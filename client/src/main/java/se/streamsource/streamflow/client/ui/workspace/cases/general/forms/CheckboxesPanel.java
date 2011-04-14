@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +35,7 @@ public class CheckboxesPanel
 
    Map<String, JCheckBox> checkBoxMap;
 
-   public CheckboxesPanel( @Uses FieldSubmissionValue field, @Uses CheckboxesFieldValue fieldValue )
+   public CheckboxesPanel( @Uses FieldSubmissionDTO field, @Uses CheckboxesFieldValue fieldValue )
    {
       super( field );
 

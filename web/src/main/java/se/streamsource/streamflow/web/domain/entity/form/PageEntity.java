@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Fields;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
 
 /**
  * JAVADOC

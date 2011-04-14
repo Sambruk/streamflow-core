@@ -19,16 +19,20 @@ package se.streamsource.streamflow.client.ui.administration.roles;
 
 import ca.odell.glazedlists.swing.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.util.*;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,7 +68,7 @@ public class RolesView
 
       roleList = new JList( new EventListModel<LinkValue>(model.getList()) );
 
-      roleList.setCellRenderer( new ListItemListCellRenderer() );
+      roleList.setCellRenderer( new LinkListCellRenderer() );
       add( roleList, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();

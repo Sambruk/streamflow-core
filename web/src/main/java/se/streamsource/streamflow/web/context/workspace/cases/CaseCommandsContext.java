@@ -17,26 +17,30 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases;
 
-import org.apache.pdfbox.exceptions.*;
-import org.apache.pdfbox.pdfwriter.*;
-import org.apache.pdfbox.pdmodel.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.caze.*;
-import se.streamsource.streamflow.web.application.pdf.*;
-import se.streamsource.streamflow.web.context.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.restlet.data.Disposition;
+import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.*;
@@ -49,8 +53,8 @@ import se.streamsource.streamflow.web.domain.structure.project.*;
 import java.io.*;
 import java.util.*;
 
-import static se.streamsource.dci.api.RoleMap.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -124,7 +128,7 @@ public interface CaseCommandsContext
    @RequiresStatus({CaseStates.OPEN, CaseStates.DRAFT})
    public void delete();
 
-   public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable;
+   public OutputRepresentation exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
    abstract class Mixin
          implements CaseCommandsContext
@@ -280,7 +284,7 @@ public interface CaseCommandsContext
          }
       }
 
-      public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable
+      public OutputRepresentation exportpdf( CaseOutputConfigDTO config ) throws Throwable
       {
          Locale locale = role( Locale.class );
 

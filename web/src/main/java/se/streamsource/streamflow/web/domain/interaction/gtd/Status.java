@@ -17,15 +17,16 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * Status for a case. Possible transitions are:

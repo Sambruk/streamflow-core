@@ -17,18 +17,27 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.domain.entity.casetype.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.created.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.*;
 import se.streamsource.streamflow.web.domain.structure.project.*;
 

@@ -17,21 +17,27 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.api.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Disposition;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.resource.caze.*;
-import se.streamsource.streamflow.resource.roles.*;
-import se.streamsource.streamflow.util.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.infrastructure.attachment.*;
+import se.streamsource.streamflow.api.workspace.cases.form.*;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.*;
 import java.net.*;
@@ -57,17 +63,10 @@ public class CaseSubmittedFormsContext
       return forms.getSubmittedForms();
    }
 
-   public EffectiveFieldsDTO effectivefields()
-   {
-      SubmittedFormsQueries fields = RoleMap.role( SubmittedFormsQueries.class );
-
-      return fields.effectiveFields();
-   }
-
-   public SubmittedFormDTO submittedform( IntegerDTO index )
+   public SubmittedFormDTO submittedform( @Name("index") int index )
    {
       SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
-      return forms.getSubmittedForm( index.integer().get() );
+      return forms.getSubmittedForm( index );
    }
 
 

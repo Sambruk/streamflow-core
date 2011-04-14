@@ -17,24 +17,30 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.restlet.client.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
+import org.restlet.representation.Representation;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.caze.*;
-import se.streamsource.streamflow.resource.roles.*;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.io.*;
+import java.io.IOException;
 
 public class CaseSubmittedFormModel
    implements Refreshable, FormAttachmentDownload
 {
    @Uses CommandQueryClient client;
 
-   @Uses IntegerDTO index;
+   @Uses Integer index;
 
    @Structure
    ValueBuilderFactory vbf;
@@ -44,8 +50,10 @@ public class CaseSubmittedFormModel
 
    public void refresh()
    {
-      form = client.query( "submittedform", index, SubmittedFormDTO.class );
-      EventListSynch.synchronize( form.pages().get(), eventList );
+      Form form = new Form();
+      form.set("index", index.toString());
+      this.form = client.query( "submittedform", form, SubmittedFormDTO.class );
+      EventListSynch.synchronize( this.form.pages().get(), eventList );
    }
 
    public EventList<SubmittedPageDTO> getEventList()

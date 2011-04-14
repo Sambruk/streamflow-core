@@ -17,23 +17,30 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.*;
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.restlet.representation.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.util.*;
+import ca.odell.glazedlists.EventList;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.representation.Representation;
+import se.streamsource.streamflow.api.administration.form.*;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -82,7 +89,7 @@ public abstract class CaseSubmittedFormAbstractView
       JComponent component;
       if ( fieldType.equals( DateFieldValue.class.getName() ))
       {
-         component = new JLabel( Strings.empty( fieldValue ) ? " " : formatter.format( DateFunctions.fromString( fieldValue ) ) );
+         component = new JLabel( Strings.empty(fieldValue) ? " " : formatter.format( DateFunctions.fromString( fieldValue ) ) );
       } else if ( fieldType.equals( TextAreaFieldValue.class.getName() ))
       {
          component = new JLabel( "<html>"+fieldValue.replace( "\n", "<br/>" )+"</html>" );

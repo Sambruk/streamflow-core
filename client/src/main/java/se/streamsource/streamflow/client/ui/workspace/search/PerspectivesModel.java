@@ -20,9 +20,11 @@ package se.streamsource.streamflow.client.ui.workspace.search;
 import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.user.profile.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 import java.util.*;
 
@@ -56,7 +58,7 @@ public class PerspectivesModel
       client.getClient(link).postCommand("changedescription", builder.newInstance());
    }
 
-   public void savePerspective(PerspectiveValue perspective)
+   public void savePerspective(PerspectiveDTO perspective)
    {
       client.postCommand("create", perspective);
    }

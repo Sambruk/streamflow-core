@@ -17,21 +17,25 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.caze.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.surface.api.CaseFormDTO;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 /**
  * JAVADOC
@@ -57,7 +61,7 @@ public class SurfaceDraftsContext
       CaseEntity caze = endUserCases.createCase(endUser);
 
       // Add contact info to case
-      ContactValue contact = endUser.getContact();
+      ContactDTO contact = endUser.getContact();
       if (contact != null)
          caze.updateContact(0, contact);
    }
@@ -70,7 +74,7 @@ public class SurfaceDraftsContext
 
 
       // Add contact info to case
-      ContactValue contact = endUser.getContact();
+      ContactDTO contact = endUser.getContact();
       if (contact != null)
          caze.updateContact(0, contact);
    }

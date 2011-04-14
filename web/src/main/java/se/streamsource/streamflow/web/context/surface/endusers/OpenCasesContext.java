@@ -17,15 +17,15 @@
 
 package se.streamsource.streamflow.web.context.surface.endusers;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.util.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 import java.util.*;
 

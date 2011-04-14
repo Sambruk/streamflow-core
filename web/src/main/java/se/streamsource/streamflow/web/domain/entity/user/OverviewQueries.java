@@ -17,22 +17,37 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.overview.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.*;
 
@@ -68,8 +83,8 @@ public interface OverviewQueries
 
          LinksBuilder linksBuilder = new LinksBuilder(vbf);
 
-         ValueBuilder<ProjectSummaryValue> summaryBuilder = vbf.newValueBuilder( ProjectSummaryValue.class );
-         ProjectSummaryValue summaryPrototype = summaryBuilder.prototype();
+         ValueBuilder<ProjectSummaryDTO> summaryBuilder = vbf.newValueBuilder( ProjectSummaryDTO.class );
+         ProjectSummaryDTO summaryPrototype = summaryBuilder.prototype();
          summaryPrototype.rel().set( "project" );
 
          for (Project project : projects.allProjects())
@@ -132,25 +147,25 @@ public interface OverviewQueries
          
          for (LinkValue summaryValue : projectsSummary.links().get())
          {
-            ProjectSummaryValue projectSummaryValue = (ProjectSummaryValue) summaryValue;
+            ProjectSummaryDTO projectSummaryDTO = (ProjectSummaryDTO) summaryValue;
             Row contentRow = sheet.createRow( ++rowCounter );
             // contentRow.setHeightInPoints(30);
 
             // Project
-            createCell( projectSummaryValue.text().get(), workbook, contentRow,
+            createCell( projectSummaryDTO.text().get(), workbook, contentRow,
                   (short) 0, HSSFCellStyle.ALIGN_LEFT,
                   HSSFCellStyle.VERTICAL_TOP );
             // Inbox
-            createCell( String.valueOf( projectSummaryValue.inboxCount().get() ),
+            createCell( String.valueOf( projectSummaryDTO.inboxCount().get() ),
                   workbook, contentRow, (short) 1,
                   HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP );
             // Assigned
-            createCell( String.valueOf( projectSummaryValue.assignedCount().get() ),
+            createCell( String.valueOf( projectSummaryDTO.assignedCount().get() ),
                   workbook, contentRow, (short) 2,
                   HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP );
             // Total
-            createCell( String.valueOf( projectSummaryValue.inboxCount().get()
-                  + projectSummaryValue.assignedCount().get() ), workbook,
+            createCell( String.valueOf( projectSummaryDTO.inboxCount().get()
+                  + projectSummaryDTO.assignedCount().get() ), workbook,
                   contentRow, (short) 3, HSSFCellStyle.ALIGN_RIGHT,
                   HSSFCellStyle.VERTICAL_TOP );
          }

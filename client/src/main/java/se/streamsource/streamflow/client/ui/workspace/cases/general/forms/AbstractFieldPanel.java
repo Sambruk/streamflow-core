@@ -17,26 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
+import se.streamsource.streamflow.client.util.StateBinder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Container;
 
 /**
  * Abstract class that each field type must extend
  */
 public abstract class AbstractFieldPanel extends JPanel
 {
-   private FieldSubmissionValue field;
+   private FieldSubmissionDTO field;
    protected StateBinder.Binding binding;
 
    @Structure
    ObjectBuilderFactory obf;
 
-   public AbstractFieldPanel( FieldSubmissionValue field )
+   public AbstractFieldPanel( FieldSubmissionDTO field )
    {
       this.field = field;
    }
@@ -47,19 +49,19 @@ public abstract class AbstractFieldPanel extends JPanel
 
    abstract public boolean validateValue( Object newValue );
 
-   public StateBinder bindComponent( BindingFormBuilder bb, FieldSubmissionValue value )
+   public StateBinder bindComponent( BindingFormBuilder bb, FieldSubmissionDTO DTO)
    {
-      if (value.field().get().note().get().length() > 0)
+      if (DTO.field().get().note().get().length() > 0)
       {
-         setToolTipText( value.field().get().note().get() );
+         setToolTipText( DTO.field().get().note().get() );
       }
 
       StateBinder stateBinder = obf.newObject( StateBinder.class );
-      FieldSubmissionValue value1 = stateBinder.bindingTemplate( FieldSubmissionValue.class );
+      FieldSubmissionDTO value1 = stateBinder.bindingTemplate( FieldSubmissionDTO.class );
 
       bb.append( componentName(), this, value1.value(), stateBinder );
 
-      stateBinder.updateWith( value );
+      stateBinder.updateWith(DTO);
       return stateBinder;
    }
 

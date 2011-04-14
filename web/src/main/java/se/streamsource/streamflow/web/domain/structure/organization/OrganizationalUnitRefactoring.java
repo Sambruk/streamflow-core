@@ -17,9 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.domain.organization.*;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 
 /**
  * An organizational unit represents a part of an organization.

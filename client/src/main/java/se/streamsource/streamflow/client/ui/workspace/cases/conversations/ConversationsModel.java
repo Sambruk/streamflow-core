@@ -22,11 +22,12 @@ import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.value.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.resource.conversation.*;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 
 import static org.qi4j.api.specification.Specifications.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;

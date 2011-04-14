@@ -17,13 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.gui.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
-import se.streamsource.streamflow.util.*;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.gui.AdvancedTableFormat;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.util.Strings;
 
 import java.util.*;
 

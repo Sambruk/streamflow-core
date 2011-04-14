@@ -17,14 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.overview.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.ui.ContextItem;
 
 import java.util.*;
 
@@ -55,7 +58,7 @@ public class OverviewModel
       LinksValue projects = client.query("index", LinksValue.class );
       for (LinkValue link : projects.links().get())
       {
-         ProjectSummaryValue project = (ProjectSummaryValue) link;
+         ProjectSummaryDTO project = (ProjectSummaryDTO) link;
          list.add( new ContextItem(project.text().get(), text( assignments_node), Icons.assign.name(), project.assignedCount().get(), client.getClient( project.href().get() ).getSubClient("assignments" )));
       }
 

@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints;
 
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.*;
-import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.*;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.EmailAccessPointAdministrationContext;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointLabelableResource;
 
 /**
  * TODO

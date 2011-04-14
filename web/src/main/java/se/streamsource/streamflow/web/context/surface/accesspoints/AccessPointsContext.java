@@ -17,20 +17,23 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.specification.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -47,14 +50,13 @@ public class AccessPointsContext
 
       if (!(authentication instanceof ProxyUser))
       {
-         TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
          ValueBuilder<LinkValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
          valueBuilder.prototype().href().set( ".." );
          valueBuilder.prototype().id().set( "" );
-         valueBuilder.prototype().text().set( "back" );
+         valueBuilder.prototype().text().set( "USER NOT A PROXY USER" );
 
-         builder.addLink( valueBuilder.newInstance() );
-         builder.addTitle( "USER NOT A PROXY USER" );
+         builder.addLink(valueBuilder.newInstance());
 
          return builder.newLinks();
       }

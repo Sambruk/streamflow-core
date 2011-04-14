@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.streamsource.streamflow</groupId>
+        <artifactId>streamflow</artifactId>
+        <version>1.4-SNAPSHOT</version>
+    </parent>
+    <artifactId>streamflow-client-api</artifactId>
+    <groupId>se.streamsource.streamflow</groupId>
+    <version>1.4-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Streamflow Client API</name>
+    <description>Streamflow Client API</description>
+    <dependencies>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-dci</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.qi4j.core</groupId>
+            <artifactId>org.qi4j.core.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.qi4j.core</groupId>
+            <artifactId>org.qi4j.core.bootstrap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>org.qi4j.library.constraints</artifactId>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.qi4j.core</groupId>
+            <artifactId>org.qi4j.core.testsupport</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+</project>

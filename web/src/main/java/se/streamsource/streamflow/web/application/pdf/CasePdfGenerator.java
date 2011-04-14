@@ -23,22 +23,27 @@ import org.qi4j.api.common.*;
 import org.qi4j.api.entity.*;
 import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.io.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.resource.caze.*;
-import se.streamsource.streamflow.util.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.api.administration.form.*;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseOutput;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.*;
 import se.streamsource.streamflow.web.domain.structure.casetype.*;
 import se.streamsource.streamflow.web.domain.structure.caze.*;
 import se.streamsource.streamflow.web.domain.structure.conversation.*;
 import se.streamsource.streamflow.web.domain.structure.created.*;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.*;
 import se.streamsource.streamflow.web.infrastructure.attachment.*;
@@ -68,7 +73,7 @@ public class CasePdfGenerator implements CaseOutput
 
    private PdfDocument document;
    private ResourceBundle bundle;
-   private final CaseOutputConfigValue config;
+   private final CaseOutputConfigDTO config;
    private Locale locale;
    private String templateUri;
 
@@ -81,7 +86,7 @@ public class CasePdfGenerator implements CaseOutput
    private String caseId = "";
    private String printedOn = "";
 
-   public CasePdfGenerator( @Uses CaseOutputConfigValue config, @Optional @Uses String templateUri, @Uses Locale locale )
+   public CasePdfGenerator(@Uses CaseOutputConfigDTO config, @Optional @Uses String templateUri, @Uses Locale locale)
    {
       this.config = config;
       this.locale = locale;
@@ -203,16 +208,16 @@ public class CasePdfGenerator implements CaseOutput
       }
    }
 
-   private void generateContacts( Input<ContactValue, RuntimeException> contacts ) throws IOException
+   private void generateContacts(Input<ContactDTO, RuntimeException> contacts) throws IOException
    {
-      final Transforms.Counter<ContactValue> counter = new Transforms.Counter<ContactValue>();
-      contacts.transferTo( Transforms.map( counter, new Output<ContactValue, IOException>()
+      final Transforms.Counter<ContactDTO> counter = new Transforms.Counter<ContactDTO>();
+      contacts.transferTo(Transforms.map(counter, new Output<ContactDTO, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<? extends ContactValue, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends ContactDTO, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
-            sender.sendTo( new Receiver<ContactValue, IOException>()
+            sender.sendTo(new Receiver<ContactDTO, IOException>()
             {
-               public void receive( ContactValue value ) throws IOException
+               public void receive(ContactDTO value) throws IOException
                {
                   Map<String, String> nameValuePairs = new LinkedHashMap<String, String>( 10 );
                   if (!Strings.empty( value.name().get() ))

@@ -17,11 +17,16 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * JAVADOC
@@ -32,13 +37,13 @@ public interface CaseType
       Describable,
       Forms,
       Labels,
-      Notable,
+        Notable,
       Ownable,
       Owner,
       Resolutions,
       SelectedForms,
       SelectedLabels,
       SelectedResolutions,
-      Removable
+        Removable
 {
 }

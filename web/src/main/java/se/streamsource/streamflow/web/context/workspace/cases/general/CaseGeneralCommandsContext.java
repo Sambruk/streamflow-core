@@ -17,26 +17,34 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.*;
+import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.*;
-import se.streamsource.streamflow.web.context.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.dci.value.StringValueMaxLength;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import java.util.Date;
+
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
 
 /**
  * Commands for the General view of a Case. They all require the "write" permission
@@ -49,7 +57,7 @@ public interface CaseGeneralCommandsContext
       Context
 {
    @RequiresStatus({DRAFT, OPEN})
-   void changedueon( DateDTO dueOnValue );
+   void changedueon( @Name("date") Date dueOnValue );
 
    @RequiresStatus({DRAFT, OPEN})
    void casetype( EntityValue dto );
@@ -80,10 +88,10 @@ public interface CaseGeneralCommandsContext
          notable.changeNote( noteValue.string().get() );
       }
 
-      public void changedueon( DateDTO dueOnValue )
+      public void changedueon( Date newDueOn )
       {
          DueOn dueOn = RoleMap.role( DueOn.class );
-         dueOn.dueOn( dueOnValue.date().get() );
+         dueOn.dueOn( newDueOn );
       }
 
       public LinksValue possiblecasetypes()

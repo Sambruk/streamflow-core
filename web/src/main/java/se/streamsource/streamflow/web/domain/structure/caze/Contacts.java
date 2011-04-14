@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.*;
 
@@ -33,9 +35,9 @@ import java.util.*;
 @Mixins(Contacts.Mixin.class)
 public interface Contacts
 {
-   public void addContact( ContactValue newContact );
+   public void addContact( ContactDTO newContact );
 
-   public void updateContact( int index, ContactValue contact );
+   public void updateContact( int index, ContactDTO contact );
 
    public void deleteContact( int index );
 
@@ -44,11 +46,11 @@ public interface Contacts
    interface Data
    {
       @UseDefaults
-      Property<List<ContactValue>> contacts();
+      Property<List<ContactDTO>> contacts();
 
-      void addedContact( @Optional DomainEvent event, ContactValue newContact );
+      void addedContact( @Optional DomainEvent event, ContactDTO newContact );
 
-      void updatedContact( @Optional DomainEvent event, int index, ContactValue contact );
+      void updatedContact( @Optional DomainEvent event, int index, ContactDTO contact );
 
       void deletedContact( @Optional DomainEvent event, int index );
    }
@@ -62,12 +64,12 @@ public interface Contacts
       @Structure
       ValueBuilderFactory vbf;
 
-      public void addContact( ContactValue newContact )
+      public void addContact( ContactDTO newContact )
       {
          addedContact( null, newContact );
       }
 
-      public void updateContact( int index, ContactValue contact )
+      public void updateContact( int index, ContactDTO contact )
       {
          if (contacts().get().size() > index)
          {
@@ -83,23 +85,23 @@ public interface Contacts
          }
       }
 
-      public void addedContact( DomainEvent event, ContactValue newContact )
+      public void addedContact( DomainEvent event, ContactDTO newContact )
       {
-         List<ContactValue> contacts = state.contacts().get();
+         List<ContactDTO> contacts = state.contacts().get();
          contacts.add( newContact );
          state.contacts().set( contacts );
       }
 
-      public void updatedContact( DomainEvent event, int index, ContactValue contact )
+      public void updatedContact( DomainEvent event, int index, ContactDTO contact )
       {
-         List<ContactValue> contacts = state.contacts().get();
+         List<ContactDTO> contacts = state.contacts().get();
          contacts.set( index, contact );
          state.contacts().set( contacts );
       }
 
       public void deletedContact( DomainEvent event, int index )
       {
-         List<ContactValue> contacts = state.contacts().get();
+         List<ContactDTO> contacts = state.contacts().get();
          contacts.remove( index );
          state.contacts().set( contacts );
       }
@@ -109,7 +111,7 @@ public interface Contacts
          return !state.contacts().get().isEmpty() && !isTemplate( state.contacts().get().get(0) );
       }
 
-      private boolean isTemplate( ContactValue contact )
+      private boolean isTemplate( ContactDTO contact )
       {
          return "".equals( contact.name().get() )
                && contact.addresses().get().isEmpty()

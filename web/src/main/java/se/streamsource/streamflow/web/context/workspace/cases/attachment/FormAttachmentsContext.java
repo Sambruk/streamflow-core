@@ -20,22 +20,27 @@ package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 import org.apache.commons.fileupload.*;
 import org.qi4j.api.entity.*;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.ext.fileupload.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import org.restlet.service.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.attachment.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.infrastructure.attachment.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.ext.fileupload.RestletFileUpload;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.service.MetadataService;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.*;
 import java.net.*;
@@ -66,7 +71,7 @@ public class FormAttachmentsContext
       FormAttachments.Data attachments = RoleMap.role( FormAttachments.Data.class );
 
       LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() ).rel( "attachment" );
-      ValueBuilder<AttachmentValue> builder = module.valueBuilderFactory().newValueBuilder( AttachmentValue.class );
+      ValueBuilder<AttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder( AttachmentDTO.class );
       for (Attachment attachment : attachments.formAttachments())
       {
          AttachedFile.Data data = (AttachedFile.Data) attachment;

@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -32,7 +33,7 @@ public class TextAreaFieldPanel
 {
    private JTextArea text;
 
-   public TextAreaFieldPanel( @Uses FieldSubmissionValue field, @Uses TextAreaFieldValue fieldValue )
+   public TextAreaFieldPanel( @Uses FieldSubmissionDTO field, @Uses TextAreaFieldValue fieldValue )
    {
       super( field );
       setLayout( new BorderLayout( ) );

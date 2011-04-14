@@ -17,14 +17,20 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.LinkTree;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 
 import java.util.*;
 

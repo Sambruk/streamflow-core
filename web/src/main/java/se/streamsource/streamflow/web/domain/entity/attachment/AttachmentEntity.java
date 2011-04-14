@@ -17,15 +17,24 @@
 
 package se.streamsource.streamflow.web.domain.entity.attachment;
 
-import org.qi4j.api.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 

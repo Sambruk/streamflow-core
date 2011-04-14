@@ -17,12 +17,18 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import org.qi4j.api.common.*;
-import org.qi4j.bootstrap.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.domain.individual.*;
-import se.streamsource.streamflow.domain.*;
-import se.streamsource.streamflow.resource.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.specification.Specifications;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.restlet.client.ClientAssembler;
+import se.streamsource.dci.value.ValueAssembler;
+import se.streamsource.streamflow.api.assembler.ClientAPIAssembler;
+import se.streamsource.streamflow.client.domain.individual.AccountEntity;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
+import se.streamsource.streamflow.client.domain.individual.IndividualEntity;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepositoryService;
 
 /**
  * JAVADOC
@@ -31,8 +37,6 @@ public class DomainAssembler
 {
    public void assemble( LayerAssembly layer ) throws AssemblyException
    {
-      new CommonDomainAssembler().assemble( layer );
-
       individual( layer.module( "Individual" ) );
       restDomainModel( layer.module( "REST domain model" ) );
    }
@@ -47,7 +51,10 @@ public class DomainAssembler
 
    private void restDomainModel( ModuleAssembly module ) throws AssemblyException
    {
-      new CommonResourceAssembler().assemble( module );
+      new ValueAssembler().assemble(module);
+      new ClientAPIAssembler().assemble(module);
       new ClientAssembler().assemble( module );
+
+      module.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }
 }

@@ -17,12 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.util.*;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.RegexPatternFormatter;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -38,7 +42,7 @@ public class TextFieldPanel
    @Service
    DialogService dialogs;
 
-   public TextFieldPanel( @Uses FieldSubmissionValue field, @Uses TextFieldValue fieldValue )
+   public TextFieldPanel( @Uses FieldSubmissionDTO field, @Uses TextFieldValue fieldValue )
    {
       super( field );
       setLayout( new BorderLayout() );

@@ -17,16 +17,17 @@
 
 package se.streamsource.streamflow.web.context.account;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.resource.user.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
 /**
  * JAVADOC
  */
 public class AccountContext
 {
-   public void changepassword( ChangePasswordCommand newPassword )
+   public void changepassword( ChangePasswordDTO newPassword )
          throws WrongPasswordException
    {
       UserAuthentication user = RoleMap.role( UserAuthentication.class );

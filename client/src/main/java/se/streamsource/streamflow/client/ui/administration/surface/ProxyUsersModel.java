@@ -24,12 +24,15 @@ import org.restlet.data.*;
 import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.application.error.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.resource.user.*;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.administration.ProxyUserDTO;
+import se.streamsource.streamflow.api.administration.ProxyUserListDTO;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
 
 public class ProxyUsersModel
       implements Refreshable, TransactionListener
@@ -53,14 +56,14 @@ public class ProxyUsersModel
       EventListSynch.synchronize( proxyUsers.users().get(), eventList );
    }
 
-   public void createProxyUser( NewProxyUserCommand proxyUserCommand )
+   public void createProxyUser( NewProxyUserDTO proxyUserDTO)
    {
       try
       {
-         client.postCommand( "createproxyuser", proxyUserCommand );
+         client.postCommand( "createproxyuser", proxyUserDTO);
       } catch (ResourceException e)
       {
-         ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
+         ErrorResources resources = ErrorResources.valueOf(e.getMessage());
          throw new OperationException( resources, e );
       }
    }

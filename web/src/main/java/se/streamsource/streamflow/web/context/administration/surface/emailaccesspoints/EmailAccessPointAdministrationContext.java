@@ -17,17 +17,20 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.domain.organization.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.entity.project.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.organization.*;
 import se.streamsource.streamflow.web.domain.structure.project.*;
 
@@ -41,7 +44,7 @@ import static se.streamsource.dci.api.RoleMap.*;
  * TODO
  */
 public class EmailAccessPointAdministrationContext
-        implements IndexContext<EmailAccessPointValue>, DeleteContext
+        implements IndexContext<EmailAccessPointDTO>, DeleteContext
 {
    @Structure
    Module module;
@@ -90,11 +93,11 @@ public class EmailAccessPointAdministrationContext
       role(EmailTemplates.class).changeTemplate(key, template);
    }
 
-   public EmailAccessPointValue index()
+   public EmailAccessPointDTO index()
    {
       EmailAccessPointEntity eap = role(EmailAccessPointEntity.class);
 
-      ValueBuilder<EmailAccessPointValue> builder = module.valueBuilderFactory().newValueBuilder(EmailAccessPointValue.class);
+      ValueBuilder<EmailAccessPointDTO> builder = module.valueBuilderFactory().newValueBuilder(EmailAccessPointDTO.class);
 
       builder.prototype().subject().set(eap.subject().get());
       builder.prototype().email().set(eap.getDescription());

@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.restlet.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.resource.user.*;
+import org.restlet.Uniform;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 
 /**
  * JAVADOC
@@ -30,5 +30,5 @@ public interface AccountSettings
 
    void updateSettings( AccountSettingsValue newAccountSettings );
 
-   void changePassword( Uniform client, ChangePasswordCommand changePassword ) throws ResourceException;
+   void changePassword( Uniform client, ChangePasswordDTO changePassword ) throws ResourceException;
 }

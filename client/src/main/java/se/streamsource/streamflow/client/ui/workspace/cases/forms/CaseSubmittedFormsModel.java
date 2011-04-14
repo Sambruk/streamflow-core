@@ -17,11 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.caze.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 
 /**
  * List of contacts for a case

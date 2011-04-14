@@ -17,29 +17,46 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
-import com.jgoodies.validation.*;
-import com.jgoodies.validation.util.*;
-import com.jgoodies.validation.view.*;
-import org.jdesktop.swingx.*;
-import org.netbeans.spi.wizard.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.validation.ValidationResult;
+import com.jgoodies.validation.ValidationResultModel;
+import com.jgoodies.validation.util.DefaultValidationResultModel;
+import com.jgoodies.validation.util.ValidationUtils;
+import com.jgoodies.validation.view.ValidationResultViewFactory;
+import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.ScrollableSizeHint;
+import org.netbeans.spi.wizard.Wizard;
+import org.netbeans.spi.wizard.WizardPage;
+import org.netbeans.spi.wizard.WizardPanelNavResult;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.administration.form.*;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -88,7 +105,7 @@ public class FormSubmissionWizardPageView
 
 
    public FormSubmissionWizardPageView( @Structure ObjectBuilderFactory obf,
-                                        @Uses PageSubmissionValue page,
+                                        @Uses PageSubmissionDTO page,
                                         @Uses CommandQueryClient client )
    {
       super( page.title().get() );
@@ -105,22 +122,22 @@ public class FormSubmissionWizardPageView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 
-      for (FieldSubmissionValue value : page.fields().get())
+      for (FieldSubmissionDTO DTO : page.fields().get())
       {
          AbstractFieldPanel component;
-         FieldValue fieldValue = value.field().get().fieldValue().get();
+         FieldValue fieldValue = DTO.field().get().fieldValue().get();
          if (!(fieldValue instanceof CommentFieldValue))
          {
-            component = getComponent( value );
-            componentFieldMap.put( value.field().get().field().get().identity(), component );
-            StateBinder stateBinder = component.bindComponent( bb, value );
+            component = getComponent(DTO);
+            componentFieldMap.put( DTO.field().get().field().get().identity(), component );
+            StateBinder stateBinder = component.bindComponent( bb, DTO);
             stateBinder.addObserver( this );
-            fieldBinders.put( stateBinder, value.field().get().field().get() );
+            fieldBinders.put( stateBinder, DTO.field().get().field().get() );
 
          } else
          {
             // comment field does not have any input component
-            String comment = value.field().get().note().get();
+            String comment = DTO.field().get().note().get();
             comment = comment.replaceAll( "\n", "<br/>" );
 
             JEditorPane commentPane = new JEditorPane( "text/html", "<html>" + comment + "</html>" );
@@ -327,7 +344,7 @@ public class FormSubmissionWizardPageView
       }
    }
 
-   private AbstractFieldPanel getComponent( FieldSubmissionValue field )
+   private AbstractFieldPanel getComponent( FieldSubmissionDTO field )
    {
       FieldValue fieldValue = field.field().get().fieldValue().get();
       Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) fieldValue.getClass().getInterfaces()[0];

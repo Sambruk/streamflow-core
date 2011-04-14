@@ -17,14 +17,15 @@
 
 package se.streamsource.streamflow.web.resource.workspace;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.context.structure.*;
-import se.streamsource.streamflow.web.context.workspace.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import se.streamsource.dci.api.ContextNotFoundException;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.context.workspace.PerspectiveContext;
+import se.streamsource.streamflow.web.context.workspace.PerspectivesContext;
+import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
+import se.streamsource.streamflow.web.domain.structure.user.Perspective;
 
 /**
  * JAVADOC

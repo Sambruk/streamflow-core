@@ -17,17 +17,20 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 import static se.streamsource.dci.api.RoleMap.*;

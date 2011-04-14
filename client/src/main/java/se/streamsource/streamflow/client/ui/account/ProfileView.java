@@ -20,17 +20,25 @@ package se.streamsource.streamflow.client.ui.account;
 import com.jgoodies.forms.builder.*;
 import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.property.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.contact.*;
+import org.jdesktop.application.ApplicationActionMap;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -74,18 +82,18 @@ public class ProfileView
 
       contactBinder = obf.newObject( StateBinder.class );
       contactBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactValue contactTemplate = contactBinder
-            .bindingTemplate(ContactValue.class);
+      ContactDTO contactTemplate = contactBinder
+            .bindingTemplate(ContactDTO.class);
 
       phoneNumberBinder = obf.newObject( StateBinder.class );
       phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactPhoneValue phoneTemplate = phoneNumberBinder
-            .bindingTemplate(ContactPhoneValue.class);
+      ContactPhoneDTO phoneTemplate = phoneNumberBinder
+            .bindingTemplate(ContactPhoneDTO.class);
 
       emailBinder = obf.newObject( StateBinder.class );
       emailBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactEmailValue emailTemplate = emailBinder
-            .bindingTemplate(ContactEmailValue.class);
+      ContactEmailDTO emailTemplate = emailBinder
+            .bindingTemplate(ContactEmailDTO.class);
 
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout,
             contactForm);

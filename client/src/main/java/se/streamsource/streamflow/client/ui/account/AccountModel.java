@@ -17,15 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.domain.individual.*;
-import se.streamsource.streamflow.resource.user.*;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.Uniform;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
+import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 
 import java.io.*;
 import java.util.*;
@@ -109,7 +115,7 @@ public class AccountModel extends Observable
       uow.complete();
    }
 
-   public void changePassword( ChangePasswordCommand changePasswordCommand )
+   public void changePassword( ChangePasswordDTO changePasswordDTO)
          throws Exception
    {
       UnitOfWork uow = uowf.newUnitOfWork();
@@ -117,7 +123,7 @@ public class AccountModel extends Observable
       try
       {
          Account account1 = uow.get( account );
-         account1.changePassword( client, changePasswordCommand );
+         account1.changePassword( client, changePasswordDTO);
          uow.complete();
       } catch (Exception ex)
       {

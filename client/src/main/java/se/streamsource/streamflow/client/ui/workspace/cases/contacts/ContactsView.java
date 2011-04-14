@@ -17,21 +17,26 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,7 +78,7 @@ public class ContactsView
 
       this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
-      contacts = new JList(new EventListModel<ContactValue>( model.getEventList() ));
+      contacts = new JList(new EventListModel<ContactDTO>( model.getEventList() ));
       contacts.setPreferredSize( new Dimension( 200, 1000 ) );
       contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       JScrollPane contactsScrollPane = new JScrollPane();
@@ -84,7 +89,7 @@ public class ContactsView
          @Override
          public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
          {
-            ContactValue contact = (ContactValue) o;
+            ContactDTO contact = (ContactDTO) o;
             if ("".equals( contact.name().get() ))
             {
                Component cell = super.getListCellRendererComponent( jList, i18n.text( WorkspaceResources.name_label ), i, b, b1 );
@@ -150,7 +155,7 @@ public class ContactsView
    public Task remove() throws IOException, ResourceException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( ((ContactValue) contacts.getSelectedValue()).name().get() );
+      dialog.setRemovalMessage( ((ContactDTO) contacts.getSelectedValue()).name().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {

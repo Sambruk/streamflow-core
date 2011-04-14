@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 /**
  * JAVADOC

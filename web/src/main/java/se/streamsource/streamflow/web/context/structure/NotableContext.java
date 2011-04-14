@@ -19,7 +19,7 @@ package se.streamsource.streamflow.web.context.structure;
 
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.domain.Notable;
 
 /**
  * JAVADOC

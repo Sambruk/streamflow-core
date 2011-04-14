@@ -72,7 +72,6 @@ public enum WorkspaceResources
 
    // Forms tab
    submitted_forms_tab,
-   effective_fields_tab,
 
    // Attachments tab
    attachment,

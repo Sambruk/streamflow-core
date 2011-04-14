@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.error.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.application.error.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.dialog.*;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.error.ErrorInfo;
+import org.qi4j.api.common.ConstructionException;
+import org.qi4j.api.injection.scope.Service;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 import javax.swing.*;
 import java.awt.*;

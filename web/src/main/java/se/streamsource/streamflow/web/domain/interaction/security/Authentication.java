@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.interaction.security;
 
-import se.streamsource.streamflow.domain.user.*;
+import se.streamsource.streamflow.api.Password;
 
 /**
  * JAVADOC

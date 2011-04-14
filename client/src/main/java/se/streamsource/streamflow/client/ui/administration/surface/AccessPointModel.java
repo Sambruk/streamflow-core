@@ -24,11 +24,12 @@ import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.application.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.util.*;
 
@@ -42,17 +43,17 @@ public class AccessPointModel extends Observable
    @Uses
    private CommandQueryClient client;
 
-   private AccessPointValue accessPoint;
+   private AccessPointDTO accessPoint;
 
-   public AccessPointValue getAccessPointValue()
+   public AccessPointDTO getAccessPointValue()
    {
       return accessPoint;
    }
 
    public void refresh() throws OperationException
    {
-      AccessPointValue updatedValue = client.query( "index", AccessPointValue.class );
-      accessPoint = (AccessPointValue) updatedValue.buildWith().prototype();
+      AccessPointDTO updatedDTO = client.query( "index", AccessPointDTO.class );
+      accessPoint = (AccessPointDTO) updatedDTO.buildWith().prototype();
 
       setChanged();
       notifyObservers();

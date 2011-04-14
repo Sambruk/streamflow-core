@@ -17,27 +17,35 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import ca.odell.glazedlists.event.*;
-import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.domain.individual.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.application.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -86,7 +94,7 @@ public class AccountsDialog
       setActionMap( context.getActionMap( this ) );
 
       accountList = new JList( new EventListModel(model.getAccounts()) );
-      accountList.setCellRenderer( new ListItemListCellRenderer() );
+      accountList.setCellRenderer( new LinkListCellRenderer() );
 
       JPanel listPanel = new JPanel(new BorderLayout());
       JScrollPane scroll = new JScrollPane( accountList );
@@ -117,7 +125,7 @@ public class AccountsDialog
             {
                if (accountList.getSelectedIndex() != -1)
                {
-                  AccountModel account = model.accountModel( accountList.getSelectedIndex() );
+                  AccountModel account = model.accountModel( (LinkValue) accountList.getSelectedValue() );
                   accountView = obf.newObjectBuilder( AccountView.class ).use( account ).newInstance();
                   viewPanel.add( accountView, "VIEW" );
                   cardLayout.show( viewPanel, "VIEW" );
@@ -154,11 +162,11 @@ public class AccountsDialog
    public void remove() throws UnitOfWorkCompletionException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( ((ListItemValue)accountList.getSelectedValue()).description().get() );
+      dialog.setRemovalMessage( ((LinkValue)accountList.getSelectedValue()).text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeAccount( accountList.getSelectedIndex() );
+         model.removeAccount( (LinkValue) accountList.getSelectedValue() );
          listChanged(null);
       }
    }
@@ -166,13 +174,13 @@ public class AccountsDialog
    public void listChanged( ListEvent listEvent )
    {
       int prevSelected = accountList.getSelectedIndex();
-      accountList.setModel( new EventListModel<ListItemValue>( model.accounts ) );
+      accountList.setModel( new EventListModel<LinkValue>( model.accounts ) );
       accountList.repaint();
       accountList.setSelectedIndex( prevSelected );
 
    }
 
-   public void setSelectedAccount(ListItemValue selectedValue)
+   public void setSelectedAccount(LinkValue selectedValue)
    {
       accountList.setSelectedValue(selectedValue, true);
    }

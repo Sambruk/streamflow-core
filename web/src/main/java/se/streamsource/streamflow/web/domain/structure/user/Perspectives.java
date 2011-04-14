@@ -17,20 +17,25 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.resource.user.profile.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
 
 @Mixins(Perspectives.Mixin.class)
 public interface Perspectives
 {
-   public void createPerspective(PerspectiveValue perspective);
+   public void createPerspective(PerspectiveDTO perspective);
 
    public void removePerspective(Perspective perspective);
 
@@ -39,7 +44,7 @@ public interface Perspectives
       @Aggregated
       ManyAssociation<Perspective> perspectives();
 
-      Perspective createdPerspective(@Optional DomainEvent event, String id, PerspectiveValue perspective);
+      Perspective createdPerspective(@Optional DomainEvent event, String id, PerspectiveDTO perspective);
 
       void removedPerspective(@Optional DomainEvent event, Perspective perspective);
    }
@@ -56,17 +61,17 @@ public interface Perspectives
       @Structure
       UnitOfWorkFactory uowf;
 
-      public void createPerspective(PerspectiveValue perspective)
+      public void createPerspective(PerspectiveDTO perspective)
       {
          String id = idgen.generate(Identity.class);
          Perspective newPerspective = createdPerspective(null, id, perspective);
          newPerspective.changeDescription(perspective.name().get());
       }
 
-      public Perspective createdPerspective(DomainEvent event, String id, PerspectiveValue perspectiveValue)
+      public Perspective createdPerspective(DomainEvent event, String id, PerspectiveDTO perspectiveDTO)
       {
          EntityBuilder<PerspectiveEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(PerspectiveEntity.class, id);
-         builder.instance().perspective().set(perspectiveValue);
+         builder.instance().perspective().set(perspectiveDTO);
          Perspective perspective = builder.newInstance();
          state.perspectives().add(perspective);
          return perspective;

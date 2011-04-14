@@ -17,30 +17,49 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.web.application.security.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.conversation.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Application;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.administration.form.*;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.util.*;
 
@@ -86,11 +105,11 @@ public interface TestDataService
          User someUser2 = users.createUser( "someuser2", "someuser2" );
 
          // contact info on someuser
-         ValueBuilder<ContactValue> contact = vbf.newValueBuilder( ContactValue.class );
-         ValueBuilder<ContactEmailValue> email = vbf.newValueBuilder( ContactEmailValue.class );
+         ValueBuilder<ContactDTO> contact = vbf.newValueBuilder( ContactDTO.class );
+         ValueBuilder<ContactEmailDTO> email = vbf.newValueBuilder( ContactEmailDTO.class );
          email.prototype().emailAddress().set( "streamsourceflow@gmail.com" );
-         email.prototype().contactType().set( ContactEmailValue.ContactType.WORK );
-         List<ContactEmailValue> list = new ArrayList<ContactEmailValue>();
+         email.prototype().contactType().set( ContactEmailDTO.ContactType.WORK );
+         List<ContactEmailDTO> list = new ArrayList<ContactEmailDTO>();
          list.add( email.newInstance() );
          contact.prototype().emailAddresses().set( list );
 
@@ -299,15 +318,15 @@ public interface TestDataService
 
       private void submitStatus( Case aCase, FormDraft formSubmission, String status, Submitter submitter )
       {
-         FormDraftValue submissionValue = (FormDraftValue) formSubmission.getFormDraftValue().buildWith().prototype();
-         for (PageSubmissionValue pageValue : submissionValue.pages().get())
+         FormDraftDTO submissionDTO = (FormDraftDTO) formSubmission.getFormDraftValue().buildWith().prototype();
+         for (PageSubmissionDTO pageDTO : submissionDTO.pages().get())
          {
-            for (FieldSubmissionValue value : pageValue.fields().get())
+            for (FieldSubmissionDTO DTO : pageDTO.fields().get())
             {
-               value.value().set( status );
+               DTO.value().set( status );
             }
          }
-         formSubmission.changeFormDraftValue( submissionValue );
+         formSubmission.changeFormDraftValue(submissionDTO);
          aCase.submitForm( formSubmission, submitter );
       }
 

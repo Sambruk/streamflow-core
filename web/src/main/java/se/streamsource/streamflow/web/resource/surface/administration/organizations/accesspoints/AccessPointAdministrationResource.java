@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints;
 
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.context.administration.surface.accesspoints.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 
 import java.util.*;
 

@@ -23,9 +23,9 @@ import org.qi4j.api.structure.*;
 import org.qi4j.api.value.*;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.api.administration.form.FormValue;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.structure.form.FormId;
 
 /**
  * Information about a single form

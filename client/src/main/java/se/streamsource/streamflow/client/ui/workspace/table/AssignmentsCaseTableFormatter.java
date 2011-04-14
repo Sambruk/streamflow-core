@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import se.streamsource.streamflow.domain.interaction.gtd.*;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
 import java.util.*;
 

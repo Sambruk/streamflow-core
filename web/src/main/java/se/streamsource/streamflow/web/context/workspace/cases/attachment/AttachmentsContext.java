@@ -27,23 +27,27 @@ import org.qi4j.api.value.*;
 import org.restlet.*;
 import org.restlet.data.*;
 import org.restlet.data.Status;
-import org.restlet.ext.fileupload.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import org.restlet.service.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.attachment.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.infrastructure.attachment.*;
+import org.restlet.ext.fileupload.RestletFileUpload;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.service.MetadataService;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
 
 /**
  * JAVADOC
@@ -68,7 +72,7 @@ public class AttachmentsContext
       Attachments.Data attachments = RoleMap.role( Attachments.Data.class );
 
       LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() ).rel( "attachment" );
-      ValueBuilder<AttachmentValue> builder = module.valueBuilderFactory().newValueBuilder( AttachmentValue.class );
+      ValueBuilder<AttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder( AttachmentDTO.class );
       for (Attachment attachment : attachments.attachments())
       {
          AttachedFile.Data data = (AttachedFile.Data) attachment;

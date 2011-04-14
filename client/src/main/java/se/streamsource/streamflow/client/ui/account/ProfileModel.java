@@ -17,13 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 
 import java.util.*;
 
@@ -40,7 +44,7 @@ public class ProfileModel
    @Uses
    private CommandQueryClient client;
 
-   private ContactValue contact;
+   private ContactDTO contact;
 
    public void changeMessageDeliveryType( String newDeliveryType )
          throws ResourceException
@@ -61,33 +65,33 @@ public class ProfileModel
 
    public void refresh()
    {
-      contact = client.query("index", ContactValue.class ).<ContactValue>buildWith().prototype();
+      contact = client.query("index", ContactDTO.class ).<ContactDTO>buildWith().prototype();
       setChanged();
       notifyObservers();
    }
 
-   public ContactValue getContact()
+   public ContactDTO getContact()
    {
       return contact;
    }
 
-   public ContactPhoneValue getPhoneNumber()
+   public ContactPhoneDTO getPhoneNumber()
    {
       if (contact.phoneNumbers().get().isEmpty())
       {
-         ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class )
-               .<ContactPhoneValue>buildWith().prototype();
+         ContactPhoneDTO phone = vbf.newValue( ContactPhoneDTO.class )
+               .<ContactPhoneDTO>buildWith().prototype();
          contact.phoneNumbers().get().add( phone );
       }
       return contact.phoneNumbers().get().get( 0 );
    }
 
-   public ContactEmailValue getEmailAddress()
+   public ContactEmailDTO getEmailAddress()
    {
       if (contact.emailAddresses().get().isEmpty())
       {
-         ContactEmailValue email = vbf.newValue( ContactEmailValue.class )
-               .<ContactEmailValue>buildWith().prototype();
+         ContactEmailDTO email = vbf.newValue( ContactEmailDTO.class )
+               .<ContactEmailDTO>buildWith().prototype();
          contact.emailAddresses().get().add( email );
       }
       return contact.emailAddresses().get().get( 0 );
@@ -103,16 +107,16 @@ public class ProfileModel
 
    public void changePhoneNumber( String newPhoneNumber )
    {
-      ValueBuilder<ContactPhoneValue> builder = vbf
-            .newValueBuilder( ContactPhoneValue.class );
+      ValueBuilder<ContactPhoneDTO> builder = vbf
+            .newValueBuilder( ContactPhoneDTO.class );
       builder.prototype().phoneNumber().set( newPhoneNumber );
       client.putCommand( "changephonenumber", builder.newInstance() );
    }
 
    public void changeEmailAddress( String newEmailAddress )
    {
-      ValueBuilder<ContactEmailValue> builder = vbf
-            .newValueBuilder( ContactEmailValue.class );
+      ValueBuilder<ContactEmailDTO> builder = vbf
+            .newValueBuilder( ContactEmailDTO.class );
       builder.prototype().emailAddress().set( newEmailAddress );
       client.putCommand( "changeemailaddress", builder.newInstance() );
    }

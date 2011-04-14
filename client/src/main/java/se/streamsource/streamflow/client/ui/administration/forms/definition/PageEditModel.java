@@ -22,8 +22,8 @@ import org.qi4j.api.value.*;
 import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 /**
  * JAVADOC

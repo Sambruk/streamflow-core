@@ -17,27 +17,36 @@
 
 package se.streamsource.streamflow.web.application.conversation;
 
-import org.qi4j.api.concern.*;
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.usecase.*;
-import org.qi4j.api.value.*;
-import org.slf4j.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.infrastructure.event.application.factory.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.replay.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.web.application.mail.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.profile.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.ValueBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventRouter;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.MailSender;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.domain.structure.conversation.*;
 import se.streamsource.streamflow.web.domain.structure.organization.*;
 
@@ -157,7 +166,7 @@ public interface NotificationService
                   if (formattedMsg.trim().equals(""))
                      return; // Don't try to send empty messages
 
-                  ContactEmailValue recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
+                  ContactEmailDTO recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
                   if (recipientEmail != null)
                   {
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);

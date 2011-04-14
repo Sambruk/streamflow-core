@@ -17,20 +17,26 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.gui.*;
-import ca.odell.glazedlists.swing.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.resource.overview.*;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXTable;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.representation.Representation;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.Action;
 import javax.swing.*;
@@ -65,7 +71,7 @@ public class OverviewSummaryView extends JPanel
       setActionMap( am );
 
       // Table
-      overviewSummaryTable = new JXTable( new EventJXTableModel<ProjectSummaryValue>(model.getProjectOverviews(), new TableFormat<ProjectSummaryValue>()
+      overviewSummaryTable = new JXTable( new EventJXTableModel<ProjectSummaryDTO>(model.getProjectOverviews(), new TableFormat<ProjectSummaryDTO>()
       {
          String[] columnNames = new String[]{text( project_column_header ), text( inbox_column_header ),
                text( assigned_column_header ), text( total_column_header )};
@@ -81,7 +87,7 @@ public class OverviewSummaryView extends JPanel
             return columnNames[i];
          }
 
-         public Object getColumnValue( ProjectSummaryValue o, int i )
+         public Object getColumnValue( ProjectSummaryDTO o, int i )
          {
             switch (i)
             {

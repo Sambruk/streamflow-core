@@ -17,20 +17,28 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.resource.user.*;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Reference;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
+import se.streamsource.dci.restlet.client.ResponseHandler;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 
 import java.io.*;
 
@@ -42,12 +50,9 @@ public interface AccountEntity
       extends Account, EntityComposite
 {
    interface Data
-         extends Describable
    {
       // Settings
-
       Property<AccountSettingsValue> settings();
-
    }
 
    class Mixin
@@ -68,9 +73,6 @@ public interface AccountEntity
       @This
       Data state;
 
-      @This
-      Describable description;
-
       @Service
       IndividualRepository repo;
 
@@ -78,7 +80,6 @@ public interface AccountEntity
       ResponseHandler handler;
 
       // AccountSettings
-
       public AccountSettingsValue accountSettings()
       {
          return state.settings().get();
@@ -86,11 +87,10 @@ public interface AccountEntity
 
       public void updateSettings( AccountSettingsValue newAccountSettings )
       {
-         state.settings().set( newAccountSettings );
-         description.changeDescription( newAccountSettings.name().get() );
+         state.settings().set(newAccountSettings);
       }
 
-      public void changePassword( Uniform client, ChangePasswordCommand changePassword ) throws ResourceException
+      public void changePassword( Uniform client, ChangePasswordDTO changePassword ) throws ResourceException
       {
          server( client ).getSubClient( "account" ).postCommand( "changepassword", changePassword );
 

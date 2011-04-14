@@ -27,10 +27,11 @@ import org.qi4j.api.property.*;
 import org.qi4j.api.value.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.ui.administration.forms.*;
+import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
 
 import javax.swing.*;
 import java.util.*;

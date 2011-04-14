@@ -17,18 +17,24 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.domain.user.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.application.mail.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.api.Password;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.Username;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
 
 /**
  * JAVADOC
@@ -97,7 +103,7 @@ public interface Users
          userEntity.userName().set( username );
          userEntity.hashedPassword().set( userEntity.hashPassword( password ) );
          Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
-         contacts.contact().set( vbf.newValue( ContactValue.class ) );
+         contacts.contact().set( vbf.newValue( ContactDTO.class ) );
          return builder.newInstance();
       }
 
@@ -116,10 +122,10 @@ public interface Users
          }
 
          // Update contact info
-         ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
+         ValueBuilder<ContactDTO> contactBuilder = vbf.newValueBuilder(ContactDTO.class);
          contactBuilder.prototype().name().set(email.fromName().get());
 
-         ValueBuilder<ContactEmailValue> emailBuilder = vbf.newValueBuilder(ContactEmailValue.class);
+         ValueBuilder<ContactEmailDTO> emailBuilder = vbf.newValueBuilder(ContactEmailDTO.class);
          emailBuilder.prototype().emailAddress().set(email.from().get());
 
          contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
@@ -134,7 +140,7 @@ public interface Users
       public EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email)
       {
          EntityBuilder<EmailUserEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( EmailUserEntity.class, "email:"+email );
-         builder.instance().contact().set(vbf.newValue(ContactValue.class));
+         builder.instance().contact().set(vbf.newValue(ContactDTO.class));
 
          return builder.newInstance();
       }

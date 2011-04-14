@@ -17,14 +17,15 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.context.administration.labels.*;
-import se.streamsource.streamflow.web.context.structure.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.labels.LabelContext;
+import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * JAVADOC

@@ -17,20 +17,30 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.decorator.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.conversation.*;
-import se.streamsource.streamflow.util.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.swingx.JXList;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.util.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.util.Locale;
 
 public class ConversationsListCellRenderer implements ListCellRenderer
 {
@@ -94,7 +104,7 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 
          // Conversation creation date
          JLabel labelDate = new JLabel(DateFormats.getFullDateTimeValue(conversations.creationDate().get(),
-               Locale.getDefault()));
+                 Locale.getDefault()));
          labelDate.setFont(labelDate.getFont().deriveFont(Font.ITALIC));
          ingressPanel.add(labelDate);
 

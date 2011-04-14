@@ -76,7 +76,6 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-server-plugin-spi</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -87,7 +86,11 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-surface-api</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-client-api</artifactId>
         </dependency>
 
         <dependency>

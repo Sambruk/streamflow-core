@@ -20,12 +20,17 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 import com.jgoodies.forms.builder.*;
 import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import org.jdesktop.application.ApplicationActionMap;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -42,7 +47,7 @@ public class AttachmentFieldPanel
    @Structure
    ValueBuilderFactory vbf;
 
-   public AttachmentFieldPanel( @Uses FieldSubmissionValue field,
+   public AttachmentFieldPanel( @Uses FieldSubmissionDTO field,
                                 @Service ApplicationContext context )
    {
       super( field );

@@ -17,16 +17,18 @@
 
 package se.streamsource.streamflow.web.resource.surface.endusers;
 
-import org.qi4j.api.query.*;
-import org.qi4j.api.util.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.context.surface.endusers.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.util.DateFunctions;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.surface.endusers.ClosedCaseContext;
+import se.streamsource.streamflow.web.context.surface.endusers.ClosedCasesContext;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
 import java.util.*;
 

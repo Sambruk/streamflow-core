@@ -17,15 +17,19 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.resource.user.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.UserEntityDTO;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.util.*;
 
@@ -64,7 +68,7 @@ public interface UsersQueries
          ValueBuilder<LinksValue> listBuilder = vbf.newValueBuilder( LinksValue.class );
          List<LinkValue> userlist = listBuilder.prototype().links().get();
 
-         ValueBuilder<UserEntityValue> builder = vbf.newValueBuilder( UserEntityValue.class );
+         ValueBuilder<UserEntityDTO> builder = vbf.newValueBuilder( UserEntityDTO.class );
 
          for (UserEntity user : usersQuery)
          {

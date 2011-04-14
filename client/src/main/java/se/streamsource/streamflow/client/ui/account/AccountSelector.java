@@ -17,17 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import ca.odell.glazedlists.event.*;
-import ca.odell.glazedlists.swing.*;
-import info.aduna.io.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.application.error.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.swing.EventListModel;
+import info.aduna.io.IOUtil;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.beans.*;
@@ -57,7 +62,7 @@ public class AccountSelector
       super( new EventListModel( dataModel.getAccounts() ) );
       this.dataModel = dataModel;
       this.context = Application.getInstance().getContext();
-      setCellRenderer( new ListItemListCellRenderer() );
+      setCellRenderer( new LinkListCellRenderer() );
 
       dataModel.getAccounts().addListEventListener( this );
       VetoableListSelectionModel veto = new VetoableListSelectionModel();
@@ -69,7 +74,7 @@ public class AccountSelector
 
    public AccountModel getSelectedAccount()
    {
-      return getSelectedIndex() == -1 ? null : dataModel.accountModel( getSelectedIndex() );
+      return getSelectedIndex() == -1 ? null : dataModel.accountModel( (LinkValue) getSelectedValue() );
    }
 
    public void listChanged( ListEvent listEvent )
@@ -96,7 +101,7 @@ public class AccountSelector
             Properties p = IOUtil.readProperties( is );
 
             String clientVersion = p.getProperty( "application.version" );
-            String response = dataModel.accountModel( (Integer) evt.getNewValue() ).test();
+            String response = dataModel.accountModel( (LinkValue) getModel().getElementAt((Integer) evt.getNewValue() )).test();
             System.out.print( response );
 
             if (response != null)

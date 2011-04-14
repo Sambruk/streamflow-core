@@ -21,19 +21,28 @@ import com.jgoodies.forms.builder.*;
 import com.jgoodies.forms.factories.*;
 import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.resource.caze.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,19 +105,19 @@ public class ContactView
 
       contactBinder = obf.newObject( StateBinder.class );
       contactBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactValue template = contactBinder.bindingTemplate( ContactValue.class );
+      ContactDTO template = contactBinder.bindingTemplate( ContactDTO.class );
 
       phoneNumberBinder = obf.newObject( StateBinder.class );
       phoneNumberBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactPhoneValue phoneTemplate = phoneNumberBinder.bindingTemplate( ContactPhoneValue.class );
+      ContactPhoneDTO phoneTemplate = phoneNumberBinder.bindingTemplate( ContactPhoneDTO.class );
 
       addressBinder = obf.newObject( StateBinder.class );
       addressBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactAddressValue addressTemplate = addressBinder.bindingTemplate( ContactAddressValue.class );
+      ContactAddressDTO addressTemplate = addressBinder.bindingTemplate( ContactAddressDTO.class );
 
       emailBinder = obf.newObject( StateBinder.class );
       emailBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactEmailValue emailTemplate = emailBinder.bindingTemplate( ContactEmailValue.class );
+      ContactEmailDTO emailTemplate = emailBinder.bindingTemplate( ContactEmailDTO.class );
 
       builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
       builder.nextColumn( 2 );
@@ -217,9 +226,9 @@ public class ContactView
    {
       try
       {
-         ContactValue query = createContactQuery();
+         ContactDTO query = createContactQuery();
 
-         ContactValue emptyCriteria = vbf.newValueBuilder( ContactValue.class ).newInstance();
+         ContactDTO emptyCriteria = vbf.newValueBuilder( ContactDTO.class ).newInstance();
          if (emptyCriteria.equals( query ))
          {
             String msg = i18n.text( CaseResources.could_not_find_search_criteria );
@@ -241,7 +250,7 @@ public class ContactView
                      contacts.contacts().get() ).newInstance();
                dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), dialog, i18n.text( WorkspaceResources.contacts_tab ) );
 
-               ContactValue contactValue = dialog.getSelectedContact();
+               ContactDTO contactValue = dialog.getSelectedContact();
 
                if (contactValue != null)
                {
@@ -251,32 +260,32 @@ public class ContactView
                      defaultFocusField.setText( contactValue.name().get() );
                   }
 
-                  for (ContactPhoneValue contactPhoneValue : contactValue.phoneNumbers().get())
+                  for (ContactPhoneDTO contactPhoneDTO : contactValue.phoneNumbers().get())
                   {
-                     if (!contactPhoneValue.phoneNumber().get().equals( "" ) && model.getPhoneNumber().phoneNumber().get().equals( "" ))
+                     if (!contactPhoneDTO.phoneNumber().get().equals( "" ) && model.getPhoneNumber().phoneNumber().get().equals( "" ))
                      {
-                        model.changePhoneNumber( contactPhoneValue.phoneNumber().get() );
-                        phoneField.setText( contactPhoneValue.phoneNumber().get() );
+                        model.changePhoneNumber( contactPhoneDTO.phoneNumber().get() );
+                        phoneField.setText( contactPhoneDTO.phoneNumber().get() );
                      }
                   }
 
-                  List<ContactAddressValue> addressValues = contactValue.addresses().get();
-                  for (ContactAddressValue addressValue : addressValues)
+                  List<ContactAddressDTO> addressDTOs = contactValue.addresses().get();
+                  for (ContactAddressDTO addressDTO : addressDTOs)
                   {
-                     if (!addressValue.address().get().equals( "" ) && model.getAddress().address().get().equals( "" ))
+                     if (!addressDTO.address().get().equals( "" ) && model.getAddress().address().get().equals( "" ))
                      {
-                        model.changeAddress( addressValue.address().get() );
-                        addressField.setText( addressValue.address().get() );
+                        model.changeAddress( addressDTO.address().get() );
+                        addressField.setText( addressDTO.address().get() );
                      }
                   }
 
-                  List<ContactEmailValue> emailValues = contactValue.emailAddresses().get();
-                  for (ContactEmailValue emailValue : emailValues)
+                  List<ContactEmailDTO> emailDTOs = contactValue.emailAddresses().get();
+                  for (ContactEmailDTO emailDTO : emailDTOs)
                   {
-                     if (!emailValue.emailAddress().get().equals( "" ) && model.getEmailAddress().emailAddress().get().equals( "" ))
+                     if (!emailDTO.emailAddress().get().equals( "" ) && model.getEmailAddress().emailAddress().get().equals( "" ))
                      {
-                        model.changeEmailAddress( emailValue.emailAddress().get() );
-                        emailField.setText( emailValue.emailAddress().get() );
+                        model.changeEmailAddress( emailDTO.emailAddress().get() );
+                        emailField.setText( emailDTO.emailAddress().get() );
                      }
                   }
 
@@ -301,9 +310,9 @@ public class ContactView
       }
    }
 
-   private ContactValue createContactQuery()
+   private ContactDTO createContactQuery()
    {
-      ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder( ContactValue.class );
+      ValueBuilder<ContactDTO> contactBuilder = vbf.newValueBuilder( ContactDTO.class );
 
       if (!defaultFocusField.getText().isEmpty())
       {
@@ -312,21 +321,21 @@ public class ContactView
 
       if (!phoneField.getText().isEmpty())
       {
-         ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder( ContactPhoneValue.class );
+         ValueBuilder<ContactPhoneDTO> builder = vbf.newValueBuilder( ContactPhoneDTO.class );
          builder.prototype().phoneNumber().set( phoneField.getText() );
          contactBuilder.prototype().phoneNumbers().get().add( builder.newInstance() );
       }
 
       if (!addressField.getText().isEmpty())
       {
-         ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder( ContactAddressValue.class );
+         ValueBuilder<ContactAddressDTO> builder = vbf.newValueBuilder( ContactAddressDTO.class );
          builder.prototype().address().set( addressField.getText() );
          contactBuilder.prototype().addresses().get().add( builder.newInstance() );
       }
 
       if (!emailField.getText().isEmpty())
       {
-         ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder( ContactEmailValue.class );
+         ValueBuilder<ContactEmailDTO> builder = vbf.newValueBuilder( ContactEmailDTO.class );
          builder.prototype().emailAddress().set( emailField.getText() );
          contactBuilder.prototype().emailAddresses().get().add( builder.newInstance() );
       }

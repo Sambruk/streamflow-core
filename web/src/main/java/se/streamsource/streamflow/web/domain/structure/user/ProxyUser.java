@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 
 /**
  * A ProxyUser represents an entire external system. Actual users

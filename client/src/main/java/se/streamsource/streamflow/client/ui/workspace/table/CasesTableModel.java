@@ -24,11 +24,13 @@ import org.qi4j.api.value.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.link.*;
 import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
-import se.streamsource.streamflow.resource.user.profile.*;
-import se.streamsource.streamflow.util.*;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.LinkComparator;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.util.Strings;
 
 import java.util.*;
 
@@ -309,9 +311,9 @@ public class CasesTableModel extends Observable
       return dueOnModel;
    }
 
-   public PerspectiveValue getPerspective(String name, String query)
+   public PerspectiveDTO getPerspective(String name, String query)
    {
-      ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
+      ValueBuilder<PerspectiveDTO> builder = vbf.newValueBuilder( PerspectiveDTO.class );
       builder.prototype().query().set( query );
       builder.prototype().name().set( name );
       builder.prototype().labels().set( selectedLabelIds );
@@ -360,23 +362,23 @@ public class CasesTableModel extends Observable
       return client.queryResource().queries().get();
    }
 
-   public void setFilter(PerspectiveValue perspectiveValue)
+   public void setFilter(PerspectiveDTO perspectiveDTO)
    {
-      perspectiveValue = vbf.newValueBuilder( PerspectiveValue.class ).withPrototype( perspectiveValue ).prototype();
-      selectedStatuses = perspectiveValue.statuses().get();
-      selectedCaseTypeIds = perspectiveValue.caseTypes().get();
-      selectedLabelIds = perspectiveValue.labels().get();
-      selectedAssigneeIds = perspectiveValue.assignees().get();
-      selectedProjectIds = perspectiveValue.projects().get();
-      selectedCreatedByIds = perspectiveValue.createdBy().get();
-      sortBy = SortBy.valueOf( perspectiveValue.sortBy().get() );
-      sortOrder = SortOrder.valueOf( perspectiveValue.sortOrder().get() );
-      groupBy = GroupBy.valueOf( perspectiveValue.groupBy().get() );
-      createdOnModel.setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
-      createdOnModel.setDate( perspectiveValue.createdOn().get() );
-      dueOnModel.setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
-      dueOnModel.setDate( perspectiveValue.dueOn().get() );
-      invisibleColumns = perspectiveValue.invisibleColumns().get();
+      perspectiveDTO = vbf.newValueBuilder( PerspectiveDTO.class ).withPrototype(perspectiveDTO).prototype();
+      selectedStatuses = perspectiveDTO.statuses().get();
+      selectedCaseTypeIds = perspectiveDTO.caseTypes().get();
+      selectedLabelIds = perspectiveDTO.labels().get();
+      selectedAssigneeIds = perspectiveDTO.assignees().get();
+      selectedProjectIds = perspectiveDTO.projects().get();
+      selectedCreatedByIds = perspectiveDTO.createdBy().get();
+      sortBy = SortBy.valueOf( perspectiveDTO.sortBy().get() );
+      sortOrder = SortOrder.valueOf( perspectiveDTO.sortOrder().get() );
+      groupBy = GroupBy.valueOf( perspectiveDTO.groupBy().get() );
+      createdOnModel.setPeriod( Period.valueOf( perspectiveDTO.createdOnPeriod().get() ) );
+      createdOnModel.setDate( perspectiveDTO.createdOn().get() );
+      dueOnModel.setPeriod( Period.valueOf( perspectiveDTO.dueOnPeriod().get() ) );
+      dueOnModel.setDate( perspectiveDTO.dueOn().get() );
+      invisibleColumns = perspectiveDTO.invisibleColumns().get();
    }
 
    protected String addSortingFromFilter()

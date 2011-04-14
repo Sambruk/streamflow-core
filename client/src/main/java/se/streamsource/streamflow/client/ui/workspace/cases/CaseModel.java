@@ -17,13 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.io.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.caze.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.restlet.representation.Representation;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.util.EventListSynch;
 
 import java.io.*;
 import java.util.*;
@@ -126,7 +132,7 @@ public class CaseModel
       client.postLink( linkValue );
    }
 
-   public File print( CaseOutputConfigValue config ) throws IOException
+   public File print( CaseOutputConfigDTO config ) throws IOException
    {
       Representation representation = client.queryRepresentation( "exportpdf", config );
 

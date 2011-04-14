@@ -19,11 +19,12 @@ package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import org.qi4j.api.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.streamflow.api.administration.form.FieldTypes;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 /**
  * JAVADOC

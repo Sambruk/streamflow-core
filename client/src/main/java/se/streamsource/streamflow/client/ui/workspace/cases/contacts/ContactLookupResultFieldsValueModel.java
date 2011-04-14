@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.table.*;
 import java.util.*;
@@ -41,16 +41,16 @@ public class ContactLookupResultFieldsValueModel extends AbstractTableModel
    };
 
 
-   List<ContactValue> effectiveFields = Collections.emptyList();
+   List<ContactDTO> contacts = Collections.emptyList();
 
-   public ContactLookupResultFieldsValueModel( List<ContactValue> contacts )
+   public ContactLookupResultFieldsValueModel( List<ContactDTO> contacts )
    {
-      effectiveFields = contacts;
+      this.contacts = contacts;
    }
 
    public int getRowCount()
    {
-      return effectiveFields == null ? 0 : effectiveFields.size();
+      return contacts == null ? 0 : contacts.size();
    }
 
    public int getColumnCount()
@@ -60,7 +60,7 @@ public class ContactLookupResultFieldsValueModel extends AbstractTableModel
 
    public Object getValueAt( int row, int col )
    {
-      ContactValue value = effectiveFields.get( row );
+      ContactDTO value = contacts.get( row );
 
       switch (col)
       {
@@ -94,11 +94,11 @@ public class ContactLookupResultFieldsValueModel extends AbstractTableModel
       return columnNames[i];
    }
 
-   public ContactValue getContactValueAt( int index )
+   public ContactDTO getContactValueAt( int index )
    {
       try
       {
-         return effectiveFields.get( index );
+         return contacts.get( index );
       } catch (IndexOutOfBoundsException e)
       {
          return null;

@@ -35,14 +35,32 @@ import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.infrastructure.event.domain.*;
 import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.resource.conversation.*;
 import se.streamsource.streamflow.util.*;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.client.ui.DateFormats;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
+
 import java.awt.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Locale;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import static se.streamsource.streamflow.client.util.i18n.*;

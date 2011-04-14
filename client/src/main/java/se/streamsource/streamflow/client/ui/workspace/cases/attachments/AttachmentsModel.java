@@ -17,22 +17,34 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
-import ca.odell.glazedlists.*;
-import eu.medsea.mimeutil.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.attachment.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import eu.medsea.mimeutil.MimeType;
+import eu.medsea.mimeutil.MimeUtil;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Disposition;
+import org.restlet.data.Form;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import java.io.*;
 import java.util.*;
@@ -56,9 +68,9 @@ public class AttachmentsModel
    @Uses
    private CommandQueryClient client;
 
-   private EventList<AttachmentValue> eventList = new BasicEventList<AttachmentValue>();
+   private EventList<AttachmentDTO> eventList = new BasicEventList<AttachmentDTO>();
 
-   public EventList<AttachmentValue> getEventList()
+   public EventList<AttachmentDTO> getEventList()
    {
       return eventList;
    }
@@ -80,7 +92,7 @@ public class AttachmentsModel
          {
             for (DomainEvent domainEvent : filter( withNames("createdAttachment" ), Events.events( transactions )))
             {
-               ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
+               ValueBuilder<UpdateAttachmentDTO> builder = vbf.newValueBuilder( UpdateAttachmentDTO.class );
                builder.prototype().name().set( file.getName() );
                builder.prototype().size().set( file.length() );
 
@@ -115,12 +127,12 @@ public class AttachmentsModel
       notifyObservers(resource);
    }
 
-   public void removeAttachment( AttachmentValue attachment )
+   public void removeAttachment( AttachmentDTO attachment )
    {
       client.getClient( attachment ).delete();
    }
 
-   public Representation download( AttachmentValue attachment ) throws IOException
+   public Representation download( AttachmentDTO attachment ) throws IOException
    {
       return client.getClient( attachment ).queryRepresentation( "download", null );
    }

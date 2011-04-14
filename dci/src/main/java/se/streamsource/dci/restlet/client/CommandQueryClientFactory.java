@@ -103,7 +103,12 @@ public class CommandQueryClientFactory
    public void writeRequest( Request request, Object queryRequest )
    {
       if (queryRequest != null)
-         setQueryParameters( request.getResourceRef(), (ValueComposite) queryRequest );
+         if (queryRequest instanceof ValueComposite)
+            setQueryParameters( request.getResourceRef(), (ValueComposite) queryRequest );
+         else if (queryRequest instanceof Form)
+            request.getResourceRef().setQuery(((Form)queryRequest).getQueryString());
+         else
+            throw new IllegalArgumentException("Illegal query request type:"+queryRequest.getClass().getName());
    }
 
    private void setQueryParameters( final Reference ref, ValueComposite queryValue )

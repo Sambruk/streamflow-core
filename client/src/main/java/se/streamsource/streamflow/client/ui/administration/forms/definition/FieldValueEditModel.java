@@ -17,14 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.resource.roles.*;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 /**
  * JAVADOC
@@ -49,101 +51,69 @@ public class FieldValueEditModel
 
    public void changeMandatory( boolean mandatory ) throws ResourceException
    {
-      ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
-      builder.prototype().bool().set( mandatory );
-      client.postCommand( "changemandatory", builder.newInstance() );
+      client.postCommand( "changemandatory", new Form("mandatory="+mandatory).getWebRepresentation() );
    }
 
    public void changeDescription( String newDescription ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newDescription );
-      client.postCommand( "changedescription", builder.newInstance() );
+      client.postCommand( "changedescription", new Form("description="+newDescription).getWebRepresentation() );
    }
 
    public void changeNote( String newNote ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newNote );
-      client.postCommand( "changenote", builder.newInstance() );
+      client.postCommand( "changenote", new Form("string="+newNote).getWebRepresentation() );
    }
 
    public void changeFieldId( String newId ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newId );
-      client.postCommand( "changefieldid", builder.newInstance() );
+      client.postCommand( "changefieldid", new Form("id="+newId).getWebRepresentation() );
    }
 
    public void changeWidth( Integer newWidth ) throws ResourceException
    {
-      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
-      builder.prototype().integer().set( newWidth );
-      client.postCommand( "changewidth", builder.newInstance() );
+      client.postCommand( "changewidth", new Form("width="+newWidth).getWebRepresentation() );
    }
 
-   public void changeRows( Integer newWidth ) throws ResourceException
+   public void changeRows( Integer newRows ) throws ResourceException
    {
-      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
-      builder.prototype().integer().set( newWidth );
-      client.postCommand( "changerows", builder.newInstance() );
+      client.postCommand( "changerows", new Form("rows="+newRows).getWebRepresentation() );
    }
 
-   public void changeCols( Integer newWidth ) throws ResourceException
+   public void changeCols( Integer newColumns ) throws ResourceException
    {
-      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
-      builder.prototype().integer().set( newWidth );
-      client.postCommand( "changecols", builder.newInstance() );
+      client.postCommand( "changecols", new Form("columns="+newColumns).getWebRepresentation() );
    }
 
-
-   public void changeMultiple( Boolean multiple ) throws ResourceException
+   public void changeInteger( Boolean isInteger ) throws ResourceException
    {
-      ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
-      builder.prototype().bool().set( multiple );
-      client.postCommand( "changemultiple", builder.newInstance() );
-   }
-
-   public void changeInteger( Boolean multiple ) throws ResourceException
-   {
-      ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
-      builder.prototype().bool().set( multiple );
-      client.postCommand( "changeinteger", builder.newInstance() );
+      client.postCommand( "changeinteger", new Form("integer="+isInteger).getWebRepresentation() );
    }
 
    public void changeComment( String comment ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( comment );
-      client.postCommand( "changecomment", builder.newInstance() );
+      client.postCommand( "changecomment", new Form("comment="+comment).getWebRepresentation() );
    }
 
    public void move( String direction ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( direction );
-      client.postCommand( "move", builder.newInstance() );
+      client.postCommand( "move", new Form("direction="+direction).getWebRepresentation() );
    }
 
    public void changeHint( String hint ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( hint );
-      client.postCommand( "changehint", builder.newInstance() );
+      client.postCommand( "changehint", new Form("hint="+hint).getWebRepresentation() );
    }
 
    public void changeRegularExpression( String regularExpression ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( regularExpression );
-      client.postCommand( "changeregularexpression", builder.newInstance() );
+      client.postCommand( "changeregularexpression", new Form("expression="+regularExpression).getWebRepresentation() );
    }
 
    public void changeOpenSelectionName( String name )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
-      client.postCommand( "changeopenselectionname", builder.newInstance() );
+      client.postCommand( "changeopenselectionname", new Form("name="+name).getWebRepresentation() );
    }
 
    public void refresh()

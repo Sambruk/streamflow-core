@@ -24,9 +24,12 @@ import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.dci.value.link.Links;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 
 /**
  * Model for a contact of a case
@@ -34,7 +37,7 @@ import se.streamsource.streamflow.resource.caze.*;
 public class ContactModel
 {
    @Uses
-   private ContactValue contact;
+   private ContactDTO contact;
 
    @Uses
    CommandQueryClient client;
@@ -43,22 +46,22 @@ public class ContactModel
    ValueBuilderFactory vbf;
 
 
-   public ContactValue getContact()
+   public ContactDTO getContact()
    {
       return contact;
    }
 
-   public ContactPhoneValue getPhoneNumber()
+   public ContactPhoneDTO getPhoneNumber()
    {
       return contact.phoneNumbers().get().get( 0 );
    }
 
-   public ContactAddressValue getAddress()
+   public ContactAddressDTO getAddress()
    {
       return contact.addresses().get().get( 0 );
    }
 
-   public ContactEmailValue getEmailAddress()
+   public ContactEmailDTO getEmailAddress()
    {
       return contact.emailAddresses().get().get( 0 );
    }
@@ -93,21 +96,21 @@ public class ContactModel
 
    public void changePhoneNumber( String newPhoneNumber ) throws ResourceException
    {
-      ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder( ContactPhoneValue.class );
+      ValueBuilder<ContactPhoneDTO> builder = vbf.newValueBuilder( ContactPhoneDTO.class );
       builder.prototype().phoneNumber().set( newPhoneNumber );
       client.putCommand( "changephonenumber", builder.newInstance() );
    }
 
    public void changeAddress( String newAddress ) throws ResourceException
    {
-      ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder( ContactAddressValue.class );
+      ValueBuilder<ContactAddressDTO> builder = vbf.newValueBuilder( ContactAddressDTO.class );
       builder.prototype().address().set( newAddress );
       client.putCommand( "changeaddress", builder.newInstance() );
    }
 
    public void changeEmailAddress( String newEmailAddress ) throws ResourceException
    {
-      ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder( ContactEmailValue.class );
+      ValueBuilder<ContactEmailDTO> builder = vbf.newValueBuilder( ContactEmailDTO.class );
       builder.prototype().emailAddress().set( newEmailAddress );
       client.putCommand( "changeemailaddress", builder.newInstance() );
    }
@@ -115,10 +118,10 @@ public class ContactModel
    public boolean isContactLookupEnabled()
    {
       ResourceValue resource = client.queryResource();
-      return Iterables.matchesAny( Links.withRel( "searchcontacts" ), resource.queries().get() );
+      return Iterables.matchesAny( Links.withRel("searchcontacts"), resource.queries().get() );
    }
 
-   public ContactsDTO searchContacts( ContactValue query ) throws ResourceException
+   public ContactsDTO searchContacts( ContactDTO query ) throws ResourceException
    {
       return client.query( "searchcontacts", query, ContactsDTO.class );
    }

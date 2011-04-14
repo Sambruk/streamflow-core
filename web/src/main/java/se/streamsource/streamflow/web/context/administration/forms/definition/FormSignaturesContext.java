@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 
 import java.util.*;
 

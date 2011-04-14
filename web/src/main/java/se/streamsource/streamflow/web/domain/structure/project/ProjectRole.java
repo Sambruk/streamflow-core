@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.project;
 
-import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.Describable;
 
 /**
  * JAVADOC

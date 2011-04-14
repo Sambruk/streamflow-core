@@ -139,8 +139,8 @@ public class AppAssembler
                               "        WHERE {\n" +
                               "        ?entity rdf:type <urn:qi4j:type:se.streamsource.streamflow.web.domain.entity.user.UserEntity>.\n" +
                               "        ?entity ns0:identity ?identity.\n" +
-                              "        ?entity <urn:qi4j:type:se.streamsource.streamflow.domain.contact.Contactable-Data#contact> ?v0.\n" +
-                              "        ?v0 <urn:qi4j:type:se.streamsource.streamflow.domain.contact.ContactValue#emailAddresses> ?email\n" +
+                              "        ?entity <urn:qi4j:type:se.streamsource.streamflow.web.domain.structure.user.Contactable-Data#contact> ?v0.\n" +
+                              "        ?v0 <urn:qi4j:type:se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO#emailAddresses> ?email\n" +
                               "        }"));
       module.importedServices(NamedEntityFinder.class).
               importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).

@@ -17,7 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.interaction.security.*;
 import se.streamsource.streamflow.web.domain.structure.attachment.*;
@@ -36,7 +38,7 @@ public interface Case
       Authorization,
       Describable,
       DueOn,
-      Notable,
+        Notable,
       Ownable,
       CaseId,
       Status,
@@ -47,7 +49,7 @@ public interface Case
       Conversations,
       ConversationOwner,
       Labelable,
-      Removable,
+        Removable,
       Resolvable,
       SubmittedForms,
       FormDrafts,

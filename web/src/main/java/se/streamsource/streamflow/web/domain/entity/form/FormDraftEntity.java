@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 
 /**
  * JAVADOC

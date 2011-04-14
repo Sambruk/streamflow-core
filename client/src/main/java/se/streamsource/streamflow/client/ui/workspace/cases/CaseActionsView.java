@@ -18,21 +18,31 @@
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.resource.caze.*;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -297,8 +307,8 @@ public class CaseActionsView extends JPanel
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task exportpdf()
    {
-      //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigValue
-      final ValueBuilder<CaseOutputConfigValue> config = vbf.newValueBuilder( CaseOutputConfigValue.class );
+      //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigDTO
+      final ValueBuilder<CaseOutputConfigDTO> config = vbf.newValueBuilder( CaseOutputConfigDTO.class );
       config.prototype().contacts().set( true );
       config.prototype().conversations().set( true );
       config.prototype().submittedForms().set( true );
@@ -349,9 +359,9 @@ public class CaseActionsView extends JPanel
 
    private class PrintCaseTask extends Task<File, Void>
    {
-      private CaseOutputConfigValue config;
+      private CaseOutputConfigDTO config;
 
-      public PrintCaseTask( CaseOutputConfigValue config )
+      public PrintCaseTask( CaseOutputConfigDTO config )
       {
          super( Application.getInstance() );
          this.config = config;

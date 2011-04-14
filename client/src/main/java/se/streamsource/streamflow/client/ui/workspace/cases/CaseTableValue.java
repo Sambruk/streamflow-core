@@ -17,11 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
 import java.util.*;
 

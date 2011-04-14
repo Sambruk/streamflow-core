@@ -34,6 +34,7 @@
         <module>dci</module>
         <module>common</module>
         <module>streamflow-surface-api</module>
+        <module>streamflow-client-api</module>
         <module>infrastructure</module>
         <module>fileconfig</module>
         <module>client</module>
@@ -452,6 +453,16 @@
             <dependency>
                 <groupId>se.streamsource.streamflow</groupId>
                 <artifactId>streamflow-fileconfig</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-client-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-surface-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

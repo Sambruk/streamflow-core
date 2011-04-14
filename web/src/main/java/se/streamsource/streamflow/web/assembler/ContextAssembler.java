@@ -17,19 +17,33 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.apache.commons.fileupload.*;
-import org.apache.commons.fileupload.disk.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.composite.*;
-import org.qi4j.api.service.qualifier.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.spi.query.*;
-import org.qi4j.spi.service.importer.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.streamflow.surface.api.*;
-import se.streamsource.streamflow.web.context.*;
-import se.streamsource.streamflow.web.context.account.*;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.service.qualifier.ServiceQualifier;
+import org.qi4j.api.specification.Specifications;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueries;
+import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.qi4j.spi.service.importer.NewObjectImporter;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.dci.api.ServiceAvailable;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.ResultConverter;
+import se.streamsource.dci.value.ValueAssembler;
+import se.streamsource.streamflow.api.assembler.ClientAPIAssembler;
+import se.streamsource.streamflow.surface.api.assembler.SurfaceAPIAssembler;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.context.account.AccountContext;
+import se.streamsource.streamflow.web.context.account.ContactableContext;
+import se.streamsource.streamflow.web.context.account.ProfileContext;
 import se.streamsource.streamflow.web.context.administration.*;
 import se.streamsource.streamflow.web.context.administration.forms.*;
 import se.streamsource.streamflow.web.context.administration.forms.definition.*;
@@ -98,7 +112,8 @@ public class ContextAssembler
 
       module.objects(StreamflowResultConverter.class);
 
-      new StreamflowSurfaceAPIAssembler().assemble(module);
+      new ValueAssembler().assemble(module);
+      new SurfaceAPIAssembler().assemble(module);
 
       module.importedServices(StreamflowCaseResultWriter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
       module.objects(StreamflowCaseResultWriter.class);
@@ -353,6 +368,8 @@ public class ContextAssembler
               CrystalContext.class,
               CrystalResource.class
       );
+
+      module.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }
 
    private void addResourceContexts(ModuleAssembly module, Class<?>... resourceContextClasses) throws AssemblyException

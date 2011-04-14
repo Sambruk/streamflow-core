@@ -17,20 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import ca.odell.glazedlists.*;
-import org.jdesktop.swingx.util.*;
-import org.netbeans.api.wizard.*;
-import org.netbeans.spi.wizard.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import ca.odell.glazedlists.EventList;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.netbeans.api.wizard.WizardDisplayer;
+import org.netbeans.spi.wizard.Wizard;
+import org.netbeans.spi.wizard.WizardException;
+import org.netbeans.spi.wizard.WizardPage;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -116,20 +124,20 @@ public class PossibleFormsView extends JPanel
 
          // get the form submission value;
          final CommandQueryClient formDraftClient = client.getClient( formDraftLink );
-         FormDraftValue formDraftValue = (FormDraftValue) formDraftClient.query( "index", FormDraftValue.class )
+         FormDraftDTO formDraftDTO = (FormDraftDTO) formDraftClient.query( "index", FormDraftDTO.class )
                .buildWith().prototype();
 
-         final WizardPage[] wizardPages = new WizardPage[ formDraftValue.pages().get().size() ];
-         for (int i = 0; i < formDraftValue.pages().get().size(); i++)
+         final WizardPage[] wizardPages = new WizardPage[ formDraftDTO.pages().get().size() ];
+         for (int i = 0; i < formDraftDTO.pages().get().size(); i++)
          {
-            PageSubmissionValue page = formDraftValue.pages().get().get( i );
+            PageSubmissionDTO page = formDraftDTO.pages().get().get( i );
             if ( page.fields().get() != null && page.fields().get().size() >0 )
             {
                wizardPages[i] = obf.newObjectBuilder( FormSubmissionWizardPageView.class ).
                      use( formDraftClient, page ).newInstance();
             }
          }
-         wizard = WizardPage.createWizard( formDraftValue.description().get(), wizardPages, new WizardPage.WizardResultProducer()
+         wizard = WizardPage.createWizard( formDraftDTO.description().get(), wizardPages, new WizardPage.WizardResultProducer()
          {
             public Object finish( Map map ) throws WizardException
             {

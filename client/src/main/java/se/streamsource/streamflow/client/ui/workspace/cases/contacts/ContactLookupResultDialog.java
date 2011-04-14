@@ -18,11 +18,12 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.domain.contact.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,9 +33,9 @@ public class ContactLookupResultDialog extends JPanel
 {
    public JXTable contactTable;
 
-   private ContactValue selectedContact;
+   private ContactDTO selectedContact;
 
-   public ContactLookupResultDialog( @Service ApplicationContext context, @Uses List<ContactValue> contacts )
+   public ContactLookupResultDialog( @Service ApplicationContext context, @Uses List<ContactDTO> contacts )
    {
       contactTable = new JXTable();
       contactTable.setModel( new ContactLookupResultFieldsValueModel( contacts ) );
@@ -59,7 +60,7 @@ public class ContactLookupResultDialog extends JPanel
       WindowUtils.findWindow( this ).dispose();
    }
 
-   public ContactValue getSelectedContact()
+   public ContactDTO getSelectedContact()
    {
       int selectedRow = contactTable.getSelectedRow();
       if (selectedRow == -1)

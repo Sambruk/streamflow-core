@@ -139,46 +139,50 @@
 			
 		</plugins>
 	</build>
-	<dependencies>
-		<!-- Integration Testing -->
-		<dependency>
-			<groupId>org.easytesting</groupId>
-			<artifactId>fest-swing</artifactId>
-			<version>1.2.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.easytesting</groupId>
-			<artifactId>fest-swing</artifactId>
-			<version>1.2.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>cuke4duke</groupId>
-			<artifactId>cuke4duke</artifactId>
-			<version>${cuke4duke.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.picocontainer</groupId>
-			<artifactId>picocontainer</artifactId>
-			<version>2.11.2</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- Domain -->
-		<dependency>
-			<groupId>se.streamsource.streamflow</groupId>
-			<artifactId>streamflow-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>se.streamsource.streamflow</groupId>
-			<artifactId>streamflow-dci</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>se.streamsource.streamflow</groupId>
-			<artifactId>streamflow-fileconfig</artifactId>
-		</dependency>
 
+    <dependencies>
+        <!-- Integration Testing -->
+        <dependency>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-swing</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-swing</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cuke4duke</groupId>
+            <artifactId>cuke4duke</artifactId>
+            <version>${cuke4duke.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.picocontainer</groupId>
+            <artifactId>picocontainer</artifactId>
+            <version>2.11.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Domain -->
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-dci</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-fileconfig</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-client-api</artifactId>
+        </dependency>
 
 		<!-- Help contents -->
 		<dependency>

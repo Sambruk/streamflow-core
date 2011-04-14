@@ -17,17 +17,21 @@
 
 package se.streamsource.streamflow.web.context.administration.forms;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.specification.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.streamflow.api.administration.form.FormValue;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 import static se.streamsource.dci.api.RoleMap.*;
 

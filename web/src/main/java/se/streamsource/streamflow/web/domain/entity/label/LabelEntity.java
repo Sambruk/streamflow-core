@@ -17,13 +17,21 @@
 
 package se.streamsource.streamflow.web.domain.entity.label;
 
-import org.qi4j.api.concern.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * Label definition

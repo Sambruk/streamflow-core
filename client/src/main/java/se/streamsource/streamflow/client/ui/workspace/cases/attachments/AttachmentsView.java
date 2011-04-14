@@ -20,22 +20,28 @@ package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 import ca.odell.glazedlists.gui.*;
 import ca.odell.glazedlists.swing.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.decorator.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.object.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.representation.Representation;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.domain.attachment.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +65,7 @@ public class AttachmentsView
 
    private JXTable attachments;
 
-   private EventJXTableModel<AttachmentValue> tableModel;
+   private EventJXTableModel<AttachmentDTO> tableModel;
 
    private AttachmentsModel attachmentsModel;
 
@@ -71,7 +77,7 @@ public class AttachmentsView
 
       this.attachmentsModel = obf.newObjectBuilder( AttachmentsModel.class ).use( client ).newInstance();
       TableFormat tableFormat = new AttachmentsTableFormatter();
-      tableModel = new EventJXTableModel<AttachmentValue>( attachmentsModel.getEventList(), tableFormat );
+      tableModel = new EventJXTableModel<AttachmentDTO>( attachmentsModel.getEventList(), tableFormat );
 
       attachments = new JXTable(tableModel);
 
@@ -157,7 +163,7 @@ public class AttachmentsView
 
       if (dialog.isConfirmed())
       {
-         final List<AttachmentValue> removedAttachments = new ArrayList<AttachmentValue>( );
+         final List<AttachmentDTO> removedAttachments = new ArrayList<AttachmentDTO>( );
          for (int i : attachments.getSelectedRows())
          {
             removedAttachments.add(attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) ));
@@ -171,7 +177,7 @@ public class AttachmentsView
             {
                try
                {
-                  for (AttachmentValue removedAttachment : removedAttachments)
+                  for (AttachmentDTO removedAttachment : removedAttachments)
                   {
                      attachmentsModel.removeAttachment( removedAttachment );
                   }
@@ -190,7 +196,7 @@ public class AttachmentsView
    {
       for (int i : attachments.getSelectedRows())
       {
-         AttachmentValue attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
+         AttachmentDTO attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
 
          return new OpenAttachmentTask( attachment );
       }
@@ -230,9 +236,9 @@ public class AttachmentsView
 
    private class OpenAttachmentTask extends Task<File, Void>
    {
-      private final AttachmentValue attachment;
+      private final AttachmentDTO attachment;
 
-      public OpenAttachmentTask( AttachmentValue attachment )
+      public OpenAttachmentTask( AttachmentDTO attachment )
       {
          super( Application.getInstance() );
          this.attachment = attachment;

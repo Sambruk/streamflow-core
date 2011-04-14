@@ -17,12 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.contact.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.contact.*;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -60,25 +63,25 @@ public class ContactsAdminView
                int idx = list.getSelectedIndex();
                if (idx != -1)
                {
-                  ContactValue contactValue = (ContactValue) list.getModel().getElementAt( idx );
+                  ContactDTO contactValue = (ContactDTO) list.getModel().getElementAt( idx );
                   // Set empty initial values for phoneNumber, email and address.
                   if (contactValue.phoneNumbers().get().isEmpty())
                   {
-                     ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class ).<ContactPhoneValue>buildWith().prototype();
+                     ContactPhoneDTO phone = vbf.newValue( ContactPhoneDTO.class ).<ContactPhoneDTO>buildWith().prototype();
                      contactValue.phoneNumbers().get().add( phone );
 
                   }
 
                   if (contactValue.addresses().get().isEmpty())
                   {
-                     ContactAddressValue address = vbf.newValue( ContactAddressValue.class ).<ContactAddressValue>buildWith().prototype();
+                     ContactAddressDTO address = vbf.newValue( ContactAddressDTO.class ).<ContactAddressDTO>buildWith().prototype();
                      contactValue.addresses().get().add( address );
 
                   }
 
                   if (contactValue.emailAddresses().get().isEmpty())
                   {
-                     ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
+                     ContactEmailDTO email = vbf.newValue( ContactEmailDTO.class ).<ContactEmailDTO>buildWith().prototype();
                      contactValue.emailAddresses().get().add( email );
 
                   }

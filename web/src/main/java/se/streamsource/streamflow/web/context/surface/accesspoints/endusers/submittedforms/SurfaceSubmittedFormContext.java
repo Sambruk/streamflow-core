@@ -17,17 +17,21 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms;
 
-import org.apache.pdfbox.exceptions.*;
-import org.apache.pdfbox.pdfwriter.*;
-import org.apache.pdfbox.pdmodel.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.unitofwork.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.web.application.pdf.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.restlet.data.Disposition;
+import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.user.*;
 

@@ -25,12 +25,22 @@ import org.qi4j.api.mixin.*;
 import org.qi4j.api.query.*;
 import org.qi4j.api.unitofwork.*;
 import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.domain.structure.*;
 import se.streamsource.streamflow.infrastructure.event.domain.*;
 import se.streamsource.streamflow.web.domain.entity.conversation.*;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.structure.conversation.*;
 import se.streamsource.streamflow.web.domain.structure.organization.*;
+
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 
 /**
  * JAVADOC

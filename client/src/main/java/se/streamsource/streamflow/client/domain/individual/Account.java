@@ -17,14 +17,11 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import se.streamsource.streamflow.domain.structure.*;
-
 /**
  * JAVADOC
  */
 public interface Account
-      extends AccountSettings, AccountConnection,
-      Describable
+      extends AccountSettings, AccountConnection
 {
 }
 

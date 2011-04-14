@@ -17,16 +17,23 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.domain.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.infrastructure.attachment.*;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Disposition;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.UpdateContext;
+import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.*;
 import java.net.*;
@@ -38,7 +45,7 @@ import static se.streamsource.streamflow.util.Strings.*;
  * JAVADOC
  */
 public class AttachmentContext
-      implements UpdateContext<UpdateAttachmentValue>, DeleteContext
+      implements UpdateContext<UpdateAttachmentDTO>, DeleteContext
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -54,24 +61,24 @@ public class AttachmentContext
       attachments.removeAttachment( attachment );
    }
 
-   public void update( UpdateAttachmentValue updateValue )
+   public void update( UpdateAttachmentDTO updateDTO)
    {
       AttachedFile.Data fileData = role( AttachedFile.Data.class );
       AttachedFile file = role( AttachedFile.class );
 
-      String name = updateValue.name().get();
+      String name = updateDTO.name().get();
       if (!empty( name ) && !fileData.name().get().equals( name ))
          file.changeName( name );
 
-      String mimeType = updateValue.mimeType().get();
+      String mimeType = updateDTO.mimeType().get();
       if (!empty( mimeType ) && !fileData.mimeType().get().equals( mimeType ))
          file.changeMimeType( mimeType );
 
-      Long size = updateValue.size().get();
+      Long size = updateDTO.size().get();
       if (size != null)
          file.changeSize( size );
 
-      String uri = updateValue.uri().get();
+      String uri = updateDTO.uri().get();
       if (!empty( uri ) && !fileData.uri().get().equals( uri ))
          file.changeUri( uri );
    }

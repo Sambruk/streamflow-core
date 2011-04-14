@@ -24,10 +24,13 @@ import org.qi4j.api.structure.*;
 import org.qi4j.library.constraints.annotation.*;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.dci.value.StringValueMaxLength;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Fields;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.Pages;
 
 /**
  * JAVADOC

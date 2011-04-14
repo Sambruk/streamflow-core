@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
+import org.jdesktop.swingx.JXTable;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 
 import javax.swing.*;
 

@@ -20,10 +20,14 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 import com.jgoodies.forms.builder.*;
 import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
+import org.jdesktop.application.ApplicationActionMap;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StateBinder;
 
 import javax.swing.*;
 
@@ -37,7 +41,7 @@ public class ListBoxPanel
    private JList selectedElements;
    private JList possibleElements;
 
-   public ListBoxPanel( @Uses FieldSubmissionValue field, @Uses ListBoxFieldValue fieldValue, @Service ApplicationContext context )
+   public ListBoxPanel( @Uses FieldSubmissionDTO field, @Uses ListBoxFieldValue fieldValue, @Service ApplicationContext context )
    {
       super( field );
 

@@ -17,15 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.structure.group;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.sideeffect.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.*;
 

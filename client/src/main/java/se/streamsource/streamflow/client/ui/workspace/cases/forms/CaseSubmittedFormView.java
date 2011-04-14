@@ -20,16 +20,21 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 import ca.odell.glazedlists.event.*;
 import com.jgoodies.forms.builder.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.joda.time.*;
-import org.joda.time.format.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.caze.*;
-import se.streamsource.streamflow.resource.roles.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,9 +55,7 @@ public class CaseSubmittedFormView
    public CaseSubmittedFormView(@Service ApplicationContext context, @Uses CommandQueryClient client,
                                 @Structure ObjectBuilderFactory obf, @Uses Integer index, @Structure  ValueBuilderFactory vbf)
    {
-      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
-      builder.prototype().integer().set( index );
-      model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use( client, builder.newInstance() ).newInstance();
+      model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use( client, new Integer(index) ).newInstance();
       model.getEventList().addListEventListener( this );
 
       setActionMap( context.getActionMap( this ) );
@@ -67,7 +70,7 @@ public class CaseSubmittedFormView
       SubmittedFormDTO form = model.getForm();
 
       JLabel title = new JLabel( form.form().get() + ": (" + form.submitter().get() +
-            ", " + DateTimeFormat.forPattern( text( date_time_format ) ).print( new DateTime( form.submissionDate().get()) ) +
+            ", " + DateTimeFormat.forPattern(text(date_time_format)).print( new DateTime( form.submissionDate().get()) ) +
             ")");
       //title.setFont( title.getFont().deriveFont( Font. ))
 

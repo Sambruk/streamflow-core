@@ -17,13 +17,14 @@
 
 package se.streamsource.streamflow.web.resource.organizations.forms;
 
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.context.administration.forms.*;
-import se.streamsource.streamflow.web.context.administration.forms.definition.*;
-import se.streamsource.streamflow.web.context.structure.*;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.forms.FormContext;
+import se.streamsource.streamflow.web.context.administration.forms.definition.FormInfoContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.context.structure.NotableContext;
 
 /**
  * JAVADOC

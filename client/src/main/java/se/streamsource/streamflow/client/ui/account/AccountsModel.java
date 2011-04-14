@@ -17,17 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.client.domain.individual.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.application.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.Uniform;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
+import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.util.LinkComparator;
+import se.streamsource.streamflow.client.util.WeakModelMap;
 
 import java.util.*;
 
@@ -51,7 +61,7 @@ public class AccountsModel
    @Service
    Uniform client;
 
-   TransactionList<ListItemValue> accounts = new TransactionList<ListItemValue>( new SortedList<ListItemValue>( new BasicEventList<ListItemValue>(), new ListItemComparator() ) );
+   TransactionList<LinkValue> accounts = new TransactionList<LinkValue>( new SortedList<LinkValue>( new BasicEventList<LinkValue>(), new LinkComparator() ) );
 
    WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
    {
@@ -77,15 +87,14 @@ public class AccountsModel
       refresh();
    }
 
-   public EventList<ListItemValue> getAccounts()
+   public EventList<LinkValue> getAccounts()
    {
       return accounts;
    }
 
-   public AccountModel accountModel( int index )
+   public AccountModel accountModel( LinkValue accountLink )
    {
-      String id = accounts.get( index ).entity().get().identity();
-      return models.get( id );
+      return models.get( accountLink.id().get() );
    }
 
    public void newAccount( AccountSettingsValue accountSettingsValue ) throws UnitOfWorkCompletionException, ResourceException
@@ -99,16 +108,16 @@ public class AccountsModel
       refresh();
    }
 
-   public void removeAccount( int index ) throws UnitOfWorkCompletionException
+   public void removeAccount( LinkValue account ) throws UnitOfWorkCompletionException
    {
-      accountModel( index ).remove();
-      accounts.remove( index );
+      accountModel( account ).remove();
+      accounts.remove( account );
    }
 
    private void refresh()
    {
       UnitOfWork uow = uowf.newUnitOfWork();
-      final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+      final ValueBuilder<LinkValue> itemBuilder = vbf.newValueBuilder( LinkValue.class );
       accounts.beginEvent();
       accounts.clear();
       repository.individual().visitAccounts( new AccountVisitor()
@@ -116,8 +125,9 @@ public class AccountsModel
 
          public void visitAccount( Account account )
          {
-            itemBuilder.prototype().description().set( account.accountSettings().name().get() );
-            itemBuilder.prototype().entity().set( EntityReference.getEntityReference( (account) ) );
+            itemBuilder.prototype().text().set( account.accountSettings().name().get() );
+            itemBuilder.prototype().href().set("");
+            itemBuilder.prototype().id().set(account.toString());
             accounts.add( itemBuilder.newInstance() );
          }
       } );

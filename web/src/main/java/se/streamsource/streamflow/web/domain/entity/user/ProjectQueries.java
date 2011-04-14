@@ -17,11 +17,14 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.group.Participants;
+import se.streamsource.streamflow.web.domain.structure.project.Members;
+import se.streamsource.streamflow.web.domain.structure.project.Memberships;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.*;
 

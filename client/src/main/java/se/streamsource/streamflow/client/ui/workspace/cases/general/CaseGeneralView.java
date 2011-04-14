@@ -48,9 +48,11 @@ import java.text.*;
 import java.util.*;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC

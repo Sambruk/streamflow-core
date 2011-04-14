@@ -21,15 +21,17 @@ import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.mixin.*;
 import org.qi4j.api.query.*;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.grammar.*;
-import org.qi4j.api.structure.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.entity.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.created.*;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.query.grammar.OrderBy;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 

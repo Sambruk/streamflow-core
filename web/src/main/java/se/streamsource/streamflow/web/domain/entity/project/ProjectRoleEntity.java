@@ -17,11 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.entity.project;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
+import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
 
 import java.util.*;
 

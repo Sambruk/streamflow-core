@@ -17,14 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.overview.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.io.*;
 
@@ -34,14 +36,14 @@ public class OverviewSummaryModel
    @Uses
    CommandQueryClient client;
 
-   private BasicEventList<ProjectSummaryValue> projectOverviews = new BasicEventList<ProjectSummaryValue>();
+   private BasicEventList<ProjectSummaryDTO> projectOverviews = new BasicEventList<ProjectSummaryDTO>();
 
    public Representation generateExcelProjectSummary() throws IOException, ResourceException
    {
       return client.queryRepresentation( "generateexcelprojectsummary", null );
    }
 
-   public EventList<ProjectSummaryValue> getProjectOverviews()
+   public EventList<ProjectSummaryDTO> getProjectOverviews()
    {
       return projectOverviews;
    }

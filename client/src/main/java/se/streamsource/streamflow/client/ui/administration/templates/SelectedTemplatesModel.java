@@ -24,11 +24,12 @@ import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.organization.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.util.*;
 
@@ -39,7 +40,7 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
 
    private CommandQueryClient client;
 
-   private SelectedTemplatesValue value;
+   private SelectedTemplatesDTO DTO;
 
 
    public SelectedTemplatesModel( @Uses CommandQueryClient client )
@@ -50,8 +51,8 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
    public void refresh()
    {
 
-      SelectedTemplatesValue updatedValue = client.query( "selectedtemplates", SelectedTemplatesValue.class );
-      value = (SelectedTemplatesValue) updatedValue.buildWith().prototype();
+      SelectedTemplatesDTO updatedDTO = client.query( "selectedtemplates", SelectedTemplatesDTO.class );
+      DTO = (SelectedTemplatesDTO) updatedDTO.buildWith().prototype();
       
       setChanged();
       notifyObservers();
@@ -89,8 +90,8 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
       client.postCommand( command, builder.newInstance() );
    }
 
-   public SelectedTemplatesValue getSelectedTemplatesValue()
+   public SelectedTemplatesDTO getSelectedTemplatesValue()
    {
-      return value;
+      return DTO;
    }
 }

@@ -17,16 +17,19 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.swing.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksBuilder;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;

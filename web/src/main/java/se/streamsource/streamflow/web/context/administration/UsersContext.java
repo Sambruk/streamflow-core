@@ -17,21 +17,27 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.resource.user.*;
-import se.streamsource.streamflow.util.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.NewUserDTO;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.io.*;
 import java.util.*;
@@ -53,12 +59,12 @@ public class UsersContext
       return orgs.users();
    }
 
-   public void createuser( NewUserCommand command )
+   public void createuser( NewUserDTO DTO)
    {
       UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
       Users users = RoleMap.role( Users.class );
-      User user = users.createUser( command.username().get(), command.password().get() );
+      User user = users.createUser( DTO.username().get(), DTO.password().get() );
    }
 
    public void importusers( Representation representation ) throws ResourceException

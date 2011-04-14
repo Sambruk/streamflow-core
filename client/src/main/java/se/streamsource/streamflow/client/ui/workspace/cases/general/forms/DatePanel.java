@@ -17,14 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.calendar.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.util.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.domain.form.*;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.calendar.DatePickerFormatter;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.util.DateFunctions;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 import javax.swing.text.*;
 import java.awt.*;
@@ -42,7 +43,7 @@ public class DatePanel
 
    private JXDatePicker datePicker;
 
-   public DatePanel( @Uses FieldSubmissionValue field )
+   public DatePanel( @Uses FieldSubmissionDTO field )
    {
       super( field );
       setLayout( new BorderLayout() );

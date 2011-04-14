@@ -17,14 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -75,7 +78,7 @@ public interface EndUsers
       {
          EntityBuilder<EndUser> builder = uowf.currentUnitOfWork().newEntityBuilder( EndUser.class, id );
          Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
-         contacts.contact().set( vbf.newValue( ContactValue.class ) );
+         contacts.contact().set( vbf.newValue( ContactDTO.class ) );
 
          return builder.newInstance();
       }

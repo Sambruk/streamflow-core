@@ -20,17 +20,20 @@ package se.streamsource.streamflow.client.ui.administration.users;
 import com.jgoodies.forms.builder.*;
 import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.application.error.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.resource.user.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.administration.NewUserDTO;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +53,7 @@ public class CreateUserDialog
 
    @Structure
    ValueBuilderFactory vbf;
-   private NewUserCommand command;
+   private NewUserDTO DTO;
 
    public CreateUserDialog( @Service ApplicationContext context )
    {
@@ -86,9 +89,9 @@ public class CreateUserDialog
       add(form, BorderLayout.CENTER);
    }
 
-   public NewUserCommand userCommand()
+   public NewUserDTO userCommand()
    {
-      return command;
+      return DTO;
    }
 
    @Action
@@ -102,12 +105,12 @@ public class CreateUserDialog
          return;
       }
 
-      ValueBuilder<NewUserCommand> builder = vbf.newValueBuilder( NewUserCommand.class );
+      ValueBuilder<NewUserDTO> builder = vbf.newValueBuilder( NewUserDTO.class );
       try
       {
          builder.prototype().username().set( usernameField.getText() );
          builder.prototype().password().set( String.valueOf( passwordField.getPassword() ) );
-         command = builder.newInstance();
+         DTO = builder.newInstance();
       } catch(ConstraintViolationException e)
       {
          dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( ErrorResources.username_password_violation ) ) );

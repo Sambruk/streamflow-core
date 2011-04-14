@@ -26,10 +26,10 @@ import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.client.*;
 import se.streamsource.streamflow.client.ui.*;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.application.*;
 import se.streamsource.streamflow.infrastructure.event.domain.*;
 import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 

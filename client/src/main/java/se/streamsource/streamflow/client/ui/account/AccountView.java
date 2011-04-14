@@ -20,19 +20,28 @@ package se.streamsource.streamflow.client.ui.account;
 import com.jgoodies.forms.builder.*;
 import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.client.domain.individual.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.resource.user.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.application.TaskEvent;
+import org.jdesktop.application.TaskListener;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -200,17 +209,17 @@ public class AccountView extends JScrollPane
       dialogs.showOkCancelHelpDialog(this, changePasswordDialog, i18n
             .text(WorkspaceResources.change_password_title));
 
-      ChangePasswordCommand command = changePasswordDialog.command();
-      if (command != null)
+      ChangePasswordDTO DTO = changePasswordDialog.command();
+      if (DTO != null)
       {
-         if (!command.oldPassword().get().equals(
+         if (!DTO.oldPassword().get().equals(
                model.settings().password().get()))
          {
             dialogs.showOkDialog(this, new JLabel(i18n
                   .text( AdministrationResources.old_password_incorrect)));
          } else
          {
-            model.changePassword(command);
+            model.changePassword(DTO);
          }
       }
    }

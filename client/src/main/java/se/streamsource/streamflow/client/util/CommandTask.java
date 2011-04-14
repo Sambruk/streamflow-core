@@ -17,12 +17,15 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.util.*;
-import se.streamsource.streamflow.application.error.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Task;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import java.util.*;

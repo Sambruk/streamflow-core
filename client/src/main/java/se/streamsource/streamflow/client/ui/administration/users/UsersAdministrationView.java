@@ -17,22 +17,32 @@
 
 package se.streamsource.streamflow.client.ui.administration.users;
 
-import ca.odell.glazedlists.gui.*;
-import ca.odell.glazedlists.swing.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.renderer.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.resource.user.*;
+import ca.odell.glazedlists.gui.AdvancedTableFormat;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.gui.WritableTableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import org.jdesktop.application.ApplicationActionMap;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.renderer.CheckBoxProvider;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.administration.UserEntityDTO;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +66,7 @@ public class UsersAdministrationView
    DialogService dialogs;
 
    JXTable usersTable;
-   private EventJXTableModel<UserEntityValue> tableModel;
+   private EventJXTableModel<UserEntityDTO> tableModel;
 
    public UsersAdministrationView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
@@ -65,9 +75,9 @@ public class UsersAdministrationView
 
       this.model = obf.newObjectBuilder( UsersAdministrationModel.class ).use( client ).newInstance();
 
-      TableFormat<UserEntityValue> userAdminTableFormat = new UserAdminTableFormat();
+      TableFormat<UserEntityDTO> userAdminTableFormat = new UserAdminTableFormat();
 
-      tableModel = new EventJXTableModel<UserEntityValue>( model.getEventList(), userAdminTableFormat );
+      tableModel = new EventJXTableModel<UserEntityDTO>( model.getEventList(), userAdminTableFormat );
 
       usersTable = new JXTable( tableModel );
       usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
@@ -147,7 +157,7 @@ public class UsersAdministrationView
    public Task resetPassword()
    {
       final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
-      final UserEntityValue userLink = tableModel.getElementAt( usersTable.convertRowIndexToModel( usersTable.getSelectedRow() ) );
+      final UserEntityDTO userLink = tableModel.getElementAt( usersTable.convertRowIndexToModel( usersTable.getSelectedRow() ) );
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + userLink.text().get() );
 
       if (dialog.password() != null)
@@ -172,14 +182,14 @@ public class UsersAdministrationView
    }
 
    private class UserAdminTableFormat
-      implements AdvancedTableFormat<UserEntityValue>, WritableTableFormat<UserEntityValue>
+      implements AdvancedTableFormat<UserEntityDTO>, WritableTableFormat<UserEntityDTO>
    {
-      public boolean isEditable( UserEntityValue userEntityDTO, int i )
+      public boolean isEditable( UserEntityDTO userEntityDTO, int i )
       {
          return i == 0;
       }
 
-      public UserEntityValue setColumnValue( final UserEntityValue userEntityDTO, Object o, int i )
+      public UserEntityDTO setColumnValue( final UserEntityDTO userEntityDTO, Object o, int i )
       {
          if (i == 0)
          {
@@ -193,7 +203,7 @@ public class UsersAdministrationView
             }.execute();
          }
 
-         ValueBuilder<UserEntityValue> builder = userEntityDTO.buildWith();
+         ValueBuilder<UserEntityDTO> builder = userEntityDTO.buildWith();
          builder.prototype().disabled().set(!builder.prototype().disabled().get());
 
          return builder.newInstance();
@@ -209,7 +219,7 @@ public class UsersAdministrationView
          return new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )}[i];
       }
 
-      public Object getColumnValue( UserEntityValue userEntityDTO, int i )
+      public Object getColumnValue( UserEntityDTO userEntityDTO, int i )
       {
          switch (i)
          {

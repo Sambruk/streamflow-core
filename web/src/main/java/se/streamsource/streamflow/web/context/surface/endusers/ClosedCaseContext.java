@@ -17,20 +17,25 @@
 
 package se.streamsource.streamflow.web.context.surface.endusers;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.surface.api.*;
-import se.streamsource.streamflow.util.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.surface.api.ClosedCaseDTO;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 
 import java.util.*;
 

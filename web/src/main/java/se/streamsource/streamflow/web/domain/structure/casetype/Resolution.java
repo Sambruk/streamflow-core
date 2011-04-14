@@ -17,7 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
-import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.Removable;
 
 /**
  * Resolution of a Case. Each CaseType has to select a number of possible Resolutions.

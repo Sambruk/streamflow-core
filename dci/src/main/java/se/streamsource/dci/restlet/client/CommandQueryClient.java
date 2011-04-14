@@ -230,21 +230,27 @@ public class CommandQueryClient
 
    public synchronized void putCommand( String operation ) throws ResourceException
    {
-      putCommand( operation, null, cqcFactory.getHandler() );
+      putCommand( operation, new EmptyRepresentation(), cqcFactory.getHandler() );
    }
 
    public synchronized void putCommand( String operation, ValueComposite command ) throws ResourceException
-   {
-      putCommand( operation, command, cqcFactory.getHandler() );
-   }
-
-   public synchronized void putCommand( String operation, ValueComposite command, ResponseHandler responseHandler) throws ResourceException
    {
       Representation commandRepresentation;
       if (command != null)
          commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
       else
          commandRepresentation = new EmptyRepresentation();
+      putCommand( operation, commandRepresentation, cqcFactory.getHandler() );
+   }
+
+   public synchronized void putCommand( String operation, Representation commandRepresentation )
+         throws ResourceException
+   {
+      postCommand( operation, commandRepresentation, cqcFactory.getHandler() );
+   }
+
+   public synchronized void putCommand( String operation, Representation representation, ResponseHandler responseHandler) throws ResourceException
+   {
 
       Reference ref = new Reference( reference.toUri().toString() );
 
@@ -256,7 +262,7 @@ public class CommandQueryClient
       Request request = new Request( Method.PUT, ref );
       cqcFactory.updateCommandRequest( request );
 
-      request.setEntity( commandRepresentation );
+      request.setEntity( representation );
       int tries = 3;
       while (true)
       {

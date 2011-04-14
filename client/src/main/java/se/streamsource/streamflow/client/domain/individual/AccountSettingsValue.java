@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.streamflow.domain.user.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Matches;
+import se.streamsource.streamflow.api.Password;
+import se.streamsource.streamflow.api.Username;
 
 /**
  * JAVADOC

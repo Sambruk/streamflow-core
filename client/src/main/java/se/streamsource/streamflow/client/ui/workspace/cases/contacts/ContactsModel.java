@@ -17,14 +17,18 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.resource.caze.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.util.*;
 
@@ -41,7 +45,7 @@ public class ContactsModel
    @Uses
    private CommandQueryClient client;
 
-   TransactionList<ContactValue> eventList = new TransactionList<ContactValue>(new BasicEventList<ContactValue>( ));
+   TransactionList<ContactDTO> eventList = new TransactionList<ContactDTO>(new BasicEventList<ContactDTO>( ));
 
    public void refresh()
    {
@@ -52,14 +56,14 @@ public class ContactsModel
       notifyObservers( resource );
    }
 
-   public EventList<ContactValue> getEventList()
+   public EventList<ContactDTO> getEventList()
    {
       return eventList;
    }
 
    public void createContact()
    {
-      client.postCommand( "add", vbf.newValue( ContactValue.class ) );
+      client.postCommand( "add", vbf.newValue( ContactDTO.class ) );
    }
 
    public void removeElement( int selectedIndex )

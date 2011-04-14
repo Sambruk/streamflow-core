@@ -22,21 +22,33 @@ import ca.odell.glazedlists.event.*;
 import ca.odell.glazedlists.gui.*;
 import com.jgoodies.forms.factories.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.ui.workspace.context.*;
-import se.streamsource.streamflow.client.ui.workspace.search.*;
-import se.streamsource.streamflow.client.ui.workspace.table.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.resource.user.profile.*;
-import se.streamsource.streamflow.util.*;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
+import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
+import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RoundedBorder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -189,8 +201,8 @@ public class WorkspaceView
 
                   if (isPerspective)
                   {
-                     PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
-                     String contextRel = perspectiveValue.context().get();
+                     PerspectiveDTO perspectiveDTO = contextItem.getClient().query("index", PerspectiveDTO.class);
+                     String contextRel = perspectiveDTO.context().get();
 
                      ListModel listModel = list.getModel();
                      for (int i = 0; i < listModel.getSize(); i++)
@@ -210,10 +222,10 @@ public class WorkspaceView
                              .use(obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null)
                              .newInstance();
 
-                     casesTable.getModel().setFilter(perspectiveValue);
+                     casesTable.getModel().setFilter(perspectiveDTO);
 
-                     searchView.getTextField().setText(perspectiveValue.query().get());
-                     setContextString(contextItem, perspectiveValue.name().get());
+                     searchView.getTextField().setText(perspectiveDTO.query().get());
+                     setContextString(contextItem, perspectiveDTO.name().get());
 
                   } else
                   {
@@ -398,7 +410,7 @@ public class WorkspaceView
                     throws Exception
             {
                PerspectivesModel model = obf.newObjectBuilder(PerspectivesModel.class).use(client.getSubClient("perspectives")).newInstance();
-               PerspectiveValue perspective = casesView.getCaseTableView().getModel().getPerspective(dialog.name(), searchView.isVisible() ? searchView.getTextField().getText() : "");
+               PerspectiveDTO perspective = casesView.getCaseTableView().getModel().getPerspective(dialog.name(), searchView.isVisible() ? searchView.getTextField().getText() : "");
                model.savePerspective(perspective);
             }
          };

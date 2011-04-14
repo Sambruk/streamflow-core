@@ -381,9 +381,8 @@ public class UIAssembler
 
       addMV( module, PerspectivesModel.class, SearchView.class );
 
-      addDialogs( module, SelectLinkDialog.class,
-            SaveSearchDialog.class,
-            ManagePerspectivesDialog.class );
+      addDialogs(module, SelectLinkDialog.class,
+              ManagePerspectivesDialog.class);
 
       module.values( CaseTableValue.class ).visibleIn( Visibility.application );
    }

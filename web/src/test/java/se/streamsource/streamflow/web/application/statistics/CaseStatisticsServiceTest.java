@@ -17,26 +17,33 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.apache.log4j.*;
-import org.apache.log4j.spi.*;
-import org.hamcrest.*;
-import org.junit.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.entitystore.memory.*;
-import org.qi4j.index.rdf.assembly.*;
-import org.qi4j.spi.uuid.*;
-import org.qi4j.test.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.infrastructure.time.*;
-import se.streamsource.streamflow.web.application.security.*;
-import se.streamsource.streamflow.web.domain.entity.casetype.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.label.*;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.junit.Test;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
+import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
+import org.qi4j.test.AbstractQi4jTest;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
+import se.streamsource.streamflow.infrastructure.time.TimeService;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.*;
 import se.streamsource.streamflow.web.domain.entity.user.*;
@@ -89,7 +96,7 @@ public class CaseStatisticsServiceTest
               ResolutionEntity.class,
               CaseEntity.class,
               CaseTypeEntity.class);
-      module.values(ContactValue.class, ParticipantRolesValue.class);
+      module.values(ContactDTO.class, ParticipantRolesValue.class);
 
       module.objects(TimeService.class, CaseStatisticsServiceTest.class);
 

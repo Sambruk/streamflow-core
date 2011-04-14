@@ -17,23 +17,37 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.json.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.composite.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.specification.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.*;
-import org.qi4j.spi.property.*;
-import org.qi4j.spi.structure.*;
-import org.qi4j.spi.value.*;
-import org.restlet.*;
+import org.json.JSONException;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.Value;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyDescriptor;
+import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.structure.ModuleSPI;
+import org.qi4j.spi.value.ValueDescriptor;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
 import org.restlet.data.*;
 import org.restlet.representation.*;
 import org.restlet.resource.*;
@@ -47,9 +61,9 @@ import java.io.*;
 import java.lang.annotation.*;
 import java.lang.reflect.*;
 import java.lang.reflect.Method;
-import java.net.*;
+import java.net.URLDecoder;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.qi4j.api.util.Annotations.*;
 import static org.qi4j.api.util.Iterables.*;
@@ -989,6 +1003,9 @@ public class CommandQueryResource
          } else if (Boolean.TYPE.isAssignableFrom(parameterType) || Boolean.class.isAssignableFrom(parameterType))
          {
             arg = Boolean.valueOf(argString);
+         } else if (Date.class.isAssignableFrom(parameterType))
+         {
+            arg = DateFunctions.fromString(argString);
          } else if (parameterType.isInterface())
          {
             arg = uowf.currentUnitOfWork().get(parameterType, argString);

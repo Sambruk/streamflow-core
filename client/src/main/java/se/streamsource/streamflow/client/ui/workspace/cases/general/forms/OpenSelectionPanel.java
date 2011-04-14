@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.util.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -40,7 +41,7 @@ public class OpenSelectionPanel
    private List<JRadioButton> selectionButtons;
    private JTextField openSelectionTextField;
 
-   public OpenSelectionPanel( @Uses FieldSubmissionValue field, @Uses OpenSelectionFieldValue fieldValue )
+   public OpenSelectionPanel( @Uses FieldSubmissionDTO field, @Uses OpenSelectionFieldValue fieldValue )
    {
       super( field );
       JPanel panel = new JPanel( new BorderLayout( ));

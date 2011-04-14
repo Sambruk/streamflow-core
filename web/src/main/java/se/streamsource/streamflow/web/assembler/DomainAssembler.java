@@ -17,28 +17,43 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.service.qualifier.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.spi.query.*;
-import org.qi4j.spi.service.importer.*;
-import se.streamsource.streamflow.domain.*;
-import se.streamsource.streamflow.resource.*;
-import se.streamsource.streamflow.web.domain.entity.attachment.*;
-import se.streamsource.streamflow.web.domain.entity.casetype.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.conversation.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
-import se.streamsource.streamflow.web.domain.entity.label.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.service.qualifier.ServiceQualifier;
+import org.qi4j.api.specification.Specifications;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueries;
+import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+import se.streamsource.streamflow.api.assembler.ClientAPIAssembler;
+import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.*;
 import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
-import se.streamsource.streamflow.web.infrastructure.index.*;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
+import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
+import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
+import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
-import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.bootstrap.AssemblySpecifications.types;
 
 /**
  * JAVADOC
@@ -48,10 +63,10 @@ public class DomainAssembler
    public void assemble(LayerAssembly layer)
            throws AssemblyException
    {
-      new CommonDomainAssembler().assemble( layer );
-      new CommonResourceAssembler().assemble( layer.module("Common") );
+      ModuleAssembly api = layer.module("API");
+      new ClientAPIAssembler().assemble(api);
 
-      conversations( layer.module("Conversations") );
+      conversations(layer.module("Conversations"));
       forms( layer.module("Forms") );
       groups( layer.module("Groups") );
       labels( layer.module("Labels") );
@@ -62,6 +77,13 @@ public class DomainAssembler
       caseTypes( layer.module("Casetypes") );
       users( layer.module("Users") );
       attachments( layer.module("Attachments") );
+
+      // All values are public
+      layer.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
+
+      // All entities are public
+      layer.entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
+
    }
 
    private void attachments(ModuleAssembly module) throws AssemblyException
@@ -134,6 +156,8 @@ public class DomainAssembler
               FieldEntity.class,
               PageEntity.class
       ).visibleIn(Visibility.application);
+
+      module.values(SubmittedFormValue.class, SubmittedPageValue.class, SubmittedFieldValue.class).visibleIn(Visibility.application);
    }
 
    private void conversations(ModuleAssembly module) throws AssemblyException

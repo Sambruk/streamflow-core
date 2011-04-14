@@ -17,13 +17,17 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.proxyusers;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.resource.user.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
+import se.streamsource.streamflow.api.administration.ProxyUserDTO;
+import se.streamsource.streamflow.api.administration.ProxyUserListDTO;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.util.*;
 
@@ -38,7 +42,7 @@ public class ProxyUsersContext
    @Structure
    Module module;
 
-   public void createproxyuser( NewProxyUserCommand proxyUser )
+   public void createproxyuser( NewProxyUserDTO proxyUser )
    {
       Organization organization = role( Organization.class );
       organization.createProxyUser( proxyUser.description().get(), proxyUser.password().get() );

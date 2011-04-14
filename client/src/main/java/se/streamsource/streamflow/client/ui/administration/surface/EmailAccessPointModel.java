@@ -17,16 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.organization.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
+import se.streamsource.streamflow.client.util.Refreshable;
+
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
 
 /**
  * TODO
@@ -40,14 +45,14 @@ public class EmailAccessPointModel
    @Uses
    protected CommandQueryClient client;
 
-   ValueBuilder<EmailAccessPointValue> value;
+   ValueBuilder<EmailAccessPointDTO> value;
 
    public void refresh()
    {
-      value = client.query("index", EmailAccessPointValue.class).buildWith();
+      value = client.query("index", EmailAccessPointDTO.class).buildWith();
    }
 
-   public EmailAccessPointValue getValue()
+   public EmailAccessPointDTO getValue()
    {
       return value.prototype();
    }

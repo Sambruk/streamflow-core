@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.group;
 
-import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.Describable;
 
 /**
  * Participant in a group

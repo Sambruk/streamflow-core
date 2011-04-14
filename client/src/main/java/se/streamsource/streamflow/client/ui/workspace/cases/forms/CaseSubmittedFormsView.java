@@ -17,20 +17,25 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.renderer.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.specification.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.resource.caze.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXList;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -82,7 +87,7 @@ public class CaseSubmittedFormsView
             if (((DefaultMutableTreeNode) value).getUserObject() instanceof SubmittedFormListDTO )
             {
                final SubmittedFormListDTO listDTO = (SubmittedFormListDTO) ((DefaultMutableTreeNode) value).getUserObject();
-               List<SubmittedFormListDTO> modelSubmittedForms = (ArrayList) Iterables.addAll( new ArrayList<SubmittedFormListDTO>(), model.getSubmittedForms() );
+               List<SubmittedFormListDTO> modelSubmittedForms = (ArrayList) Iterables.addAll(new ArrayList<SubmittedFormListDTO>(), model.getSubmittedForms());
                Collections.reverse( modelSubmittedForms );
 
                SubmittedFormListDTO lastSubmitted = Iterables.first(

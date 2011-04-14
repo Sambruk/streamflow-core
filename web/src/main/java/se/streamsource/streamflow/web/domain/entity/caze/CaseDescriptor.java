@@ -17,13 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
-import org.qi4j.api.io.*;
-import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 
 /**
  * JAVADOC
@@ -42,7 +46,7 @@ public class CaseDescriptor
       return caze;
    }
 
-   public Input<ContactValue, RuntimeException> contacts()
+   public Input<ContactDTO, RuntimeException> contacts()
    {
       return Inputs.iterable(((Contacts.Data)caze).contacts().get());
    }

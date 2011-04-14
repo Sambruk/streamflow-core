@@ -28,16 +28,28 @@ import org.restlet.resource.*;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.domain.structure.*;
-import se.streamsource.streamflow.infrastructure.application.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.dci.value.StringValueMaxLength;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 import java.util.*;
 
@@ -49,7 +61,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 @Mixins(AccessPointAdministrationContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface AccessPointAdministrationContext
-      extends IndexContext<AccessPointValue>, Context, DeleteContext
+      extends IndexContext<AccessPointDTO>, Context, DeleteContext
 {
    void changedescription( @MaxLength(50) StringValue name )
          throws IllegalArgumentException;
@@ -76,9 +88,9 @@ public interface AccessPointAdministrationContext
       @Structure
       Module module;
 
-      public AccessPointValue index()
+      public AccessPointDTO index()
       {
-         ValueBuilder<AccessPointValue> builder = module.valueBuilderFactory().newValueBuilder( AccessPointValue.class );
+         ValueBuilder<AccessPointDTO> builder = module.valueBuilderFactory().newValueBuilder( AccessPointDTO.class );
 
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
          AccessPointSettings.Data accessPointData = RoleMap.role( AccessPointSettings.Data.class );
