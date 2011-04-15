@@ -17,38 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
-import ca.odell.glazedlists.UniqueList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.table.CellValue;
-import se.streamsource.dci.value.table.ColumnValue;
-import se.streamsource.dci.value.table.RowValue;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.LinkComparator;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.interaction.gtd.*;
+import se.streamsource.streamflow.resource.user.profile.*;
+import se.streamsource.streamflow.util.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
@@ -123,8 +105,24 @@ public class CasesTableModel extends Observable
       TableValue table = client.query( "cases", query, TableValue.class );
       List<CaseTableValue> caseTableValues = caseTableValues( table );
 
-      EventListSynch.synchronize( Collections.<CaseTableValue>emptyList(), eventList );
-      EventListSynch.synchronize( caseTableValues, eventList );
+      //EventListSynch.synchronize( Collections.<CaseTableValue>emptyList(), eventList );
+      //EventListSynch.synchronize( caseTableValues, eventList );
+
+      eventList.getReadWriteLock().writeLock().lock();
+      try
+      {
+         if (eventList instanceof TransactionList)
+            ((TransactionList) eventList).beginEvent();
+
+            eventList.clear();
+            eventList.addAll( caseTableValues );
+
+         if (eventList instanceof TransactionList)
+            ((TransactionList) eventList).commitEvent();
+      } finally
+      {
+         eventList.getReadWriteLock().writeLock().unlock();
+      }
 
       setChanged();
       notifyObservers();

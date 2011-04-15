@@ -18,30 +18,22 @@
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.data.Reference;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.restlet.data.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableModel;
-import java.awt.CardLayout;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+import java.awt.*;
 import java.awt.Dimension;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
@@ -205,7 +197,7 @@ public class CasesDetailView
     * If not the case detail is cleared.
     * @param cases A JTable containing cases.
     */
-   public void selectCaseInTable( JTable cases )
+   public void selectCaseInTable( final JTable cases )
    {
       if( currentCase != null )
       {
@@ -218,10 +210,15 @@ public class CasesDetailView
                cases.getSelectionModel().setSelectionInterval( cases.convertRowIndexToView( i ), cases.convertRowIndexToView( i )  );
                cases.scrollRectToVisible( cases.getCellRect( i, 0, true ) );
                rowFound = true;
+               break;
             }
          }
          if( !rowFound )
-            clear();
+         {
+            WorkspaceView workspace = (WorkspaceView)SwingUtilities.getAncestorOfClass( WorkspaceView.class, this );
+            if( !workspace.getWorkspaceContext().showContext( this.model ) )
+               clear();
+         }
       }
    }
 
@@ -241,11 +238,11 @@ public class CasesDetailView
             {
                // Do nothing
             } // only clear detail if it is not a draft
-            else if (matches( withNames( "changedOwner" ), transactions )
+            /*else if (matches( withNames( "changedOwner" ), transactions )
                   && !"DRAFT".equals( model.getIndex().status().get().name() ))
             {
                clear();
-            }
+            }*/
             // clear detail if status changed from draft to open and it's not a subcase
             else if (matches( withUsecases( "open" ), transactions ) && currentMainCase.getReference().equals(currentCase))
             {

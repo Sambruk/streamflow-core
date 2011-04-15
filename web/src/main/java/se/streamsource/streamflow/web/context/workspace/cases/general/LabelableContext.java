@@ -17,25 +17,21 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import org.qi4j.api.entity.Entity;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinksValue;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.RequiresPermission;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.context.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.security.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
 
-import java.util.HashSet;
+import java.util.*;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
@@ -68,21 +64,23 @@ public class LabelableContext
       if (from != null)
          labels.addAll( from.selectedLabels().toSet() );
 
-
-      // project's selected labels
-      labels.addAll( ((SelectedLabels.Data) project).selectedLabels().toSet() );
-
-
-      // OU hirarchy labels from bottom up
-      Entity entity = (Entity) ((Ownable.Data) project).owner().get();
-
-      while ( entity instanceof Ownable )
+      if( project != null )
       {
+         // project's selected labels
+         labels.addAll( ((SelectedLabels.Data) project).selectedLabels().toSet() );
+
+
+         // OU hirarchy labels from bottom up
+         Entity entity = (Entity) ((Ownable.Data) project).owner().get();
+
+         while (entity instanceof Ownable)
+         {
+            labels.addAll( ((SelectedLabels.Data) entity).selectedLabels().toSet() );
+            entity = (Entity) ((Ownable.Data) entity).owner().get();
+         }
+         // Organization's selected labels
          labels.addAll( ((SelectedLabels.Data) entity).selectedLabels().toSet() );
-         entity = (Entity) ((Ownable.Data) entity).owner().get();
       }
-      // Organization's selected labels
-      labels.addAll( ((SelectedLabels.Data) entity).selectedLabels().toSet() );
 
       // omitt already set labels
       Labelable.Data labelable = RoleMap.role( Labelable.Data.class );
