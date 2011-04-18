@@ -86,7 +86,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Date;
 
-import static org.qi4j.api.specification.Specifications.and;
+import static org.qi4j.api.specification.Specifications.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -145,7 +145,7 @@ public interface CaseStatisticsService
 
                         // case has been reopend and is still not closed again
                         // do nothing
-                        if (!entity.isStatus( CaseStates.CLOSED ))
+                        if (!entity.isStatus( CaseStates.CLOSED ) || !entity.isAssigned() )
                            return true;
 
                         CaseStatisticsValue stats = createStatistics( entity );
@@ -391,7 +391,7 @@ public interface CaseStatisticsService
             Query<CaseEntity> cases = queryBuilder.where( QueryExpressions.eq( QueryExpressions.templateFor( Status.Data.class ).status(), CaseStates.CLOSED ) ).newQuery( uow );
             for (CaseEntity aCase : cases)
             {
-               if (aCase.caseId().get() != null)
+               if (aCase.caseId().get() != null && aCase.isAssigned() )
                {
                   UnitOfWork caseUoW = module.unitOfWorkFactory().newUnitOfWork();
                   try

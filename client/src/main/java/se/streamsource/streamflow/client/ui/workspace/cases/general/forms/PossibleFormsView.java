@@ -30,8 +30,8 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
@@ -40,10 +40,16 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Map;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -87,10 +93,6 @@ public class PossibleFormsView extends JPanel
       for (LinkValue itemValue : formList)
       {
          PossibleFormView formView = new PossibleFormView( itemValue );
-
-         formView.setPreferredSize( new Dimension( 145, 25 ) );
-         formView.setMinimumSize( new Dimension( 145, 25 ) );
-         formView.setMaximumSize( new Dimension( 145, 25 ) );
          formView.addActionListener( this );
          add( formView, Component.LEFT_ALIGNMENT );
       }

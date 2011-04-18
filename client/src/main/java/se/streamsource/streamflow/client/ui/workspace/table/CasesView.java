@@ -17,21 +17,35 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.SeparatorList;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.HtmlPanel;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.net.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.net.URL;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -39,11 +53,11 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  * JAVADOC
  */
 public class CasesView
-        extends JPanel
+      extends JPanel
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
-
+   
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
    private JComponent blank;
@@ -52,63 +66,70 @@ public class CasesView
    private JPanel topPanel;
    private CommandQueryClient client;
 
-   public CasesView(@Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client,
-                    @Optional @Uses JTextField searchField)
+   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client,
+                     @Optional @Uses JTextField searchField)
    {
       super();
       this.obf = obf;
       this.searchField = searchField;
       this.client = client;
 
-      setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-      setLayout(cardLayout);
+      setLayout( cardLayout );
 
-      this.detailsView = obf.newObjectBuilder(CasesDetailView.class).newInstance();
+      this.detailsView = obf.newObjectBuilder( CasesDetailView.class ).newInstance();
+      
+      
+      splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
+      splitPane.setOneTouchExpandable( true );
 
+      splitPane.setTopComponent( new JPanel() );
+      splitPane.setBottomComponent( detailsView );
+      splitPane.setResizeWeight( 0.27D );
 
-      splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-      splitPane.setOneTouchExpandable(true);
+      splitPane.setDividerLocation( 1D );
+      splitPane.setBorder( BorderFactory.createEmptyBorder() );
 
-      splitPane.setTopComponent(new JPanel());
-      splitPane.setBottomComponent(detailsView);
-      splitPane.setResizeWeight(0.27D);
+      topPanel = new JPanel( new BorderLayout());
+      topPanel.add( splitPane, BorderLayout.CENTER);
+      
+      add( blank = createBlankPanel(), "blank" );
+      add( topPanel, "cases" );
 
-      splitPane.setDividerLocation(1D);
-      splitPane.setBorder(BorderFactory.createEmptyBorder());
-
-      topPanel = new JPanel(new BorderLayout());
-      topPanel.add(splitPane, BorderLayout.CENTER);
-
-      add(blank = createBlankPanel(), "blank");
-      add(topPanel, "cases");
-
-      cardLayout.show(this, "blank");
+      cardLayout.show( this, "blank" );
    }
 
    protected JPanel createBlankPanel()
    {
-      JPanel blankPanel = new JPanel(new BorderLayout());
-      URL logoURL = getClass().getResource(i18n.text(Icons.name_logo));
-      JEditorPane blankPane = new HtmlPanel(text(WorkspaceResources.welcome, logoURL.toExternalForm()));
-      blankPanel.add(blankPane, BorderLayout.CENTER);
+      JPanel blankPanel = new JPanel( new BorderLayout() );
+      URL logoURL = getClass().getResource( i18n.text( Icons.name_logo ) );
+      JEditorPane blankPane = new HtmlPanel(text( WorkspaceResources.welcome, logoURL.toExternalForm() ) );
+      blankPanel.add( blankPane, BorderLayout.CENTER );
       return blankPanel;
    }
 
-   public void showTable(CasesTableView casesTableView)
+   public void showTable( final CasesTableView casesTableView )
    {
-      cardLayout.show(this, "cases");
+      cardLayout.show( this, "cases" );
       this.casesTableView = casesTableView;
-      this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener(new CaseSelectionListener());
-      splitPane.setTopComponent(casesTableView);
-      clearCase();
+      this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
+      splitPane.setTopComponent( casesTableView );
+      SwingUtilities.invokeLater( new Runnable()
+      {
+         public void run()
+         {
+            detailsView.selectCaseInTable( casesTableView.getCaseTable() );
+         }
+      } );
+
    }
 
    public void clearTable()
    {
-      cardLayout.show(this, "blank");
+      cardLayout.show( this, "blank" );
       casesTableView = null;
-      splitPane.setTopComponent(new JPanel());
+      splitPane.setTopComponent( new JPanel() );
       clearCase();
    }
 
@@ -134,22 +155,22 @@ public class CasesView
       detailsView.refresh();
    }
 
-   public void setBlankPanel(JComponent blankPanel)
+   public void setBlankPanel( JComponent blankPanel )
    {
       remove(blank);
-      add(blank = blankPanel, "blank");
+      add( blank = blankPanel, "blank" );
    }
 
    class CaseSelectionListener
-           implements ListSelectionListener
+         implements ListSelectionListener
    {
-      public void valueChanged(ListSelectionEvent e)
+      public void valueChanged( ListSelectionEvent e )
       {
          if (!e.getValueIsAdjusting())
          {
             final JTable caseTable = getCaseTableView().getCaseTable();
 
-            SwingUtilities.invokeLater(new Runnable()
+            SwingUtilities.invokeLater( new Runnable()
             {
                public void run()
                {
@@ -159,22 +180,22 @@ public class CasesView
                      if (!caseTable.getSelectionModel().isSelectionEmpty())
                      {
                         int selectedRow = caseTable.getSelectedRow();
-                        Object selectedValue = caseTable.getModel().getValueAt(caseTable.convertRowIndexToModel(selectedRow), 8);
-                        if (selectedRow != -1 && !(selectedValue instanceof SeparatorList.Separator))
+                        Object selectedValue = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
+                        if (selectedRow != -1 && !(selectedValue instanceof SeparatorList.Separator) )
                         {
                            String href = (String) selectedValue;
-                           detailsView.show(client.getClient(href));
+                           detailsView.show( client.getClient( href ) );
                         }
                      } else
                      {
-                        detailsView.selectCaseInTable(caseTable);
+                        detailsView.selectCaseInTable( caseTable );
                      }
                   } catch (Exception e1)
                   {
-                     throw new OperationException(CaseResources.could_not_view_details, e1);
+                     throw new OperationException( CaseResources.could_not_view_details, e1 );
                   }
                }
-            });
+            } );
          }
       }
    }
