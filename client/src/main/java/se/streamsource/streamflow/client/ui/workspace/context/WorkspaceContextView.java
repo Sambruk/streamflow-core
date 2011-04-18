@@ -17,18 +17,37 @@
 
 package se.streamsource.streamflow.client.ui.workspace.context;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.swing.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.swing.EventListModel;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
+import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseModel;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
+import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -42,46 +61,49 @@ public class WorkspaceContextView
    private JScrollPane workspaceContextScroll;
    private WorkspaceContextModel contextModel;
 
-   public WorkspaceContextView(final @Service ApplicationContext context,
-                               final @Structure ObjectBuilderFactory obf,
-                               @Uses final CommandQueryClient client)
+   public WorkspaceContextView( final @Service ApplicationContext context,
+                                 final @Structure ObjectBuilderFactory obf,
+                                 @Uses final CommandQueryClient client )
    {
-      setLayout(new BorderLayout());
+      setLayout( new BorderLayout() );
 
-      setPreferredSize(new Dimension(250, 500));
+      setPreferredSize( new Dimension(250, 500) );
 
-      this.contextModel = obf.newObjectBuilder(WorkspaceContextModel.class).use(client).newInstance();
+      this.contextModel = obf.newObjectBuilder( WorkspaceContextModel.class ).use( client ).newInstance();
 
       contextList = new JList();
       Comparator<ContextItem> comparator = new ContextItemGroupComparator();
 
       JTextField filterField = new JTextField();
-      SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>(contextModel.getItems(), new Comparator<ContextItem>()
+      SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>( contextModel.getItems(), new Comparator<ContextItem>()
       {
-         public int compare(ContextItem o1, ContextItem o2)
+         public int compare( ContextItem o1, ContextItem o2 )
          {
-            return o1.getGroup().compareTo(o2.getGroup());
+            return o1.getGroup().compareTo( o2.getGroup() );
          }
       });
-      final FilterList<ContextItem> textFilteredIssues = new FilterList<ContextItem>(sortedIssues, new TextComponentMatcherEditor<ContextItem>(filterField, new TextFilterator<ContextItem>()
+      final FilterList<ContextItem> textFilteredIssues = new FilterList<ContextItem>( sortedIssues, new TextComponentMatcherEditor<ContextItem>( filterField, new TextFilterator<ContextItem>()
       {
-         public void getFilterStrings(List<String> strings, ContextItem contextItem)
+         public void getFilterStrings( List<String> strings, ContextItem contextItem )
          {
-            strings.add(contextItem.getGroup());
+            if(Strings.empty( contextItem.getGroup() ))
+               strings.add(contextItem.getName());
+            else
+               strings.add(contextItem.getGroup());
          }
-      }));
-      EventList<ContextItem> separatorList = new SeparatorList<ContextItem>(textFilteredIssues, comparator, 1, 10000);
-      contextList.setModel(new EventListModel<ContextItem>(separatorList));
-      contextList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      }) );
+      EventList<ContextItem> separatorList = new SeparatorList<ContextItem>( textFilteredIssues, comparator, 1, 10000 );
+      contextList.setModel( new EventListModel<ContextItem>( separatorList ) );
+      contextList.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
-      contextList.setCellRenderer(new SeparatorContextItemListCellRenderer(new ContextItemListRenderer()));
+      contextList.setCellRenderer( new SeparatorContextItemListCellRenderer( new ContextItemListRenderer()));
 
-      workspaceContextScroll = new JScrollPane(contextList);
+      workspaceContextScroll = new JScrollPane( contextList );
 
-      add(filterField, BorderLayout.NORTH);
-      add(workspaceContextScroll, BorderLayout.CENTER);
+      add( filterField, BorderLayout.NORTH );
+      add( workspaceContextScroll, BorderLayout.CENTER );
 
-      new RefreshWhenShowing(this, this);
+      new RefreshWhenShowing( this, contextModel);
    }
 
    public void refresh()
@@ -92,5 +114,38 @@ public class WorkspaceContextView
    public JList getWorkspaceContextList()
    {
       return contextList;
+   }
+
+   public boolean showContext( CaseModel caseModel )
+   {
+      boolean result = false;
+      CaseDTO caze = caseModel.getIndex();
+      for (ContextItem contextItem : contextModel.getItems())
+      {
+         if( !Strings.empty( caze.assignedTo().get() ) )
+         {
+            if( contextItem.getGroup().equals( caze.owner().get() ) && contextItem.getRelation().equals( "assign" ) )
+            {
+               contextList.setSelectedValue( contextItem,  true );
+               result = true;
+               break;
+            }
+         } else
+         {
+            if( contextItem.getGroup().equals( caze.owner().get() ) && contextItem.getRelation().equals( "inbox" ) )
+            {
+               contextList.setSelectedValue( contextItem,  true );
+               result = true;
+               break;
+            }
+         }
+      }
+
+      return result;
+   }
+
+   public WorkspaceContextModel getModel()
+   {
+      return contextModel;
    }
 }

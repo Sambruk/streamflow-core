@@ -17,22 +17,36 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.dci.value.table.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import ca.odell.glazedlists.UniqueList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.table.CellValue;
+import se.streamsource.dci.value.table.ColumnValue;
+import se.streamsource.dci.value.table.RowValue;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.util.Strings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Observable;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
@@ -40,7 +54,7 @@ import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.
  * Base class for all models that list cases
  */
 public class CasesTableModel extends Observable
-        implements Refreshable
+      implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -54,7 +68,7 @@ public class CasesTableModel extends Observable
    BasicEventList<LinkValue> possibleProjects = new BasicEventList<LinkValue>();
    BasicEventList<LinkValue> possibleCreatedBy = new BasicEventList<LinkValue>();
 
-   List<String> selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name(), ON_HOLD.name(), CLOSED.name()));
+   List<String> selectedStatuses = new ArrayList<String>( Arrays.asList( OPEN.name(), ON_HOLD.name(), CLOSED.name() ));
    List<String> selectedCaseTypeIds = new ArrayList<String>();
    List<String> selectedLabelIds = new ArrayList<String>();
    List<String> selectedAssigneeIds = new ArrayList<String>();
@@ -68,11 +82,11 @@ public class CasesTableModel extends Observable
 
    private PerspectivePeriodModel createdOnModel;
    private PerspectivePeriodModel dueOnModel;
-
-   public CasesTableModel(@Structure ObjectBuilderFactory obf)
+   
+   public CasesTableModel(@Structure ObjectBuilderFactory obf  )
    {
-      createdOnModel = obf.newObjectBuilder(PerspectivePeriodModel.class).use(Period.none).newInstance();
-      dueOnModel = obf.newObjectBuilder(PerspectivePeriodModel.class).use(Period.none).newInstance();
+      createdOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
+      dueOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
    }
 
    protected EventList<CaseTableValue> eventList = new TransactionList<CaseTableValue>(new BasicEventList<CaseTableValue>());
@@ -82,54 +96,67 @@ public class CasesTableModel extends Observable
       return eventList;
    }
 
-   public void search(String text)
+   public void search( String text )
    {
       refresh();
    }
 
    public void refresh()
    {
-      ValueBuilder<TableQuery> builder = vbf.newValueBuilder(TableQuery.class);
+      ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
       String queryString = "select *";
       String whereClause = addWhereClauseFromFilter();
       String sorting = addSortingFromFilter();
 
-      if (!Strings.empty(whereClause))
+      if( !Strings.empty( whereClause ) )
          queryString += " where " + whereClause;
 
-      if (!Strings.empty(sorting))
+      if( !Strings.empty( sorting ))
          queryString += " " + sorting;
 
-      builder.prototype().tq().set(queryString);
+      builder.prototype().tq().set( queryString );
       TableQuery query = builder.newInstance();
 
 
       TableValue table = client.query( "cases", query, TableValue.class );
       List<CaseTableValue> caseTableValues = caseTableValues( table );
 
-      EventListSynch.synchronize( Collections.<CaseTableValue>emptyList(), eventList );
-      EventListSynch.synchronize( caseTableValues, eventList );
+      eventList.getReadWriteLock().writeLock().lock();
+      try
+      {
+         if (eventList instanceof TransactionList)
+            ((TransactionList) eventList).beginEvent();
+
+            eventList.clear();
+            eventList.addAll( caseTableValues );
+
+         if (eventList instanceof TransactionList)
+            ((TransactionList) eventList).commitEvent();
+      } finally
+      {
+         eventList.getReadWriteLock().writeLock().unlock();
+      }
 
       setChanged();
       notifyObservers();
    }
 
-   protected List<CaseTableValue> caseTableValues(TableValue table)
+   protected List<CaseTableValue> caseTableValues( TableValue table )
    {
-      List<CaseTableValue> caseTableValues = new ArrayList<CaseTableValue>();
-      for (RowValue row : table.rows().get())
+      List<CaseTableValue> caseTableValues = new ArrayList<CaseTableValue>(  );
+      for(RowValue row : table.rows().get())
       {
-         ValueBuilder<CaseTableValue> caseBuilder = vbf.newValueBuilder(CaseTableValue.class);
+         ValueBuilder<CaseTableValue> caseBuilder = vbf.newValueBuilder( CaseTableValue.class );
          CaseTableValue prototype = caseBuilder.prototype();
          List<CellValue> cells = row.c().get();
          for (int i = 0; i < table.cols().get().size(); i++)
          {
-            ColumnValue columnValue = table.cols().get().get(i);
-            CellValue cell = cells.get(i);
+            ColumnValue columnValue = table.cols().get().get( i );
+            CellValue cell = cells.get( i );
             if (columnValue.id().get().equals("assigned"))
-               prototype.assignedTo().set(cell.f().get());
+               prototype.assignedTo().set( cell.f().get() );
             else if (columnValue.id().get().equals("caseid"))
-               prototype.caseId().set(cell.f().get());
+               prototype.caseId().set( cell.f().get() );
             else if (columnValue.id().get().equals("casetype"))
                prototype.caseType().set(cell.f().get());
             else if (columnValue.id().get().equals("creator"))
@@ -151,20 +178,21 @@ public class CasesTableModel extends Observable
             else if (columnValue.id().get().equals("labels"))
             {
                String json = cell.v().get().toString();
-               prototype.labels().set(vbf.newValueFromJSON(LinksValue.class, json));
-            } else if (columnValue.id().get().equals("owner"))
+               prototype.labels().set(vbf.newValueFromJSON( LinksValue.class, json ));
+            }
+            else if (columnValue.id().get().equals("owner"))
                prototype.owner().set(cell.f().get());
             else if (columnValue.id().get().equals("parent") && cell.v().get() != null)
-               prototype.parentCase().set(vbf.newValueFromJSON(LinkValue.class, cell.v().get().toString()));
+               prototype.parentCase().set(vbf.newValueFromJSON( LinkValue.class, cell.v().get().toString() ));
             else if (columnValue.id().get().equals("resolution"))
                prototype.resolution().set(cell.f().get());
             else if (columnValue.id().get().equals("status"))
-               prototype.status().set(CaseStates.valueOf(cell.v().get().toString()));
+               prototype.status().set( CaseStates.valueOf( cell.v().get().toString() ));
             else if (columnValue.id().get().equals("subcases"))
             {
-               prototype.subcases().set(vbf.newValueFromJSON(LinksValue.class, cell.v().get().toString()));
-            } else if (columnValue.id().get().equals("href"))
-               prototype.href().set(cell.f().get());
+               prototype.subcases().set( vbf.newValueFromJSON( LinksValue.class, cell.v().get().toString() ) );
+            } else if (columnValue.id().get().equals( "href" ))
+               prototype.href().set( cell.f().get() );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }
@@ -173,17 +201,17 @@ public class CasesTableModel extends Observable
 
    public EventList<LinkValue> getPossibleLabels()
    {
-      LinksValue labels = client.query("possiblelabels",
-              LinksValue.class);
+      LinksValue labels = client.query( "possiblelabels",
+            LinksValue.class );
       possibleLabels.clear();
       possibleLabels.addAll(labels.links().get());
-      return new UniqueList<LinkValue>(possibleLabels, new LinkComparator());
+      return new UniqueList<LinkValue>( possibleLabels, new LinkComparator() );
    }
 
    public BasicEventList<LinkValue> getPossibleCaseTypes()
    {
-      LinksValue caseTypes = client.query("possiblecasetypes",
-              LinksValue.class);
+      LinksValue caseTypes = client.query( "possiblecasetypes",
+            LinksValue.class );
       possibleCaseTypes.clear();
       possibleCaseTypes.addAll(caseTypes.links().get());
       return possibleCaseTypes;
@@ -191,8 +219,8 @@ public class CasesTableModel extends Observable
 
    public BasicEventList<LinkValue> getPossibleAssignees()
    {
-      LinksValue assignees = client.query("possibleassignees",
-              LinksValue.class);
+      LinksValue assignees = client.query( "possibleassignees",
+            LinksValue.class );
       possibleAssignees.clear();
       possibleAssignees.addAll(assignees.links().get());
       return possibleAssignees;
@@ -200,17 +228,17 @@ public class CasesTableModel extends Observable
 
    public BasicEventList<LinkValue> getPossibleProjects()
    {
-      LinksValue projects = client.query("possibleprojects",
-              LinksValue.class);
+      LinksValue projects = client.query( "possibleprojects",
+            LinksValue.class );
       possibleProjects.clear();
-      possibleProjects.addAll((Collection) projects.links().get());
+      possibleProjects.addAll((Collection)projects.links().get());
       return possibleProjects;
    }
 
    public BasicEventList<LinkValue> getPossibleCreatedBy()
    {
-      LinksValue createdby = client.query("possiblecreatedby",
-              LinksValue.class);
+      LinksValue createdby = client.query( "possiblecreatedby",
+            LinksValue.class );
       possibleCreatedBy.clear();
       possibleCreatedBy.addAll(createdby.links().get());
       return possibleCreatedBy;
@@ -223,7 +251,7 @@ public class CasesTableModel extends Observable
 
    public List<String> getSelectedCaseTypes()
    {
-      return selectedDescriptions(selectedCaseTypeIds, possibleCaseTypes);
+      return selectedDescriptions( selectedCaseTypeIds, possibleCaseTypes );
    }
 
    public List<String> getSelectedCaseTypeIds()
@@ -233,7 +261,7 @@ public class CasesTableModel extends Observable
 
    public List<String> getSelectedLabels()
    {
-      return selectedDescriptions(selectedLabelIds, possibleLabels);
+      return selectedDescriptions( selectedLabelIds, possibleLabels );
    }
 
    public List<String> getSelectedLabelIds()
@@ -243,7 +271,7 @@ public class CasesTableModel extends Observable
 
    public List<String> getSelectedAssignees()
    {
-      return selectedDescriptions(selectedAssigneeIds, possibleAssignees);
+      return selectedDescriptions( selectedAssigneeIds, possibleAssignees );
    }
 
    public List<String> getSelectedAssigneeIds()
@@ -253,7 +281,7 @@ public class CasesTableModel extends Observable
 
    public List<String> getSelectedProjects()
    {
-      return selectedDescriptions(selectedProjectIds, possibleProjects);
+      return selectedDescriptions( selectedProjectIds, possibleProjects );
    }
 
    public List<String> getSelectedProjectIds()
@@ -263,7 +291,7 @@ public class CasesTableModel extends Observable
 
    public List<String> getSelectedCreatedBy()
    {
-      return selectedDescriptions(selectedCreatedByIds, possibleCreatedBy);
+      return selectedDescriptions( selectedCreatedByIds, possibleCreatedBy );
    }
 
    public List<String> getSelectedCreatedByIds()
@@ -276,7 +304,7 @@ public class CasesTableModel extends Observable
       return groupBy;
    }
 
-   public void setGroupBy(GroupBy groupBy)
+   public void setGroupBy( GroupBy groupBy )
    {
       this.groupBy = groupBy;
    }
@@ -286,7 +314,7 @@ public class CasesTableModel extends Observable
       return sortBy;
    }
 
-   public void setSortBy(SortBy sortBy)
+   public void setSortBy( SortBy sortBy )
    {
       this.sortBy = sortBy;
    }
@@ -296,7 +324,7 @@ public class CasesTableModel extends Observable
       return sortOrder;
    }
 
-   public void setSortOrder(SortOrder sortOrder)
+   public void setSortOrder( SortOrder sortOrder )
    {
       this.sortOrder = sortOrder;
    }
@@ -415,7 +443,7 @@ public class CasesTableModel extends Observable
             filter += comma + caseType;
             comma = ",";
          }
-         filter += "\"";
+         filter +=  "\"";
       }
 
       if (!selectedLabelIds.isEmpty())
@@ -427,7 +455,7 @@ public class CasesTableModel extends Observable
             filter += comma + label;
             comma = ",";
          }
-         filter += "\"";
+         filter +=  "\"";
       }
 
       if (!selectedAssigneeIds.isEmpty())
@@ -439,7 +467,7 @@ public class CasesTableModel extends Observable
             filter += comma + assignee;
             comma = ",";
          }
-         filter += "\"";
+         filter +=  "\"";
       }
 
       if (!selectedProjectIds.isEmpty())
@@ -451,7 +479,7 @@ public class CasesTableModel extends Observable
             filter += comma + project;
             comma = ",";
          }
-         filter += "\"";
+         filter +=  "\"";
       }
 
       if (!selectedCreatedByIds.isEmpty())
@@ -463,7 +491,7 @@ public class CasesTableModel extends Observable
             filter += comma + createdBy;
             comma = ",";
          }
-         filter += "\"";
+         filter +=  "\"";
       }
 
       if ( !Period.none.equals( createdOnModel.getPeriod() ) )
@@ -478,15 +506,15 @@ public class CasesTableModel extends Observable
       return filter;
    }
 
-   private List<String> selectedDescriptions(List<String> selected, List<LinkValue> baseList)
+   private List<String> selectedDescriptions( List<String> selected, List<LinkValue> baseList )
    {
       List<String> descriptions = new ArrayList<String>();
-      for (String id : selected)
+      for(String id : selected )
       {
-         for (LinkValue link : baseList)
+         for( LinkValue link : baseList )
          {
-            if (link.id().get().equals(id))
-               descriptions.add(link.text().get());
+            if( link.id().get().equals( id ))
+               descriptions.add( link.text().get() );
          }
       }
       return descriptions;
