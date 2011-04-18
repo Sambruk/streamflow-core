@@ -17,18 +17,24 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.hamcrest.*;
-import org.junit.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.util.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.application.security.*;
-import se.streamsource.streamflow.web.context.*;
-import se.streamsource.streamflow.web.context.administration.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import java.io.IOException;
 
-import java.io.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Test;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.util.Iterables;
+
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 /**
  * JAVADOC

@@ -17,21 +17,34 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.hamcrest.*;
-import org.junit.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.context.*;
-import se.streamsource.streamflow.web.context.administration.*;
-import se.streamsource.streamflow.web.context.administration.labels.*;
-import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import static org.qi4j.api.util.Iterables.count;
 
-import java.io.*;
+import java.io.IOException;
 
-import static org.qi4j.api.util.Iterables.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
+import se.streamsource.streamflow.web.context.administration.ProjectsContext;
+import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
+import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
+import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.EmailAccessPointAdministrationContext;
+import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.EmailAccessPointsAdministrationContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 /**
  * JAVADOC
