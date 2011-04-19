@@ -247,8 +247,7 @@ public class CasesDetailView
             } else if (matches(withUsecases( "createsubcase" ), transactions ))
             {
                // Do nothing
-            } // only clear detail if it is not a draft
-            
+            }
             // clear detail if status changed from draft to open and it's not a subcase
             else if (matches( withUsecases( "open" ), transactions ) && currentMainCase.getReference().equals(currentCase))
             {
