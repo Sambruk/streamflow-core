@@ -20,6 +20,7 @@ package se.streamsource.streamflow.api.assembler;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
@@ -85,6 +86,7 @@ public class ClientAPIAssembler
 {
    public void assemble(ModuleAssembly module) throws AssemblyException
    {
+      new ValueAssembler().assemble( module );
       workspace(module);
       overview(module);
       administration(module);
