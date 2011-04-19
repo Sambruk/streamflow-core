@@ -599,8 +599,9 @@ public interface
 
          private String escapeLuceneCharacters( String query )
          {
+            // DO NOT escape wildcard characters!!  "*", "?"
             List<String> specialChars =
-                  Arrays.asList( "+", "-", "&&", "||", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":" );
+                  Arrays.asList( "+", "-", "&&", "||", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", ":" );
 
             for ( String str : specialChars )
             {
