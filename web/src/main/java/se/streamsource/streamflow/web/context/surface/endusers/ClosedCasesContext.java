@@ -50,6 +50,9 @@ public class ClosedCasesContext
       if (tableQuery.limit() != null)
          query.maxResults(Integer.parseInt(tableQuery.limit()));
 
+      // TODO Sort by description, caseid, lastupdated, lastmessage
+
+
       return query;
    }
 }

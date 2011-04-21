@@ -17,81 +17,213 @@
 
 package se.streamsource.dci.value.table;
 
-import org.qi4j.api.value.*;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JAVADOC
  */
-public class TableBuilder<T extends TableBuilder>
+public class TableBuilder
 {
    protected ValueBuilderFactory vbf;
+   private Map<String, TableBuilderFactory.Column> columns;
+   private TableQuery tableQuery;
 
    protected ValueBuilder<TableValue> tableBuilder;
 
    protected ValueBuilder<RowValue> rowBuilder;
 
-   public TableBuilder( ValueBuilderFactory vbf )
+   public TableBuilder(ValueBuilderFactory vbf)
    {
       this.vbf = vbf;
 
-      tableBuilder = vbf.newValueBuilder( TableValue.class );
+      tableBuilder = vbf.newValueBuilder(TableValue.class);
    }
 
-   public T selectedColumns(String selectClause, String[][] columnDescriptions)
+   public TableBuilder(ValueBuilderFactory vbf, Map<String, TableBuilderFactory.Column> columns, TableQuery tableQuery)
    {
-      if (selectClause.equals("*"))
+      this.vbf = vbf;
+      this.columns = columns;
+      this.tableQuery = tableQuery;
+
+      tableBuilder = vbf.newValueBuilder(TableValue.class);
+
+      if (tableQuery.select().equals("*"))
       {
-         for (String[] column : columnDescriptions)
+         for (TableBuilderFactory.Column column : columns.values())
          {
-            column(column[0], column[1], column[2]);
+            column(column.getId(), column.getLabel(), column.getType());
          }
       } else
       {
-         for (String columnName : selectClause.split("[, ]"))
+         for (String columnName : tableQuery.select().split("[, ]"))
          {
-            for (String[] column : columnDescriptions)
-            {
-               if (column[0].equals(columnName))
-                  column(column[0], column[1], column[2]);
-            }
+            TableBuilderFactory.Column column = columns.get(columnName.trim());
+            if (column != null)
+               column(column.getId(), column.getLabel(), column.getType());
          }
       }
-      return (T) this;
    }
 
-   public T column(String id, String label, String type)
+   public TableBuilder column(String id, String label, String type)
    {
-      ValueBuilder<ColumnValue> builder = vbf.newValueBuilder( ColumnValue.class );
-      builder.prototype().id().set( id );
-      builder.prototype().label().set( label );
-      builder.prototype().columnType().set( type );
-      tableBuilder.prototype().cols().get().add( builder.newInstance() );
-      return (T) this;
+      ValueBuilder<ColumnValue> builder = vbf.newValueBuilder(ColumnValue.class);
+      builder.prototype().id().set(id);
+
+      if (tableQuery != null && tableQuery.label() != null)
+      {
+         // TODO Fix label selection
+      }
+
+      builder.prototype().label().set(label);
+      builder.prototype().columnType().set(type);
+      tableBuilder.prototype().cols().get().add(builder.newInstance());
+      return this;
    }
 
-   public T row()
+   public TableBuilder rows(Iterable<?> rowObjects)
+   {
+      boolean no_format = false;
+      boolean no_values = false;
+      if (tableQuery != null && tableQuery.options() != null)
+      {
+         if (tableQuery.options().contains("no_format"))
+            no_format = true;
+         if (tableQuery != null && tableQuery.options().contains("no_values"))
+            no_values = true;
+      }
+
+      for (Object rowObject : rowObjects)
+      {
+         row();
+         for (ColumnValue columnValue : tableBuilder.prototype().cols().get())
+         {
+            Object v = null;
+            String f = null;
+            Function valueFunction = columns.get(columnValue.id().get()).getValueFunction();
+            if (!no_values && valueFunction != null)
+               v = valueFunction.map(rowObject);
+            Function formattedFunction = columns.get(columnValue.id().get()).getFormattedFunction();
+            if (!no_format && formattedFunction != null)
+               f = (String) formattedFunction.map(rowObject);
+            else if (v != null)
+            {
+               if (columnValue.columnType().get().equals(TableValue.DATETIME))
+                  f = DateFunctions.toUtcString((Date) v);
+               else if (columnValue.columnType().get().equals(TableValue.DATE))
+                  f = new SimpleDateFormat( "yyyy-MM-dd").format((Date) v);
+               else if (columnValue.columnType().get().equals(TableValue.TIME_OF_DAY))
+                  f = new SimpleDateFormat( "HH:mm:ss").format((Date) v);
+               else
+                  f = v.toString();
+            }
+
+            cell(v, f);
+         }
+         endRow();
+      }
+
+      return this;
+   }
+
+   public TableBuilder row()
    {
       if (rowBuilder != null)
          endRow();
 
-      rowBuilder = vbf.newValueBuilder( RowValue.class );
-      return (T)this;
+      rowBuilder = vbf.newValueBuilder(RowValue.class);
+      return this;
    }
 
-   public T endRow()
+   public TableBuilder endRow()
    {
-      tableBuilder.prototype().rows().get().add( rowBuilder.newInstance() );
+      tableBuilder.prototype().rows().get().add(rowBuilder.newInstance());
       rowBuilder = null;
-      return (T)this;
+      return this;
    }
 
-   public T cell(Object v, String f)
+   public TableBuilder cell(Object v, String f)
    {
-      ValueBuilder<CellValue> cellBuilder = vbf.newValueBuilder( CellValue.class );
-      cellBuilder.prototype().v().set( v );
-      cellBuilder.prototype().f().set( f );
-      rowBuilder.prototype().c().get().add( cellBuilder.newInstance() );
-      return (T)this;
+      ValueBuilder<CellValue> cellBuilder = vbf.newValueBuilder(CellValue.class);
+      cellBuilder.prototype().v().set(v);
+      cellBuilder.prototype().f().set(f);
+      rowBuilder.prototype().c().get().add(cellBuilder.newInstance());
+      return this;
+   }
+
+   public TableBuilder orderBy()
+   {
+      if (tableQuery.orderBy() != null)
+      {
+         // Sort table
+         // Find sort column index
+         int sortIndex = -1;
+         List<ColumnValue> columnValues = tableBuilder.prototype().cols().get();
+         for (int i = 0; i < columnValues.size(); i++)
+         {
+            ColumnValue columnValue = columnValues.get(i);
+            if (columnValue.id().equals(tableQuery.orderBy()))
+            {
+               sortIndex = i;
+               break;
+            }
+
+         }
+
+         if (sortIndex != -1)
+         {
+            final int idx = sortIndex;
+            Comparator<RowValue> comparator = new Comparator<RowValue>()
+            {
+               public int compare(RowValue o1, RowValue o2)
+               {
+                  Object o = o1.c().get().get(idx).v().get();
+
+                  if (o != null && o instanceof Comparable)
+                  {
+                     Comparable c1 = (Comparable) o;
+                     Comparable c2 = (Comparable) o2.c().get().get(idx).v().get();
+                     return c1.compareTo(c2);
+                  } else
+                  {
+                     String f1 = o1.c().get().get(idx).f().get();
+                     String f2 = o2.c().get().get(idx).f().get();
+                     return f1.compareTo(f2);
+                  }
+               }
+            };
+
+            Collections.sort(tableBuilder.prototype().rows().get(), comparator);
+         }
+      }
+
+      return this;
+   }
+
+   public TableBuilder paging()
+   {
+      // Paging
+      int start = 0;
+      int end = tableBuilder.prototype().rows().get().size();
+      if (tableQuery.offset() != null)
+         start = Integer.parseInt(tableQuery.offset());
+      if (tableQuery.limit() != null)
+         end = Math.min(end, start + Integer.parseInt(tableQuery.limit()));
+
+      if (!(start == 0 && end == tableBuilder.prototype().rows().get().size()))
+         tableBuilder.prototype().rows().set(tableBuilder.prototype().rows().get().subList(start, end));
+
+      return this;
+
    }
 
    public TableValue newTable()

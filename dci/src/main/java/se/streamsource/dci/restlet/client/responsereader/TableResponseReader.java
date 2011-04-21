@@ -27,6 +27,9 @@ import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.table.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 /**
  * JAVADOC
  */
@@ -67,8 +70,24 @@ public class TableResponseReader
                   Object value = cell.opt( "v" );
                   String formatted = cell.optString("f");
 
-                  if (cols.getJSONObject( j ).getString( "type" ).equals("date") && value != null)
+                  if (cols.getJSONObject( j ).getString( "type" ).equals("datetime") && value != null)
                      value = DateFunctions.fromString( value.toString() );
+                  else if (cols.getJSONObject( j ).getString( "type" ).equals("date") && value != null)
+                     try
+                     {
+                        value = new SimpleDateFormat( "yyyy-MM-dd").parse( value.toString() );
+                     } catch (ParseException e)
+                     {
+                        throw new ResourceException(e);
+                     }
+                  else if (cols.getJSONObject( j ).getString( "type" ).equals("timeofday") && value != null)
+                     try
+                     {
+                        value = new SimpleDateFormat( "HH:mm:ss").parse( value.toString() );
+                     } catch (ParseException e)
+                     {
+                        throw new ResourceException(e);
+                     }
 
                   builder.cell( value, formatted );
                }

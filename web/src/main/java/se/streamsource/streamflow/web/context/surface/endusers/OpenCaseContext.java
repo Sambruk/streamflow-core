@@ -21,11 +21,13 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Function;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -62,43 +64,9 @@ public class OpenCaseContext
       return builder.newInstance();
    }
 
-   public TableValue history(TableQuery tq)
+   public Iterable<Message> history(TableQuery tq)
    {
-      String select = "*".equals(tq.select().trim()) ? "sender,message,created" : tq.select();
-      String[] columns = select.split("[, ]");
-
       Messages.Data messages = (Messages.Data) RoleMap.role(History.class).getHistory();
-      Query<Message> query = module.queryBuilderFactory().newQueryBuilder(Message.class).newQuery(messages.messages());
-      if (tq.offset() != null)
-         query.firstResult(Integer.parseInt(tq.offset()));
-      if (tq.limit() != null)
-         query.maxResults(Integer.parseInt(tq.limit()));
-
-      TableBuilder table = new TableBuilder(module.valueBuilderFactory());
-      for (String column : columns)
-      {
-         if (column.equals("created"))
-            table.column("created","Created", "date");
-         else
-            table.column(column, Strings.humanReadable(column), "string");
-      }
-
-      for (Message message : query)
-      {
-         Message.Data data = (Message.Data) message;
-         table.row();
-         for (String column : columns)
-         {
-            if (column.equals("sender"))
-               table.cell(data.sender().get().getDescription(), data.sender().get().getDescription());
-            else if (column.equals("message"))
-               table.cell(data.body().get(), data.body().get());
-            else if (column.equals("created"))
-               table.cell(data.createdOn().get(), DateFunctions.toUtcString(data.createdOn().get()));
-         }
-         table.endRow();
-      }
-
-      return table.newTable();
+      return messages.messages();
    }
 }

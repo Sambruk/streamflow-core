@@ -32,6 +32,7 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
@@ -49,7 +50,12 @@ import se.streamsource.streamflow.web.domain.structure.caze.*;
 import se.streamsource.streamflow.web.domain.structure.created.*;
 import se.streamsource.streamflow.web.domain.structure.label.*;
 
+import javax.print.DocFlavor;
 import java.util.*;
+
+import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
+import static se.streamsource.dci.value.table.TableValue.DATETIME;
+import static se.streamsource.dci.value.table.TableValue.STRING;
 
 /**
  * JAVADOC
@@ -190,10 +196,180 @@ public class StreamflowResultConverter
       return builder.newInstance();
    }
 
-   private TableValue caseTable(Iterable<CaseEntity> cases, Module module, Request request, Object[] arguments)
+   private TableValue caseTable(Iterable<CaseEntity> cases, final Module module, final Request request, Object[] arguments)
    {
       TableQuery query = (TableQuery) arguments[0];
-      TableBuilder table = new TableBuilder(module.valueBuilderFactory());
+
+      TableBuilderFactory tbf = new TableBuilderFactory(module.valueBuilderFactory());
+
+      return tbf.column("description", "Description", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.getDescription();
+         }
+      }).
+      column("created", "Created", DATETIME, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.createdOn().get();
+         }
+      }).
+      column("creator", "Creator", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return ((Describable)caseEntity.createdBy().get()).getDescription();
+         }
+      }).
+      column("due", "Due on", DATETIME, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.dueOn().get();
+         }
+      }).
+      column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.caseId().get();
+         }
+      }).
+      column("href", "Location", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return request.getResourceRef().getBaseRef().getPath() + "/workspace/cases/" + caseEntity.identity().get() + "/";
+         }
+      }).
+      column("owner", "Owner", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.owner().get();
+         }
+      }, new Function<CaseEntity, String>()
+      {
+         public String map(CaseEntity caseEntity)
+         {
+            Owner owner = caseEntity.owner().get();
+            return owner == null ? null : ((Describable) owner).getDescription();
+         }
+      }).
+      column("status", "Status", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.status().get().name();
+         }
+      }).
+      column("casetype", "Case type", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            CaseType caseType = caseEntity.caseType().get();
+            return caseType == null ? null : caseType.getDescription();
+         }
+      }).
+      column("resolution", "Resolution", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            Resolution resolution = caseEntity.resolution().get();
+            return resolution == null ? null : resolution.getDescription();
+         }
+      }).
+      column("assigned", "Assigned", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            Assignee assignee = caseEntity.assignedTo().get();
+            return assignee == null ? null : ((Describable) assignee).getDescription();
+         }
+      }).
+      column("hascontacts", "Has contacts", BOOLEAN, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.hasContacts();
+         }
+      }).
+      column("hasconversations", "Has conversations", BOOLEAN, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.hasConversations();
+         }
+      }).
+      column("hasattachments", "Has attachments", BOOLEAN, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.hasAttachments();
+         }
+      }).
+      column("hassubmittedforms", "Has submitted forms", BOOLEAN, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            return caseEntity.hasSubmittedForms();
+         }
+      }).
+      column("labels", "Labels", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).command("delete");
+            for (Label label : caseEntity.labels())
+            {
+               labelsBuilder.addDescribable(label);
+            }
+            LinksValue linksValue = labelsBuilder.newLinks();
+            return linksValue;
+         }
+      }).
+      column("subcases", "Subcases", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            LinksBuilder subcasesBuilder = new LinksBuilder(module.valueBuilderFactory());
+            subcasesBuilder.path("..");
+            try
+            {
+               for (Case subCase : caseEntity.subCases())
+               {
+                  subcasesBuilder.classes(((Status.Data) subCase).status().get().name());
+                  subcasesBuilder.addDescribable(subCase);
+               }
+            } catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+            LinksValue linksValue = subcasesBuilder.newLinks();
+            return linksValue;
+         }
+      }).
+      column("parent", "Parent case", STRING, new Function<CaseEntity, Object>()
+      {
+         public Object map(CaseEntity caseEntity)
+         {
+            Case parentCase = caseEntity.parent().get();
+            if (parentCase != null)
+            {
+               ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
+               linkBuilder.prototype().id().set(parentCase.toString());
+               linkBuilder.prototype().rel().set("parent");
+               linkBuilder.prototype().href().set("../" + parentCase.toString() + "/");
+               linkBuilder.prototype().text().set(((CaseId.Data) parentCase).caseId().get());
+               return linkBuilder.newInstance();
+            } else
+               return null;
+         }
+      }).newInstance(query).rows(cases).newTable();
+
+/*      TableBuilder table = new TableBuilder(module.valueBuilderFactory(), columns, tableQuery);
 
       String select = "*".equals(query.select().trim()) ? "description,created,creator,due,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
       String[] columns = select.split("[, ]");
@@ -233,11 +409,11 @@ public class StreamflowResultConverter
                   table.cell(caseEntity.createdOn().get(), DateFunctions.toUtcString(caseEntity.createdOn().get()));
                else if (column.equals("due"))
                {
-                  Date dueDate = caseEntity.dueOn().get();
+                  Date dueDate = ;
                   table.cell(dueDate, dueDate == null ? null : DateFunctions.toUtcString(dueDate));
                } else if (column.equals("creator"))
                {
-                  Creator v = caseEntity.createdBy().get();
+                  Creator v = ;
                   table.cell(v, v == null ? "" : ((Describable) v).getDescription());
                } else if (column.equals("caseid"))
                {
@@ -248,7 +424,7 @@ public class StreamflowResultConverter
                   table.cell(href, href);
                } else if (column.equals("owner"))
                {
-                  Owner owner = caseEntity.owner().get();
+                  Owner owner = ;
                   table.cell(owner, owner == null ? null : ((Describable) owner).getDescription());
                } else if (column.equals("status"))
                {
@@ -331,6 +507,6 @@ public class StreamflowResultConverter
          }
       }
 
-      return table.newTable();
+      return table.newTable();*/
    }
 }

@@ -328,6 +328,7 @@ public class ContextAssembler
               OpenCasesContext.class,
               OpenCaseContext.class,
               ClosedCasesResource.class,
+              ClosedCaseResource.class,
               ClosedCasesContext.class,
               ClosedCaseContext.class,
               EndUserResource.class,
