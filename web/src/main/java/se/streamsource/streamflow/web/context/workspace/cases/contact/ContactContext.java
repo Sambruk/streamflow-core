@@ -149,7 +149,7 @@ public class ContactContext
          builder.prototype().addresses().get().add( address );
       } else
       {
-         builder.prototype().addresses().get().get( 0 ).address().set( addressDTO.address().get() );
+         builder.prototype().addresses().get().set( 0, addressDTO );
       }
 
       contacts.updateContact( index, builder.newInstance() );

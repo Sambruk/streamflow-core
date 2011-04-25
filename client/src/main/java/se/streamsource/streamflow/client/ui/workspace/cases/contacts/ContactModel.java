@@ -103,9 +103,32 @@ public class ContactModel
 
    public void changeAddress( String newAddress ) throws ResourceException
    {
-      ValueBuilder<ContactAddressDTO> builder = vbf.newValueBuilder( ContactAddressDTO.class );
-      builder.prototype().address().set( newAddress );
-      client.putCommand( "changeaddress", builder.newInstance() );
+      getAddress().address().set( newAddress );
+      client.putCommand( "changeaddress", getAddress() );
+   }
+
+   public void changeZipCode(String newZipCode)
+   {
+      getAddress().zipCode().set( newZipCode );
+      client.putCommand( "changeaddress", getAddress() );
+   }
+
+   public void changeCity(String newCity)
+   {
+      getAddress().city().set( newCity );
+      client.putCommand( "changeaddress", getAddress() );
+   }
+
+   public void changeRegion(String newRegion)
+   {
+      getAddress().region().set( newRegion );
+      client.putCommand( "changeaddress", getAddress() );
+   }
+
+   public void changeCountry(String newCountry)
+   {
+      getAddress().country().set( newCountry );
+      client.putCommand( "changeaddress", getAddress() );
    }
 
    public void changeEmailAddress( String newEmailAddress ) throws ResourceException
