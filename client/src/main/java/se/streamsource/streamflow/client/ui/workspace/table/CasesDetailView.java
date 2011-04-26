@@ -216,7 +216,8 @@ public class CasesDetailView
          if( !rowFound )
          {
             WorkspaceView workspace = (WorkspaceView)SwingUtilities.getAncestorOfClass( WorkspaceView.class, this );
-            if( !workspace.getWorkspaceContext().showContext( this.model ) )
+            // if overview - always close detail on changes
+            if( workspace == null || !workspace.getWorkspaceContext().showContext( this.model ) )
                clear();
          }
       }

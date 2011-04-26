@@ -98,7 +98,8 @@ public class WorkspaceContextView
    {
       boolean result = false;
       // do not switch context on searches
-      if( ((ContextItem)contextList.getSelectedValue()).getRelation().equals( "search" ) )
+      if( contextList.getSelectedValue() != null &&
+            ((ContextItem)contextList.getSelectedValue()).getRelation().equals( "search" ) )
          return result;
       CaseDTO caze = caseModel.getIndex();
       for (ContextItem contextItem : contextModel.getItems())
