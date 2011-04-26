@@ -17,46 +17,86 @@
 
 package se.streamsource.streamflow.web.context.overview;
 
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.table.TableBuilderFactory;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Locale;
 
 /**
  * JAVADOC
  */
 public class OverviewContext
-      implements IndexContext<LinksValue>
 {
-   public LinksValue index()
-   {
-      OverviewQueries queries = RoleMap.role( OverviewQueries.class );
+   @Structure
+   ValueBuilderFactory vbf;
 
-      return queries.getProjectsSummary();
+   public TableValue index(TableQuery tq)
+   {
+      OverviewQueries queries = RoleMap.role(OverviewQueries.class);
+
+      return new TableBuilderFactory(vbf).
+            column("description", "Description", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.description().get();
+               }
+            }).
+            column("href", "Location", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.identity().get()+"/";
+               }
+            }).
+            column("inbox", "Inbox count", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.inboxCount().get();
+               }
+            }).
+            column("assignments", "Assignment count", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.assignedCount().get();
+               }
+            }).
+            newInstance(tq).rows(queries.getProjectsSummary()).orderBy().paging().newTable();
    }
 
    public OutputRepresentation generateexcelprojectsummary() throws IOException
    {
-      Locale locale = RoleMap.role( Locale.class );
+      Locale locale = RoleMap.role(Locale.class);
 
       final Workbook workbook = new HSSFWorkbook();
 
-      OverviewQueries queries = RoleMap.role( OverviewQueries.class );
+      OverviewQueries queries = RoleMap.role(OverviewQueries.class);
 
-      queries.generateExcelProjectSummary( locale, workbook );
+      queries.generateExcelProjectSummary(locale, workbook);
 
-      OutputRepresentation representation = new OutputRepresentation( MediaType.APPLICATION_EXCEL )
+      OutputRepresentation representation = new OutputRepresentation(MediaType.APPLICATION_EXCEL)
       {
          @Override
-         public void write( OutputStream outputStream ) throws IOException
+         public void write(OutputStream outputStream) throws IOException
          {
-            workbook.write( outputStream );
+            workbook.write(outputStream);
          }
       };
 

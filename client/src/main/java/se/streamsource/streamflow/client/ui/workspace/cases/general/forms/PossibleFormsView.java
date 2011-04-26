@@ -145,16 +145,19 @@ public class PossibleFormsView extends JPanel
             {
                // Force focus move before submit
                Component focusOwner = WindowUtils.findWindow( wizardPages[ wizardPages.length - 1 ]  ).getFocusOwner();
-               focusOwner.transferFocus();
-
-               new CommandTask()
+               if (focusOwner != null)
                {
-                  @Override
-                  protected void command() throws Exception
+                  focusOwner.transferFocus();
+
+                  new CommandTask()
                   {
-                     formDraftClient.putCommand( "submit" );
-                  }
-               }.execute();
+                     @Override
+                     protected void command() throws Exception
+                     {
+                        formDraftClient.putCommand( "submit" );
+                     }
+                  }.execute();
+               }
                return null;
             }
 

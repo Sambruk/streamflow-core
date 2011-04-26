@@ -86,7 +86,6 @@ public class ClientAPIAssembler
 {
    public void assemble(ModuleAssembly module) throws AssemblyException
    {
-      new ValueAssembler().assemble( module );
       workspace(module);
       overview(module);
       administration(module);

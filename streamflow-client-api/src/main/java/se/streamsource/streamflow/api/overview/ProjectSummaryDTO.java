@@ -19,11 +19,18 @@ package se.streamsource.streamflow.api.overview;
 
 import org.qi4j.api.common.*;
 import org.qi4j.api.property.*;
+import org.qi4j.api.value.ValueComposite;
 import se.streamsource.dci.value.link.*;
 
 public interface ProjectSummaryDTO
-      extends LinkValue
+   extends ValueComposite
 {
+   @UseDefaults
+   Property<String> identity();
+
+   @UseDefaults
+   Property<String> description();
+
    @UseDefaults
    Property<Long> inboxCount();
 

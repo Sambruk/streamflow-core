@@ -23,22 +23,17 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.UserEntityDTO;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import java.util.*;
-
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 @Mixins(UsersQueries.Mixin.class)
 public interface UsersQueries
 {
-   public LinksValue users();
+   public Query<UserEntity> users();
 
    UserEntity getUserByName( String name );
 
@@ -57,31 +52,14 @@ public interface UsersQueries
       @This
       Organizations.Data state;
 
-      public LinksValue users()
+      public Query<UserEntity> users()
       {
          Query<UserEntity> usersQuery = qbf.newQueryBuilder( UserEntity.class ).
                newQuery( uowf.currentUnitOfWork() );
 
          usersQuery.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
-
-         ValueBuilder<LinksValue> listBuilder = vbf.newValueBuilder( LinksValue.class );
-         List<LinkValue> userlist = listBuilder.prototype().links().get();
-
-         ValueBuilder<UserEntityDTO> builder = vbf.newValueBuilder( UserEntityDTO.class );
-
-         for (UserEntity user : usersQuery)
-         {
-            builder.prototype().href().set( user.toString() + "/" );
-            builder.prototype().id().set( user.toString() );
-            builder.prototype().text().set( user.userName().get() );
-            builder.prototype().disabled().set( user.disabled().get() );
-
-            userlist.add( builder.newInstance() );
-         }
-
-         return listBuilder.newInstance();
-
+         return usersQuery;
       }
 
       public UserEntity getUserByName( String name )

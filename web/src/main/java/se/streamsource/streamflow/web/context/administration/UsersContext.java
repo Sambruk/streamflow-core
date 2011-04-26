@@ -25,14 +25,17 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
+import se.streamsource.streamflow.api.administration.UserEntityDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
@@ -54,9 +57,24 @@ public class UsersContext
 
    public LinksValue index()
    {
-      UsersQueries orgs = RoleMap.role( UsersQueries.class );
+      UsersQueries users = RoleMap.role( UsersQueries.class );
 
-      return orgs.users();
+      ValueBuilder<LinksValue> listBuilder = module.valueBuilderFactory().newValueBuilder(LinksValue.class);
+      List<LinkValue> userlist = listBuilder.prototype().links().get();
+
+      ValueBuilder<UserEntityDTO> builder = module.valueBuilderFactory().newValueBuilder(UserEntityDTO.class);
+
+      for (UserEntity user : users.users())
+      {
+         builder.prototype().href().set( user.toString() + "/" );
+         builder.prototype().id().set( user.toString() );
+         builder.prototype().text().set( user.userName().get() );
+         builder.prototype().disabled().set( user.disabled().get() );
+
+         userlist.add( builder.newInstance() );
+      }
+
+      return listBuilder.newInstance();
    }
 
    public void createuser( NewUserDTO DTO)

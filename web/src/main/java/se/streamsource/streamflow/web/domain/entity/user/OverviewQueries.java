@@ -36,11 +36,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
-import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -49,7 +46,10 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -58,7 +58,7 @@ public interface OverviewQueries
 {
    public void generateExcelProjectSummary( Locale locale, Workbook workbook );
 
-   public LinksValue getProjectsSummary();
+   public Iterable<ProjectSummaryDTO> getProjectsSummary();
 
    class Mixin implements OverviewQueries
    {
@@ -77,21 +77,19 @@ public interface OverviewQueries
       @This
       ProjectQueries projects;
 
-      public LinksValue getProjectsSummary()
+      public Iterable<ProjectSummaryDTO> getProjectsSummary()
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         LinksBuilder linksBuilder = new LinksBuilder(vbf);
+         List<ProjectSummaryDTO> projectList = new ArrayList<ProjectSummaryDTO>();
 
          ValueBuilder<ProjectSummaryDTO> summaryBuilder = vbf.newValueBuilder( ProjectSummaryDTO.class );
          ProjectSummaryDTO summaryPrototype = summaryBuilder.prototype();
-         summaryPrototype.rel().set( "project" );
 
          for (Project project : projects.allProjects())
          {
-            summaryPrototype.text().set( project.getDescription() );
-            summaryPrototype.id().set( project.toString() );
-            summaryPrototype.href().set( project.toString()+"/" );
+            summaryPrototype.identity().set(project.toString());
+            summaryPrototype.description().set( project.getDescription() );
 
             Association<Assignee> assigneeAssociation = templateFor( Assignable.Data.class ).assignedTo();
             Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
@@ -113,15 +111,14 @@ public interface OverviewQueries
             summaryPrototype.inboxCount().set( inboxQuery.count() );
             summaryPrototype.assignedCount().set( assignedQuery.count() );
 
-            linksBuilder.addLink( summaryBuilder.newInstance() );
+            projectList.add(summaryBuilder.newInstance());
 
          }
-         return linksBuilder.newLinks();
+         return projectList;
       }
 
       public void generateExcelProjectSummary( Locale locale, Workbook workbook )
       {
-         LinksValue projectsSummary = getProjectsSummary();
          ResourceBundle bundle = ResourceBundle.getBundle(
                OverviewQueries.class.getName(), locale );
          Sheet sheet = createSheet( bundle.getString( "projects_summary" ),
@@ -145,14 +142,14 @@ public interface OverviewQueries
                HSSFCellStyle.VERTICAL_CENTER );
          short rowCounter = 0;
          
-         for (LinkValue summaryValue : projectsSummary.links().get())
+         for (ProjectSummaryDTO summaryValue : getProjectsSummary())
          {
-            ProjectSummaryDTO projectSummaryDTO = (ProjectSummaryDTO) summaryValue;
+            ProjectSummaryDTO projectSummaryDTO = summaryValue;
             Row contentRow = sheet.createRow( ++rowCounter );
             // contentRow.setHeightInPoints(30);
 
             // Project
-            createCell( projectSummaryDTO.text().get(), workbook, contentRow,
+            createCell( projectSummaryDTO.description().get(), workbook, contentRow,
                   (short) 0, HSSFCellStyle.ALIGN_LEFT,
                   HSSFCellStyle.VERTICAL_TOP );
             // Inbox
