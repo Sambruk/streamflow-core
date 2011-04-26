@@ -29,6 +29,7 @@ import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;
 import se.streamsource.streamflow.web.context.administration.UserContext;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
@@ -109,7 +110,7 @@ public class UserContextTest
          RoleMap.newCurrentRoleMap();
          playRole(User.class, "test");
 
-         context( ProfileContext.class).changemessagedeliverytype( stringValue( "none") );
+         context(ProfileContext.class).changemessagedeliverytype(MessageRecipient.MessageDeliveryTypes.none);
          uow.complete();
          eventsOccurred( "changedMessageDeliveryType" );
       }
@@ -119,7 +120,7 @@ public class UserContextTest
          RoleMap.newCurrentRoleMap();
          playRole(User.class, "test");
 
-         context( ProfileContext.class).changemessagedeliverytype( stringValue( "none") );
+         context( ProfileContext.class).changemessagedeliverytype( MessageRecipient.MessageDeliveryTypes.email );
          uow.complete();
          eventsOccurred( );
       }

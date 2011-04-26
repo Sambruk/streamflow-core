@@ -92,7 +92,7 @@ public class OverviewSummaryView extends JPanel
             switch (i)
             {
                case 0:
-                  return o.text().get();
+                  return o.description().get();
                case 1:
                   return o.inboxCount().get();
                case 2:

@@ -18,8 +18,10 @@
 package se.streamsource.dci.value.table;
 
 import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.*;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.*;
 
 import java.util.*;
@@ -27,6 +29,7 @@ import java.util.*;
 /**
  * A table of rows. RowValue needs to be subtyped in order to add columns.
  */
+@Mixins(TableValue.Mixin.class)
 public interface TableValue
       extends ValueComposite
 {
@@ -42,4 +45,25 @@ public interface TableValue
 
    @UseDefaults
    Property<List<RowValue>> rows();
+
+   CellValue cell(RowValue row, String name);
+
+   abstract class Mixin
+      implements TableValue
+   {
+      @State
+      Property<List<ColumnValue>> cols;
+
+      public CellValue cell(RowValue row, String columnName)
+      {
+         for (int i = 0; i < cols.get().size(); i++)
+         {
+            ColumnValue columnValue = cols.get().get(i);
+            if (columnValue.id().get().equals(columnName))
+               return row.c().get().get(i);
+         }
+
+         return null;
+      }
+   }
 }
