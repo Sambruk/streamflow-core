@@ -83,17 +83,20 @@ public class SolrEntityIndexerMixin
             List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
             for (EntityState entityState : entityStates)
             {
-               if (entityState.status().equals( EntityStatus.REMOVED ))
+               if (entityState.entityDescriptor().entityType().queryable())
                {
-                  if (deleted == null)
-                     deleted = new ArrayList<String>();
-                  deleted.add( entityState.identity().identity() );
-               } else if (entityState.status().equals( EntityStatus.UPDATED ))
-               {
-                  added.add( indexEntityState( entityState, server ) );
-               } else if (entityState.status().equals( EntityStatus.NEW ))
-               {
-                  added.add( indexEntityState( entityState, server ) );
+                  if (entityState.status().equals( EntityStatus.REMOVED ))
+                  {
+                     if (deleted == null)
+                        deleted = new ArrayList<String>();
+                     deleted.add( entityState.identity().identity() );
+                  } else if (entityState.status().equals( EntityStatus.UPDATED ))
+                  {
+                     added.add( indexEntityState( entityState, server ) );
+                  } else if (entityState.status().equals( EntityStatus.NEW ))
+                  {
+                     added.add( indexEntityState( entityState, server ) );
+                  }
                }
             }
 
@@ -143,11 +146,11 @@ public class SolrEntityIndexerMixin
                   if (value.charAt( 0 ) == '[')
                   {
                      JSONArray array = new JSONArray( value );
-                     indexJson( input, array );
+                     indexJson( input, array, field.getName() );
                   } else if (value.charAt( 0 ) == '{')
                   {
                      JSONObject object = new JSONObject( value );
-                     indexJson( input, object );
+                     indexJson( input, object, field.getName());
                   }
                } else
                {
@@ -178,14 +181,14 @@ public class SolrEntityIndexerMixin
       return input;
    }
 
-   private void indexJson( SolrInputDocument input, Object object ) throws JSONException
+   private void indexJson(SolrInputDocument input, Object object, String fieldName) throws JSONException
    {
       if (object instanceof JSONArray)
       {
          JSONArray array = (JSONArray) object;
          for (int i = 0; i < array.length(); i++)
-            indexJson( input, array.get( i ) );
-      } else
+            indexJson( input, array.get( i ), fieldName);
+      } else if (object instanceof JSONObject)
       {
          JSONObject jsonObject = (JSONObject) object;
          Iterator keys = jsonObject.keys();
@@ -195,7 +198,7 @@ public class SolrEntityIndexerMixin
             Object value = jsonObject.get( name.toString() );
             if (value instanceof JSONObject || value instanceof JSONArray)
             {
-               indexJson( input, value );
+               indexJson( input, value, fieldName);
             } else
             {
                SchemaField field = indexedFields.get( name.toString() );
@@ -205,6 +208,10 @@ public class SolrEntityIndexerMixin
                }
             }
          }
+      } else
+      {
+         if (object != null)
+            input.addField(fieldName, object.toString());
       }
    }
 }

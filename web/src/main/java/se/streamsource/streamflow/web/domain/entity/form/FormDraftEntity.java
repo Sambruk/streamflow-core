@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
+import org.qi4j.api.entity.Queryable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -25,6 +26,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 /**
  * JAVADOC
  */
+@Queryable(false)
 public interface FormDraftEntity
       extends
       FormAttachments,
