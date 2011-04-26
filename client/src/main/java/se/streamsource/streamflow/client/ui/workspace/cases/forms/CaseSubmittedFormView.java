@@ -69,9 +69,9 @@ public class CaseSubmittedFormView
       final DefaultFormBuilder builder = builder( panel() );
       SubmittedFormDTO form = model.getForm();
 
-      JLabel title = new JLabel( form.form().get() + ": (" + form.submitter().get() +
+      JLabel title = new JLabel( form.form().get() + " (" + form.submitter().get() +
             ", " + DateTimeFormat.forPattern(text(date_time_format)).print( new DateTime( form.submissionDate().get()) ) +
-            ")");
+            "):");
       //title.setFont( title.getFont().deriveFont( Font. ))
 
       builder.append( title );
@@ -81,18 +81,12 @@ public class CaseSubmittedFormView
       {
          public void iterate( SubmittedPageDTO page )
          {
-            JLabel label = new JLabel( page.name().get(), SwingConstants.LEFT );
-            label.setFont( label.getFont().deriveFont( Font.ITALIC + Font.BOLD ) );
-            label.setBackground( Color.LIGHT_GRAY );
-            label.setOpaque( true );
-
-            builder.append( label );
-            builder.nextLine();
+            builder.appendSeparator(page.name().get());
 
             for (FieldDTO field : page.fields().get())
             {
-               label = new JLabel( field.field().get(), SwingConstants.LEFT );
-               label.setFont( label.getFont().deriveFont( Font.BOLD ) );
+               JLabel label = new JLabel( field.field().get()+":", SwingConstants.LEFT );
+               label.setForeground(Color.gray);
                JComponent component = getComponent( field.value().get(), field.fieldType().get() );
 
                builder.append( label );

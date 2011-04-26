@@ -501,6 +501,8 @@ any data added to them will be ignored outright.  -->
 
         <field name="createdBy" type="string" indexed="true" stored="true"/>
 
+        <field name="searchableFormValues" type="json" indexed="true" stored="true" multiValued="true"/>
+
         <!--
         <field name="sku" type="textTight" indexed="true" stored="true" omitNorms="true"/>
         <field name="name" type="textgen" indexed="true" stored="true"/>
@@ -617,6 +619,7 @@ or to add multiple fields to the same field for easier/faster searching.  -->
     <copyField source="description" dest="ntext"/>
     <copyField source="note" dest="text"/>
     <copyField source="caseId" dest="text"/>
+    <copyField source="searchableFormValues" dest="text"/>
 
     <!-- Copy contact info to text -->
     <copyField source="name" dest="text"/>

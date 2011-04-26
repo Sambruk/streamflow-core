@@ -52,6 +52,7 @@ public interface Case
         Removable,
       Resolvable,
       SubmittedForms,
+      SearchableForms,
       FormDrafts,
       TypedCase,
       CaseStructure,

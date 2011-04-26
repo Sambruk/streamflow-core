@@ -70,7 +70,6 @@ public abstract class CaseSubmittedFormAbstractView
    public CaseSubmittedFormAbstractView()
    {
       panel = new JPanel();
-      panel.setBackground( Color.WHITE );
       panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
       setViewportView( panel );
 
@@ -106,7 +105,7 @@ public abstract class CaseSubmittedFormAbstractView
       } else {
          component = new JLabel( fieldValue );
       }
-      component.setBorder( BorderFactory.createEtchedBorder() );
+//      component.setBorder( BorderFactory.createEtchedBorder() );
       return component;
    }
 

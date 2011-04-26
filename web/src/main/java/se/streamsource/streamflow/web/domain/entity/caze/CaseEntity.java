@@ -86,7 +86,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 /**
  * This represents a single Case in the system
  */
-@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class})
+@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
 @Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
@@ -113,6 +113,8 @@ public interface CaseEntity
       Resolvable.Data,
       FormDrafts.Data,
       SubmittedForms.Data,
+      SearchableForms.Data,
+      SearchableForms.Events,
       TypedCase.Data,
       SubCases.Data,
       SubCase.Data,
@@ -341,6 +343,19 @@ public interface CaseEntity
       {
          history.addHistoryComment( "{createdSubCase}", RoleMap.role( ConversationParticipant.class ) );
       }
+   }
 
+   abstract class UpdateSearchableFormsSideEffect
+      extends SideEffectOf<SubmittedForms>
+      implements SubmittedForms
+   {
+      @This SearchableForms searchableForms;
+
+      public void submitForm(FormDraft formSubmission, Submitter submitter)
+      {
+         result.submitForm(formSubmission, submitter);
+
+         searchableForms.updateSearchableFormValues();
+      }
    }
 }
