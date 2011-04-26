@@ -990,19 +990,65 @@ public class CommandQueryResource
 
          // Parameter conversion
          Class<?> parameterType = method.getParameterTypes()[idx];
-         Object arg;
-         if (parameterType.equals(EntityReference.class))
+         Object arg = null;
+         if (parameterType.equals(String.class))
+         {
+            arg = argString;
+         } else if (parameterType.equals(EntityReference.class))
          {
             arg = EntityReference.parseEntityReference(argString);
          } else if (parameterType.isEnum())
          {
             arg = Enum.valueOf((Class<Enum>) parameterType, argString);
-         } else if (Integer.TYPE.isAssignableFrom(parameterType) || Integer.class.isAssignableFrom(parameterType))
+         } else if (Integer.TYPE.isAssignableFrom(parameterType))
          {
             arg = Integer.valueOf(argString);
-         } else if (Boolean.TYPE.isAssignableFrom(parameterType) || Boolean.class.isAssignableFrom(parameterType))
+         } else if (Integer.class.isAssignableFrom(parameterType))
+         {
+            if (argString != null)
+               arg = Integer.valueOf(argString);
+         } else if (Long.TYPE.isAssignableFrom(parameterType))
+         {
+            arg = Long.valueOf(argString);
+         } else if (Long.class.isAssignableFrom(parameterType))
+         {
+            if (argString != null)
+               arg = Long.valueOf(argString);
+         } else if (Short.TYPE.isAssignableFrom(parameterType))
+         {
+            arg = Short.valueOf(argString);
+         } else if (Short.class.isAssignableFrom(parameterType))
+         {
+            if (argString != null)
+               arg = Short.valueOf(argString);
+         } else if (Double.TYPE.isAssignableFrom(parameterType))
+         {
+            arg = Double.valueOf(argString);
+         } else if (Double.class.isAssignableFrom(parameterType))
+         {
+            if (argString != null)
+               arg = Double.valueOf(argString);
+         } else if (Float.TYPE.isAssignableFrom(parameterType))
+         {
+            arg = Float.valueOf(argString);
+         } else if (Float.class.isAssignableFrom(parameterType))
+         {
+            if (argString != null)
+               arg = Float.valueOf(argString);
+         } else if (Character.TYPE.isAssignableFrom(parameterType))
+         {
+            arg = argString.charAt(0);
+         } else if (Character.class.isAssignableFrom(parameterType))
+         {
+            if (argString != null)
+               arg = argString.charAt(0);
+         } else if (Boolean.TYPE.isAssignableFrom(parameterType))
          {
             arg = Boolean.valueOf(argString);
+         } else if (Boolean.class.isAssignableFrom(parameterType))
+         {
+            if (argString != null)
+               arg = Boolean.valueOf(argString);
          } else if (Date.class.isAssignableFrom(parameterType))
          {
             arg = DateFunctions.fromString(argString);
@@ -1010,9 +1056,10 @@ public class CommandQueryResource
          {
             arg = uowf.currentUnitOfWork().get(parameterType, argString);
          } else
-         {
-            arg = argString;
-         }
+            throw new IllegalArgumentException("Don't know how to parse parameter "+name.value()+" of type "+parameterType.getName());
+
+         if (arg == null && !Iterables.matchesAny(isType(Optional.class), iterable(annotations)))
+               throw new IllegalArgumentException("Parameter "+name.value()+" was not set");
 
          args[idx++] = arg;
       }

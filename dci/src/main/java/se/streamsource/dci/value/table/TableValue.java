@@ -18,6 +18,7 @@
 package se.streamsource.dci.value.table;
 
 import org.qi4j.api.common.*;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.*;
 import org.qi4j.api.value.*;
 
@@ -29,6 +30,13 @@ import java.util.*;
 public interface TableValue
       extends ValueComposite
 {
+   public static final String STRING = "string";
+   public static final String NUMBER = "number";
+   public static final String BOOLEAN = "boolean";
+   public static final String DATE = "date";
+   public static final String DATETIME = "datetime";
+   public static final String TIME_OF_DAY = "timeofday";
+
    @UseDefaults
    Property<List<ColumnValue>> cols();
 

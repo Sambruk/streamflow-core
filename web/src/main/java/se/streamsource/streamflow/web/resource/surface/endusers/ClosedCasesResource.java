@@ -17,20 +17,19 @@
 
 package se.streamsource.streamflow.web.resource.surface.endusers;
 
-import org.qi4j.api.query.Query;
-import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Function;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.context.surface.endusers.ClosedCaseContext;
 import se.streamsource.streamflow.web.context.surface.endusers.ClosedCasesContext;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
-import java.util.*;
+import static se.streamsource.dci.value.table.TableValue.DATETIME;
+import static se.streamsource.dci.value.table.TableValue.STRING;
 
 /**
  * TODO
@@ -46,71 +45,82 @@ public class ClosedCasesResource
 
    public void cases() throws Throwable
    {
-      Query<CaseEntity> closedCases = (Query<CaseEntity>) invoke();
+      Iterable<CaseEntity> closedCases = (Iterable<CaseEntity>) invoke();
 
       TableQuery query = (TableQuery) getArguments()[0];
 
-      TableBuilder builder = new TableBuilder(module.valueBuilderFactory());
+      TableBuilderFactory tableBuilderFactory = new TableBuilderFactory(module.valueBuilderFactory());
 
-      String select = query.select();
-      if (select.equals("*"))
-         select = "description,created,closed,caseid,project,resolution,href";
-
-      builder.selectedColumns(select, new String[][]
+      tableBuilderFactory.
+              column("description", "Description", STRING, new Function<CaseEntity, Object>()
               {
-                      {"description", "Description", "string"},
-                      {"created", "Created", "date"},
-                      {"closed", "Closed", "date"},
-                      {"caseid", "Case Id", "string"},
-                      {"project", "Project", "string"},
-                      {"resolution", "Resolution", "string"},
-                      {"href", "Href", "string"},
-              });
+                 public Object map(CaseEntity closedCase)
+                 {
+                    return closedCase.description().get();
+                 }
+              }, null).
+              column("created", "Created", DATETIME, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity closedCase)
+                 {
+                    return closedCase.createdOn().get();
+                 }
+              }, null).
+              column("closed", "Closed", DATETIME, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity closedCase)
+                 {
+                    return closedCase.getHistoryMessage("closed").createdOn().get();
+                 }
+              }, null).
+              column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity closedCase)
+                 {
+                    return closedCase.caseId().get();
+                 }
+              }, null).
+              column("status", "Status", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity closedCase)
+                 {
+                    return closedCase.status().get().name();
+                 }
+              }, null).
+              column("project", "Project", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity closedCase)
+                 {
+                    return ((Describable) closedCase.owner().get()).getDescription();
+                 }
+              }, null).
+              column("resolution", "Resolution", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity closedCase)
+                 {
+                    String resolution = null;
+                    if (closedCase.resolution().get() != null)
+                       resolution = closedCase.resolution().get().getDescription();
+                    return resolution;
+                 }
+              }, null).
+              column("href", "Location", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity closedCase)
+                 {
+                    return closedCase.toString() + "/";
+                 }
+              }, null);
 
-      String[] columns = select.split("[ ,]");
 
-      for (CaseEntity closedCase : closedCases)
-      {
-         Owner owner = closedCase.owner().get();
-         String project = ((Describable) owner).getDescription();
+      TableBuilder builder = tableBuilderFactory.newInstance(query);
 
-         builder.row();
-
-         for (String column : columns)
-         {
-            if (column.equals("description"))
-               builder.cell(closedCase.description().get(), closedCase.description().get());
-            else if (column.equals("created"))
-               builder.cell(closedCase.createdOn().get(), DateFunctions.toUtcString(closedCase.createdOn().get()));
-            else if (column.equals("closed"))
-            {
-               Date closed = closedCase.getHistoryMessage("closed").createdOn().get();
-               builder.cell(closed, DateFunctions.toUtcString(closed));
-            }
-            else if (column.equals("caseid"))
-               builder.cell(closedCase.caseId().get(), closedCase.caseId().get());
-            else if (column.equals("project"))
-               builder.cell(project, project);
-            else if (column.equals("resolution"))
-            {
-               String resolution = null;
-               if (closedCase.resolution().get() != null)
-                  resolution = closedCase.resolution().get().getDescription();
-               builder.cell(resolution, resolution);
-            }
-            else if (column.equals("href"))
-               builder.cell(closedCase.toString() + "/", closedCase.toString() + "/");
-
-         }
-         builder.endRow();
-      }
-      
-      result(builder.newTable());
+      result(builder.rows(closedCases).orderBy().paging().newTable());
    }
 
    public void resource(String segment) throws ResourceException
    {
       setResourceValidity( setRole( CaseEntity.class, segment ) );
-      subResourceContexts(ClosedCaseContext.class);
+      subResource(ClosedCaseResource.class);
    }
 }

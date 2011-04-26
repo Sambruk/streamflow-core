@@ -73,10 +73,13 @@ public class ContactBuilder
    public ContactBuilder address(String address)
    {
       List<ContactAddressDTO> addresses = contactBuilder.prototype().addresses().get();
-      addresses.clear();
-      ValueBuilder<ContactAddressDTO> addressBuilder = vbf.newValueBuilder(ContactAddressDTO.class);
-      addressBuilder.prototype().address().set(address);
-      addresses.add(addressBuilder.newInstance());
+      if (addresses.isEmpty())
+      {
+         ValueBuilder<ContactAddressDTO> addressBuilder = vbf.newValueBuilder(ContactAddressDTO.class);
+         addresses.add(addressBuilder.prototype());
+      }
+
+      addresses.get(0).address().set(address);
 
       return this;
    }
@@ -95,5 +98,73 @@ public class ContactBuilder
    public ContactDTO newInstance()
    {
       return contactBuilder.newInstance();
+   }
+
+   public ContactBuilder contactId(String id)
+   {
+      contactBuilder.prototype().contactId().set(id);
+      return this;
+   }
+
+   public ContactBuilder isCompany(boolean isCompany)
+   {
+      contactBuilder.prototype().isCompany().set(isCompany);
+      return this;
+   }
+
+   public ContactBuilder zipCode(String zip)
+   {
+      List<ContactAddressDTO> addresses = contactBuilder.prototype().addresses().get();
+      if (addresses.isEmpty())
+      {
+         ValueBuilder<ContactAddressDTO> addressBuilder = vbf.newValueBuilder(ContactAddressDTO.class);
+         addresses.add(addressBuilder.prototype());
+      }
+
+      addresses.get(0).zipCode().set(zip);
+
+      return this;
+   }
+
+   public ContactBuilder city(String city)
+   {
+      List<ContactAddressDTO> addresses = contactBuilder.prototype().addresses().get();
+      if (addresses.isEmpty())
+      {
+         ValueBuilder<ContactAddressDTO> addressBuilder = vbf.newValueBuilder(ContactAddressDTO.class);
+         addresses.add(addressBuilder.prototype());
+      }
+
+      addresses.get(0).city().set(city);
+
+      return this;
+   }
+
+   public ContactBuilder region(String region)
+   {
+      List<ContactAddressDTO> addresses = contactBuilder.prototype().addresses().get();
+      if (addresses.isEmpty())
+      {
+         ValueBuilder<ContactAddressDTO> addressBuilder = vbf.newValueBuilder(ContactAddressDTO.class);
+         addresses.add(addressBuilder.prototype());
+      }
+
+      addresses.get(0).region().set(region);
+
+      return this;
+   }
+
+   public ContactBuilder country(String country)
+   {
+      List<ContactAddressDTO> addresses = contactBuilder.prototype().addresses().get();
+      if (addresses.isEmpty())
+      {
+         ValueBuilder<ContactAddressDTO> addressBuilder = vbf.newValueBuilder(ContactAddressDTO.class);
+         addresses.add(addressBuilder.prototype());
+      }
+
+      addresses.get(0).country().set(country);
+
+      return this;
    }
 }

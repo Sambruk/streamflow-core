@@ -56,7 +56,7 @@ public class CrystalContext
 
    public TableValue motionchart()
    {
-      final TableBuilder tableBuilder = new TableBuilder( module.valueBuilderFactory() );
+      final TableBuilder tableBuilder = new TableBuilder( module.valueBuilderFactory());
       tableBuilder.
             column( "CaseType", "Case type", "string" ).
             column( "Week", "Week", "string" ).

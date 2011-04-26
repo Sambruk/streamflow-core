@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.account;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.value.*;
 import se.streamsource.dci.api.*;
@@ -31,20 +32,11 @@ public class ProfileContext
    @Structure
    ValueBuilderFactory vbf;
 
-   public void changemessagedeliverytype( StringValue newDeliveryType )
+   public void changemessagedeliverytype( @Name("messagedeliverytype") MessageRecipient.MessageDeliveryTypes newDeliveryType )
    {
       MessageRecipient recipient = RoleMap.role( MessageRecipient.class );
 
-      if (MessageRecipient.MessageDeliveryTypes.email.toString().equals(
-            newDeliveryType.string().get() ))
-      {
-         recipient
-               .changeMessageDeliveryType( MessageRecipient.MessageDeliveryTypes.email );
-      } else
-      {
-         recipient
-               .changeMessageDeliveryType( MessageRecipient.MessageDeliveryTypes.none );
-      }
+      recipient.changeMessageDeliveryType( newDeliveryType );
    }
 
    public String messagedeliverytype()

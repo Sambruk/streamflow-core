@@ -17,16 +17,20 @@
 
 package se.streamsource.streamflow.web.resource.surface.endusers;
 
-import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Function;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.surface.endusers.OpenCasesContext;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+
+import static se.streamsource.dci.value.table.TableValue.DATETIME;
+import static se.streamsource.dci.value.table.TableValue.STRING;
 
 /**
  * TODO
@@ -46,51 +50,70 @@ public class OpenCasesResource
 
       TableQuery query = (TableQuery) getArguments()[0];
 
-      TableBuilder builder = new TableBuilder(module.valueBuilderFactory());
+      TableBuilderFactory tableBuilderFactory = new TableBuilderFactory(module.valueBuilderFactory());
 
-      String select = query.select();
-      if (select.equals("*"))
-         select = "description,created,caseid,status,project,href";
-
-      builder.selectedColumns(select, new String[][]
+      tableBuilderFactory.
+              column("description", "Description", STRING, new Function<CaseEntity, Object>()
               {
-                      {"description", "Description", "string"},
-                      {"created", "Created", "date"},
-                      {"caseid", "Case Id", "string"},
-                      {"status", "Status", "string"},
-                      {"project", "Project", "string"},
-                      {"href", "Href", "string"},
-              });
+                 public Object map(CaseEntity openCase)
+                 {
+                    return openCase.description().get();
+                 }
+              }, null).
+              column("created", "Created", DATETIME, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity openCase)
+                 {
+                    return openCase.createdOn().get();
+                 }
+              }, null).
+              column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity openCase)
+                 {
+                    return openCase.caseId().get();
+                 }
+              }, null).
+              column("status", "Status", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity openCase)
+                 {
+                    return openCase.status().get().name();
+                 }
+              }, null).
+              column("project", "Project", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity openCase)
+                 {
+                    return ((Describable) openCase.owner().get()).getDescription();
+                 }
+              }, null).
+              column("lastupdated", "Last updated", DATETIME, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity openCase)
+                 {
+                    return ((Message.Data) openCase.getHistory().getLastMessage()).createdOn().get();
+                 }
+              }, null).
+              column("lastmessage", "Last message", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity openCase)
+                 {
+                    return ((Message.Data) openCase.getHistory().getLastMessage()).createdOn().get();
+                 }
+              }, null).
+              column("href", "Location", STRING, new Function<CaseEntity, Object>()
+              {
+                 public Object map(CaseEntity openCase)
+                 {
+                    return openCase.toString() + "/";
+                 }
+              }, null);
 
-      String[] columns = select.split("[ ,]");
 
-      for (CaseEntity openCase : openCases)
-      {
-         Owner owner = openCase.owner().get();
-         String project = ((Describable) owner).getDescription();
+      TableBuilder builder = tableBuilderFactory.newInstance(query);
 
-         builder.row();
-
-         for (String column : columns)
-         {
-            if (column.equals("description"))
-               builder.cell(openCase.description().get(), openCase.description().get());
-            else if (column.equals("created"))
-               builder.cell(openCase.createdOn().get(), DateFunctions.toUtcString(openCase.createdOn().get()));
-            else if (column.equals("caseid"))
-               builder.cell(openCase.caseId().get(), openCase.caseId().get());
-            else if (column.equals("status"))
-               builder.cell(openCase.status().get().name(), openCase.status().get().name());
-            else if (column.equals("project"))
-               builder.cell(project, project);
-            else if (column.equals("href"))
-               builder.cell(openCase.toString() + "/", openCase.toString() + "/");
-
-         }
-         builder.endRow();
-      }
-
-      result(builder.newTable());
+      result(builder.rows(openCases).orderBy().paging().newTable());
    }
 
    public void resource(String segment) throws ResourceException

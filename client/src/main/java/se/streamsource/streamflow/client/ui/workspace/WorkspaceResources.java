@@ -64,6 +64,10 @@ public enum WorkspaceResources
    phone_label,
    email_label,
    address_label,
+   zip_label,
+   city_label,
+   region_label,
+   country_label,
    forms_label,
    choose_casetype,
 
@@ -141,5 +145,11 @@ public enum WorkspaceResources
 
    // Conversation
    sender_column_header,
-   message_column_header, change_perspective_title, selected_projects, no_casetype, no_assignee, no_project, search_period
+   message_column_header,
+   change_perspective_title,
+   selected_projects,
+   no_casetype,
+   no_assignee,
+   no_project,
+   search_period
 }

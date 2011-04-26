@@ -31,6 +31,7 @@ import se.streamsource.dci.restlet.server.velocity.*;
 import se.streamsource.dci.value.table.*;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -112,10 +113,19 @@ public class TableResultWriter
                            {
                               json.object();
                               Object value = cellValue.v().get();
-                              if (columnList.get( idx ).columnType().get().equals("date") && value != null)
+                              if (columnList.get( idx ).columnType().get().equals(TableValue.DATETIME) && value != null)
                               {
                                  value = DateFunctions.toUtcString( (Date) value);
                               }
+                              else if (columnList.get( idx ).columnType().get().equals(TableValue.DATE) && value != null)
+                              {
+                                 value = new SimpleDateFormat( "yyyy-MM-dd").format( (Date) value);
+                              }
+                              else if (columnList.get( idx ).columnType().get().equals(TableValue.TIME_OF_DAY) && value != null)
+                              {
+                                 value = new SimpleDateFormat( "HH:mm:ss").format((Date) value);
+                              }
+
                               if (value != null)
                                  json.key( "v" ).value( value );
                               if (cellValue.f().get() != null)

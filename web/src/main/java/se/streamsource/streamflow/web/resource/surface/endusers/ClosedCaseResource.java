@@ -22,18 +22,19 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.web.context.surface.endusers.ClosedCaseContext;
 import se.streamsource.streamflow.web.context.surface.endusers.OpenCaseContext;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
 /**
- * Resource for an open case
+ * Resource for a closed case
  */
-public class OpenCaseResource
+public class ClosedCaseResource
         extends CommandQueryResource
 {
-   public OpenCaseResource()
+   public ClosedCaseResource()
    {
-      super(OpenCaseContext.class);
+      super(ClosedCaseContext.class);
    }
 
    public void history() throws Throwable
