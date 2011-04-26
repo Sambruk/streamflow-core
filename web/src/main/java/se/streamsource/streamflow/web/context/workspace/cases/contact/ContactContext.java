@@ -55,7 +55,18 @@ public class ContactContext
       contacts.deleteContact( index );
    }
 
-   public void update(@Optional @Name("name") String name, @Optional @Name("email") String email, @Optional @Name("phone") String phone)
+   public void update(@Optional @Name("name") String name,
+                      @Optional @Name("contactId") String contactId,
+                      @Optional @Name("company") String company,
+                      @Optional @Name("iscompany") Boolean isCompany,
+                      @Optional @Name("phone") String phone,
+                      @Optional @Name("email") String email,
+                      @Optional @Name("address") String address,
+                      @Optional @Name("zipCode") String zip,
+                      @Optional @Name("city") String city,
+                      @Optional @Name("region") String region,
+                      @Optional @Name("country") String country,
+                      @Optional @Name("note") String note)
    {
       Contacts contacts = RoleMap.role( Contacts.class );
       Integer index = RoleMap.role( Integer.class );
@@ -65,115 +76,28 @@ public class ContactContext
 
       if (name != null)
          builder.name(name );
-      if (email != null)
-         builder.email( email );
+      if (contactId != null)
+         builder.contactId(contactId);
+      if (company != null)
+         builder.company(company);
+      if (isCompany != null)
+         builder.isCompany(isCompany);
       if (phone != null)
          builder.phoneNumber(phone);
-
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changename( StringValue name )
-   {
-      update(name.string().get(), null, null);
-   }
-
-   public void changenote( StringValue note )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactDTO contact = RoleMap.role( ContactDTO.class );
-
-      ValueBuilder<ContactDTO> builder = contact.buildWith();
-      builder.prototype().note().set( note.string().get() );
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changecontactid( StringValue contactId )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactDTO contact = RoleMap.role( ContactDTO.class );
-
-      ValueBuilder<ContactDTO> builder = contact.buildWith();
-      builder.prototype().contactId().set( contactId.string().get() );
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changecompany( StringValue company )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactDTO contact = RoleMap.role( ContactDTO.class );
-
-      ValueBuilder<ContactDTO> builder = contact.buildWith();
-      builder.prototype().company().set( company.string().get() );
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changephonenumber( ContactPhoneDTO phoneDTO)
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactDTO contact = RoleMap.role( ContactDTO.class );
-
-      ValueBuilder<ContactDTO> builder = contact.buildWith();
-
-      // Create an empty phone value if it doesnt exist already
-      if (contact.phoneNumbers().get().isEmpty())
-      {
-         ContactPhoneDTO phone = vbf.newValue( ContactPhoneDTO.class ).<ContactPhoneDTO>buildWith().prototype();
-         phone.phoneNumber().set( phoneDTO.phoneNumber().get() );
-         builder.prototype().phoneNumbers().get().add( phone );
-      } else
-      {
-         builder.prototype().phoneNumbers().get().get( 0 ).phoneNumber().set( phoneDTO.phoneNumber().get() );
-      }
-
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changeaddress( ContactAddressDTO addressDTO)
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactDTO contact = RoleMap.role( ContactDTO.class );
-
-      ValueBuilder<ContactDTO> builder = contact.buildWith();
-
-      // Create an empty address value if it doesnt exist already
-      if (contact.addresses().get().isEmpty())
-      {
-         ContactAddressDTO address = vbf.newValue( ContactAddressDTO.class ).<ContactAddressDTO>buildWith().prototype();
-         address.address().set( addressDTO.address().get() );
-         builder.prototype().addresses().get().add( address );
-      } else
-      {
-         builder.prototype().addresses().get().set( 0, addressDTO );
-      }
-
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changeemailaddress( ContactEmailDTO emailDTO)
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactDTO contact = RoleMap.role( ContactDTO.class );
-
-      ValueBuilder<ContactDTO> builder = contact.buildWith();
-
-      // Create an empty email value if it doesnt exist already
-      if (contact.emailAddresses().get().isEmpty())
-      {
-         ContactEmailDTO email = vbf.newValue( ContactEmailDTO.class ).<ContactEmailDTO>buildWith().prototype();
-         email.emailAddress().set( emailDTO.emailAddress().get() );
-         builder.prototype().emailAddresses().get().add( email );
-      } else
-      {
-         builder.prototype().emailAddresses().get().get( 0 ).emailAddress().set( emailDTO.emailAddress().get() );
-      }
-
+      if (email != null)
+         builder.email(email);
+      if (address != null)
+         builder.address(address);
+      if (zip != null)
+         builder.zipCode(zip);
+      if (city != null)
+         builder.city(city);
+      if (region != null)
+         builder.region(region);
+      if (country != null)
+         builder.country(country);
+      if (note != null)
+         builder.note(note);
 
       contacts.updateContact( index, builder.newInstance() );
    }

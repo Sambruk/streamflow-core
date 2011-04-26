@@ -113,7 +113,7 @@ public class ContactView
       // Edit panel
       {
          FormLayout formLayout = new FormLayout(
-                     "70dlu, 5dlu, 150dlu:grow",
+                     "right:70dlu, 5dlu, 150dlu:grow",
                      "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
@@ -141,49 +141,49 @@ public class ContactView
 
          builder.add(new JButton(getActionMap().get("view")));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
+         builder.add(createLabel(WorkspaceResources.name_label));
          builder.nextColumn(2);
          builder.add(contactBinder.bind(defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name()));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
+         builder.add(createLabel(WorkspaceResources.phone_label));
          builder.nextColumn(2);
          builder.add(phoneNumberBinder.bind(phoneField, phoneTemplate.phoneNumber()));
          builder.nextLine();
 
-         builder.add(new JLabel(i18n.text(WorkspaceResources.address_label)));
+         builder.add(createLabel(WorkspaceResources.address_label));
          builder.nextColumn(2);
          builder.add(addressBinder.bind(addressField, addressTemplate.address()));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.zip_label)));
+         builder.add(createLabel(WorkspaceResources.zip_label));
          builder.nextColumn(2);
          builder.add(addressBinder.bind(zipField, addressTemplate.zipCode()));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.city_label)));
+         builder.add(createLabel(WorkspaceResources.city_label));
          builder.nextColumn(2);
          builder.add(addressBinder.bind(cityField, addressTemplate.city()));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.region_label)));
+         builder.add(createLabel(WorkspaceResources.region_label));
          builder.nextColumn(2);
          builder.add(addressBinder.bind(regionField, addressTemplate.region()));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.country_label)));
+         builder.add(createLabel(WorkspaceResources.country_label));
          builder.nextColumn(2);
          builder.add(addressBinder.bind(countryField, addressTemplate.country()));
          builder.nextLine();
 
-         builder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
+         builder.add(createLabel(WorkspaceResources.email_label));
          builder.nextColumn(2);
          builder.add(emailBinder.bind(emailField, emailTemplate.emailAddress()));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.contact_id_label)));
+         builder.add(createLabel(WorkspaceResources.contact_id_label));
          builder.nextColumn(2);
          builder.add(contactBinder.bind(contactIdField, template.contactId()));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.company_label)));
+         builder.add(createLabel(WorkspaceResources.company_label));
          builder.nextColumn(2);
          builder.add(contactBinder.bind(companyField, template.company()));
          builder.nextLine(2);
-         builder.add(new JLabel(i18n.text(WorkspaceResources.note_label)));
+         builder.add(createLabel(WorkspaceResources.note_label));
          builder.nextColumn(2);
          builder.add(contactBinder.bind(TEXTAREA.newField(), template.note()));
 
@@ -203,7 +203,7 @@ public class ContactView
       // View panel
       {
          FormLayout formLayout = new FormLayout(
-                     "70dlu, 5dlu, 150dlu:grow",
+                     "right:70dlu, 5dlu, 150dlu:grow",
                      "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
@@ -220,49 +220,49 @@ public class ContactView
 
          builder.add(new JButton(getActionMap().get("edit")));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
+         builder.add(createLabel(WorkspaceResources.name_label));
          builder.nextColumn(2);
          builder.add(viewBinder.bind("name", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
+         builder.add(createLabel(WorkspaceResources.phone_label));
          builder.nextColumn(2);
          builder.add(phoneViewBinder.bind("phoneNumber", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
          
-         builder.add(new JLabel(i18n.text(WorkspaceResources.address_label)));
+         builder.add(createLabel(WorkspaceResources.address_label));
          builder.nextColumn(2);
          builder.add(addressViewBinder.bind("address", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.zip_label)));
+         builder.add(createLabel(WorkspaceResources.zip_label));
          builder.nextColumn(2);
          builder.add(addressViewBinder.bind("zipCode", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.city_label)));
+         builder.add(createLabel(WorkspaceResources.city_label));
          builder.nextColumn(2);
          builder.add(addressViewBinder.bind("city", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.region_label)));
+         builder.add(createLabel(WorkspaceResources.region_label));
          builder.nextColumn(2);
          builder.add(addressViewBinder.bind("region", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.country_label)));
+         builder.add(createLabel(WorkspaceResources.country_label));
          builder.nextColumn(2);
          builder.add(addressViewBinder.bind("country", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
 
-         builder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
+         builder.add(createLabel(WorkspaceResources.email_label));
          builder.nextColumn(2);
          builder.add(emailViewBinder.bind("emailAddress", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.contact_id_label)));
+         builder.add(createLabel(WorkspaceResources.contact_id_label));
          builder.nextColumn(2);
          builder.add(viewBinder.bind("contactId", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         builder.add(new JLabel(i18n.text(WorkspaceResources.company_label)));
+         builder.add(createLabel(WorkspaceResources.company_label));
          builder.nextColumn(2);
          builder.add(viewBinder.bind("company", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine(2);
-         builder.add(new JLabel(i18n.text(WorkspaceResources.note_label)));
+         builder.add(createLabel(WorkspaceResources.note_label));
          builder.nextColumn(2);
          builder.add(viewBinder.bind("note", visibleIfNotEmpty(new JLabel("!"))));
 
@@ -270,6 +270,12 @@ public class ContactView
       }
    }
 
+   private JLabel createLabel(Enum key)
+   {
+      JLabel label = new JLabel(i18n.text(key));
+      label.setForeground(Color.gray);
+      return label;
+   }
 
    public void setModel(ContactModel model)
    {

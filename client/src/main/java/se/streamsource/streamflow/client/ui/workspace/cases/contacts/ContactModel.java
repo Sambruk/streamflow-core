@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.util.*;
 import org.qi4j.api.value.*;
+import org.restlet.data.Form;
 import org.restlet.resource.*;
 import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.*;
@@ -68,74 +69,79 @@ public class ContactModel
 
    public void changeName( String newName ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newName );
-      client.putCommand( "changename", builder.newInstance() );
+      Form form = new Form();
+      form.set("name", newName);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeNote( String newNote ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newNote );
-      client.putCommand( "changenote", builder.newInstance() );
+      Form form = new Form();
+      form.set("note", newNote);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeContactId( String newId ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newId );
-      client.putCommand( "changecontactid", builder.newInstance() );
+      Form form = new Form();
+      form.set("contactId", newId);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeCompany( String newCompany ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newCompany );
-      client.putCommand( "changecompany", builder.newInstance() );
+      Form form = new Form();
+      form.set("company", newCompany);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
-   public void changePhoneNumber( String newPhoneNumber ) throws ResourceException
+   public void changePhoneNumber( String newPhone ) throws ResourceException
    {
-      ValueBuilder<ContactPhoneDTO> builder = vbf.newValueBuilder( ContactPhoneDTO.class );
-      builder.prototype().phoneNumber().set( newPhoneNumber );
-      client.putCommand( "changephonenumber", builder.newInstance() );
+      Form form = new Form();
+      form.set("phone", newPhone);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeAddress( String newAddress ) throws ResourceException
    {
-      getAddress().address().set( newAddress );
-      client.putCommand( "changeaddress", getAddress() );
+      Form form = new Form();
+      form.set("address", newAddress);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeZipCode(String newZipCode)
    {
-      getAddress().zipCode().set( newZipCode );
-      client.putCommand( "changeaddress", getAddress() );
+      Form form = new Form();
+      form.set("zipCode", newZipCode);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeCity(String newCity)
    {
-      getAddress().city().set( newCity );
-      client.putCommand( "changeaddress", getAddress() );
+      Form form = new Form();
+      form.set("city", newCity);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeRegion(String newRegion)
    {
-      getAddress().region().set( newRegion );
-      client.putCommand( "changeaddress", getAddress() );
+      Form form = new Form();
+      form.set("region", newRegion);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeCountry(String newCountry)
    {
-      getAddress().country().set( newCountry );
-      client.putCommand( "changeaddress", getAddress() );
+      Form form = new Form();
+      form.set("country", newCountry);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeEmailAddress( String newEmailAddress ) throws ResourceException
    {
-      ValueBuilder<ContactEmailDTO> builder = vbf.newValueBuilder( ContactEmailDTO.class );
-      builder.prototype().emailAddress().set( newEmailAddress );
-      client.putCommand( "changeemailaddress", builder.newInstance() );
+      Form form = new Form();
+      form.set("email", newEmailAddress);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public boolean isContactLookupEnabled()

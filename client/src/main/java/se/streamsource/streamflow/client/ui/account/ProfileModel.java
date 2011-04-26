@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
@@ -49,10 +50,9 @@ public class ProfileModel
    public void changeMessageDeliveryType( String newDeliveryType )
          throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newDeliveryType );
-      client.putCommand( "changemessagedeliverytype", builder.newInstance() );
+      Form form = new Form();
+      form.set("messagedeliverytype", newDeliveryType);
+      client.putCommand( "changemessagedeliverytype", form.getWebRepresentation() );
    }
 
    public String getMessageDeliveryType()
@@ -99,25 +99,22 @@ public class ProfileModel
 
    public void changeName( String newName )
    {
-      ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newName );
-      client.putCommand( "changename", builder.newInstance() );
+      Form form = new Form();
+      form.set("name", newName);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changePhoneNumber( String newPhoneNumber )
    {
-      ValueBuilder<ContactPhoneDTO> builder = vbf
-            .newValueBuilder( ContactPhoneDTO.class );
-      builder.prototype().phoneNumber().set( newPhoneNumber );
-      client.putCommand( "changephonenumber", builder.newInstance() );
+      Form form = new Form();
+      form.set("phone", newPhoneNumber);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeEmailAddress( String newEmailAddress )
    {
-      ValueBuilder<ContactEmailDTO> builder = vbf
-            .newValueBuilder( ContactEmailDTO.class );
-      builder.prototype().emailAddress().set( newEmailAddress );
-      client.putCommand( "changeemailaddress", builder.newInstance() );
+      Form form = new Form();
+      form.set("email", newEmailAddress);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 }
