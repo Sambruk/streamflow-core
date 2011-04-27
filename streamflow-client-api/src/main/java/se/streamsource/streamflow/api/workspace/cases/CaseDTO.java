@@ -47,7 +47,7 @@ public interface CaseDTO
    Property<LinksValue> labels();
 
    @Optional
-   Property<String> caseType();
+   Property<LinkValue> caseType();
 
    @Optional
    Property<String> assignedTo();

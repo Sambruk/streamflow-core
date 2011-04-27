@@ -17,9 +17,12 @@
 
 package se.streamsource.streamflow.web.rest;
 
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.entity.*;
 import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.query.*;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.*;
 import org.qi4j.api.util.*;
 import org.qi4j.api.value.*;
@@ -37,6 +40,7 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.util.Strings;
@@ -51,6 +55,8 @@ import se.streamsource.streamflow.web.domain.structure.created.*;
 import se.streamsource.streamflow.web.domain.structure.label.*;
 
 import javax.print.DocFlavor;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 
 import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
@@ -65,6 +71,9 @@ public class StreamflowResultConverter
 {
    @Structure
    Module module;
+
+   @Service
+   ServiceReference<KnowledgebaseService> knowledgeBaseService;
 
    public Object convert(Object result, Request request, Object[] arguments)
    {
@@ -145,7 +154,27 @@ public class StreamflowResultConverter
       prototype.text().set(aCase.description().get());
 
       if (aCase.caseType().get() != null)
-         prototype.caseType().set(aCase.caseType().get().getDescription());
+      {
+         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
+         linkBuilder.prototype().text().set(aCase.caseType().get().getDescription());
+         linkBuilder.prototype().id().set(aCase.caseType().get().toString());
+
+         if (knowledgeBaseService.isAvailable())
+         {
+            try
+            {
+               linkBuilder.prototype().href().set(knowledgeBaseService.get().createURL((EntityComposite) aCase.caseType().get()));
+            } catch (Exception e)
+            {
+               LoggerFactory.getLogger(getClass()).error("Could not create link for case type:" + aCase.caseType().get().getDescription(), e);
+            }
+         } else
+         {
+            // TODO What to do here?
+            linkBuilder.prototype().href().set("");
+         }
+         prototype.caseType().set(linkBuilder.newInstance());
+      }
 
       if (aCase.isAssigned())
          prototype.assignedTo().set(((Describable) aCase.assignedTo().get()).getDescription());

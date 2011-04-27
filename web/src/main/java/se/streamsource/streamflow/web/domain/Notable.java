@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.domain;
+package se.streamsource.streamflow.web.domain;
 
 import org.qi4j.api.common.*;
 import org.qi4j.api.mixin.*;

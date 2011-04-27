@@ -24,25 +24,12 @@ import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.mixin.*;
 import org.qi4j.api.sideeffect.*;
 import org.qi4j.api.unitofwork.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
 
 import java.util.*;
 
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.Notable;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;

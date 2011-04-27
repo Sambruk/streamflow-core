@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Describable;
 
 /**
@@ -27,6 +27,6 @@ public interface Page
       extends
       Fields,
       Describable,
-        Notable
+      Notable
 {
 }
