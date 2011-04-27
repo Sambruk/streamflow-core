@@ -34,7 +34,11 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +52,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  */
 public class CaseSubmittedFormView
       extends CaseSubmittedFormAbstractView
-      implements ListEventListener<SubmittedPageDTO>
+      implements Refreshable
 {
    private CaseSubmittedFormModel model;
 
@@ -56,15 +60,15 @@ public class CaseSubmittedFormView
                                 @Structure ObjectBuilderFactory obf, @Uses Integer index, @Structure  ValueBuilderFactory vbf)
    {
       model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use( client, new Integer(index) ).newInstance();
-      model.getEventList().addListEventListener( this );
 
       setActionMap( context.getActionMap( this ) );
 
-      new RefreshWhenShowing( this, model );
+      new RefreshWhenShowing( this, this );
    }
 
-   public void listChanged( ListEvent<SubmittedPageDTO> listEvent )
+   public void refresh()
    {
+      model.refresh();
       panel().removeAll();
       final DefaultFormBuilder builder = builder( panel() );
       SubmittedFormDTO form = model.getForm();
@@ -77,27 +81,34 @@ public class CaseSubmittedFormView
       builder.append( title );
       builder.nextLine();
 
-      safeRead( model.getEventList(), new EventCallback<SubmittedPageDTO>()
+      if (!form.signatures().get().isEmpty())
       {
-         public void iterate( SubmittedPageDTO page )
+         builder.appendSeparator(i18n.text(WorkspaceResources.signatures));
+         for (FormSignatureDTO signatureDTO : form.signatures().get())
          {
-            builder.appendSeparator(page.name().get());
-
-            for (FieldDTO field : page.fields().get())
-            {
-               JLabel label = new JLabel( field.field().get()+":", SwingConstants.LEFT );
-               label.setForeground(Color.gray);
-               JComponent component = getComponent( field.value().get(), field.fieldType().get() );
-
-               builder.append( label );
-               builder.nextLine();
-               builder.append( component );
-               builder.nextLine();
-            }
+            builder.append( signatureDTO.name().get()+": "+signatureDTO.signerName().get()+"("+signatureDTO.signerId()+")" );
+            builder.nextLine();
          }
-      } );
+      }
+
+      for (SubmittedPageDTO page : form.pages().get())
+      {
+         builder.appendSeparator(page.name().get());
+
+         for (FieldDTO field : page.fields().get())
+         {
+            JLabel label = new JLabel( field.field().get()+":", SwingConstants.LEFT );
+            label.setForeground(Color.gray);
+            JComponent component = getComponent( field.value().get(), field.fieldType().get() );
+
+            builder.append( label );
+            builder.nextLine();
+            builder.append( component );
+            builder.nextLine();
+         }
+      }
       revalidate();
-      repaint(  );
+      repaint();
    }
 
    @Override

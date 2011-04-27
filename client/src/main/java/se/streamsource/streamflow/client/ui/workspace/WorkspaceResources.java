@@ -76,6 +76,7 @@ public enum WorkspaceResources
 
    // Forms tab
    submitted_forms_tab,
+   signatures,
 
    // Attachments tab
    attachment,
@@ -151,5 +152,5 @@ public enum WorkspaceResources
    no_casetype,
    no_assignee,
    no_project,
-   search_period
+   search_period;
 }

@@ -20,6 +20,7 @@ package se.streamsource.streamflow.api.workspace.cases.form;
 import org.qi4j.api.common.*;
 import org.qi4j.api.property.*;
 import org.qi4j.api.value.*;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 
 import java.util.*;
 
@@ -37,4 +38,7 @@ public interface SubmittedFormDTO
 
    @UseDefaults
    Property<List<SubmittedPageDTO>> pages();
+
+   @UseDefaults
+   Property<List<FormSignatureDTO>> signatures();
 }

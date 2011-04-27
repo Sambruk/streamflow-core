@@ -137,6 +137,8 @@ public interface SubmittedFormsQueries
             formDTO.pages().get().add(pageBuilder.newInstance());
          }
 
+         formDTO.signatures().get().addAll(form.signatures().get());
+
          return formBuilder.newInstance();
       }
 
