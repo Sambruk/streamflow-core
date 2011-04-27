@@ -99,7 +99,7 @@ public class OpenCasesResource
               {
                  public Object map(CaseEntity openCase)
                  {
-                    return ((Message.Data) openCase.getHistory().getLastMessage()).createdOn().get();
+                    return ((Message.Data) openCase.getHistory().getLastMessage()).body().get();
                  }
               }, null).
               column("href", "Location", STRING, new Function<CaseEntity, Object>()

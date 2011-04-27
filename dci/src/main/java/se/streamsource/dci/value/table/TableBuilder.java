@@ -17,10 +17,7 @@
 
 package se.streamsource.dci.value.table;
 
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.util.Function;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import static java.util.Collections.reverseOrder;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -28,6 +25,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
 /**
  * JAVADOC
@@ -166,12 +168,16 @@ public class TableBuilder
       {
          // Sort table
          // Find sort column index
+
+         String[] orderBy = tableQuery.orderBy().split(" ");
+         boolean descending = orderBy.length == 2 && orderBy[1].equals("desc");
+
          int sortIndex = -1;
          List<ColumnValue> columnValues = tableBuilder.prototype().cols().get();
          for (int i = 0; i < columnValues.size(); i++)
          {
             ColumnValue columnValue = columnValues.get(i);
-            if (columnValue.id().equals(tableQuery.orderBy()))
+            if (columnValue.id().get().equals(orderBy[0]))
             {
                sortIndex = i;
                break;
@@ -202,12 +208,67 @@ public class TableBuilder
                }
             };
 
+            if (descending)
+            {
+               // Flip it
+               comparator = reverseOrder(comparator);
+            }
+
             Collections.sort(tableBuilder.prototype().rows().get(), comparator);
          }
       }
 
       return this;
    }
+   
+//   public TableBuilder orderBy()
+//   {
+//      if (tableQuery.orderBy() != null)
+//      {
+//         // Sort table
+//         // Find sort column index
+//         int sortIndex = -1;
+//         List<ColumnValue> columnValues = tableBuilder.prototype().cols().get();
+//         for (int i = 0; i < columnValues.size(); i++)
+//         {
+//            ColumnValue columnValue = columnValues.get(i);
+//            if (columnValue.id().equals(tableQuery.orderBy()))
+//            {
+//               sortIndex = i;
+//               break;
+//            }
+//
+//         }
+//
+//         if (sortIndex != -1)
+//         {
+//            final int idx = sortIndex;
+//            Comparator<RowValue> comparator = new Comparator<RowValue>()
+//            {
+//               public int compare(RowValue o1, RowValue o2)
+//               {
+//                  Object o = o1.c().get().get(idx).v().get();
+//
+//                  if (o != null && o instanceof Comparable)
+//                  {
+//                     Comparable c1 = (Comparable) o;
+//                     Comparable c2 = (Comparable) o2.c().get().get(idx).v().get();
+//                     return c1.compareTo(c2);
+//                  } else
+//                  {
+//                     String f1 = o1.c().get().get(idx).f().get();
+//                     String f2 = o2.c().get().get(idx).f().get();
+//                     return f1.compareTo(f2);
+//                  }
+//               }
+//            };
+//
+//            Collections.sort(tableBuilder.prototype().rows().get(), comparator);
+//         }
+//      }
+//
+//      return this;
+//   }
 
    public TableBuilder paging()
    {
