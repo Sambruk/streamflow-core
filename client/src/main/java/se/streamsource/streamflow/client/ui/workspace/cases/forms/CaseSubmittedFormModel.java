@@ -46,19 +46,11 @@ public class CaseSubmittedFormModel
    ValueBuilderFactory vbf;
    SubmittedFormDTO form;
 
-   private EventList<SubmittedPageDTO> eventList = new TransactionList<SubmittedPageDTO>( new BasicEventList<SubmittedPageDTO>() );
-
    public void refresh()
    {
       Form form = new Form();
       form.set("index", index.toString());
       this.form = client.query( "submittedform", form, SubmittedFormDTO.class );
-      EventListSynch.synchronize( this.form.pages().get(), eventList );
-   }
-
-   public EventList<SubmittedPageDTO> getEventList()
-   {
-      return eventList;
    }
 
    public SubmittedFormDTO getForm()
