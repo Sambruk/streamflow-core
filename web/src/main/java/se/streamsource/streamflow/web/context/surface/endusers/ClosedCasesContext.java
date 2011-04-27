@@ -44,7 +44,7 @@ public class ClosedCasesContext
       Query<Case> query = module.queryBuilderFactory()
             .newNamedQuery( Case.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery" ).setVariable( "query", queryBuilder.toString() );
 
-//      // TODO Sort by description, caseid, lastupdated, lastmessage
+      // TODO Sort by description, caseid, lastupdated, lastmessage
 
       return query;
    }
