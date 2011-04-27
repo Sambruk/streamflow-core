@@ -44,15 +44,6 @@ public class ClosedCasesContext
       Query<Case> query = module.queryBuilderFactory()
             .newNamedQuery( Case.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery" ).setVariable( "query", queryBuilder.toString() );
 
-      // Paging
-      if (tableQuery.offset() != null)
-         query.firstResult(Integer.parseInt(tableQuery.offset()));
-      if (tableQuery.limit() != null)
-         query.maxResults(Integer.parseInt(tableQuery.limit()));
-
-      // TODO Sort by description, caseid, lastupdated, lastmessage
-
-
       return query;
    }
 }
