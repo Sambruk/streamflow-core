@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
-import se.streamsource.streamflow.domain.Notable;
+import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
@@ -37,7 +37,7 @@ public interface CaseType
       Describable,
       Forms,
       Labels,
-        Notable,
+      Notable,
       Ownable,
       Owner,
       Resolutions,

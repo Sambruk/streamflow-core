@@ -30,6 +30,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -71,7 +72,7 @@ public class OverviewSummaryView extends JPanel
       setActionMap( am );
 
       // Table
-      overviewSummaryTable = new JXTable( new EventJXTableModel<ProjectSummaryDTO>(model.getProjectOverviews(), new TableFormat<ProjectSummaryDTO>()
+      overviewSummaryTable = new JXTable( new EventJXTableModel<RowValue>(model.getProjectOverviews(), new TableFormat<RowValue>()
       {
          String[] columnNames = new String[]{text( project_column_header ), text( inbox_column_header ),
                text( assigned_column_header ), text( total_column_header )};
@@ -87,18 +88,18 @@ public class OverviewSummaryView extends JPanel
             return columnNames[i];
          }
 
-         public Object getColumnValue( ProjectSummaryDTO o, int i )
+         public Object getColumnValue( RowValue o, int i )
          {
             switch (i)
             {
                case 0:
-                  return o.description().get();
+                  return o.c().get().get(0).f().get();
                case 1:
-                  return o.inboxCount().get();
+                  return o.c().get().get(1).f().get();
                case 2:
-                  return o.assignedCount().get();
+                  return o.c().get().get(2).f().get();
                case 3:
-                  return o.assignedCount().get()+o.inboxCount().get();
+                  return o.c().get().get(1).f().get()+o.c().get().get(2).f().get();
             }
 
             return null;

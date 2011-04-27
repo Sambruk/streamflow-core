@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.assembler;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.*;
 import org.qi4j.api.service.qualifier.*;
+import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.structure.*;
 import org.qi4j.bootstrap.*;
 import org.qi4j.index.rdf.query.*;
@@ -32,6 +34,8 @@ import se.streamsource.streamflow.web.application.attachment.*;
 import se.streamsource.streamflow.web.application.console.*;
 import se.streamsource.streamflow.web.application.contact.*;
 import se.streamsource.streamflow.web.application.conversation.*;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.*;
 import se.streamsource.streamflow.web.application.migration.*;
 import se.streamsource.streamflow.web.application.organization.*;
@@ -40,7 +44,10 @@ import se.streamsource.streamflow.web.application.security.*;
 import se.streamsource.streamflow.web.application.statistics.*;
 import se.streamsource.streamflow.web.infrastructure.index.*;
 
+import java.util.Properties;
+
 import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 /**
  * JAVADOC
@@ -76,6 +83,11 @@ public class AppAssembler
       {
          mail( layer.module( "Mail" ) );
       }
+
+      knowledgebase(layer.module("Knowledgebase"));
+
+      // All configurations must be visible in the Application scope
+      configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }
 
    private void replay( ModuleAssembly module ) throws AssemblyException
@@ -86,18 +98,18 @@ public class AppAssembler
    private void attachment( ModuleAssembly module ) throws AssemblyException
    {
       module.services( RemoveAttachmentsService.class )
-            .identifiedBy( "removeattachments" ).visibleIn( application ).instantiateOnStartup();
+            .identifiedBy( "removeattachments" ).visibleIn(application).instantiateOnStartup();
    }
 
    private void pdf( ModuleAssembly module ) throws AssemblyException
    {
       module.objects( CasePdfGenerator.class ).visibleIn( application );
-      module.services( SubmittedFormPdfGenerator.class ).visibleIn( application );
+      module.services(SubmittedFormPdfGenerator.class).visibleIn(application);
    }
 
    private void contactLookup( ModuleAssembly module ) throws AssemblyException
    {
-      module.services( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
+      module.services(StreamflowContactLookupService.class).visibleIn( Visibility.application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
@@ -105,8 +117,8 @@ public class AppAssembler
 
       module.importedServices( NamedEntityFinder.class ).
             importedBy( ServiceSelectorImporter.class ).
-            setMetaInfo( ServiceQualifier.withId( "solr" ) ).
-            setMetaInfo( namedQueries );
+            setMetaInfo(ServiceQualifier.withId("solr")).
+            setMetaInfo(namedQueries);
    }
 
    private void mail( ModuleAssembly module ) throws AssemblyException
@@ -125,7 +137,7 @@ public class AppAssembler
             identifiedBy( "sendmail" ).
             instantiateOnStartup().
             visibleIn( Visibility.application ).
-            setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
+            setMetaInfo(new CircuitBreaker(3, 1000 * 60 * 5));
 
       configuration().entities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       configuration().entities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
@@ -156,12 +168,12 @@ public class AppAssembler
       module.services( NotificationService.class )
             .identifiedBy( "notification" )
             .instantiateOnStartup()
-            .visibleIn( application );
+            .visibleIn(application);
 
       module.services( ConversationResponseService.class )
-            .identifiedBy( "conversationresponse" )
+            .identifiedBy("conversationresponse")
             .instantiateOnStartup()
-            .visibleIn( application );
+            .visibleIn(application);
    }
 
    private void statistics( ModuleAssembly module ) throws AssemblyException
@@ -184,7 +196,7 @@ public class AppAssembler
                visibleIn( Visibility.module );
       }
 
-      module.values( RelatedStatisticsValue.class, FormFieldStatisticsValue.class, CaseStatisticsValue.class ).visibleIn( layer );
+      module.values(RelatedStatisticsValue.class, FormFieldStatisticsValue.class, CaseStatisticsValue.class).visibleIn(layer);
    }
 
    private void security( ModuleAssembly module ) throws AssemblyException
@@ -193,8 +205,8 @@ public class AppAssembler
       module.services( AuthenticationFilterService.class )
             .identifiedBy( "authentication" )
             .instantiateOnStartup()
-            .setMetaInfo( new CircuitBreaker(10, 1000*60*5) )
-            .visibleIn( application );
+            .setMetaInfo(new CircuitBreaker(10, 1000 * 60 * 5))
+            .visibleIn(application);
    }
 
    private void migration( ModuleAssembly module ) throws AssemblyException
@@ -216,5 +228,26 @@ public class AppAssembler
       module.values( ConsoleScriptValue.class, ConsoleResultValue.class ).visibleIn( application );
 
       module.services( ConsoleService.class ).visibleIn( application );
+   }
+
+   private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException
+   {
+      Properties props = new Properties();
+      try
+      {
+         props.load(getClass().getResourceAsStream("/velocity.properties"));
+
+         VelocityEngine velocity = new VelocityEngine(props);
+
+         knowledgebase.importedServices(VelocityEngine.class)
+                 .importedBy(INSTANCE).setMetaInfo(velocity);
+
+      } catch (Exception e)
+      {
+         throw new AssemblyException("Could not load velocity properties", e);
+      }
+
+      knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
+      configuration().entities(KnowledgebaseConfiguration.class);
    }
 }
