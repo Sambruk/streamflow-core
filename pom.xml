@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -358,7 +357,7 @@
                     <stylesheetfile>${project.parent.basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
                     <overview>${project.parent.basedir}/src/main/javadoc/overview.html</overview>
                     <javadocDirectory>${project.parent.basedir}/src/main/javadoc</javadocDirectory>
-                    <excludePackageNames/>
+                    <excludePackageNames />
                     <links>
                         <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
                         <link>http://www.restlet.org/documentation/snapshot/jse/api/</link>
@@ -608,11 +607,11 @@
                                     </goals>
                                     <configuration>
                                         <tasks>
-                                            <echo message="Deploying ${basedir}/target/${project.artifactId}-${project.version} to ${deploy.dir}}"/>
+                                            <echo message="Deploying ${basedir}/target/${project.artifactId}-${project.version} to ${deploy.dir}}" />
                                             <copy todir="${deploy.dir}" preservelastmodified="true">
                                                 <fileset dir="${basedir}/target/">
-                                                    <include name="*.war"/>
-                                                    <include name="*.ear"/>
+                                                    <include name="*.war" />
+                                                    <include name="*.ear" />
                                                 </fileset>
                                             </copy>
                                         </tasks>
