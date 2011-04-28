@@ -46,8 +46,8 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0</connection>
-        <developerConnection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0
+        <connection>scm:git:ssh://gerrit.jayway.com/projects/streamflow-core.git</connection>
+        <developerConnection>scm:git:ssh://gerrit.jayway.com/projects/streamflow-core.git
         </developerConnection>
     </scm>
 
