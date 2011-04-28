@@ -64,7 +64,7 @@ public interface StartupMigrationService
             if( lsv != null && !lsv.equals( application.version() ) )
             {
                 // Migrate all data eagerly
-                logger.info( "Migrating data to new version" );
+                logger.info( "Migrating data from version "+lsv+" to "+application.version() );
 
                 // Do nothing - the EntityStore will do the migration on load
                 entityStore.entityStates( module ).transferTo( Transforms.map( new Function<EntityState, EntityState>()

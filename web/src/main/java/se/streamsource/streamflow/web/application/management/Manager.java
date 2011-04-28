@@ -51,6 +51,8 @@ public interface Manager
 
    public void refreshStatistics() throws StatisticsStoreException;
 
+   public void performArchivalCheck();
+
    @Computed
    Property<Integer> failedLogins();
 

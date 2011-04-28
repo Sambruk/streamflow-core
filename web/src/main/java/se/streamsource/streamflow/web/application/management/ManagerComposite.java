@@ -39,6 +39,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.*;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.*;
 import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.web.application.archival.ArchivalService;
 import se.streamsource.streamflow.web.application.statistics.*;
 import se.streamsource.streamflow.web.infrastructure.event.*;
 import se.streamsource.streamflow.web.infrastructure.index.*;
@@ -123,6 +124,9 @@ public interface ManagerComposite
 
       @Service
       CaseStatistics statistics;
+
+      @Service
+      ArchivalService archival;
 
       @Structure
       UnitOfWorkFactory uowf;
@@ -503,6 +507,11 @@ public interface ManagerComposite
          logger.info("Start refreshing statistics");
          statistics.refreshStatistics();
          logger.info("Finished refreshing statistics");
+      }
+
+      public void performArchivalCheck()
+      {
+         archival.performArchivalCheck();
       }
 
       private File getLatestBackup() throws ParseException

@@ -30,6 +30,8 @@ import se.streamsource.infrastructure.circuitbreaker.*;
 import se.streamsource.streamflow.infrastructure.event.application.replay.*;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.*;
 import se.streamsource.streamflow.server.plugin.authentication.*;
+import se.streamsource.streamflow.web.application.archival.ArchivalConfiguration;
+import se.streamsource.streamflow.web.application.archival.ArchivalService;
 import se.streamsource.streamflow.web.application.attachment.*;
 import se.streamsource.streamflow.web.application.console.*;
 import se.streamsource.streamflow.web.application.contact.*;
@@ -60,6 +62,8 @@ public class AppAssembler
    {
       super.assemble( layer );
 
+      archival(layer.module("Archival"));
+
       replay(layer.module("Replay"));
 
       console( layer.module( "Console" ) );
@@ -88,6 +92,12 @@ public class AppAssembler
 
       // All configurations must be visible in the Application scope
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
+   }
+
+   private void archival(ModuleAssembly archival)
+   {
+      archival.services(ArchivalService.class).identifiedBy("archival").instantiateOnStartup().visibleIn(Visibility.application);
+      configuration().entities(ArchivalConfiguration.class);
    }
 
    private void replay( ModuleAssembly module ) throws AssemblyException

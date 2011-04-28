@@ -29,6 +29,7 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,6 +39,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+
+import static se.streamsource.streamflow.util.Strings.*;
 
 /**
  * JAVADOC
@@ -159,15 +162,18 @@ public class CaseInfoView extends JPanel
    {
       String href = CaseInfoView.this.model.getIndex().caseType().get().href().get();
 
-      try
+      if (!empty(href))
       {
-         Desktop.getDesktop().browse(new URI(href));
-      } catch (IOException e1)
-      {
-         e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      } catch (URISyntaxException e1)
-      {
-         e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+         try
+         {
+            Desktop.getDesktop().browse(new URI(href));
+         } catch (IOException e1)
+         {
+            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+         } catch (URISyntaxException e1)
+         {
+            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+         }
       }
    }
 }

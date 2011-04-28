@@ -33,6 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
  */
 public interface CaseType
    extends
+      ArchivalSettings,
       CaseAccessDefaults,
       Describable,
       Forms,
