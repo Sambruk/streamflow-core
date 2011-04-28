@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +23,20 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class RemovableLabel extends JPanel
       implements FocusListener, KeyListener, MouseListener
@@ -85,6 +97,13 @@ public class RemovableLabel extends JPanel
       button = new JButton( i18n.icon( Icons.drop, 12 ) );
       button.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
       button.setFocusable( false );
+      button.addActionListener( new ActionListener()
+      {
+         public void actionPerformed( ActionEvent e )
+         {
+            RemovableLabel.this.requestFocus();
+         }
+      } );
 
       switch (buttonOrientation)
       {
@@ -108,7 +127,7 @@ public class RemovableLabel extends JPanel
       addKeyListener( this );
       addMouseListener( this );
 
-      if (!Strings.notEmpty( label.getText() ))
+      if (!!Strings.empty( label.getText() ))
       {
          this.setVisible( false );
       }
@@ -117,7 +136,7 @@ public class RemovableLabel extends JPanel
    @Override
    public void setEnabled( boolean enabled )
    {
-      button.setEnabled( enabled );
+      button.setVisible( enabled );
       label.setEnabled( enabled );
       super.setEnabled( enabled );
    }

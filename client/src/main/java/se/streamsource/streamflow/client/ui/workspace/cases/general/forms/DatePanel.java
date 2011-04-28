@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,26 +25,17 @@ import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
-import javax.swing.JFormattedTextField;
 import javax.swing.text.DefaultFormatterFactory;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+import java.util.TimeZone;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -61,7 +53,9 @@ public class DatePanel
       setLayout( new BorderLayout() );
 
       datePicker = new JXDatePicker();
+      datePicker.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
       final DateFormat dateFormat =  DateFormat.getDateInstance( DateFormat.SHORT );
+      dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
 
       datePicker.getEditor().setFormatterFactory( new DefaultFormatterFactory(new DatePickerFormatter( new DateFormat[]{dateFormat} ){
 

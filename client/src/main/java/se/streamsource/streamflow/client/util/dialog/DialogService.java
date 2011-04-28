@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Window;
-import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -93,9 +92,15 @@ public class DialogService
       return dialog;
    }
 
-   public JXDialog showOkDialog(Component owner, JComponent main)
+   public void showOkDialog(Component owner, JComponent main)
    {
-      Window window = WindowUtils.findWindow(owner);
+      JXDialog dialog = createOkDialog( owner, main );
+      dialog.setVisible( true );
+   }
+
+   private JXDialog createOkDialog( Component owner, JComponent main )
+   {
+     Window window = WindowUtils.findWindow(owner);
       JXDialog dialog;
       if (window instanceof Frame)
          dialog = new JXDialog((Frame) window, main);
@@ -109,7 +114,7 @@ public class DialogService
 
       dialog.getContentPane().setLayout(new BorderLayout());
       JButton okButton = new JButton(ok);
-      dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton));
+      dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton) );
       dialog.getContentPane().add(BorderLayout.CENTER, main);
       dialog.setMinimumSize(new Dimension(300, 100));
       dialog.pack();
@@ -125,8 +130,25 @@ public class DialogService
          }
       });
 
-      dialog.setVisible(true);
-      
+      return dialog;
+   }
+
+   private JXDialog createButtonLessDialog( Component owner, JComponent main )
+   {
+     Window window = WindowUtils.findWindow(owner);
+      JXDialog dialog;
+      if (window instanceof Frame)
+         dialog = new JXDialog((Frame) window, main);
+      else
+         dialog = new JXDialog((Dialog) window, main);
+      final JXDialog finalDialog = dialog;
+
+      dialog.getContentPane().setLayout(new BorderLayout());
+      dialog.getContentPane().add(BorderLayout.CENTER, main);
+      dialog.setMinimumSize(new Dimension(300, 100));
+      dialog.pack();
+      dialog.setLocationRelativeTo(owner);
+      dialog.setModal(true);
       return dialog;
    }
 
@@ -150,6 +172,16 @@ public class DialogService
       return builder.getPanel();
    }
 
+   private JPanel createButtonBar( JButton ok, JButton[] extras )
+   {
+      ButtonBarBuilder2 builder = new ButtonBarBuilder2();
+      builder.addButton(extras);
+      builder.addUnrelatedGap();
+      builder.addGlue();
+      builder.addButton(new JButton[] { ok });
+      return builder.getPanel();
+   }
+
    private JPanel createHelpOKCancelBar(JButton help, JButton ok, JButton cancel)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
@@ -162,14 +194,26 @@ public class DialogService
 
    public void showOkDialog(Component component, JComponent main, String title)
    {
-      showOkDialog(component, main).setTitle(title);
+      JXDialog dialog = createOkDialog(component, main);
+      dialog.setTitle(title);
+      dialog.setVisible(true);
    }
+
+   public void showButtonLessDialog( Component component, JComponent main, String title )
+   {
+      JXDialog dialog = createButtonLessDialog( component, main );
+      dialog.setTitle( title );
+      dialog.setVisible( true );
+   }
+
 
    public void showMessageDialog(Component component, String message, String title)
    {
       MessageLabel messageLabel = new MessageLabel( message );
       messageLabel.setActionMap( context.getActionMap(messageLabel ));
-      showOkDialog(component, messageLabel ).setTitle(title);
+      JXDialog dialog = createOkDialog(component, messageLabel );
+      dialog.setTitle( title );
+      dialog.setVisible( true );
    }
 
    public static class MessageLabel

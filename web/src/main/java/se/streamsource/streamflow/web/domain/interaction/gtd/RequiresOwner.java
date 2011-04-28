@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Check that an owner has a specific type
+ * Check that an owner is specified
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
 @Constraints(RequiresOwner.Constraint.class)
 public @interface RequiresOwner
 {
-   public Class value();
-
    public class Constraint
          implements org.qi4j.api.constraint.Constraint<RequiresOwner, Ownable.Data>
    {
       public boolean isValid( RequiresOwner owner, Ownable.Data value )
       {
-         return owner.value().isInstance(value.owner().get());
+         return value.owner().get() != null;
       }
    }
 }

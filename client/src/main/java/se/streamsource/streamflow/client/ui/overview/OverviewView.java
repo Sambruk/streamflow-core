@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,14 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
-import se.streamsource.streamflow.client.ui.workspace.table.InboxCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 
 import javax.swing.AbstractAction;
 import javax.swing.JList;
@@ -65,15 +65,20 @@ public class OverviewView
 {
    private JList overviewList;
    private JSplitPane pane;
+   private CasesView casesView;
    private OverviewModel model;
+   private final CommandQueryClient client;
 
    public OverviewView( final @Service ApplicationContext context,
                         final @Uses CommandQueryClient client,
                         final @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
+      this.client = client;
 
       overviewList = new JList();
+      casesView = obf.newObjectBuilder( CasesView.class ).use( client ).newInstance();
+      casesView.setBlankPanel(new JPanel());
 
       model = obf.newObjectBuilder( OverviewModel.class ).use( client ).newInstance();
 
@@ -120,7 +125,7 @@ public class OverviewView
       overviewOutline.setMinimumSize( new Dimension( 150, 300 ) );
 
       pane.setLeftComponent( overviewOutline );
-      pane.setRightComponent( new JPanel() );
+      pane.setRightComponent( casesView );
 
       add( pane, BorderLayout.CENTER );
 
@@ -139,18 +144,16 @@ public class OverviewView
                {
                   ContextItem contextItem = (ContextItem) list.getSelectedValue();
                   TableFormat tableFormat;
-                  if (contextItem.getRelation().equals(Icons.assign.name()))
+                  /*if (contextItem.getRelation().equals(Icons.assign.name()))
                   {
                      tableFormat = new OverviewAssignmentsCaseTableFormatter();
                   } else
-                  {
-                     tableFormat = new InboxCaseTableFormatter();
-                  }
+                  {*/
+                     tableFormat = new CasesTableFormatter();
+                  //}
                   CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
 
-//                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
-
-                  pane.setRightComponent( casesTable );
+                  casesView.showTable( casesTable );
                } else
                {
                   // TODO Overview of all projects
@@ -174,4 +177,5 @@ public class OverviewView
 
       new RefreshWhenShowing(this, model);
    }
+
 }

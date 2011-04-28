@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,13 @@ import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -71,10 +77,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
-import static org.qi4j.api.util.Iterables.count;
-import static org.qi4j.api.util.Iterables.filter;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Implementation of Manager interface. All general JMX management methods
@@ -432,7 +436,7 @@ public interface ManagerComposite
       private Date getEventBackupDate( File eventBackup ) throws ParseException
       {
          String name = eventBackup.getName().substring( "streamflow_events_".length() );
-         if (isCompleteEventBackup( eventBackup ))
+         if (isDiffEventBackup(eventBackup))
          {
             // Range
             name = name.substring( name.indexOf( "-" ) + 1, name.indexOf( "." ) );
@@ -448,7 +452,7 @@ public interface ManagerComposite
          return backupDate;
       }
 
-      private boolean isCompleteEventBackup(File eventBackup)
+      private boolean isDiffEventBackup(File eventBackup)
       {
          return eventBackup.getName().substring( "streamflow_events_".length() ).contains( "-" );
       }
@@ -583,7 +587,12 @@ public interface ManagerComposite
          {
             public int compare( File o1, File o2 )
             {
-               return o2.getName().compareTo( o1.getName() );
+               String o1Name = o1.getName();
+               o1Name = o1Name.substring(0, o1Name.lastIndexOf('.'));
+               String o2Name = o2.getName();
+               o2Name = o2Name.substring(0, o2Name.lastIndexOf('.'));
+
+               return o1Name.compareTo(o2Name);
             }
          } );
 

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,18 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
-import se.streamsource.dci.value.StringValue;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
@@ -52,7 +55,7 @@ import java.util.regex.PatternSyntaxException;
 public interface
       SearchCaseQueries
 {
-   Query<Case> search( StringValue query );
+   Query<Case> search( String query );
 
    abstract class Mixin
          implements SearchCaseQueries
@@ -63,11 +66,11 @@ public interface
       @This
       UserAuthentication.Data user;
 
-      public Query<Case> search( StringValue query )
+      public Query<Case> search( String query )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         String queryString = query.string().get().trim();
+         String queryString = query.trim();
 
          if (queryString.length() > 0)
          {
@@ -78,44 +81,89 @@ public interface
             {
                SubQuery search = searches.get( i );
 
-               if (search.hasName( "label" ))
+               if (search.hasName("status"))
                {
-                  StringBuilder labelQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity" );
-                  labelQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
+                  queryBuilder.append( " status:(" );
+                  int count = 0;
+                  for (String status : Arrays.asList(search.getValue().split(",")))
+                  {
+                     if (count == 0)
+                     {
+                        queryBuilder.append(status);
+                     } else
+                     {
+                        queryBuilder.append(" OR ").append(status);
+                     }
 
-                  Query<LabelEntity> labels = module.queryBuilderFactory()
-                        .newNamedQuery( LabelEntity.class, uow, "solrquery" ).setVariable( "query", labelQueryBuilder.toString() );
+                     count++;
+                  }
+                  queryBuilder.append(")");
+                  
+               } else if (search.hasName( "label" ))
+               {
+                  List<LabelEntity> labels = new ArrayList<LabelEntity>();
+                  for (String label : search.getValue().split(","))
+                  {
+                     try
+                     {
+                        labels.add( module.unitOfWorkFactory().currentUnitOfWork().get( LabelEntity.class, label.replace( "\\", "" ) ) );
 
+                     } catch (NoSuchEntityException e)
+                     {
+                        StringBuilder labelQueryBuilder = new StringBuilder(
+                              "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity" );
+                        labelQueryBuilder.append( " (description:" ).append( label );
+                        labelQueryBuilder.append( " OR ntext:" ).append( label ).append( ")" );
+
+                        Iterables.addAll( labels, module.queryBuilderFactory()
+                              .newNamedQuery( LabelEntity.class, uow, "solrquery" )
+                              .setVariable( "query", labelQueryBuilder.toString() ) );
+                     }
+                  }
                   if (labels.iterator().hasNext())
                   {
-                     queryBuilder.append( " labels:(" );
+                     queryBuilder.append(" labels:(");
                      int count = 0;
-                     for (LabelEntity label : labels)
+                     for (LabelEntity labelEntity : labels)
                      {
                         if (count == 0)
                         {
-                           queryBuilder.append( label.identity().get() );
+                           queryBuilder.append(labelEntity.identity().get());
                         } else
                         {
-                           queryBuilder.append( " OR " ).append( label.identity().get() );
+                           queryBuilder.append(" OR ").append(labelEntity.identity().get());
                         }
 
                         count++;
                      }
-                     queryBuilder.append( ")" );
+                     queryBuilder.append(")");
                   } else
                   {
-                     // dismiss search - no label/s with given name exist. Return empty search
-                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
+                     // dismiss search - no label/s with given name exist.
+                     // Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder(Case.class)
+                           .newQuery( Collections.<Case>emptyList() );
                   }
                } else if (search.hasName( "caseType" ))
                {
-                  StringBuilder caseTypeQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" );
-                  caseTypeQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
+                  List<CaseTypeEntity> caseTypes = new ArrayList<CaseTypeEntity>();
+                  for (String caseType : search.getValue().split(","))
+                  {
+                     try
+                     {
+                        caseTypes.add( module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypeEntity.class, caseType.replace( "\\", "" ) ) );
+                     } catch ( NoSuchEntityException e )
+                     {
+                        StringBuilder caseTypeQueryBuilder = new StringBuilder(
+                              "type:se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" );
+                        caseTypeQueryBuilder.append( " (description:" ).append( caseType );
+                        caseTypeQueryBuilder.append( " OR ntext:" ).append( caseType ).append( ")" );
 
-                  Query<CaseTypeEntity> caseTypes = module.queryBuilderFactory()
-                        .newNamedQuery( CaseTypeEntity.class, uow, "solrquery" ).setVariable( "query", caseTypeQueryBuilder.toString() );
-
+                        Iterables.addAll( caseTypes,
+                              module.queryBuilderFactory().newNamedQuery( CaseTypeEntity.class, uow, "solrquery" )
+                                    .setVariable( "query", caseTypeQueryBuilder.toString() ) );
+                     }
+                  }
                   if (caseTypes.iterator().hasNext())
                   {
                      queryBuilder.append( " caseType:(" );
@@ -141,12 +189,24 @@ public interface
                   }
                } else if (search.hasName( "project" ))
                {
-                  StringBuilder projectQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" );
-                  projectQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
+                  List<ProjectEntity> projects = new ArrayList<ProjectEntity>();
+                  for (String project : search.getValue().split(","))
+                  {
+                     try
+                     {
+                        projects.add( module.unitOfWorkFactory().currentUnitOfWork().get( ProjectEntity.class, project.replace( "\\", "" ) ) );
+                     } catch ( NoSuchEntityException e )
+                     {
+                        StringBuilder projectQueryBuilder = new StringBuilder(
+                              "type:se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" );
+                        projectQueryBuilder.append( " ( description:" ).append( project );
+                        projectQueryBuilder.append( " OR ntext:" ).append( project ).append( ")" );
 
-                  Query<ProjectEntity> projects = module.queryBuilderFactory()
-                        .newNamedQuery( ProjectEntity.class, uow, "solrquery" ).setVariable( "query", projectQueryBuilder.toString() );
-
+                        Iterables.addAll( projects,
+                              module.queryBuilderFactory().newNamedQuery( ProjectEntity.class, uow, "solrquery" )
+                                    .setVariable( "query", projectQueryBuilder.toString() ) );
+                     }
+                  }
                   if (projects.iterator().hasNext())
                   {
                      queryBuilder.append( " owner:(" );
@@ -171,13 +231,24 @@ public interface
                   }
                } else if (search.hasName( "createdBy" ))
                {
-                  StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
+                  List<UserEntity> users = new ArrayList<UserEntity>();
                   String userName = user.userName().get();
-                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) ).append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) ).append( ")" );
+                  for (String user : search.getValue().split(","))
+                  {
+                     try
+                     {
+                        users.add( module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, user.replace( "\\", "" ) ) );
+                     } catch ( NoSuchEntityException e )
+                     {
+                        StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
+                        creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( user, userName ) )
+                              .append( " OR " ).append( " description:" ).append( getUserInSearch( user, userName ) )
+                              .append( " OR " ).append( " ntext:" ).append( getUserInSearch( user, userName ) ).append( ")" );
 
-                  Query<UserEntity> users = module.queryBuilderFactory()
-                        .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
-
+                        Iterables.addAll( users, module.queryBuilderFactory()
+                              .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() ) );
+                     }
+                  }
                   int count = 0;
                   for (UserEntity user : users)
                   {
@@ -204,28 +275,41 @@ public interface
                {
                   queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getQuotedValue() );
 
-               } else if (search.hasName( "createdOn" ))
+               } else if (search.hasName( "createdOn" ) || search.hasName( "dueOn" ) )
                {
                   buildDateQuery( queryBuilder, search );
                } else if (search.hasName( "assignedTo" ))
                {
-
-                  StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
+                  List<UserEntity> users = new ArrayList<UserEntity>();
                   String userName = user.userName().get();
-                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) ).append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) ).append( ")" );
+                  for (String user : search.getValue().split(","))
+                  {
+                     try
+                     {
+                        users.add( module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, user.replace( "\\", "" ) ) );
+                     } catch ( NoSuchEntityException e )
+                     {
+                        StringBuilder creatorQueryBuilder = new StringBuilder(
+                              "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
+                        creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( user, userName ) ).append( " OR " )
+                              .append( " description:" ).append( getUserInSearch( user, userName ) ).append( " OR " )
+                              .append( " ntext:" ).append( getUserInSearch( user, userName ) ).append( ")" );
 
-                  Query<UserEntity> users = module.queryBuilderFactory()
-                        .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
-
+                        Iterables.addAll(
+                              users,
+                              module.queryBuilderFactory().newNamedQuery( UserEntity.class, uow, "solrquery" )
+                                    .setVariable( "query", creatorQueryBuilder.toString() ) );
+                     }
+                  }
                   int count = 0;
-                  for (UserEntity user : users)
+                  for (UserEntity userItem : users)
                   {
                      if (count == 0)
                      {
-                        queryBuilder.append( " assignedTo:(" ).append( user.identity().get() );
+                        queryBuilder.append( " assignedTo:(" ).append( userItem.identity().get() );
                      } else
                      {
-                        queryBuilder.append( " OR " ).append( user.identity().get() );
+                        queryBuilder.append( " OR " ).append( userItem.identity().get() );
                      }
 
                      count++;
@@ -252,7 +336,13 @@ public interface
                queryBuilder.append( " !status:DRAFT" );
                Query<Case> cases = module.queryBuilderFactory()
                      .newNamedQuery( Case.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
-               return cases;
+               return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Iterables.filter( new Specification<Case>()
+               {
+                  public boolean satisfiedBy( Case item )
+                  {
+                     return item.hasPermission( user.userName().get(), PermissionType.read.name() );
+                  }
+               }, cases) );
             }
          }
          return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
@@ -265,7 +355,8 @@ public interface
          String searchDateTo = search.getValue();
          if (occurrancesOfInString( "-", searchDateFrom ) == 1)
          {
-            searchDateFrom = searchDateFrom.substring( 0, searchDateFrom.indexOf( "-" ) );
+            // Substring and remove escape chars
+            searchDateFrom = searchDateFrom.substring( 0, searchDateFrom.indexOf( "-" ) ).replace( "\\", "" );
             searchDateTo = searchDateTo.substring( searchDateTo.indexOf( "-" ) + 1, searchDateTo.length() );
          }
          Date referenceDate = new Date();
@@ -318,17 +409,17 @@ public interface
       /**
        * Get the calling user from the access controller roleMap.
        *
-       * @param search
+       * @param 
        * @return
        */
-      protected String getUserInSearch( SubQuery search, String user )
+      protected String getUserInSearch( String userName, String user )
       {
-         if (UserSearchKeyword.ME.toString().equalsIgnoreCase( search.getValue() ))
+         if (UserSearchKeyword.ME.toString().equalsIgnoreCase( userName ))
          {
             return user;
          } else
          {
-            return search.getQuotedValue();
+            return "\"" + userName + "\"";
          }
       }
 
@@ -493,17 +584,42 @@ public interface
 
          public String getValue()
          {
-            return value;
+            return escapeLuceneCharacters( value );
          }
 
          public String getQuotedValue()
          {
-            return "\""+value+"\"";
+            return "\""+escapeLuceneCharacters( value )+"\"";
          }
 
          public boolean hasName( String... names )
          {
             return name == null ? false : Arrays.asList( names ).contains( name );
+         }
+
+         private String escapeLuceneCharacters( String query )
+         {
+            // DO NOT escape wildcard characters!!  "*", "?"
+            List<String> specialChars =
+                  Arrays.asList( "+", "-", "&&", "||", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", ":" );
+
+            for ( String str : specialChars )
+            {
+               if( query.contains( str ) )
+               {
+                  char[] escaped = new char[str.length()*2];
+                  int count = 0;
+                  for( Character c : str.toCharArray() )
+                  {
+                     escaped[count] = '\\';
+                     count++;
+                     escaped[count] = c;
+                     count++;
+                  }
+                  query = query.replace( str, new String( escaped ) );
+               }
+            }
+            return query;
          }
       }
    }

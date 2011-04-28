@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,18 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * JAVADOC
@@ -140,7 +148,7 @@ public class SelectionElementsView
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
 
-      if ( Strings.notEmpty( dialog.name() ) )
+      if ( !Strings.empty( dialog.name() ) )
       {
          return new CommandTask()
          {
@@ -228,7 +236,7 @@ public class SelectionElementsView
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.rename ));
 
-      if ( Strings.notEmpty( dialog.name() ))
+      if ( !Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {

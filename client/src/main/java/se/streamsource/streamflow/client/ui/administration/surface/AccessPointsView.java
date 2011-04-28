@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,10 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import java.awt.Component;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 
 public class AccessPointsView
@@ -85,7 +85,7 @@ public class AccessPointsView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_accesspoint_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {
@@ -116,7 +116,7 @@ public class AccessPointsView
             public void command()
                throws Exception
             {
-               model.removeAccessPoint( selected );
+               model.remove( selected );
             }
          };
       } else
@@ -129,7 +129,7 @@ public class AccessPointsView
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_accesspoint_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {
@@ -147,5 +147,7 @@ public class AccessPointsView
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
+
+      super.notifyTransactions( transactions );
    }
 }

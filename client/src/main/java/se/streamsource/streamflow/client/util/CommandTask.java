@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,6 +90,9 @@ public abstract class CommandTask
    @Override
    protected void failed( Throwable throwable )
    {
-      throw new OperationException( ErrorResources.error, throwable );
+      if (throwable instanceof OperationException)
+         throw (OperationException) throwable;
+      else
+         throw new OperationException( ErrorResources.error, throwable );
    }
 }

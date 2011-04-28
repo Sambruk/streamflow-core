@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +22,17 @@ import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
 
 /**
  * JAVADOC
  */
-@RequiresPermission("administrator")
+@RequiresPermission(PermissionType.administrator)
 public class OrganizationResource
       extends CommandQueryResource
 {
@@ -85,6 +88,12 @@ public class OrganizationResource
    public void accesspoints()
    {
       subResource( AccessPointsAdministrationResource.class );
+   }
+
+   @SubResource
+   public void emailaccesspoints()
+   {
+      subResource(EmailAccessPointsAdministrationResource.class);
    }
 
    @SubResource

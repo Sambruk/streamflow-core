@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import se.streamsource.streamflow.domain.attachment.AttachmentAssembler;
 import se.streamsource.streamflow.domain.contact.ContactAssembler;
 import se.streamsource.streamflow.domain.form.FormAssembler;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
 
 /**
  * JAVADOC
@@ -32,10 +33,12 @@ public class CommonDomainAssembler
 {
    public void assemble( LayerAssembly domainLayer ) throws AssemblyException
    {
-      new ContactAssembler().assemble( domainLayer.moduleAssembly( "Contact" ) );
-      new FormAssembler().assemble( domainLayer.moduleAssembly( "Form" ) );
-      new AttachmentAssembler().assemble( domainLayer.moduleAssembly( "Attachment" ) );
+      new ContactAssembler().assemble( domainLayer.module( "Contact" ) );
+      new FormAssembler().assemble( domainLayer.module( "Form" ) );
+      new AttachmentAssembler().assemble( domainLayer.module( "Attachment" ) );
 
-      domainLayer.moduleAssembly( "Case" ).addValues( Actions.class ).visibleIn( Visibility.application );
+      domainLayer.module("Organization").values(EmailAccessPointValue.class).visibleIn(Visibility.application);
+
+      domainLayer.module( "Case" ).values( Actions.class ).visibleIn( Visibility.application );
    }
 }

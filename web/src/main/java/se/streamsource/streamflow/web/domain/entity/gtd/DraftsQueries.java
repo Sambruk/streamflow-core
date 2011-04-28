@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package se.streamsource.streamflow.web.domain.entity.gtd;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -24,6 +26,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
@@ -33,10 +36,11 @@ import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(DraftsQueries.Mixin.class)
 public interface DraftsQueries
+   extends AbstractCaseQueriesFilter
 {
-   QueryBuilder<Case> drafts();
+   QueryBuilder<Case> drafts( @Optional String filter);
 
-   class Mixin
+   abstract class Mixin
          implements DraftsQueries
    {
       @Structure
@@ -45,7 +49,7 @@ public interface DraftsQueries
       @This
       Creator creator;
 
-      public QueryBuilder<Case> drafts()
+      public QueryBuilder<Case> drafts( String filter)
       {
          // Find all Draft cases with specific creator which have not yet been opened
          QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder( Case.class );
@@ -53,6 +57,10 @@ public interface DraftsQueries
          queryBuilder = queryBuilder.where( and(
                eq( createdId, creator ),
                QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.DRAFT ) ) );
+
+         if( !Strings.empty( filter ) )
+            queryBuilder = applyFilter( queryBuilder, filter );
+
          return queryBuilder;
       }
    }

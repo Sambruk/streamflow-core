@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.group.Participants;
 
 /**
  * JAVADOC
@@ -41,6 +42,8 @@ public interface Members
    void removeMember( Member member );
 
    void removeAllMembers();
+
+   boolean isMember(Member member);
 
    interface Data
    {
@@ -93,6 +96,21 @@ public interface Members
          {
             removeMember( data.members().get( 0 ) );
          }
+      }
+
+      public boolean isMember( Member member )
+      {
+         for (Member member1 : data.members())
+         {
+            if (member.equals(member1))
+               return true;
+
+            if (member instanceof Participants)
+            {
+
+            }
+         }
+         return false;
       }
    }
 

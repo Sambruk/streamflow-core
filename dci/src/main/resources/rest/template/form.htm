@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2010 Streamsource AB
+    Copyright 2009-2011 Streamsource AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@
     <fieldset>
             <legend>$request.resourceRef.lastSegment</legend>
 
-#foreach ($property in $result.state().properties())
-        <label for="${property.qualifiedName().name()}">${property.qualifiedName().name()}:</label>
-        <input type="text" name="${property.qualifiedName().name()}" value="$!{request.getResourceRef().getQueryAsForm().getFirstValue( $property.qualifiedName().name() )}"><br/>
+#foreach ($param in $result)
+        <label for="${param.name}">${param.name}:</label>
+        <input type="text" name="${param.name}" value="$!{param.value}"><br/>
 #end
     <fieldset>
     <input value="Submit" type="submit"/>

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,23 +30,29 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Annotations;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyDescriptor;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.*;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Form;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
+import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -72,13 +78,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.qi4j.api.util.Annotations.*;
+import static org.qi4j.api.util.Iterables.*;
+
 /**
  * JAVADOC
  */
 public class CommandQueryResource
       implements Uniform
 {
+   private static final String ARGUMENTS = "arguments";
    private Map<Class, List<Method>> contextClassMethods = new ConcurrentHashMap<Class, List<Method>>();
+   private Map<String, Object> contexts = new ConcurrentHashMap<String, Object>();
 
    private
    @Structure
@@ -108,8 +119,9 @@ public class CommandQueryResource
    @Service
    ResultConverter converter;
 
-   protected Request request;
-   protected Response response;
+   private
+   @Uses
+   CommandQueryRestlet2 restlet;
 
    private Class[] contextClasses;
 
@@ -123,18 +135,15 @@ public class CommandQueryResource
       RoleMap roleMap = RoleMap.current();
 
       // Check constraints for this resource
-      if (!constraints.isValid( getClass(), roleMap ))
+      if (!constraints.isValid( getClass(), roleMap, module ))
       {
-         throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN );
+         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
       }
 
       RoleMap.setCurrentRoleMap( new RoleMap( roleMap ) );
 
-      this.request = request;
-      this.response = response;
-
       // Find remaining segments
-      List<String> segments = getSegments( request );
+      List<String> segments = getSegments( );
 
       if (segments.size() > 0)
       {
@@ -142,22 +151,22 @@ public class CommandQueryResource
 
          if (segments.size() > 0)
          {
-            invokeResource( segment );
+            handleSubResource( segment );
          } else
          {
-            invokeCommandQuery( segment );
+            handleResource( segment );
          }
       }
    }
 
-   private void invokeResource( String segment )
+   private void handleSubResource( String segment )
    {
       if (this instanceof SubResources)
       {
          SubResources subResources = (SubResources) this;
          try
          {
-            StringBuilder template = (StringBuilder) request.getAttributes().get("template");
+            StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get( "template" );
             template.append( "resource/" );
             subResources.resource( URLDecoder.decode( segment, "UTF-8" ) );
          } catch (UnsupportedEncodingException e)
@@ -171,13 +180,13 @@ public class CommandQueryResource
          {
             Method method = getSubResourceMethod( segment );
 
-            StringBuilder template = (StringBuilder) request.getAttributes().get("template");
-            template.append( segment).append("/" );
+            StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get( "template" );
+            template.append( segment ).append( "/" );
 
             method.invoke( this );
          } catch (Throwable e)
          {
-            handleException( response, e );
+            handleException( Response.getCurrent(), e );
          }
       }
    }
@@ -195,7 +204,7 @@ public class CommandQueryResource
 
    public void resource()
    {
-      if (request.getMethod().equals( org.restlet.data.Method.GET ))
+      if (Request.getCurrent().getMethod().equals( org.restlet.data.Method.GET ))
       {
          RoleMap roleMap = RoleMap.current();
 
@@ -204,25 +213,35 @@ public class CommandQueryResource
          final List<Method> subResources = new ArrayList<Method>();
 
          // Add commands+queries from the context classes
-         InteractionConstraints methodConstraints = constraints;
          for (Class contextClass : contextClasses)
          {
+            // Check context class constraints
+            if (!constraints.isValid( contextClass, roleMap, module ))
+               continue; // Skip this class entirely
 
-            Method[] methods = contextClass.getMethods();
-            // TODO Handle custom constraints        if (context instanceof InteractionConstraints)
-            //            methodConstraints = (InteractionConstraints) context;
+            // Filter out methods first.
+            // TODO Cache this
+            Iterable<Method> methods = Iterables.filter( new Specification<Method>()
+            {
+               public boolean satisfiedBy( Method method )
+               {
+                  return !method.isSynthetic() &&
+                        !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )) &&
+                        !(method.getName().equals("isValid"));
+
+               }
+            }, Iterables.iterable( contextClass.getMethods()));
 
             for (Method method : methods)
             {
-               if (!method.isSynthetic() && !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
-                  if (methodConstraints.isValid( method, roleMap ))
-                     if (method.getReturnType().equals( Void.TYPE ))
-                     {
-                        commands.add( method );
-                     } else
-                     {
-                        queries.add( method );
-                     }
+               if (constraints.isValid( method, roleMap, module ))
+                  if (isCommand( method ))
+                  {
+                     commands.add( method );
+                  } else
+                  {
+                     queries.add( method );
+                  }
             }
          }
 
@@ -233,7 +252,7 @@ public class CommandQueryResource
 
             for (Method method : methods)
             {
-               if (method.getAnnotation( SubResource.class ) != null && methodConstraints.isValid( method, roleMap ))
+               if (method.getAnnotation( SubResource.class ) != null && constraints.isValid( method, roleMap, module ))
                   subResources.add( method );
             }
          }
@@ -262,7 +281,7 @@ public class CommandQueryResource
                prototype.href().set( query.getName().toLowerCase() );
                prototype.rel().set( query.getName().toLowerCase() );
                prototype.id().set( query.getName().toLowerCase() );
-               queriesProperty.add( linkBuilder.newInstance());
+               queriesProperty.add( linkBuilder.newInstance() );
             }
          }
 
@@ -276,7 +295,7 @@ public class CommandQueryResource
                prototype.href().set( command.getName().toLowerCase() );
                prototype.rel().set( command.getName().toLowerCase() );
                prototype.id().set( command.getName().toLowerCase() );
-               commandsProperty.add( linkBuilder.newInstance());
+               commandsProperty.add( linkBuilder.newInstance() );
             }
          }
 
@@ -301,22 +320,27 @@ public class CommandQueryResource
 
          try
          {
-            resultWriter.write( builder.newInstance(), response );
+            resultWriter.write( builder.newInstance(), Response.getCurrent() );
          } catch (Throwable e)
          {
-            handleException( response, e );
+            handleException( Response.getCurrent(), e );
          }
       } else
       {
-         response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
+         Response.getCurrent().setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
       }
 
    }
 
-   protected void setResourceValidity(EntityComposite entity)
+   protected void setResourceValidity( EntityComposite entity )
    {
       ResourceValidity validity = new ResourceValidity( entity, spi );
       RoleMap.current().set( validity );
+   }
+
+   private boolean isCommand( Method method )
+   {
+      return method.getReturnType().equals( Void.TYPE );
    }
 
    /**
@@ -352,33 +376,48 @@ public class CommandQueryResource
       return humanReadableString.toString();
    }
 
-   protected Object createContext( String queryName )
+   protected Object createContext( String interactionName )
    {
-      for (Class contextClass : contextClasses)
+      Object context = contexts.get(interactionName);
+
+      if (context == null)
       {
-         for (Method method : getContextMethods( contextClass ))
+         // Instantiate correct context class for this name
+         // TODO Move this to constructor?
+         next : for (Class contextClass : contextClasses)
          {
-            if (method.getName().equalsIgnoreCase( queryName ))
+            for (Method method : getContextMethods( contextClass ))
             {
-               if (TransientComposite.class.isAssignableFrom( contextClass ))
+               if (method.getName().equalsIgnoreCase( interactionName ))
                {
-                  return module.transientBuilderFactory().newTransient( contextClass );
-               } else
-               {
-                  return module.objectBuilderFactory().newObject( contextClass );
+                  if (TransientComposite.class.isAssignableFrom( contextClass ))
+                  {
+                     context = module.transientBuilderFactory().newTransient( contextClass );
+                     break next;
+                  } else
+                  {
+                     context = module.objectBuilderFactory().newObject( contextClass );
+                     break next;
+                  }
                }
             }
          }
+
+         // Save it
+         contexts.put(interactionName, context);
       }
 
-      throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+      if (context == null)
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+
+      return context;
    }
 
    protected void result( Object resultValue ) throws Exception
    {
       if (resultValue != null)
       {
-         if (!resultWriter.write( resultValue, response ))
+         if (!resultWriter.write( resultValue, Response.getCurrent() ))
          {
             throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "No result writer for type " + resultValue.getClass().getName() );
          }
@@ -387,7 +426,7 @@ public class CommandQueryResource
 
    protected Object invoke() throws Throwable
    {
-      return invoke( request.getResourceRef().getLastSegment() );
+      return invoke( Request.getCurrent().getResourceRef().getLastSegment() );
    }
 
    protected Object invoke( String interactionName ) throws Throwable
@@ -395,13 +434,23 @@ public class CommandQueryResource
       Object context = createContext( interactionName );
 
       Method method = getInteractionMethod( interactionName );
+      Object[] arguments;
 
-      if (method.getReturnType().equals( Void.TYPE ))
+      // Check context class constraints
+      if (!constraints.isValid( method.getDeclaringClass(), RoleMap.current(), module ))
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+
+      // Check method constraints
+      if (!constraints.isValid( method, RoleMap.current(), module ))
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+
+      if (isCommand( method ))
       {
          // Command
 
          // Create argument
-         Object[] arguments = getCommandArguments( method );
+         arguments = getCommandArguments( method );
+         Request.getCurrent().getAttributes().put(ARGUMENTS, arguments);
 
          // Invoke method
          try
@@ -423,7 +472,6 @@ public class CommandQueryResource
          // Query
 
          // Create argument
-         Object[] arguments;
          if (method.getParameterTypes().length > 0)
          {
             try
@@ -433,16 +481,12 @@ public class CommandQueryResource
                if (arguments == null)
                {
                   // Show form
-                  Class valueType = method.getParameterTypes()[0];
-                  ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-                  return valueDescriptor;
+                  return formForMethod( method );
                }
             } catch (IllegalArgumentException e)
             {
                // Still missing some values - show form
-               Class valueType = method.getParameterTypes()[0];
-               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-               return valueDescriptor;
+               return formForMethod(method);
             }
 
          } else
@@ -454,6 +498,7 @@ public class CommandQueryResource
          // Invoke method
          try
          {
+            Request.getCurrent().getAttributes().put(ARGUMENTS, arguments);
             return method.invoke( context, arguments );
          } catch (IllegalAccessException e)
          {
@@ -470,12 +515,12 @@ public class CommandQueryResource
 
    protected void subResource( Class<? extends CommandQueryResource> subResourceClass )
    {
-      module.objectBuilderFactory().newObject( subResourceClass ).handle( request, response );
+      restlet.subResource(subResourceClass);
    }
 
    protected void subResourceContexts( Class<?>... contextClasses )
    {
-      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( new Object[]{contextClasses} ).newInstance().handle( request, response );
+      restlet.subResourceContexts(contextClasses);
    }
 
    protected Method getInteractionMethod( String methodName ) throws ResourceException
@@ -492,9 +537,9 @@ public class CommandQueryResource
       throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
    }
 
-   protected List<String> getSegments( Request request )
+   protected List<String> getSegments()
    {
-      return (List<String>) request.getAttributes().get( "segments" );
+      return (List<String>) Request.getCurrent().getAttributes().get( "segments" );
    }
 
    protected <T> T setRole( Class<T> entityClass, String id, Class... roleClasses )
@@ -543,114 +588,239 @@ public class CommandQueryResource
 
    }
 
-   private void invokeCommandQuery( String segment )
+   private void handleResource( String segment )
    {
       if (segment.equals( "" ) || segment.equals( "." ))
       {
-         StringBuilder template = (StringBuilder) request.getAttributes().get("template");
-         template.append("resource" );
+         StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get( "template" );
+         template.append( "resource" );
 
          // Index for this resource
          resource();
       } else
       {
-         StringBuilder template = (StringBuilder) request.getAttributes().get("template");
-         template.append( segment);
+         StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get( "template" );
+         template.append( segment );
 
          Method contextMethod = getInteractionMethod( segment );
 
-         // Check if this is a request to show the form for this interaction
-         if ((request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getResourceRef().getQuery() == null) ||
-               (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null || contextMethod.getParameterTypes()[0].equals(Response.class))))
+         if (isCommand( contextMethod ))
          {
-            // Show form
-            try
-            {
-               Class valueType = contextMethod.getParameterTypes()[0];
-               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-
-               result( valueDescriptor );
-            } catch (Throwable ex)
-            {
-               handleException( response, ex );
-            }
+            handleCommand( contextMethod );
          } else
          {
-            try
-            {
-               // Check timestamps
-               ResourceValidity validity = RoleMap.role(ResourceValidity.class);
-               validity.checkRequest( request );
-            } catch (IllegalArgumentException e)
-            {
-               // Ignore
-            }
-
-            // We have input data - do either command or query
-            try
-            {
-               Method method = getClass().getMethod( segment );
-
-               if (contextMethod.getReturnType().equals( Void.TYPE ))
-               {
-                  // Command
-                  try
-                  {
-                     method.invoke( this );
-                  } catch (IllegalArgumentException e)
-                  {
-                     response.setStatus( Status.SERVER_ERROR_INTERNAL );
-
-                  } catch (IllegalAccessException e)
-                  {
-                     response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
-
-                  } catch (InvocationTargetException e)
-                  {
-                     handleException( response, e );
-                  }
-               } else
-               {
-                  // Query
-                  try
-                  {
-                     method.invoke( this );
-                  } catch (IllegalAccessException e)
-                  {
-                     response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
-
-                  } catch (InvocationTargetException e)
-                  {
-                     handleException( response, e );
-                  }
-               }
-
-            } catch (NoSuchMethodException e)
-            {
-               try
-               {
-                  Object result = invoke( segment );
-                  if (result instanceof Representation)
-                  {
-                     response.setEntity( (Representation) result );
-                  } else
-                     result( convert( result ) );
-               } catch (Throwable throwable)
-               {
-                  handleException( response, throwable );
-               }
-            } catch (Exception ex)
-            {
-               handleException( response, ex );
-            }
+            handleQuery( contextMethod );
          }
       }
+   }
+
+   private void handleCommand( Method contextMethod )
+   {
+      // Check if this is a request to show the form for this command
+      if (shouldShowCommandForm(contextMethod))
+      {
+         // Show form
+         Request.getCurrent().setMethod( org.restlet.data.Method.POST );
+
+         try
+         {
+            result( formForMethod( contextMethod ) );
+         } catch (Exception e)
+         {
+            handleException( Response.getCurrent(), e );
+         }
+      } else
+      {
+         try
+         {
+            // Check timestamps
+            ResourceValidity validity = RoleMap.role( ResourceValidity.class );
+            validity.checkRequest( Request.getCurrent() );
+         } catch (IllegalArgumentException e)
+         {
+            // Ignore
+         }
+
+         // We have input data - do command
+         try
+         {
+            Method method = getClass().getMethod( contextMethod.getName().toLowerCase() );
+
+            // Command
+            try
+            {
+               method.invoke( this );
+            } catch (IllegalArgumentException e)
+            {
+               Response.getCurrent().setStatus( Status.SERVER_ERROR_INTERNAL );
+
+            } catch (IllegalAccessException e)
+            {
+               Response.getCurrent().setStatus( Status.CLIENT_ERROR_NOT_FOUND );
+
+            } catch (InvocationTargetException e)
+            {
+               handleException( Response.getCurrent(), e );
+            }
+         } catch (NoSuchMethodException e)
+         {
+            try
+            {
+               Object result = invoke( contextMethod.getName().toLowerCase() );
+               if (result instanceof Representation)
+               {
+                  Response.getCurrent().setEntity( (Representation) result );
+               } else
+                  result( convert( result ) );
+            } catch (Throwable throwable)
+            {
+               handleException( Response.getCurrent(), throwable );
+            }
+         } catch (Exception ex)
+         {
+            handleException( Response.getCurrent(), ex );
+         }
+      }
+   }
+
+   private boolean shouldShowCommandForm(Method contextMethod)
+   {
+      // Show form on GET/HEAD
+      if (Request.getCurrent().getMethod().isSafe())
+         return true;
+
+      if (contextMethod.getParameterTypes().length > 0)
+      {
+         return !(contextMethod.getParameterTypes()[0].equals( Response.class ) || Request.getCurrent().getEntity().isAvailable() || Request.getCurrent().getEntityAsText() != null || Request.getCurrent().getResourceRef().getQuery() != null);
+      }
+
+      return false;
+   }
+
+   private void handleQuery( Method contextMethod )
+   {
+      // Query
+      // Check if this is a Request.getCurrent() to show the form for this interaction
+      if ((Request.getCurrent().getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && Request.getCurrent().getResourceRef().getQuery() == null) ||
+            (!Request.getCurrent().getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(Request.getCurrent().getEntity().isAvailable() || Request.getCurrent().getResourceRef().getQuery() != null || contextMethod.getParameterTypes()[0].equals( Response.class ))))
+      {
+         // Show form
+         try
+         {
+            result( formForMethod( contextMethod ) );
+         } catch (Exception e)
+         {
+            handleException( Response.getCurrent(), e );
+         }
+      } else
+      {
+         try
+         {
+            // Check timestamps
+            ResourceValidity validity = RoleMap.role( ResourceValidity.class );
+            validity.checkRequest( Request.getCurrent() );
+         } catch (IllegalArgumentException e)
+         {
+            // Ignore
+         }
+
+         // We have input data - do query
+         try
+         {
+            Method method = getClass().getMethod( contextMethod.getName().toLowerCase() );
+
+            // Query
+            try
+            {
+               method.invoke( this );
+            } catch (IllegalAccessException e)
+            {
+               Response.getCurrent().setStatus( Status.CLIENT_ERROR_NOT_FOUND );
+
+            } catch (InvocationTargetException e)
+            {
+               handleException( Response.getCurrent(), e );
+            }
+         } catch (NoSuchMethodException e)
+         {
+            try
+            {
+               Object result = invoke( contextMethod.getName().toLowerCase() );
+               if (result instanceof Representation)
+               {
+                  Response.getCurrent().setEntity( (Representation) result );
+               } else
+                  result( convert( result ) );
+            } catch (Throwable throwable)
+            {
+               handleException( Response.getCurrent(), throwable );
+            }
+         } catch (Exception ex)
+         {
+            handleException( Response.getCurrent(), ex );
+         }
+      }
+   }
+
+   private Form formForMethod( Method contextMethod )
+   {
+      Form form = new Form();
+
+      Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
+      Form entityAsForm = null;
+      Representation representation = Request.getCurrent().getEntity();
+      if (representation != null && !EmptyRepresentation.class.isInstance( representation ))
+      {
+         entityAsForm = new Form( representation );
+      } else
+         entityAsForm = new Form();
+
+      Class valueType = contextMethod.getParameterTypes()[0];
+      if (ValueComposite.class.isAssignableFrom( valueType))
+      {
+         ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+
+         for (PropertyDescriptor propertyDescriptor : valueDescriptor.state().properties())
+         {
+            String value = getValue( propertyDescriptor.qualifiedName().name(), queryAsForm, entityAsForm );
+
+            if (value == null && propertyDescriptor.initialValue() != null)
+              value = propertyDescriptor.initialValue().toString();
+
+            form.add( propertyDescriptor.qualifiedName().name(), value );
+         }
+      } else
+      {
+         // Construct form out of individual parameters instead
+         int idx = 0;
+         for (Annotation[] annotations : contextMethod.getParameterAnnotations())
+         {
+            Name name = (Name) first( filter( isType( Name.class ), iterable( annotations ) ) );
+
+            String value = getValue( name.value(), queryAsForm, entityAsForm );
+
+            String paramName;
+            if (name != null)
+            {
+               paramName = name.value();
+            } else
+            {
+               paramName = "param"+idx;
+            }
+
+            form.add( paramName, value );
+
+            idx++;
+         }
+      }
+
+      return form;
    }
 
    private Object convert( Object result )
    {
       if (converter != null)
-         result = converter.convert( result, request );
+         result = converter.convert( result, Request.getCurrent(), (Object[]) Request.getCurrent().getAttributes().get(ARGUMENTS) );
 
       return result;
    }
@@ -658,18 +828,18 @@ public class CommandQueryResource
    private Variant getVariant( Request request )
    {
       List<Language> possibleLanguages = Arrays.asList( Language.ENGLISH );
-      Language language = request.getClientInfo().getPreferredLanguage( possibleLanguages );
+      Language language = Request.getCurrent().getClientInfo().getPreferredLanguage( possibleLanguages );
 
       if (language == null)
          language = Language.ENGLISH;
 
       List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM );
-      MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
+      MediaType ResponseType = Request.getCurrent().getClientInfo().getPreferredMediaType( possibleMediaTypes );
 
-      if (responseType == null)
-         responseType = MediaType.TEXT_HTML;
+      if (ResponseType == null)
+         ResponseType = MediaType.TEXT_HTML;
 
-      Variant variant = new Variant( responseType, language );
+      Variant variant = new Variant( ResponseType, language );
       variant.setCharacterSet( CharacterSet.UTF_8 );
 
       return variant;
@@ -679,11 +849,10 @@ public class CommandQueryResource
          throws ResourceException
    {
       Object[] args = new Object[method.getParameterTypes().length];
-      int idx = 0;
 
-      Form queryAsForm = request.getResourceRef().getQueryAsForm();
+      Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
       Form entityAsForm = null;
-      Representation representation = request.getEntity();
+      Representation representation = Request.getCurrent().getEntity();
       if (representation != null && !EmptyRepresentation.class.isInstance( representation ))
       {
          entityAsForm = new Form( representation );
@@ -703,29 +872,19 @@ public class CommandQueryResource
             Class<?> valueType = method.getParameterTypes()[0];
 
             args[0] = getValueFromForm( (Class<ValueComposite>) valueType, queryAsForm, entityAsForm );
+            return args;
          } else if (Form.class.equals( method.getParameterTypes()[0] ))
          {
             args[0] = queryAsForm.isEmpty() ? entityAsForm : queryAsForm;
+            return args;
          } else if (Response.class.equals( method.getParameterTypes()[0] ))
          {
-            args[0] = response;
-         }
-      } else
-      {
-         for (Annotation[] annotations : method.getParameterAnnotations())
-         {
-            Name name = (Name) Iterables.first( Iterables.filter(Annotations.isType( Name.class ), Iterables.iterable(annotations )));
-            Object arg = getValue( name.value(), queryAsForm, entityAsForm );
-
-            // Parameter conversion
-            if (method.getParameterTypes()[idx].equals( EntityReference.class ))
-            {
-               arg = EntityReference.parseEntityReference( arg.toString() );
-            }
-
-            args[idx++] = arg;
+            args[0] = Response.getCurrent();
+            return args;
          }
       }
+      parseMethodArguments( method, args, queryAsForm, entityAsForm );
+
 
       return args;
    }
@@ -740,14 +899,20 @@ public class CommandQueryResource
 
          if (method.getParameterTypes()[0].equals( Response.class ))
          {
-            return new Object[]{response};
+            return new Object[]{Response.getCurrent()};
          }
-         Representation representation = request.getEntity();
+         Representation representation = Request.getCurrent().getEntity();
          MediaType type = representation.getMediaType();
          if (type == null)
          {
-            Form queryAsForm = request.getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
-            args[0] = getValueFromForm( commandType, queryAsForm, new Form() );
+            Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
+            if (ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0]))
+            {
+               args[0] = getValueFromForm( commandType, queryAsForm, new Form() );
+            } else
+            {
+               parseMethodArguments( method, args, queryAsForm, new Form() );
+            }
             return args;
          } else
          {
@@ -759,12 +924,12 @@ public class CommandQueryResource
             {
                // Command method takes Form as input
                return new Object[]{new Form( representation )};
-            } else
+            } else if (ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0]))
             {
                // Need to parse input into ValueComposite
                if (type.equals( MediaType.APPLICATION_JSON ))
                {
-                  String json = request.getEntityAsText();
+                  String json = Request.getCurrent().getEntityAsText();
                   if (json == null)
                   {
                      LoggerFactory.getLogger( getClass() ).error( "Restlet bugg http://restlet.tigris.org/issues/show_bug.cgi?id=843 detected. Notify developers!" );
@@ -776,7 +941,7 @@ public class CommandQueryResource
                   return args;
                } else if (type.equals( MediaType.TEXT_PLAIN ))
                {
-                  String text = request.getEntityAsText();
+                  String text = Request.getCurrent().getEntityAsText();
                   if (text == null)
                   {
                      LoggerFactory.getLogger( getClass() ).error( "Restlet bugg http://restlet.tigris.org/issues/show_bug.cgi?id=843 detected. Notify developers!" );
@@ -787,7 +952,7 @@ public class CommandQueryResource
                } else if (type.equals( (MediaType.APPLICATION_WWW_FORM) ))
                {
 
-                  Form queryAsForm = request.getResourceRef().getQueryAsForm();
+                  Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
                   Form entityAsForm;
                   if (representation != null && !EmptyRepresentation.class.isInstance( representation ) && representation.isAvailable())
                   {
@@ -800,11 +965,60 @@ public class CommandQueryResource
                   return args;
                } else
                   throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
+            } else
+            {
+               Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
+               Form entityAsForm;
+               if (representation != null && !EmptyRepresentation.class.isInstance( representation ) && representation.isAvailable())
+               {
+                  entityAsForm = new Form( representation );
+               } else
+                  entityAsForm = new Form();
+
+               parseMethodArguments( method, args,  queryAsForm, entityAsForm);
+
+               return args;
             }
          }
       } else
       {
          return new Object[0];
+      }
+   }
+
+   private void parseMethodArguments( Method method, Object[] args, Form queryAsForm, Form entityAsForm )
+   {
+      // Parse each argument separately using the @Name annotation as help
+      int idx = 0;
+      for (Annotation[] annotations : method.getParameterAnnotations())
+      {
+         Name name = (Name) first( filter( isType( Name.class ), iterable( annotations ) ) );
+         String argString = getValue( name.value(), queryAsForm, entityAsForm );
+
+         // Parameter conversion
+         Class<?> parameterType = method.getParameterTypes()[idx];
+         Object arg;
+         if (parameterType.equals( EntityReference.class ))
+         {
+            arg = EntityReference.parseEntityReference( argString );
+         } else if (parameterType.isEnum())
+         {
+            arg = Enum.valueOf( (Class<Enum>) parameterType, argString );
+         } else if (Integer.TYPE.isAssignableFrom( parameterType ) || Integer.class.isAssignableFrom( parameterType ))
+         {
+            arg = Integer.valueOf( argString );
+         } else if (Boolean.TYPE.isAssignableFrom( parameterType ) || Boolean.class.isAssignableFrom( parameterType ))
+         {
+            arg = Boolean.valueOf( argString );
+         } else if (parameterType.isInterface())
+         {
+            arg = uowf.currentUnitOfWork().get( parameterType, argString );
+         } else
+         {
+            arg = argString;
+         }
+
+         args[idx++] = arg;
       }
    }
 
@@ -887,33 +1101,33 @@ public class CommandQueryResource
       } catch (ResourceException e)
       {
          // IAE (or subclasses) are considered client faults
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( e.getStatus() );
+         Response.getCurrent().setEntity( new StringRepresentation( e.getMessage() ) );
+         Response.getCurrent().setStatus( e.getStatus() );
       } catch (IllegalArgumentException e)
       {
          // IAE (or subclasses) are considered client faults
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+         Response.getCurrent().setEntity( new StringRepresentation( e.getMessage() ) );
+         Response.getCurrent().setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
       } catch (RuntimeException e)
       {
          // RuntimeExceptions are considered server faults
          LoggerFactory.getLogger( getClass() ).warn( "Exception thrown during processing", e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+         Response.getCurrent().setEntity( new StringRepresentation( e.getMessage() ) );
+         Response.getCurrent().setStatus( Status.SERVER_ERROR_INTERNAL );
       } catch (Exception e)
       {
          // Checked exceptions are considered client faults
          String s = e.getMessage();
          if (s == null)
             s = e.getClass().getSimpleName();
-         response.setEntity( new StringRepresentation( s ) );
-         response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+         Response.getCurrent().setEntity( new StringRepresentation( s ) );
+         Response.getCurrent().setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
       } catch (Throwable e)
       {
          // Anything else are considered server faults
          LoggerFactory.getLogger( getClass() ).error( "Exception thrown during processing", e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+         Response.getCurrent().setEntity( new StringRepresentation( e.getMessage() ) );
+         Response.getCurrent().setStatus( Status.SERVER_ERROR_INTERNAL );
       }
    }
 

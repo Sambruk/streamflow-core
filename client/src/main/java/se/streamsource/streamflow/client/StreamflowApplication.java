@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ProxyActions;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.TaskService;
@@ -43,7 +44,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.ui.DebugWindow;
-import se.streamsource.streamflow.client.ui.account.*;
+import se.streamsource.streamflow.client.ui.account.AccountResources;
+import se.streamsource.streamflow.client.ui.account.AccountSelector;
+import se.streamsource.streamflow.client.ui.account.AccountsDialog;
+import se.streamsource.streamflow.client.ui.account.AccountsModel;
+import se.streamsource.streamflow.client.ui.account.ProfileView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
@@ -56,17 +61,24 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.concurrent.Executors;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Controller for the application
@@ -196,6 +208,9 @@ public class StreamflowApplication
             StreamflowApplication.this.getContext().getActionMap().get( "myProfile" ).setEnabled( !accountSelector.getSelectionModel().isSelectionEmpty() );
          }
       } );
+
+      getContext().getActionMap().get( "savePerspective" ).setEnabled( false );
+      getContext().getActionMap().get( "managePerspectives" ).setEnabled( false );
    }
 
    @Override
@@ -275,6 +290,18 @@ public class StreamflowApplication
       dialogs.showOkDialog( getMainFrame(), profile, text( AccountResources.profile_title ) );
    }
 
+   @Action
+   public void savePerspective( ActionEvent e)
+   {
+      ((ApplicationAction)getContext().getActionMap().get( "savePerspective" ).getValue( "proxy" )).actionPerformed( e );
+   }
+
+   @Action
+   public void managePerspectives( ActionEvent e)
+   {
+      ((ApplicationAction)getContext().getActionMap().get( "managePerspectives" ).getValue( "proxy" )).actionPerformed( e );
+   }
+   
    public AccountsModel accountsModel()
    {
       return accountsModel;

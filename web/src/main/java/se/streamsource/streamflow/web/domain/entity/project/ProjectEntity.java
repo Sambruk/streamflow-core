@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
@@ -68,6 +69,7 @@ public interface ProjectEntity
       OwningOrganizationalUnit,
 
       // Data
+      CaseAccessDefaults.Data,
       Members.Data,
       Describable.Data,
       OwningOrganizationalUnit.Data,
@@ -110,7 +112,7 @@ public interface ProjectEntity
       public void removeMember( Member member )
       {
          // Get all active cases in a project for a particular user and unassign.
-         for (Assignable caze : assignments.assignments( (Assignee) member ))
+         for (Assignable caze : assignments.assignments( (Assignee) member, null ).newQuery( uowf.currentUnitOfWork() ))
          {
             caze.unassign();
          }

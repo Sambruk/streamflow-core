@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.JLabel;
@@ -53,7 +53,7 @@ public class SaveSearchDialog
    public JTextField name;
    public JTextField query;
 
-   SearchValue search;
+   PerspectiveValue search;
 
    public SaveSearchDialog( @Service ApplicationContext context )
    {
@@ -84,7 +84,7 @@ public class SaveSearchDialog
       add( form, BorderLayout.CENTER );
    }
 
-   public SearchValue search()
+   public PerspectiveValue search()
    {
       return search;
    }
@@ -92,9 +92,9 @@ public class SaveSearchDialog
    @Action
    public void execute()
    {
-      if (Strings.notEmpty( name.getText() ) && Strings.notEmpty( query.getText() ))
+      if (!Strings.empty( name.getText() ) && !Strings.empty( query.getText() ))
       {
-         ValueBuilder<SearchValue> builder = vbf.newValueBuilder( SearchValue.class );
+         ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
          builder.prototype().name().set( name.getText() );
          builder.prototype().query().set( query.getText() );
 

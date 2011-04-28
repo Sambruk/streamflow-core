@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +22,14 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
  */
 public class AssignmentsCaseTableFormatter
-      extends AbstractCaseTableFormatter
+      extends CasesTableFormatter
 {
    public AssignmentsCaseTableFormatter()
    {
@@ -38,12 +39,12 @@ public class AssignmentsCaseTableFormatter
             text( casetype_column_header ),
             text( created_column_header ),
             text( case_status_header )};
-      columnClasses = new Class[] {
+      columnClasses = new Class[]{
             String.class,
             ArrayList.class,
             String.class,
             Date.class,
             CaseStates.class
-            };
+      };
    }
 }

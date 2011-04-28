@@ -1,11 +1,12 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,30 +17,31 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
-import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.workspace.cases.info.CaseInfoModel;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -52,23 +54,23 @@ public class SubCasesView
    implements TransactionListener
 {
    private JList subCaseList;
-   private JButton createSubCase;
-   private CaseInfoModel model;
+   private CaseModel model;
    private JButton caseButton = new JButton();
    private JButton parentCaseButton = new JButton();
-   private EventList<LinkValue> eventList = new BasicEventList<LinkValue>(  );
    private JLabel parentLabel;
    private JLabel subcasesLabel;
    private JScrollPane subCaseListScroll;
 
-   public SubCasesView(@Uses CommandQueryClient client, @Service ApplicationContext context, @Structure ObjectBuilderFactory obf)
+   public SubCasesView(@Service ApplicationContext context, @Uses final CaseModel model, @Structure ObjectBuilderFactory obf)
    {
+      this.model = model;
       setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
 
       setPreferredSize( new Dimension(150,0) );
       setMaximumSize( new Dimension(150,1000) );
+      setMinimumSize( new Dimension(150, 0) );
 
-      subCaseList = new JList(new EventListModel<LinkValue>(eventList));
+      subCaseList = new JList(new EventListModel<LinkValue>(model.getSubcases()));
       subCaseList.setCellRenderer( new LinkListCellRenderer(){
          @Override
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
@@ -100,8 +102,6 @@ public class SubCasesView
       add(parentLabel);
       add(parentCaseButton);
 
-      createSubCase = new JButton(getActionMap().get( "createSubCase" ));
-
       JLabel caseLabel = new JLabel( "Case", JLabel.RIGHT );
       caseLabel.setForeground( Color.GRAY );
       caseLabel.setLabelFor( caseButton );
@@ -113,33 +113,27 @@ public class SubCasesView
       add( subcasesLabel );
       subCaseListScroll = new JScrollPane( subCaseList );
       add( subCaseListScroll );
-      add( createSubCase);
-   }
 
-   public void setModel(CaseInfoModel model)
-   {
-      this.model = model;
       model.addObserver( new Observer()
       {
          public void update( Observable o, Object arg )
          {
-            CaseValue caseValue = (CaseValue) arg;
-            if (caseValue.subcases().get().links().get().isEmpty())
+            CaseDTO caseDTO = model.getIndex();
+            if (caseDTO.subcases().get().links().get().isEmpty())
             {
                subcasesLabel.setVisible( false );
                subCaseListScroll.setVisible( false );
             } else
             {
-               EventListSynch.synchronize( caseValue.subcases().get().links().get(), eventList );
                subcasesLabel.setVisible( true );
                subCaseListScroll.setVisible( true );
             }
 
-            caseButton.setText( caseValue.caseId().get() );
+            caseButton.setText( caseDTO.caseId().get() );
 
-            if (caseValue.parentCase().get() != null)
+            if (caseDTO.parentCase().get() != null)
             {
-               parentCaseButton.setText( caseValue.parentCase().get().text().get() );
+               parentCaseButton.setText( caseDTO.parentCase().get().text().get() );
             } else
             {
                parentLabel.setVisible( false );
@@ -147,31 +141,20 @@ public class SubCasesView
 
             }
 
-            if (caseValue.subcases().get().links().get().isEmpty() && caseValue.parentCase().get() == null)
+            JSplitPane parent = (JSplitPane) getParent();
+            if (parent != null)
             {
-               JSplitPane parent = (JSplitPane) getParent();
-               parent.setDividerLocation( 0.0 );
-            } else
-            {
-               JSplitPane parent = (JSplitPane) getParent();
-               parent.resetToPreferredSizes();
+
+               if (caseDTO.subcases().get().links().get().isEmpty() && caseDTO.parentCase().get() == null)
+               {
+                  parent.setDividerLocation( 0.0 );
+               } else
+               {
+                  parent.resetToPreferredSizes();
+               }
             }
          }
       } );
-   }
-
-   @Action
-   public Task createSubCase()
-   {
-      return new CommandTask()
-      {
-         @Override
-         public void command()
-            throws Exception
-         {
-            model.createSubCase();
-         }
-      };
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -195,7 +178,7 @@ public class SubCasesView
       return parentCaseButton;
    }
 
-   public CaseInfoModel getModel()
+   public CaseModel getModel()
    {
       return model;
    }

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,34 +27,34 @@ import org.qi4j.api.specification.Specification;
  */
 public class CircuitBreakers
 {
-   public static <Item, ReceiverThrowable extends Throwable> Output<Item, ReceiverThrowable> withBreaker( final CircuitBreaker breaker, final Output<Item, ReceiverThrowable> output)
+   public static <Item, ReceiverThrowable extends Throwable> Output<Item, ReceiverThrowable> withBreaker(final CircuitBreaker breaker, final Output<Item, ReceiverThrowable> output)
    {
       return new Output<Item, ReceiverThrowable>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( final Sender<Item, SenderThrowableType> sender ) throws ReceiverThrowable, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(final Sender<? extends Item, SenderThrowableType> sender) throws ReceiverThrowable, SenderThrowableType
          {
-            output.receiveFrom( new Sender<Item, SenderThrowableType>()
+            output.receiveFrom(new Sender<Item, SenderThrowableType>()
             {
-               public <ReceiverThrowableType extends Throwable> void sendTo( final Receiver<Item, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, SenderThrowableType
+               public <ReceiverThrowableType extends Throwable> void sendTo(final Receiver<? super Item, ReceiverThrowableType> receiver) throws ReceiverThrowableType, SenderThrowableType
                {
                   // Check breaker first
                   if (!breaker.isOn())
                      throw (ReceiverThrowableType) breaker.getLastThrowable();
 
-                  sender.sendTo( new Receiver<Item, ReceiverThrowableType>()
+                  sender.sendTo(new Receiver<Item, ReceiverThrowableType>()
                   {
-                     public void receive( Item item ) throws ReceiverThrowableType
+                     public void receive(Item item) throws ReceiverThrowableType
                      {
                         try
                         {
-                           receiver.receive( item );
+                           receiver.receive(item);
 
                            // Notify breaker that it went well
                            breaker.success();
                         } catch (Throwable receiverThrowableType)
                         {
                            // Notify breaker of trouble
-                           breaker.throwable( receiverThrowableType );
+                           breaker.throwable(receiverThrowableType);
 
                            throw (ReceiverThrowableType) receiverThrowableType;
                         }
@@ -71,16 +72,16 @@ public class CircuitBreakers
     * @param throwables
     * @return
     */
-   public static Specification<Throwable> in( final Class<? extends Throwable>... throwables)
+   public static Specification<Throwable> in(final Class<? extends Throwable>... throwables)
    {
       return new Specification<Throwable>()
       {
-         public boolean satisfiedBy( Throwable item )
+         public boolean satisfiedBy(Throwable item)
          {
             Class<? extends Throwable> throwableClass = item.getClass();
             for (Class<? extends Throwable> throwable : throwables)
             {
-               if (throwable.isAssignableFrom( throwableClass ))
+               if (throwable.isAssignableFrom(throwableClass))
                   return true;
             }
             return false;
@@ -88,13 +89,13 @@ public class CircuitBreakers
       };
    }
 
-   public static Specification<Throwable> rootCause( final Specification<Throwable> specification)
+   public static Specification<Throwable> rootCause(final Specification<Throwable> specification)
    {
       return new Specification<Throwable>()
       {
-         public boolean satisfiedBy( Throwable item )
+         public boolean satisfiedBy(Throwable item)
          {
-            return specification.satisfiedBy( unwrap(item) );
+            return specification.satisfiedBy(unwrap(item));
          }
 
          private Throwable unwrap(Throwable item)

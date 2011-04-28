@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,11 @@ public class GroupedFilteredList
 
    public void setEventList( EventList<TitledLinkValue> eventList )
    {
+      setEventList( eventList, "" );
+   }
+   
+   public void setEventList( EventList<TitledLinkValue> eventList, String topValue )
+   {
       SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>( eventList, new LinkComparator() );
       TextComponentMatcherEditor editor = new TextComponentMatcherEditor( filterField, new LinkFilterator() );
       editor.addMatcherEditorListener( new MatcherEditor.Listener()
@@ -119,7 +124,7 @@ public class GroupedFilteredList
       });
       final FilterList<TitledLinkValue> textFilteredIssues = new FilterList<TitledLinkValue>( sortedIssues, editor );
 
-      EventListModel listModel = new EventListModel<TitledLinkValue>( new SeparatorList<TitledLinkValue>( textFilteredIssues, new TitledLinkGroupingComparator(), 1, 10000 ) );
+      EventListModel listModel = new EventListModel<TitledLinkValue>( new SeparatorList<TitledLinkValue>( textFilteredIssues, new TitledLinkGroupingComparator( topValue ), 1, 10000 ) );
 
       list.setModel( listModel );
 

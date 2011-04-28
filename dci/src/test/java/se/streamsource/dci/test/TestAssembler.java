@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,33 @@
 package se.streamsource.dci.test;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
-import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.CommandResult;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.NullCommandResult;
+import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.dci.restlet.server.ResultWriterDelegator;
 import se.streamsource.dci.test.interactions.RootResource;
 import se.streamsource.dci.test.interactions.file.FileContext;
 import se.streamsource.dci.test.interactions.file.FileResource;
-import se.streamsource.dci.test.interactions.jmx.*;
+import se.streamsource.dci.test.interactions.jmx.DomainContext;
+import se.streamsource.dci.test.interactions.jmx.DomainResource;
+import se.streamsource.dci.test.interactions.jmx.JmxServerContext;
+import se.streamsource.dci.test.interactions.jmx.JmxServerResource;
+import se.streamsource.dci.test.interactions.jmx.MBeanAttributeContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanResource;
+import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
+import se.streamsource.dci.value.ValueAssembler;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -45,15 +62,17 @@ public class TestAssembler
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-      ModuleAssembly assembly1 = assembly.layerAssembly( "Web" ).moduleAssembly( "REST" );
+      ModuleAssembly assembly1 = assembly.layer( "Web" ).module( "REST" );
       assemble( assembly1 );
-      new DCIAssembler().assemble( assembly1 );
-      assembly1.importServices(CommandResult.class).importedBy( NEW_OBJECT );
 
-      assembly1.importServices( InteractionConstraintsService.class ).
+      new ValueAssembler().assemble( assembly1 );
+      new DCIAssembler().assemble( assembly1 );
+      assembly1.importedServices(CommandResult.class).importedBy( NEW_OBJECT );
+
+      assembly1.importedServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).
             visibleIn( Visibility.application );
-      assembly1.addObjects( InteractionConstraintsService.class );
+      assembly1.objects( InteractionConstraintsService.class );
 
 
       for (Object service : services)
@@ -66,24 +85,24 @@ public class TestAssembler
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( TestCommandQueryRestlet2.class );
+      module.objects( TestCommandQueryRestlet2.class );
 
       // Use defaults
-      module.addObjects( ResultWriterDelegator.class,
+      module.objects( ResultWriterDelegator.class,
             NullCommandResult.class );
 
-      module.addObjects( RootResource.class,
+      module.objects( RootResource.class,
             FileResource.class,
             FileContext.class);
 
-      module.addObjects( JmxServerContext.class, JmxServerResource.class,
+      module.objects( JmxServerContext.class, JmxServerResource.class,
             DomainContext.class, DomainResource.class,
             MBeanContext.class, MBeanResource.class,
             MBeanAttributeContext.class );
 
-      module.addObjects( TestRestletApplication.class,
+      module.objects( TestRestletApplication.class,
             ResourceFinder.class);
       
-      module.addValues( TabularDataValue.class );
+      module.values( TabularDataValue.class );
    }
 }

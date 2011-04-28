@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,10 @@ public class EventListSynch
 
          } else if (list.size() < eventList.size())
          {
+            eventList.clear();
+            eventList.addAll( (Collection<? extends P>) list );
+/*
+
             // New size is less than current
             int idx = 0;
             for (Object item : list)
@@ -64,6 +68,7 @@ public class EventListSynch
             idx = list.size();
             while (eventList.size() > list.size())
                eventList.remove( idx );
+*/
          } else
          {
             // New size is more than current

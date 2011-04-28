@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +20,14 @@ package se.streamsource.dci.restlet.server.resultwriter;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONWriter;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Response;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
@@ -39,6 +40,7 @@ import se.streamsource.dci.value.table.TableValue;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,71 +61,9 @@ public class TableResultWriter
    {
       if (result instanceof TableValue)
       {
-         MediaType type = getVariant(response.getRequest(), ENGLISH, supportedMediaTypes).getMediaType();
-         if (MediaType.APPLICATION_JSON.equals(type))
+         MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes ).getMediaType();
+         if (MediaType.APPLICATION_JSON.equals( type ))
          {
-            try
-            {
-               TableValue tableValue = (TableValue) result;
-
-               // Parse parameters
-               String tqx = response.getRequest().getResourceRef().getQueryAsForm(  ).getFirstValue( "tqx" );
-               String reqId = null;
-               if (tqx != null)
-               {
-                  String[] params = tqx.split( ";" );
-                  for (String param : params)
-                  {
-                     String[] p = param.split( ":" );
-                     String key = p[0];
-                     String value = p[1];
-
-                     if (key.equals("reqId"))
-                        reqId = value;
-                  }
-               }
-
-               final JSONObject responseJson = new JSONObject();
-               responseJson.put( "version", "0.6" );
-               if (reqId != null)
-                  responseJson.put("reqId", reqId);
-               responseJson.put( "status", "ok" );
-
-               JSONObject dataTable = new JSONObject();
-
-               JSONArray cols = new JSONArray();
-               List<ColumnValue> columnList = tableValue.columns().get();
-               for (ColumnValue columnValue : columnList)
-               {
-                  JSONObject column = new JSONObject();
-                  column.put( "id", columnValue.id().get() );
-                  column.put( "label", columnValue.label().get() );
-                  column.put( "type", columnValue.columnType().get() );
-                  cols.put( column );
-               }
-               dataTable.put( "cols", cols );
-
-               JSONArray rows = new JSONArray();
-               for (RowValue rowValue : tableValue.rows().get())
-               {
-                  JSONObject row = new JSONObject();
-                  JSONArray cells = new JSONArray();
-                  int idx = 0;
-                  for (CellValue cellValue : rowValue.cells().get())
-                  {
-                     JSONObject cell = new JSONObject();
-                     cell.putOpt( "v", cellValue.value().get() );
-                     cell.putOpt( "f", cellValue.formatted().get() );
-                     cells.put( cell );
-                     
-                     idx++;
-                  }
-                  row.put( "c", cells );
-                  rows.put( row );
-               }
-               dataTable.put( "rows", rows );
-
-               responseJson.put( "table", dataTable );
 
                response.setEntity( new WriterRepresentation( MediaType.APPLICATION_JSON )
                {
@@ -132,7 +72,74 @@ public class TableResultWriter
                   {
                      try
                      {
-                        responseJson.write( writer );
+                        JSONWriter json = new JSONWriter(writer);
+                        TableValue tableValue = (TableValue) result;
+
+                        // Parse parameters
+                        String tqx = response.getRequest().getResourceRef().getQueryAsForm().getFirstValue( "tqx" );
+                        String reqId = null;
+                        if (tqx != null)
+                        {
+                           String[] params = tqx.split( ";" );
+                           for (String param : params)
+                           {
+                              String[] p = param.split( ":" );
+                              String key = p[0];
+                              String value = p[1];
+
+                              if (key.equals( "reqId" ))
+                                 reqId = value;
+                           }
+                        }
+
+                        json.object().
+                              key("version").value( "0.6" );
+                        if (reqId != null)
+                           json.key("reqId").value( reqId );
+                        json.key( "status").value("ok" );
+
+                        json.key( "table" ).object();
+
+                        List<ColumnValue> columnList = tableValue.cols().get();
+                        json.key( "cols" ).array();
+                        for (ColumnValue columnValue : columnList)
+                        {
+                           json.object().
+                              key("id").value( columnValue.id().get() ).
+                              key("label").value(columnValue.label().get()).
+                              key("type").value(columnValue.columnType().get()).
+                           endObject();
+                        }
+                        json.endArray();
+
+                        json.key( "rows" ).array();
+                        for (RowValue rowValue : tableValue.rows().get())
+                        {
+                           json.object();
+                           json.key( "c" ).array();
+                           int idx = 0;
+                           for (CellValue cellValue : rowValue.c().get())
+                           {
+                              json.object();
+                              Object value = cellValue.v().get();
+                              if (columnList.get( idx ).columnType().get().equals("date") && value != null)
+                              {
+                                 value = DateFunctions.toUtcString( (Date) value);
+                              }
+                              if (value != null)
+                                 json.key( "v" ).value( value );
+                              if (cellValue.f().get() != null)
+                                 json.key("f").value( cellValue.f().get() );
+                              json.endObject();
+
+                              idx++;
+                           }
+                           json.endArray();
+                           json.endObject();
+                        }
+                        json.endArray();
+                        json.endObject();
+                        json.endObject();
                      } catch (JSONException e)
                      {
                         throw new IOException( e );
@@ -140,11 +147,7 @@ public class TableResultWriter
                   }
                } );
                return true;
-            } catch (JSONException e)
-            {
-               throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not serialize table to JSON");
-            }
-         } else if (MediaType.TEXT_HTML.equals(type))
+         } else if (MediaType.TEXT_HTML.equals( type ))
          {
             Representation rep = new WriterRepresentation( MediaType.TEXT_HTML )
             {
@@ -159,6 +162,7 @@ public class TableResultWriter
                   htmlTemplate.merge( context, writer );
                }
             };
+            rep.setCharacterSet( CharacterSet.UTF_8 );
             response.setEntity( rep );
             return true;
          }

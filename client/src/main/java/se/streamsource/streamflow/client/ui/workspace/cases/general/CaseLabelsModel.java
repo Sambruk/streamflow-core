@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +24,8 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
@@ -33,7 +34,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
  * Model for the list of currently selected labels of a case
  */
 public class CaseLabelsModel
-   implements Refreshable, TransactionListener
+   extends ResourceModel<LinksValue>
+   implements TransactionListener
 {
    @Uses
    CommandQueryClient client;
@@ -47,8 +49,8 @@ public class CaseLabelsModel
 
    public void refresh()
    {
-      LinksValue linkList = client.query( "index", LinksValue.class );
-      EventListSynch.synchronize( linkList.links().get(), labels );
+      super.refresh();
+      EventListSynch.synchronize( getIndex().links().get(), labels );
    }
 
    public EventList<LinkValue> getPossibleLabels()

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,25 +23,30 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.InteractionValidation;
+import se.streamsource.dci.api.RequiresValid;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * JAVADOC
  */
 public class OrganizationalUnitContext
-      implements DeleteContext
+      implements DeleteContext, InteractionValidation
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -131,17 +136,51 @@ public class OrganizationalUnitContext
       }
    }
 
+   @RequiresValid("delete")
    public void delete() throws ResourceException
    {
       OrganizationalUnitRefactoring ou = RoleMap.role( OrganizationalUnitRefactoring.class );
 
-      try
-      {
-         ou.deleteOrganizationalUnit();
+      ou.deleteOrganizationalUnit();
+   }
 
-      } catch (OpenProjectExistsException pe)
+   public boolean isValid( String name )
+   {
+      if (name.equals("delete"))
       {
-         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT, pe.getMessage() );
+         // OU has to be empty first
+         return isEmpty(RoleMap.role(OrganizationalUnit.class));
+      } else
+         return false;
+   }
+
+   private boolean isEmpty( OrganizationalUnit organizationalUnit )
+   {
+      if (((Projects.Data)organizationalUnit).projects().count() > 0)
+      {
+         return false;
       }
+
+      if (((Groups.Data)organizationalUnit).groups().count() > 0)
+      {
+         return false;
+      }
+
+      if (((Forms.Data)organizationalUnit).forms().count() > 0)
+      {
+         return false;
+      }
+
+      if (((Labels.Data)organizationalUnit).labels().count() > 0)
+      {
+         return false;
+      }
+
+      if (((OrganizationalUnits.Data)organizationalUnit).organizationalUnits().count() > 0)
+      {
+         return false;
+      }
+
+      return true;
    }
 }

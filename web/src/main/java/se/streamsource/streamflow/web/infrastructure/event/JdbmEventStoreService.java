@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,13 @@ import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.RecordManagerOptions;
 import jdbm.btree.BTree;
-import jdbm.helper.*;
+import jdbm.helper.ByteArraySerializer;
+import jdbm.helper.LongComparator;
+import jdbm.helper.LongSerializer;
+import jdbm.helper.MRU;
+import jdbm.helper.Serializer;
+import jdbm.helper.Tuple;
+import jdbm.helper.TupleBrowser;
 import jdbm.recman.CacheRecordManager;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +42,11 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.AbstractEventStoreMixin;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,11 +59,11 @@ import java.util.Properties;
  */
 @Mixins(JdbmEventStoreService.JdbmEventStoreMixin.class)
 public interface JdbmEventStoreService
-      extends EventSource, EventStore, EventStream, EventManagement, Activatable, ServiceComposite
+        extends EventSource, EventStore, EventStream, EventManagement, Activatable, ServiceComposite
 {
    class JdbmEventStoreMixin
-         extends AbstractEventStoreMixin
-         implements EventManagement, EventSource
+           extends AbstractEventStoreMixin
+           implements EventManagement, EventSource
    {
       @Service
       FileConfiguration fileConfig;
@@ -69,23 +79,23 @@ public interface JdbmEventStoreService
       {
          super.activate();
 
-         dataFile = new File( fileConfig.dataDirectory(), identity.identity() + "/events" );
-         databaseFile = new File( fileConfig.dataDirectory(), identity.identity() + "/events.db" );
-         logFile = new File( fileConfig.dataDirectory(), identity.identity() + "/events.lg" );
+         dataFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events");
+         databaseFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events.db");
+         logFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events.lg");
          File directory = dataFile.getAbsoluteFile().getParentFile();
          directory.mkdirs();
          String name = dataFile.getAbsolutePath();
          Properties properties = new Properties();
-         properties.put( RecordManagerOptions.AUTO_COMMIT, "false" );
-         properties.put( RecordManagerOptions.DISABLE_TRANSACTIONS, "false" );
-         initialize( name, properties );
+         properties.put(RecordManagerOptions.AUTO_COMMIT, "false");
+         properties.put(RecordManagerOptions.DISABLE_TRANSACTIONS, "false");
+         initialize(name, properties);
       }
 
       public void passivate() throws Exception
       {
          super.passivate();
 
-         logger.info( "Close event db" );
+         logger.info("Close event db");
          recordManager.close();
       }
 
@@ -95,14 +105,14 @@ public interface JdbmEventStoreService
          passivate();
 
          if (!databaseFile.delete())
-            throw new IOException( "Could not delete event database" );
+            throw new IOException("Could not delete event database");
          if (!logFile.delete())
-            throw new IOException( "Could not delete event log" );
+            throw new IOException("Could not delete event log");
 
          activate();
       }
 
-      public void removeTo( Date date ) throws IOException
+      public void removeTo(Date date) throws IOException
       {
 
          lock();
@@ -111,12 +121,12 @@ public interface JdbmEventStoreService
          {
             final TupleBrowser browser = index.browse();
             Tuple tuple = new Tuple();
-            while (browser.getNext( tuple ))
+            while (browser.getNext(tuple))
             {
                Long key = (Long) tuple.getKey();
                if (key <= date.getTime())
                {
-                  index.remove( key );
+                  index.remove(key);
                } else
                {
                   break; // We're done
@@ -136,22 +146,22 @@ public interface JdbmEventStoreService
       {
          return Transforms.lock(JdbmEventStoreMixin.this.lock, new Output<String, IOException>()
          {
-            public <SenderThrowableType extends Throwable> void receiveFrom( Sender<String, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+            public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends String, SenderThrowableType> sender) throws IOException, SenderThrowableType
             {
                try
                {
-                  sender.sendTo( new Receiver<String, IOException>()
+                  sender.sendTo(new Receiver<String, IOException>()
                   {
                      int count = 0;
 
-                     public void receive( String item ) throws IOException
+                     public void receive(String item) throws IOException
                      {
                         try
                         {
-                           JSONObject json = (JSONObject) new JSONTokener( item ).nextValue();
-                           TransactionDomainEvents transactionDomain = (TransactionDomainEvents) transactionEventsType.fromJSON( json, module );
+                           JSONObject json = (JSONObject) new JSONTokener(item).nextValue();
+                           TransactionDomainEvents transactionDomain = (TransactionDomainEvents) transactionEventsType.fromJSON(json, module);
 
-                           storeEvents( transactionDomain );
+                           storeEvents(transactionDomain);
 
                            count++;
                            if (count % 1000 == 0)
@@ -179,7 +189,7 @@ public interface JdbmEventStoreService
       }
 
       // EventStore implementation
-      public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
+      public void transactionsAfter(long afterTimestamp, TransactionVisitor visitor)
       {
          // Lock datastore first
          lock();
@@ -188,30 +198,30 @@ public interface JdbmEventStoreService
 
          try
          {
-            final TupleBrowser browser = index.browse( afterTime );
+            final TupleBrowser browser = index.browse(afterTime);
 
             Tuple tuple = new Tuple();
 
-            while (browser.getNext( tuple ))
+            while (browser.getNext(tuple))
             {
                // Get next transaction
-               TransactionDomainEvents domainEvents = readTransactionEvents( tuple );
+               TransactionDomainEvents domainEvents = readTransactionEvents(tuple);
 
-               if (!visitor.visit( domainEvents ))
+               if (!visitor.visit(domainEvents))
                {
                   return;
                }
             }
          } catch (Exception e)
          {
-            logger.warn( "Could not iterate transactions", e );
+            logger.warn("Could not iterate transactions", e);
          } finally
          {
             lock.unlock();
          }
       }
 
-      public void transactionsBefore( long beforeTimestamp, TransactionVisitor visitor )
+      public void transactionsBefore(long beforeTimestamp, TransactionVisitor visitor)
       {
          // Lock datastore first
          lock();
@@ -220,23 +230,23 @@ public interface JdbmEventStoreService
 
          try
          {
-            final TupleBrowser browser = index.browse( beforeTime );
+            final TupleBrowser browser = index.browse(beforeTime);
 
             Tuple tuple = new Tuple();
 
-            while (browser.getPrevious( tuple ))
+            while (browser.getPrevious(tuple))
             {
                // Get previous transaction
-               TransactionDomainEvents domainEvents = readTransactionEvents( tuple );
+               TransactionDomainEvents domainEvents = readTransactionEvents(tuple);
 
-               if (!visitor.visit( domainEvents ))
+               if (!visitor.visit(domainEvents))
                {
                   return;
                }
             }
          } catch (Exception e)
          {
-            logger.warn( "Could not iterate transactions", e );
+            logger.warn("Could not iterate transactions", e);
          } finally
          {
             lock.unlock();
@@ -244,51 +254,51 @@ public interface JdbmEventStoreService
       }
 
       protected void rollback()
-            throws IOException
+              throws IOException
       {
          recordManager.rollback();
       }
 
       protected void commit()
-            throws IOException
+              throws IOException
       {
          recordManager.commit();
       }
 
-      protected void storeEvents( TransactionDomainEvents transactionDomain )
-            throws IOException
+      protected void storeEvents(TransactionDomainEvents transactionDomain)
+              throws IOException
       {
          String jsonString = transactionDomain.toJSON();
-         index.insert( transactionDomain.timestamp().get(), jsonString.getBytes( "UTF-8" ), false );
+         index.insert(transactionDomain.timestamp().get(), jsonString.getBytes("UTF-8"), false);
       }
 
-      private void initialize( String name, Properties properties )
-            throws IOException
+      private void initialize(String name, Properties properties)
+              throws IOException
       {
-         recordManager = RecordManagerFactory.createRecordManager( name, properties );
+         recordManager = RecordManagerFactory.createRecordManager(name, properties);
          serializer = new ByteArraySerializer();
-         recordManager = new CacheRecordManager( recordManager, new MRU( 1000 ) );
-         long recid = recordManager.getNamedObject( "index" );
+         recordManager = new CacheRecordManager(recordManager, new MRU(1000));
+         long recid = recordManager.getNamedObject("index");
          if (recid != 0)
          {
-            index = BTree.load( recordManager, recid );
+            index = BTree.load(recordManager, recid);
          } else
          {
             LongComparator comparator = new LongComparator();
-            index = BTree.createInstance( recordManager, comparator, new LongSerializer(), serializer, 16 );
-            recordManager.setNamedObject( "index", index.getRecid() );
+            index = BTree.createInstance(recordManager, comparator, new LongSerializer(), serializer, 16);
+            recordManager.setNamedObject("index", index.getRecid());
          }
          commit();
       }
 
-      private TransactionDomainEvents readTransactionEvents( Tuple tuple )
-            throws UnsupportedEncodingException, JSONException
+      private TransactionDomainEvents readTransactionEvents(Tuple tuple)
+              throws UnsupportedEncodingException, JSONException
       {
          byte[] eventData = (byte[]) tuple.getValue();
-         String eventJson = new String( eventData, "UTF-8" );
-         JSONTokener tokener = new JSONTokener( eventJson );
+         String eventJson = new String(eventData, "UTF-8");
+         JSONTokener tokener = new JSONTokener(eventJson);
          JSONObject transaction = (JSONObject) tokener.nextValue();
-         return (TransactionDomainEvents) transactionEventsType.fromJSON( transaction, module );
+         return (TransactionDomainEvents) transactionEventsType.fromJSON(transaction, module);
       }
    }
 }

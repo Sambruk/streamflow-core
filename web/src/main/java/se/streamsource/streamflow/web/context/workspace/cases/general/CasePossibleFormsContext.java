@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +18,8 @@
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -37,7 +40,7 @@ public class CasePossibleFormsContext
    {
       CaseType caseType = role( TypedCase.Data.class ).caseType().get();
 
-      if (caseType != null)
+      if (caseType != null && (role(Status.class).isStatus( CaseStates.DRAFT ) || role(Status.class).isStatus( CaseStates.OPEN )))
       {
          return ((SelectedForms.Data) caseType).selectedForms().toList();
       } else {

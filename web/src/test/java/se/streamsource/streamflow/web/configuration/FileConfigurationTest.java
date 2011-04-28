@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,9 @@ public class FileConfigurationTest
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.layerAssembly().applicationAssembly().setName( "StreamFlowServer" );
-      module.addServices( FileConfiguration.class );
-      module.addObjects( getClass() );
+      module.layer().application().setName( "StreamFlowServer" );
+      module.services( FileConfiguration.class );
+      module.objects( getClass() );
    }
 
    @Test
@@ -53,7 +53,7 @@ public class FileConfigurationTest
 
       File user = config.user();
       Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.mac ) );
-      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/Library/Preferences/StreamFlowServer" ) ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/Library/Preferences/StreamFlowServer-test" ) ) );
    }
 
    @Test
@@ -64,6 +64,6 @@ public class FileConfigurationTest
 
       File user = config.user();
       Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.unix ) );
-      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/.StreamFlowServer/etc" ) ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/.StreamFlowServer-test/etc" ) ) );
    }
 }

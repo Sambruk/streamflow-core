@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -37,16 +38,16 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import static org.qi4j.api.query.QueryExpressions.*;
-import static org.qi4j.api.util.Iterables.*;
 
 @Mixins(AssignmentsQueries.Mixin.class)
 public interface AssignmentsQueries
+   extends AbstractCaseQueriesFilter
 {
-   Query<Case> assignments(@Optional Assignee assignee);
+   QueryBuilder<Case> assignments( @Optional Assignee assignee, @Optional String filter );
 
    boolean assignmentsHaveActiveCases();
 
-   class Mixin
+   abstract class Mixin
          implements AssignmentsQueries
    {
 
@@ -62,21 +63,22 @@ public interface AssignmentsQueries
       @This
       Owner owner;
 
-      public Query<Case> assignments( Assignee assignee )
+      public QueryBuilder<Case> assignments( Assignee assignee, String filter )
       {
          Association<Assignee> assignedId = templateFor( Assignable.Data.class ).assignedTo();
          Association<Owner> ownedId = templateFor( Ownable.Data.class ).owner();
 
          // Find all my OPEN cases assigned to optional assignee
          QueryBuilder<Case> openQueryBuilder = qbf.newQueryBuilder( Case.class );
-         openQueryBuilder = openQueryBuilder.where( and(
+         openQueryBuilder = openQueryBuilder.where( and( or(
                eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
+               eq( templateFor( Status.Data.class).status(), CaseStates.ON_HOLD )),
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
                eq( ownedId, owner ))
                );
 
          // Find all my ON_HOLD cases assigned to optional assignee
-         QueryBuilder<Case> onHoldQueryBuilder = qbf.newQueryBuilder( Case.class );
+         /*QueryBuilder<Case> onHoldQueryBuilder = qbf.newQueryBuilder( Case.class );
          onHoldQueryBuilder = onHoldQueryBuilder.where( and(
                eq( templateFor( Status.Data.class ).status(), CaseStates.ON_HOLD ),
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
@@ -86,6 +88,11 @@ public interface AssignmentsQueries
 
          Iterable<Case> assignables = flatten(openQueryBuilder.newQuery(uowf.currentUnitOfWork() ), onHoldQueryBuilder.newQuery( uowf.currentUnitOfWork() ));
          return qbf.newQueryBuilder( Case.class ).newQuery( assignables );
+         */
+         if( !Strings.empty( filter ) )
+            openQueryBuilder = applyFilter( openQueryBuilder, filter );
+
+         return openQueryBuilder;
       }
 
       public boolean assignmentsHaveActiveCases()

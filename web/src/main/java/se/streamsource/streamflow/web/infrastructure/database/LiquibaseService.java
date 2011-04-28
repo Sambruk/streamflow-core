@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import liquibase.FileOpener;
 import liquibase.Liquibase;
-import liquibase.database.DatabaseFactory;
+import liquibase.database.DatabaseConnection;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
@@ -32,13 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.ConnectException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Enumeration;
 
 /**
  * Wrapper service for LiquiBase
@@ -70,25 +67,9 @@ public interface LiquibaseService
          try
          {
             c = dataSource.get().getConnection();
+            DatabaseConnection dc = new JdbcConnection(c);
             Liquibase liquibase = new Liquibase( config.configuration().changeLog().get(),
-                  new FileOpener()
-                  {
-                     public InputStream getResourceAsStream( String s ) throws IOException
-                     {
-                        return getClass().getClassLoader().getResourceAsStream( s );
-                     }
-
-                     public Enumeration<URL> getResources( String s ) throws IOException
-                     {
-                        return getClass().getClassLoader().getResources( s );
-                     }
-
-                     public ClassLoader toClassLoader()
-                     {
-                        return getClass().getClassLoader();
-                     }
-                  },
-                  DatabaseFactory.getInstance().findCorrectDatabaseImplementation( c ) );
+                  new ClassLoaderResourceAccessor(),dc );
 
             liquibase.update( config.configuration().contexts().get() );
          }

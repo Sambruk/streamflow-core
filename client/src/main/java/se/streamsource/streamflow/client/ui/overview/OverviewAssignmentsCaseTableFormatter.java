@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import se.streamsource.streamflow.client.ui.workspace.table.AbstractCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.util.Date;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
  */
 public class OverviewAssignmentsCaseTableFormatter
-   extends AbstractCaseTableFormatter
+   extends CasesTableFormatter
 {
    public OverviewAssignmentsCaseTableFormatter()
    {
@@ -52,14 +51,14 @@ public class OverviewAssignmentsCaseTableFormatter
    }
 
    @Override
-   public Object getColumnValue( CaseValue caseValue, int i )
+   public Object getColumnValue( Object caseValue, int i )
    {
       switch (i)
       {
          case 0:
             return super.getColumnValue( caseValue, i );
          case 1:
-            return caseValue.assignedTo().get();
+            return ((CaseTableValue)caseValue).assignedTo().get();
          default:
             return super.getColumnValue( caseValue, i );
       }

@@ -1,11 +1,12 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,6 +71,7 @@ public class ResourceValidity
    public void checkRequest(Request request)
          throws ResourceException
    {
+      // Check command rules
       Date modificationDate = request.getConditions().getUnmodifiedSince();
       if (modificationDate != null)
       {
@@ -78,6 +80,18 @@ public class ResourceValidity
          if (lastModified.after( modificationDate ))
          {
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
+         }
+      }
+
+      // Check query rules
+      modificationDate = request.getConditions().getModifiedSince();
+      if (modificationDate != null)
+      {
+         EntityState state = spi.getEntityState( entity );
+         Date lastModified = new Date( (state.lastModified()/1000)*1000); // Cut off milliseconds
+         if (!lastModified.after( modificationDate ))
+         {
+            throw new ResourceException(Status.REDIRECTION_NOT_MODIFIED);
          }
       }
    }

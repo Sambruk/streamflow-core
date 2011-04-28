@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 
 package se.streamsource.streamflow.web.context.administration.labels;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
@@ -38,7 +37,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -119,20 +118,18 @@ public class SelectedLabelsContext
       return builder.newLinks();
    }
 
-   public void createlabel( StringValue name )
+   public void createlabel( @Name("name") String name )
    {
       Labels labels = role(Labels.class);
       SelectedLabels selectedLabels = role(SelectedLabels.class);
 
-      Label label = labels.createLabel( name.string().get() );
+      Label label = labels.createLabel( name );
       selectedLabels.addSelectedLabel( label );
    }
 
-   public void addlabel( EntityValue labelDTO )
+   public void addlabel( @Name("entity") Label label)
    {
       SelectedLabels labels = role( SelectedLabels.class);
-      Label label = module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, labelDTO.entity().get() );
-
       labels.addSelectedLabel( label );
    }
 }

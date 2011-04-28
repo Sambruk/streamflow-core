@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,68 +28,78 @@ import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
  * Assembly of the Streamflow Server
  */
 public class StreamflowWebAssembler
-      implements ApplicationAssembler
+        implements ApplicationAssembler
 {
    private Object[] serviceObjects;
+   private String name = "StreamflowServer";
 
-   public StreamflowWebAssembler( Object... serviceObjects )
+   public StreamflowWebAssembler(Object... serviceObjects)
    {
       this.serviceObjects = serviceObjects;
    }
 
-   public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
+   public void setName(String name)
+   {
+      this.name = name;
+   }
+
+   public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory)
+           throws AssemblyException
    {
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-      assembly.setName( "StreamflowServer" );
+      assembly.setName(name);
 
       for (Object serviceObject : serviceObjects)
       {
-         assembly.setMetaInfo( serviceObject );
+         assembly.setMetaInfo(serviceObject);
       }
 
-      assembly.setMetaInfo( new RoleInjectionProviderFactory() );
+      assembly.setMetaInfo(new RoleInjectionProviderFactory());
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion( "1.2.9.2945" );
+      assembly.setVersion( "1.3.0.1" );
 
-      LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
-      LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
-      LayerAssembly domainLayer = assembly.layerAssembly( "Domain" );
-      LayerAssembly contextLayer = assembly.layerAssembly( "Context" );
-      LayerAssembly appLayer = assembly.layerAssembly( "Application" );
-      LayerAssembly webLayer = assembly.layerAssembly( "Web" );
-      LayerAssembly managementLayer = assembly.layerAssembly( "Management" );
+      LayerAssembly configurationLayer = assembly.layer("Configuration");
+      LayerAssembly domainInfrastructureLayer = assembly.layer("Domain infrastructure");
+      LayerAssembly domainLayer = assembly.layer("Domain");
+      LayerAssembly contextLayer = assembly.layer("Context");
+      LayerAssembly appLayer = assembly.layer("Application");
+      LayerAssembly webLayer = assembly.layer("Web");
+      LayerAssembly managementLayer = assembly.layer("Management");
 
-      managementLayer.uses( appLayer, domainLayer, domainInfrastructureLayer, configurationLayer );
-      webLayer.uses( appLayer, contextLayer, domainLayer, domainInfrastructureLayer );
-      appLayer.uses( domainLayer, domainInfrastructureLayer, configurationLayer );
-      contextLayer.uses( domainLayer, appLayer, domainInfrastructureLayer );
-      domainLayer.uses( domainInfrastructureLayer );
-      domainInfrastructureLayer.uses( configurationLayer );
+      managementLayer.uses(appLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
+      webLayer.uses(appLayer, contextLayer, domainLayer, domainInfrastructureLayer);
+      appLayer.uses(domainLayer, domainInfrastructureLayer, configurationLayer);
+      contextLayer.uses(domainLayer, appLayer, domainInfrastructureLayer);
+      domainLayer.uses(domainInfrastructureLayer);
+      domainInfrastructureLayer.uses(configurationLayer);
 
-      assembleWebLayer( webLayer );
-      assembleApplicationLayer( appLayer );
-      new ContextAssembler().assemble( contextLayer );
-      new DomainAssembler().assemble( domainLayer );
-      new InfrastructureAssembler().assemble( domainInfrastructureLayer );
-      new ConfigurationAssembler().assemble( configurationLayer );
+      assembleWebLayer(webLayer);
+      assembleApplicationLayer(appLayer);
+      new ContextAssembler().assemble(contextLayer);
+      new DomainAssembler().assemble(domainLayer);
+      new InfrastructureAssembler().assemble(domainInfrastructureLayer);
+      new ConfigurationAssembler().assemble(configurationLayer);
       assembleManagementLayer(managementLayer);
 
       return assembly;
    }
 
-   protected void assembleManagementLayer( LayerAssembly managementLayer ) throws AssemblyException
+   protected void assembleManagementLayer(LayerAssembly managementLayer)
+           throws AssemblyException
    {
-      new ManagementAssembler().assemble( managementLayer );
+      new ManagementAssembler().assemble(managementLayer);
    }
 
-   protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
+   protected void assembleApplicationLayer(LayerAssembly appLayer)
+           throws AssemblyException
    {
-      new AppAssembler().assemble( appLayer );
+      new AppAssembler().assemble(appLayer);
    }
 
-   protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
+   protected void assembleWebLayer(LayerAssembly webLayer)
+           throws AssemblyException
    {
-      new WebAssembler().assemble( webLayer );
+      new WebAssembler().assemble(webLayer);
    }
 }

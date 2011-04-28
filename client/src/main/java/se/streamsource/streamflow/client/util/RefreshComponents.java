@@ -1,11 +1,12 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,16 +23,16 @@ import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.Links;
 
-import java.awt.*;
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import static org.qi4j.api.util.Iterables.matchesAny;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
- * Register components here that should be visible/invisble, enabled/disabled depending on available commands.
+ * Register components here that should be visible/invisible, enabled/disabled depending on available commands.
  */
 public class RefreshComponents
    implements Observer
@@ -81,7 +82,8 @@ public class RefreshComponents
 
          for (Component component : Components.components( Specifications.<Component>TRUE(), value ))
          {
-            component.setEnabled( resourceValue != null && matchesAny( en.getKey(), resourceValue.commands().get() ) );
+            boolean enabled = resourceValue != null && matchesAny( en.getKey(), resourceValue.commands().get() );
+            component.setEnabled( enabled );
          }
 
       }

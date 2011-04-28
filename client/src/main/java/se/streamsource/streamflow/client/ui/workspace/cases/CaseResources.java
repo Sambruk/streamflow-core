@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +38,8 @@ public enum CaseResources
    case_status_open_icon,
    case_status_draft_icon,
    case_status_closed_icon,
+   case_status_withresolution_closed_icon,
+   case_status_withresolution_open_icon,
    case_status_on_hold_icon,
    case_status_draft_text,
    case_status_open_text,

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class ContactAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( ContactAddressValue.class,
+      module.values( ContactAddressValue.class,
             ContactEmailValue.class,
             ContactPhoneValue.class,
             ContactValue.class ).visibleIn( Visibility.application );

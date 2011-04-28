@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,9 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import java.awt.Component;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Deprected: Use BindingFormBuilder2 instead.
@@ -114,7 +116,10 @@ public class BindingFormBuilder
             {
                public Component newField()
                {
-                  return new JXDatePicker( Locale.getDefault());
+                  JXDatePicker jxDatePicker = new JXDatePicker( Locale.getDefault() );
+                  jxDatePicker.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+                  jxDatePicker.getMonthView().setFirstDayOfWeek( Calendar.MONDAY );
+                  return jxDatePicker;
                }
             };
 

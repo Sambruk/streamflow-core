@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +17,23 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
-import se.streamsource.streamflow.client.util.HtmlPanel;
-import se.streamsource.streamflow.client.util.i18n;
+import ca.odell.glazedlists.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.util.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
-import java.net.URL;
+import java.net.*;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -41,23 +43,32 @@ public class CasesView
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
+   
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
+   private JComponent blank;
+   private final ObjectBuilderFactory obf;
+   private JTextField searchField;
+   private JPanel topPanel;
+   private CommandQueryClient client;
 
-   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context )
+   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client,
+                     @Optional @Uses JTextField searchField)
    {
       super();
+      this.obf = obf;
+      this.searchField = searchField;
+      this.client = client;
 
       setActionMap( context.getActionMap( this ) );
 
       setLayout( cardLayout );
 
-      JPanel welcomePanel = createWelcomePanel();
       this.detailsView = obf.newObjectBuilder( CasesDetailView.class ).newInstance();
-
+      
+      
       splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );
-      add( splitPane, BorderLayout.CENTER );
 
       splitPane.setTopComponent( new JPanel() );
       splitPane.setBottomComponent( detailsView );
@@ -66,41 +77,46 @@ public class CasesView
       splitPane.setDividerLocation( 1D );
       splitPane.setBorder( BorderFactory.createEmptyBorder() );
 
+      topPanel = new JPanel( new BorderLayout());
+      topPanel.add( splitPane, BorderLayout.CENTER);
+      
+      add( blank = createBlankPanel(), "blank" );
+      add( topPanel, "cases" );
 
-      add( welcomePanel, "welcome" );
-      add( splitPane, "cases" );
-
-      cardLayout.show( this, "welcome" );
+      cardLayout.show( this, "blank" );
    }
 
-   private JPanel createWelcomePanel()
+   protected JPanel createBlankPanel()
    {
-      JPanel welcomePanel = new JPanel( new BorderLayout() );
+      JPanel blankPanel = new JPanel( new BorderLayout() );
       URL logoURL = getClass().getResource( i18n.text( Icons.name_logo ) );
-      JEditorPane welcomePane = new HtmlPanel(text( WorkspaceResources.welcome, logoURL.toExternalForm() ) );
-      welcomePanel.add( welcomePane, BorderLayout.CENTER );
-      return welcomePanel;
+      JEditorPane blankPane = new HtmlPanel(text( WorkspaceResources.welcome, logoURL.toExternalForm() ) );
+      blankPanel.add( blankPane, BorderLayout.CENTER );
+      return blankPanel;
    }
 
-   public void showTable( CasesTableView casesTableView )
+   public void showTable( final CasesTableView casesTableView )
    {
       cardLayout.show( this, "cases" );
       this.casesTableView = casesTableView;
+      this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
       splitPane.setTopComponent( casesTableView );
-      clearCase();
+      SwingUtilities.invokeLater( new Runnable()
+      {
+         public void run()
+         {
+            detailsView.selectCaseInTable( casesTableView.getCaseTable() );
+         }
+      } );
+
    }
 
    public void clearTable()
    {
-      cardLayout.show( this, "welcome" );
+      cardLayout.show( this, "blank" );
       casesTableView = null;
       splitPane.setTopComponent( new JPanel() );
       clearCase();
-   }
-
-   public void showCase( CommandQueryClient client )
-   {
-      detailsView.show( client );
    }
 
    public void clearCase()
@@ -123,6 +139,51 @@ public class CasesView
       if (casesTableView != null)
          casesTableView.getModel().refresh();
       detailsView.refresh();
+   }
+
+   public void setBlankPanel( JComponent blankPanel )
+   {
+      remove(blank);
+      add( blank = blankPanel, "blank" );
+   }
+
+   class CaseSelectionListener
+         implements ListSelectionListener
+   {
+      public void valueChanged( ListSelectionEvent e )
+      {
+         if (!e.getValueIsAdjusting())
+         {
+            final JTable caseTable = getCaseTableView().getCaseTable();
+
+            SwingUtilities.invokeLater( new Runnable()
+            {
+               public void run()
+               {
+
+                  try
+                  {
+                     if (!caseTable.getSelectionModel().isSelectionEmpty())
+                     {
+                        int selectedRow = caseTable.getSelectedRow();
+                        Object selectedValue = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
+                        if (selectedRow != -1 && !(selectedValue instanceof SeparatorList.Separator) )
+                        {
+                           String href = (String) selectedValue;
+                           detailsView.show( client.getClient( href ) );
+                        }
+                     } else
+                     {
+                        detailsView.selectCaseInTable( caseTable );
+                     }
+                  } catch (Exception e1)
+                  {
+                     throw new OperationException( CaseResources.could_not_view_details, e1 );
+                  }
+               }
+            } );
+         }
+      }
    }
 }
 

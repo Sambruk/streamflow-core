@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,16 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.property.PropertyTypeDescriptor;
-import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.*;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
@@ -33,6 +34,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
 import java.io.IOException;
 
@@ -64,22 +66,20 @@ public class CommandQueryClient
       return resourceValue = query( "", null, ResourceValue.class );
    }
 
-   public synchronized <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
+   public synchronized <T> T query( String operation, Class<T> queryResult ) throws ResourceException
    {
       return query( operation, null, queryResult );
    }
 
-   public synchronized <T extends ValueComposite> T query( String operation, ValueComposite queryValue, Class<T> queryResult ) throws ResourceException
+   public synchronized <T> T query( String operation, Object queryRequest, Class<T> queryResult ) throws ResourceException
    {
-      Response response = invokeQuery( operation, queryValue );
+      Response response = invokeQuery( operation, queryRequest );
 
       if (response.getStatus().isSuccess())
       {
          cqcFactory.updateCache( response );
 
-         String jsonValue = response.getEntityAsText();
-
-         return cqcFactory.newValue(queryResult, jsonValue );
+         return cqcFactory.readResponse( response, queryResult );
       } else
       {
          // This will throw an exception
@@ -88,7 +88,7 @@ public class CommandQueryClient
       }
    }
 
-   public synchronized Representation queryRepresentation( String query, ValueComposite queryValue )
+   public synchronized Representation queryRepresentation( String query, Object queryValue )
    {
       Response response = invokeQuery( query, queryValue );
 
@@ -103,32 +103,28 @@ public class CommandQueryClient
       }
    }
 
-   private void setQueryParameters( final Reference ref, ValueComposite queryValue )
+   public synchronized  <T> T queryLink(LinkValue link, Class<T> queryResult)
    {
-      // Value as parameter
-      StateHolder holder = cqcFactory.getSPI().getState( queryValue );
-      final ValueDescriptor descriptor = cqcFactory.getSPI().getValueDescriptor( queryValue );
-
-      ref.setQuery( null );
-
-      holder.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
-      {
-         public void visitProperty( QualifiedName
-               name, Object value )
-         {
-            if (value != null)
-            {
-               PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName( name );
-               String queryParam = propertyDesc.propertyType().type().toQueryParameter( value );
-               ref.addQueryParameter( name.name(), queryParam );
-            }
-         }
-      } );
+      return query( link.href().get(), queryResult );
    }
 
    public synchronized void postLink( LinkValue link ) throws ResourceException
    {
       postCommand( link.href().get(), new EmptyRepresentation() );
+   }
+
+   public synchronized void command(String relation)
+      throws ResourceException
+   {
+      LinkValue link = Iterables.first( Iterables.filter( Links.withRel( relation ), resourceValue.commands().get()));
+      if (link == null)
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+
+      // Check if we should do POST or PUT
+      if (Links.withClass( "idempotent" ).satisfiedBy( link ))
+         putCommand( link.href().get() );
+      else
+         postLink( link );
    }
 
    public synchronized void postCommand( String operation ) throws ResourceException
@@ -174,7 +170,13 @@ public class CommandQueryClient
          }
       } finally
       {
-         response.release();
+         try
+         {
+            response.getEntity().exhaust();
+         } catch (Throwable e)
+         {
+            // Ignore
+         }
       }
    }
 
@@ -212,14 +214,15 @@ public class CommandQueryClient
       }
    }
 
-   private Response invokeQuery( String operation, ValueComposite queryValue )
+   private Response invokeQuery( String operation, Object queryRequest )
          throws ResourceException
    {
       Reference ref = new Reference( reference.toUri().toString() + operation );
-      if (queryValue != null)
-         setQueryParameters( ref, queryValue );
-
       Request request = new Request( Method.GET, ref );
+
+      if (queryRequest != null)
+         cqcFactory.writeRequest(request, queryRequest);
+
       cqcFactory.updateQueryRequest( request );
 
       Response response = new Response( request );
@@ -284,7 +287,13 @@ public class CommandQueryClient
                }
             } finally
             {
-               response.release();
+               try
+               {
+                  response.getEntity().exhaust();
+               } catch (Throwable e)
+               {
+                  // Ignore
+               }
             }
             break;
          } catch (ResourceException e)
@@ -358,7 +367,13 @@ public class CommandQueryClient
             }
          } finally
          {
-            response.release();
+            try
+            {
+               response.getEntity().exhaust();
+            } catch (Throwable e)
+            {
+               // Ignore
+            }
          }
       }
    }

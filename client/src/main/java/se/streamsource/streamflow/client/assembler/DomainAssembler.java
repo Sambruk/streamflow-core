@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
+import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualEntity;
@@ -39,24 +38,21 @@ public class DomainAssembler
    {
       new CommonDomainAssembler().assemble( layer );
 
-      individual( layer.moduleAssembly( "Individual" ) );
-      restDomainModel( layer.moduleAssembly( "REST domain model" ) );
+      individual( layer.module( "Individual" ) );
+      restDomainModel( layer.module( "REST domain model" ) );
    }
 
    private void individual( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( IndividualRepositoryService.class ).visibleIn( Visibility.application );
+      module.services( IndividualRepositoryService.class ).visibleIn( Visibility.application );
 
-      module.addValues( AccountSettingsValue.class ).visibleIn( Visibility.application );
-      module.addEntities( IndividualEntity.class, AccountEntity.class ).visibleIn( Visibility.application );
+      module.values( AccountSettingsValue.class ).visibleIn( Visibility.application );
+      module.entities( IndividualEntity.class, AccountEntity.class ).visibleIn( Visibility.application );
    }
 
    private void restDomainModel( ModuleAssembly module ) throws AssemblyException
    {
       new CommonResourceAssembler().assemble( module );
-
-      // /users
-      module.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class
-      ).visibleIn( Visibility.application );
+      new ClientAssembler().assemble( module );
    }
 }

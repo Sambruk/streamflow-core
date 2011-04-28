@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 
 package se.streamsource.dci.restlet.client;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -32,34 +35,57 @@ import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.test.AbstractQi4jTest;
-import org.restlet.*;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Server;
+import org.restlet.Uniform;
+import org.restlet.data.Form;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.*;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.dci.api.InteractionValidation;
+import se.streamsource.dci.api.RequiresRoles;
+import se.streamsource.dci.api.RequiresValid;
+import se.streamsource.dci.api.Role;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
-import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
+import se.streamsource.dci.restlet.server.CommandResult;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.ValueAssembler;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
-import javax.security.auth.Subject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * Test for CommandQueryClient
@@ -99,29 +125,30 @@ public class CommandQueryClientTest
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( RootContext.class, SubContext.class, SubContext2.class, RootResource.class, SubResource1.class );
+      module.objects( RootContext.class, SubContext.class, SubContext2.class, RootResource.class, SubResource1.class );
 
-      module.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class );
+      new ClientAssembler().assemble( module );
 
-
-      module.addValues( TestQuery.class, TestResult.class, TestCommand.class );
+      module.values( TestQuery.class, TestResult.class, TestCommand.class );
       module.forMixin( TestQuery.class ).declareDefaults().abc().set( "def" );
 
+
+      new ValueAssembler().assemble( module );
       new DCIAssembler().assemble( module );
 
-      module.addObjects(NullCommandResult.class );
-      module.importServices(CommandResult.class).importedBy( NEW_OBJECT );
-      module.addObjects(RootRestlet.class );
+      module.objects(NullCommandResult.class );
+      module.importedServices(CommandResult.class).importedBy( NEW_OBJECT );
+      module.objects(RootRestlet.class );
 
-      module.importServices( InteractionConstraintsService.class ).
+      module.importedServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).
             visibleIn( Visibility.application );
-      module.addObjects( InteractionConstraintsService.class );
+      module.objects( InteractionConstraintsService.class );
 
-      module.importServices( MetadataService.class ).importedBy( NEW_OBJECT );
-      module.addObjects( MetadataService.class );
+      module.importedServices( MetadataService.class ).importedBy( NEW_OBJECT );
+      module.objects( MetadataService.class );
 
-      module.addObjects( DescribableContext.class );
+      module.objects( DescribableContext.class );
       module.addTransients( TestComposite.class );
    }
 
@@ -131,7 +158,7 @@ public class CommandQueryClientTest
 
       server = new Server( Protocol.HTTP, 8888 );
       CommandQueryRestlet2 restlet = objectBuilderFactory.newObjectBuilder( CommandQueryRestlet2.class ).use( new org.restlet.Context() ).newInstance();
-      server.setNext( restlet );
+      server.setNext(restlet);
       server.start();
 
       Client client = new Client( Protocol.HTTP );
@@ -150,7 +177,7 @@ public class CommandQueryClientTest
    {
       TestResult result = cqc.query( "querywithvalue", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
 
-      assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
+      assertThat(result.toJSON(), equalTo("{\"xyz\":\"bar\"}"));
    }
 
    @Test
@@ -206,7 +233,7 @@ public class CommandQueryClientTest
    {
       cqc.delete();
 
-      assertThat(command, equalTo("delete"));
+      assertThat( command, equalTo( "delete" ) );
    }
 
    @Test
@@ -216,6 +243,42 @@ public class CommandQueryClientTest
       TestResult result = cqc2.query( "querywithvalue", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
 
       assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
+   }
+
+   @Test
+   public void testInteractionValidation()
+   {
+      CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
+
+      LinkValue xyzLink;
+      {
+         ResourceValue result = cqc2.queryResource();
+         xyzLink = Iterables.first( Iterables.filter( Links.withId( "xyz" ), result.commands().get() ) );
+         assertThat( xyzLink, CoreMatchers.<Object>notNullValue());
+         Form form = new Form();
+         form.set( "valid", "false" );
+         cqc2.postCommand( xyzLink.rel().get(), form.getWebRepresentation());
+      }
+
+      {
+         ResourceValue result = cqc2.queryResource();
+         LinkValue nullLink = Iterables.first( Iterables.filter( Links.withId( "xyz" ), result.commands().get() ) );
+         assertThat( nullLink, CoreMatchers.<Object>nullValue());
+
+      }
+
+      try
+      {
+         cqc2.postCommand( xyzLink.rel().get(), new StringRepresentation("{valid:false}") );
+         Assert.fail("ResourceException should have been thrown");
+      } catch (ResourceException e)
+      {
+         // Ok
+      }
+
+      Form form = new Form();
+      form.set( "valid", "true" );
+      cqc2.postCommand( "notxyz", form.getWebRepresentation());
    }
 
    @Test
@@ -232,7 +295,7 @@ public class CommandQueryClientTest
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
       ResourceValue result = cqc2.queryResource();
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"commandwithrolerequirement\",\"id\":\"commandwithrolerequirement\",\"rel\":\"commandwithrolerequirement\",\"text\":\"Command with role requirement\"},{\"classes\":\"command\",\"href\":\"changedescription\",\"id\":\"changedescription\",\"rel\":\"changedescription\",\"text\":\"Change description\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithrolerequirement\",\"id\":\"querywithrolerequirement\",\"rel\":\"querywithrolerequirement\",\"text\":\"Query with role requirement\"},{\"classes\":\"query\",\"href\":\"genericquery\",\"id\":\"genericquery\",\"rel\":\"genericquery\",\"text\":\"Generic query\"},{\"classes\":\"query\",\"href\":\"description\",\"id\":\"description\",\"rel\":\"description\",\"text\":\"Description\"}],\"resources\":[{\"classes\":\"resource\",\"href\":\"subresource1/\",\"id\":\"subresource1\",\"rel\":\"subresource1\",\"text\":\"Subresource 1\"},{\"classes\":\"resource\",\"href\":\"subresource2/\",\"id\":\"subresource2\",\"rel\":\"subresource2\",\"text\":\"Subresource 2\"}]}" ) );
+      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"xyz\",\"id\":\"xyz\",\"rel\":\"xyz\",\"text\":\"Xyz\"},{\"classes\":\"command\",\"href\":\"commandwithrolerequirement\",\"id\":\"commandwithrolerequirement\",\"rel\":\"commandwithrolerequirement\",\"text\":\"Command with role requirement\"},{\"classes\":\"command\",\"href\":\"changedescription\",\"id\":\"changedescription\",\"rel\":\"changedescription\",\"text\":\"Change description\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithrolerequirement\",\"id\":\"querywithrolerequirement\",\"rel\":\"querywithrolerequirement\",\"text\":\"Query with role requirement\"},{\"classes\":\"query\",\"href\":\"genericquery\",\"id\":\"genericquery\",\"rel\":\"genericquery\",\"text\":\"Generic query\"},{\"classes\":\"query\",\"href\":\"description\",\"id\":\"description\",\"rel\":\"description\",\"text\":\"Description\"}],\"resources\":[{\"classes\":\"resource\",\"href\":\"subresource1/\",\"id\":\"subresource1\",\"rel\":\"subresource1\",\"text\":\"Subresource 1\"},{\"classes\":\"resource\",\"href\":\"subresource2/\",\"id\":\"subresource2\",\"rel\":\"subresource2\",\"text\":\"Subresource 2\"}]}" ) );
    }
 
    @Test
@@ -240,15 +303,6 @@ public class CommandQueryClientTest
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
       TestResult result = cqc2.query( "querywithrolerequirement", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
-
-      assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
-   }
-
-   @Test
-   public void testSubResourceQueryWithRoleRequirement2()
-   {
-      CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
-      TestResult result = cqc2.query( "querywithrolerequirement2", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
 
       assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
    }
@@ -313,7 +367,7 @@ public class CommandQueryClientTest
       @Override
       protected Uniform createRoot( Request request, Response response )
       {
-         return module.objectBuilderFactory().newObjectBuilder( RootResource.class ).newInstance();
+         return module.objectBuilderFactory().newObjectBuilder( RootResource.class ).use(this).newInstance();
       }
    }
 
@@ -463,6 +517,7 @@ public class CommandQueryClientTest
    }
 
    public static class SubContext
+      implements InteractionValidation
    {
       @Structure
       ValueBuilderFactory vbf;
@@ -480,20 +535,34 @@ public class CommandQueryClientTest
          return vbf.newValueFromJSON( TestResult.class, "{'xyz':'bar'}" );
       }
 
-      @RequiresRoles(Subject.class)
-      public TestResult queryWithRoleRequirement2( TestQuery query )
-      {
-         return vbf.newValueFromJSON( TestResult.class, "{'xyz':'bar'}" );
-      }
-
       @RequiresRoles(File.class)
       public void commandWithRoleRequirement()
       {
       }
 
-      @RequiresRoles(Subject.class)
-      public void commandWithRoleRequirement2()
+      // Interaction validation
+      private static boolean xyzValid = true;
+
+      @RequiresValid("xyz")
+      public void xyz(@Name("valid") boolean valid)
       {
+         xyzValid = valid;
+      }
+
+      @RequiresValid("notxyz")
+      public void notxyz(@Name("valid") boolean valid)
+      {
+         xyzValid = valid;
+      }
+
+      public boolean isValid( String name )
+      {
+         if (name.equals("xyz"))
+            return xyzValid;
+         else if (name.equals( "notxyz" ))
+            return !xyzValid;
+         else
+            return false;
       }
    }
 

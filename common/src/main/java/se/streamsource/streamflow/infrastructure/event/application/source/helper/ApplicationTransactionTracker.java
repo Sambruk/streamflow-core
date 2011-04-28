@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +33,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Tran
  * the tracker will get all the transactions from the store since the last
  * check, and delegate them to the given Output. It will also register itself
  * with the store so that it can get continuous updates.
- *
+ * <p/>
  * Then, as transactions come in from the store, they will be processed in real-time.
  * If a transaction is successfully handled the configuration of the service, which must
  * extend TransactionTrackerConfiguration, will update the marker for the last successfully handled transaction.
- *
  */
 public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwable>
 {
@@ -49,16 +49,16 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
    private Logger logger;
    private Output<TransactionApplicationEvents, ReceiverThrowableType> trackerOutput;
 
-   public ApplicationTransactionTracker( ApplicationEventStream stream, ApplicationEventSource source,
-                              Configuration<? extends TransactionTrackerConfiguration> configuration,
-                              Output<TransactionApplicationEvents, ReceiverThrowableType> output )
+   public ApplicationTransactionTracker(ApplicationEventStream stream, ApplicationEventSource source,
+                                        Configuration<? extends TransactionTrackerConfiguration> configuration,
+                                        Output<TransactionApplicationEvents, ReceiverThrowableType> output)
    {
       this.stream = stream;
       this.configuration = configuration;
       this.source = source;
       this.output = output;
 
-      logger = LoggerFactory.getLogger( output.getClass() );
+      logger = LoggerFactory.getLogger(output.getClass());
    }
 
    public void start()
@@ -72,13 +72,13 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
          trackerOutput = output();
          try
          {
-            source.transactionsAfter( configuration.configuration().lastEventDate().get(), Long.MAX_VALUE).transferTo( trackerOutput );
+            source.transactionsAfter(configuration.configuration().lastEventDate().get(), Long.MAX_VALUE).transferTo(trackerOutput);
          } catch (Throwable receiverThrowableType)
          {
             upToSpeed = false;
          }
 
-         stream.registerListener( trackerOutput );
+         stream.registerListener(trackerOutput);
       }
    }
 
@@ -87,7 +87,7 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
       if (started)
       {
          started = false;
-         stream.unregisterListener( trackerOutput );
+         stream.unregisterListener(trackerOutput);
          upToSpeed = false;
       }
    }
@@ -96,7 +96,7 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
    {
       return new Output<TransactionApplicationEvents, ReceiverThrowableType>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( final Sender<TransactionApplicationEvents, SenderThrowableType> sender ) throws ReceiverThrowableType, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(final Sender<? extends TransactionApplicationEvents, SenderThrowableType> sender) throws ReceiverThrowableType, SenderThrowableType
          {
             if (!upToSpeed)
             {
@@ -108,28 +108,28 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
                // Get all transactions from last timestamp, including the one in this call
                try
                {
-                  source.transactionsAfter( configuration.configuration().lastEventDate().get(), Long.MAX_VALUE).transferTo( trackerOutput );
+                  source.transactionsAfter(configuration.configuration().lastEventDate().get(), Long.MAX_VALUE).transferTo(trackerOutput);
                } catch (Throwable e)
                {
                   upToSpeed = false;
-                  throw (SenderThrowableType)e;
+                  throw (SenderThrowableType) e;
                }
             }
 
             try
             {
-               output.receiveFrom( new Sender<TransactionApplicationEvents, SenderThrowableType>()
+               output.receiveFrom(new Sender<TransactionApplicationEvents, SenderThrowableType>()
                {
-                  public <ReceiverThrowableType extends Throwable> void sendTo( final Receiver<TransactionApplicationEvents, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, SenderThrowableType
+                  public <ReceiverThrowableType extends Throwable> void sendTo(final Receiver<? super TransactionApplicationEvents, ReceiverThrowableType> receiver) throws ReceiverThrowableType, SenderThrowableType
                   {
-                     sender.sendTo( new Receiver<TransactionApplicationEvents, ReceiverThrowableType>()
+                     sender.sendTo(new Receiver<TransactionApplicationEvents, ReceiverThrowableType>()
                      {
-                        public void receive( TransactionApplicationEvents item ) throws ReceiverThrowableType
+                        public void receive(TransactionApplicationEvents item) throws ReceiverThrowableType
                         {
-                           receiver.receive( item );
+                           receiver.receive(item);
 
                            // Events in this transactionDomain were handled successfully so store new marker
-                           configuration.configuration().lastEventDate().set( item.timestamp().get() );
+                           configuration.configuration().lastEventDate().set(item.timestamp().get());
                            configuration.save();
                         }
                      });

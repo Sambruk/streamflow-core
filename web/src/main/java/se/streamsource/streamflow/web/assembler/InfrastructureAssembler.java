@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
+import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
@@ -53,7 +52,11 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
@@ -71,9 +74,9 @@ import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLooku
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 
-import static org.qi4j.api.service.qualifier.ServiceTags.tags;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -86,34 +89,32 @@ public class InfrastructureAssembler
    {
       super.assemble( layer );
 
-      logging (layer.moduleAssembly("Logging"));
-      caching( layer.moduleAssembly( "Caching" ) );
-      database( layer.moduleAssembly( "Database" ) );
-      entityStore( layer.moduleAssembly( "Entity store" ) );
-      entityFinder( layer.moduleAssembly( "Entity finder" ) );
-      events( layer.moduleAssembly( "Events" ) );
-      searchEngine( layer.moduleAssembly( "Search engine" ) );
-      attachments( layer.moduleAssembly( "Attachments store" ) );
-      plugins( layer.moduleAssembly( "Plugins" ) );
+      logging (layer.module("Logging"));
+      caching( layer.module( "Caching" ) );
+      database( layer.module( "Database" ) );
+      entityStore( layer.module( "Entity store" ) );
+      entityFinder( layer.module( "Entity finder" ) );
+      events( layer.module( "Events" ) );
+      searchEngine( layer.module( "Search engine" ) );
+      attachments( layer.module( "Attachments store" ) );
+      plugins( layer.module( "Plugins" ) );
    }
 
    private void logging( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( LoggingService.class ).instantiateOnStartup();
+      module.services( LoggingService.class ).instantiateOnStartup();
    }
 
    private void plugins( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
+      new ClientAssembler().assemble( moduleAssembly );
 
-      moduleAssembly.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class
-      ).visibleIn( Visibility.module );
-
-      moduleAssembly.addServices( ContactLookupService.class ).
-            identifiedBy( "contactlookup" ).
-            visibleIn( Visibility.application ).
+      moduleAssembly.services( ContactLookupService.class ).
+            identifiedBy("contactlookup").
+            visibleIn(Visibility.application).
             instantiateOnStartup();
 
-      moduleAssembly.addValues( ContactList.class,
+      moduleAssembly.values( ContactList.class,
             ContactValue.class,
             ContactAddressValue.class,
             ContactEmailValue.class,
@@ -124,89 +125,89 @@ public class InfrastructureAssembler
 
    private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addServices( CachingServiceComposite.class ).visibleIn( Visibility.application );
+      moduleAssembly.services( CachingServiceComposite.class ).visibleIn( Visibility.application );
 
- //     moduleAssembly.addServices( EhCachePoolService.class ).visibleIn( Visibility.layer );
+ //     moduleAssembly.services( EhCachePoolService.class ).visibleIn( Visibility.layer );
    }
 
    private void attachments( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( AttachmentStoreService.class ).identifiedBy( "attachments" ).visibleIn( Visibility.application );
+      module.services( AttachmentStoreService.class ).identifiedBy( "attachments" ).visibleIn( Visibility.application );
    }
 
    private void searchEngine( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (!mode.equals( Application.Mode.test ))
       {
-         module.addServices( EmbeddedSolrService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
-         module.addServices( SolrQueryService.class ).visibleIn( Visibility.application ).identifiedBy( "solr" ).instantiateOnStartup();
+         module.services( EmbeddedSolrService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
+         module.services( SolrQueryService.class ).visibleIn( Visibility.application ).identifiedBy( "solr" ).instantiateOnStartup();
 
-         module.addObjects( EntityStateSerializer.class );
+         module.objects( EntityStateSerializer.class );
       }
    }
 
    private void events( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( EventsCommandResult.class ).importedBy( NEW_OBJECT ).visibleIn( Visibility.application );
-      module.addObjects( EventsCommandResult.class );
-      module.addValues( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
-      module.addValues( TransactionApplicationEvents.class, ApplicationEvent.class ).visibleIn( Visibility.application );
-      module.addServices( DomainEventFactoryService.class ).visibleIn( Visibility.application );
-      module.addServices( ApplicationEventFactoryService.class ).visibleIn( Visibility.application );
-      module.addObjects( TimeService.class );
-      module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
+      module.importedServices( EventsCommandResult.class ).importedBy( NEW_OBJECT ).visibleIn( Visibility.application );
+      module.objects( EventsCommandResult.class );
+      module.values( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      module.values( TransactionApplicationEvents.class, ApplicationEvent.class ).visibleIn( Visibility.application );
+      module.services( DomainEventFactoryService.class ).visibleIn( Visibility.application );
+      module.services( ApplicationEventFactoryService.class ).visibleIn( Visibility.application );
+      module.objects( TimeService.class );
+      module.importedServices( TimeService.class ).importedBy( NewObjectImporter.class );
 
-      if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
+      if (module.layer().application().mode() == Application.Mode.production)
       {
-         module.addServices( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).setMetaInfo( tags( "domain" ) ).visibleIn( Visibility.application );
-         module.addServices( JdbmApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
+         module.services( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).taggedWith("domain").visibleIn( Visibility.application );
+         module.services( JdbmApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
       } else
       {
-         module.addServices( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
-         module.addServices( MemoryApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
+         module.services( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
+         module.services( MemoryApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
       }
    }
 
    private void entityFinder( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
       {
          // In-memory store
-         module.addServices( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+         module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
       } else if (mode.equals( Application.Mode.production ))
       {
          // Native storage
-         module.addServices( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
-         configuration().addEntities( NativeConfiguration.class ).visibleIn( Visibility.application );
+         module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+         configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
       }
 
-      module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
-      module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
+      module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
 //            withConcerns( PerformanceLogConcern.class );
-      module.addServices( RdfQueryParserFactory.class );
+      module.services( RdfQueryParserFactory.class );
    }
 
    private void entityStore( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.development ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+         module.services( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
       } else if (mode.equals( Application.Mode.test ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+         module.services( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
       } else if (mode.equals( Application.Mode.production ))
       {
          // JDBM storage
-         module.addServices( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
+         module.services( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
 //               withConcerns( EntityStorePerformanceCheck.class );
-         module.addServices( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+         module.services( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
 
-         configuration().addEntities( JdbmConfiguration.class ).visibleIn( Visibility.application );
+         configuration().entities( JdbmConfiguration.class ).visibleIn( Visibility.application );
 
          // Migration service
          // Enter all migration rules here
@@ -558,31 +559,107 @@ public class InfrastructureAssembler
                   forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
                      renameAssociation( "selectedTemplate", "formPdfTemplate" ).
                      renameAssociation( "caseTemplate", "casePdfTemplate" ).
-               end();
+               end().
+               toVersion("1.3.0.0").
+                  renameEntity( "se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity", "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity").
+                  forEntities("se.streamsource.streamflow.web.domain.entity.user.UserEntity").
+                     renameAssociation("searches", "perspectives").
+                  end().
+               toVersion("1.3.0.1").
+                 forEntities("se.streamsource.streamflow.web.domain.entity.caze.CaseEntity").
+                     removeProperty("effectiveFieldValues", null).
+                     custom(new EntityMigrationOperation()
+                     {
+                        public boolean upgrade(JSONObject state, StateStore stateStore, Migrator migrator) throws JSONException
+                        {
+                           try
+                           {
+                              JSONArray submittedForms = state.getJSONObject( "properties" ).getJSONArray("submittedForms");
 
-         module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
-         configuration().addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
+                              for (int i = 0; i < submittedForms.length(); i++)
+                              {
+                                 JSONObject submittedForm = submittedForms.getJSONObject(i);
+                                 JSONArray fields = submittedForm.getJSONArray("values");
 
-         module.addObjects( MigrationEventLogger.class );
-         module.importServices( MigrationEventLogger.class ).importedBy( NEW_OBJECT );
+                                 JSONObject formState = stateStore.getState(submittedForm.getString("form"));
+
+                                 JSONArray formPages = formState.getJSONObject("manyassociations").getJSONArray("pages");
+
+                                 JSONArray submittedPages = new JSONArray();
+
+                                 for (int k = 0; k < formPages.length(); k++)
+                                 {
+                                    JSONObject submittedPage = new JSONObject();
+
+                                    submittedPage.put("page", formPages.getString(k));
+
+                                    JSONObject pageState = stateStore.getState(formPages.getString(k));
+
+                                    JSONArray fieldsState = pageState.getJSONObject("manyassociations").getJSONArray("fields");
+
+                                    JSONArray submittedFields = new JSONArray();
+                                    for (int j = 0; j < fieldsState.length(); j++)
+                                    {
+                                       for (int m = 0; m < fields.length(); m++)
+                                       {
+                                          JSONObject field = fields.getJSONObject(m);
+
+                                          if (field.getString("field").equals(fieldsState.getString(j)))
+                                          {
+                                             submittedFields.put(field);
+                                             break;
+                                          }
+                                       }
+                                    }
+                                    submittedPage.put("fields", submittedFields);
+
+                                    submittedPages.put(submittedPage);
+                                 }
+
+                                 submittedForm.put("pages", submittedPages);
+                                 submittedForm.remove("values");
+                              }
+
+                              return true;
+                           } catch (IOException e)
+                           {
+                              throw new JSONException(e);
+                           }
+                        }
+
+                        public boolean downgrade(JSONObject state, StateStore stateStore, Migrator migrator) throws JSONException
+                        {
+                           return false;
+                        }
+                     }).
+                 end();
+
+
+                  
+
+         module.services( MigrationService.class ).setMetaInfo( migrationBuilder );
+         configuration().entities( MigrationConfiguration.class ).visibleIn( Visibility.application );
+
+         module.objects( MigrationEventLogger.class );
+         module.importedServices( MigrationEventLogger.class ).importedBy( NEW_OBJECT );
       }
    }
 
    private void database( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( DataSourceService.class ).identifiedBy( "datasource" ).visibleIn( Visibility.application );
-      module.importServices( DataSource.class ).
-            importedBy( ServiceInstanceImporter.class ).
-            setMetaInfo( "datasource" ).
-            identifiedBy( "streamflowds" ).visibleIn( Visibility.application );
+      module.services( DataSourceService.class ).identifiedBy( "datasource" ).visibleIn( Visibility.application );
+      module.importedServices( DataSource.class ).
+            importedBy(ServiceInstanceImporter.class).
+            setMetaInfo("datasource").
+            identifiedBy("streamflowds").visibleIn( Visibility.application );
 
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.production ))
       {
          // Liquibase migration
-         module.addServices( LiquibaseService.class ).instantiateOnStartup();
-         ModuleAssembly config = module.layerAssembly().applicationAssembly().layerAssembly( "Configuration" ).moduleAssembly( "DefaultConfiguration" );
-         config.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
+         module.services( LiquibaseService.class ).instantiateOnStartup();
+         ModuleAssembly config = module.layer().application().layer( "Configuration" ).module( "DefaultConfiguration" );
+         config.entities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
          config.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);
          config.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
       }

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class FormAssembler
 {
    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addValues( CreateFieldDTO.class,
+      moduleAssembly.values( CreateFieldDTO.class,
             EffectiveFieldValue.class,
             EffectiveFormFieldsValue.class,
             SubmittedFieldValue.class,
@@ -55,6 +55,7 @@ public class FormAssembler
             FieldDefinitionValue.class,
             FieldSubmissionValue.class,
             SubmittedFormValue.class,
+            SubmittedPageValue.class,
             PageSubmissionValue.class,
             FormSignatureValue.class,
             RequiredSignaturesValue.class,

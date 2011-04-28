@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.qi4j.api.service.ServiceReference;
  * Use a registered service that implements ServiceImporter to do the actual
  * import. The service id of the service that this importer should delegate to must
  * be set as meta-info on this service. Example:
- * module.addServices(MyServiceImporterService.class).identifiedBy("someid");
- * module.importServices(OtherService.class).importedBy(ServiceInstanceImporter.class).setMetaInfo("someid");
+ * module.services(MyServiceImporterService.class).identifiedBy("someid");
+ * module.importedServices(OtherService.class).importedBy(ServiceInstanceImporter.class).setMetaInfo("someid");
  */
 public class ServiceInstanceImporter
    implements ServiceImporter

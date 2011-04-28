@@ -1,0 +1,8 @@
+* [index Manual]
+  * [Administration Administration]
+    * [Organization Organizational structure]
+    * [Restore Restoring data from backup]
+  * [Workspace The workspace]
+    * [WorkspaceContext Using the context]
+    * [WorkspaceCases The case table]
+    * [WorkspaceCaseDetails Case details ]

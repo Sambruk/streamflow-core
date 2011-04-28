@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -36,13 +37,13 @@ public interface EndUserCases
 {
    CaseEntity createCaseWithForm( AnonymousEndUser endUser );
 
-   CaseEntity createCase( AnonymousEndUser endUser );
+   CaseEntity createCase( Drafts endUser );
 
    void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter );
 
    void submitForm( Case caze, FormDraft formSubmission, Submitter submitter );
 
-   void sendToFunction( Case caze );
+   void sendTo( Case caze );
 
    void discardCase( Case caze );
 
@@ -76,11 +77,10 @@ public interface EndUserCases
       public void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter )
       {
          submitForm( caze, formSubmission, submitter );
-         sendToFunction( caze );
-
+         sendTo( caze );
       }
 
-      public CaseEntity createCase( AnonymousEndUser endUser )
+      public CaseEntity createCase( Drafts endUser )
       {
          CaseEntity caseEntity = endUser.createDraft();
          caseEntity.changeDescription( accesspoint.caseType().get().getDescription() );
@@ -93,10 +93,11 @@ public interface EndUserCases
          return caseEntity;
       }
 
-      public void sendToFunction( Case caze )
+      public void sendTo( Case caze )
       {
          CaseEntity caseEntity = (CaseEntity) caze;
-         caseEntity.unassign();
+         if (caseEntity.isAssigned())
+            caseEntity.unassign();
          caseEntity.changeOwner( accesspoint.project().get() );
          caseEntity.open();
       }

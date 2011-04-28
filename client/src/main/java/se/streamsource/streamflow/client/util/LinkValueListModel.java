@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.util;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.specification.Specifications;
@@ -35,9 +36,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import static org.qi4j.api.specification.Specifications.or;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * A general super class for models that use LinkValue lists shown in a JList.
@@ -51,7 +51,7 @@ public class LinkValueListModel
    @Structure
    protected ValueBuilderFactory vbf;
 
-   protected EventList<LinkValue> linkValues = new BasicEventList<LinkValue>();
+   protected EventList<LinkValue> linkValues = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
    protected EventList<LinkValue> sortedValues = new SortedList<LinkValue>(linkValues, new LinkComparator());
 
    private final String refresh;

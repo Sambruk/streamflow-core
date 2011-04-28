@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.web.rest;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -38,11 +37,11 @@ import se.streamsource.streamflow.web.resource.APIRouter;
  * JAVADOC
  */
 public class StreamflowRestApplication
-      extends Application
+        extends Application
 {
-   public static final MediaType APPLICATION_SPARQL_JSON = new MediaType( "application/sparql-results+json", "SPARQL JSON" );
+   public static final MediaType APPLICATION_SPARQL_JSON = new MediaType("application/sparql-results+json", "SPARQL JSON");
 
-   final Logger logger = LoggerFactory.getLogger( "streamflow" );
+   final Logger logger = LoggerFactory.getLogger("streamflow");
 
    @Structure
    ObjectBuilderFactory factory;
@@ -51,11 +50,16 @@ public class StreamflowRestApplication
 
    @Structure
    ApplicationSPI app;
+   private String name = "default";
 
-   public StreamflowRestApplication( @Uses Context parentContext ) throws Exception
+   public StreamflowRestApplication()
    {
-      super( parentContext );
-      getMetadataService().addExtension( "srj", APPLICATION_SPARQL_JSON );
+   }
+
+   public StreamflowRestApplication(Context parentContext) throws Exception
+   {
+      super(parentContext);
+      getMetadataService().addExtension("srj", APPLICATION_SPARQL_JSON);
 
    }
 
@@ -65,12 +69,12 @@ public class StreamflowRestApplication
    @Override
    public Restlet createInboundRoot()
    {
-      getContext().setDefaultEnroler( enroler );
+      getContext().setDefaultEnroler(enroler);
 
-      Router versions = new Router( getContext() );
+      Router versions = new Router(getContext());
 
-      Router api = factory.newObjectBuilder( APIRouter.class ).use( getContext() ).newInstance();
-      versions.attachDefault( api );
+      Router api = factory.newObjectBuilder(APIRouter.class).use(getContext()).newInstance();
+      versions.attachDefault(api);
 
       return versions;
    }
@@ -84,11 +88,19 @@ public class StreamflowRestApplication
          {
             // Start Qi4j
             Energy4Java is = new Energy4Java();
-            app = is.newApplication( new StreamflowWebAssembler( getMetadataService() ) );
+            StreamflowWebAssembler streamflowWebAssembler = new StreamflowWebAssembler(getMetadataService());
+
+            String name = "StreamflowServer";
+            Object host = getContext().getAttributes().get("streamflow.host");
+            if (host != null)
+               name+="-"+host;
+
+            streamflowWebAssembler.setName(name);
+            app = is.newApplication(streamflowWebAssembler);
 
             app.activate();
 
-            app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamflowRestApplication.class ).injectTo( this );
+            app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamflowRestApplication.class).injectTo(this);
 
             super.start();
          } catch (Exception e)
@@ -106,7 +118,7 @@ public class StreamflowRestApplication
       {
          super.stop();
 
-         logger.info( "Passivating Streamflow" );
+         logger.info("Passivating Streamflow");
          app.passivate();
       }
    }

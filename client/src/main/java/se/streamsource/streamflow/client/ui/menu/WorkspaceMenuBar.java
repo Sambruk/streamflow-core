@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ public class WorkspaceMenuBar
 {
    public WorkspaceMenuBar( @Uses FileMenu fileMenu,
                             @Uses EditMenu editMenu,
+                            @Uses PerspectiveMenu perspectiveMenu,
                             @Uses AccountMenu accountMenu,
                             @Uses WindowMenu windowMenu,
                             @Uses HelpMenu helpMenu
@@ -36,6 +37,7 @@ public class WorkspaceMenuBar
    {
       add( fileMenu );
       add( editMenu );
+      add( perspectiveMenu );
       add( accountMenu );
       add( windowMenu );
       add( helpMenu );

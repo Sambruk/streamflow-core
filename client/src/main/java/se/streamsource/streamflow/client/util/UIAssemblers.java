@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,21 +37,21 @@ public final class UIAssemblers
 
    public static void addModels( ModuleAssembly module, Class... modelClasses ) throws AssemblyException
    {
-      module.addObjects( modelClasses ).visibleIn( Visibility.layer );
+      module.objects( modelClasses ).visibleIn( Visibility.layer );
    }
 
    public static void addViews( ModuleAssembly module, Class<? extends JComponent>... viewClasses ) throws AssemblyException
    {
-      module.addObjects( viewClasses ).visibleIn( Visibility.layer );
+      module.objects( viewClasses ).visibleIn( Visibility.layer );
    }
 
    public static void addDialogs( ModuleAssembly module, Class<? extends JComponent>... dialogClasses ) throws AssemblyException
    {
-      module.addObjects( dialogClasses ).visibleIn( Visibility.layer );
+      module.objects( dialogClasses ).visibleIn( Visibility.layer );
    }
 
    public static void addTasks( ModuleAssembly module, Class<? extends Task>... taskClasses ) throws AssemblyException
    {
-      module.addObjects( taskClasses );
+      module.objects( taskClasses );
    }
 }

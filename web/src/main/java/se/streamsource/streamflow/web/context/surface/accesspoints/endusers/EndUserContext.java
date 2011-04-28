@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class EndUserContext
    {
       DraftsQueries draftsQueries = RoleMap.role( DraftsQueries.class );
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-      linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
+      linksBuilder.addDescribables( draftsQueries.drafts( null ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
       return linksBuilder.newLinks();
    }
 
@@ -70,7 +70,7 @@ public class EndUserContext
    {
       ValueBuilder<CaseFormDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseFormDTO.class );
       DraftsQueries queries = RoleMap.role( DraftsQueries.class );
-      Query<Case> query = queries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+      Query<Case> query = queries.drafts( null ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
       for (Case aCase : query)
       {
          SelectedForms.Data data = RoleMap.role( SelectedForms.Data.class );

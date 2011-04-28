@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +39,7 @@ public class ConversationView extends JPanel
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       add( obf.newObjectBuilder( ConversationParticipantsView.class ).use(client.getSubClient( "participants" )).newInstance(), BorderLayout.NORTH );
-      add( obf.newObjectBuilder( MessagesView.class ).use( client.getSubClient("messages" )).newInstance(), BorderLayout.CENTER );
+      add( obf.newObjectBuilder( MessagesConversationView.class ).use( client.getSubClient("messages" )).newInstance(), BorderLayout.CENTER );
+      
    }
 }

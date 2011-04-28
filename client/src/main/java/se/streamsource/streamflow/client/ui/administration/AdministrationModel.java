@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -118,9 +118,9 @@ public class AdministrationModel
          contextItem.getClient().delete();
       } catch (ResourceException e)
       {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         if (Status.SERVER_ERROR_INTERNAL.equals( e.getStatus() ))
          {
-            throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e );
+            throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e);
 
          }
       }

@@ -1,0 +1,19 @@
+#include TableOfContents as sidebar
+
+= Restore =
+
+The following instructions will guide you to how to set up and use the restore facilities in Streamflow. This is useful if the server has crashed, or if you need to set up a copy of a backed up server.
+
+== What needs to be restored up? ==
+
+TODO
+
+== Doing a restore using VisualVM ==
+
+TODO
+
+== Doing a restore from the command line ==
+
+{{{
+<input type="hidden" name="cx" value="">
+}}}

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,11 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
-import org.restlet.data.*;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Language;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
@@ -41,7 +45,10 @@ import org.slf4j.MDC;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.api.ResourceValidity;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JAVADOC
@@ -69,6 +76,8 @@ public abstract class CommandQueryRestlet2
 
    @Service
    ResultWriter responseWriter;
+
+   private Map<Class, Uniform> subResources = Collections.synchronizedMap(new HashMap<Class, Uniform>());
 
    @Override
    public void handle( Request request, Response response )
@@ -225,6 +234,26 @@ public abstract class CommandQueryRestlet2
    }
 
    protected abstract Uniform createRoot( Request request, Response response );
+
+   // Callbacks used from resources
+   public void subResource(Class<? extends CommandQueryResource> subResourceClass)
+   {
+      Uniform subResource = subResources.get(subResourceClass);
+
+      if (subResource == null)
+      {
+         // Instantiate and store subresource instance
+         subResource = module.objectBuilderFactory().newObjectBuilder( subResourceClass ).use(this).newInstance();
+         subResources.put(subResourceClass, subResource);
+      }
+
+      subResource.handle(Request.getCurrent(), Response.getCurrent());
+   }
+
+   public void subResourceContexts(Class<?>[] contextClasses)
+   {
+      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( new Object[]{contextClasses} ).newInstance().handle( Request.getCurrent(), Response.getCurrent() );
+   }
 
    private String getUsecaseName( Request request )
    {

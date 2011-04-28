@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,12 @@ public class BootstrapAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( BootstrapDataService.class ).instantiateOnStartup();
+      module.services( BootstrapDataService.class ).instantiateOnStartup();
 
-      if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.development)
+      if (module.layer().application().mode() == Application.Mode.development)
       {
-         module.importServices( NamedEntityFinder.class ).importedBy( ServiceSelectorImporter.class ).setMetaInfo( ServiceQualifier.withId("solr" ));
-         module.addServices( TestDataService.class ).instantiateOnStartup();
+         module.importedServices( NamedEntityFinder.class ).importedBy( ServiceSelectorImporter.class ).setMetaInfo( ServiceQualifier.withId("solr" ));
+         module.services( TestDataService.class ).instantiateOnStartup();
       }
    }
 }

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +36,17 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
 
-import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Map;
 import java.util.Properties;
 
-import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.withBreaker;
+import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.*;
 
 /**
  * Send emails. This service
@@ -158,7 +163,7 @@ public interface SendMailService
                if (email.fromName().get() == null)
                   msg.setFrom( new InternetAddress( config.configuration().from().get() ) );
                else
-                  msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get() ) );
+                  msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get(), "ISO-8859-1" ) );
 
                msg.setRecipient( javax.mail.Message.RecipientType.TO, new InternetAddress( email.to().get() ) );
                msg.setSubject( email.subject().get() );

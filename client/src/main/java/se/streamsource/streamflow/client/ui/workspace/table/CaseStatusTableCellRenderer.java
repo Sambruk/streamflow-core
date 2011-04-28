@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +20,11 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 public class CaseStatusTableCellRenderer extends DefaultTableCellRenderer
 {
@@ -38,7 +41,7 @@ public class CaseStatusTableCellRenderer extends DefaultTableCellRenderer
       renderedComponent.setHorizontalAlignment( SwingConstants.CENTER );
       setText( null );
 
-      setIcon( i18n.icon( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_icon"),
+      setIcon( i18n.icon( CaseResources.valueOf( "case_status_" + value.toString().toLowerCase() + "_icon" ),
             i18n.ICON_16 ) );
       setName( i18n.text( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_text" ) ));
       setToolTipText( i18n.text( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_text" ) ) );

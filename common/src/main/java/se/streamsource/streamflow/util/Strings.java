@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,70 @@ package se.streamsource.streamflow.util;
  */
 public class Strings
 {
-   /**
-    * Check if a string is not null and not equal to ""
-    *
-    * @param value string to be tested
-    * @return true if value is not null and not equal to ""
-    */
-   public static boolean notEmpty(String value)
-   {
-      return value != null && !value.trim().equals("");
-   }
+    /**
+     * Check if a string is null or equal to ""
+     *
+     * @param value string to be tested
+     * @return true if value is null or equal to ""
+     */
+    public static boolean empty( String value )
+    {
+        return value == null || value.trim().equals( "" );
+    }
+
+    /**
+     * Transform a Java name to a human readable string by replacing uppercase characters
+     * with space+toLowerCase(char)
+     * Example:
+     * changeDescription -> Change description
+     * doStuffNow -> Do stuff now
+     * ON_HOLD -> On hold
+     *
+     * @param name
+     * @return
+     */
+    public static String humanReadable( String name )
+    {
+        if (name.toUpperCase().equals(name))
+            name = name.toLowerCase();
+
+        StringBuilder humanReadableString = new StringBuilder();
+
+        boolean previousWasUppercase = false;
+        boolean hasUppercaseWord = false;
+        for (int i = 0; i < name.length(); i++)
+        {
+            char character = name.charAt( i );
+            if (i == 0)
+            {
+                // Capitalize first character
+                humanReadableString.append( Character.toUpperCase( character ) );
+                previousWasUppercase = true;
+            } else if (character == '_')
+            {
+                humanReadableString.append( ' ' );
+            } else if (Character.isLowerCase( character ))
+            {
+                if (hasUppercaseWord)
+                {
+                    humanReadableString.append( ' ' );
+                    hasUppercaseWord = false;
+                }
+                humanReadableString.append( character );
+                previousWasUppercase = false;
+            } else if (previousWasUppercase)
+            {
+                previousWasUppercase = true;
+                hasUppercaseWord = true;
+                humanReadableString.append( character );
+            } else
+            {
+                previousWasUppercase = true;
+                humanReadableString.append( ' ' ).append( Character.toLowerCase( character ) );
+            }
+        }
+
+        return humanReadableString.toString();
+    }
 
 }

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +113,7 @@ public class OpenSelectionPanel
       }
       // if we reach here it must be the "other" option that is selected
       // unless it is the empty string
-      if ( Strings.notEmpty( newValue ) )
+      if ( !Strings.empty( newValue ) )
       {
          openButton.setSelected( true );
          openSelectionTextField.setText( newValue );

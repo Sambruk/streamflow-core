@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ public class PluginAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( StreamflowContactLookupPluginConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( StreamflowContactLookupPluginConfiguration.class ).visibleIn( Visibility.application );
       
-      module.addServices( StreamflowContactLookupPlugin.class ).
+      module.services( StreamflowContactLookupPlugin.class ).
             identifiedBy( "streamflowcontactlookup" ).
             visibleIn( Visibility.application ).
             instantiateOnStartup();

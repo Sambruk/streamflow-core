@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,9 @@ import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -30,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -59,6 +63,7 @@ public abstract class ListDetailView
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory)
    {
       list = new JList(listModel);
+      list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       list.setCellRenderer( new LinkListCellRenderer() );
 
       JScrollPane scrollPane = new JScrollPane( list );
@@ -100,14 +105,14 @@ public abstract class ListDetailView
                   if (getRightComponent() != null && getRightComponent() instanceof TabbedResourceView)
                   {
                      TabbedResourceView tab = (TabbedResourceView) getRightComponent();
-                     selectedIndex = tab.getSelectedIndex();
+//                     selectedIndex = tab.getSelectedIndex();
                   }
 
                   Component detailView = factory.createDetail( detailLink );
 
                   if (detailView instanceof TabbedResourceView)
                   {
-                     ((TabbedResourceView)detailView).setSelectedIndex( selectedIndex );
+//                     ((TabbedResourceView)detailView).setSelectedIndex( selectedIndex );
                   }
 
                   setRightComponent( detailView );
@@ -136,5 +141,11 @@ public abstract class ListDetailView
    protected LinkValue getSelectedValue()
    {
       return (LinkValue) list.getSelectedValue();
+   }
+
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   {
+      if (Events.matches(Events.withUsecases( "delete" ), transactions))
+         list.clearSelection();
    }
 }

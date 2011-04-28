@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,41 +28,70 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.SwingConstants;
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -86,14 +116,13 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private JScrollPane notePane;
    private JXDatePicker dueOnField;
    private JPanel rightForm;
-   private JPanel leftForm;
+   private Box leftForm;
    private CaseLabelsView labels;
    private PossibleFormsView forms;
    private RemovableLabel selectedCaseType = new RemovableLabel();
    private JButton caseTypeButton;
    private JButton labelButton;
    private final ApplicationContext appContext;
-   private RefreshComponents refreshComponents = new RefreshComponents();
 
    public CaseGeneralView( @Service ApplicationContext appContext,
                            @Uses CommandQueryClient client,
@@ -101,10 +130,16 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    {
       this.appContext = appContext;
       this.model = obf.newObjectBuilder( CaseGeneralModel.class ).use( client ).newInstance();
+      RefreshComponents refreshComponents = new RefreshComponents();
       model.addObserver( refreshComponents );
 
       this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
+
+      RefreshComponents refreshLabelComponents = new RefreshComponents();
+      labels.getModel().addObserver( refreshLabelComponents );
+
       this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../possibleforms/" ) ).newInstance();
+      refreshComponents.visibleOn( "changedescription", forms );
       this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
 
@@ -118,7 +153,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       actionBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, fill:pref:grow" );
+      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
@@ -139,6 +174,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       rightBuilder.nextLine();
       rightBuilder.setExtent( 3, 1 );
       rightBuilder.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField = (JTextField) TEXTFIELD.newField() ) ) );
+      descriptionField.setName("txtCaseDescription");
       rightBuilder.nextLine();
       descriptionLabel.setLabelFor( descriptionField );
       refreshComponents.enabledOn( "changedescription", descriptionField );
@@ -168,13 +204,16 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      labelButton.addActionListener( new ActionListener(){
+      labelButton.addActionListener( new ActionListener()
+      {
 
          public void actionPerformed( ActionEvent e )
          {
             labelButton.requestFocusInWindow();
          }
-      });
+      } );
+      labels.setButtonRelation( labelButton );
+      refreshLabelComponents.enabledOn( "addlabel", labelButton, labels );
       
       rightBuilder.add( labelButton,
             new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
@@ -197,10 +236,14 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
 
       // Forms
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
+      JLabel formsLabel = new JLabel( i18n.text( WorkspaceResources.forms_label ) );
+      refreshComponents.visibleOn( "changedescription", formsLabel);
+      rightBuilder.add( formsLabel,
             new CellConstraints( 1, 6, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
-      rightBuilder.add( forms,
+      JPanel formsPanel = new JPanel( new BorderLayout() );
+      formsPanel.add( forms, BorderLayout.WEST );
+      rightBuilder.add( formsPanel,
             new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 0, 0, 0 ) ) );
 
       // Limit pickable dates to future
@@ -210,6 +253,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       dueOnField.getMonthView().setLowerBound( calendar.getTime() );
 
       final DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT );
+      dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
       dueOnField.getEditor().setFormatterFactory( new DefaultFormatterFactory( new DatePickerFormatter( new DateFormat[]{dateFormat} )
       {
 
@@ -236,24 +280,20 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       FormLayout leftLayout = new FormLayout( "200dlu:grow",
             "pref,fill:pref:grow" );
 
-      leftForm = new JPanel();
-      leftForm.setPreferredSize( new Dimension( 200, 100 ) );
-      leftForm.setFocusable( false );
-      DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout,
-            leftForm );
-      leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
-            Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
+      leftForm = Box.createVerticalBox();
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
+      notePane.setPreferredSize( new Dimension( 700, 300 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
-      BindingFormBuilder2 leftBindingBuilder = new BindingFormBuilder2(
-            leftBuilder, actionBinder, valueBinder, appContext.getResourceMap( getClass() ) );
-      leftBindingBuilder.appendWithLabel( WorkspaceResources.note_label,
-            notePane, "note", "changeNote" );
-
-      JPanel formsContainer = new JPanel( new GridLayout( 1, 2 ) );
+      leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
+      leftForm.add(notePane);
+      actionBinder.bind( "changeNote", notePane );
+      valueBinder.bind( "note", notePane );
+      
+      JPanel formsContainer = new JPanel();
+      formsContainer.setLayout( new BoxLayout(formsContainer, BoxLayout.X_AXIS) );
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
       formsContainer.add( leftForm );
       formsContainer.add( rightForm );
@@ -296,15 +336,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    public void refresh()
    {
       model.refresh();
-//      labels.getModel().refresh();
-
-/*
-      dueOnField.setEnabled( model.getCommandEnabled( "changedueon" ) );
-      descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ) );
-      notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ) );
-      caseTypeButton.setEnabled( model.getCommandEnabled( "casetype" ) );
-      selectedCaseType.setEnabled( model.getCommandEnabled( "casetype" ) );
-*/
 
       boolean enabled = model.getCaseStatus().equals( DRAFT ) || model.getCaseStatus().equals( OPEN );
       labelButton.setEnabled( enabled );
@@ -317,6 +348,19 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task changeDescription( final ActionEvent event )
    {
+      Property<String> description = model.getGeneral().description();
+      String oldValue = description.get();
+      try
+      {
+         description.set( descriptionField.getText() );
+         // set back old value to not mess up model execution
+         description.set( oldValue );
+      } catch ( ConstraintViolationException cve )
+      {
+         int maxLength = description.metaInfo( MaxLength.class ).value();
+         descriptionField.setText( descriptionField.getText().substring( 0, maxLength ) );
+         throw new RuntimeException( new MessageFormat( i18n.text( StreamflowResources.max_length ) ).format( new Object[]{maxLength} ).toString() );
+      }
       return new CommandTask()
       {
          @Override

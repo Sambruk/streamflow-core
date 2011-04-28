@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +44,7 @@ public class TableBuilder<T extends TableBuilder>
       builder.prototype().id().set( id );
       builder.prototype().label().set( label );
       builder.prototype().columnType().set( type );
-      tableBuilder.prototype().columns().get().add( builder.newInstance() );
+      tableBuilder.prototype().cols().get().add( builder.newInstance() );
       return (T) this;
    }
 
@@ -66,9 +67,9 @@ public class TableBuilder<T extends TableBuilder>
    public T cell(Object v, String f)
    {
       ValueBuilder<CellValue> cellBuilder = vbf.newValueBuilder( CellValue.class );
-      cellBuilder.prototype().value().set( v );
-      cellBuilder.prototype().formatted().set( f );
-      rowBuilder.prototype().cells().get().add( cellBuilder.newInstance() );
+      cellBuilder.prototype().v().set( v );
+      cellBuilder.prototype().f().set( f );
+      rowBuilder.prototype().c().get().add( cellBuilder.newInstance() );
       return (T)this;
    }
 
@@ -78,5 +79,10 @@ public class TableBuilder<T extends TableBuilder>
          endRow();
 
       return tableBuilder.newInstance();
+   }
+
+   public void abortRow()
+   {
+      rowBuilder = null;
    }
 }

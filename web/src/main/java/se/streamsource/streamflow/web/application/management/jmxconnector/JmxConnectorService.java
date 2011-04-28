@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,14 @@ import se.streamsource.streamflow.web.domain.interaction.security.Authentication
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import javax.management.MBeanServer;
-import javax.management.remote.*;
+import javax.management.remote.JMXAuthenticator;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXPrincipal;
+import javax.management.remote.JMXServiceURL;
 import javax.security.auth.Subject;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -52,13 +57,13 @@ import java.util.Map;
  */
 @Mixins(JmxConnectorService.JmxConnectorMixin.class)
 public interface JmxConnectorService
-      extends Configuration, ServiceComposite, Activatable
+        extends Configuration, ServiceComposite, Activatable
 {
 
    class JmxConnectorMixin
-         implements Activatable
+           implements Activatable
    {
-      final Logger logger = LoggerFactory.getLogger( JmxConnectorService.class.getName() );
+      final Logger logger = LoggerFactory.getLogger(JmxConnectorService.class.getName());
       @This
       Configuration<JmxConnectorConfiguration> config;
 
@@ -76,26 +81,32 @@ public interface JmxConnectorService
          if (config.configuration().enabled().get())
          {
             // see java.rmi.server.ObjID
-            System.setProperty( "java.rmi.server.randomIDs", "true" );
+            System.setProperty("java.rmi.server.randomIDs", "true");
 
             int jmxAgentPort = config.configuration().port().get();
 
-            registry = LocateRegistry.createRegistry( jmxAgentPort );
+            try
+            {
+               registry = LocateRegistry.createRegistry(jmxAgentPort);
+            } catch (RemoteException e)
+            {
+               registry = LocateRegistry.getRegistry(jmxAgentPort);
+            }
 
             String hostName = InetAddress.getLocalHost().getHostName();
             JMXServiceURL url = new JMXServiceURL(
-                  "service:jmx:rmi://" + hostName + ":" + jmxAgentPort
-                        + "/jndi/rmi://" + hostName + ":" + jmxAgentPort + "/jmxrmi" );
+                    "service:jmx:rmi://" + hostName + ":" + jmxAgentPort
+                            + "/jndi/rmi://" + hostName + ":" + jmxAgentPort + "/jmxrmi");
             Map env = new HashMap();
-            env.put( JMXConnectorServer.AUTHENTICATOR, new StreamflowJmxAuthenticator() );
+            env.put(JMXConnectorServer.AUTHENTICATOR, new StreamflowJmxAuthenticator());
 
             try
             {
-               connector = JMXConnectorServerFactory.newJMXConnectorServer( url, env, server );
+               connector = JMXConnectorServerFactory.newJMXConnectorServer(url, env, server);
                connector.start();
             } catch (Exception e)
             {
-               logger.error( "Could not start JMX connector", e );
+               logger.error("Could not start JMX connector", e);
             }
          }
       }
@@ -112,7 +123,7 @@ public interface JmxConnectorService
          // Remove registry
          if (registry != null)
          {
-            UnicastRemoteObject.unexportObject( registry, true );
+            UnicastRemoteObject.unexportObject(registry, true);
             registry = null;
          }
       }
@@ -120,10 +131,10 @@ public interface JmxConnectorService
       class StreamflowJmxAuthenticator implements JMXAuthenticator
       {
 
-         public Subject authenticate( Object credentials )
+         public Subject authenticate(Object credentials)
          {
 
-            UnitOfWork unitOfWork = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Authenticate JMX user" ) );
+            UnitOfWork unitOfWork = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Authenticate JMX user"));
             Subject subject = null;
 
             try
@@ -134,37 +145,37 @@ public interface JmxConnectorService
                   // Special case for null so we get a more informative message
                   if (credentials == null)
                   {
-                     throw new SecurityException( "Credentials required" );
+                     throw new SecurityException("Credentials required");
                   }
-                  throw new SecurityException( "Credentials should be String[]" );
+                  throw new SecurityException("Credentials should be String[]");
                }
 
                final String[] aCredentials = (String[]) credentials;
                if (aCredentials.length != 2)
                {
-                  throw new SecurityException( "Credentials should have 2 elements" );
+                  throw new SecurityException("Credentials should have 2 elements");
                }
 
                String username = aCredentials[0];
                String password = aCredentials[1];
 
-               Authentication user = unitOfWork.get( Authentication.class, username );
+               Authentication user = unitOfWork.get(Authentication.class, username);
 
-               if (!user.login( password ))
+               if (!user.login(password))
                {
-                  throw new SecurityException( "User/password combination not valid." );
+                  throw new SecurityException("User/password combination not valid.");
                }
 
 
                if (((UserAuthentication.Data) user).isAdministrator())
                {
-                  subject = new Subject( true,
-                        Collections.singleton( new JMXPrincipal( username ) ),
-                        Collections.EMPTY_SET,
-                        Collections.EMPTY_SET );
+                  subject = new Subject(true,
+                          Collections.singleton(new JMXPrincipal(username)),
+                          Collections.EMPTY_SET,
+                          Collections.EMPTY_SET);
                } else
                {
-                  throw new SecurityException( "Invalid credentials" );
+                  throw new SecurityException("Invalid credentials");
                }
 
                unitOfWork.complete();

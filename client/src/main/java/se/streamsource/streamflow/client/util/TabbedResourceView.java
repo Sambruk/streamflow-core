@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
@@ -45,15 +46,16 @@ import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersVie
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.qi4j.api.util.Iterables.matchesAny;
-import static se.streamsource.dci.value.link.Links.withRel;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.dci.value.link.Links.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Show a REST resource as a tabbed view. To determine tabs, do a query to the resources directory URL ("/") to get
@@ -89,12 +91,15 @@ public class TabbedResourceView
       addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
 
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
+      //addTab( "emailaccesspoints", AdministrationResources.emailaccesspoints_tab, EmailAccessPointsView.class );
       addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
       addTab( "attachments", AdministrationResources.templates_tab, TemplatesView.class );
 
       addTab( "forminfo", AdministrationResources.forminfo_tab, FormEditView.class );
       addTab( "pages", AdministrationResources.formpages_tab, FormElementsView.class );
       addTab( "signatures", AdministrationResources.formsignatures_tab, FormSignaturesView.class );
+
+      addTab( "caseaccessdefaults", AdministrationResources.caseaccessdefaults_tab, CaseAccessDefaultsView.class );
 
       addTab( "administrators", AdministrationResources.administrators_tab, AdministratorsView.class );
    }
@@ -107,6 +112,8 @@ public class TabbedResourceView
 
    public TabbedResourceView( @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
+      setTabLayoutPolicy( JTabbedPane.WRAP_TAB_LAYOUT );
+
       ResourceValue resource = client.queryResource();
       List<LinkValue> resources = resource.resources().get();
       int index = 0;

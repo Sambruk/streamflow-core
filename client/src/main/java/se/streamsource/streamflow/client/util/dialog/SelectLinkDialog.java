@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.util.dialog;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
@@ -31,9 +32,14 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
+import se.streamsource.streamflow.client.util.LinkComparator;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +60,9 @@ public class SelectLinkDialog
                                       @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout());
+      setPreferredSize( new Dimension( 250, 200 ) );
+      setMaximumSize( new Dimension( 250, 200 ) );
+      setMinimumSize( new Dimension( 250, 200 ) );
 
       setActionMap( context.getActionMap( this ) );
       getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
@@ -70,11 +79,16 @@ public class SelectLinkDialog
       {
          FilteredList list = new FilteredList();
          list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-         list.setEventList( (EventList<LinkValue>) links );
+         SortedList<LinkValue> sortedIssues = new SortedList( links, new LinkComparator() );
+         list.setEventList( (EventList<LinkValue>) sortedIssues );
          add(list);
          this.list = list.getList();
          this.filterField = list.getFilterField();
       }
+
+      // Skip filtering if short list
+      if (links.size() < 10)
+         filterField.setVisible( false );
    }
 
    public void setSelectionMode(int selectionMode)

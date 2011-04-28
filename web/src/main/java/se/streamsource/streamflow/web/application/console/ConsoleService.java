@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public interface ConsoleService
 
          // Replace output streams
          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-         PrintStream out = new PrintStream( stream );
+         PrintStream out = new PrintStream( stream, true, "UTF-8" );
 
          interpreter.setOut( out );
          interpreter.setErr( out );

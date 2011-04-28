@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +19,13 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
@@ -31,7 +33,7 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
 public class NumberPanel
-       extends AbstractFieldPanel
+      extends AbstractFieldPanel
 {
    private JTextField textField;
 
@@ -42,7 +44,7 @@ public class NumberPanel
    public NumberPanel( @Uses FieldSubmissionValue field, @Uses NumberFieldValue fieldValue )
    {
       super( field );
-      setLayout( new BorderLayout( ) );
+      setLayout( new BorderLayout() );
 
       textField = new JTextField();
       textField.setColumns( 20 );
@@ -79,29 +81,34 @@ public class NumberPanel
          public boolean verify( JComponent input )
          {
             JTextField field = (JTextField) input;
-            try
+
+            String value = field.getText();
+            if (!Strings.empty( value ))
             {
-               String value = field.getText();
-               if ( isInteger)
+               try
                {
-                  binding.updateProperty( Integer.parseInt( value ) );
-               } else
+
+                  if (isInteger)
+                  {
+                     binding.updateProperty( Integer.parseInt( value ) );
+                  } else
+                  {
+                     binding.updateProperty( Double.parseDouble( value.replace( ',', '.' ) ) );
+                  }
+               } catch (NumberFormatException e)
                {
-                  binding.updateProperty( Double.parseDouble( value.replace( ',', '.' ) ) );
+                  if (isInteger)
+                  {
+                     dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidinteger ), "" );
+                  } else
+                  {
+                     dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidfloat ), "" );
+                  }
+                  return false;
                }
-            }  catch ( NumberFormatException e)
-            {
-               if ( isInteger )
-               {
-                  dialogs.showMessageDialog( panel , i18n.text( CaseResources.invalidinteger ), ""  );
-               } else
-               {
-                  dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidfloat ), "");
-               }
-               return false;
             }
             return true;
          }
-      });
+      } );
    }
 }

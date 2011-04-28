@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ package se.streamsource.streamflow.web.context.workspace.cases;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -35,13 +34,10 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * Updates the cache of casecounts.
  */
 public abstract class UpdateCaseCountCacheConcern
-   extends ConcernOf<CaseActionsContext>
-   implements CaseActionsContext
+   extends ConcernOf<CaseCommandsContext>
+   implements CaseCommandsContext
 {
    Caching caching;
-
-   @Structure
-   UnitOfWorkFactory uowf;
 
    public void init(@Optional @Service CachingService cache)
    {
@@ -121,7 +117,8 @@ public abstract class UpdateCaseCountCacheConcern
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       Owner owner = caze.owner().get();
-      if (owner != null) // If no owner, then it is still in drafts mode - no cache to fix
+      // If status DRAFT - no cache to fix since case is moved by open command
+      if ( !CaseStates.DRAFT.equals( caze.status().get() ))
       {
          if (caze.isAssigned())
          {
@@ -172,8 +169,9 @@ public abstract class UpdateCaseCountCacheConcern
    {
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
+      //String createdBy = caze.createdBy().get().toString();
 
-      if (caze.hasOwner())
+      if (caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
       {
          if (caze.isAssigned())
          {
@@ -190,7 +188,6 @@ public abstract class UpdateCaseCountCacheConcern
          // Update drafts for user
          caching.addToCache( caze.createdBy().get().toString(), -1 );
       }
-
       next.delete();
    }
 }

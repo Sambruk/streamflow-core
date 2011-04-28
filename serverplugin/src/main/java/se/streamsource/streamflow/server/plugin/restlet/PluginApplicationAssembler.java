@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,23 @@
 package se.streamsource.streamflow.server.plugin.restlet;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
 import java.util.prefs.Preferences;
 
@@ -47,16 +57,16 @@ public class PluginApplicationAssembler
    {
       ApplicationAssembly app = applicationFactory.newApplicationAssembly();
 
-      LayerAssembly webLayer = app.layerAssembly( "Web" );
+      LayerAssembly webLayer = app.layer( "Web" );
       assembleWebLayer(webLayer);
 
-      LayerAssembly pluginLayer = app.layerAssembly( "Plugins" );
+      LayerAssembly pluginLayer = app.layer( "Plugins" );
       assemblePluginLayer(pluginLayer);
 
-      LayerAssembly managementLayer = app.layerAssembly("Management");
+      LayerAssembly managementLayer = app.layer("Management");
       assembleManagementLayer(managementLayer);
 
-      LayerAssembly configurationLayer = app.layerAssembly( "Configuration" );
+      LayerAssembly configurationLayer = app.layer( "Configuration" );
       assembleConfigurationLayer(configurationLayer);
 
       managementLayer.uses(pluginLayer);
@@ -68,7 +78,7 @@ public class PluginApplicationAssembler
 
    private void assembleConfigurationLayer( LayerAssembly configurationLayer ) throws AssemblyException
    {
-      ModuleAssembly configurationModuleAssembly = configurationLayer.moduleAssembly( "Configuration" );
+      ModuleAssembly configurationModuleAssembly = configurationLayer.module( "Configuration" );
 
       // Preferences storage
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -82,21 +92,21 @@ public class PluginApplicationAssembler
          Thread.currentThread().setContextClassLoader( cl );
       }
 
-      configurationModuleAssembly.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.application );
+      configurationModuleAssembly.services( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.application );
    }
 
    private void assembleManagementLayer( LayerAssembly managementLayer ) throws AssemblyException
    {
-      ModuleAssembly adminAssembly = managementLayer.moduleAssembly("JMX");
+      ModuleAssembly adminAssembly = managementLayer.module("JMX");
       new JMXAssembler().assemble( adminAssembly );
    }
 
    private void assemblePluginLayer( LayerAssembly pluginLayer ) throws AssemblyException
    {
       // Plugins goes here
-      ModuleAssembly moduleAssembly = pluginLayer.moduleAssembly( "Plugin" );
+      ModuleAssembly moduleAssembly = pluginLayer.module( "Plugin" );
 
-      moduleAssembly.addValues( ContactList.class,
+      moduleAssembly.values( ContactList.class,
             ContactValue.class,
             ContactAddressValue.class,
             ContactEmailValue.class,
@@ -110,10 +120,10 @@ public class PluginApplicationAssembler
    private void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
    {
 
-      ModuleAssembly rest = webLayer.moduleAssembly( "REST" );
+      ModuleAssembly rest = webLayer.module( "REST" );
 
       // Plugin wrappers
-      rest.addObjects( ContactLookupRestlet.class,
+      rest.objects( ContactLookupRestlet.class,
             AuthenticationRestlet.class );
 
    }

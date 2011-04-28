@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.rest.ExtensionMediaTypeFilter;
-import org.qi4j.rest.entity.EntitiesResource;
-import org.qi4j.rest.entity.EntityResource;
-import org.qi4j.rest.query.IndexResource;
-import org.qi4j.rest.query.SPARQLResource;
+import org.qi4j.library.rest.EntitiesResource;
+import org.qi4j.library.rest.EntityResource;
+import org.qi4j.library.rest.IndexResource;
+import org.qi4j.library.rest.SPARQLResource;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.resource.Directory;
@@ -34,6 +33,7 @@ import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
+import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;

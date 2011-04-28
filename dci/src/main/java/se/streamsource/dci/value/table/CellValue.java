@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +28,8 @@ public interface CellValue
    extends ValueComposite
 {
    @Optional
-   Property<Object> value();
+   Property<Object> v();
 
    @Optional
-   Property<String> formatted();  
+   Property<String> f();
 }

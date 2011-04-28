@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +37,7 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import java.awt.Component;
@@ -53,11 +55,11 @@ public class CaseLabelsView
    private ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
 
    private CaseLabelsModel model;
+   private JButton actionButton;
 
-   private boolean useBorders;
-
-   public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
+      this.actionButton = actionButton;
       setActionMap( context.getActionMap(this ));
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseLabelsView.class, this ) );
@@ -77,6 +79,7 @@ public class CaseLabelsView
 
    public void setEnabled( boolean enabled )
    {
+      super.setEnabled( enabled );
       for (Component component : getComponents())
       {
          component.setEnabled( enabled );
@@ -90,10 +93,10 @@ public class CaseLabelsView
       for (int i = 0; i < model.getLabels().size(); i++)
       {
          LinkValue linkValue = model.getLabels().get( i );
-         RemovableLabel label = new RemovableLabel( linkValue, useBorders );
+         RemovableLabel label = new RemovableLabel( linkValue, false );
          label.setToolTipText( linkValue.text().get() );
          label.getButton().addActionListener( getActionMap().get("remove" ));
-
+         label.setEnabled( isEnabled() );
          add( label );
       }
 
@@ -106,7 +109,7 @@ public class CaseLabelsView
    {
       final SelectLinkDialog dialog = labelSelectionDialog.use( model.getPossibleLabels() ).newInstance();
       dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( actionButton == null ? this : actionButton, dialog );
 
       return new CommandTask()
       {
@@ -138,13 +141,13 @@ public class CaseLabelsView
       };
    }
 
-   public void useBorders( boolean useBorders )
-   {
-      this.useBorders = useBorders;
-   }
-
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions(transactions);
+   }
+
+   public void setButtonRelation( JButton button )
+   {
+      this.actionButton = button;
    }
 }

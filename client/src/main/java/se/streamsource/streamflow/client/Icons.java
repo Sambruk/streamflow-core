@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ public enum Icons
    details,
    inbox,
    draft,
+   search,
+   perspective,
 
    calendar,
 
@@ -48,6 +50,9 @@ public enum Icons
    conversations,
    forms,
    attachments,
+   history,
+
+   subcase,
 
    // Admin
    server,
@@ -66,6 +71,11 @@ public enum Icons
 
    // Logos
    name_logo,
-   logo
+   logo,
+   
+   // Check
+   check,
 
+   down_no_selection,
+   down_with_selection
 }

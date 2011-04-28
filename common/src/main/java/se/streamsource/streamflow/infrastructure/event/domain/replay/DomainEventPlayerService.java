@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.util.Classes;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityState;
@@ -109,7 +110,8 @@ public interface DomainEventPlayerService
 
          if (eventMethod == null)
          {
-            logger.warn( "Could not find event method " + domainEvent.name().get() + " in entity of type " + entityType.getName() );
+            logger.warn( "Could not find event method " + domainEvent.name().get()
+                  + " in object with types " + Classes.interfacesOf( entityType ) );
             return;
          }
 

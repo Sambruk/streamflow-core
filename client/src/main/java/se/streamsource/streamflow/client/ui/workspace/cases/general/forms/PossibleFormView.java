@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +31,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class PossibleFormView extends JButton
-      implements FocusListener, KeyListener
+      implements KeyListener
 {
    LinkValue itemValue;
 
@@ -39,7 +40,6 @@ public class PossibleFormView extends JButton
       super(itemValue.text().get(), i18n.icon( Icons.formSubmit, 16 ) ) ;
       this.setHorizontalAlignment( SwingConstants.LEFT );
       this.setToolTipText( itemValue.text().get() );
-//      this.setBorder( BorderFactory.createEmptyBorder(2,2,2,2 ));
       this.setFont( this.getFont().deriveFont( (float)this.getFont().getSize()  ));
 
       this.itemValue = itemValue;
@@ -47,7 +47,6 @@ public class PossibleFormView extends JButton
       setFocusable( true );
       this.setRequestFocusEnabled( true );
 
-      addFocusListener( this );
       addKeyListener( this );
    }
 
@@ -56,18 +55,6 @@ public class PossibleFormView extends JButton
       return itemValue;
    }
 
-   public void focusGained( FocusEvent e )
-   {
-      setBorder( BorderFactory.createLineBorder( Color.BLACK, 1 ) );
-      repaint();
-   }
-
-   public void focusLost( FocusEvent e )
-   {
-      setBorder( BorderFactory.createEmptyBorder(2,2,2,2) );
-      repaint();
-   }
-   
    public void keyTyped( KeyEvent e )
    {
    }

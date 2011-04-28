@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,23 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.dci.value.link.TitledLinksValue;
+import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
+import se.streamsource.streamflow.resource.caze.CaseFormDTO;
+import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
@@ -47,9 +52,8 @@ import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
-import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityValue;
-import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 /**
  * JAVADOC
@@ -60,31 +64,22 @@ public class CommonResourceAssembler
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       // Commands
-      module.addValues( RegisterUserCommand.class,
+      module.values( RegisterUserCommand.class,
             ChangePasswordCommand.class,
             BooleanDTO.class,
-            StringValue.class,
             DateDTO.class,
             IntegerDTO.class,
             NamedIndexDTO.class,
-            EntityValue.class,
             NewUserCommand.class,
-            NewProxyUserCommand.class,
-            ResetPasswordCommand.class ).visibleIn( Visibility.application );
+            NewProxyUserCommand.class).visibleIn( Visibility.application );
 
-      // Queries
-      module.addValues( CasesQuery.class ).visibleIn( Visibility.application );
+      new ValueAssembler().assemble( module );
 
       // Result values
-      module.addValues(
+      module.values(
             AccessPointValue.class,
-            ResourceValue.class,
-            LinkValue.class,
-            LinksValue.class,
-            TitledLinkValue.class,
-            TitledLinksValue.class,
             ListItemValue.class,
-            CaseValue.class,
+            CaseDTO.class,
             CaseGeneralDTO.class,
             CaseFormDTO.class,
             ContactsDTO.class,
@@ -97,12 +92,13 @@ public class CommonResourceAssembler
             EffectiveFieldsDTO.class,
             EffectiveFieldDTO.class,
             SubmittedFormDTO.class,
+            SubmittedPageDTO.class,
             SubmittedFormListDTO.class,
             SubmittedFormsListDTO.class,
             UserEntityValue.class,
             ProxyUserListDTO.class,
             ProxyUserDTO.class,
-            SearchValue.class,
+            PerspectiveValue.class,
             SelectedTemplatesValue.class,
             CaseOutputConfigValue.class).visibleIn( Visibility.application );
    }

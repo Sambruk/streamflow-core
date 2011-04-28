@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2010 Streamsource AB
+    Copyright 2009-2011 Streamsource AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,18 +22,18 @@
 
 <table border="1">
     <tr>
-    #foreach($column in $result.columns)
+    #foreach($column in $result.cols)
     <th id="$column.id">$column.label</th>
     #end
     </tr>
     #foreach($row in $result.rows)
     <tr>
-        #foreach($cell in $row.cells)
+        #foreach($cell in $row.c)
         <td>
-            #if($cell.formatted)
-                $cell.formatted
+            #if($cell.f)
+                $cell.f
             #else
-                $cell.value
+                $!{cell.v}
             #end
         </td>
         #end

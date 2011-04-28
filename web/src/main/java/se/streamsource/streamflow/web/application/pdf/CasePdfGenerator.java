@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,52 +25,74 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.*;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.io.Transforms;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseOutput;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.label.*;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.URI;
 import java.text.DateFormat;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
- * A specialisation of CaseOutput that is responsible for exporting a case in PDF format;
- * The provided configuration tells what parts of the case are included in the export.
+ * A specialisation of CaseOutput that is responsible for exporting a case in
+ * PDF format; The provided configuration tells what parts of the case are
+ * included in the export.
  */
-public class CasePdfGenerator
-      implements CaseOutput
+public class CasePdfGenerator implements CaseOutput
 {
    @Structure
    UnitOfWorkFactory uowf;
@@ -90,6 +112,7 @@ public class CasePdfGenerator
    private PdfFont h1Font = new PdfFont( PDType1Font.HELVETICA_BOLD, 16 );
    private PdfFont valueFont = new PdfFont( PDType1Font.HELVETICA, 12 );
    private PdfFont valueFontBold = new PdfFont( PDType1Font.HELVETICA_BOLD, 12 );
+   private PdfFont valueFontBoldItalic = new PdfFont( PDType1Font.HELVETICA_BOLD_OBLIQUE, 12 );
    private PdfFont headerFont = new PdfFont( PDType1Font.HELVETICA, 10 );
 
    private String caseId = "";
@@ -113,42 +136,62 @@ public class CasePdfGenerator
       printedOn = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( new Date() );
 
       document.print( "", valueFont ).changeColor( Color.BLUE )
-            .println( bundle.getString( "caseSummary" ) + " - " + caseId, h1Font )
-            .line().changeColor( Color.BLACK )
-            .print( "", valueFont )
-            .print( "", valueFont );
+            .println( bundle.getString( "caseSummary" ) + " - " + caseId, h1Font ).line().changeColor( Color.BLACK )
+            .print( "", valueFont ).print( "", valueFont );
 
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),
             bundle.getString( "createdOn" ), bundle.getString( "createdBy" ), bundle.getString( "owner" ),
-            bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ) );
+            bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
+            bundle.getString( "resolution" ), bundle.getString( "dueOn" ) );
 
-      document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont, tabStop );
+      document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont,
+            tabStop );
       document.printLabelAndText( bundle.getString( "createdOn" ) + ": ", valueFontBold,
-            DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ), valueFont, tabStop );
+            DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ),
+            valueFont, tabStop );
+
+      if (((DueOn.Data) caze).dueOn().get() != null)
+      {
+         document.printLabelAndText( bundle.getString( "dueOn" ) + ": ", valueFontBold,
+               new SimpleDateFormat( bundle.getString( "date_format" ) ).format( ((DueOn.Data) caze).dueOn().get() ),
+               valueFont, tabStop );
+      }
 
       Creator creator = caze.createdBy().get();
       if (creator != null)
       {
-         document.printLabelAndText( bundle.getString( "createdBy" ) + ": ", valueFontBold, ((Describable) creator).getDescription(), valueFont, tabStop );
+         document.printLabelAndText( bundle.getString( "createdBy" ) + ": ", valueFontBold,
+               ((Describable) creator).getDescription(), valueFont, tabStop );
       }
 
       Owner owner = ((Ownable.Data) caze).owner().get();
       if (owner != null)
       {
-         document.printLabelAndText( bundle.getString( "owner" ) + ": ", valueFontBold, ((Describable) owner).getDescription(), valueFont, tabStop );
+         document.printLabelAndText( bundle.getString( "owner" ) + ": ", valueFontBold,
+               ((Describable) owner).getDescription(), valueFont, tabStop );
       }
 
       Assignee assignee = ((Assignable.Data) caze).assignedTo().get();
       if (assignee != null)
       {
-         document.printLabelAndText( bundle.getString( "assignedTo" ) + ": ", valueFontBold, ((Describable) assignee).getDescription(), valueFont, tabStop );
+         document.printLabelAndText( bundle.getString( "assignedTo" ) + ": ", valueFontBold,
+               ((Describable) assignee).getDescription(), valueFont, tabStop );
       }
 
       CaseType caseType = ((TypedCase.Data) caze).caseType().get();
 
       if (caseType != null)
       {
-         document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold, ((Describable) caseType).getDescription(), valueFont, tabStop );
+         document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold,
+               ((Describable) caseType).getDescription(), valueFont, tabStop );
+      }
+
+      Resolution resolution = ((Resolvable.Data) caze).resolution().get();
+
+      if (resolution != null)
+      {
+         document.printLabelAndText( bundle.getString( "resolution" ) + ":", valueFontBold,
+               ((Describable) resolution).getDescription(), valueFont, tabStop );
       }
 
       List<Label> labels = ((Labelable.Data) caze).labels().toList();
@@ -166,7 +209,7 @@ public class CasePdfGenerator
       }
 
       String note = caze.getNote();
-      if (Strings.notEmpty( note ))
+      if (!Strings.empty( note ))
       {
          document.changeColor( Color.BLUE );
          document.println( bundle.getString( "note" ), valueFontBold );
@@ -181,9 +224,9 @@ public class CasePdfGenerator
          generateContacts( cazeDescriptor.contacts() );
       }
 
-      if (config.effectiveFields().get())
+      if (config.submittedForms().get())
       {
-         generateEffectiveFields( cazeDescriptor.effectiveFields() );
+         generateSubmittedForms( cazeDescriptor.submittedForms() );
       }
 
       if (config.conversations().get())
@@ -202,45 +245,56 @@ public class CasePdfGenerator
       final Transforms.Counter<ContactValue> counter = new Transforms.Counter<ContactValue>();
       contacts.transferTo( Transforms.map( counter, new Output<ContactValue, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<ContactValue, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<? extends ContactValue, SenderThrowableType> sender ) throws IOException, SenderThrowableType
          {
             sender.sendTo( new Receiver<ContactValue, IOException>()
             {
                public void receive( ContactValue value ) throws IOException
                {
-                  Map<String, String> nameValuePairs = new HashMap<String, String>( 10 );
-                  if (Strings.notEmpty( value.name().get() ))
+                  Map<String, String> nameValuePairs = new LinkedHashMap<String, String>( 10 );
+                  if (!Strings.empty( value.name().get() ))
                      nameValuePairs.put( bundle.getString( "name" ), value.name().get() );
 
-                  if (!value.phoneNumbers().get().isEmpty() && Strings.notEmpty( value.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
-                     nameValuePairs.put( bundle.getString( "phoneNumber" ), value.phoneNumbers().get().get( 0 ).phoneNumber().get() );
+                  if (!value.phoneNumbers().get().isEmpty()
+                        && !Strings.empty( value.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
+                     nameValuePairs.put( bundle.getString( "phoneNumber" ), value.phoneNumbers().get().get( 0 )
+                           .phoneNumber().get() );
 
-                  if (!value.addresses().get().isEmpty() && Strings.notEmpty( value.addresses().get().get( 0 ).address().get() ))
+                  if (!value.addresses().get().isEmpty()
+                        && !Strings.empty( value.addresses().get().get( 0 ).address().get() ))
                      nameValuePairs.put( bundle.getString( "address" ), value.addresses().get().get( 0 ).address().get() );
 
-                  if (!value.emailAddresses().get().isEmpty() && Strings.notEmpty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
-                     nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress().get() );
+                  if (!value.emailAddresses().get().isEmpty()
+                        && !Strings.empty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
+                     nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress()
+                           .get() );
 
-                  if (Strings.notEmpty( value.company().get() ))
+                  if (!Strings.empty( value.contactId().get() ))
+                     nameValuePairs.put( bundle.getString( "contactID" ), value.contactId().get() );
+
+                  if (!Strings.empty( value.company().get() ))
                      nameValuePairs.put( bundle.getString( "company" ), value.company().get() );
 
-                  if (Strings.notEmpty( value.note().get() ))
+                  if (!Strings.empty( value.note().get() ))
                      nameValuePairs.put( bundle.getString( "note" ), value.note().get() );
 
-                  float tabStop = document.calculateTabStop( valueFontBold, nameValuePairs.keySet()
-                        .toArray( new String[nameValuePairs.keySet().size()] ) );
+                  float tabStop = document.calculateTabStop( valueFontBold,
+                        nameValuePairs.keySet().toArray( new String[nameValuePairs.keySet().size()] ) );
 
                   if (!nameValuePairs.entrySet().isEmpty())
                   {
                      document.changeColor( Color.BLUE );
-                     document.println( bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()), valueFontBold );
+                     document.println(
+                           bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()),
+                           valueFontBold );
                      document.print( "", valueFont );
                      document.changeColor( Color.BLACK );
                   }
-                  
+
                   for (Map.Entry<String, String> stringEntry : nameValuePairs.entrySet())
                   {
-                     document.printLabelAndText( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(), valueFont, tabStop );
+                     document.printLabelAndText( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(),
+                           valueFont, tabStop );
                   }
                }
             } );
@@ -253,7 +307,7 @@ public class CasePdfGenerator
       final Transforms.Counter<Conversation> counter = new Transforms.Counter<Conversation>();
       Output<Conversation, IOException> output = Transforms.map( counter, new Output<Conversation, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<Conversation, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<? extends Conversation, SenderThrowableType> sender ) throws IOException, SenderThrowableType
          {
             sender.sendTo( new Receiver<Conversation, IOException>()
             {
@@ -265,20 +319,21 @@ public class CasePdfGenerator
                            .changeColor( Color.BLACK );
                   }
 
-
                   List<Message> messages = ((Messages.Data) conversation).messages().toList();
                   if (!messages.isEmpty())
                   {
-                     document.println( conversation.getDescription(), valueFontBold ).underLine( conversation.getDescription(), valueFontBold );
+                     document.println( conversation.getDescription(), valueFontBold ).underLine(
+                           conversation.getDescription(), valueFontBold );
 
                      for (Message message : messages)
                      {
                         Message.Data data = ((Message.Data) message);
-                        String label = data.sender().get().getDescription() + ", "
-                              + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( data.createdOn().get() )
-                              + ": ";
+                        String label = data.sender().get().getDescription()
+                              + ", "
+                              + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format(
+                              data.createdOn().get() ) + ": ";
 
-                        document.print( label, valueFontBold ).print( extractBody( data.body().get() ), valueFont )
+                        document.print( label, valueFontBold ).print( data.body().get(), valueFont )
                               .print( "", valueFont );
                      }
                   }
@@ -289,91 +344,99 @@ public class CasePdfGenerator
       conversations.transferTo( output );
    }
 
-   public void generateEffectiveFields( Input<EffectiveFieldValue, RuntimeException> effectiveFields ) throws IOException
+   public void generateSubmittedForms( Input<SubmittedFormValue, RuntimeException> submittedForms ) throws IOException
    {
-      final Map<EntityReference, List<EffectiveFieldValue>> forms = new LinkedHashMap<EntityReference, List<EffectiveFieldValue>>( 10 );
 
-      effectiveFields.transferTo( new Output<EffectiveFieldValue, IOException>()
+      ArrayList<SubmittedFormValue> formValues = new ArrayList<SubmittedFormValue>();
+      submittedForms.transferTo( Outputs.collection( formValues ) );
+
+      // Latest forms first please
+      Collections.reverse( formValues );
+
+      Set<EntityReference> printedForms = new HashSet<EntityReference>();
+      boolean printedHeader = false;
+      for (SubmittedFormValue formValue : formValues)
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<EffectiveFieldValue, SenderThrowableType> sender ) throws IOException, SenderThrowableType
-         {
-            sender.sendTo( new Receiver<EffectiveFieldValue, IOException>()
-            {
-               public void receive( EffectiveFieldValue field ) throws IOException
-               {
+         if (printedForms.contains( formValue.form().get() ))
+            continue; // Skip this form - already printed
 
-                  // sort effective fields per form
-                  if (!forms.containsKey( field.form().get() ))
+         // Form PDF section header
+         if (!printedHeader)
+         {
+            document.changeColor( Color.BLUE );
+            document.println( bundle.getString( "submittedForms" ) + ":", valueFontBold );
+            document.changeColor( Color.BLACK );
+            printedHeader = true;
+         }
+
+         Describable form = uowf.currentUnitOfWork().get( Describable.class, formValue.form().get().identity() );
+
+         document.println( form.getDescription() + ":", valueFontBold );
+         document.underLine( form.getDescription(), valueFontBold );
+         document.println( "", valueFont );
+
+         // Submitted by whom and when
+         float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "lastSubmitted" ), bundle.getString( "lastSubmittedBy" ) );
+         document.printLabelAndText( bundle.getString( "lastSubmitted" ) + ":", valueFontBold,
+               DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( formValue.submissionDate().get() ),
+               valueFont, tabStop );
+         document.printLabelAndText( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold,
+               uowf.currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont, tabStop );
+
+         float fieldNameTabStop = 0;
+         for (SubmittedPageValue submittedPageValue : formValue.pages().get())
+         {
+            if (!submittedPageValue.fields().get().isEmpty())
+            {
+               Describable page = uowf.currentUnitOfWork().get( Describable.class, submittedPageValue.page().get().identity() );
+               document.println( page.getDescription() + ":", valueFontBoldItalic );
+               document.println( "", valueFont );
+
+               // Calculate fields tabstop
+               for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
+               {
+                  Describable fieldName = uowf.currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() );
+
+                  float tempTabStop = document.calculateTabStop( valueFontBold, fieldName.getDescription() );
+                  if (tempTabStop > fieldNameTabStop)
                   {
-                     List<EffectiveFieldValue> formFields = new ArrayList<EffectiveFieldValue>();
-                     formFields.add( field );
-                     forms.put( field.form().get(), formFields );
-                  } else
-                  {
-                     forms.get( field.form().get() ).add( field );
+                     fieldNameTabStop = tempTabStop;
                   }
                }
-            } );
-         }
-      } );
 
-      if (!forms.isEmpty())
-      {
-         // Heading
-         document.changeColor( Color.BLUE );
-         document.println( bundle.getString( "submittedForms" ) + ":", valueFontBold );
-         document.changeColor( Color.BLACK );
-
-         Date lastSubmittedOn = null;
-         String lastSubmittedBy = "";
-
-         for (Map.Entry<EntityReference, List<EffectiveFieldValue>> entityReferenceListEntry : forms.entrySet())
-         {
-            Describable form = uowf.currentUnitOfWork().get( Describable.class, entityReferenceListEntry.getKey().identity() );
-
-            document.println( form.getDescription() + ":", valueFontBold );
-            document.underLine( form.getDescription(), valueFontBold );
-            document.println( "", valueFont );
-
-            Map<String, String> fieldKeyValues = new LinkedHashMap<String, String>();
-            for (EffectiveFieldValue field : entityReferenceListEntry.getValue())
-            {
-               Describable fieldName = uowf.currentUnitOfWork().get( Describable.class, field.field().get().identity() );
-
-               // convert JSON String if field type AttachmentFieldValue
-               if (uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get() instanceof AttachmentFieldValue)
+               // Fetch and occasionally format field name and value
+               for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
                {
-                  AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
-                  fieldKeyValues.put( fieldName.getDescription(), attachment.name().get() );
 
-               } else
-               {
-                  fieldKeyValues.put( fieldName.getDescription(), field.value().get() );
-               }
+                  FieldValue fieldValue = uowf.currentUnitOfWork().get( FieldEntity.class, submittedFieldValue.field().get().identity() )
+                        .fieldValue().get();
 
-               // keep track of last submitter and submission date
-               if (lastSubmittedOn == null || lastSubmittedOn.before( field.submissionDate().get() ))
-               {
-                  lastSubmittedOn = field.submissionDate().get();
-                  lastSubmittedBy = uowf.currentUnitOfWork().get( Describable.class, field.submitter().get().identity() ).getDescription();
+                  if (!Strings.empty( submittedFieldValue.value().get() ))
+                  {
+                     String label = uowf.currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() )
+                           .getDescription();
+                     String value = "";
+                     // convert JSON String if field type AttachmentFieldValue
+                     if (fieldValue instanceof AttachmentFieldValue)
+                     {
+                        AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, submittedFieldValue
+                              .value().get() );
+                        value = attachment.name().get();
+
+                     } else if (fieldValue instanceof DateFieldValue && !Strings.empty( submittedFieldValue.value().get() ))
+                     {
+                        value = new SimpleDateFormat( bundle.getString( "date_format" ) ).format( DateFunctions
+                              .fromString( submittedFieldValue.value().get() ) );
+                     } else
+                     {
+                        value = submittedFieldValue.value().get();
+                     }
+                     document.printLabelAndText( label + ":", valueFontBold, value, valueFont, fieldNameTabStop );
+                  }
                }
             }
-
-            float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "lastSubmitted" ), bundle.getString( "lastSubmittedBy" ) );
-            document.printLabelAndText( bundle.getString( "lastSubmitted" ) + ":", valueFontBold,
-                  DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( lastSubmittedOn ),
-                  valueFont, tabStop );
-            document.printLabelAndText( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold, lastSubmittedBy, valueFont, tabStop );
-            document.print( "", valueFont );
-
-            tabStop = document.calculateTabStop( valueFontBold, fieldKeyValues.keySet().toArray( new String[fieldKeyValues.keySet().size()] ) );
-
-            for (Map.Entry<String, String> entry : fieldKeyValues.entrySet())
-            {
-               if (Strings.notEmpty( entry.getValue() ))
-                  document.printLabelAndText( entry.getKey() + ":", valueFontBold, entry.getValue(), valueFont, tabStop );
-            }
          }
+         printedForms.add( formValue.form().get() );
       }
    }
 
@@ -382,7 +445,7 @@ public class CasePdfGenerator
       final Transforms.Counter<Attachment> counter = new Transforms.Counter<Attachment>();
       attachments.transferTo( Transforms.map( counter, new Output<Attachment, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<Attachment, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<? extends Attachment, SenderThrowableType> sender ) throws IOException, SenderThrowableType
          {
             sender.sendTo( new Receiver<Attachment, IOException>()
             {
@@ -404,8 +467,8 @@ public class CasePdfGenerator
    public PDDocument getPdf() throws IOException
    {
       document.closeAndReturn();
-      PDDocument generatedDoc = document.generateHeaderAndPageNumbers( headerFont, caseId, bundle.getString( "printDate" ) + ": " + printedOn );
-
+      PDDocument generatedDoc = document.generateHeaderAndPageNumbers( headerFont, caseId, bundle.getString( "printDate" )
+            + ": " + printedOn );
 
       generatedDoc.getDocumentInformation().setCreator( "Streamflow" );
       Calendar calendar = Calendar.getInstance();
@@ -432,42 +495,5 @@ public class CasePdfGenerator
       }
 
       return generatedDoc;
-   }
-
-   private String extractBody( String html ) throws IOException
-   {
-      final StringBuffer buff = new StringBuffer();
-
-      ParserDelegator parserDelegator = new ParserDelegator();
-      HTMLEditorKit.ParserCallback parserCallback = new HTMLEditorKit.ParserCallback()
-      {
-         public void handleText( final char[] data, final int pos )
-         {
-            buff.append( new String( data ) );
-         }
-
-         public void handleStartTag( HTML.Tag tag, MutableAttributeSet attribute, int pos )
-         {
-         }
-
-         public void handleEndTag( HTML.Tag t, final int pos )
-         {
-         }
-
-         public void handleSimpleTag( HTML.Tag t, MutableAttributeSet a, final int pos )
-         {
-         }
-
-         public void handleComment( final char[] data, final int pos )
-         {
-         }
-
-         public void handleError( final java.lang.String errMsg, final int pos )
-         {
-         }
-      };
-      parserDelegator.parse( new StringReader( html ), parserCallback, true );
-
-      return buff.toString();
    }
 }

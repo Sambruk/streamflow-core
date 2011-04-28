@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +23,6 @@ import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.Container;

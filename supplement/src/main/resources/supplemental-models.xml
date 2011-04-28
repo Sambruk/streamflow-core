@@ -2,7 +2,7 @@
 <!--
 
 
-    Copyright 2009-2010 Streamsource AB
+    Copyright 2009-2011 Streamsource AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -616,6 +616,17 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>org.jdesktop.bsaf</groupId>
+            <artifactId>bsaf</artifactId>
+            <name>bsaf</name>
+            <organization>
+                <name>Better Swing Application Framework</name>
+                <url>http://kenai.com/projects/bsaf</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <name>Liquibase</name>
@@ -645,7 +656,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-api</artifactId>
+            <artifactId>org.qi4j.core.api</artifactId>
             <name>Qi4j Core</name>
             <organization>
                 <name>Qi4j</name>
@@ -656,7 +667,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-bootstrap</artifactId>
+            <artifactId>org.qi4j.core.bootstrap</artifactId>
             <name>Qi4j Core Bootstrap</name>
             <organization>
                 <name>Qi4j</name>
@@ -667,7 +678,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-runtime</artifactId>
+            <artifactId>org.qi4j.core.runtime</artifactId>
             <name>Qi4j Core Runtime</name>
             <organization>
                 <name>Qi4j</name>
@@ -678,7 +689,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-spi</artifactId>
+            <artifactId>org.qi4j.core.spi</artifactId>
             <name>Qi4j Core SPI</name>
             <organization>
                 <name>Qi4j</name>
@@ -689,7 +700,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-testsupport</artifactId>
+            <artifactId>org.qi4jcore.testsupport</artifactId>
             <name>Qi4j Core Testsupport</name>
             <organization>
                 <name>Qi4j</name>
@@ -700,7 +711,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-entitystore-jdbm</artifactId>
+            <artifactId>org.qi4j.extension.entitystore-jdbm</artifactId>
             <name>Qi4j Extension JDBM</name>
             <organization>
                 <name>Qi4j</name>
@@ -711,7 +722,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-entitystore-preferences</artifactId>
+            <artifactId>org.qi4j.extension.entitystore-preferences</artifactId>
             <name>Qi4j Ext EntityStore Preferences</name>
             <organization>
                 <name>Qi4j</name>
@@ -722,18 +733,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-entitystore-rest</artifactId>
-            <name>Qi4j Ext EntityStore REST</name>
-            <organization>
-                <name>Qi4j</name>
-                <url>http://www.qi4j.org</url>
-            </organization>
-        </project>
-    </supplement>
-    <supplement>
-        <project>
-            <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-indexing-rdf</artifactId>
+            <artifactId>org.qi4j.extension.indexing-rdf</artifactId>
             <name>Qi4j Ext Indexing RDF</name>
             <organization>
                 <name>Qi4j</name>
@@ -744,7 +744,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-migration</artifactId>
+            <artifactId>org.qi4j.extension.migration</artifactId>
             <name>Qi4j Ext Migration</name>
             <organization>
                 <name>Qi4j</name>
@@ -755,7 +755,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-reindexer</artifactId>
+            <artifactId>org.qi4j.extension.reindexer</artifactId>
             <name>Qi4j Ext Reindexer</name>
             <organization>
                 <name>Qi4j</name>
@@ -766,7 +766,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-constraints</artifactId>
+            <artifactId>org.qi4j.library.constraints</artifactId>
             <name>Qi4j Lib Constraints</name>
             <organization>
                 <name>Qi4j</name>
@@ -777,7 +777,18 @@
     <supplement>
         <project>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-jmx</artifactId>
+            <artifactId>org.qi4j.library.fileconfig</artifactId>
+            <name>Qi4j Lib Fileconfig</name>
+            <organization>
+                <name>Qi4j</name>
+                <url>http://www.qi4j.org</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>org.qi4j.library.jmx</artifactId>
             <name>Qi4j Library - JMX</name>
             <organization>
                 <name>Qi4j</name>
@@ -788,7 +799,7 @@
     <supplement>
         <project>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-locking</artifactId>
+            <artifactId>org.qi4j.library.locking</artifactId>
             <name>Qi4j Lib Locking</name>
             <organization>
                 <name>Qi4j</name>
@@ -799,7 +810,18 @@
     <supplement>
         <project>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-rdf</artifactId>
+            <artifactId>org.qi4j.library.logging</artifactId>
+            <name>Qi4j Lib Logging</name>
+            <organization>
+                <name>Qi4j</name>
+                <url>http://www.qi4j.org</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>org.qi4j.library.rdf</artifactId>
             <name>Qi4j Lib RDF</name>
             <organization>
                 <name>Qi4j</name>
@@ -809,9 +831,9 @@
     </supplement>
     <supplement>
         <project>
-            <groupId>org.qi4j.swing</groupId>
-            <artifactId>qi4j-swing-envisage</artifactId>
-            <name>Qi4j Swing Envisage</name>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>org.qi4j.library.rest</artifactId>
+            <name>Qi4j Lib REST</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -820,9 +842,9 @@
     </supplement>
     <supplement>
         <project>
-            <groupId>org.qi4j</groupId>
-            <artifactId>qi4j-cache-ehcache</artifactId>
-            <name>Qi4j Extension - Ehcache Cache</name>
+            <groupId>org.qi4j.tool</groupId>
+            <artifactId>org.qi4j.tool.envisage</artifactId>
+            <name>Qi4j Swing Envisage</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -1045,7 +1067,7 @@
             <artifactId>swing-worker</artifactId>
             <name>Swing Layout Extensions</name>
             <organization>
-                <name>Swinglabs</name>
+                <name>Swinglabs Worker</name>
                 <url>https://swingx.dev.java.net/</url>
             </organization>
             <licenses>
@@ -1059,16 +1081,16 @@
     <supplement>
         <project>
             <groupId>org.swinglabs</groupId>
-            <artifactId>swingx</artifactId>
-            <name>Swinglabs</name>
+            <artifactId>swingx-core</artifactId>
+            <name>Swinglabs Core</name>
             <organization>
                 <name>Swinglabs</name>
-                <url>https://swingx.dev.java.net/</url>
+                <url>http://java.net/projects/swingx/</url>
             </organization>
             <licenses>
                 <license>
-                    <name>LGPL</name>
-                    <url>http://www.gnu.org/copyleft/lesser.html</url>
+                    <name>LGPL 2.1</name>
+                    <url>http://www.opensource.org/licenses/lgpl-2.1.php</url>
                 </license>
             </licenses>
         </project>
@@ -1079,7 +1101,7 @@
             <artifactId>wizard</artifactId>
             <name>Swinglabs Wizard</name>
             <organization>
-                <name>Swinglabs</name>
+                <name>Swinglabs Wizard</name>
                 <url>https://wizard.dev.java.net/</url>
             </organization>
             <licenses>
@@ -1143,6 +1165,23 @@
             <organization>
                 <name>Codehouse</name>
                 <url>http://woodstox.codehaus.org</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>se.nexus.multiid</groupId>
+            <artifactId>osif</artifactId>
+            <name>eID Plugin API</name>
+            <organization>
+                <name>Streamflow AB</name>
+                <url>N/A</url>
             </organization>
             <licenses>
                 <license>

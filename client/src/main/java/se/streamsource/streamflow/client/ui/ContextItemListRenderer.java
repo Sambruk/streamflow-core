@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +44,7 @@ public class ContextItemListRenderer
                public Icon getIcon( Object o )
                {
                   ContextItem item = (ContextItem) o;
-                  return i18n.icon( Icons.valueOf(item.getRelation() ), 16);
+                  return i18n.icon( Icons.valueOf( item.getRelation() ), 16);
                }
             },
             new StringValue()
@@ -65,7 +66,14 @@ public class ContextItemListRenderer
    public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
    {
       JComponent component = (JComponent) super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
-      component.setBorder( BorderFactory.createEmptyBorder(0, 10, 0, 0 ));
+      ContextItem contextItem = (ContextItem) value;
+      if (contextItem.getRelation().equals("perspective"))
+      {
+         component.setBorder( BorderFactory.createEmptyBorder(0, 20, 0, 0 ));
+      } else
+      {
+         component.setBorder( BorderFactory.createEmptyBorder(0, 10, 0, 0 ));
+      }
       return component;
    }
 }

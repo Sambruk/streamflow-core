@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,45 +23,50 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
-import se.streamsource.streamflow.web.application.management.*;
+import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
+import se.streamsource.streamflow.web.application.management.CompositeMBean;
+import se.streamsource.streamflow.web.application.management.DatasourceConfigurationManagerService;
+import se.streamsource.streamflow.web.application.management.ErrorLogService;
+import se.streamsource.streamflow.web.application.management.EventManagerService;
+import se.streamsource.streamflow.web.application.management.ManagerComposite;
+import se.streamsource.streamflow.web.application.management.ManagerService;
+import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
-import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * Assembler for management layer
  */
 public class ManagementAssembler
-   extends AbstractLayerAssembler
+        extends AbstractLayerAssembler
 {
-   public void assemble( LayerAssembly layer )
-         throws AssemblyException
+   public void assemble(LayerAssembly layer)
+           throws AssemblyException
    {
-      super.assemble( layer );
-      jmx( layer.moduleAssembly( "JMX" ) );
+      super.assemble(layer);
+      jmx(layer.module("JMX"));
    }
 
-   private void jmx( ModuleAssembly module ) throws AssemblyException
+   private void jmx(ModuleAssembly module) throws AssemblyException
    {
-      new JMXAssembler().assemble( module );
+      new JMXAssembler().assemble(module);
 
-      module.addObjects( CompositeMBean.class );
-      module.addTransients( ManagerComposite.class );
+      module.objects(CompositeMBean.class);
+      module.transients(ManagerComposite.class);
 
-      module.addServices(
-            ManagerService.class,
-            DatasourceConfigurationManagerService.class,
-            ReindexOnStartupService.class,
-            EventManagerService.class,
-            ErrorLogService.class,
-            CircuitBreakerManagement.class).visibleIn( application ).instantiateOnStartup();
+      module.services(
+              ManagerService.class,
+              DatasourceConfigurationManagerService.class,
+              ReindexOnStartupService.class,
+              EventManagerService.class,
+              ErrorLogService.class,
+              CircuitBreakerManagement.class).visibleIn(application).instantiateOnStartup();
 
-      module.addServices( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( layer );
+      module.services(ReindexerService.class).identifiedBy("reindexer").visibleIn(layer);
 
-      module.addServices( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
-      configuration().addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
+      module.services(JmxConnectorService.class).identifiedBy("jmxconnector").instantiateOnStartup();
+      configuration().entities(JmxConnectorConfiguration.class).visibleIn(Visibility.application);
    }
 }

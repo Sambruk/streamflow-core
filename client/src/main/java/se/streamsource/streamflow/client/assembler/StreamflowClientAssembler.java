@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ public class StreamflowClientAssembler
       assembly.setVersion( "0.1" );
 
       // Create layers
-      LayerAssembly clientDomainInfrastructureLayer = assembly.layerAssembly( "Client domain infrastructure" );
-      LayerAssembly clientDomainLayer = assembly.layerAssembly( "Client domain" );
-      LayerAssembly uiLayer = assembly.layerAssembly( "UI" );
+      LayerAssembly clientDomainInfrastructureLayer = assembly.layer( "Client domain infrastructure" );
+      LayerAssembly clientDomainLayer = assembly.layer( "Client domain" );
+      LayerAssembly uiLayer = assembly.layer( "UI" );
 
       // Define layer usage
       uiLayer.uses( clientDomainLayer, clientDomainInfrastructureLayer );

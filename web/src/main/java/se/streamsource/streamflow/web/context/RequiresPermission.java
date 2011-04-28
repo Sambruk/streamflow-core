@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import se.streamsource.dci.api.InteractionConstraint;
 import se.streamsource.dci.api.InteractionConstraintDeclaration;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -36,7 +37,7 @@ import java.security.Principal;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface RequiresPermission
 {
-   String value();
+   PermissionType value();
 
    class RequiresPermissionConstraint
          implements InteractionConstraint<RequiresPermission>
@@ -51,7 +52,7 @@ public @interface RequiresPermission
 
          Authorization policy = roleMap.get( Authorization.class );
 
-         return policy.hasPermission( principal.getName(), requiresPermission.value() );
+         return policy.hasPermission( principal.getName(), requiresPermission.value().name() );
       }
    }
 }

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,158 +17,129 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import ca.odell.glazedlists.swing.EventComboBoxModel;
-import com.jgoodies.forms.factories.Borders;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.SavedSearchListCellRenderer;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
+import javax.swing.ActionMap;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
 
 /**
  * JAVADOC
  */
 public class SearchView
       extends JPanel
-   implements TransactionListener
 {
    @Service
    DialogService dialogs;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
-   @Uses
-   Iterable<SaveSearchDialog> saveSearchDialogs;
+   private JTextField searchField;
 
-   @Uses
-   protected ObjectBuilder<HandleSearchesDialog> handleSearchesDialogs;
+   private final SearchResultTableModel searchResultTableModel;
 
-   private JComboBox searches;
-   private SavedSearchesModel model;
+   private JPanel search;
 
-   public SearchView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+   public SearchView( @Service ApplicationContext context, @Uses final CommandQueryClient client,
+                      @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf )
    {
-      super( new BorderLayout() );
-      setBorder( Borders.createEmptyBorder( "3dlu,2dlu,4dlu,4dlu" ) );
-
+      setLayout( new BoxLayout(this, BoxLayout.X_AXIS) );
+      this.searchResultTableModel = searchResultTableModel;
+      
       ActionMap am;
       setActionMap( am = context.getActionMap( this ) );
 
-      model = obf.newObjectBuilder( SavedSearchesModel.class ).use(client).newInstance();
+      javax.swing.Action searchAction = am.get( "search" );
+      JButton searchButton = new JButton( searchAction );
+      searchButton.registerKeyboardAction( searchAction, (KeyStroke) searchAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      
+      searchField = new JTextField(40);
+      searchField.addActionListener( searchAction );
 
-      searches = new JComboBox(new EventComboBoxModel<LinkValue>( model.getList() ) );
-      searches.setEditable( true );
-      searches.setMaximumRowCount( 10 );
-      searches.setRenderer( new SavedSearchListCellRenderer() );
-      searches.setEditor( new SearchComboEditor() );
+      search = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      search.add(searchField);
+      search.add( searchButton );
+      add(search);
 
-      JPopupMenu options = new JPopupMenu();
-      options.add( am.get( "add" ) );
-      options.add( am.get( "handle" ) );
+      new RefreshWhenShowing( this, new Refreshable()
+      {
+         public void refresh()
+         {
+            getTextField().requestFocusInWindow();
+         }
+      });
 
-      add( searches, BorderLayout.CENTER );
-      add( new JButton( new OptionsAction( options ) ), BorderLayout.EAST );
-
-      new RefreshWhenShowing( this, model);
    }
 
    public JTextField getTextField()
    {
-      return (JTextField) searches.getEditor();
+      return (JTextField) searchField;
    }
 
    @Action
-   public Task add()
+   public void search()
    {
-      final SaveSearchDialog dialog = saveSearchDialogs.iterator().next();
-      dialog.presetQuery( searches.getEditor().getItem().toString() );
-      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), dialog, text( WorkspaceResources.save_search ) );
-
-      if (dialog.search() != null)
+      // close all open perspective popups without triggering search twice
+      if (!closedOpenPerspectivePopups( WindowUtils.findWindow( this ) ))
       {
-         return new CommandTask()
+         String searchString = getTextField().getText();
+
+         if (searchString.length() > 500)
          {
-            @Override
-            public void command()
-               throws Exception
-            {
-               model.saveSearch( dialog.search() );
-            }
-         };
-      } else
-         return null;
-   }
-
-   @Action
-   public void handle()
-   {
-      HandleSearchesDialog handleSearchesDialog = handleSearchesDialogs.use( vbf, this.model ).newInstance();
-      dialogs.showOkDialog( WindowUtils.findWindow( this ), handleSearchesDialog, text( WorkspaceResources.handle_searches ) );
-   }
-
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
-   {
-      if (Events.matches( Specifications.or(Events.onEntities( model.getList() ), Events.withNames( "createdSavedSearch", "removedSavedSearch" )), transactions ))
-         model.refresh();
-   }
-
-   class SearchComboEditor extends JTextField
-         implements ComboBoxEditor
-   {
-      private LinkValue link;
-
-      public Component getEditorComponent()
-      {
-         return this;
-      }
-
-      public void setItem( Object anObject )
-      {
-         if (anObject instanceof TitledLinkValue)
+            dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.too_long_query ), "" );
+         } else
          {
-            this.link = (LinkValue) anObject;
-            this.setText( ((TitledLinkValue) anObject).title().get() );
+            searchResultTableModel.search( searchString );
          }
       }
+   }
 
-      public Object getItem()
+   private boolean closedOpenPerspectivePopups( Container container )
+   {
+      for (Component c : container.getComponents())
       {
-         return this.getText();
+         if (c instanceof Container)
+         {
+            if (c instanceof PerspectiveView)
+            {
+               PerspectiveView view = ((PerspectiveView) c);
+               if (view.getCurrentPopup() != null)
+               {
+                  view.killPopup();
+                  view.cleanToggleButtonSelection();
+                  return true;
+               }
+            } else
+            {
+               closedOpenPerspectivePopups( (Container) c );
+            }
+         }
       }
-
-      public LinkValue getLink()
-      {
-         return link;
-      }
-
-      public void clear()
-      {
-         link = null;
-         this.setText( "" );
-      }
+      return false;
    }
 }

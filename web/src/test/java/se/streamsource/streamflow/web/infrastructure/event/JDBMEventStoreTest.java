@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ public class JDBMEventStoreTest
    {
       super.assemble( module );
 
-      module.layerAssembly().applicationAssembly().setName( "jdbmeventstoretest" );
+      module.layer().application().setName( "jdbmeventstoretest" );
 
-      module.addServices( FileConfiguration.class );
-      module.addServices( JdbmEventStoreService.class );
+      module.services( FileConfiguration.class );
+      module.services( JdbmEventStoreService.class );
    }
 }

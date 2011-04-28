@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +23,9 @@ import org.qi4j.api.value.ValueComposite;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,7 +74,7 @@ public interface TableQuery
 
       public String groupBy()
       {
-         return getParts().get("groupBy");
+         return getParts().get("group by");
       }
 
       public String pivot()
@@ -81,7 +84,7 @@ public interface TableQuery
 
       public String orderBy()
       {
-         return getParts().get("orderBy");
+         return getParts().get("order by");
       }
 
       public String limit()
@@ -111,28 +114,26 @@ public interface TableQuery
             parts = new HashMap<String,String>();
 
             String value = tq().get();
-            String[] values = value.split( " " );
-            StringBuilder builder = new StringBuilder();
-            String currentKeyWord = null;
+            List<String> values = Arrays.asList(value.split( " " ));
+            Collections.reverse(values);
+            String currentPhrase = "";
             for (String str : values)
             {
-               if (keywords.contains( str ))
+               currentPhrase = str + currentPhrase;
+               boolean found = false;
+               for (String keyword : keywords)
                {
-                  if (currentKeyWord != null)
+                  if (currentPhrase.startsWith(keyword + " "))
                   {
-                     parts.put( currentKeyWord, builder.toString().trim() );
-                     builder.setLength( 0 );
+                     found = true;
+                     parts.put( keyword, currentPhrase.substring(keyword.length() +1));
+                     currentPhrase = "";
+                     break;
                   }
-                  currentKeyWord = str;
-               } else
-               {
-                  builder.append( str ).append(' ');
                }
-            }
-
-            if (currentKeyWord != null)
-            {
-               parts.put( currentKeyWord, builder.toString().trim() );
+               
+               if (!found)
+                  currentPhrase = " " + currentPhrase;
             }
          }
 

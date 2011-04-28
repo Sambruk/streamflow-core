@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +34,7 @@ import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
@@ -47,7 +49,7 @@ import java.net.URISyntaxException;
  * JAVADOC
  */
 public class CaseSubmittedFormsContext
-      implements IndexContext<SubmittedFormsListDTO>
+        implements IndexContext<SubmittedFormsListDTO>
 {
    @Service
    AttachmentStore store;
@@ -60,37 +62,37 @@ public class CaseSubmittedFormsContext
 
    public SubmittedFormsListDTO index()
    {
-      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
+      SubmittedFormsQueries forms = RoleMap.role(SubmittedFormsQueries.class);
       return forms.getSubmittedForms();
    }
 
    public EffectiveFieldsDTO effectivefields()
    {
-      SubmittedFormsQueries fields = RoleMap.role( SubmittedFormsQueries.class );
+      SubmittedFormsQueries fields = RoleMap.role(SubmittedFormsQueries.class);
 
       return fields.effectiveFields();
    }
 
-   public SubmittedFormDTO submittedform( IntegerDTO index )
+   public SubmittedFormDTO submittedform(IntegerDTO index)
    {
-      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
-      return forms.getSubmittedForm( index.integer().get() );
+      SubmittedFormsQueries forms = RoleMap.role(SubmittedFormsQueries.class);
+      return forms.getSubmittedForm(index.integer().get());
    }
 
 
-   public Representation download( StringValue id ) throws IOException, URISyntaxException
+   public Representation download(StringValue id) throws IOException, URISyntaxException
    {
-      AttachmentFieldSubmission value = getAttachmentFieldValue( id.string().get() );
-      if ( value != null )
+      AttachmentFieldSubmission value = getAttachmentFieldValue(id.string().get());
+      if (value != null)
       {
-         AttachedFile.Data data = uowf.currentUnitOfWork().get( AttachedFile.Data.class, id.string().get() );
-         String fileId = new URI( data.uri().get() ).getSchemeSpecificPart();
+         AttachedFile.Data data = uowf.currentUnitOfWork().get(AttachedFile.Data.class, id.string().get());
+         String fileId = new URI(data.uri().get()).getSchemeSpecificPart();
 
-         InputRepresentation inputRepresentation = new InputRepresentation( store.getAttachment( fileId ) );
+         InputRepresentation inputRepresentation = new InputRepresentation(store.getAttachment(fileId));
          Form downloadParams = new Form();
-         downloadParams.set( Disposition.NAME_FILENAME, value.name().get() );
+         downloadParams.set(Disposition.NAME_FILENAME, value.name().get());
 
-         inputRepresentation.setDisposition( new Disposition( Disposition.TYPE_ATTACHMENT, downloadParams ) );
+         inputRepresentation.setDisposition(new Disposition(Disposition.TYPE_ATTACHMENT, downloadParams));
          return inputRepresentation;
       } else
       {
@@ -100,20 +102,23 @@ public class CaseSubmittedFormsContext
 
    }
 
-   // find the attachment in all fields every submitted on this case
-   private AttachmentFieldSubmission getAttachmentFieldValue( String id )
+   // find the attachment in all fields every submitted form on this case
+   private AttachmentFieldSubmission getAttachmentFieldValue(String id)
    {
-      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
-      for ( int i=0; i<forms.getSubmittedForms().forms().get().size(); i++ )
+      SubmittedFormsQueries forms = RoleMap.role(SubmittedFormsQueries.class);
+      for (int i = 0; i < forms.getSubmittedForms().forms().get().size(); i++)
       {
-         for (FieldDTO fieldDTO : forms.getSubmittedForm( i ).values().get())
+         for (SubmittedPageDTO submittedPageDTO : forms.getSubmittedForm(i).pages().get())
          {
-            if ( fieldDTO.fieldType().get().equals( AttachmentFieldValue.class.getName() ) )
+            for (FieldDTO fieldDTO : submittedPageDTO.fields().get())
             {
-               if ( Strings.notEmpty( fieldDTO.value().get() ) )
+               if (fieldDTO.fieldType().get().equals(AttachmentFieldValue.class.getName()))
                {
-                  AttachmentFieldSubmission submission = vbf.newValueFromJSON( AttachmentFieldSubmission.class, fieldDTO.value().get() );
-                  if ( submission.attachment().get().identity().equals( id )) return submission;
+                  if (!Strings.empty(fieldDTO.value().get()))
+                  {
+                     AttachmentFieldSubmission submission = vbf.newValueFromJSON(AttachmentFieldSubmission.class, fieldDTO.value().get());
+                     if (submission.attachment().get().identity().equals(id)) return submission;
+                  }
                }
             }
          }
