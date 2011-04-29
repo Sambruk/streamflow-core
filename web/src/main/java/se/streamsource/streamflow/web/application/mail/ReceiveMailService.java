@@ -245,9 +245,12 @@ public interface ReceiveMailService
                            builder.prototype().attachments().get().add(attachmentBuilder.newInstance());
                         } else
                         {
-                           body = (String) part.getContent();
-                           builder.prototype().content().set(body);
-                           builder.prototype().contentType().set(part.getContentType());
+                           if (part.isMimeType("text/plain"))
+                           {
+                              body = (String) part.getContent();
+                              builder.prototype().content().set(body);
+                              builder.prototype().contentType().set(part.getContentType());
+                           }
                         }
                      }
                   } else if (content instanceof InputStream)

@@ -62,8 +62,8 @@ public class EmailAccessPointsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient caseTypeClient = client.getClient( detailLink );
-            return obf.newObjectBuilder( EmailAccessPointView.class ).use( caseTypeClient).newInstance();
+            CommandQueryClient apClient = client.getClient( detailLink );
+            return obf.newObjectBuilder( EmailAccessPointView.class ).use( apClient).newInstance();
          }
       });
 
