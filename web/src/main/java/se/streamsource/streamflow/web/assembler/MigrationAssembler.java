@@ -504,9 +504,7 @@ public class
                  }
               }).end().
               renameEntity("se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity", "se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity").
-              renameEntity("se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity", "se.streamsource.streamflow.web.domain.entity.user.EndUserEntity").
-              toVersion("1.4.0.4").
-              end();
+              renameEntity("se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity", "se.streamsource.streamflow.web.domain.entity.user.EndUserEntity");
 
       module.services(MigrationService.class).setMetaInfo(migrationBuilder);
    }
