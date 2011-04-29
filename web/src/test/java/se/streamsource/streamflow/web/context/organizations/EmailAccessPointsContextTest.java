@@ -61,7 +61,7 @@ public class EmailAccessPointsContextTest
       playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       playRole( Organization.class, findLink(context(OrganizationsContext.class).index(), "Organization"));
 
-      context( EmailAccessPointsAdministrationContext.class).create(stringValue("streamsourceflow@gmail.com"));
+      context( EmailAccessPointsAdministrationContext.class).create("streamsourceflow@gmail.com");
 
       uow.complete();
    }
