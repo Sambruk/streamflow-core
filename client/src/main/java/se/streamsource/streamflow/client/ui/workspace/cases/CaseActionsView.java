@@ -309,6 +309,7 @@ public class CaseActionsView extends JPanel
    {
       //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigDTO
       final ValueBuilder<CaseOutputConfigDTO> config = vbf.newValueBuilder( CaseOutputConfigDTO.class );
+      config.prototype().history().set( true );
       config.prototype().contacts().set( true );
       config.prototype().conversations().set( true );
       config.prototype().submittedForms().set( true );

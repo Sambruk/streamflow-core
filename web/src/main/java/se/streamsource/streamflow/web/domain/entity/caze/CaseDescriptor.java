@@ -24,8 +24,11 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 
@@ -65,5 +68,10 @@ public class CaseDescriptor
    public Input<Attachment, RuntimeException> attachments()
    {
       return Inputs.iterable(((Attachments.Data)caze).attachments());
+   }
+
+   public Input<Message, RuntimeException> history()
+   {
+      return Inputs.iterable(((Messages.Data)((History)caze).getHistory()).messages());
    }
 }

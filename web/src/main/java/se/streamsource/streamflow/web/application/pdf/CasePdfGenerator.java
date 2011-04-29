@@ -28,6 +28,7 @@ import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.administration.form.*;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -54,6 +55,8 @@ import java.net.*;
 import java.text.*;
 import java.util.*;
 import java.util.List;
+
+import static se.streamsource.streamflow.util.Strings.empty;
 
 /**
  * A specialisation of CaseOutput that is responsible for exporting a case in
@@ -177,7 +180,7 @@ public class CasePdfGenerator implements CaseOutput
       }
 
       String note = caze.getNote();
-      if (!Strings.empty( note ))
+      if (!empty(note))
       {
          document.changeColor( Color.BLUE );
          document.println( bundle.getString( "note" ), valueFontBold );
@@ -187,6 +190,11 @@ public class CasePdfGenerator implements CaseOutput
       }
 
       // traverse structure
+      if (config.history().get())
+      {
+         generateHistory(cazeDescriptor.history());
+      }
+
       if (config.contacts().get())
       {
          generateContacts( cazeDescriptor.contacts() );
@@ -208,6 +216,33 @@ public class CasePdfGenerator implements CaseOutput
       }
    }
 
+   private void generateHistory(Input<Message, RuntimeException> history) throws IOException
+   {
+      history.transferTo(new Output<Message, IOException>()
+      {
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends Message, SenderThrowableType> sender) throws IOException, SenderThrowableType
+         {
+            document.changeColor( Color.BLUE ).println( bundle.getString( "history" ), valueFontBold )
+                  .changeColor(Color.BLACK);
+
+            sender.sendTo(new Receiver<Message, IOException>()
+            {
+               public void receive(Message message) throws IOException
+               {
+                  Message.Data data = ((Message.Data) message);
+                  String label = data.sender().get().getDescription()
+                        + ", "
+                        + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format(
+                        data.createdOn().get() ) + ": ";
+
+                  document.print( label, valueFontBold ).print( data.body().get(), valueFont )
+                        .print("", valueFont);
+               }
+            });
+         }
+      });
+   }
+
    private void generateContacts(Input<ContactDTO, RuntimeException> contacts) throws IOException
    {
       final Transforms.Counter<ContactDTO> counter = new Transforms.Counter<ContactDTO>();
@@ -220,30 +255,41 @@ public class CasePdfGenerator implements CaseOutput
                public void receive(ContactDTO value) throws IOException
                {
                   Map<String, String> nameValuePairs = new LinkedHashMap<String, String>( 10 );
-                  if (!Strings.empty( value.name().get() ))
+                  if (!empty(value.name().get()))
                      nameValuePairs.put( bundle.getString( "name" ), value.name().get() );
 
                   if (!value.phoneNumbers().get().isEmpty()
-                        && !Strings.empty( value.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
+                        && !empty(value.phoneNumbers().get().get(0).phoneNumber().get()))
                      nameValuePairs.put( bundle.getString( "phoneNumber" ), value.phoneNumbers().get().get( 0 )
                            .phoneNumber().get() );
 
-                  if (!value.addresses().get().isEmpty()
-                        && !Strings.empty( value.addresses().get().get( 0 ).address().get() ))
-                     nameValuePairs.put( bundle.getString( "address" ), value.addresses().get().get( 0 ).address().get() );
+                  if (!value.addresses().get().isEmpty())
+                  {
+                     ContactAddressDTO address = value.addresses().get().get( 0 );
+                     if (!empty(address.address().get()))
+                        nameValuePairs.put( bundle.getString( "address" ), address.address().get() );
+                     if (!empty(address.zipCode().get()))
+                        nameValuePairs.put( bundle.getString( "zipCode" ), address.zipCode().get() );
+                     if (!empty(address.city().get()))
+                        nameValuePairs.put( bundle.getString( "city" ), address.city().get() );
+                     if (!empty(address.region().get()))
+                        nameValuePairs.put( bundle.getString( "region" ), address.region().get() );
+                     if (!empty(address.country().get()))
+                        nameValuePairs.put( bundle.getString( "country" ), address.country().get() );
+                  }
 
                   if (!value.emailAddresses().get().isEmpty()
-                        && !Strings.empty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
+                        && !empty(value.emailAddresses().get().get(0).emailAddress().get()))
                      nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress()
                            .get() );
 
-                  if (!Strings.empty( value.contactId().get() ))
+                  if (!empty(value.contactId().get()))
                      nameValuePairs.put( bundle.getString( "contactID" ), value.contactId().get() );
 
-                  if (!Strings.empty( value.company().get() ))
+                  if (!empty(value.company().get()))
                      nameValuePairs.put( bundle.getString( "company" ), value.company().get() );
 
-                  if (!Strings.empty( value.note().get() ))
+                  if (!empty(value.note().get()))
                      nameValuePairs.put( bundle.getString( "note" ), value.note().get() );
 
                   float tabStop = document.calculateTabStop( valueFontBold,
@@ -379,7 +425,7 @@ public class CasePdfGenerator implements CaseOutput
                   FieldValue fieldValue = uowf.currentUnitOfWork().get( FieldEntity.class, submittedFieldValue.field().get().identity() )
                         .fieldValue().get();
 
-                  if (!Strings.empty( submittedFieldValue.value().get() ))
+                  if (!empty(submittedFieldValue.value().get()))
                   {
                      String label = uowf.currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() )
                            .getDescription();
@@ -391,7 +437,7 @@ public class CasePdfGenerator implements CaseOutput
                               .value().get() );
                         value = attachment.name().get();
 
-                     } else if (fieldValue instanceof DateFieldValue && !Strings.empty( submittedFieldValue.value().get() ))
+                     } else if (fieldValue instanceof DateFieldValue && !empty(submittedFieldValue.value().get()))
                      {
                         value = new SimpleDateFormat( bundle.getString( "date_format" ) ).format( DateFunctions
                               .fromString( submittedFieldValue.value().get() ) );

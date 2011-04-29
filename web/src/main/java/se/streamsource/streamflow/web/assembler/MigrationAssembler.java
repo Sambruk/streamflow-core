@@ -506,10 +506,6 @@ public class
               renameEntity("se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity", "se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity").
               renameEntity("se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity", "se.streamsource.streamflow.web.domain.entity.user.EndUserEntity").
               toVersion("1.4.0.4").
-              toVersion("1.4.0.5").
-              toVersion("1.4.0.6").
-              forEntities("se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity").
-                  addProperty("archivalSettings", "{'maxAge':0,'archivalType':'delete'}").
               end();
 
       module.services(MigrationService.class).setMetaInfo(migrationBuilder);
