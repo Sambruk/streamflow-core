@@ -53,6 +53,8 @@ public interface Manager
 
    public void performArchivalCheck();
 
+   public void performArchival();
+
    @Computed
    Property<Integer> failedLogins();
 

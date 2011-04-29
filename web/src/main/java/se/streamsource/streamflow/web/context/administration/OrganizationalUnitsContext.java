@@ -44,8 +44,7 @@ public interface OrganizationalUnitsContext
 
       public Iterable<OrganizationalUnit> index()
       {
-         OrganizationalUnits.Data ous = RoleMap.role( OrganizationalUnits.Data.class );
-         return ous.organizationalUnits();
+         return module.queryBuilderFactory().newQueryBuilder(OrganizationalUnit.class).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
       }
 
       public void createorganizationalunit( String name )

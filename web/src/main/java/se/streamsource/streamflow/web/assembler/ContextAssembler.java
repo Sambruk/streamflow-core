@@ -179,6 +179,8 @@ public class ContextAssembler
               AdministratorsContext.class,
               AdministratorsResource.class,
 
+              ArchivalSettingsContext.class,
+
               LabelContext.class,
               LabelResource.class,
               LabelsContext.class,

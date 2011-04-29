@@ -511,7 +511,22 @@ public interface ManagerComposite
 
       public void performArchivalCheck()
       {
+         logger.info("Start archival check");
          archival.performArchivalCheck();
+         logger.info("Finished archival check");
+      }
+
+      public void performArchival()
+      {
+         try
+         {
+            logger.info("Start archival");
+            archival.performArchival();
+            logger.info("Finished archival");
+         } catch (UnitOfWorkCompletionException e)
+         {
+            logger.warn("Could not perform archival", e);
+         }
       }
 
       private File getLatestBackup() throws ParseException

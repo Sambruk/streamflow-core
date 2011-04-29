@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints;
 
+import org.qi4j.api.constraint.Name;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.structure.organization.*;
@@ -27,7 +28,7 @@ import static se.streamsource.dci.api.RoleMap.*;
  * TODO
  */
 public class EmailAccessPointsAdministrationContext
-        implements CreateContext<StringValue>, IndexContext<Iterable<EmailAccessPoint>>
+        implements IndexContext<Iterable<EmailAccessPoint>>
 {
    public Iterable<EmailAccessPoint> index()
    {
@@ -35,9 +36,9 @@ public class EmailAccessPointsAdministrationContext
       return data.emailAccessPoints();
    }
 
-   public void create(StringValue email)
+   public void create(@Name("email") String email)
    {
       EmailAccessPoints eap = role(EmailAccessPoints.class);
-      eap.createEmailAccessPoint(email.string().get());
+      eap.createEmailAccessPoint(email);
    }
 }

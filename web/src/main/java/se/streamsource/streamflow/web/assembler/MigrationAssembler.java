@@ -34,7 +34,8 @@ import java.io.IOException;
 /**
  * This assembler contains all the migration rules for Streamflow
  */
-public class MigrationAssembler
+public class
+      MigrationAssembler
         implements Assembler
 {
    public void assemble(ModuleAssembly module) throws AssemblyException
@@ -504,10 +505,11 @@ public class MigrationAssembler
               }).end().
               renameEntity("se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity", "se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity").
               renameEntity("se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity", "se.streamsource.streamflow.web.domain.entity.user.EndUserEntity").
-              toVersion("1.4.0.3").
+              toVersion("1.4.0.4").
+              toVersion("1.4.0.5").
+              toVersion("1.4.0.6").
               forEntities("se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity").
-                  addProperty("maxAge", "100").
-                  addProperty("archivalType", "delete").
+                  addProperty("archivalSettings", "{'maxAge':0,'archivalType':'delete'}").
               end();
 
       module.services(MigrationService.class).setMetaInfo(migrationBuilder);

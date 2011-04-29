@@ -113,7 +113,7 @@ public interface EmailAccessPoints
                return emailAccessPoint;
          }
 
-         return null;
+         throw new IllegalArgumentException("No access point defined for "+email);
       }
    }
 }

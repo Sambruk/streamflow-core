@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.value.ValueAssembler;
+import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
@@ -132,6 +133,7 @@ public class ClientAPIAssembler
    {
       // Commands
       administration.values(
+              ArchivalSettingsDTO.class,
               RegisterUserDTO.class,
               ChangePasswordDTO.class,
               NewUserDTO.class,

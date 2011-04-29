@@ -17,20 +17,18 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.gui.*;
 import ca.odell.glazedlists.swing.*;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.*;
 import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.object.*;
 import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.table.*;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.*;
 import se.streamsource.streamflow.client.ui.administration.*;
 import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.*;
 import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 import se.streamsource.streamflow.util.*;
 
 import javax.swing.*;
@@ -40,16 +38,12 @@ import static se.streamsource.streamflow.client.util.i18n.*;
 
 
 public class EmailAccessPointsView
-      extends JPanel
-   implements TransactionListener
+      extends ListDetailView
 {
    EmailAccessPointsModel model;
 
    @Uses
-   ObjectBuilder<SelectLinkDialog> caseTypesDialogs;
-
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   ObjectBuilder<InputDialog> inputDialogs;
 
    @Service
    DialogService dialogs;
@@ -57,46 +51,21 @@ public class EmailAccessPointsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   JTable table;
-
-   public EmailAccessPointsView(@Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf)
+   public EmailAccessPointsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf )
    {
-      super(new BorderLayout());
-
       this.model = obf.newObjectBuilder( EmailAccessPointsModel.class ).use( client ).newInstance();
 
-      table = new JTable(new EventTableModel<RowValue>(model.getRows(), new TableFormat<RowValue>()
-      {
-         public int getColumnCount()
-         {
-            return 2;
-         }
-
-         public String getColumnName(int i)
-         {
-            return new String[]{i18n.text(AdministrationResources.email), i18n.text(AdministrationResources.accesspoint)}[i];
-         }
-
-         public Object getColumnValue(RowValue rowValue, int i)
-         {
-            return rowValue.c().get().get(i).f();
-         }
-      }));
-
-      table.setGridColor(Color.lightGray);
-      table.setShowHorizontalLines(true);
-
-      add(new JScrollPane(table), BorderLayout.CENTER);
-
       ActionMap am = context.getActionMap( this );
-      setActionMap(am);
+      setActionMap( am );
 
-      JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
-      toolbar.add(new JButton(am.get("add")));
-      toolbar.add(new JButton(am.get("remove")));
-      add(toolbar, BorderLayout.SOUTH);
-
-      table.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "remove" )}, new DetailFactory()
+      {
+         public Component createDetail( LinkValue detailLink )
+         {
+            CommandQueryClient caseTypeClient = client.getClient( detailLink );
+            return obf.newObjectBuilder( EmailAccessPointView.class ).use( caseTypeClient).newInstance();
+         }
+      });
 
       new RefreshWhenShowing(this, model);
    }
@@ -104,39 +73,32 @@ public class EmailAccessPointsView
    @Action
    public Task add()
    {
-      final SelectLinkDialog dialog = caseTypesDialogs.use( model.possibleAccessPoints() ).newInstance();
-      dialog.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      final InputDialog dialog = inputDialogs.use(i18n.text(AdministrationResources.email)).newInstance();
 
-      dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.choose_accesspoint_title));
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_email_accesspoint ) );
 
-      if (dialog.getSelectedLink() != null)
+      if (!Strings.empty( dialog.value() ))
       {
-         final NameDialog emailDialog = nameDialogs.iterator().next();
-
-         dialogs.showOkCancelHelpDialog( this, emailDialog, text( AdministrationResources.add_accesspoint_title ) );
-
-         if (!Strings.empty( emailDialog.name() ))
+         return new CommandTask()
          {
-            return new CommandTask()
+            @Override
+            public void command()
+               throws Exception
             {
-               @Override
-               public void command()
-                     throws Exception
-               {
-                  model.create(emailDialog.name(), dialog.getSelectedLink());
-               }
-            };
-         }
-      }
-
-      return null;
+               model.createEmailAccessPoint(dialog.value());
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
    public Task remove()
    {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( table.getValueAt(table.getSelectedRow(), 0 ).toString());
+      dialog.setRemovalMessage(selected.text().get());
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
@@ -146,7 +108,7 @@ public class EmailAccessPointsView
             public void command()
                throws Exception
             {
-               model.remove(table.getSelectedRow());
+               model.remove( selected );
             }
          };
       } else
@@ -155,6 +117,8 @@ public class EmailAccessPointsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      model.notifyTransactions(transactions);
+      model.notifyTransactions( transactions );
+
+      super.notifyTransactions(transactions);
    }
 }

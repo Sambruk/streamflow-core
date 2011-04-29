@@ -19,11 +19,16 @@ package se.streamsource.streamflow.client.ui.administration.surface;
 
 import ca.odell.glazedlists.*;
 import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.*;
 import org.restlet.data.*;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.link.*;
 import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.infrastructure.event.domain.*;
 import se.streamsource.streamflow.infrastructure.event.domain.source.*;
@@ -35,53 +40,22 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * TODO
  */
 public class EmailAccessPointsModel
-        implements Refreshable, TransactionListener
+   extends LinkValueListModel
+      implements Refreshable
 {
-   @Uses
-   protected CommandQueryClient client;
+   @Structure
+   ValueBuilderFactory vbf;
 
    @Structure
-   protected ValueBuilderFactory vbf;
+   ObjectBuilderFactory obf;
 
-   protected EventList<RowValue> rowValues = new TransactionList<RowValue>(new BasicEventList<RowValue>());
+   @Uses
+   CommandQueryClient client;
 
-   public EmailAccessPointsModel()
-   {
-   }
-
-   public void refresh()
-   {
-      EventListSynch.synchronize(client.query("index", TableValue.class).rows().get(), rowValues);
-   }
-
-   public EventList<RowValue> getRows()
-   {
-      return rowValues;
-   }
-
-   public void remove(int index)
-   {
-      client.getClient(index + "/").delete();
-   }
-
-   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
-   {
-      // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
-      if (matches(or(onEntities(client.getReference().getParentRef().getLastSegment()), onEntities(client.getReference().getLastSegment())), transactions))
-         refresh();
-   }
-
-   public EventList<LinkValue> possibleAccessPoints()
-   {
-      EventList<LinkValue> eventList = new BasicEventList<LinkValue>();
-      EventListSynch.synchronize(client.query("possibleaccesspoints", LinksValue.class).links().get(), eventList);
-      return eventList;
-   }
-
-   public void create(String email, LinkValue createEmailAccessPoint)
+   public void createEmailAccessPoint( String email )
    {
       Form form = new Form();
       form.set("email", email);
-      client.getClient(createEmailAccessPoint).postCommand("", form.getWebRepresentation());
+      client.postCommand( "create", form.getWebRepresentation() );
    }
 }

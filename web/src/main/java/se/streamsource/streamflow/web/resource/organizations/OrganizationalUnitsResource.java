@@ -21,6 +21,8 @@ import org.restlet.resource.*;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.restlet.server.*;
 import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.*;
 
 /**
@@ -32,6 +34,14 @@ public class OrganizationalUnitsResource
 {
    public OrganizationalUnitsResource()
    {
+      super(OrganizationalUnitsContext.class);
+   }
+
+   public void index() throws Throwable
+   {
+      Iterable<OrganizationalUnit> ous = (Iterable<OrganizationalUnit>) invoke();
+
+      result(new LinksBuilder(module.valueBuilderFactory()).addDescribables(ous).newLinks());
    }
 
    public void resource( String segment ) throws ResourceException

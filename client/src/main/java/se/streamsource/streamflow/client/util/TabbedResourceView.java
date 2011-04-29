@@ -79,7 +79,7 @@ public class TabbedResourceView
       addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
 
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
-      //addTab( "emailaccesspoints", AdministrationResources.emailaccesspoints_tab, EmailAccessPointsView.class );
+      addTab( "emailaccesspoints", AdministrationResources.emailaccesspoints_tab, EmailAccessPointsView.class );
       addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
       addTab( "attachments", AdministrationResources.templates_tab, TemplatesView.class );
 

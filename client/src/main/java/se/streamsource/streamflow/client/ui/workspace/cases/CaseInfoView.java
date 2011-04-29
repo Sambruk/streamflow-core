@@ -135,7 +135,7 @@ public class CaseInfoView extends JPanel
       String text = aCase.caseType().get() != null ? aCase.caseType().get().text().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") : "";
       caseType.setText(text);
       caseType.setToolTipText( caseType.getText() );
-      if (aCase.caseType().get().href().get().equals(""))
+      if (aCase.caseType().get() == null || aCase.caseType().get().href().get().equals(""))
       {
          caseType.getAction().setEnabled(false);
 //         caseType.setBackground(Color.black);

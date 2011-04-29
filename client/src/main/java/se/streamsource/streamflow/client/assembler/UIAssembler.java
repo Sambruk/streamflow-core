@@ -248,7 +248,8 @@ public class UIAssembler
       module.services( DummyDataService.class ).instantiateOnStartup();
       module.services( ApplicationInitializationService.class ).instantiateOnStartup();
 
-      addDialogs( module, NameDialog.class,
+      addDialogs( module, InputDialog.class,
+            NameDialog.class,
             SelectUsersAndGroupsDialog.class,
             CreateUserDialog.class,
             CreateProxyUserDialog.class,

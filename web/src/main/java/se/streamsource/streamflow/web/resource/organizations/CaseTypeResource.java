@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.administration.ArchivalSettingsContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
@@ -90,5 +91,11 @@ public class CaseTypeResource
    public void caseaccessdefaults()
    {
       subResourceContexts( CaseAccessDefaultsContext.class );
+   }
+
+   @SubResource
+   public void archival()
+   {
+      subResourceContexts(ArchivalSettingsContext.class);
    }
 }
