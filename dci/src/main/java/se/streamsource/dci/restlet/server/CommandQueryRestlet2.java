@@ -26,6 +26,7 @@ import org.qi4j.api.value.*;
 import org.qi4j.spi.*;
 import org.restlet.*;
 import org.restlet.data.*;
+import org.restlet.engine.http.HttpResponse;
 import org.restlet.representation.*;
 import org.restlet.resource.*;
 import org.slf4j.*;
@@ -66,6 +67,8 @@ public abstract class CommandQueryRestlet2
    @Override
    public void handle(Request request, Response response)
    {
+      super.handle(request, response);
+
       MDC.put("url", request.getResourceRef().toString());
 
       try

@@ -27,6 +27,7 @@ import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
+import se.streamsource.streamflow.client.util.LinkedLabel;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.util.Strings;
@@ -51,7 +52,7 @@ public class CaseInfoView extends JPanel
    CaseModel model;
 
    private JLabel title = new JLabel("");
-   private JXHyperlink caseType;
+   private LinkedLabel caseType;
    private JLabel owner = new JLabel("");
    private JLabel assignedTo = new JLabel("");
    private JLabel createdBy = new JLabel("");
@@ -62,16 +63,13 @@ public class CaseInfoView extends JPanel
    {
       setActionMap(appContext.getActionMap(this));
 
-      caseType = new JXHyperlink(getActionMap().get("caseTypeLink"));
-      caseType.setText("");
+      caseType = new LinkedLabel();
 
       this.model = model;
 
       this.setFocusable( false );
       setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
       setPreferredSize( new Dimension( 800, 50 ) );
-
-      caseType.setClickedColor(caseType.getUnclickedColor());
 
       BoxLayout layout = new BoxLayout(this, BoxLayout.X_AXIS);
       setLayout( layout );
@@ -133,17 +131,8 @@ public class CaseInfoView extends JPanel
 
 
       String text = aCase.caseType().get() != null ? aCase.caseType().get().text().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") : "";
-      caseType.setText(text);
-      caseType.setToolTipText( caseType.getText() );
-      if (aCase.caseType().get() == null || aCase.caseType().get().href().get().equals(""))
-      {
-         caseType.getAction().setEnabled(false);
-//         caseType.setBackground(Color.black);
-      } else
-      {
-         caseType.getAction().setEnabled(true);
-      }
-      
+      caseType.setLink(aCase.caseType().get(), text);
+
       String ownerText = aCase.owner().get();
       owner.setText( ownerText );
       owner.setToolTipText( ownerText );
@@ -155,25 +144,5 @@ public class CaseInfoView extends JPanel
 
       assignedTo.setText( aCase.assignedTo().get() != null ? aCase.assignedTo().get() : "" );
       assignedTo.setToolTipText( assignedTo.getText() );
-   }
-
-   @org.jdesktop.application.Action
-   public void caseTypeLink()
-   {
-      String href = CaseInfoView.this.model.getIndex().caseType().get().href().get();
-
-      if (!empty(href))
-      {
-         try
-         {
-            Desktop.getDesktop().browse(new URI(href));
-         } catch (IOException e1)
-         {
-            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-         } catch (URISyntaxException e1)
-         {
-            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-         }
-      }
    }
 }

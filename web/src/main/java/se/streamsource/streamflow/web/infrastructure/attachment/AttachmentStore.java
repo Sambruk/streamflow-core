@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
 import org.qi4j.api.io.*;
+import se.streamsource.streamflow.util.Visitor;
 
 import java.io.*;
 import java.nio.*;
@@ -37,6 +38,8 @@ public interface AttachmentStore
    String storeAttachment( Input<ByteBuffer, IOException> input) throws IOException;
 
    Input<ByteBuffer, IOException> attachment(String id) throws FileNotFoundException;
+
+   void attachment(String id, Visitor<InputStream, IOException> visitor) throws IOException;
 
    Input<String, IOException> text(String id) throws FileNotFoundException;
 

@@ -17,15 +17,23 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -38,6 +46,9 @@ public class CaseTypeContext
 {
    @Structure
    Module module;
+
+   @Service
+   KnowledgebaseService knowledgebaseService;
 
    public LinksValue usages()
    {
@@ -70,5 +81,17 @@ public class CaseTypeContext
       CaseTypes toCaseTypes = module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypes.class, to.entity().get() );
       CaseType caseType = RoleMap.role( CaseType.class );
       RoleMap.role( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
+   }
+
+   @ServiceAvailable(KnowledgebaseService.class)
+   public LinkValue knowledgeBase()
+   {
+      CaseTypeEntity caseType = RoleMap.role(CaseTypeEntity.class);
+      ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
+      builder.prototype().id().set(caseType.identity().get());
+      builder.prototype().text().set(caseType.getDescription());
+      builder.prototype().rel().set("knowledgebase");
+      builder.prototype().href().set(knowledgebaseService.createURL(caseType));
+      return builder.newInstance();
    }
 }

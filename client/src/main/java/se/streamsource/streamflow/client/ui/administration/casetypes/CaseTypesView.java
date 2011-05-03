@@ -34,6 +34,9 @@ import se.streamsource.streamflow.util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -63,14 +66,23 @@ public class CaseTypesView
    {
       this.model = obf.newObjectBuilder( CaseTypesModel.class ).use( client ).newInstance();
 
-      ActionMap am = context.getActionMap( this );
+      final ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get("move"), am.get( "rename" ), am.get("showUsages"), am.get( "remove" )}, new DetailFactory()
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get("move"), am.get( "rename" ), am.get("showUsages"), am.get("knowledgeBase"), am.get( "remove" )}, new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient caseTypeClient = client.getClient( detailLink );
+            final CommandQueryClient caseTypeClient = client.getClient( detailLink );
+
+            new ResourceActionEnabler(am.get("knowledgeBase"))
+            {
+               @Override
+               protected CommandQueryClient getClient()
+               {
+                  return caseTypeClient;
+               }
+            }.refresh();
 
             TabbedResourceView view = obf.newObjectBuilder( TabbedResourceView.class ).use( caseTypeClient).newInstance();
             return view;
@@ -170,6 +182,16 @@ public class CaseTypesView
          };
       } else
          return null;
+   }
+
+   @Action
+   public void knowledgeBase() throws URISyntaxException, IOException
+   {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+
+      LinkValue url = model.getKnowledgeBaseLink(selected);
+
+      Desktop.getDesktop().browse(new URI(url.href().get()));
    }
 
    @Action

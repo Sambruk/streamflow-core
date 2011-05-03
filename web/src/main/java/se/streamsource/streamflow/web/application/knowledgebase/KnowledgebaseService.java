@@ -41,7 +41,7 @@ import java.net.URLEncoder;
  */
 @Mixins(KnowledgebaseService.Mixin.class)
 public interface KnowledgebaseService
-      extends ServiceComposite, Activatable, Configuration
+      extends ServiceComposite, Activatable, Configuration<KnowledgebaseConfiguration>
 {
    /**
     * Given an entity, create a URL in the external website for it.
