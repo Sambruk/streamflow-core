@@ -26,11 +26,13 @@ import org.qi4j.api.io.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.administration.form.*;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
@@ -49,7 +51,9 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.*;
 import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.text.*;
@@ -472,6 +476,33 @@ public class CasePdfGenerator implements CaseOutput
                   }
 
                   document.print( ((AttachedFile.Data) attachment).name().get(), valueFont );
+
+/* TODO Fix image insert. For some reason adding images to a PDF doesn't seem to work
+                  if (((AttachedFile.Data) attachment).mimeType().get().startsWith("image/"))
+                  {
+                     try
+                     {
+                        store.attachment(((AttachedFile.Data) attachment).uri().get(), new Visitor<InputStream, IOException>()
+                        {
+                           public boolean visit(InputStream visited) throws IOException
+                           {
+                              BufferedImage image = ImageIO.read(visited);
+
+                              document.print("Image insert", valueFont);
+
+                              document.insertImage(image);
+
+                              document.print("Image inserted", valueFont);
+
+                              return true;
+                           }
+                        });
+                     } catch (IOException e)
+                     {
+                        LoggerFactory.getLogger(getClass()).warn("Could not insert image into generated PDF", e);
+                     }
+                  }
+*/
                }
             } );
          }

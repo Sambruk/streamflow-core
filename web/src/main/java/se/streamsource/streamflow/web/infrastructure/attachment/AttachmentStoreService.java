@@ -22,6 +22,7 @@ import org.qi4j.api.io.*;
 import org.qi4j.api.mixin.*;
 import org.qi4j.api.service.*;
 import se.streamsource.streamflow.infrastructure.configuration.*;
+import se.streamsource.streamflow.util.Visitor;
 
 import java.io.*;
 import java.nio.*;
@@ -62,6 +63,23 @@ public interface AttachmentStoreService
             throw new FileNotFoundException("Attachment for id "+id+" does not exist");
 
          return Inputs.byteBuffer(file, 4096);
+      }
+
+      public void attachment(String id, Visitor<InputStream, IOException> visitor) throws IOException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), 4096);
+         try
+         {
+            visitor.visit(inputStream);
+         } finally
+         {
+            inputStream.close();
+         }
       }
 
       public Input<String, IOException> text(String id) throws FileNotFoundException
@@ -115,6 +133,9 @@ public interface AttachmentStoreService
 
       private File getFile( String id )
       {
+         if (id.startsWith("store:"))
+            id = id.substring("store:".length());
+
          // Ensure that directory for data exists
          File files = new File(fileConfig.dataDirectory(), "files");
 

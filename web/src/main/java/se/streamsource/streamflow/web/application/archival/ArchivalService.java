@@ -48,6 +48,10 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -56,20 +60,20 @@ import static org.qi4j.api.query.QueryExpressions.*;
  */
 @Mixins(ArchivalService.Mixin.class)
 public interface ArchivalService
-      extends ServiceComposite, Configuration, Activatable
+      extends ServiceComposite, Configuration<ArchivalConfiguration>, Activatable
 {
    void performArchivalCheck();
 
    public void performArchival() throws UnitOfWorkCompletionException;
 
    abstract class Mixin
-         implements ArchivalService, Activatable
+         implements ArchivalService, Activatable, Runnable
    {
-      @This
-      Configuration<ArchivalConfiguration> config;
-
       @Service
       FileConfiguration fileConfiguration;
+
+      @This
+      Configuration<ArchivalConfiguration> config;
 
       File archiveDir;
 
@@ -79,15 +83,40 @@ public interface ArchivalService
       Usecase archivalCheck = UsecaseBuilder.newUsecase("Archival check");
 
       Logger logger = LoggerFactory.getLogger(ArchivalService.class);
+      private ScheduledExecutorService dailyChecker;
 
       public void activate() throws Exception
       {
          archiveDir = new File(fileConfiguration.dataDirectory(), "archive");
          archiveDir.mkdir();
+
+         if (config.configuration().archiveDaily().get())
+         {
+            // Start daily checker
+            dailyChecker = Executors.newSingleThreadScheduledExecutor();
+            dailyChecker.scheduleAtFixedRate(this, 0, 1, TimeUnit.DAYS);
+         }
       }
 
       public void passivate() throws Exception
       {
+         if (dailyChecker != null)
+         {
+            dailyChecker.shutdown();
+         }
+      }
+
+      public void run()
+      {
+         try
+         {
+            logger.info("Starting daily archival");
+            performArchival();
+            logger.info("Finished daily archival");
+         } catch (Throwable e)
+         {
+            logger.error("Could not complete daily archival", e);
+         }
       }
 
       public void performArchivalCheck()

@@ -18,13 +18,14 @@
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
 import org.qi4j.api.common.*;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.*;
 import org.qi4j.api.value.*;
 
 import java.util.*;
 
 /**
- * TODO
+ * Representation of an attached file. Maintains all the metainfo about the attachment.
  */
 public interface AttachedFileValue
    extends ValueComposite
@@ -34,6 +35,10 @@ public interface AttachedFileValue
    @Optional
    Property<String> mimeType();
 
+   /**
+    * URI where the binary data is stored. The protocol has to be "store:"
+    * @return
+    */
    Property<String> uri();
 
    Property<Date> modificationDate();
