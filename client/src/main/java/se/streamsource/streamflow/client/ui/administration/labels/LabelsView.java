@@ -37,6 +37,9 @@ import se.streamsource.streamflow.util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -78,6 +81,7 @@ public class LabelsView
       options.add( am.get( "rename" ) );
       options.add( am.get( "move" ) );
       options.add( am.get( "showUsages" ) );
+      options.add( am.get( "knowledgeBase" ) );
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
@@ -92,9 +96,18 @@ public class LabelsView
       toolbar.add( new JButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "move" ), am.get( "showUsages" ) ) );
+      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "move" ), am.get("knowledgeBase"), am.get( "showUsages" ) ) );
 
       new RefreshWhenShowing( this, model );
+
+      new RefreshWhenShowing(options, new ResourceActionEnabler(am.get("knowledgeBase"))
+      {
+         @Override
+         protected CommandQueryClient getClient()
+         {
+            return client.getClient((LinkValue) list.getSelectedValue());
+         }
+      });
    }
 
    @Action
@@ -179,6 +192,16 @@ public class LabelsView
       dialogs.showOkDialog( this, list );
 
       usageList.dispose();
+   }
+
+   @Action
+   public void knowledgeBase() throws URISyntaxException, IOException
+   {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+
+      LinkValue url = model.getKnowledgeBaseLink(selected);
+
+      Desktop.getDesktop().browse(new URI(url.href().get()));
    }
 
    @Action

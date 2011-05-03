@@ -43,4 +43,9 @@ public class CaseTypesModel
    {
       client.getClient( selected ).postLink( selectedLink );
    }
+
+   public LinkValue getKnowledgeBaseLink(LinkValue selected)
+   {
+      return client.getClient(selected).query("knowledgebase", LinkValue.class);
+   }
 }

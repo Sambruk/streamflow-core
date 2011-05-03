@@ -21,6 +21,8 @@ import ca.odell.glazedlists.*;
 import se.streamsource.dci.value.link.*;
 import se.streamsource.streamflow.client.util.*;
 
+import java.net.URL;
+
 /**
  * Management of labels
  */
@@ -42,5 +44,10 @@ public class LabelsModel
    public void moveForm( LinkValue selected, LinkValue selectedLink )
    {
       client.getClient( selected ).postLink( selectedLink );
+   }
+
+   public LinkValue getKnowledgeBaseLink(LinkValue selected)
+   {
+      return client.getClient(selected).query("knowledgebase", LinkValue.class);
    }
 }

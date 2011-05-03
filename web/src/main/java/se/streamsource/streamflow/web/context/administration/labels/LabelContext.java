@@ -23,8 +23,12 @@ import org.qi4j.api.query.*;
 import org.qi4j.api.specification.*;
 import org.qi4j.api.structure.*;
 import org.qi4j.api.util.*;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.*;
 import se.streamsource.streamflow.web.domain.structure.label.*;
 
@@ -38,6 +42,9 @@ public class LabelContext
 {
    @Structure
    Module module;
+
+   @Service
+   KnowledgebaseService knowledgebaseService;
 
    public Query<SelectedLabels> usages()
    {
@@ -80,4 +87,15 @@ public class LabelContext
       RoleMap.current().set( RoleMap.role( CaseTypes.class ), Identity.class );
    }
 
+   @ServiceAvailable(KnowledgebaseService.class)
+   public LinkValue knowledgeBase()
+   {
+      LabelEntity label = RoleMap.role(LabelEntity.class);
+      ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
+      builder.prototype().id().set(label.identity().get());
+      builder.prototype().text().set(label.getDescription());
+      builder.prototype().rel().set("knowledgebase");
+      builder.prototype().href().set(knowledgebaseService.createURL(label));
+      return builder.newInstance();
+   }
 }
