@@ -71,6 +71,11 @@ public class CaseLabelsModel
       client.getClient( removeLabel ).delete();
    }
 
+   public LinkValue getKnowledgeBaseLink(LinkValue selected)
+   {
+      return client.getClient(selected).query("knowledgebase", LinkValue.class);
+   }
+
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (Events.matches( Events.withNames("addedLabel", "removedLabel" ), transactions ))

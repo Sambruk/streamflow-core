@@ -17,70 +17,47 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import org.jdesktop.swingx.*;
 import se.streamsource.dci.value.link.*;
 import se.streamsource.streamflow.client.*;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.util.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class RemovableLabel extends JPanel
-      implements FocusListener, KeyListener, MouseListener
+      implements FocusListener
 {
    private JButton button;
-   private LinkValue link;
-   private JXLabel label;
-   private boolean useBorder = false;
-
-   /**
-    * Button orientation left
-    */
-   public static final int LEFT = 0;
-   /**
-    * Button orientation right
-    */
-   public static final int RIGHT = 1;
+   private LinkValue removeLink;
+   private LinkValue clickLink;
+   private LinkedLabel label;
 
    public RemovableLabel()
    {
-      initComponents( RIGHT );
+      initComponents();
    }
 
-   public RemovableLabel( int buttonOrientation )
+   public RemovableLabel(LinkValue removeLink, LinkValue clickLink)
+   {
+      this.removeLink = removeLink;
+      this.clickLink = clickLink;
+      initComponents();
+   }
+
+   private void initComponents()
    {
       this.setLayout( new BorderLayout(2,1) );
-      initComponents( buttonOrientation );
-   }
+      setFocusable(true);
+      this.setRequestFocusEnabled(true);
 
-   public RemovableLabel( LinkValue link, boolean useBorder )
-   {
-      this.setLayout( new BorderLayout( 2,1 ) );
-      this.link = link;
-      this.useBorder = useBorder;
-      initComponents( RIGHT );
-   }
-
-   public RemovableLabel( LinkValue link, int buttonOrientation )
-   {
-      super( new BorderLayout( 2, 1 ) );
-      this.link = link;
-      initComponents( buttonOrientation );
-   }
-
-   private void initComponents( int buttonOrientation )
-   {
-      setFocusable( true );
-      this.setRequestFocusEnabled( true );
-
-      if (link != null)
+      if (removeLink != null)
       {
-         label = new JXLabel( link.text().get() );
+         label = new LinkedLabel( );
+         label.setLink(clickLink, removeLink.text().get());
       } else
       {
-         label = new JXLabel();
+         label = new LinkedLabel();
       }
 
       button = new JButton( i18n.icon( Icons.drop, 12 ) );
@@ -94,32 +71,32 @@ public class RemovableLabel extends JPanel
          }
       } );
 
-      switch (buttonOrientation)
-      {
-
-         case RIGHT:
-            this.add( label, BorderLayout.CENTER );
-            this.add( button, BorderLayout.EAST );
-            break;
-
-         case LEFT:
-            this.add( button, BorderLayout.WEST );
-            this.add( label, BorderLayout.CENTER );
-            break;
-      }
-      if (useBorder)
-      {
-         setBorder( BorderFactory.createEtchedBorder() );
-      }
+      this.add( label, BorderLayout.CENTER );
+      this.add(button, BorderLayout.EAST);
 
       addFocusListener( this );
-      addKeyListener( this );
-      addMouseListener( this );
-
-      if (!!Strings.empty( label.getText() ))
+      addKeyListener( new KeyAdapter()
       {
-         this.setVisible( false );
-      }
+         @Override
+         public void keyPressed(KeyEvent e)
+         {
+            if (e.getKeyChar() == KeyEvent.VK_BACK_SPACE
+                  || e.getKeyChar() == KeyEvent.VK_DELETE)
+            {
+               button.doClick();
+            }
+         }
+      });
+      addMouseListener(new MouseAdapter()
+      {
+         @Override
+         public void mouseClicked(MouseEvent e)
+         {
+            requestFocusInWindow();
+         }
+      });
+
+      this.setVisible(removeLink != null);
    }
 
    @Override
@@ -130,9 +107,9 @@ public class RemovableLabel extends JPanel
       super.setEnabled( enabled );
    }
 
-   public LinkValue link()
+   public LinkValue getRemoveLink()
    {
-      return link;
+      return removeLink;
    }
 
    public JButton getButton()
@@ -140,71 +117,21 @@ public class RemovableLabel extends JPanel
       return button;
    }
 
-   public JXLabel getLabel()
+   public LinkedLabel getLabel()
    {
       return label;
    }
 
    public void focusGained( FocusEvent e )
    {
-      if (useBorder)
-      {
-         setBorder( BorderFactory.createEtchedBorder( Color.LIGHT_GRAY, Color.BLUE ) );
-      } else
-      {
-         setBorder( BorderFactory.createLineBorder( Color.GRAY, 1 ) );
-      }
+      setBorder( BorderFactory.createLineBorder(Color.GRAY, 1) );
       repaint();
    }
 
    public void focusLost( FocusEvent e )
    {
-      if (useBorder)
-      {
-         setBorder( BorderFactory.createEtchedBorder() );
-      } else
-      {
-         setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
-      }
+      setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
       repaint();
-   }
-
-   public void keyTyped( KeyEvent e )
-   {
-   }
-
-   public void keyPressed( KeyEvent e )
-   {
-      if (e.getKeyChar() == KeyEvent.VK_BACK_SPACE
-            || e.getKeyChar() == KeyEvent.VK_DELETE)
-      {
-         button.doClick();
-      }
-   }
-
-   public void keyReleased( KeyEvent e )
-   {
-   }
-
-   public void mouseClicked( MouseEvent e )
-   {
-      this.requestFocusInWindow();
-   }
-
-   public void mousePressed( MouseEvent e )
-   {
-   }
-
-   public void mouseReleased( MouseEvent e )
-   {
-   }
-
-   public void mouseEntered( MouseEvent e )
-   {
-   }
-
-   public void mouseExited( MouseEvent e )
-   {
    }
 
    public void setText( String text )
@@ -214,27 +141,19 @@ public class RemovableLabel extends JPanel
       this.setVisible( text != null );
    }
 
-   public void setLinkValue( LinkValue link )
+   public void setRemoveLink(LinkValue link)
    {
-      this.link = link;
+      this.removeLink = link;
       if (link != null)
       {
-         label.setText( this.link.text().get() );
+         label.setLink(clickLink, this.removeLink.text().get() );
       }
       this.setVisible( link != null );
    }
 
-   public Font getFont()
+   public void setLinks(LinkValue removeLink, LinkValue clickLink)
    {
-      return label == null ? null : label.getFont();
-   }
-
-
-   public void setFont( Font f )
-   {
-      if (label != null)
-      {
-         label.setFont( f );
-      }
+      this.clickLink = clickLink;
+      setRemoveLink(removeLink);
    }
 }

@@ -123,7 +123,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
             Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
 
-      selectedCaseType.setFont( selectedCaseType.getFont().deriveFont(
+      selectedCaseType.getLabel().setFont( selectedCaseType.getLabel().getFont().deriveFont(
             Font.BOLD ) );
       selectedCaseType.getButton().addActionListener(am.get("removeCaseType" ));
       valueBinder.bind( "caseType", selectedCaseType );
@@ -380,7 +380,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                LinkValue selected = dialog.getSelectedLink();
                model.changeCaseType( selected );
 
-               selectedCaseType.getLabel().setText( selected.text().get() );
+               selectedCaseType.setRemoveLink(selected);
 
                String labelQuery = dialog.getFilterField().getText();
                // if the query string has any match inside label descriptions

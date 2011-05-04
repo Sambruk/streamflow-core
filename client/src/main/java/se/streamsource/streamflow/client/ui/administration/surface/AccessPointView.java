@@ -147,7 +147,7 @@ public class AccessPointView
       selectedForm.setFont( selectedForm.getFont().deriveFont(
             Font.BOLD ) );
 
-      selectedTemplate.setFont( selectedTemplate.getFont().deriveFont(
+      selectedTemplate.getLabel().setFont( selectedTemplate.getLabel().getFont().deriveFont(
             Font.BOLD ) );
 
       ActionMap am = getActionMap();
