@@ -83,7 +83,7 @@ public class ConversationParticipantsView
       for (int i = 0; i < model.participants().size(); i++)
       {
          LinkValue link = model.participants().get( i );
-         RemovableLabel label = new RemovableLabel( link, RemovableLabel.LEFT );
+         RemovableLabel label = new RemovableLabel( link, null);
          label.getButton().addActionListener( getActionMap().get("removeParticipant" ));
          participants.add( label );
       }
@@ -131,7 +131,7 @@ public class ConversationParticipantsView
          {
             Component component = ((Component) e.getSource());
             RemovableLabel label = (RemovableLabel) component.getParent();
-            model.removeParticipant( label.link() );
+            model.removeParticipant( label.getRemoveLink() );
          }
       };
    }

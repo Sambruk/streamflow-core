@@ -65,9 +65,9 @@ public class SelectedTemplatesView extends JPanel
    JButton formTemplateButton;
    JButton caseTemplateButton;
 
-   RemovableLabel defaultTemplate = new RemovableLabel( RemovableLabel.LEFT );
-   RemovableLabel formTemplate = new RemovableLabel( RemovableLabel.LEFT );
-   RemovableLabel caseTemplate = new RemovableLabel( RemovableLabel.LEFT );
+   RemovableLabel defaultTemplate = new RemovableLabel();
+   RemovableLabel formTemplate = new RemovableLabel();
+   RemovableLabel caseTemplate = new RemovableLabel();
 
    private SelectedTemplatesModel model;
 
@@ -100,16 +100,16 @@ public class SelectedTemplatesView extends JPanel
       SelectedTemplatesDTO template = selectedTemplatesBinder
             .bindingTemplate( SelectedTemplatesDTO.class );
 
-      defaultTemplate.setFont( defaultTemplate.getFont().deriveFont(
-            Font.BOLD ) );
+      defaultTemplate.getLabel().setFont(defaultTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
       defaultTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      formTemplate.setFont( formTemplate.getFont().deriveFont(
-            Font.BOLD ) );
+      formTemplate.getLabel().setFont(formTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
       formTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      caseTemplate.setFont( caseTemplate.getFont().deriveFont(
-            Font.BOLD ) );
+      caseTemplate.getLabel().setFont(caseTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
       caseTemplate.setPreferredSize( new Dimension( 150, 25) );
 
       FormLayout layout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref:grow" );
@@ -296,7 +296,9 @@ public class SelectedTemplatesView extends JPanel
          }
       } else
       {
-         selectedTemplatesBinder.updateWith( model.getSelectedTemplatesValue() );
+         SelectedTemplatesDTO selectedTemplatesValue = model.getSelectedTemplatesValue();
+         defaultTemplate.setRemoveLink(selectedTemplatesValue.defaultPdfTemplate().get());
+         selectedTemplatesBinder.updateWith(selectedTemplatesValue);
       }
    }
 

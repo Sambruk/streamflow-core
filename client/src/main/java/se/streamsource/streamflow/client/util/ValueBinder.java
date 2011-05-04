@@ -197,7 +197,7 @@ public class ValueBinder
          } else if (component instanceof RemovableLabel)
          {
             RemovableLabel label = (RemovableLabel) component;
-            label.setLinkValue( (LinkValue) value);
+            label.setRemoveLink((LinkValue) value);
          }
       }
    }

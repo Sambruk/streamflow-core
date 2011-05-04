@@ -82,7 +82,17 @@ public class CaseLabelsView
       for (int i = 0; i < model.getLabels().size(); i++)
       {
          LinkValue linkValue = model.getLabels().get(i);
-         RemovableLabel label = new RemovableLabel(linkValue, false);
+         LinkValue knowledgeBase = null;
+         try
+         {
+            knowledgeBase = model.getKnowledgeBaseLink(linkValue);
+         } catch (Exception e)
+         {
+            // Ignore
+         }
+
+         RemovableLabel label = new RemovableLabel(linkValue, knowledgeBase);
+
          label.setToolTipText(linkValue.text().get());
          label.getButton().addActionListener(getActionMap().get("remove"));
          label.setEnabled(isEnabled());
@@ -125,7 +135,7 @@ public class CaseLabelsView
          {
             Component component = ((Component) e.getSource());
             RemovableLabel label = (RemovableLabel) component.getParent();
-            model.removeLabel(label.link());
+            model.removeLabel(label.getRemoveLink());
          }
       };
    }

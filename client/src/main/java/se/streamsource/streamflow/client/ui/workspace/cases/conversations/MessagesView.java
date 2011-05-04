@@ -177,7 +177,7 @@ public class MessagesView extends JPanel implements TransactionListener
 
       // NEWMESSAGE
       sendPanel = new JPanel(new BorderLayout());
-      sendPanel.setPreferredSize(new Dimension(100, 150));
+      sendPanel.setPreferredSize(new Dimension(100, 250));
       JScrollPane messageScroll = new JScrollPane();
 
       newMessage = new JTextPane();
@@ -202,7 +202,7 @@ public class MessagesView extends JPanel implements TransactionListener
 
       // SHOWMESSAGE
       showPanel = new JPanel(new BorderLayout());
-      showPanel.setPreferredSize(new Dimension(100, 150));
+      showPanel.setPreferredSize(new Dimension(100, 250));
       showPanel.setBorder(BorderFactory.createEmptyBorder(5,0,0,0));
       JScrollPane messageShowScroll = new JScrollPane();
 
