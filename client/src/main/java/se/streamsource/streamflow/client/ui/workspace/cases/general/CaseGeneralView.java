@@ -77,7 +77,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private JScrollPane notePane;
    private JXDatePicker dueOnField;
    private JPanel rightForm;
-   private Box leftForm;
+   private JPanel leftForm;
    private CaseLabelsView labels;
    private PossibleFormsView forms;
    private RemovableLabel selectedCaseType = new RemovableLabel();
@@ -134,7 +134,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       descriptionLabel.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
       rightBuilder.nextLine();
       rightBuilder.setExtent( 3, 1 );
-      rightBuilder.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField = (JTextField) TEXTFIELD.newField() ) ) );
+      JPanel descPanel = new JPanel( new BorderLayout());
+      descPanel.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField = (JTextField) TEXTFIELD.newField() ) ), BorderLayout.WEST );
+      rightBuilder.add( descPanel );
       descriptionField.setName("txtCaseDescription");
       rightBuilder.nextLine();
       descriptionLabel.setLabelFor( descriptionField );
@@ -241,14 +243,18 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       FormLayout leftLayout = new FormLayout( "200dlu:grow",
             "pref,fill:pref:grow" );
 
-      leftForm = Box.createVerticalBox();
+      leftForm = new JPanel();
+      leftForm.setLayout( new BoxLayout( leftForm, BoxLayout.PAGE_AXIS ) );
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
       notePane.setPreferredSize( new Dimension( 700, 300 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
-      leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
+      JLabel noteLabel = new JLabel(i18n.text( WorkspaceResources.note_label ));
+      noteLabel.setAlignmentX( Component.LEFT_ALIGNMENT );
+      notePane.setAlignmentX( Component.LEFT_ALIGNMENT );
+      leftForm.add( noteLabel );
       leftForm.add(notePane);
       actionBinder.bind( "changeNote", notePane );
       valueBinder.bind( "note", notePane );

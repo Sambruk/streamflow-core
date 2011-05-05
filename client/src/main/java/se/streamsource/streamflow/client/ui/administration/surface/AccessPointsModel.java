@@ -47,9 +47,9 @@ public class AccessPointsModel
    {
       try
       {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( accessPointName );
-         client.postCommand( "createaccesspoint", builder.newInstance() );
+         Form form = new Form();
+         form.set( "name", accessPointName );
+         client.postCommand( "createaccesspoint", form.getWebRepresentation() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
