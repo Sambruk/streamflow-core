@@ -17,21 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.history;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.conversations.*;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 
 public class MessagesHistoryView extends MessagesView
 {
 
    private static final long serialVersionUID = 8844722606127717377L;
 
-   public MessagesHistoryView(@Service ApplicationContext context, @Uses CommandQueryClient client,
-         @Structure ObjectBuilderFactory obf)
+   public MessagesHistoryView(@Service ApplicationContext context, @Uses MessagesModel model)
    {
-      super(context,client,obf);
+      super(context,model);
    }
    
    @Action

@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * List of projects in a OU
@@ -28,5 +28,7 @@ public class ProjectsModel
    public ProjectsModel()
    {
       super( "createproject" );
+
+      relationModelMapping("resource", ProjectModel.class);
    }
 }

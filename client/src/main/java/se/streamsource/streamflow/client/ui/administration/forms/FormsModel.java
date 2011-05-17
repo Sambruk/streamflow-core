@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import ca.odell.glazedlists.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * JAVADOC
@@ -30,6 +32,8 @@ public class FormsModel
    public FormsModel( )
    {
       super( "createform" );
+
+      relationModelMapping("form", FormModel.class);
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)

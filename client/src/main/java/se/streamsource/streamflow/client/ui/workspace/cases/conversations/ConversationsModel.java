@@ -17,20 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.specification.Specifications.or;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
 
 public class ConversationsModel
    implements Refreshable, TransactionListener
@@ -40,6 +47,9 @@ public class ConversationsModel
 
    @Structure
    ValueBuilderFactory vbf;
+
+   @Structure
+   ObjectBuilderFactory obf;
 
    TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
 
@@ -66,5 +76,10 @@ public class ConversationsModel
       // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
       if (matches( or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( conversations )), transactions ))
          refresh();
+   }
+
+   public ConversationModel newConversationModel(LinkValue selectedValue)
+   {
+      return obf.newObjectBuilder(ConversationModel.class).use(client.getClient(selectedValue)).newInstance();
    }
 }

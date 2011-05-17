@@ -43,6 +43,8 @@ import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.*;
@@ -95,7 +97,9 @@ public class CaseStatisticsServiceTest
               UserEntity.class,
               ResolutionEntity.class,
               CaseEntity.class,
-              CaseTypeEntity.class);
+              CaseTypeEntity.class,
+              ConversationEntity.class,
+              MessageEntity.class);
       module.values(ContactDTO.class, ParticipantRolesValue.class);
 
       module.objects(TimeService.class, CaseStatisticsServiceTest.class);

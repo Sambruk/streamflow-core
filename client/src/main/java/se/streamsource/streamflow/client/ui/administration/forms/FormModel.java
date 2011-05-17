@@ -17,52 +17,38 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
-import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import java.util.*;
-
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
 
 /**
  * JAVADOC
  */
 public class FormModel
-      extends Observable
+   extends ResourceModel<FormValue>
       implements Refreshable, TransactionListener
 
 {
    @Structure
    ObjectBuilderFactory obf;
 
-   @Uses
-   CommandQueryClient client;
-
-   private FormValue formValue;
-
-   public void refresh() throws OperationException
+   public FormModel()
    {
-      formValue = client.query( "index", FormValue.class );
-      setChanged();
-      notifyObservers( this );
-   }
-
-   public String getNote()
-   {
-      return formValue.note().get();
-   }
-
-   public FormValue getFormValue()
-   {
-      return formValue;
+      relationModelMapping("forminfo", FormModel.class);
+      relationModelMapping("pages", FormElementsModel.class);
+      relationModelMapping("signatures", FormSignaturesModel.class);
    }
 
    public void changeDescription( StringValue description ) throws ResourceException

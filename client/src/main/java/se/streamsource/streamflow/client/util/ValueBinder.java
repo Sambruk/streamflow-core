@@ -17,20 +17,23 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.*;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXLabel;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Bind components to value names to allow them to be updated from a given source

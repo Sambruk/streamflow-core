@@ -276,8 +276,16 @@ public interface JdbmApplicationEventStoreService
       protected void storeEvents(TransactionApplicationEvents transactionApplication)
               throws IOException
       {
-         String jsonString = transactionApplication.toJSON();
-         index.insert(transactionApplication.timestamp().get(), jsonString.getBytes("UTF-8"), false);
+         try
+         {
+            String jsonString = transactionApplication.toJSON();
+            index.insert(transactionApplication.timestamp().get(), jsonString.getBytes("UTF-8"), false);
+            recordManager.commit();
+         } catch (IOException e)
+         {
+            recordManager.rollback();
+            throw e;
+         }
       }
 
       private void initialize(String name, Properties properties)

@@ -28,19 +28,22 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
  * JAVADOC
@@ -55,13 +58,13 @@ public class FormSignatureView
    private StateBinder formValueBinder;
 
    public FormSignatureView( @Service ApplicationContext context,
-                             @Uses CommandQueryClient client,
+                             @Uses FormSignatureModel model,
                              @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
       setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
-      this.model = obf.newObjectBuilder( FormSignatureModel.class ).use( client ).newInstance();
+      this.model = model;
 
       FormLayout formLayout = new FormLayout(
             "200dlu", "" );

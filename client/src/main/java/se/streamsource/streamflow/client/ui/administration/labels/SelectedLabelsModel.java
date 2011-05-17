@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.labels;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.SelectionListModel;
 
 /**
  * Management of selected labels on a casetype, project or OU level

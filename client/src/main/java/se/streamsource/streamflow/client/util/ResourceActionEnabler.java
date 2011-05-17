@@ -17,14 +17,15 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.specification.*;
-import org.qi4j.api.util.*;
-import se.streamsource.dci.restlet.client.*;
+import org.jdesktop.application.ApplicationAction;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.link.LinkValue;
 
-import javax.swing.Action;
+import javax.swing.*;
 
 /**
  * Enable actions based on commands and queries in a REST resource.
@@ -45,7 +46,7 @@ public abstract class ResourceActionEnabler
 
    public void refresh()
    {
-      ResourceValue resource = getClient().queryResource();
+      ResourceValue resource = getResource();
       Iterable<LinkValue> commandsAndQueries = Iterables.flatten(resource.commands().get(), resource.queries().get());
 
       Iterable<String> availableCommandsAndQueries = Iterables.map( new Function<LinkValue, String>()
@@ -69,5 +70,5 @@ public abstract class ResourceActionEnabler
       }
    }
 
-   protected abstract CommandQueryClient getClient();
+   protected abstract ResourceValue getResource();
 }

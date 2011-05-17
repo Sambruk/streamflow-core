@@ -397,6 +397,15 @@ public class CommandQueryClient
 
    public synchronized CommandQueryClient getClient( LinkValue link )
    {
+      if (link == null)
+         throw new NullPointerException("No link specified");
+
       return getClient( link.href().get() );
+   }
+
+   @Override
+   public String toString()
+   {
+      return reference.toString();
    }
 }

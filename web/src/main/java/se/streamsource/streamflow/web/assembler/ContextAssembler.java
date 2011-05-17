@@ -23,6 +23,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.specification.Specifications;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
@@ -39,6 +40,8 @@ import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.surface.api.assembler.SurfaceAPIAssembler;
+import se.streamsource.streamflow.util.ClassScanner;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ContactableContext;
@@ -279,7 +282,18 @@ public class ContextAssembler
               setMetaInfo(ServiceQualifier.withId("solr")).
               setMetaInfo(namedQueries);
 
-      addResourceContexts(module,
+      // Register all resources and contexts
+      for (Class aClass : Iterables.filter(ClassScanner.matches(".*Resource"), ClassScanner.getClasses(RootResource.class)))
+      {
+         addResourceContexts(module, aClass);
+      }
+
+      for (Class aClass : Iterables.filter(ClassScanner.matches(".*Context"), ClassScanner.getClasses(LinksBuilder.class)))
+      {
+         addResourceContexts(module, aClass);
+      }
+
+/*      addResourceContexts(module,
               RootResource.class,
 
               DescribableContext.class,
@@ -505,6 +519,7 @@ public class ContextAssembler
               CrystalContext.class,
               CrystalResource.class
       );
+      */
 
       module.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }

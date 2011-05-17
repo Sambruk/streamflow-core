@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.qi4j.api.entity.*;
+import org.qi4j.api.entity.EntityComposite;
 
 /**
  * JAVADOC

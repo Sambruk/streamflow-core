@@ -17,29 +17,38 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.util.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Set;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.specification.Specifications.not;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -57,21 +66,16 @@ public class ParticipantsView
    @Uses
    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
 
-   @Uses
-   ObjectBuilder<UsersAndGroupsModel> usersAndGroupsModel;
-
    public JList participantList;
 
    private ParticipantsModel model;
-   private final CommandQueryClient client;
 
    public ParticipantsView( @Service ApplicationContext context,
-                            @Uses CommandQueryClient client,
+                            @Uses ParticipantsModel model,
                             @Structure ObjectBuilderFactory obf)
    {
       super( new BorderLayout() );
-      this.client = client;
-      this.model = obf.newObjectBuilder( ParticipantsModel.class ).use(client).newInstance();
+      this.model = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
@@ -94,7 +98,7 @@ public class ParticipantsView
    @Action
    public Task add() throws ResourceException
    {
-      UsersAndGroupsModel dialogModel = usersAndGroupsModel.use( client ).newInstance();
+      UsersAndGroupsModel dialogModel = model.newUsersAndGroupsModel();
       SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( dialogModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 

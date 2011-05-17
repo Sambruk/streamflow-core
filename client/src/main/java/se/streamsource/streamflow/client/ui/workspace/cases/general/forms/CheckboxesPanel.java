@@ -20,14 +20,16 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CheckboxesPanel
       extends AbstractFieldPanel

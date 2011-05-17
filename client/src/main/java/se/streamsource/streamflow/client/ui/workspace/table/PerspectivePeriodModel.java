@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import org.joda.time.*;
-import org.joda.time.format.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
+import org.joda.time.DateMidnight;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Uses;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * The backing model for PerspectivePeriodModel

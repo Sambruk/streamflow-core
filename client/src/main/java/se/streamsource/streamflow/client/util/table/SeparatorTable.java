@@ -17,15 +17,15 @@
 
 package se.streamsource.streamflow.client.util.table;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.swing.*;
-import org.jdesktop.swingx.*;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.swing.EventTableModel;
+import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.util.*;
+import java.util.Enumeration;
 
 /**
  * JAVADOC

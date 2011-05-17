@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.SelectionListModel;
 
 /**
  * Management of selected casetypes on a project

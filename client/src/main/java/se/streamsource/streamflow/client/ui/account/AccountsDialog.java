@@ -33,7 +33,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
@@ -64,9 +63,6 @@ public class AccountsDialog
 
    @Structure
    ObjectBuilderFactory obf;
-
-   @Service
-   IndividualRepository individualRepository;
 
    @Service
    DialogService dialogs;

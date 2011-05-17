@@ -17,16 +17,16 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import com.jgoodies.forms.builder.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
+import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
 
-import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * JAVADOC

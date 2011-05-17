@@ -40,7 +40,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
 import se.streamsource.dci.restlet.client.ResponseHandler;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Entity representing a client-side account

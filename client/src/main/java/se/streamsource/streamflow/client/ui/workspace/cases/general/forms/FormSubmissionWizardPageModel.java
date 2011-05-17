@@ -31,10 +31,9 @@ import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
@@ -42,11 +41,14 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 public class FormSubmissionWizardPageModel
 {
@@ -57,7 +59,7 @@ public class FormSubmissionWizardPageModel
    ValueBuilderFactory vbf;
 
    @Uses
-   CommandQueryClient client;
+   FormDraftModel model;
 
    public void updateField( EntityReference reference, String value ) throws ResourceException
    {
@@ -65,7 +67,7 @@ public class FormSubmissionWizardPageModel
       builder.prototype().field().set( reference );
       builder.prototype().value().set( value );
 
-      client.putCommand( "updatefield", builder.newInstance() );
+      model.updateField(builder.newInstance());
    }
 
    public void createAttachment( final EntityReference field, final File file, InputStream in) throws IOException
@@ -95,7 +97,7 @@ public class FormSubmissionWizardPageModel
                builder.prototype().mimeType().set( mimeType.toString() );
 
                String attachmentId = EventParameters.getParameter( domainEvent, "param1" );
-               client.getClient( "formattachments/" + attachmentId +"/" ).postCommand( "update", builder.newInstance() );
+               model.updateAttachment(attachmentId, builder.newInstance());
 
                ValueBuilder<AttachmentFieldDTO> valueBuilder = vbf.newValueBuilder( AttachmentFieldDTO.class );
                valueBuilder.prototype().field().set( field );
@@ -103,8 +105,8 @@ public class FormSubmissionWizardPageModel
                valueBuilder.prototype().attachment().set( EntityReference.parseEntityReference( attachmentId ) );
 
                // must update lastModified before new update
-               client.queryResource();
-               client.putCommand( "updateattachmentfield",  valueBuilder.newInstance() );
+               model.getFormDraftDTO();
+               model.updateAttachmentField(valueBuilder.newInstance());
             }
          }
       };
@@ -112,7 +114,7 @@ public class FormSubmissionWizardPageModel
 
       try
       {
-         client.getClient( "formattachments/" ).postCommand( "createformattachment", input);
+         model.createAttachment(input);
       } finally
       {
          eventStream.unregisterListener( updateListener );

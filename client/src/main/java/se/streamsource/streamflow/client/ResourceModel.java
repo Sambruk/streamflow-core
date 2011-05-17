@@ -17,14 +17,21 @@
 
 package se.streamsource.streamflow.client;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.TransactionList;
+import org.apache.commons.collections.map.HashedMap;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
 
 /**
  * A model that represents a resource. Handles refreshing and basic observability. Exposes list of commands and queries
@@ -34,6 +41,9 @@ public abstract class ResourceModel<INDEXTYPE>
       extends Observable
       implements Refreshable
 {
+   @Structure
+   ObjectBuilderFactory obf;
+
    @Uses
    protected CommandQueryClient client;
 
@@ -42,6 +52,8 @@ public abstract class ResourceModel<INDEXTYPE>
    private TransactionList<LinkValue> commands = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
    private TransactionList<LinkValue> queries = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
    private TransactionList<LinkValue> resources = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
+
+   private Map<String, Class> relationModelMap = new HashMap<String, Class>();
 
    public void refresh()
    {
@@ -70,8 +82,40 @@ public abstract class ResourceModel<INDEXTYPE>
       return queries;
    }
 
+   public TransactionList<LinkValue> getResources()
+   {
+      return resources;
+   }
+
    public INDEXTYPE getIndex()
    {
       return resourceValue == null ? null : (INDEXTYPE) resourceValue.index().get();
+   }
+
+   public Object newResourceModel(LinkValue resource)
+      throws IllegalArgumentException
+   {
+      Class modelClass = relationModelMap.get(resource.rel().get());
+      if (modelClass == null)
+         throw new IllegalArgumentException("Unknown relation type:"+resource.rel().get());
+
+      return obf.newObjectBuilder(modelClass).use(client.getClient(resource)).newInstance();
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      return obj instanceof ResourceModel && client.getReference().equals(((ResourceModel) obj).client.getReference());
+   }
+
+   @Override
+   public String toString()
+   {
+      return client.getReference().toString();
+   }
+
+   protected void relationModelMapping(String relation, Class modelClass)
+   {
+      relationModelMap.put(relation, modelClass);
    }
 }

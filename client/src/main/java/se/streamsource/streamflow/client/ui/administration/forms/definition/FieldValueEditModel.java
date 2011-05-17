@@ -17,14 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.client.util.Refreshable;
 
@@ -35,14 +32,12 @@ public class FieldValueEditModel
       implements Refreshable
 {
    private FieldDefinitionValue value;
-   private CommandQueryClient client;
-   private ValueBuilderFactory vbf;
 
-   public FieldValueEditModel( @Uses CommandQueryClient client, @Structure ValueBuilderFactory vbf )
-   {
-      this.client = client;
-      this.vbf = vbf;
-   }
+   @Uses
+   private CommandQueryClient client;
+
+   @Uses
+   private Module module;
 
    public FieldDefinitionValue getFieldDefinition()
    {
@@ -91,8 +86,6 @@ public class FieldValueEditModel
 
    public void changeComment( String comment ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( comment );
       client.postCommand( "changecomment", new Form("comment="+comment).getWebRepresentation() );
    }
 
@@ -125,5 +118,10 @@ public class FieldValueEditModel
    {
       client.delete();
 
+   }
+
+   public SelectionElementsModel newSelectionElementsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(SelectionElementsModel.class).use(client).newInstance();
    }
 }

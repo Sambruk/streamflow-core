@@ -17,24 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 /**
  * TODO
@@ -51,6 +41,11 @@ public class EmailAccessPointsModel
 
    @Uses
    CommandQueryClient client;
+
+   public EmailAccessPointsModel()
+   {
+      relationModelMapping("resource", EmailAccessPointModel.class);
+   }
 
    public void createEmailAccessPoint( String email )
    {

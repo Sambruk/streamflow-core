@@ -18,7 +18,9 @@
 package se.streamsource.streamflow.client.ui.account;
 
 import javax.swing.*;
-import java.beans.*;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
 
 /**
  * Quick impl of a list selection model which respects a veto before

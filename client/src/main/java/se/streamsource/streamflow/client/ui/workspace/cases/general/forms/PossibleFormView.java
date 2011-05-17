@@ -17,20 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class PossibleFormView extends JButton
       implements KeyListener
 {
    LinkValue itemValue;
 
-   public PossibleFormView( LinkValue itemValue )
+   public PossibleFormView( @Uses LinkValue itemValue )
    {
       super(itemValue.text().get(), i18n.icon( Icons.formSubmit, 16 ) ) ;
       this.setHorizontalAlignment( SwingConstants.LEFT );

@@ -17,37 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.gui.*;
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.decorator.*;
-import org.jdesktop.swingx.renderer.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXLabel;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.util.*;
-
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.client.ui.DateFormats;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -57,13 +48,12 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-
 import java.awt.*;
 import java.util.Date;
 import java.util.Locale;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class MessagesView extends JPanel implements TransactionListener
 {
@@ -80,15 +70,14 @@ public class MessagesView extends JPanel implements TransactionListener
    private JXLabel authorLabelValue;
    private JXLabel createdOnLabelValue;
 
-   public MessagesView(@Service ApplicationContext context, @Uses CommandQueryClient client,
-         @Structure ObjectBuilderFactory obf)
+   public MessagesView(@Service ApplicationContext context, @Uses MessagesModel model)
    {
       setActionMap(context.getActionMap(this));
       MacOsUIWrapper.convertAccelerators(getActionMap());
 
       setLayout(new BorderLayout());
 
-      model = obf.newObjectBuilder(MessagesModel.class).use(client).newInstance();
+      this.model = model;
 
       messageTable = new JXTable(new EventJXTableModel<MessageDTO>(model.messages(), new TableFormat<MessageDTO>()
       {

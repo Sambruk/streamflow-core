@@ -29,8 +29,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
@@ -113,8 +111,8 @@ public class ContactView
       // Edit panel
       {
          FormLayout formLayout = new FormLayout(
-                     "right:70dlu, 5dlu, 150dlu:grow",
-                     "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+               "right:70dlu, 5dlu, 150dlu:grow",
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
          form = new JPanel();
@@ -203,8 +201,8 @@ public class ContactView
       // View panel
       {
          FormLayout formLayout = new FormLayout(
-                     "right:70dlu, 5dlu, 150dlu:grow",
-                     "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+               "right:70dlu, 5dlu, 150dlu:grow",
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
          form = new JPanel();
@@ -228,7 +226,7 @@ public class ContactView
          builder.nextColumn(2);
          builder.add(phoneViewBinder.bind("phoneNumber", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         
+
          builder.add(createLabel(WorkspaceResources.address_label));
          builder.nextColumn(2);
          builder.add(addressViewBinder.bind("address", visibleIfNotEmpty(new JLabel("!"))));
@@ -513,7 +511,7 @@ public class ContactView
                Component component = container.getComponents()[i];
                if (component == label)
                {
-                  JLabel labelForLabel = (JLabel) container.getComponent(i-1);
+                  JLabel labelForLabel = (JLabel) container.getComponent(i - 1);
                   labelForLabel.setVisible(label.isVisible());
                }
             }

@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.templates;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -29,7 +31,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -47,7 +48,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 
 public class SelectedTemplatesView extends JPanel
@@ -72,10 +74,10 @@ public class SelectedTemplatesView extends JPanel
    private SelectedTemplatesModel model;
 
    public SelectedTemplatesView( @Service ApplicationContext appContext,
-                                @Uses CommandQueryClient client,
+                                @Uses SelectedTemplatesModel model,
                                 @Structure ObjectBuilderFactory obf )
    {
-      this.model = obf.newObjectBuilder( SelectedTemplatesModel.class ).use( client ).newInstance();
+      this.model = model;
       model.addObserver( this );
 
       selectedTemplatesBinder = obf.newObject( StateBinder.class );

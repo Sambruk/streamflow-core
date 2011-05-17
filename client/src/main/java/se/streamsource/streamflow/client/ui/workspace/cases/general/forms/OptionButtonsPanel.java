@@ -26,8 +26,9 @@ import se.streamsource.streamflow.client.util.StateBinder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
 
 public class OptionButtonsPanel
       extends AbstractFieldPanel

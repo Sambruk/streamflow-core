@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.*;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
+import java.awt.event.KeyEvent;
+import java.text.MessageFormat;
 
 /**
  * JAVADOC
@@ -85,7 +86,14 @@ public class i18n
 
    private static ResourceMap getResourceMap( Enum resource )
    {
-      ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap( resource.getClass() );
+      ResourceMap resourceMap = null;
+      try
+      {
+         resourceMap = Application.getInstance().getContext().getResourceMap( resource.getClass() );
+      } catch (Exception e)
+      {
+         resourceMap = new ResourceMap(null, i18n.class.getClassLoader(), resource.getClass().getName());
+      }
       if (resourceMap == null)
          throw new IllegalArgumentException( "No resource map found for resource:" + resource );
       return resourceMap;

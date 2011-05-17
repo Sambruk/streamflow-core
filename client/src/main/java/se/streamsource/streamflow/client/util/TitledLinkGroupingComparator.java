@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.util.*;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.streamflow.util.Strings;
 
-import java.util.*;
+import java.util.Comparator;
 
 /**
  * JAVADOC

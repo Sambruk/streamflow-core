@@ -17,26 +17,30 @@
 
 package se.streamsource.streamflow.client.ui.administration.templates;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.util.*;
+import java.util.Observable;
 
 public class SelectedTemplatesModel extends Observable implements Refreshable
 {
    @Structure
-   private ValueBuilderFactory vbf;
+   private Module module;
 
    private CommandQueryClient client;
 
@@ -58,13 +62,18 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
       notifyObservers();
    }
 
+   public AttachmentsModel newAttachmentsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(AttachmentsModel.class).use(client.getClient("../attachments/")).newInstance();
+   }
+
    public EventList<LinkValue> getPossibleTemplates( String query)
    {
       try
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
          builder.prototype().string().set( "pdf" );
          
          LinksValue listValue = client.query( query,
@@ -86,7 +95,7 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
 
    public void removeTemplate( String command )
    {
-      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
+      ValueBuilder<EntityValue> builder = module.valueBuilderFactory().newValueBuilder( EntityValue.class );
       client.postCommand( command, builder.newInstance() );
    }
 

@@ -23,14 +23,12 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.io.*;
+import java.io.IOException;
 
 public class OverviewSummaryModel
       implements Refreshable

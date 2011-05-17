@@ -29,11 +29,9 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.ContextItem;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
@@ -50,29 +48,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.HierarchyEvent;
@@ -107,7 +86,7 @@ public class WorkspaceView
 
    private CasesView casesView;
    private final ObjectBuilderFactory obf;
-   private final CommandQueryClient client;
+   private WorkspaceModel model;
 
    private SearchView searchView;
    private javax.swing.Action managePerspectives;
@@ -116,86 +95,86 @@ public class WorkspaceView
    private CasesTableView casesTable;
 
 
-   public WorkspaceView( final @Service ApplicationContext context,
-                         final @Structure ObjectBuilderFactory obf,
-                         final @Uses CommandQueryClient client )
+   public WorkspaceView(final @Service ApplicationContext context,
+                        final @Structure ObjectBuilderFactory obf,
+                        final @Uses WorkspaceModel model)
    {
       this.obf = obf;
-      this.client = client;
-      setLayout( new BorderLayout() );
-      this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
+      this.model = model;
+      setLayout(new BorderLayout());
+      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectTree" );
-      getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectTable" );
-      getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectDetails" );
-      setActionMap( context.getActionMap( this ) );
-      MacOsUIWrapper.convertAccelerators( context.getActionMap(
-            WorkspaceView.class, this ) );
+      getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTree");
+      getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTable");
+      getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectDetails");
+      setActionMap(context.getActionMap(this));
+      MacOsUIWrapper.convertAccelerators(context.getActionMap(
+            WorkspaceView.class, this));
 
       final ActionMap am = getActionMap();
 
       // Proxy menu item actions manually
-      ApplicationAction managePerspectivesAction = (ApplicationAction) getActionMap().get( "managePerspectives" );
-      managePerspectives = context.getActionMap().get( "managePerspectives" );
-      managePerspectives.putValue( "proxy", managePerspectivesAction );
+      ApplicationAction managePerspectivesAction = (ApplicationAction) getActionMap().get("managePerspectives");
+      managePerspectives = context.getActionMap().get("managePerspectives");
+      managePerspectives.putValue("proxy", managePerspectivesAction);
 
       // Proxy menu item actions manually
-      ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get( "savePerspective" );
-      savePerspective = context.getActionMap().get( "savePerspective" );
-      savePerspective.putValue( "proxy", savePerspectiveAction );
+      ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get("savePerspective");
+      savePerspective = context.getActionMap().get("savePerspective");
+      savePerspective.putValue("proxy", savePerspectiveAction);
 
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search") ).newInstance();
+      searchResultTableModel = model.newSearchModel();
 
-      searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
+      searchView = obf.newObjectBuilder(SearchView.class).use(searchResultTableModel).newInstance();
 
-      casesView = obf.newObjectBuilder( CasesView.class ).use(client, searchView.getTextField() ).newInstance();
+      casesView = obf.newObjectBuilder(CasesView.class).use(model.newCasesModel(), searchView.getTextField()).newInstance();
 
       // Create Case
-      javax.swing.Action createCaseAction = am.get( "createCase" );
-      createCaseButton = new JButton( createCaseAction );
-      createCaseButton.registerKeyboardAction( createCaseAction, (KeyStroke) createCaseAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      javax.swing.Action createCaseAction = am.get("createCase");
+      createCaseButton = new JButton(createCaseAction);
+      createCaseButton.registerKeyboardAction(createCaseAction, (KeyStroke) createCaseAction
+            .getValue(javax.swing.Action.ACCELERATOR_KEY),
+            JComponent.WHEN_IN_FOCUSED_WINDOW);
 
       // Refresh case list
-      javax.swing.Action refreshAction = am.get( "refresh" );
-      JButton refreshButton = new JButton( refreshAction );
-      refreshButton.registerKeyboardAction( refreshAction, (KeyStroke) refreshAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      javax.swing.Action refreshAction = am.get("refresh");
+      JButton refreshButton = new JButton(refreshAction);
+      refreshButton.registerKeyboardAction(refreshAction, (KeyStroke) refreshAction
+            .getValue(javax.swing.Action.ACCELERATOR_KEY),
+            JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 
-      MacOsUIWrapper.convertAccelerators( getActionMap() );
+      MacOsUIWrapper.convertAccelerators(getActionMap());
 
-      JPanel topPanel = new JPanel( new BorderLayout());
-      selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
+      JPanel topPanel = new JPanel(new BorderLayout());
+      selectContextButton = new JButton(getActionMap().get("selectContext"));
       selectContextButton.setName("btnSelectContext");
-      JPanel contextSelectionPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
-      contextSelectionPanel.setBorder( BorderFactory.createEmptyBorder( 5, 0, 0, 0 ) );
-      contextSelectionPanel.add( selectContextButton );
+      JPanel contextSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+      contextSelectionPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+      contextSelectionPanel.add(selectContextButton);
       selectedContext = new JLabel();
-      selectedContext.setFont( selectedContext.getFont().deriveFont( Font.BOLD ) );
-      contextSelectionPanel.add( selectedContext );
+      selectedContext.setFont(selectedContext.getFont().deriveFont(Font.BOLD));
+      contextSelectionPanel.add(selectedContext);
       topPanel.add(contextSelectionPanel, BorderLayout.WEST);
-      
+
       contextToolbar = new JPanel();
       //contextToolbar.add( perspectiveButton );
-      contextToolbar.add( createCaseButton );
-      contextToolbar.add( refreshButton);
+      contextToolbar.add(createCaseButton);
+      contextToolbar.add(refreshButton);
       topPanel.add(contextToolbar, BorderLayout.EAST);
-      contextToolbar.setVisible( false );
+      contextToolbar.setVisible(false);
 
-      topPanel.add( searchView, BorderLayout.CENTER );
+      topPanel.add(searchView, BorderLayout.CENTER);
       searchView.setVisible(false);
 
-      add( topPanel, BorderLayout.NORTH );
-      add( casesView, BorderLayout.CENTER );
+      add(topPanel, BorderLayout.NORTH);
+      add(casesView, BorderLayout.CENTER);
 
-      contextView = obf.newObjectBuilder( WorkspaceContextView.class ).use( client ).newInstance();
+      contextView = obf.newObjectBuilder(WorkspaceContextView.class).use(model).newInstance();
       JList workspaceContextList = contextView.getWorkspaceContextList();
-      workspaceContextList.addListSelectionListener( new ListSelectionListener()
+      workspaceContextList.addListSelectionListener(new ListSelectionListener()
       {
-         public void valueChanged( ListSelectionEvent e )
+         public void valueChanged(ListSelectionEvent e)
          {
             if (!e.getValueIsAdjusting())
             {
@@ -219,29 +198,29 @@ public class WorkspaceView
                ContextItem contextItem = (ContextItem) list.getSelectedValue();
                if (contextItem != null)
                {
-                  boolean isSearch = contextItem.getRelation().equals( "search" );
-                  boolean isPerspective = contextItem.getRelation().equals( "perspective" );
+                  boolean isSearch = contextItem.getRelation().equals("search");
+                  boolean isPerspective = contextItem.getRelation().equals("perspective");
 
                   TableFormat tableFormat;
                   tableFormat = new CasesTableFormatter();
-                  
-                  if ( isPerspective )
+
+                  if (isPerspective)
                   {
                      PerspectiveDTO perspectiveDTO = contextItem.getClient().query("index", PerspectiveDTO.class);
                      String contextRel = perspectiveDTO.context().get();
 
                      for (ContextItem item : contextView.getModel().getItems())
                      {
-                        if (contextRel.equals( item.getClient().getReference().toString()) )
+                        if (contextRel.equals(item.getClient().getReference().toString()))
                         {
                            contextItem = item;
-                           isSearch = contextItem.getRelation().equals( "search" );
+                           isSearch = contextItem.getRelation().equals("search");
                            break;
                         }
                      }
                      casesTable = obf.newObjectBuilder(CasesTableView.class)
-                           .use( obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null )
-                              .newInstance();
+                           .use(obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null)
+                           .newInstance();
 
                      casesTable.getModel().setFilter(perspectiveDTO);
 
@@ -251,47 +230,46 @@ public class WorkspaceView
                   } else
                   {
                      casesTable = obf.newObjectBuilder(CasesTableView.class)
-                           .use( obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null )
-                              .newInstance();
+                           .use(obf, isSearch ? searchResultTableModel : model.newCasesTableModel(contextItem.getClient()), tableFormat, isSearch ? searchView.getTextField() : null)
+                           .newInstance();
 
-                     searchView.getTextField().setText( "" );
+                     searchView.getTextField().setText("");
                      casesTable.getModel().clearFilter();
-                     setContextString( contextItem, null );
+                     setContextString(contextItem, null);
                   }
 
                   searchView.setVisible(isSearch);
-                  contextToolbar.setVisible( true );
+                  contextToolbar.setVisible(true);
 
                   casesView.showTable(casesTable);
 
-                  createCaseButton.setVisible( casesTable.getModel().isCreateCaseEnabled() );
+                  createCaseButton.setVisible(casesTable.getModel().isCreateCaseEnabled());
 
                } else
                {
-                  setContextString( contextItem, null );
+                  setContextString(contextItem, null);
                }
 
                killPopup();
             }
          }
-      } );
-      
+      });
+
       addHierarchyListener(new HierarchyListener()
       {
          public void hierarchyChanged(HierarchyEvent e)
          {
-            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 )
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) > 0)
             {
-               if( !WorkspaceView.this.isShowing() )
+               if (!WorkspaceView.this.isShowing())
                {
                   killPopup();
-                  context.getActionMap().get( "managePerspectives" ).setEnabled( false );
-                  context.getActionMap().get( "savePerspective" ).setEnabled( false );
-               }
-               else
+                  context.getActionMap().get("managePerspectives").setEnabled(false);
+                  context.getActionMap().get("savePerspective").setEnabled(false);
+               } else
                {
-                  context.getActionMap().get( "managePerspectives" ).setEnabled( true );
-                  context.getActionMap().get( "savePerspective" ).setEnabled( true );
+                  context.getActionMap().get("managePerspectives").setEnabled(true);
+                  context.getActionMap().get("savePerspective").setEnabled(true);
                }
             }
          }
@@ -323,18 +301,18 @@ public class WorkspaceView
       searchResultTableModel.search(id);
    }
 
-   private void setContextString( ContextItem contextItem, String perspective )
+   private void setContextString(ContextItem contextItem, String perspective)
    {
       if (contextItem != null)
       {
-         selectedContext.setOpaque( true );
+         selectedContext.setOpaque(true);
          UIDefaults uiDefaults = UIManager.getDefaults();
-         selectedContext.setBackground( uiDefaults.getColor( "Menu.selectionBackground" ) );
-         selectedContext.setForeground( uiDefaults.getColor( "Menu.selectionForeground" ) );
-         selectedContext.setBorder( new RoundedBorder( ) );
+         selectedContext.setBackground(uiDefaults.getColor("Menu.selectionBackground"));
+         selectedContext.setForeground(uiDefaults.getColor("Menu.selectionForeground"));
+         selectedContext.setBorder(new RoundedBorder());
 
          String text = "";
-         if (contextItem.getGroup().equals( "" ))
+         if (contextItem.getGroup().equals(""))
          {
             text += contextItem.getName();
          } else
@@ -342,17 +320,17 @@ public class WorkspaceView
             text += contextItem.getGroup() + " : " + contextItem.getName();
          }
 
-         text = Strings.empty( perspective ) ? text :  text + " : " + perspective;
-         selectedContext.setText( "  " + text + " " );
-         FontMetrics fm = selectedContext.getFontMetrics( selectedContext.getFont() );
-         int width = fm.stringWidth( selectedContext.getText() )+15;
-         selectedContext.setPreferredSize( new Dimension( width, 22 ) );
+         text = Strings.empty(perspective) ? text : text + " : " + perspective;
+         selectedContext.setText("  " + text + " ");
+         FontMetrics fm = selectedContext.getFontMetrics(selectedContext.getFont());
+         int width = fm.stringWidth(selectedContext.getText()) + 15;
+         selectedContext.setPreferredSize(new Dimension(width, 22));
       } else
       {
-         selectedContext.setOpaque( false );
-         selectedContext.setBackground( selectedContext.getParent().getBackground() );
-         selectedContext.setForeground( selectedContext.getParent().getForeground() );
-         selectedContext.setText( "" );
+         selectedContext.setOpaque(false);
+         selectedContext.setBackground(selectedContext.getParent().getBackground());
+         selectedContext.setForeground(selectedContext.getParent().getForeground());
+         selectedContext.setText("");
       }
    }
 
@@ -362,28 +340,28 @@ public class WorkspaceView
    {
       if (popup == null)
       {
-         final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass( JFrame.class, this );
-         popup = new JDialog( frame );
-         popup.setUndecorated( true );
-         popup.setModal( false );
-         popup.setLayout( new BorderLayout() );
-         popup.add( contextView, BorderLayout.CENTER );
+         final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
+         popup = new JDialog(frame);
+         popup.setUndecorated(true);
+         popup.setModal(false);
+         popup.setLayout(new BorderLayout());
+         popup.add(contextView, BorderLayout.CENTER);
          Point location = selectContextButton.getLocationOnScreen();
-         popup.setBounds( (int) location.getX(), (int) location.getY() + selectContextButton.getHeight(), contextView.getWidth(), contextView.getHeight() );
+         popup.setBounds((int) location.getX(), (int) location.getY() + selectContextButton.getHeight(), contextView.getWidth(), contextView.getHeight());
          popup.pack();
-         popup.setVisible( true );
-         frame.addComponentListener( new ComponentAdapter()
+         popup.setVisible(true);
+         frame.addComponentListener(new ComponentAdapter()
          {
             @Override
-            public void componentMoved( ComponentEvent e )
+            public void componentMoved(ComponentEvent e)
             {
-               if(popup != null )
+               if (popup != null)
                {
                   killPopup();
-                  frame.removeComponentListener( this );
+                  frame.removeComponentListener(this);
                }
             }
-         } );
+         });
       } else
       {
          killPopup();
@@ -414,16 +392,16 @@ public class WorkspaceView
    @Action
    public void managePerspectives()
    {
-      ManagePerspectivesDialog dialog = obf.newObjectBuilder( ManagePerspectivesDialog.class ).use( client.getSubClient( "perspectives" )).newInstance();
-      dialogs.showButtonLessDialog( this, dialog, i18n.text( WorkspaceResources.manage_perspectives ) );
+      ManagePerspectivesDialog dialog = obf.newObjectBuilder(ManagePerspectivesDialog.class).use(model.newPerspectivesModel()).newInstance();
+      dialogs.showButtonLessDialog(this, dialog, i18n.text(WorkspaceResources.manage_perspectives));
    }
 
    @Action
    public Task savePerspective()
    {
       final NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( WorkspaceResources.save_perspective ) );
-      if (!Strings.empty( dialog.name() ))
+      dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(WorkspaceResources.save_perspective));
+      if (!Strings.empty(dialog.name()))
       {
          return new CommandTask()
          {
@@ -431,22 +409,22 @@ public class WorkspaceView
             public void command()
                   throws Exception
             {
-               PerspectivesModel model = obf.newObjectBuilder(PerspectivesModel.class).use(client.getSubClient("perspectives")).newInstance();
+               PerspectivesModel perspectivesModel = obf.newObjectBuilder(PerspectivesModel.class).use(model.newPerspectivesModel()).newInstance();
                PerspectiveDTO perspective = casesView.getCaseTableView().getModel().getPerspective(dialog.name(), searchView.isVisible() ? searchView.getTextField().getText() : "");
-               model.savePerspective(perspective);
+               perspectivesModel.savePerspective(perspective);
             }
          };
       } else
          return null;
    }
-   
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
    }
 
    public void killPopup()
    {
-      if( popup != null )
+      if (popup != null)
       {
          popup.setVisible(false);
          popup.dispose();

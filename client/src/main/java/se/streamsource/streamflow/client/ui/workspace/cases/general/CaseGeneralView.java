@@ -17,40 +17,62 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import ca.odell.glazedlists.*;
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
+import ca.odell.glazedlists.EventList;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.calendar.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.property.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.calendar.DatePickerFormatter;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.DefaultFormatterFactory;
 import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
@@ -86,20 +108,20 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private final ApplicationContext appContext;
 
    public CaseGeneralView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
+                           @Uses CaseGeneralModel generalModel,
                            @Structure ObjectBuilderFactory obf )
    {
       this.appContext = appContext;
-      this.model = obf.newObjectBuilder( CaseGeneralModel.class ).use( client ).newInstance();
+      this.model = generalModel;
       RefreshComponents refreshComponents = new RefreshComponents();
       model.addObserver( refreshComponents );
 
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
+      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( generalModel.newLabelsModel() ).newInstance();
 
       RefreshComponents refreshLabelComponents = new RefreshComponents();
       labels.getModel().addObserver( refreshLabelComponents );
 
-      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../possibleforms/" ) ).newInstance();
+      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( generalModel.newPossibleFormsModel() ).newInstance();
       refreshComponents.visibleOn( "changedescription", forms );
       this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
@@ -123,8 +145,8 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
             Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
 
-      selectedCaseType.getLabel().setFont( selectedCaseType.getLabel().getFont().deriveFont(
-            Font.BOLD ) );
+      selectedCaseType.getLabel().setFont(selectedCaseType.getLabel().getFont().deriveFont(
+            Font.BOLD));
       selectedCaseType.getButton().addActionListener(am.get("removeCaseType" ));
       valueBinder.bind( "caseType", selectedCaseType );
 
@@ -240,15 +262,12 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
 
       // Layout and form for the bottom panel
-      FormLayout leftLayout = new FormLayout( "200dlu:grow",
-            "pref,fill:pref:grow" );
-
       leftForm = new JPanel();
       leftForm.setLayout( new BoxLayout( leftForm, BoxLayout.PAGE_AXIS ) );
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
-      notePane.setPreferredSize( new Dimension( 700, 300 ) );
+//      notePane.setPreferredSize( new Dimension( 700, 300 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
       JLabel noteLabel = new JLabel(i18n.text( WorkspaceResources.note_label ));
@@ -260,7 +279,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       valueBinder.bind( "note", notePane );
       
       JPanel formsContainer = new JPanel();
-      formsContainer.setLayout( new BoxLayout(formsContainer, BoxLayout.X_AXIS) );
+      formsContainer.setLayout( new GridLayout(1, 2) );
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
       formsContainer.add( leftForm );
       formsContainer.add( rightForm );

@@ -18,7 +18,8 @@
 package se.streamsource.streamflow.client.util;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 
 /**
  * Refresh a Refreshable when a component becomes showing on screen.

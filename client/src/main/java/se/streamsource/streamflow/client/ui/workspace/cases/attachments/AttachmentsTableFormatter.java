@@ -20,11 +20,12 @@ package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 
-import java.text.*;
-import java.util.*;
+import java.text.DateFormat;
+import java.util.Comparator;
+import java.util.Date;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC

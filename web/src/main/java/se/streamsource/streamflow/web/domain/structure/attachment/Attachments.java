@@ -100,7 +100,7 @@ public interface Attachments
          // Delete the attachment entity
          removedAttachment( null, attachment );
 
-         attachment.removeEntity();
+         attachment.deleteEntity();
       }
 
       public Attachment getAttachment( String id )

@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -27,26 +27,26 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.io.*;
+import java.io.IOException;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class ConversationsView
       extends JSplitPane
@@ -62,9 +62,9 @@ public class ConversationsView
 
    private JList list;
 
-   public ConversationsView( @Service final ApplicationContext context, @Structure final ObjectBuilderFactory obf, @Uses final CommandQueryClient client )
+   public ConversationsView( @Service final ApplicationContext context, @Structure final ObjectBuilderFactory obf, @Uses final ConversationsModel model )
    {
-      model = obf.newObjectBuilder(ConversationsModel.class ).use( client ).newInstance();
+      this.model = model;
 
       setActionMap(context.getActionMap( this ));
       MacOsUIWrapper.convertAccelerators( getActionMap() );
@@ -95,7 +95,7 @@ public class ConversationsView
          {
             if (list.getSelectedIndex() != -1 && !e.getValueIsAdjusting())
             {
-               final ConversationView conversationView = obf.newObjectBuilder( ConversationView.class ).use( client.getClient( (LinkValue) list.getSelectedValue() )).newInstance();
+               final ConversationView conversationView = obf.newObjectBuilder( ConversationView.class ).use(model.newConversationModel((LinkValue) list.getSelectedValue())).newInstance();
                setRightComponent( conversationView );
             } else
             {

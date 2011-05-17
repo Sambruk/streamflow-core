@@ -18,30 +18,20 @@
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXHyperlink;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
 import se.streamsource.streamflow.client.util.LinkedLabel;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
-import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
-import static se.streamsource.streamflow.util.Strings.*;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC

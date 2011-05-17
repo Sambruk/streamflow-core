@@ -17,14 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Form;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.StringValue;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.Links;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;

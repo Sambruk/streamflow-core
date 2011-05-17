@@ -17,7 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.util.SelectionListModel;
 
 /**
  * JAVADOC
@@ -28,5 +29,10 @@ public class MembersModel
    public MembersModel()
    {
       super( "" );
+   }
+
+   public UsersAndGroupsModel newUsersAndGroupsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder( UsersAndGroupsModel.class ).use( client ).newInstance();
    }
 }

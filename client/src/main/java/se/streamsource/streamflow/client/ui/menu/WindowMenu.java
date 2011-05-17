@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.infrastructure.configuration.*;
+import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
  * Window menu

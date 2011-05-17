@@ -29,7 +29,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.domain.individual.Account;
@@ -39,7 +38,8 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.WeakModelMap;
 
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
@@ -57,9 +57,6 @@ public class AccountsModel
 
    @Structure
    UnitOfWorkFactory uowf;
-
-   @Service
-   Uniform client;
 
    TransactionList<LinkValue> accounts = new TransactionList<LinkValue>( new SortedList<LinkValue>( new BasicEventList<LinkValue>(), new LinkComparator() ) );
 

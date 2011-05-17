@@ -17,17 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.TabbedResourceView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
@@ -38,17 +41,16 @@ public class FormView
 {
    private FormModel model;
 
-   @Structure
-   ObjectBuilderFactory obf;
    private JTextArea textArea;
-   private final CommandQueryClient client;
+
+   @Structure
+   private ObjectBuilderFactory obf;
 
    public FormView( @Service ApplicationContext context,
-                    @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+                    @Uses FormModel model)
    {
       super( new BorderLayout() );
-      this.client = client;
-      this.model = obf.newObjectBuilder( FormModel.class ).use(client).newInstance();
+      this.model = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
       
       ActionMap am = context.getActionMap( this );
@@ -68,7 +70,7 @@ public class FormView
    public void edit()
    {
       //FormEditView formEditView = obf.newObjectBuilder( FormEditView.class ).use( client ).newInstance();
-      TabbedResourceView resourceView = obf.newObjectBuilder( TabbedResourceView.class ).use( client ).newInstance();
+      TabbedResourceView resourceView = obf.newObjectBuilder( TabbedResourceView.class ).use( model ).newInstance();
 
       AdministrationView adminView = (AdministrationView) SwingUtilities.getAncestorOfClass( AdministrationView.class, this );
 
@@ -77,6 +79,6 @@ public class FormView
 
    public void update( Observable observable, Object o )
    {
-      textArea.setText( model.getNote() );
+      textArea.setText( model.getIndex().note().get() );
    }
 }

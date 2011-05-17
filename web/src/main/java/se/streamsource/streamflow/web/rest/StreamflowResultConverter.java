@@ -197,7 +197,7 @@ public class StreamflowResultConverter
 
       // Subcases
       LinksBuilder subcasesBuilder = new LinksBuilder(module.valueBuilderFactory());
-      subcasesBuilder.path("..");
+      subcasesBuilder.path(basePath+"/workspace/cases");
       try
       {
          for (Case subCase : aCase.subCases())
@@ -227,6 +227,7 @@ public class StreamflowResultConverter
 
    private TableValue caseTable(Iterable<CaseEntity> cases, final Module module, final Request request, Object[] arguments)
    {
+      final String basePath = request.getResourceRef().getBaseRef().getPath();
       TableQuery query = (TableQuery) arguments[0];
 
       TableBuilderFactory tbf = new TableBuilderFactory(module.valueBuilderFactory());
@@ -364,7 +365,7 @@ public class StreamflowResultConverter
          public Object map(CaseEntity caseEntity)
          {
             LinksBuilder subcasesBuilder = new LinksBuilder(module.valueBuilderFactory());
-            subcasesBuilder.path("..");
+            subcasesBuilder.path(basePath+"/workspace/cases");
             try
             {
                for (Case subCase : caseEntity.subCases())
@@ -390,7 +391,7 @@ public class StreamflowResultConverter
                ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
                linkBuilder.prototype().id().set(parentCase.toString());
                linkBuilder.prototype().rel().set("parent");
-               linkBuilder.prototype().href().set("../" + parentCase.toString() + "/");
+               linkBuilder.prototype().href().set(parentCase.toString() + "/");
                linkBuilder.prototype().text().set(((CaseId.Data) parentCase).caseId().get());
                return linkBuilder.newInstance();
             } else

@@ -32,9 +32,12 @@ import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
+import se.streamsource.streamflow.client.ui.overview.OverviewModel;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Observable;
 
 /**
  * JAVADOC
@@ -94,7 +97,27 @@ public class AccountModel extends Observable
       }
    }
 
-   public CommandQueryClient serverResource()
+   public ProfileModel newProfileModel()
+   {
+      return obf.newObjectBuilder(ProfileModel.class).use(serverResource().getSubClient("account").getSubClient("profile")).newInstance();
+   }
+
+   public OverviewModel newOverviewModel()
+   {
+      return obf.newObjectBuilder(OverviewModel.class).use(serverResource().getSubClient("overview")).newInstance();
+   }
+
+   public WorkspaceModel newWorkspaceModel()
+   {
+      return obf.newObjectBuilder(WorkspaceModel.class).use(serverResource().getSubClient("workspace")).newInstance();
+   }
+
+   public AdministrationModel newAdministrationModel()
+   {
+      return obf.newObjectBuilder(AdministrationModel.class).use(serverResource().getSubClient( "administration" )).newInstance();
+   }
+
+   private CommandQueryClient serverResource()
    {
       UnitOfWork uow = uowf.newUnitOfWork();
 

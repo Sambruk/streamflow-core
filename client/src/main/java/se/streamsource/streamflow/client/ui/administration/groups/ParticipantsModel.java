@@ -17,7 +17,10 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import se.streamsource.streamflow.client.util.*;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.util.SelectionListModel;
 
 /**
  * JAVADOC
@@ -25,8 +28,16 @@ import se.streamsource.streamflow.client.util.*;
 public class ParticipantsModel
    extends SelectionListModel
 {
+   @Uses
+   ObjectBuilder<UsersAndGroupsModel> usersAndGroupsModel;
+
    public ParticipantsModel()
    {
       super( "possibleusers" );
+   }
+
+   public UsersAndGroupsModel newUsersAndGroupsModel()
+   {
+      return usersAndGroupsModel.use( client ).newInstance();
    }
 }

@@ -17,22 +17,36 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.gui.*;
-import ca.odell.glazedlists.swing.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.ui.workspace.table.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventListModel;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
+import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
+import se.streamsource.streamflow.client.ui.workspace.cases.CasesModel;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -45,20 +59,19 @@ public class OverviewView
    private JSplitPane pane;
    private CasesView casesView;
    private OverviewModel model;
-   private final CommandQueryClient client;
 
    public OverviewView(final @Service ApplicationContext context,
-                       final @Uses CommandQueryClient client,
+                       final @Uses CasesModel casesModel,
+                       final @Uses OverviewModel overviewModel,
                        final @Structure ObjectBuilderFactory obf)
    {
       super(new BorderLayout());
-      this.client = client;
 
       overviewList = new JList();
-      casesView = obf.newObjectBuilder(CasesView.class).use(client).newInstance();
+      casesView = obf.newObjectBuilder(CasesView.class).use(casesModel).newInstance();
       casesView.setBlankPanel(new JPanel());
 
-      model = obf.newObjectBuilder(OverviewModel.class).use(client).newInstance();
+      model = overviewModel;
 
       JTextField filterField = new JTextField();
       SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>(model.getItems(), new Comparator<ContextItem>()

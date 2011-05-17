@@ -59,11 +59,10 @@ import static se.streamsource.dci.api.RoleMap.*;
  * JAVADOC
  */
 @Mixins(AccessPointAdministrationContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface AccessPointAdministrationContext
       extends IndexContext<AccessPointDTO>, Context, DeleteContext
 {
-   void changedescription( @MaxLength(50) StringValue name )
+   void changedescription( @MaxLength(50) @Name("string") String name )
          throws IllegalArgumentException;
 
    List<Project> possibleprojects();
@@ -139,7 +138,7 @@ public interface AccessPointAdministrationContext
          accessPoints.removeAccessPoint( accessPoint );
       }
 
-      public void changedescription( StringValue name )
+      public void changedescription( String name )
             throws IllegalArgumentException
       {
          // check if the new description is valid
@@ -147,13 +146,13 @@ public interface AccessPointAdministrationContext
          List<AccessPoint> accessPointsList = accessPoints.accessPoints().toList();
          for (AccessPoint accessPoint : accessPointsList)
          {
-            if (accessPoint.getDescription().equals( name.string().get() ))
+            if (accessPoint.getDescription().equals( name ))
             {
                throw new IllegalArgumentException( "accesspoint_already_exists" );
             }
          }
 
-         RoleMap.role( AccessPoint.class ).changeDescription( name.string().get() );
+         RoleMap.role( AccessPoint.class ).changeDescription( name );
       }
 
       public List<Project> possibleprojects()

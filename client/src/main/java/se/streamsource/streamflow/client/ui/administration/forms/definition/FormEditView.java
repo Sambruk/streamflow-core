@@ -17,26 +17,33 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StateBinder;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 
 
 /**
@@ -51,13 +58,13 @@ public class FormEditView
    private FormModel model;
 
    public FormEditView( @Service ApplicationContext context,
-                        @Uses final CommandQueryClient client,
+                        @Uses final FormModel model,
                         @Structure final ObjectBuilderFactory obf,
                         @Structure ValueBuilderFactory vbf )
    {
       super();
 
-      this.model = obf.newObjectBuilder( FormModel.class ).use( client ).newInstance();
+      this.model = model;
       setBorder(BorderFactory.createEmptyBorder());
 
       this.vbf = vbf;
@@ -85,7 +92,7 @@ public class FormEditView
    public void refresh()
    {
       model.refresh();
-      FormValue value = vbf.newValueBuilder( FormValue.class ).withPrototype( model.getFormValue() ).prototype();
+      FormValue value = vbf.newValueBuilder( FormValue.class ).withPrototype( model.getIndex() ).prototype();
       formValueBinder.updateWith( value );
    }
 

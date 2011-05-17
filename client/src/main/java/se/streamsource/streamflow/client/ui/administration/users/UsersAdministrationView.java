@@ -32,7 +32,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.administration.UserEntityDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -46,9 +45,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Comparator;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class UsersAdministrationView
       extends JPanel
@@ -68,12 +67,12 @@ public class UsersAdministrationView
    JXTable usersTable;
    private EventJXTableModel<UserEntityDTO> tableModel;
 
-   public UsersAdministrationView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public UsersAdministrationView( @Service ApplicationContext context, @Uses UsersAdministrationModel model, @Structure ObjectBuilderFactory obf)
    {
       ApplicationActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      this.model = obf.newObjectBuilder( UsersAdministrationModel.class ).use( client ).newInstance();
+      this.model = model;
 
       TableFormat<UserEntityDTO> userAdminTableFormat = new UserAdminTableFormat();
 

@@ -31,8 +31,6 @@ import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
-
 /**
  * TODO
  */

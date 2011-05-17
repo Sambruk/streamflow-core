@@ -25,11 +25,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +45,6 @@ public class FieldEditorListBoxFieldValueView
    StateBinder fieldValueBinder;
 
    public FieldEditorListBoxFieldValueView( @Service ApplicationContext context,
-                                            @Uses CommandQueryClient client,
                                             @Uses FieldValueEditModel model,
                                             @Structure ObjectBuilderFactory obf )
    {
@@ -99,7 +97,7 @@ public class FieldEditorListBoxFieldValueView
       fieldDefinitionBinder.updateWith( model.getFieldDefinition() );
 
       panel.add( fieldPanel, BorderLayout.CENTER );
-      panel.add( obf.newObjectBuilder( SelectionElementsView.class ).use( client ).newInstance(),
+      panel.add( obf.newObjectBuilder( SelectionElementsView.class ).use( model.newSelectionElementsModel() ).newInstance(),
             BorderLayout.SOUTH );
 
       setViewportView( panel );

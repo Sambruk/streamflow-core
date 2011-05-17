@@ -17,26 +17,34 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.util.*;
+import java.util.Observable;
 
 
 public class AccessPointModel extends Observable
       implements Refreshable
 {
+   CaseLabelsModel labelsModel;
+
    @Structure
    ValueBuilderFactory vbf;
 
@@ -44,6 +52,12 @@ public class AccessPointModel extends Observable
    private CommandQueryClient client;
 
    private AccessPointDTO accessPoint;
+
+   public AccessPointModel(@Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   {
+      this.client = client;
+      labelsModel = obf.newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient( "labels" )).newInstance();
+   }
 
    public AccessPointDTO getAccessPointValue()
    {
@@ -123,6 +137,11 @@ public class AccessPointModel extends Observable
       list.addAll( listValue.links().get() );
 
       return list;
+   }
+
+   public CaseLabelsModel getLabelsModel()
+   {
+      return labelsModel;
    }
 
    public EventList<LinkValue> getPossibleTemplates()

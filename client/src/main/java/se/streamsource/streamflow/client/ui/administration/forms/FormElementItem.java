@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 
 /**
 * JAVADOC

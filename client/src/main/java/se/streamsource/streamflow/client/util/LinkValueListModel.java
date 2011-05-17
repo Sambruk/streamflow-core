@@ -32,17 +32,20 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.specification.Specifications.or;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
 
 /**
  * A general super class for models that use LinkValue lists shown in a JList.
  */
 public class LinkValueListModel
+   extends ResourceModel<LinksValue>
    implements Refreshable, TransactionListener
 {
    @Uses
@@ -54,21 +57,11 @@ public class LinkValueListModel
    protected EventList<LinkValue> linkValues = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
    protected EventList<LinkValue> sortedValues = new SortedList<LinkValue>(linkValues, new LinkComparator());
 
-   private final String refresh;
-
-   public LinkValueListModel()
-   {
-      this("index");
-   }
-
-   public LinkValueListModel(String refresh)
-   {
-      this.refresh = refresh;
-   }
-
    public void refresh()
    {
-      EventListSynch.synchronize( client.query( refresh, LinksValue.class ).links().get(), linkValues );
+      super.refresh();
+
+      EventListSynch.synchronize( getIndex().links().get(), linkValues );
    }
 
    public EventList<LinkValue> getList()

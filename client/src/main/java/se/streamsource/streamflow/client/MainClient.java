@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.client;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Locale;
 
 /**
  * Main class for client.

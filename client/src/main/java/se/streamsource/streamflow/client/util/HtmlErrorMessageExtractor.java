@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.text.*;
-import javax.swing.text.html.*;
-import java.io.*;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLEditorKit;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * This class is able to extract the first h3 heading from a html body tag.

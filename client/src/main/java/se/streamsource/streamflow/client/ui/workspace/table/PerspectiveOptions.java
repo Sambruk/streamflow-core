@@ -17,30 +17,37 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SeparatorList;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.FilteredList;
+import se.streamsource.streamflow.client.util.GroupedFilteredList;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.icon;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
-public class PerspectiveOptionsView extends JPanel
+public class PerspectiveOptions extends JPanel
 {
    private JList itemList;
    private JTextField filterField;
 
 
-   public PerspectiveOptionsView(final ApplicationContext context, List<LinkValue> values,
-         final List selectedValues, final boolean isGrouped,  ObjectBuilderFactory obf)
+   public PerspectiveOptions(final ApplicationContext context, List<LinkValue> values,
+                             final List selectedValues, final boolean isGrouped, ObjectBuilderFactory obf)
    {
 
       super(new BorderLayout());

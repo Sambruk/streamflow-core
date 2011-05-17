@@ -17,16 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.ui.workspace.table.*;
-import se.streamsource.streamflow.client.util.*;
-
-import java.util.*;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 
 /**
  * Model for search results
@@ -56,31 +54,27 @@ public class SearchResultTableModel
    {
       if (searchString != null)
       {
-         new Task<TableValue, Void>(Application.getInstance())
+         TableValue result = performSearch();
+
+         eventList.getReadWriteLock().writeLock().lock();
+         try
          {
-            @Override
-            protected TableValue doInBackground() throws Exception
-            {
-               return performSearch();
-            }
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).beginEvent();
 
-            @Override
-            protected void succeeded(TableValue result)
-            {
-               EventListSynch.synchronize(Collections.<CaseTableValue>emptyList(), eventList);
-               EventListSynch.synchronize(caseTableValues(result), eventList);
-            }
+               eventList.clear();
+               eventList.addAll( caseTableValues(result) );
 
-            @Override
-            protected void failed(Throwable cause)
-            {
-               throw (RuntimeException) cause;
-            }
-         }.execute();
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).commitEvent();
+         } finally
+         {
+            eventList.getReadWriteLock().writeLock().unlock();
+         }
+
+         setChanged();
+         notifyObservers();
       }
-
-      setChanged();
-      notifyObservers();
    }
 
    private TableValue performSearch()

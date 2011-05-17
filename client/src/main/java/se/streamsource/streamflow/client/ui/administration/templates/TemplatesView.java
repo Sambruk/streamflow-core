@@ -17,29 +17,31 @@
 
 package se.streamsource.streamflow.client.ui.administration.templates;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.attachments.*;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static java.awt.BorderLayout.*;
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.EAST;
 
 public class TemplatesView extends JPanel
 {
    public TemplatesView( @Service ApplicationContext appContext,
-                         @Uses CommandQueryClient client,
+                         @Uses SelectedTemplatesModel model,
                          @Structure ObjectBuilderFactory obf )
    {
 
       this.setLayout( new BorderLayout( ) );
 
-      add( CENTER, obf.newObjectBuilder( AttachmentsView.class ).use( client).newInstance());
+      add( CENTER, obf.newObjectBuilder( AttachmentsView.class ).use( model.newAttachmentsModel()).newInstance());
 
-      add( EAST, obf.newObjectBuilder( SelectedTemplatesView.class ).use(client.getClient( "../templates/" )).newInstance());
+      add( EAST, obf.newObjectBuilder( SelectedTemplatesView.class ).use(model).newInstance());
 
    }
 }

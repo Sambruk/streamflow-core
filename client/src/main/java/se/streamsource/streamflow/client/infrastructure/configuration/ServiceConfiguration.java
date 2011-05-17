@@ -17,16 +17,19 @@
 
 package se.streamsource.streamflow.client.infrastructure.configuration;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.usecase.*;
-import org.qi4j.entitystore.jdbm.*;
-import se.streamsource.streamflow.infrastructure.configuration.*;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.entitystore.jdbm.JdbmConfiguration;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
-import java.io.*;
+import java.io.File;
 
 /**
  * Configure all services

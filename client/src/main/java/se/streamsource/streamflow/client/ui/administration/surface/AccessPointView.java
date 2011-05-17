@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -30,8 +32,8 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
@@ -42,14 +44,14 @@ import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 
 public class AccessPointView
@@ -94,11 +96,11 @@ public class AccessPointView
    private StateBinder accessPointBinder;
 
    public AccessPointView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
+                           @Uses AccessPointModel model,
                            @Structure ObjectBuilderFactory obf )
    {
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
-      this.model = obf.newObjectBuilder( AccessPointModel.class ).use( client, labels.getModel() ).newInstance();
+      this.model = model;
+      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( model.getLabelsModel() ).newInstance();
       model.addObserver( this );
 
       setLayout( new BorderLayout() );
@@ -147,8 +149,8 @@ public class AccessPointView
       selectedForm.setFont( selectedForm.getFont().deriveFont(
             Font.BOLD ) );
 
-      selectedTemplate.getLabel().setFont( selectedTemplate.getLabel().getFont().deriveFont(
-            Font.BOLD ) );
+      selectedTemplate.getLabel().setFont(selectedTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
 
       ActionMap am = getActionMap();
 

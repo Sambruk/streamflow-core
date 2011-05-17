@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.client.util;
 
-import com.jgoodies.forms.builder.*;
-import org.jdesktop.application.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import javax.swing.*;
 import java.awt.*;

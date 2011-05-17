@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.border.*;
+import javax.swing.border.AbstractBorder;
 import java.awt.*;
 
 public class BottomBorder extends AbstractBorder

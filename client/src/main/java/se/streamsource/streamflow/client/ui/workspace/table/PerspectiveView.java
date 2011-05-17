@@ -17,24 +17,42 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.SortedList;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.util.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -209,7 +227,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>( model.getPossibleCaseTypes(),
             new SelectedLinkValueComparator(model.getSelectedCaseTypes()));
       
-      PerspectiveOptionsView panel = new PerspectiveOptionsView(context, sortedCaseTypes, model.getSelectedCaseTypeIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions(context, sortedCaseTypes, model.getSelectedCaseTypeIds(), false, obf );
       optionsPanel.add( panel );
    }
 
@@ -219,7 +237,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(),
             new SelectedLinkValueComparator( model.getSelectedLabels() ) );
       
-      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedLabels, model.getSelectedLabelIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedLabels, model.getSelectedLabelIds(), false, obf );
       optionsPanel.add(panel);
    }
 
@@ -229,7 +247,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>( model.getPossibleAssignees(),
             new SelectedLinkValueComparator( model.getSelectedAssignees() ) );
 
-      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedAssignees, model.getSelectedAssigneeIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedAssignees, model.getSelectedAssigneeIds(), false, obf );
       optionsPanel.add(panel);
    }
 
@@ -239,7 +257,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>( model.getPossibleProjects(),
             new SelectedLinkValueComparator( model.getSelectedProjects() ) );
 
-      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedProjects, model.getSelectedProjectIds(), true, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedProjects, model.getSelectedProjectIds(), true, obf );
       optionsPanel.add( panel );
    }
    
@@ -263,7 +281,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>( model.getPossibleCreatedBy(),
             new SelectedLinkValueComparator( model.getSelectedCreatedBy() ) );
       
-      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedCreatedBy, model.getSelectedCreatedByIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedCreatedBy, model.getSelectedCreatedByIds(), false, obf );
       optionsPanel.add(panel);
    }
 

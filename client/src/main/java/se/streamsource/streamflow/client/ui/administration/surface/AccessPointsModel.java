@@ -17,17 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 
 public class AccessPointsModel
@@ -42,6 +46,11 @@ public class AccessPointsModel
 
    @Uses
    CommandQueryClient client;
+
+   public AccessPointsModel()
+   {
+      relationModelMapping("accesspoint", AccessPointModel.class);
+   }
 
    public void createAccessPoint( String accessPointName )
    {

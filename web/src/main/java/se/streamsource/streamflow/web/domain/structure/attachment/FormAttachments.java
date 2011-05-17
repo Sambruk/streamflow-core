@@ -104,7 +104,7 @@ public interface FormAttachments
          // Delete the attachment entity
          removedFormAttachment( null, attachment );
 
-         attachment.removeEntity();
+         attachment.deleteEntity();
       }
 
       public Attachment getFormAttachment( String id )

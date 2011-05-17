@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes;
 
-import ca.odell.glazedlists.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * List of casetypes in an Organization
@@ -30,6 +32,8 @@ public class CaseTypesModel
    public CaseTypesModel()
    {
       super( "createcasetype" );
+
+      relationModelMapping("resource", CaseTypeModel.class);
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)

@@ -42,8 +42,6 @@ public interface FormPagesContext
 {
    public void create( @MaxLength(50) StringValue name );
 
-   LinksValue formelements();
-
    abstract class Mixin
          implements FormPagesContext
    {
@@ -77,28 +75,6 @@ public interface FormPagesContext
          Pages pages = RoleMap.role( Pages.class );
 
          pages.createPage( name.string().get() );
-      }
-
-      public LinksValue formelements()
-      {
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-
-         Pages.Data pages = RoleMap.role( Pages.Data.class );
-         for (Page page : pages.pages())
-         {
-            linksBuilder.path( null );
-            linksBuilder.rel( "page" );
-            linksBuilder.addDescribable( page );
-            Fields.Data fields = (Fields.Data) page;
-            linksBuilder.path( page.toString() );
-            linksBuilder.rel( "field" );
-            for (Field field : fields.fields())
-            {
-               linksBuilder.addDescribable( field );
-            }
-         }
-
-         return linksBuilder.newLinks();
       }
    }
 }

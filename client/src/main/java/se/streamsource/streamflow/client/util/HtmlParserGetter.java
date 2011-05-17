@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.text.html.*;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  * Convenience class to fetch the HTMLEditorKit.Parser

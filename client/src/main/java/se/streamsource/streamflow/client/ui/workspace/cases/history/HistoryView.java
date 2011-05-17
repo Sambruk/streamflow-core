@@ -17,12 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.history;
 
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.conversations.*;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,14 +41,14 @@ public class HistoryView extends JPanel
    private static final long serialVersionUID = 3540488243544689740L;
 
    public HistoryView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
+                           @Uses ConversationModel model,
                            @Structure ObjectBuilderFactory obf )
    {
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       this.setLayout( new BorderLayout());
 
-      add( obf.newObjectBuilder( ConversationParticipantsView.class ).use(client.getSubClient( "participants" )).newInstance(), BorderLayout.NORTH );
-      add( obf.newObjectBuilder( MessagesHistoryView.class ).use( client.getSubClient("messages" )).newInstance(), BorderLayout.CENTER );
+      add( obf.newObjectBuilder( ConversationParticipantsView.class ).use(model.newParticipantsModel()).newInstance(), BorderLayout.NORTH );
+      add( obf.newObjectBuilder( MessagesHistoryView.class ).use( model.newMessagesModel()).newInstance(), BorderLayout.CENTER );
    }
 }

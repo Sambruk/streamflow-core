@@ -17,7 +17,8 @@
 
 package se.streamsource.streamflow.client.util;
 
-import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 import javax.swing.*;
 import java.awt.*;

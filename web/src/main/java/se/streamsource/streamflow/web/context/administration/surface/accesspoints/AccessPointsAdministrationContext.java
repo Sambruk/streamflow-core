@@ -54,7 +54,7 @@ public interface AccessPointsAdministrationContext
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
-         linksBuilder.addDescribables( data.accessPoints() );
+         linksBuilder.rel("accesspoint").addDescribables( data.accessPoints() );
 
          return linksBuilder.newLinks();
       }

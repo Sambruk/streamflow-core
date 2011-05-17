@@ -17,7 +17,11 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
 
 /**
  * JAVADOC
@@ -39,21 +43,24 @@ public class StreamflowClientAssembler
       assembly.setVersion( "0.1" );
 
       // Create layers
-      LayerAssembly clientDomainInfrastructureLayer = assembly.layer( "Client domain infrastructure" );
-      LayerAssembly clientDomainLayer = assembly.layer( "Client domain" );
+      LayerAssembly domainInfrastructureLayer = assembly.layer( "Client domain infrastructure" );
+      LayerAssembly domainLayer = assembly.layer( "Client domain" );
+      LayerAssembly modelLayer = assembly.layer( "Client model" );
+      LayerAssembly restLayer = assembly.layer( "REST Client" );
       LayerAssembly uiLayer = assembly.layer( "UI" );
 
       // Define layer usage
-      uiLayer.uses( clientDomainLayer, clientDomainInfrastructureLayer );
-      clientDomainLayer.uses( clientDomainInfrastructureLayer );
+      uiLayer.uses( modelLayer, domainInfrastructureLayer, restLayer );
+      domainLayer.uses( domainInfrastructureLayer, restLayer );
+      modelLayer.uses(domainLayer, domainInfrastructureLayer, restLayer);
+      restLayer.uses(domainInfrastructureLayer);
 
-//      assembleUILayer( uiLayer );
-
+      // Assembler layers
       new UIAssembler().assemble( uiLayer );
-
-      new DomainAssembler().assemble( clientDomainLayer );
-
-      new InfrastructureAssembler().assemble( clientDomainInfrastructureLayer );
+      new ModelAssembler().assemble(modelLayer);
+      new DomainAssembler().assemble( domainLayer );
+      new InfrastructureAssembler().assemble( domainInfrastructureLayer );
+      new RESTAssembler().assembler(restLayer);
 
       for (Object serviceObject : serviceObjects)
       {
