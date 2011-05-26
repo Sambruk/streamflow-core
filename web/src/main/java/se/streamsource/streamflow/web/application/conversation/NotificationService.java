@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,11 @@ import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 
 /**
  * Send and receive notifications. This service

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.SeparatorList;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.util.HtmlPanel;
-import se.streamsource.streamflow.client.util.i18n;
+import ca.odell.glazedlists.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.util.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.net.URL;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.net.*;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -108,13 +95,20 @@ public class CasesView
       return blankPanel;
    }
 
-   public void showTable( CasesTableView casesTableView )
+   public void showTable( final CasesTableView casesTableView )
    {
       cardLayout.show( this, "cases" );
       this.casesTableView = casesTableView;
       this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
       splitPane.setTopComponent( casesTableView );
-      clearCase();
+      SwingUtilities.invokeLater( new Runnable()
+      {
+         public void run()
+         {
+            detailsView.selectCaseInTable( casesTableView.getCaseTable() );
+         }
+      } );
+
    }
 
    public void clearTable()

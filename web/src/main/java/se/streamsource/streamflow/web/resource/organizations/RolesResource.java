@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +20,8 @@ package se.streamsource.streamflow.web.resource.organizations;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.administration.RolesContext;
 import se.streamsource.streamflow.web.context.administration.RoleContext;
+import se.streamsource.streamflow.web.context.administration.RolesContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 

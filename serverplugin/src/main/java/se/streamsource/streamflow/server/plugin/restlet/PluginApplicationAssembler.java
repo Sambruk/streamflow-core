@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,23 @@
 package se.streamsource.streamflow.server.plugin.restlet;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
 import java.util.prefs.Preferences;
 

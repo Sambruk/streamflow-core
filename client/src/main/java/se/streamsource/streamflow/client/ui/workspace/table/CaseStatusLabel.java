@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -153,7 +152,7 @@ public interface
                      try
                      {
                         caseTypes.add( module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypeEntity.class, caseType.replace( "\\", "" ) ) );
-                     } catch ( NoSuchElementException e )
+                     } catch ( NoSuchEntityException e )
                      {
                         StringBuilder caseTypeQueryBuilder = new StringBuilder(
                               "type:se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" );
@@ -600,8 +599,9 @@ public interface
 
          private String escapeLuceneCharacters( String query )
          {
+            // DO NOT escape wildcard characters!!  "*", "?"
             List<String> specialChars =
-                  Arrays.asList( "+", "-", "&&", "||", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":" );
+                  Arrays.asList( "+", "-", "&&", "||", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", ":" );
 
             for ( String str : specialChars )
             {

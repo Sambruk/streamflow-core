@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +40,7 @@ import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -98,7 +100,7 @@ public abstract class CaseSubmittedFormAbstractView
       JComponent component;
       if ( fieldType.equals( DateFieldValue.class.getName() ))
       {
-         component = new JLabel( formatter.format( DateFunctions.fromString( fieldValue ) ) );
+         component = new JLabel( Strings.empty( fieldValue ) ? " " : formatter.format( DateFunctions.fromString( fieldValue ) ) );
       } else if ( fieldType.equals( TextAreaFieldValue.class.getName() ))
       {
          component = new JLabel( "<html>"+fieldValue.replace( "\n", "<br/>" )+"</html>" );

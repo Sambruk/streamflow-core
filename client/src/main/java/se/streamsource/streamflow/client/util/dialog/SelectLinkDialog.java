@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,9 @@ public class SelectLinkDialog
                                       @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout());
+      setPreferredSize( new Dimension( 250, 200 ) );
+      setMaximumSize( new Dimension( 250, 200 ) );
+      setMinimumSize( new Dimension( 250, 200 ) );
 
       setActionMap( context.getActionMap( this ) );
       getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));

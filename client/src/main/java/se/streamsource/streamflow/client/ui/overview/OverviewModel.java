@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,15 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.assignments_node;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**

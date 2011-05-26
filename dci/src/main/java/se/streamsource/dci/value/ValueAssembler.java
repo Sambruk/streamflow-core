@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,12 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.dci.value.link.TitledLinksValue;
-import se.streamsource.dci.value.table.*;
+import se.streamsource.dci.value.table.CellValue;
+import se.streamsource.dci.value.table.ColumnValue;
+import se.streamsource.dci.value.table.RowValue;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableResponseValue;
+import se.streamsource.dci.value.table.TableValue;
 
 /**
  * Assembler all DCI values.

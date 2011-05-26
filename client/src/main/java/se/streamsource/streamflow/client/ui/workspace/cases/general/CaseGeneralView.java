@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +28,18 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.util.ActionBinder;
@@ -71,6 +76,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -230,14 +236,16 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       rightBuilder.add( formsLabel,
             new CellConstraints( 1, 6, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
-      rightBuilder.add( forms,
+      JPanel formsPanel = new JPanel( new BorderLayout() );
+      formsPanel.add( forms, BorderLayout.WEST );
+      rightBuilder.add( formsPanel,
             new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 0, 0, 0 ) ) );
 
       // Limit pickable dates to future
       Calendar calendar = Calendar.getInstance();
-      calendar.setTime( new Date() );
+      calendar.setTime(new Date());
       calendar.add( Calendar.DAY_OF_MONTH, 1 );
-      dueOnField.getMonthView().setLowerBound( calendar.getTime() );
+      dueOnField.getMonthView().setLowerBound(calendar.getTime());
 
       final DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT );
       dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
@@ -271,6 +279,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
+      notePane.setPreferredSize(new Dimension(700, 300));
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
       leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
@@ -334,6 +343,19 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task changeDescription( final ActionEvent event )
    {
+      Property<String> description = model.getGeneral().description();
+      String oldValue = description.get();
+      try
+      {
+         description.set( descriptionField.getText() );
+         // set back old value to not mess up model execution
+         description.set( oldValue );
+      } catch ( ConstraintViolationException cve )
+      {
+         int maxLength = description.metaInfo( MaxLength.class ).value();
+         descriptionField.setText( descriptionField.getText().substring( 0, maxLength ) );
+         throw new RuntimeException( new MessageFormat( i18n.text( StreamflowResources.max_length ) ).format( new Object[]{maxLength} ).toString() );
+      }
       return new CommandTask()
       {
          @Override

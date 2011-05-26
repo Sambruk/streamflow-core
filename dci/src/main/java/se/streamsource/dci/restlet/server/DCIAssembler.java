@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,16 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.restlet.server.resultwriter.*;
+import se.streamsource.dci.restlet.server.resultwriter.FormResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.LinksResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.ResourceResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.ResourceTemplateResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.TableResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.ValueCompositeResultWriter;
 
 import java.util.Properties;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

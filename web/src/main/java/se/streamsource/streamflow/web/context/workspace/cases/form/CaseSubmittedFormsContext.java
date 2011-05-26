@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +30,11 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;

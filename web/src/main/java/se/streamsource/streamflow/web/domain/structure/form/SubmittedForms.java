@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,17 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
+import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
+import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;

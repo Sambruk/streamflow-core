@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,19 @@ import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
+import se.streamsource.streamflow.resource.caze.CaseFormDTO;
+import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
+import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;

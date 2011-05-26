@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,33 @@
 package se.streamsource.dci.test;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
-import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.CommandResult;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.NullCommandResult;
+import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.dci.restlet.server.ResultWriterDelegator;
 import se.streamsource.dci.test.interactions.RootResource;
 import se.streamsource.dci.test.interactions.file.FileContext;
 import se.streamsource.dci.test.interactions.file.FileResource;
-import se.streamsource.dci.test.interactions.jmx.*;
+import se.streamsource.dci.test.interactions.jmx.DomainContext;
+import se.streamsource.dci.test.interactions.jmx.DomainResource;
+import se.streamsource.dci.test.interactions.jmx.JmxServerContext;
+import se.streamsource.dci.test.interactions.jmx.JmxServerResource;
+import se.streamsource.dci.test.interactions.jmx.MBeanAttributeContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanResource;
+import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
 import se.streamsource.dci.value.ValueAssembler;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

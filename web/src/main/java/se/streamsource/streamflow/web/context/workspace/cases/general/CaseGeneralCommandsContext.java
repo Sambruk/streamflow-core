@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
  * Commands for the General view of a Case. They all require the "write" permission

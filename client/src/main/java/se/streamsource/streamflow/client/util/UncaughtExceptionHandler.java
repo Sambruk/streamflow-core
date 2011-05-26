@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,17 @@ import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Frame;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.logging.Level;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

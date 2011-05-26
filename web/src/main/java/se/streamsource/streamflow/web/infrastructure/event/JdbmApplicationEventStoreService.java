@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +21,23 @@ import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.RecordManagerOptions;
 import jdbm.btree.BTree;
-import jdbm.helper.*;
+import jdbm.helper.ByteArraySerializer;
+import jdbm.helper.LongComparator;
+import jdbm.helper.LongSerializer;
+import jdbm.helper.MRU;
+import jdbm.helper.Serializer;
+import jdbm.helper.Tuple;
+import jdbm.helper.TupleBrowser;
 import jdbm.recman.CacheRecordManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.io.*;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.io.Transforms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,12 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-import org.qi4j.api.specification.Specification;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -34,9 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.qi4j.api.util.Classes.methodsOf;
-import static org.qi4j.api.util.Iterables.filter;
-import static org.qi4j.api.util.Iterables.map;
+import static org.qi4j.api.util.Classes.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Helper methods for working with Iterables of DomainEvents and TransactionDomainEvents.

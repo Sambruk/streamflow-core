@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -34,7 +35,6 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
-import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 

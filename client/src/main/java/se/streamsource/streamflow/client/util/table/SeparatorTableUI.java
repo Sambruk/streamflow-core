@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,14 @@ package se.streamsource.streamflow.client.util.table;
 
 import ca.odell.glazedlists.swing.EventTableModel;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * JAVADOC
