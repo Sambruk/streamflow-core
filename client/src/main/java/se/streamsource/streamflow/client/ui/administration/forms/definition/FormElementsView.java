@@ -310,6 +310,9 @@ public class FormElementsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
+      if (Events.matches( withNames("removedPage","removedField", "movedField", "movedPage" ), transactions ))
+         list.clearSelection();
+
       if (Events.matches( withNames("changedDescription", "removedPage","removedField", "movedField", "movedPage" ), transactions ))
          model.refresh();
 

@@ -282,12 +282,7 @@ public class ContextAssembler
               setMetaInfo(ServiceQualifier.withId("solr")).
               setMetaInfo(namedQueries);
 
-      // Register all resources and contexts
-      for (Class aClass : Iterables.filter(ClassScanner.matches(".*Resource"), ClassScanner.getClasses(RootResource.class)))
-      {
-         addResourceContexts(module, aClass);
-      }
-
+      // Register all contexts
       for (Class aClass : Iterables.filter(ClassScanner.matches(".*Context"), ClassScanner.getClasses(LinksBuilder.class)))
       {
          addResourceContexts(module, aClass);
@@ -530,13 +525,13 @@ public class ContextAssembler
       {
          if (CommandQueryResource.class.isAssignableFrom(resourceContextClass))
          {
-            module.objects(resourceContextClass);
+            module.objects(resourceContextClass).visibleIn(Visibility.application);
          } else if (TransientComposite.class.isAssignableFrom(resourceContextClass))
          {
-            module.transients((Class<TransientComposite>) resourceContextClass);
+            module.transients((Class<TransientComposite>) resourceContextClass).visibleIn(Visibility.application);
          } else
          {
-            module.objects(resourceContextClass);
+            module.objects(resourceContextClass).visibleIn(Visibility.application);
          }
       }
    }

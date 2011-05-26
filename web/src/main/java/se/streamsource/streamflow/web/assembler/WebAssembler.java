@@ -17,11 +17,13 @@
 
 package se.streamsource.streamflow.web.assembler;
 
+import org.qi4j.api.util.Iterables;
 import org.qi4j.bootstrap.*;
 import org.qi4j.library.rdf.entity.*;
 import org.qi4j.library.rest.*;
 import org.restlet.security.*;
 import se.streamsource.dci.restlet.server.*;
+import se.streamsource.streamflow.util.ClassScanner;
 import se.streamsource.streamflow.web.application.security.*;
 import se.streamsource.streamflow.web.resource.*;
 import se.streamsource.streamflow.web.resource.admin.*;
@@ -56,15 +58,14 @@ public class WebAssembler
       // Resources
       module.objects(
               APIRouter.class,
-              AuthenticationFilter.class,
-
-              // Events
-              DomainEventsServerResource.class,
-              ApplicationEventsServerResource.class,
-
-              // Admin
-              ConsoleServerResource.class,
-              SolrSearchServerResource.class
+              AuthenticationFilter.class
       );
+
+      // Register all resources
+      for (Class aClass : Iterables.filter(ClassScanner.matches(".*Resource"), ClassScanner.getClasses(RootResource.class)))
+      {
+         module.objects(aClass);
+      }
+
    }
 }
