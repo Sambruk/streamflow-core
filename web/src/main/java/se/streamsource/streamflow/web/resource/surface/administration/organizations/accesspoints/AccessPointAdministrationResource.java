@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.resource.surface.administration.organizat
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
@@ -38,31 +39,31 @@ public class AccessPointAdministrationResource
       super( AccessPointAdministrationContext.class );
    }
 
-   public void possibleprojects() throws Throwable
+   public LinksValue possibleprojects() throws Throwable
    {
-      result(new LinksBuilder(module.valueBuilderFactory()).
+      return new LinksBuilder(module.valueBuilderFactory()).
             command( "changeproject" ).
-            addDescribables( (Iterable<? extends Describable>) invoke() ).
-            newLinks());
+            addDescribables( context(AccessPointAdministrationContext.class).possibleprojects() ).
+            newLinks();
    }
 
-   public void possiblecasetypes() throws Throwable
+   public LinksValue possiblecasetypes() throws Throwable
    {
-      result(new LinksBuilder(module.valueBuilderFactory()).
+      return new LinksBuilder(module.valueBuilderFactory()).
             command( "changecasetype" ).
-            addDescribables( (Iterable<? extends Describable>) invoke() ).
-            newLinks());
+            addDescribables( context(AccessPointAdministrationContext.class).possiblecasetypes() ).
+            newLinks();
    }
 
-   public void possibleforms() throws Throwable
+   public LinksValue possibleforms() throws Throwable
    {
-      result(new LinksBuilder(module.valueBuilderFactory()).
+      return new LinksBuilder(module.valueBuilderFactory()).
             command( "setform" ).
-            addDescribables( (Iterable<? extends Describable>) invoke() ).
-            newLinks());
+            addDescribables( context(AccessPointAdministrationContext.class).possibleforms() ).
+            newLinks();
    }
 
-   public void possibleformtemplates() throws Throwable
+   public LinksValue possibleformtemplates() throws Throwable
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setformtemplate" );
 
@@ -73,7 +74,7 @@ public class AccessPointAdministrationResource
          linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
       }
 
-      result( linksBuilder.newLinks() );
+      return linksBuilder.newLinks();
    }
 
    @SubResource

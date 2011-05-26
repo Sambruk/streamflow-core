@@ -10,6 +10,6 @@ public class GroupModel
 {
    public GroupModel()
    {
-
+      relationModelMapping("resource", ParticipantsModel.class);
    }
 }

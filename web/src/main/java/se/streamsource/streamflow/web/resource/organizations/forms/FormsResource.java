@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.forms.FormsContext;
@@ -38,16 +39,15 @@ public class FormsResource
       super( FormsContext.class );
    }
 
-   public void possiblemoveto() throws Throwable
+   public LinksValue possiblemoveto() throws Throwable
    {
-
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       builder.command( "move" );
       Iterable<Describable> forms = (Iterable<Describable>) invoke();
 
       builder.addDescribables( forms );
 
-      result(builder.newLinks());
+      return builder.newLinks();
    }
 
    public void resource( String segment ) throws ResourceException

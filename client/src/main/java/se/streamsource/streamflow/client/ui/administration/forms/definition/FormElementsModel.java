@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
@@ -57,10 +58,10 @@ public class FormElementsModel
 
    public void move( LinkValue item, String direction )
    {
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-      builder.prototype().string().set( direction );
+      Form form = new Form();
+      form.set("direction", direction);
 
-      client.getClient( item ).putCommand( "move",  builder.newInstance() );
+      client.getClient( item ).putCommand( "move",  form.getWebRepresentation() );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

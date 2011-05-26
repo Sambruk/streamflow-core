@@ -45,14 +45,14 @@ import static org.qi4j.api.query.QueryExpressions.*;
  * JAVADOC
  */
 public class ParticipantsContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<Participant>>
 {
    @Structure
    Module module;
 
-   public LinksValue index()
+   public Iterable<Participant> index()
    {
-      return new LinksBuilder( module.valueBuilderFactory() ).rel( "participant" ).addDescribables( RoleMap.role( Participants.Data.class ).participants() ).newLinks();
+      return RoleMap.role( Participants.Data.class ).participants();
    }
 
    public void addparticipant( EntityValue participantId )

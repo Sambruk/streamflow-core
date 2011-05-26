@@ -31,7 +31,7 @@ public class SelectedTemplatesResource extends CommandQueryResource
       super( SelectedTemplatesContext.class);
    }
 
-   public void possibledefaulttemplates() throws Throwable
+   public LinksValue possibledefaulttemplates() throws Throwable
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setdefaulttemplate" );
 
@@ -42,10 +42,10 @@ public class SelectedTemplatesResource extends CommandQueryResource
          linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
       }
 
-      result( linksBuilder.newLinks() );
+      return linksBuilder.newLinks();
    }
 
-   public void possibleformtemplates() throws Throwable
+   public LinksValue possibleformtemplates() throws Throwable
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setformtemplate" );
 
@@ -56,10 +56,10 @@ public class SelectedTemplatesResource extends CommandQueryResource
          linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
       }
 
-      result( linksBuilder.newLinks() );
+      return linksBuilder.newLinks();
    }
 
-   public void possiblecasetemplates() throws Throwable
+   public LinksValue possiblecasetemplates() throws Throwable
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setcasetemplate" );
 
@@ -70,6 +70,6 @@ public class SelectedTemplatesResource extends CommandQueryResource
          linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
       }
 
-      result( linksBuilder.newLinks() );
+      return linksBuilder.newLinks();
    }
 }

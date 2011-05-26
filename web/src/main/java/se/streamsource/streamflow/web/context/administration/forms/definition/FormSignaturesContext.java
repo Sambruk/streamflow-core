@@ -50,6 +50,7 @@ public class FormSignaturesContext
       List<RequiredSignatureValue> signatureValues = RoleMap.role( RequiredSignatures.Data.class ).requiredSignatures().get();
       int index = 0;
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      builder.rel("resource");
       for (RequiredSignatureValue signatureValue : signatureValues)
       {
          builder.addLink( signatureValue.name().get(), "" + index );

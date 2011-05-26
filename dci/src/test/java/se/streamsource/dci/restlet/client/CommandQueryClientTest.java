@@ -349,19 +349,19 @@ public class CommandQueryClientTest
          super( RootContext.class );
       }
 
-      public void querywithvalue( ) throws Throwable
+      public TestResult querywithvalue( ) throws Throwable
       {
-         result( invoke( ) );
+         return (TestResult) invoke( );
       }
 
-      public void querywithoutvalue( ) throws Throwable
+      public TestResult querywithoutvalue( ) throws Throwable
       {
-         result( invoke(  ) );
+         return context(RootContext.class).queryWithoutValue();
       }
 
       public void commandwithvalue(  ) throws Throwable
       {
-         result( invoke( ) );
+         invoke( );
       }
 
       public void resource( String currentSegment )

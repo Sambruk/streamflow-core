@@ -283,6 +283,7 @@ public class FormElementsView
          public void command()
                throws Exception
          {
+
             model.move( selected, "up" );
          }
       };
@@ -309,7 +310,7 @@ public class FormElementsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( withNames("changedDescription", "removedPage","removedField", "movedField" ), transactions ))
+      if (Events.matches( withNames("changedDescription", "removedPage","removedField", "movedField", "movedPage" ), transactions ))
          model.refresh();
 
       DomainEvent event = first( filter( withNames("createdField", "createdPage", "movedField", "movedPage"), events(transactions ) ));

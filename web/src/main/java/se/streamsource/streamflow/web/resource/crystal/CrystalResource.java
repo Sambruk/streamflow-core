@@ -34,13 +34,13 @@ public class CrystalResource
       super( CrystalContext.class );
    }
 
-   public void motionchart() throws Throwable
+   public TableValue motionchart()
    {
       if (motionchart == null)
       {
-         motionchart = (TableValue) invoke();
+         motionchart = context(CrystalContext.class).motionchart();
       }
 
-      result(motionchart);
+      return motionchart;
    }
 }

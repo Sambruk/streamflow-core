@@ -35,6 +35,7 @@ import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
@@ -67,6 +68,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.qi4j.api.util.Annotations.*;
 import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.iterable;
 
 /**
  * JAVADOC
@@ -76,7 +78,8 @@ public class CommandQueryResource
 {
    private static final String ARGUMENTS = "arguments";
    private Map<Class, List<Method>> contextClassMethods = new ConcurrentHashMap<Class, List<Method>>();
-   private Map<String, Object> contexts = new ConcurrentHashMap<String, Object>();
+   private Map<String, Class> interactionClasses = new ConcurrentHashMap<String, Class>();
+   private Map<Class, Object> contexts = new ConcurrentHashMap<Class, Object>();
 
    private
    @Structure
@@ -208,16 +211,16 @@ public class CommandQueryResource
 
             // Filter out methods first.
             // TODO Cache this
-            Iterable<Method> methods = Iterables.filter(new Specification<Method>()
+            Iterable<Method> methods = filter(new Specification<Method>()
             {
                public boolean satisfiedBy(Method method)
                {
                   return !method.isSynthetic() &&
-                          !(method.getDeclaringClass().isAssignableFrom(TransientComposite.class)) &&
-                          !(method.getName().equals("isValid"));
+                        !(method.getDeclaringClass().isAssignableFrom(TransientComposite.class)) &&
+                        !(method.getName().equals("isValid"));
 
                }
-            }, Iterables.iterable(contextClass.getMethods()));
+            }, iterable(contextClass.getMethods()));
 
             for (Method method : methods)
             {
@@ -363,42 +366,47 @@ public class CommandQueryResource
       return humanReadableString.toString();
    }
 
-   protected Object createContext(String interactionName)
+   private Object createContext(final String interactionName)
    {
-      Object context = contexts.get(interactionName);
+      Class contextClass = interactionClasses.get(interactionName);
 
-      if (context == null)
+      if (contextClass == null)
       {
          // Instantiate correct context class for this name
-         // TODO Move this to constructor?
-         next:
-         for (Class contextClass : contextClasses)
+         contextClass = first(filter(new Specification<Class>()
          {
-            for (Method method : getContextMethods(contextClass))
+            public boolean satisfiedBy(Class contextClass)
             {
-               if (method.getName().equalsIgnoreCase(interactionName))
+               return matchesAny(new Specification<Method>()
                {
-                  if (TransientComposite.class.isAssignableFrom(contextClass))
+                  public boolean satisfiedBy(Method contextMethod)
                   {
-                     context = module.transientBuilderFactory().newTransient(contextClass);
-                     break next;
-                  } else
-                  {
-                     context = module.objectBuilderFactory().newObject(contextClass);
-                     break next;
+                     return contextMethod.getName().equalsIgnoreCase(interactionName);
                   }
-               }
+               }, getContextMethods(contextClass));
             }
-         }
+         }, iterable(contextClasses)));
 
          // Save it
-         contexts.put(interactionName, context);
+         if (contextClass != null)
+            interactionClasses.put(interactionName, contextClass);
       }
 
-      if (context == null)
+      if (contextClass == null)
          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 
-      return context;
+      return context(contextClass);
+   }
+
+   protected <T> T context(Class<T> contextClass)
+   {
+      if (TransientComposite.class.isAssignableFrom(contextClass))
+      {
+         return module.transientBuilderFactory().newTransient(contextClass);
+      } else
+      {
+         return module.objectBuilderFactory().newObject(contextClass);
+      }
    }
 
    protected void result(Object resultValue) throws Exception
@@ -642,7 +650,16 @@ public class CommandQueryResource
             // Command
             try
             {
-               method.invoke(this);
+               Object result = method.invoke(this);
+
+               if (result != null)
+               {
+                  if (result instanceof Representation)
+                  {
+                     Response.getCurrent().setEntity((Representation) result);
+                  } else
+                     result(convert(result));
+               }
             } catch (IllegalArgumentException e)
             {
                Response.getCurrent().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -725,7 +742,15 @@ public class CommandQueryResource
             // Query
             try
             {
-               method.invoke(this);
+               Object result = method.invoke(this);
+               if (result != null)
+               {
+                  if (result instanceof Representation)
+                  {
+                     Response.getCurrent().setEntity((Representation) result);
+                  } else
+                     result(convert(result));
+               }
             } catch (IllegalAccessException e)
             {
                Response.getCurrent().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -782,6 +807,10 @@ public class CommandQueryResource
 
             form.add(propertyDescriptor.qualifiedName().name(), value);
          }
+      } else if (valueType.isInterface() && contextMethod.getParameterTypes().length == 1)
+      {
+         // Single entity as input
+         form.add("entity", getValue("entity", queryAsForm, entityAsForm));
       } else
       {
          // Construct form out of individual parameters instead
@@ -958,6 +987,19 @@ public class CommandQueryResource
                   return args;
                } else
                   throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format");
+            } else if (method.getParameterTypes()[0].isInterface() && method.getParameterTypes().length == 1)
+            {
+               Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
+               Form entityAsForm;
+               if (representation != null && !EmptyRepresentation.class.isInstance(representation) && representation.isAvailable())
+               {
+                  entityAsForm = new Form(representation);
+               } else
+                  entityAsForm = new Form();
+
+               args[0] = uowf.currentUnitOfWork().get(method.getParameterTypes()[0], getValue("entity", queryAsForm, entityAsForm));
+
+               return args;
             } else
             {
                Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
@@ -1058,7 +1100,7 @@ public class CommandQueryResource
          } else
             throw new IllegalArgumentException("Don't know how to parse parameter "+name.value()+" of type "+parameterType.getName());
 
-         if (arg == null && !Iterables.matchesAny(isType(Optional.class), iterable(annotations)))
+         if (arg == null && !matchesAny(isType(Optional.class), iterable(annotations)))
                throw new IllegalArgumentException("Parameter "+name.value()+" was not set");
 
          args[idx++] = arg;

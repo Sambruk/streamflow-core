@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.restlet.data.Form;
@@ -36,7 +37,7 @@ public class FieldValueEditModel
    @Uses
    private CommandQueryClient client;
 
-   @Uses
+   @Structure
    private Module module;
 
    public FieldDefinitionValue getFieldDefinition()
@@ -87,11 +88,6 @@ public class FieldValueEditModel
    public void changeComment( String comment ) throws ResourceException
    {
       client.postCommand( "changecomment", new Form("comment="+comment).getWebRepresentation() );
-   }
-
-   public void move( String direction ) throws ResourceException
-   {
-      client.postCommand( "move", new Form("direction="+direction).getWebRepresentation() );
    }
 
    public void changeHint( String hint ) throws ResourceException

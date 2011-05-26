@@ -24,6 +24,7 @@ import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.context.surface.endusers.ClosedCasesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -43,7 +44,7 @@ public class ClosedCasesResource
       super(ClosedCasesContext.class);
    }
 
-   public void cases() throws Throwable
+   public TableValue cases() throws Throwable
    {
       Iterable<CaseEntity> closedCases = (Iterable<CaseEntity>) invoke();
 
@@ -115,7 +116,7 @@ public class ClosedCasesResource
 
       TableBuilder builder = tableBuilderFactory.newInstance(query);
 
-      result(builder.rows(closedCases).orderBy().paging().newTable());
+      return builder.rows(closedCases).orderBy().paging().newTable();
    }
 
    public void resource(String segment) throws ResourceException

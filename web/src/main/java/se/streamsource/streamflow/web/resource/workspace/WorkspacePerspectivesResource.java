@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.resource.workspace;
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.workspace.PerspectiveContext;
@@ -39,13 +40,13 @@ public class WorkspacePerspectivesResource
       super(PerspectivesContext.class);
    }
 
-   public void index() throws Throwable
+   public LinksValue index() throws Throwable
    {
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       Iterable<Perspective> perspectives = (Iterable<Perspective>) invoke();
       builder.addDescribables(perspectives);
 
-      result(builder.newLinks());
+      return builder.newLinks();
    }
 
    public void resource(String segment) throws ContextNotFoundException

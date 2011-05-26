@@ -17,14 +17,30 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
+import org.qi4j.api.query.Query;
 import org.restlet.data.*;
 import org.restlet.resource.*;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.restlet.server.*;
 import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.*;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.group.*;
 import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.role.*;
+import se.streamsource.streamflow.web.domain.structure.role.Role;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
+import java.lang.reflect.Type;
+
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC
@@ -36,6 +52,32 @@ public class AdministratorsResource
    public AdministratorsResource( )
    {
       super( AdministratorsContext.class );
+   }
+
+   public LinksValue possibleusers()
+   {
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addadministrator" );
+
+      for (Describable user : context(AdministratorsContext.class).possibleusers())
+      {
+         String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
+         linksBuilder.addDescribable( user, group );
+      }
+
+      return linksBuilder.newLinks();
+   }
+
+   public LinksValue possiblegroups()
+   {
+      final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addadministrator" );
+
+      for (Group group : context(AdministratorsContext.class).possiblegroups())
+      {
+         String groupText = "" + Character.toUpperCase( group.getDescription().charAt( 0 ) );
+         linksBuilder.addDescribable( group, groupText );
+      }
+
+      return linksBuilder.newLinks();
    }
 
    public void resource( String segment ) throws ResourceException

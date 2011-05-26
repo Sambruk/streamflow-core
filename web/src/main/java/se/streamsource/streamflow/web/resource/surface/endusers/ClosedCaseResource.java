@@ -37,13 +37,13 @@ public class ClosedCaseResource
       super(ClosedCaseContext.class);
    }
 
-   public void history() throws Throwable
+   public TableValue history() throws Throwable
    {
       Iterable<Message> history = (Iterable<Message>) invoke();
 
       TableQuery query = (TableQuery) getArguments()[0];
 
-      result(new TableBuilderFactory(module.valueBuilderFactory()).
+      return new TableBuilderFactory(module.valueBuilderFactory()).
               column("created", "Created", TableValue.DATETIME, new Function<Message.Data, Object>()
               {
                  public Object map(Message.Data data)
@@ -65,6 +65,6 @@ public class ClosedCaseResource
                     return data.sender().get().getDescription();
                  }
               }).
-              newInstance(query).rows(history).orderBy().paging().newTable());
+              newInstance(query).rows(history).orderBy().paging().newTable();
    }
 }

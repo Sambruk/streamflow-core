@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.resource.organizations.forms;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.forms.FormContext;
@@ -37,7 +38,7 @@ public class FormResource
       super( FormContext.class);
    }
 
-   public void possiblemoveto() throws Throwable
+   public LinksValue possiblemoveto() throws Throwable
    {
       Iterable<Describable> labels = (Iterable<Describable>) invoke();
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
@@ -45,8 +46,7 @@ public class FormResource
 
       builder.addDescribables( labels );
 
-      result(builder.newLinks());
-
+      return builder.newLinks();
    }
 
    @SubResource

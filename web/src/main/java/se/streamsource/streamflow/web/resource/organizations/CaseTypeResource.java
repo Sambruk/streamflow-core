@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.administration.ArchivalSettingsContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
@@ -39,7 +40,7 @@ public class CaseTypeResource
       super( CaseTypeContext.class, DescribableContext.class );
    }
 
-   public void possiblemoveto() throws Throwable
+   public LinksValue possiblemoveto() throws Throwable
    {
       Iterable<Describable> caseTypes = (Iterable<Describable>) invoke();
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
@@ -47,8 +48,7 @@ public class CaseTypeResource
 
       builder.addDescribables( caseTypes );
 
-      result(builder.newLinks());
-
+      return builder.newLinks();
    }
 
    @SubResource

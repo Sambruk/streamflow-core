@@ -38,12 +38,6 @@ public class ProjectsResource
       super( ProjectsContext.class );
    }
 
-   public void index() throws Throwable
-   {
-      Iterable<Project> projects = (Iterable<Project>) invoke();
-      result(new LinksBuilder( module.valueBuilderFactory() ).rel( "project" ).addDescribables( projects ).newLinks());
-   }
-
    public void resource( String segment ) throws ResourceException
    {
       findManyAssociation( RoleMap.role(Projects.Data.class).projects(), segment );

@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.resource.surface.administration.organizat
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.EmailAccessPointAdministrationContext;
@@ -35,20 +36,20 @@ public class EmailAccessPointAdministrationResource
       super(EmailAccessPointAdministrationContext.class);
    }
 
-   public void possibleprojects() throws Throwable
+   public LinksValue possibleprojects() throws Throwable
    {
-      result(new LinksBuilder(module.valueBuilderFactory()).
+      return new LinksBuilder(module.valueBuilderFactory()).
             command( "changeproject" ).
-            addDescribables( (Iterable<? extends Describable>) invoke() ).
-            newLinks());
+            addDescribables( context(EmailAccessPointAdministrationContext.class).possibleprojects() ).
+            newLinks();
    }
 
-   public void possiblecasetypes() throws Throwable
+   public LinksValue possiblecasetypes() throws Throwable
    {
-      result(new LinksBuilder(module.valueBuilderFactory()).
+      return new LinksBuilder(module.valueBuilderFactory()).
             command( "changecasetype" ).
-            addDescribables( (Iterable<? extends Describable>) invoke() ).
-            newLinks());
+            addDescribables( context(EmailAccessPointAdministrationContext.class).possiblecasetypes() ).
+            newLinks();
    }
 
    @SubResource

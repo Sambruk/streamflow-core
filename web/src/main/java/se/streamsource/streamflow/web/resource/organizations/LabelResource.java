@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.labels.LabelContext;
@@ -39,7 +40,7 @@ public class LabelResource
       super( LabelContext.class, DescribableContext.class );
    }
 
-   public void possiblemoveto() throws Throwable
+   public LinksValue possiblemoveto() throws Throwable
    {
       Iterable<Describable> labels = (Iterable<Describable>) invoke();
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
@@ -47,7 +48,7 @@ public class LabelResource
 
       builder.addDescribables( labels );
 
-      result(builder.newLinks());
+      return builder.newLinks();
 
    }
 

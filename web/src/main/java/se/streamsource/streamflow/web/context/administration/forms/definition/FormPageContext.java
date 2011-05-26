@@ -64,14 +64,14 @@ public class FormPageContext
       return builder.newInstance();
    }
 
-   public void move( StringValue direction )
+   public void move( @Name("direction") String direction )
    {
       Page page = RoleMap.role( Page.class );
       Pages.Data pagesData = RoleMap.role( Pages.Data.class );
       Pages pages = RoleMap.role( Pages.class );
 
       int index = pagesData.pages().toList().indexOf( page );
-      if (direction.string().get().equalsIgnoreCase( "up" ))
+      if (direction.equalsIgnoreCase( "up" ))
       {
          try
          {
