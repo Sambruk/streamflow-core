@@ -428,12 +428,13 @@ public class StreamflowApplication
       {
          if (app != null)
             app.passivate();
+
+         super.shutdown();
       } catch (Exception e)
       {
          e.printStackTrace();
       }
 
-      super.shutdown();
    }
 
    @Override

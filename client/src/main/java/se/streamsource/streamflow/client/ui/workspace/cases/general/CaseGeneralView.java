@@ -65,11 +65,7 @@ import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -283,7 +279,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       valueBinder.bind( "note", notePane );
       
       JPanel formsContainer = new JPanel();
-      formsContainer.setLayout( new BoxLayout(formsContainer, BoxLayout.X_AXIS) );
+      formsContainer.setLayout( new GridLayout(1, 2) );
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
       formsContainer.add( leftForm );
       formsContainer.add( rightForm );
