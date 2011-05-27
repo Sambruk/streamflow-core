@@ -217,6 +217,7 @@ public class WorkspaceView
                               .newInstance();
 
                      searchView.getTextField().setText( "" );
+                     searchResultTableModel.clearSearchString();
                      casesTable.getModel().clearFilter();
                      setContextString( contextItem, null );
                   }
