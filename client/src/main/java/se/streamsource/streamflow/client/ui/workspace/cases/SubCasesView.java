@@ -86,20 +86,20 @@ public class SubCasesView
 
       setActionMap(context.getActionMap(this));
 
-      parentLabel = new JLabel("Parent");
+      parentLabel = new JLabel(i18n.text( CaseResources.parent ));
       parentLabel.setForeground( Color.GRAY );
       parentLabel.setLabelFor( parentCaseButton );
 
       add(parentLabel);
       add(parentCaseButton);
 
-      JLabel caseLabel = new JLabel( "Case", JLabel.RIGHT );
+      JLabel caseLabel = new JLabel( i18n.text( CaseResources.caze ), JLabel.RIGHT );
       caseLabel.setForeground( Color.GRAY );
       caseLabel.setLabelFor( caseButton );
       add( caseLabel );
       add(caseButton);
 
-      subcasesLabel = new JLabel( "Subcases", JLabel.RIGHT );
+      subcasesLabel = new JLabel( i18n.text( CaseResources.subcases ), JLabel.RIGHT );
       subcasesLabel.setForeground( Color.GRAY );
       add( subcasesLabel );
       subCaseListScroll = new JScrollPane( subCaseList );

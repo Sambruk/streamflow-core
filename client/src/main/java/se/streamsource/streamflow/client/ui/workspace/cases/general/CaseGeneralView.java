@@ -267,7 +267,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
-//      notePane.setPreferredSize( new Dimension( 700, 300 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
       JLabel noteLabel = new JLabel(i18n.text( WorkspaceResources.note_label ));
@@ -283,12 +282,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
       formsContainer.add( leftForm );
       formsContainer.add( rightForm );
-
-/*
-      JPanel borderLayoutContainer = new JPanel( new BorderLayout() );
-      borderLayoutContainer.add( formsContainer, BorderLayout.NORTH );
-      borderLayoutContainer.add( leftForm, BorderLayout.CENTER );
-*/
 
       setViewportView( formsContainer );
 

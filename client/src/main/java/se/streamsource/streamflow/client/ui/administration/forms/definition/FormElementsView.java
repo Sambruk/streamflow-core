@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -46,15 +47,22 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
-import static org.qi4j.api.util.Iterables.filter;
-import static org.qi4j.api.util.Iterables.first;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -82,10 +90,10 @@ public class FormElementsView
 
 
    public FormElementsView( @Service ApplicationContext context,
-                            @Uses final FormElementsModel model,
+                            @Uses final CommandQueryClient client,
                             @Structure final ObjectBuilderFactory obf)
    {
-      this.model = model;
+      this.model = obf.newObjectBuilder( FormElementsModel.class ).use( client).newInstance();
 
       final ActionMap am = context.getActionMap( this );
 
@@ -106,9 +114,9 @@ public class FormElementsView
                   LinkValue link = getSelectedValue();
                   if (link.rel().get().equals("page"))
                   {
-                     return obf.newObjectBuilder( PageEditView.class ).use( model.newResourceModel( link ) ).newInstance();
+                     return obf.newObjectBuilder( PageEditView.class ).use( client.getClient( link ) ).newInstance();
                   } else
-                     return obf.newObjectBuilder( FieldEditView.class ).use( model.newResourceModel( link )).newInstance();
+                     return obf.newObjectBuilder( FieldEditView.class ).use( client.getClient( link )).newInstance();
                }
             },
             am.get( "addPage" ), am.get( "addField" ), am.get( "remove" ), am.get( "up" ), am.get( "down" ));
@@ -283,7 +291,6 @@ public class FormElementsView
          public void command()
                throws Exception
          {
-
             model.move( selected, "up" );
          }
       };
@@ -310,11 +317,15 @@ public class FormElementsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( withNames("removedPage","removedField", "movedField", "movedPage" ), transactions ))
+      if (Events.matches( withNames("removedPage","removedField" ), transactions ))
+      {
          list.clearSelection();
+      }
 
       if (Events.matches( withNames("changedDescription", "removedPage","removedField", "movedField", "movedPage" ), transactions ))
+      {
          model.refresh();
+      }
 
       DomainEvent event = first( filter( withNames("createdField", "createdPage", "movedField", "movedPage"), events(transactions ) ));
       if (event != null)

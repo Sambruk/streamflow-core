@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.junit.Test;
+import org.junit.Ignore;
 import org.qi4j.api.structure.Module;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -33,11 +33,10 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralM
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 
-import java.beans.Beans;
-
 /**
  * TODO
  */
+@Ignore
 public class ClientModelTest
 {
 //   @Test

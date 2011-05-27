@@ -233,7 +233,8 @@ public class WorkspaceView
                            .use(obf, isSearch ? searchResultTableModel : model.newCasesTableModel(contextItem.getClient()), tableFormat, isSearch ? searchView.getTextField() : null)
                            .newInstance();
 
-                     searchView.getTextField().setText("");
+                     searchView.getTextField().setText( "" );
+                     searchResultTableModel.clearSearchString();
                      casesTable.getModel().clearFilter();
                      setContextString(contextItem, null);
                   }
