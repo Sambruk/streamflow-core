@@ -102,4 +102,8 @@ public class SearchResultTableModel
 
       return client.query( "cases", builder.newInstance(), TableValue.class );
    }
+
+    public void clearSearchString() {
+        searchString = "";
+    }
 }

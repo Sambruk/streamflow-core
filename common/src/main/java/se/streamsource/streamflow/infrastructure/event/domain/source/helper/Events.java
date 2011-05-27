@@ -52,7 +52,7 @@ public class Events
       }
 
       Iterable<DomainEvent>[] iterables = (Iterable<DomainEvent>[]) new Iterable[events.size()];
-      return Iterables.<DomainEvent>flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
+      return Iterables.flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
    }
 
    public static Iterable<DomainEvent> events( TransactionDomainEvents... transactionDomains )
@@ -64,7 +64,7 @@ public class Events
       }
 
       Iterable<DomainEvent>[] iterables = (Iterable<DomainEvent>[]) new Iterable[events.size()];
-      return Iterables.<DomainEvent>flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
+      return Iterables.flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
    }
 
    public static TransactionVisitor adapter( final EventVisitor eventVisitor )

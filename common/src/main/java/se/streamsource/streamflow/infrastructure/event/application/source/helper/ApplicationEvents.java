@@ -49,7 +49,7 @@ public class ApplicationEvents
       }
 
       Iterable<ApplicationEvent>[] iterables = (Iterable<ApplicationEvent>[]) new Iterable[events.size()];
-      return Iterables.<ApplicationEvent>flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
+      return Iterables.flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
    }
 
    public static Iterable<ApplicationEvent> events(TransactionApplicationEvents... transactionDomains)
@@ -61,7 +61,7 @@ public class ApplicationEvents
       }
 
       Iterable<ApplicationEvent>[] iterables = (Iterable<ApplicationEvent>[]) new Iterable[events.size()];
-      return Iterables.<ApplicationEvent>flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
+      return Iterables.flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
    }
 
    public static boolean matches(Specification<ApplicationEvent> specification, Iterable<TransactionApplicationEvents> transactions)

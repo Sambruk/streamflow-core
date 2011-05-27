@@ -42,40 +42,15 @@ import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
-import se.streamsource.streamflow.client.util.ActionBinder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshComponents;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
-import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -89,9 +64,11 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -248,9 +225,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       // Limit pickable dates to future
       Calendar calendar = Calendar.getInstance();
-      calendar.setTime( new Date() );
+      calendar.setTime(new Date());
       calendar.add( Calendar.DAY_OF_MONTH, 1 );
-      dueOnField.getMonthView().setLowerBound( calendar.getTime() );
+      dueOnField.getMonthView().setLowerBound(calendar.getTime());
 
       final DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT );
       dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
@@ -283,8 +260,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       leftForm = Box.createVerticalBox();
 
       notePane = (JScrollPane) TEXTAREA.newField();
-      notePane.setMinimumSize( new Dimension( 10, 50 ) );
-      notePane.setPreferredSize( new Dimension( 700, 300 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
       leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
@@ -293,16 +268,10 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       valueBinder.bind( "note", notePane );
       
       JPanel formsContainer = new JPanel();
-      formsContainer.setLayout( new BoxLayout(formsContainer, BoxLayout.X_AXIS) );
+      formsContainer.setLayout( new GridLayout(1, 2) );
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
       formsContainer.add( leftForm );
       formsContainer.add( rightForm );
-
-/*
-      JPanel borderLayoutContainer = new JPanel( new BorderLayout() );
-      borderLayoutContainer.add( formsContainer, BorderLayout.NORTH );
-      borderLayoutContainer.add( leftForm, BorderLayout.CENTER );
-*/
 
       setViewportView( formsContainer );
 
