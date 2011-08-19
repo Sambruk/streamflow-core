@@ -17,12 +17,17 @@
 
 package se.streamsource.dci.restlet.server.sitemesh;
 
-import org.restlet.*;
-import org.restlet.data.*;
-import org.sitemesh.*;
-import org.sitemesh.content.*;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
+import org.sitemesh.BaseSiteMeshContext;
+import org.sitemesh.content.Content;
+import org.sitemesh.content.ContentProcessor;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * JAVADOC

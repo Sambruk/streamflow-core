@@ -20,20 +20,19 @@ package se.streamsource.streamflow.web.application.contact;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 
 /**
  * JAVADOC
@@ -46,13 +45,7 @@ public interface StreamflowContactLookupService
          implements ContactLookup
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public ContactList lookup( ContactValue contactTemplate )
       {
@@ -95,17 +88,17 @@ public interface StreamflowContactLookupService
             queryString.append( ") " );
          }
 
-         ValueBuilder<ContactList> listBuilder = vbf.newValueBuilder( ContactList.class );
+         ValueBuilder<ContactList> listBuilder = module.valueBuilderFactory().newValueBuilder(ContactList.class);
 
          if (argumentFound)
          {
             queryString.append( "type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity " );
             queryString.append( "!status:DRAFT" );
-            Query<Contacts.Data> cases = qbf
-                  .newNamedQuery( Contacts.Data.class, uowf.currentUnitOfWork(), "solrquery" ).setVariable( "query", queryString.toString() );
+            Query<Contacts.Data> cases = module.queryBuilderFactory()
+                  .newNamedQuery(Contacts.Data.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery").setVariable( "query", queryString.toString() );
 
 
-            ContactDTO contactSearchCriteria = vbf.newValueFromJSON( ContactDTO.class, contactTemplate.toJSON() );
+            ContactDTO contactSearchCriteria = module.valueBuilderFactory().newValueFromJSON(ContactDTO.class, contactTemplate.toJSON());
             for (Contacts.Data contact : cases)
             {
                for (ContactDTO contactValue : contact.contacts().get())
@@ -119,7 +112,7 @@ public interface StreamflowContactLookupService
                      }
                      if (matched)
                      {
-                        listBuilder.prototype().contacts().get().add( vbf.newValueFromJSON( ContactValue.class, contactValue.toJSON() ) );
+                        listBuilder.prototype().contacts().get().add( module.valueBuilderFactory().newValueFromJSON(ContactValue.class, contactValue.toJSON()) );
                      }
                   }
                }

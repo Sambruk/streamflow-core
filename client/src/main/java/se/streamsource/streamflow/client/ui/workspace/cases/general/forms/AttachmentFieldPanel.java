@@ -25,7 +25,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -46,7 +46,7 @@ public class AttachmentFieldPanel
    private JLabel attachment = new JLabel();
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    public AttachmentFieldPanel( @Uses FieldSubmissionDTO field,
                                 @Service ApplicationContext context )
@@ -83,7 +83,7 @@ public class AttachmentFieldPanel
    {
       if (!newValue.equals(""))
       {
-         AttachmentFieldSubmission submission = vbf.newValueFromJSON( AttachmentFieldSubmission.class, newValue );
+         AttachmentFieldSubmission submission = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, newValue);
          attachment.setText( submission.name().get() );
       }
    }

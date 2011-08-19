@@ -19,9 +19,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
@@ -49,7 +47,7 @@ public class CaseInfoView extends JPanel
 
    private CaseStatusLabel statusLabel = new CaseStatusLabel();
 
-   public CaseInfoView( @Service ApplicationContext appContext, @Uses CaseModel model, @Structure ObjectBuilderFactory obf )
+   public CaseInfoView( @Service ApplicationContext appContext, @Uses CaseModel model)
    {
       setActionMap(appContext.getActionMap(this));
 

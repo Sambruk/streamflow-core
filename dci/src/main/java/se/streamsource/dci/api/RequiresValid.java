@@ -17,9 +17,12 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.constraint.*;
+import org.qi4j.api.constraint.Constraint;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.api.constraint.Constraints;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * JAVADOC

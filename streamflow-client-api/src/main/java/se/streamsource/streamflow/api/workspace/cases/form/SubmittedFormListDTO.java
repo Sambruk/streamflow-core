@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.api.workspace.cases.form;
 
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * JAVADOC

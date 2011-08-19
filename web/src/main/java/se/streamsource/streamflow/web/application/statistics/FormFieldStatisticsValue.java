@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * Value for form data about a case in statistics. For multi-value fields

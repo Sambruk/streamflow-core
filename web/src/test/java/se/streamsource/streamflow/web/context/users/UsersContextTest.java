@@ -24,10 +24,10 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.administration.OrganizationUserContext;
 import se.streamsource.streamflow.web.context.administration.OrganizationUsersContext;
 import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
 import se.streamsource.streamflow.web.context.administration.UsersContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationUserContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -35,9 +35,9 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 
-import java.io.*;
+import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 /**
  * JAVADOC

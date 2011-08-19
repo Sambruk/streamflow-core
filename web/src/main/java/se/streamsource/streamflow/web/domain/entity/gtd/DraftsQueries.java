@@ -23,8 +23,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
@@ -44,7 +44,7 @@ public interface DraftsQueries
            implements DraftsQueries
    {
       @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Creator creator;
@@ -52,7 +52,7 @@ public interface DraftsQueries
       public QueryBuilder<Case> drafts(String filter)
       {
          // Find all Draft cases with specific creator which have not yet been opened
-         QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder(Case.class);
+         QueryBuilder<Case> queryBuilder = module.queryBuilderFactory().newQueryBuilder(Case.class);
          Association<Creator> createdId = templateFor(CreatedOn.class).createdBy();
          queryBuilder = queryBuilder.where(and(
                  eq(createdId, creator),

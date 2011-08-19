@@ -17,41 +17,71 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.hamcrest.*;
-import org.junit.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.composite.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.spi.service.importer.*;
-import org.qi4j.spi.structure.*;
-import org.qi4j.test.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import org.restlet.service.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.qi4j.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
+import org.qi4j.api.unitofwork.UnitOfWorkCallback;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
+import org.qi4j.spi.structure.ApplicationModelSPI;
+import org.qi4j.test.AbstractQi4jTest;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Server;
+import org.restlet.Uniform;
+import org.restlet.data.Form;
+import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ResourceException;
+import org.restlet.service.MetadataService;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.dci.api.InteractionValidation;
+import se.streamsource.dci.api.Requires;
+import se.streamsource.dci.api.RequiresValid;
+import se.streamsource.dci.api.Role;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet;
+import se.streamsource.dci.restlet.server.CommandResult;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.NullCommandResult;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.ValueAssembler;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * Test for CommandQueryClient
@@ -95,8 +125,8 @@ public class CommandQueryClientTest
 
       new ClientAssembler().assemble( module );
 
-      module.values( TestQuery.class, TestResult.class, TestCommand.class );
-      module.forMixin( TestQuery.class ).declareDefaults().abc().set( "def" );
+      module.values(TestQuery.class, TestResult.class, TestCommand.class);
+      module.forMixin( TestQuery.class ).declareDefaults().abc().set("def");
 
 
       new ValueAssembler().assemble( module );
@@ -123,7 +153,7 @@ public class CommandQueryClientTest
    {
 
       server = new Server( Protocol.HTTP, 8888 );
-      CommandQueryRestlet2 restlet = objectBuilderFactory.newObjectBuilder( CommandQueryRestlet2.class ).use( new org.restlet.Context() ).newInstance();
+      CommandQueryRestlet restlet = objectBuilderFactory.newObjectBuilder( CommandQueryRestlet.class ).use( new org.restlet.Context() ).newInstance();
       server.setNext(restlet);
       server.start();
 
@@ -141,7 +171,7 @@ public class CommandQueryClientTest
    @Test
    public void testQueryWithValue()
    {
-      TestResult result = cqc.query( "querywithvalue", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
+      TestResult result = cqc.query( "querywithvalue", TestResult.class, valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ));
 
       assertThat(result.toJSON(), equalTo("{\"xyz\":\"bar\"}"));
    }
@@ -152,6 +182,22 @@ public class CommandQueryClientTest
       TestQuery result = cqc.query( "querywithvalue", TestQuery.class );
 
       assertThat( result.toJSON(), equalTo( "{\"abc\":\"def\"}" ) );
+   }
+
+   @Test
+   public void testQueryWithStringResult()
+   {
+      String result = cqc.query( "querywithstringresult", String.class, valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ));
+
+      assertThat( result, equalTo( "bar") );
+   }
+
+   @Test
+   public void testQueryWithIntegerResult()
+   {
+      int result = cqc.query( "querywithintegerresult", Integer.class, valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ));
+
+      assertThat( result, equalTo( 7) );
    }
 
    @Test
@@ -185,13 +231,13 @@ public class CommandQueryClientTest
    @Test
    public void testPostCommandWithRightValue()
    {
-      cqc.postCommand( "commandwithvalue", valueBuilderFactory.newValueFromJSON( TestCommand.class, "{'abc':'right'}" ) );
+      cqc.postCommand("commandwithvalue", valueBuilderFactory.newValueFromJSON(TestCommand.class, "{'abc':'right'}"));
    }
 
    @Test
    public void testPutCommandWithRightValue()
    {
-      cqc.putCommand( "idempotentcommandwithvalue", valueBuilderFactory.newValueFromJSON( TestCommand.class, "{'abc':'right'}" ) );
+      cqc.putCommand("idempotentcommandwithvalue", valueBuilderFactory.newValueFromJSON(TestCommand.class, "{'abc':'right'}"));
    }
 
    @Test
@@ -206,19 +252,19 @@ public class CommandQueryClientTest
    public void testSubResourceQueryWithValue()
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
-      TestResult result = cqc2.query( "querywithvalue", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
+      TestResult result = cqc2.query( "querywithvalue", TestResult.class, valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ));
 
-      assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
+      assertThat(result.toJSON(), equalTo("{\"xyz\":\"bar\"}"));
    }
 
    @Test
    public void testInteractionValidation()
    {
-      CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
+      CommandQueryClient cqc2 = cqc.getSubClient("subresource");
 
       LinkValue xyzLink;
       {
-         ResourceValue result = cqc2.queryResource();
+         ResourceValue result = cqc2.query();
          xyzLink = Iterables.first( Iterables.filter( Links.withId( "xyz" ), result.commands().get() ) );
          assertThat( xyzLink, CoreMatchers.<Object>notNullValue());
          Form form = new Form();
@@ -227,7 +273,7 @@ public class CommandQueryClientTest
       }
 
       {
-         ResourceValue result = cqc2.queryResource();
+         ResourceValue result = cqc2.query();
          LinkValue nullLink = Iterables.first( Iterables.filter( Links.withId( "xyz" ), result.commands().get() ) );
          assertThat( nullLink, CoreMatchers.<Object>nullValue());
 
@@ -244,22 +290,22 @@ public class CommandQueryClientTest
 
       Form form = new Form();
       form.set( "valid", "true" );
-      cqc2.postCommand( "notxyz", form.getWebRepresentation());
+      cqc2.postCommand("notxyz", form.getWebRepresentation());
    }
 
    @Test
    public void testRootIndex()
    {
-      ResourceValue result = cqc.queryResource();
+      ResourceValue result = cqc.query();
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"delete\",\"id\":\"delete\",\"rel\":\"delete\",\"text\":\"Delete\"},{\"classes\":\"command\",\"href\":\"commandwithvalue\",\"id\":\"commandwithvalue\",\"rel\":\"commandwithvalue\",\"text\":\"Command with value\"},{\"classes\":\"command\",\"href\":\"idempotentcommandwithvalue\",\"id\":\"idempotentcommandwithvalue\",\"rel\":\"idempotentcommandwithvalue\",\"text\":\"Idempotent command with value\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithoutvalue\",\"id\":\"querywithoutvalue\",\"rel\":\"querywithoutvalue\",\"text\":\"Query without value\"}],\"resources\":[]}"));
+      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"delete\",\"id\":\"delete\",\"rel\":\"delete\",\"text\":\"Delete\"},{\"classes\":\"command\",\"href\":\"commandwithvalue\",\"id\":\"commandwithvalue\",\"rel\":\"commandwithvalue\",\"text\":\"Command with value\"},{\"classes\":\"command\",\"href\":\"idempotentcommandwithvalue\",\"id\":\"idempotentcommandwithvalue\",\"rel\":\"idempotentcommandwithvalue\",\"text\":\"Idempotent command with value\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithoutvalue\",\"id\":\"querywithoutvalue\",\"rel\":\"querywithoutvalue\",\"text\":\"Query without value\"},{\"classes\":\"query\",\"href\":\"querywithstringresult\",\"id\":\"querywithstringresult\",\"rel\":\"querywithstringresult\",\"text\":\"Query with string result\"},{\"classes\":\"query\",\"href\":\"querywithintegerresult\",\"id\":\"querywithintegerresult\",\"rel\":\"querywithintegerresult\",\"text\":\"Query with integer result\"}],\"resources\":[]}"));
    }
 
    @Test
    public void testSubResourceIndex()
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
-      ResourceValue result = cqc2.queryResource();
+      ResourceValue result = cqc2.query();
 
       assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"xyz\",\"id\":\"xyz\",\"rel\":\"xyz\",\"text\":\"Xyz\"},{\"classes\":\"command\",\"href\":\"commandwithrolerequirement\",\"id\":\"commandwithrolerequirement\",\"rel\":\"commandwithrolerequirement\",\"text\":\"Command with role requirement\"},{\"classes\":\"command\",\"href\":\"changedescription\",\"id\":\"changedescription\",\"rel\":\"changedescription\",\"text\":\"Change description\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithrolerequirement\",\"id\":\"querywithrolerequirement\",\"rel\":\"querywithrolerequirement\",\"text\":\"Query with role requirement\"},{\"classes\":\"query\",\"href\":\"genericquery\",\"id\":\"genericquery\",\"rel\":\"genericquery\",\"text\":\"Generic query\"},{\"classes\":\"query\",\"href\":\"description\",\"id\":\"description\",\"rel\":\"description\",\"text\":\"Description\"}],\"resources\":[{\"classes\":\"resource\",\"href\":\"subresource1/\",\"id\":\"subresource1\",\"rel\":\"subresource1\",\"text\":\"Subresource 1\"},{\"classes\":\"resource\",\"href\":\"subresource2/\",\"id\":\"subresource2\",\"rel\":\"subresource2\",\"text\":\"Subresource 2\"}]}" ) );
    }
@@ -268,7 +314,7 @@ public class CommandQueryClientTest
    public void testSubResourceQueryWithRoleRequirement()
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
-      TestResult result = cqc2.query( "querywithrolerequirement", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
+      TestResult result = cqc2.query( "querywithrolerequirement", TestResult.class, valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ));
 
       assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
    }
@@ -277,7 +323,7 @@ public class CommandQueryClientTest
    public void testSubResourceGenericQuery()
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
-      TestResult result = cqc2.query( "genericquery", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
+      TestResult result = cqc2.query( "genericquery", TestResult.class, valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ));
 
       assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
    }
@@ -286,25 +332,21 @@ public class CommandQueryClientTest
    public void testSubResourceCompositeCommandQuery()
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
-      cqc2.postCommand( "changedescription", valueBuilderFactory.newValueFromJSON( StringValue.class, "{'string':'foo'}" ) );
-      StringValue result = cqc2.query( "description", StringValue.class );
+      Form form = new Form();
+      form.set("description", "foo");
+      cqc2.postCommand( "changedescription", form );
+      String result = cqc2.query( "description", String.class );
 
-      assertThat( result.toJSON(), equalTo( "{\"string\":\"foo\"}" ) );
+      assertThat( result, equalTo( "foo" ) );
    }
 
    @Test
    public void testContext()
    {
-      RoleMap.newCurrentRoleMap();
-      RoleMap.current().set( transientBuilderFactory.newTransient(TestComposite.class ));
-
       DescribableContext context = objectBuilderFactory.newObject(DescribableContext.class);
-
-      ValueBuilder<StringValue> vb = valueBuilderFactory.newValueBuilder( StringValue.class );
-      vb.prototype().string().set( "Foo" );
-      context.changeDescription( vb.newInstance() );
-
-      assertThat(context.description().string().get(), equalTo("Foo"));
+      context.bind(transientBuilderFactory.newTransient(TestComposite.class ));
+      context.changeDescription( "Foo" );
+      assertThat(context.description(), equalTo("Foo"));
    }
 
    public interface TestQuery
@@ -328,7 +370,7 @@ public class CommandQueryClientTest
    }
 
    public static class RootRestlet
-         extends CommandQueryRestlet2
+         extends CommandQueryRestlet
    {
       @Override
       protected Uniform createRoot( Request request, Response response )
@@ -349,9 +391,9 @@ public class CommandQueryClientTest
          super( RootContext.class );
       }
 
-      public TestResult querywithvalue( ) throws Throwable
+      public TestResult querywithvalue(TestQuery testQuery ) throws Throwable
       {
-         return (TestResult) invoke( );
+         return context(RootContext.class).queryWithValue(testQuery);
       }
 
       public TestResult querywithoutvalue( ) throws Throwable
@@ -359,9 +401,14 @@ public class CommandQueryClientTest
          return context(RootContext.class).queryWithoutValue();
       }
 
-      public void commandwithvalue(  ) throws Throwable
+      public String querywithstringresult(TestQuery query ) throws Throwable
       {
-         invoke( );
+         return context(RootContext.class).queryWithStringResult(query);
+      }
+
+      public void commandwithvalue( TestCommand command ) throws Throwable
+      {
+         context(RootContext.class).commandWithValue(command);
       }
 
       public void resource( String currentSegment )
@@ -387,24 +434,14 @@ public class CommandQueryClientTest
          super( SubContext.class, SubContext2.class, DescribableContext.class );
       }
 
-      public void genericquery(  ) throws Throwable
+      public TestResult genericquery( TestQuery query ) throws Throwable
       {
-         result( invoke( ) );
+         return context(SubContext2.class).genericQuery(query);
       }
 
-      public void querywithvalue( ) throws Throwable
+      public TestResult querywithvalue(TestQuery query ) throws Throwable
       {
-         result( invoke( ) );
-      }
-
-      public void querywithoutvalue() throws Throwable
-      {
-         result( invoke( ) );
-      }
-
-      public void commandwithvalue( ) throws Throwable
-      {
-         result( invoke(  ) );
+         return context(SubContext.class).queryWithValue(query);
       }
 
       @SubResource
@@ -426,19 +463,26 @@ public class CommandQueryClientTest
       private static int count = 0;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public TestResult queryWithValue( TestQuery query )
       {
-         return vbf.newValueFromJSON( TestResult.class, "{'xyz':'bar'}" );
+         return module.valueBuilderFactory().newValueFromJSON(TestResult.class, "{'xyz':'bar'}");
       }
 
       public TestResult queryWithoutValue()
       {
-         return vbf.newValueFromJSON( TestResult.class, "{'xyz':'bar'}" );
+         return module.valueBuilderFactory().newValueFromJSON(TestResult.class, "{'xyz':'bar'}");
+      }
+
+      public String queryWithStringResult( TestQuery query )
+      {
+         return "bar";
+      }
+
+      public int queryWithIntegerResult( TestQuery query )
+      {
+         return 7;
       }
 
       public void commandWithValue( TestCommand command )
@@ -456,7 +500,7 @@ public class CommandQueryClientTest
          count++;
          if (count%3 != 0)
          {
-            uowf.currentUnitOfWork().addUnitOfWorkCallback( new UnitOfWorkCallback()
+            module.unitOfWorkFactory().currentUnitOfWork().addUnitOfWorkCallback( new UnitOfWorkCallback()
             {
                public void beforeCompletion() throws UnitOfWorkCompletionException
                {
@@ -486,22 +530,22 @@ public class CommandQueryClientTest
       implements InteractionValidation
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public TestResult queryWithValue( TestQuery query )
       {
-         return vbf.newValueFromJSON( TestResult.class, "{'xyz':'bar'}" );
+         return module.valueBuilderFactory().newValueFromJSON(TestResult.class, "{'xyz':'bar'}");
       }
 
       // Test interaction constraints
 
-      @RequiresRoles(File.class)
+      @Requires(File.class)
       public TestResult queryWithRoleRequirement( TestQuery query )
       {
-         return vbf.newValueFromJSON( TestResult.class, "{'xyz':'bar'}" );
+         return module.valueBuilderFactory().newValueFromJSON(TestResult.class, "{'xyz':'bar'}");
       }
 
-      @RequiresRoles(File.class)
+      @Requires(File.class)
       public void commandWithRoleRequirement()
       {
       }
@@ -535,52 +579,47 @@ public class CommandQueryClientTest
    public static class SubContext2
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public TestResult genericQuery( TestQuery query )
       {
-         return vbf.newValueFromJSON( TestResult.class, "{'xyz':'bar'}" );
+         return module.valueBuilderFactory().newValueFromJSON(TestResult.class, "{'xyz':'bar'}");
       }
    }
 
    public static class DescribableContext
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
-      @Role
-      Describable describable;
+      Describable describable = new Describable();
 
-      @Role
-      DescribableData describableData;
-
-      public StringValue description()
+      public void bind(@Uses DescribableData describableData)
       {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( se.streamsource.dci.value.StringValue.class );
-         builder.prototype().string().set( describableData.description().get() );
-         return builder.newInstance();
+         describable.bind(describableData);
       }
 
-      public void changeDescription( StringValue newDesc )
+      public String description()
       {
-         describable.changeDescription( newDesc.string().get() );
+         return describable.description();
       }
 
-      @Mixins(Describable.Mixin.class)
-      public interface Describable
+      public void changeDescription( @Name("description") String newDesc )
       {
-         void changeDescription( String newDesc );
+         describable.changeDescription(newDesc);
+      }
 
-         class Mixin
-               implements Describable
-         {
-            @This
-            DescribableData data;
-
+      public class Describable
+         extends Role<DescribableData>
+      {
             public void changeDescription( String newDesc )
             {
-               data.description().set( newDesc );
+               self.description().set( newDesc );
             }
+
+         public String description()
+         {
+            return self.description().get();
          }
       }
    }
@@ -592,7 +631,7 @@ public class CommandQueryClientTest
    }
 
    public interface TestComposite
-         extends TransientComposite, DescribableData, DescribableContext.Describable
+         extends TransientComposite, DescribableData
    {
 
    }

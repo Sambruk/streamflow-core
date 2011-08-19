@@ -17,20 +17,19 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
-import org.qi4j.api.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.sideeffect.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.web.domain.Notable;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-
-import java.util.*;
-
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
@@ -62,13 +61,18 @@ import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+
+import java.util.Map;
 
 /**
  * This represents a single Case in the system
@@ -80,12 +84,14 @@ public interface CaseEntity
       extends Case,
 
       // Interactions
+      Assignable.Events,
       Assignable.Data,
       Describable.Data,
       DueOn.Data,
       Notable.Data,
       Ownable.Data,
       CaseId.Data,
+      Status.Events,
       Status.Data,
       Conversations.Data,
       CaseAccess.Data,
@@ -120,11 +126,11 @@ public interface CaseEntity
       CaseEntity aCase;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public boolean hasPermission( String userId, String permission )
       {
-         User actor = uowf.currentUnitOfWork().get( User.class, userId );
+         User actor = module.unitOfWorkFactory().currentUnitOfWork().get( User.class, userId );
 
          switch (aCase.status().get())
          {

@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 
 /**
@@ -31,15 +31,15 @@ public class ConversationModel
    CommandQueryClient client;
 
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    public ConversationParticipantsModel newParticipantsModel()
    {
-      return obf.newObjectBuilder(ConversationParticipantsModel.class).use(client.getSubClient( "participants" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(ConversationParticipantsModel.class).use(client.getSubClient( "participants" )).newInstance();
    }
 
    public MessagesModel newMessagesModel()
    {
-      return obf.newObjectBuilder(MessagesModel.class).use(client.getSubClient( "messages" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(MessagesModel.class).use(client.getSubClient( "messages" )).newInstance();
    }
 }

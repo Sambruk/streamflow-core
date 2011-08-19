@@ -17,7 +17,8 @@
 
 package se.streamsource.dci.value.table;
 
-import org.qi4j.api.value.*;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
 /**
  * JAVADOC

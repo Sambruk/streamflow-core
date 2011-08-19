@@ -17,11 +17,12 @@
 
 package se.streamsource.dci.restlet.client.responsereader;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import se.streamsource.dci.restlet.client.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueComposite;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import se.streamsource.dci.restlet.client.ResponseReader;
 
 /**
  * JAVADOC
@@ -30,14 +31,14 @@ public class JSONResponseReader
    implements ResponseReader
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
-   public <T> T readResponse( Response response, Class<T> resultType )
+   public Object readResponse( Response response, Class<?> resultType )
    {
       if (response.getEntity().getMediaType().equals( MediaType.APPLICATION_JSON) && ValueComposite.class.isAssignableFrom( resultType ))
       {
          String jsonValue = response.getEntityAsText();
-         return vbf.newValueFromJSON( resultType, jsonValue );
+         return module.valueBuilderFactory().newValueFromJSON(resultType, jsonValue);
       }
 
       return null;

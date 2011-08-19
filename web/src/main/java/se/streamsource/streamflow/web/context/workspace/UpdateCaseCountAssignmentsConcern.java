@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.infrastructure.caching.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.injection.scope.Service;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.infrastructure.caching.Caches;
+import se.streamsource.streamflow.web.infrastructure.caching.Caching;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 /**
  * Increase case count when creating new case in assignments
@@ -35,9 +37,6 @@ public abstract class UpdateCaseCountAssignmentsConcern
    @Optional
    @Service
    CachingService caching;
-
-   @Structure
-   UnitOfWorkFactory uowf;
 
    public void createcase()
    {

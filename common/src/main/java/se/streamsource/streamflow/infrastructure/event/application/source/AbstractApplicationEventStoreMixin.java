@@ -17,24 +17,35 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.property.*;
-import org.qi4j.spi.structure.*;
-import org.slf4j.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
-import se.streamsource.streamflow.infrastructure.time.*;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.spi.property.ValueType;
+import org.qi4j.spi.structure.ModuleSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
+import se.streamsource.streamflow.infrastructure.time.Time;
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.locks.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import static java.util.Collections.*;
+import static java.util.Collections.synchronizedList;
 
 /**
  * Base implementation for ApplicationEventStores.
@@ -56,9 +67,6 @@ public abstract class AbstractApplicationEventStoreMixin
 
    @Structure
    protected ModuleSPI module;
-
-   @Structure
-   private ValueBuilderFactory vbf;
 
    private ExecutorService transactionNotifier;
 
@@ -84,12 +92,10 @@ public abstract class AbstractApplicationEventStoreMixin
 
    // TransactionVisitor implementation
    // This is how transactions are put into the store
-
-
    public TransactionApplicationEvents storeEvents( Iterable<ApplicationEvent> events ) throws IOException
    {
       // Create new TransactionApplicationEvents
-      ValueBuilder<TransactionApplicationEvents> builder = vbf.newValueBuilder( TransactionApplicationEvents.class );
+      ValueBuilder<TransactionApplicationEvents> builder = module.valueBuilderFactory().newValueBuilder(TransactionApplicationEvents.class);
       Iterables.addAll( builder.prototype().events().get(), events );
       builder.prototype().timestamp().set( getCurrentTimestamp() );
 

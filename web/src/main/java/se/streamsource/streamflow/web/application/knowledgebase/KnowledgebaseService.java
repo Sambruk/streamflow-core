@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.application.knowledgebase;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.Entity;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;

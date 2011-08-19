@@ -17,24 +17,29 @@
 
 package se.streamsource.dci.test.interactions.file;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import org.restlet.service.*;
-import se.streamsource.dci.api.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.link.LinksBuilder;
+import se.streamsource.dci.value.link.LinksValue;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * JAVADOC
  */
 public class FileContext
-      implements CreateContext<StringValue>, IndexContext<LinksValue>, DeleteContext
+      implements CreateContext<StringValue, File>, IndexContext<LinksValue>, DeleteContext
 {
    @Structure
    Module module;
@@ -48,11 +53,13 @@ public class FileContext
    }
 
    @RequiresDirectory
-   public void create( StringValue value )
+   public File create( StringValue value )
    {
       try
       {
-         new File( RoleMap.role( File.class ), value.string().get() ).createNewFile();
+         File file = new File(RoleMap.role(File.class), value.string().get());
+         file.createNewFile();
+         return file;
       } catch (IOException e)
       {
          throw new ResourceException( e );
@@ -68,14 +75,10 @@ public class FileContext
    }
 
    @RequiresFile
-   public Representation content() throws FileNotFoundException
+   public InputStream content() throws FileNotFoundException
    {
       File file = RoleMap.role( File.class );
-
-      MetadataService metadataService = (MetadataService) module.serviceFinder().findService( MetadataService.class ).get();
-      String ext = file.getName().split( "\\." )[1];
-      MediaType mediaType = metadataService.getMediaType( ext );
-      return new InputRepresentation( new FileInputStream( file ), mediaType );
+      return new FileInputStream( file );
    }
 
    @RequiresDirectory

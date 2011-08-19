@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
 /**
  * JAVADOC

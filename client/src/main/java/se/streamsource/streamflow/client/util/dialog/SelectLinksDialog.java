@@ -25,7 +25,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
@@ -37,19 +37,17 @@ import java.awt.*;
 public class SelectLinksDialog
       extends JPanel
 {
-
-   private ValueBuilderFactory vbf;
-
    private LinksValue selectedLinks;
 
    private JList list;
 
+   @Structure
+   Module module;
+
    public SelectLinksDialog( @Service ApplicationContext context,
-                                         @Uses EventList<LinkValue> model,
-                                         @Structure ValueBuilderFactory vbf )
+                                         @Uses EventList<LinkValue> model)
    {
       super( new BorderLayout() );
-      this.vbf = vbf;
 
       setActionMap( context.getActionMap( this ) );
       getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
@@ -66,7 +64,7 @@ public class SelectLinksDialog
    @org.jdesktop.application.Action
    public void execute()
    {
-      LinksBuilder linksBuilder = new LinksBuilder( vbf );
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
       for (Object value : list.getSelectedValues())
       {

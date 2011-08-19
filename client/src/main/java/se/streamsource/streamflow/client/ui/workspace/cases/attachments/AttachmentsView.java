@@ -30,7 +30,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -68,8 +68,8 @@ public class AttachmentsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private JXTable attachments;
 
@@ -77,7 +77,7 @@ public class AttachmentsView
 
    private AttachmentsModel attachmentsModel;
 
-   public AttachmentsView(@Service ApplicationContext context, @Uses AttachmentsModel model, @Structure ObjectBuilderFactory obf)
+   public AttachmentsView(@Service ApplicationContext context, @Uses AttachmentsModel model)
    {
       setLayout(new BorderLayout());
 
@@ -163,7 +163,7 @@ public class AttachmentsView
    @Action
    public Task remove()
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage(i18n.text(attachments.getSelectedRows().length > 1
             ? WorkspaceResources.attachments
             : WorkspaceResources.attachment));

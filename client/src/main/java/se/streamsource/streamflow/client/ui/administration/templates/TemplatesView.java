@@ -21,7 +21,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 
 import javax.swing.*;
@@ -34,14 +34,14 @@ public class TemplatesView extends JPanel
 {
    public TemplatesView( @Service ApplicationContext appContext,
                          @Uses SelectedTemplatesModel model,
-                         @Structure ObjectBuilderFactory obf )
+                         @Structure Module module )
    {
 
       this.setLayout( new BorderLayout( ) );
 
-      add( CENTER, obf.newObjectBuilder( AttachmentsView.class ).use( model.newAttachmentsModel()).newInstance());
+      add( CENTER, module.objectBuilderFactory().newObjectBuilder(AttachmentsView.class).use( model.newAttachmentsModel()).newInstance());
 
-      add( EAST, obf.newObjectBuilder( SelectedTemplatesView.class ).use(model).newInstance());
+      add( EAST, module.objectBuilderFactory().newObjectBuilder(SelectedTemplatesView.class).use(model).newInstance());
 
    }
 }

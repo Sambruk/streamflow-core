@@ -17,7 +17,7 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.composite.*;
+import org.qi4j.api.composite.TransientComposite;
 
 /**
  * Base interface for interactions

@@ -17,13 +17,18 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.restlet.*;
-import org.slf4j.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Initializable;
+import org.qi4j.api.mixin.InitializationException;
+import org.qi4j.api.structure.Module;
+import org.restlet.Response;
+import org.restlet.representation.Representation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Delegates to a list of potential readers. Register readers on startup.
@@ -40,7 +45,7 @@ public class ResponseReaderDelegator
    {
       Logger logger = LoggerFactory.getLogger( getClass() );
 
-      ResourceBundle defaultResponseReaders = ResourceBundle.getBundle( "responsereaders" );
+      ResourceBundle defaultResponseReaders = ResourceBundle.getBundle( "commandquery" );
 
       String responseReaderClasses = defaultResponseReaders.getString( "responsereaders" );
       logger.info( "Using responsereaders:"+responseReaderClasses );
@@ -63,11 +68,14 @@ public class ResponseReaderDelegator
       responseReaders.add( reader );
    }
 
-   public <T> T readResponse( Response response, Class<T> resultType )
+   public Object readResponse( Response response, Class<?> resultType )
    {
+      if (resultType.equals(Representation.class))
+         return response.getEntity();
+
       for (ResponseReader responseReader : responseReaders)
       {
-         T result = responseReader.readResponse( response, resultType );
+         Object result = responseReader.readResponse( response, resultType );
          if (result != null)
             return result;
       }

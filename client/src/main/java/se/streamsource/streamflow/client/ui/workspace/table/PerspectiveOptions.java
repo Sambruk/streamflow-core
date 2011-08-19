@@ -21,7 +21,6 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
@@ -47,7 +46,7 @@ public class PerspectiveOptions extends JPanel
 
 
    public PerspectiveOptions(final ApplicationContext context, List<LinkValue> values,
-                             final List selectedValues, final boolean isGrouped, ObjectBuilderFactory obf)
+                             final List selectedValues, final boolean isGrouped)
    {
 
       super(new BorderLayout());

@@ -21,7 +21,6 @@ import org.jdesktop.application.ApplicationAction;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 

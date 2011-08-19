@@ -17,10 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -42,10 +40,6 @@ public class ContactModel
 
    @Uses
    CommandQueryClient client;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
 
    public ContactDTO getContact()
    {
@@ -146,12 +140,12 @@ public class ContactModel
 
    public boolean isContactLookupEnabled()
    {
-      ResourceValue resource = client.queryResource();
+      ResourceValue resource = client.query();
       return Iterables.matchesAny( Links.withRel("searchcontacts"), resource.queries().get() );
    }
 
    public ContactsDTO searchContacts( ContactDTO query ) throws ResourceException
    {
-      return client.query( "searchcontacts", query, ContactsDTO.class );
+      return client.query( "searchcontacts", ContactsDTO.class, query);
    }
 }

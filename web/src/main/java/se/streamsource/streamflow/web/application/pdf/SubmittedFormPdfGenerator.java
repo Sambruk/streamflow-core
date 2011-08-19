@@ -26,11 +26,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.api.administration.form.*;
-import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
@@ -64,10 +63,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
    {
 
       @Structure
-      UnitOfWorkFactory uowFactory;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Service
       AttachmentStore store;
@@ -87,7 +83,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          PdfFont descFont = new PdfFont( PDType1Font.HELVETICA_OBLIQUE, 10 );
          PdfFont pageFont = new PdfFont( PDType1Font.HELVETICA_BOLD_OBLIQUE, 14 );
 
-         Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
+         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
          document.println( bundle.getString( "caseid") + ": " + id.caseId().get(), h1Font);
          document.print( form.getDescription(), h2Font );
@@ -98,13 +94,13 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
 
          for (SubmittedPageValue submittedPageValue : value.pages().get())
          {
-            Page page = uowFactory.currentUnitOfWork().get( Page.class, submittedPageValue.page().get().identity() );
+            Page page = module.unitOfWorkFactory().currentUnitOfWork().get( Page.class, submittedPageValue.page().get().identity() );
             document.println( page.getDescription(), pageFont );
 
             // TODO Page breaks
             for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
             {
-               FieldEntity field = uowFactory.currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
+               FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
 
                document.print(field.getDescription() + ":", h2Font);
                if (field.fieldValue().get() instanceof DateFieldValue)
@@ -123,7 +119,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
                {
                   try
                   {
-                     AttachmentFieldSubmission attachment = vbf.newValueFromJSON(AttachmentFieldSubmission.class, submittedFieldValue.value().get());
+                     AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, submittedFieldValue.value().get());
                      document.println(attachment.name().get(), valueFont);
                   } catch (ConstructionException e)
                   {

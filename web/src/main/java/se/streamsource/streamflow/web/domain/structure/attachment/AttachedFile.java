@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Settings for where an attached file reside

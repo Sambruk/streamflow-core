@@ -22,16 +22,13 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.web.domain.Notable;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormId;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
@@ -60,10 +57,7 @@ public interface FormEntity
       implements Removable
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Form form;
@@ -77,9 +71,9 @@ public interface FormEntity
          {
             {
                SelectedForms.Data selectedForms = QueryExpressions.templateFor(SelectedForms.Data.class);
-               Query<SelectedForms> formUsages = qbf.newQueryBuilder( SelectedForms.class ).
+               Query<SelectedForms> formUsages = module.queryBuilderFactory().newQueryBuilder(SelectedForms.class).
                      where(QueryExpressions.contains(selectedForms.selectedForms(), form)).
-                     newQuery(uowf.currentUnitOfWork());
+                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
                for (SelectedForms usages : formUsages)
                {

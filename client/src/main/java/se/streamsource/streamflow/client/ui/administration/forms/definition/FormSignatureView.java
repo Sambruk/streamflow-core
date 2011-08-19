@@ -24,10 +24,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
@@ -53,15 +52,15 @@ public class FormSignatureView
       implements Observer, Refreshable, TransactionListener
 {
    private FormSignatureModel model;
-   @Structure
-   ValueBuilderFactory vbf;
    private StateBinder formValueBinder;
+   private Module module;
 
    public FormSignatureView( @Service ApplicationContext context,
                              @Uses FormSignatureModel model,
-                             @Structure ObjectBuilderFactory obf )
+                             @Structure Module module)
    {
       super( new BorderLayout() );
+      this.module = module;
       setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       this.model = model;
@@ -72,7 +71,7 @@ public class FormSignatureView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
       formBuilder.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
-      formValueBinder = obf.newObject( StateBinder.class );
+      formValueBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       formValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       RequiredSignatureValue signatureValue = formValueBinder.bindingTemplate( RequiredSignatureValue.class );
 
@@ -89,13 +88,13 @@ public class FormSignatureView
    public void refresh()
    {
       model.refresh();
-      RequiredSignatureValue value = vbf.newValueBuilder( RequiredSignatureValue.class ).withPrototype( model.getFormSignature() ).prototype();
+      RequiredSignatureValue value = module.valueBuilderFactory().newValueBuilder(RequiredSignatureValue.class).withPrototype( model.getFormSignature() ).prototype();
       formValueBinder.updateWith( value );
    }
 
    public void update( Observable observable, Object arg )
    {
-      final ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class ).withPrototype( model.getFormSignature() );
+      final ValueBuilder<RequiredSignatureValue> builder = module.valueBuilderFactory().newValueBuilder(RequiredSignatureValue.class).withPrototype( model.getFormSignature() );
       final Property property = (Property) arg;
       if (property.qualifiedName().name().equals( "description" ))
       {

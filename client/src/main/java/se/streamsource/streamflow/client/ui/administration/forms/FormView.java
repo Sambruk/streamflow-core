@@ -22,7 +22,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
@@ -44,7 +44,7 @@ public class FormView
    private JTextArea textArea;
 
    @Structure
-   private ObjectBuilderFactory obf;
+   Module module;
 
    public FormView( @Service ApplicationContext context,
                     @Uses FormModel model)
@@ -70,7 +70,7 @@ public class FormView
    public void edit()
    {
       //FormEditView formEditView = obf.newObjectBuilder( FormEditView.class ).use( client ).newInstance();
-      TabbedResourceView resourceView = obf.newObjectBuilder( TabbedResourceView.class ).use( model ).newInstance();
+      TabbedResourceView resourceView = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( model ).newInstance();
 
       AdministrationView adminView = (AdministrationView) SwingUtilities.getAncestorOfClass( AdministrationView.class, this );
 

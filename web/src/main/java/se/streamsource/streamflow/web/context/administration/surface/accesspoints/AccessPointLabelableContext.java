@@ -17,22 +17,26 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.entity.project.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

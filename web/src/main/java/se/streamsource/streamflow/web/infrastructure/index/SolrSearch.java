@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import org.apache.solr.client.solrj.*;
-import org.apache.solr.common.*;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrDocumentList;
 
 /**
  * JAVADOC

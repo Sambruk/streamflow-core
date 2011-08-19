@@ -21,8 +21,9 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
@@ -46,7 +47,7 @@ public class UsersAdministrationModel
       implements Refreshable, TransactionListener
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private EventList<UserEntityDTO> eventList = new BasicEventList<UserEntityDTO>();
 
@@ -97,10 +98,9 @@ public class UsersAdministrationModel
 
    public void resetPassword( UserEntityDTO user, String password )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( password );
-
-      client.getClient( user ).putCommand( "resetpassword", builder.newInstance() );
+      Form form = new Form();
+      form.set("password", password);
+      client.getClient( user ).putCommand( "resetpassword", form );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

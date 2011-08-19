@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.factory;
 
-import org.qi4j.api.entity.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.entity.EntityComposite;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Factory for DomainEvents

@@ -17,12 +17,13 @@
 
 package se.streamsource.dci.value.link;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
-import java.io.*;
-import java.net.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Builder for making it easier to create LinksValue/LinkValue

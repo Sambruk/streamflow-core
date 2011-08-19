@@ -17,7 +17,9 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC

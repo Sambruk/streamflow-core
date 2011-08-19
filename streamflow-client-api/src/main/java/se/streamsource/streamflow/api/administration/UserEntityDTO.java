@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.api.administration;
 
-import org.qi4j.api.property.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.property.Property;
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * User information in the admin UI

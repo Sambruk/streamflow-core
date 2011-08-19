@@ -18,10 +18,8 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.value.ValueComposite;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -41,9 +39,21 @@ import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.entity.project.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
+import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.EndUserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
+import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
@@ -53,7 +63,6 @@ import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.bootstrap.AssemblySpecifications.types;
 
 /**
  * JAVADOC

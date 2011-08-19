@@ -25,8 +25,8 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
@@ -49,7 +49,7 @@ public class CreateAccountDialog extends JPanel
    final Logger logger = LoggerFactory.getLogger( getClass().getName() );
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private JTextField nameField;
    private JTextField serverField;
@@ -110,7 +110,7 @@ public class CreateAccountDialog extends JPanel
    {
       try
       {
-         ValueBuilder<AccountSettingsValue> accountBuilder = vbf.newValueBuilder( AccountSettingsValue.class );
+         ValueBuilder<AccountSettingsValue> accountBuilder = module.valueBuilderFactory().newValueBuilder(AccountSettingsValue.class);
          accountBuilder.prototype().name().set( nameField.getText() );
          accountBuilder.prototype().server().set( serverField.getText() );
          accountBuilder.prototype().userName().set( usernameField.getText() );

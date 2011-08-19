@@ -25,8 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -63,19 +62,13 @@ public class FormsView
 {
    private FormsModel model;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   @Structure
+   Module module;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> possibleMoveToDialogs;
-
-   public FormsView( @Service ApplicationContext context, @Uses final FormsModel model, @Structure final ObjectBuilderFactory obf)
+   public FormsView( @Service ApplicationContext context, @Uses final FormsModel model)
    {
       this.model = model;
 
@@ -86,7 +79,7 @@ public class FormsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            return obf.newObjectBuilder( FormView.class ).use( model.newResourceModel(detailLink)).newInstance();
+            return module.objectBuilderFactory().newObjectBuilder(FormView.class).use( model.newResourceModel(detailLink)).newInstance();
          }
       });
 
@@ -96,7 +89,7 @@ public class FormsView
    @Action
    public Task add()
    {
-      NameDialog formDialog = nameDialogs.iterator().next();
+      NameDialog formDialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, formDialog, i18n.text( AdministrationResources.create_new_form ) );
 
@@ -121,7 +114,7 @@ public class FormsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -147,7 +140,7 @@ public class FormsView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );

@@ -17,17 +17,22 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.util.Iterables;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Base class for client-side Command/Query resources
@@ -52,17 +57,18 @@ public class CommandQueryClient
       return resourceValue;
    }
 
-   public synchronized ResourceValue queryResource( ) throws ResourceException
+   // Queries
+   public synchronized ResourceValue query() throws ResourceException
    {
-      return resourceValue = query( "", null, ResourceValue.class );
+      return resourceValue = query( "", ResourceValue.class);
    }
 
    public synchronized <T> T query( String operation, Class<T> queryResult ) throws ResourceException
    {
-      return query( operation, null, queryResult );
+      return query( operation, queryResult, null);
    }
 
-   public synchronized <T> T query( String operation, Object queryRequest, Class<T> queryResult ) throws ResourceException
+   public synchronized <T> T query(String operation, Class<T> queryResult, Object queryRequest) throws ResourceException
    {
       Response response = invokeQuery( operation, queryRequest );
 
@@ -79,31 +85,12 @@ public class CommandQueryClient
       }
    }
 
-   public synchronized Representation queryRepresentation( String query, Object queryValue )
-   {
-      Response response = invokeQuery( query, queryValue );
-
-      if (response.getStatus().isSuccess())
-      {
-         return response.getEntity();
-      } else
-      {
-         // This will throw an exception
-         handleError( response );
-         return null;
-      }
-   }
-
    public synchronized  <T> T queryLink(LinkValue link, Class<T> queryResult)
    {
       return query( link.href().get(), queryResult );
    }
 
-   public synchronized void postLink( LinkValue link ) throws ResourceException
-   {
-      postCommand( link.href().get(), new EmptyRepresentation() );
-   }
-
+   // Commands
    public synchronized void command(String relation)
       throws ResourceException
    {
@@ -118,30 +105,29 @@ public class CommandQueryClient
          postLink( link );
    }
 
+   public synchronized void postLink( LinkValue link ) throws ResourceException
+   {
+      postCommand( link.href().get(), new EmptyRepresentation() );
+   }
+
    public synchronized void postCommand( String operation ) throws ResourceException
    {
       postCommand( operation, new EmptyRepresentation() );
    }
 
-   public synchronized void postCommand( String operation, ValueComposite command ) throws ResourceException
-   {
-      Representation commandRepresentation;
-      commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
-
-      postCommand( operation, commandRepresentation );
-   }
-
-   public synchronized void postCommand( String operation, Representation commandRepresentation )
+   public synchronized void postCommand( String operation, Object requestObject )
          throws ResourceException
    {
-      postCommand( operation, commandRepresentation, cqcFactory.getHandler() );
+      postCommand( operation, requestObject, cqcFactory.getHandler() );
    }
 
-   public synchronized void postCommand( String operation, Representation commandRepresentation, ResponseHandler responseHandler )
+   public synchronized void postCommand( String operation, Object requestObject, ResponseHandler responseHandler )
          throws ResourceException
    {
       Reference ref = new Reference( reference.toUri().toString() + operation );
-      Request request = new Request( Method.POST, ref, commandRepresentation );
+      Request request = new Request( Method.POST, ref );
+
+      cqcFactory.writeRequest(request, requestObject);
 
       cqcFactory.updateCommandRequest( request );
 
@@ -171,58 +157,6 @@ public class CommandQueryClient
       }
    }
 
-   private Object handleError( Response response )
-         throws ResourceException
-   {
-      if (response.getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
-      {
-         if (response.getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT ))
-         {
-            try
-            {
-               Object exception = new ObjectRepresentation( response.getEntity() ).getObject();
-               throw new ResourceException( (Throwable) exception );
-            } catch (IOException e)
-            {
-               throw new ResourceException( e );
-            } catch (ClassNotFoundException e)
-            {
-               throw new ResourceException( e );
-            }
-         }
-
-         throw new ResourceException( Status.SERVER_ERROR_INTERNAL, response.getEntityAsText() );
-      } else
-      {
-         if (response.getEntity() != null)
-         {
-            String text = response.getEntityAsText();
-            throw new ResourceException( response.getStatus().getCode(), response.getStatus().getName(), text, response.getRequest().getResourceRef().toUri().toString() );
-         } else
-         {
-            throw new ResourceException( response.getStatus().getCode(), response.getStatus().getName(), response.getStatus().getDescription(), response.getRequest().getResourceRef().toUri().toString() );
-         }
-      }
-   }
-
-   private Response invokeQuery( String operation, Object queryRequest )
-         throws ResourceException
-   {
-      Reference ref = new Reference( reference.toUri().toString() + operation );
-      Request request = new Request( Method.GET, ref );
-
-      if (queryRequest != null)
-         cqcFactory.writeRequest(request, queryRequest);
-
-      cqcFactory.updateQueryRequest( request );
-
-      Response response = new Response( request );
-
-      cqcFactory.getClient().handle( request, response );
-
-      return response;
-   }
-
    public synchronized void create() throws ResourceException
    {
       putCommand( null );
@@ -230,28 +164,17 @@ public class CommandQueryClient
 
    public synchronized void putCommand( String operation ) throws ResourceException
    {
-      putCommand( operation, new EmptyRepresentation(), cqcFactory.getHandler() );
+      putCommand( operation, null, cqcFactory.getHandler() );
    }
 
-   public synchronized void putCommand( String operation, ValueComposite command ) throws ResourceException
-   {
-      Representation commandRepresentation;
-      if (command != null)
-         commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
-      else
-         commandRepresentation = new EmptyRepresentation();
-      putCommand( operation, commandRepresentation, cqcFactory.getHandler() );
-   }
-
-   public synchronized void putCommand( String operation, Representation commandRepresentation )
+   public synchronized void putCommand( String operation, Object requestObject )
          throws ResourceException
    {
-      postCommand( operation, commandRepresentation, cqcFactory.getHandler() );
+      postCommand( operation, requestObject, cqcFactory.getHandler() );
    }
 
-   public synchronized void putCommand( String operation, Representation representation, ResponseHandler responseHandler) throws ResourceException
+   public synchronized void putCommand( String operation, Object requestObject, ResponseHandler responseHandler) throws ResourceException
    {
-
       Reference ref = new Reference( reference.toUri().toString() );
 
       if (operation != null)
@@ -260,9 +183,10 @@ public class CommandQueryClient
       }
 
       Request request = new Request( Method.PUT, ref );
-      cqcFactory.updateCommandRequest( request );
 
-      request.setEntity( representation );
+      cqcFactory.writeRequest(request, requestObject);
+      cqcFactory.updateCommandRequest(request);
+
       int tries = 3;
       while (true)
       {
@@ -315,6 +239,7 @@ public class CommandQueryClient
       }
    }
 
+   // Delete
    public synchronized void delete() throws ResourceException
    {
       delete(cqcFactory.getHandler());
@@ -375,6 +300,7 @@ public class CommandQueryClient
       }
    }
 
+   // Browse to other resources
    public synchronized CommandQueryClient getSubClient( String pathSegment )
    {
       Reference subReference = reference.clone().addSegment( pathSegment ).addSegment( "" );
@@ -383,6 +309,9 @@ public class CommandQueryClient
 
    public synchronized CommandQueryClient getClient( String relativePath )
    {
+      if (relativePath.startsWith("http://"))
+         return cqcFactory.newClient(new Reference(relativePath));
+
       Reference reference = this.reference.clone();
       if (relativePath.startsWith( "/" ))
          reference.setPath( relativePath );
@@ -401,6 +330,59 @@ public class CommandQueryClient
          throw new NullPointerException("No link specified");
 
       return getClient( link.href().get() );
+   }
+
+   // Internal
+   private Object handleError( Response response )
+         throws ResourceException
+   {
+      if (response.getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
+      {
+         if (MediaType.APPLICATION_JAVA_OBJECT.equals(response.getEntity().getMediaType()))
+         {
+            try
+            {
+               Object exception = new ObjectRepresentation( response.getEntity() ).getObject();
+               throw new ResourceException( (Throwable) exception );
+            } catch (IOException e)
+            {
+               throw new ResourceException( e );
+            } catch (ClassNotFoundException e)
+            {
+               throw new ResourceException( e );
+            }
+         }
+
+         throw new ResourceException( Status.SERVER_ERROR_INTERNAL, response.getEntityAsText() );
+      } else
+      {
+         if (response.getEntity() != null)
+         {
+            String text = response.getEntityAsText();
+            throw new ResourceException( response.getStatus().getCode(), response.getStatus().getName(), text, response.getRequest().getResourceRef().toUri().toString() );
+         } else
+         {
+            throw new ResourceException( response.getStatus().getCode(), response.getStatus().getName(), response.getStatus().getDescription(), response.getRequest().getResourceRef().toUri().toString() );
+         }
+      }
+   }
+
+   private Response invokeQuery( String operation, Object queryRequest )
+         throws ResourceException
+   {
+      Reference ref = new Reference( reference.toUri().toString() + operation );
+      Request request = new Request( Method.GET, ref );
+
+      if (queryRequest != null)
+         cqcFactory.writeRequest(request, queryRequest);
+
+      cqcFactory.updateQueryRequest( request );
+
+      Response response = new Response( request );
+
+      cqcFactory.getClient().handle( request, response );
+
+      return response;
    }
 
    @Override

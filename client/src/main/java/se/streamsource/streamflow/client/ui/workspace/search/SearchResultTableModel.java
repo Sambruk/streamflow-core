@@ -19,9 +19,8 @@ package se.streamsource.streamflow.client.ui.workspace.search;
 
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
@@ -32,14 +31,11 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 public class SearchResultTableModel
         extends CasesTableModel
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
    private String searchString;
 
-   public SearchResultTableModel(@Structure ObjectBuilderFactory obf)
+   public SearchResultTableModel(@Structure Module module)
    {
-      super(obf);
+      super(module);
    }
 
    public void search(String text)
@@ -83,7 +79,7 @@ public class SearchResultTableModel
 
       translatedQuery += addWhereClauseFromFilter();
 
-      ValueBuilder<TableQuery> builder = vbf.newValueBuilder(TableQuery.class);
+      ValueBuilder<TableQuery> builder = module.valueBuilderFactory().newValueBuilder(TableQuery.class);
       String query = "select * where " + translatedQuery;
 
       query += addSortingFromFilter();
@@ -91,7 +87,7 @@ public class SearchResultTableModel
       query += " limit 1000";
       builder.prototype().tq().set(query);
 
-      return client.query("cases", builder.newInstance(), TableValue.class);
+      return client.query("cases", TableValue.class, builder.newInstance());
    }
 
     public void clearSearchString() {

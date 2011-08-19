@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source;
 
-import org.qi4j.api.io.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import org.qi4j.api.io.Output;
+import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 
 /**
  * Stream of event transactions. Registering with a stream will

@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.SelectionListModel;
 
@@ -28,8 +28,8 @@ import se.streamsource.streamflow.client.util.SelectionListModel;
 public class ParticipantsModel
    extends SelectionListModel
 {
-   @Uses
-   ObjectBuilder<UsersAndGroupsModel> usersAndGroupsModel;
+   @Structure
+   Module module;
 
    public ParticipantsModel()
    {
@@ -38,6 +38,6 @@ public class ParticipantsModel
 
    public UsersAndGroupsModel newUsersAndGroupsModel()
    {
-      return usersAndGroupsModel.use( client ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(UsersAndGroupsModel.class).use( client ).newInstance();
    }
 }

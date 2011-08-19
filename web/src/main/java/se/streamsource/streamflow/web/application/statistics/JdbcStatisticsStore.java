@@ -17,14 +17,18 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.slf4j.*;
-import se.streamsource.streamflow.web.infrastructure.database.*;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.web.infrastructure.database.Databases;
 
-import javax.sql.*;
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Statistics store that saves data into a JDBC database

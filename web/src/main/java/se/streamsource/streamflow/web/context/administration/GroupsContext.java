@@ -17,25 +17,28 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Role;
+import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
 
 /**
  * JAVADOC
  */
 @Mixins(GroupsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface GroupsContext
       extends IndexContext<Iterable<Group>>, Context
 {
-   public void creategroup( @MaxLength(50) StringValue name );
+   public Group create( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements GroupsContext
@@ -43,17 +46,43 @@ public interface GroupsContext
       @Structure
       Module module;
 
-      public Iterable<Group> index()
-      {
-         Groups.Data groups = RoleMap.role( Groups.Data.class );
+      GroupsAdmin groups;
 
-         return groups.groups();
+      void bind(@Uses Groups.Events groups)
+      {
+         this.groups = new GroupsAdmin(groups);
       }
 
-      public void creategroup( StringValue name )
+      public Iterable<Group> index()
       {
-         Groups groups = RoleMap.role( Groups.class );
-         groups.createGroup( name.string().get() );
+         return groups.index();
+      }
+
+      public Group create( String name )
+      {
+         return groups.create(name);
+      }
+
+      class GroupsAdmin
+         extends Role<Groups.Events>
+      {
+         GroupsAdmin(Groups.Events self)
+         {
+            super(self);
+         }
+
+         public Iterable<Group> index()
+         {
+            return ((Groups.Data) self).groups();
+         }
+
+         Group create(String name)
+         {
+            Group group = self.createdGroup(null, module.serviceFinder().<IdentityGenerator>findService(IdentityGenerator.class).get().generate(GroupEntity.class));
+            group.changeDescription(name);
+            self.addedGroup(null, group);
+            return group;
+         }
       }
    }
 }

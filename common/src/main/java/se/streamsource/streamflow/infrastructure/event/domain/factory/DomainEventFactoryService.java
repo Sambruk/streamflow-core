@@ -17,20 +17,26 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.factory;
 
-import org.json.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.time.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Application;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.time.Time;
 
-import java.security.*;
+import java.security.Principal;
 
 /**
  * DomainEvent factory
@@ -44,10 +50,7 @@ public interface DomainEventFactoryService
          implements DomainEventFactory
    {
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Service
       IdentityGenerator idGenerator;
@@ -64,7 +67,7 @@ public interface DomainEventFactoryService
 
       public DomainEvent createEvent( EntityComposite entity, String name, Object[] args )
       {
-         ValueBuilder<DomainEvent> builder = vbf.newValueBuilder( DomainEvent.class );
+         ValueBuilder<DomainEvent> builder = module.valueBuilderFactory().newValueBuilder(DomainEvent.class);
 
          DomainEvent prototype = builder.prototype();
          prototype.name().set( name );
@@ -84,7 +87,7 @@ public interface DomainEventFactoryService
 
          prototype.identity().set( idGenerator.generate( DomainEvent.class ) );
 
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          prototype.usecase().set( uow.usecase().name() );
          prototype.version().set( version );
 

@@ -33,11 +33,10 @@ import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
@@ -100,11 +99,10 @@ public class FormSubmissionWizardPageView
    private java.util.Map<StateBinder, EntityReference> fieldBinders;
    private ValidationResultModel validationResultModel;
    private FormSubmissionWizardPageModel model;
-   private ObjectBuilderFactory obf;
    private static final Map<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>> fields = new HashMap<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>>();
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    static
    {
@@ -122,13 +120,12 @@ public class FormSubmissionWizardPageView
    }
 
 
-   public FormSubmissionWizardPageView( @Structure ObjectBuilderFactory obf,
+   public FormSubmissionWizardPageView( @Structure Module module,
                                         @Uses PageSubmissionDTO page,
                                         @Uses FormDraftModel model)
    {
       super( page.title().get() );
-      this.model = obf.newObjectBuilder( FormSubmissionWizardPageModel.class ).use( model ).newInstance();
-      this.obf = obf;
+      this.model = module.objectBuilderFactory().newObjectBuilder(FormSubmissionWizardPageModel.class).use( model ).newInstance();
       componentFieldMap = new HashMap<String, AbstractFieldPanel>();
       validationResultModel = new DefaultValidationResultModel();
       setLayout( new BorderLayout() );
@@ -366,7 +363,7 @@ public class FormSubmissionWizardPageView
    {
       FieldValue fieldValue = field.field().get().fieldValue().get();
       Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) fieldValue.getClass().getInterfaces()[0];
-      return obf.newObjectBuilder( fields.get( fieldValueType ) ).use( field, fieldValue ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(fields.get(fieldValueType)).use( field, fieldValue ).newInstance();
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -374,9 +371,9 @@ public class FormSubmissionWizardPageView
       if (Events.matches( Events.withNames( "changedFieldAttachmentValue" ), transactions ))
       {
          String value = EventParameters.getParameter( first( filter( Events.withNames( "changedFieldAttachmentValue" ), events( transactions ) ) ), "param1" );
-         AttachmentFieldDTO dto = vbf.newValueFromJSON( AttachmentFieldDTO.class, value );
+         AttachmentFieldDTO dto = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldDTO.class, value);
 
-         ValueBuilder<AttachmentFieldSubmission> builder = vbf.newValueBuilder( AttachmentFieldSubmission.class );
+         ValueBuilder<AttachmentFieldSubmission> builder = module.valueBuilderFactory().newValueBuilder(AttachmentFieldSubmission.class);
          builder.prototype().attachment().set( dto.attachment().get() );
          builder.prototype().name().set( dto.name().get() );
 

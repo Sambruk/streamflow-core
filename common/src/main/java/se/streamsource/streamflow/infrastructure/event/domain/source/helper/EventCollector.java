@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventVisitor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC

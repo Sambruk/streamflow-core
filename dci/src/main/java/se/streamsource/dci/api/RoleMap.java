@@ -17,7 +17,10 @@
 
 package se.streamsource.dci.api;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Map objects to role interfaces. An instance of RoleMap
@@ -146,12 +149,10 @@ public class RoleMap
 
    private <T> void getAll0( Class<T> roleClass, List<T> list )
    {
-      try
+      for (Object obj : roles.values())
       {
-         list.add( get(roleClass) );
-      } catch (IllegalArgumentException e)
-      {
-         // Ignore
+         if (roleClass.isInstance(obj) && !list.contains(obj))
+            list.add((T) obj);
       }
 
       // Check parent roleMap

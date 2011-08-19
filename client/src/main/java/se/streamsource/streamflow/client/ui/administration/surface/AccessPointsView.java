@@ -24,7 +24,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -49,16 +49,13 @@ public class AccessPointsView
 {
    AccessPointsModel model;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
-   public AccessPointsView( @Service ApplicationContext context, @Uses final AccessPointsModel model, @Structure final ObjectBuilderFactory obf )
+   public AccessPointsView( @Service ApplicationContext context, @Uses final AccessPointsModel model)
    {
       this.model = model;
 
@@ -69,7 +66,7 @@ public class AccessPointsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            return obf.newObjectBuilder( AccessPointView.class ).use( model.newResourceModel(detailLink)).newInstance();
+            return module.objectBuilderFactory().newObjectBuilder(AccessPointView.class).use( model.newResourceModel(detailLink)).newInstance();
          }
       });
 
@@ -79,7 +76,7 @@ public class AccessPointsView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_accesspoint_title ) );
 
@@ -103,7 +100,7 @@ public class AccessPointsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -124,7 +121,7 @@ public class AccessPointsView
    @Action
    public Task rename()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_accesspoint_title ) );
 
       if (!Strings.empty( dialog.name() ))

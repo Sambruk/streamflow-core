@@ -20,7 +20,13 @@ package se.streamsource.streamflow.surface.api.assembler;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.surface.api.*;
+import se.streamsource.streamflow.surface.api.AttachmentFieldDTO;
+import se.streamsource.streamflow.surface.api.AttachmentFieldSubmission;
+import se.streamsource.streamflow.surface.api.CaseFormDTO;
+import se.streamsource.streamflow.surface.api.ClosedCaseDTO;
+import se.streamsource.streamflow.surface.api.EndUserCaseDTO;
+import se.streamsource.streamflow.surface.api.FormSignatureDTO;
+import se.streamsource.streamflow.surface.api.OpenCaseDTO;
 
 /**
  * TODO

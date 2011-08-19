@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source;
 
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Store of domain-events. Internally it stores TransactionDomainEvents, which is a timestamped

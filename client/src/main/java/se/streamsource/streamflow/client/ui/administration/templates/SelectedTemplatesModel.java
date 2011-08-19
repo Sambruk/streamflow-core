@@ -77,7 +77,7 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
          builder.prototype().string().set( "pdf" );
          
          LinksValue listValue = client.query( query,
-               builder.newInstance(), LinksValue.class );
+               LinksValue.class, builder.newInstance());
          list.addAll( listValue.links().get() );
 
          return list;

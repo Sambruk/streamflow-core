@@ -29,7 +29,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
@@ -63,12 +63,12 @@ public class OverviewView
    public OverviewView(final @Service ApplicationContext context,
                        final @Uses CasesModel casesModel,
                        final @Uses OverviewModel overviewModel,
-                       final @Structure ObjectBuilderFactory obf)
+                       final @Structure Module module)
    {
       super(new BorderLayout());
 
       overviewList = new JList();
-      casesView = obf.newObjectBuilder(CasesView.class).use(casesModel).newInstance();
+      casesView = module.objectBuilderFactory().newObjectBuilder(CasesView.class).use(casesModel).newInstance();
       casesView.setBlankPanel(new JPanel());
 
       model = overviewModel;
@@ -142,7 +142,7 @@ public class OverviewView
                   {*/
                   tableFormat = new CasesTableFormatter();
                   //}
-                  CasesTableView casesTable = obf.newObjectBuilder(CasesTableView.class).use(contextItem.getClient(), tableFormat).newInstance();
+                  CasesTableView casesTable = module.objectBuilderFactory().newObjectBuilder(CasesTableView.class).use(contextItem.getClient(), tableFormat).newInstance();
 
                   casesView.showTable(casesTable);
                } else

@@ -17,20 +17,31 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import com.mchange.v2.c3p0.*;
-import org.qi4j.api.composite.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.usecase.*;
-import org.slf4j.*;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.DataSources;
+import org.qi4j.api.composite.PropertyMapper;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ImportedServiceDescriptor;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceImporter;
+import org.qi4j.api.service.ServiceImporterException;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * DataSource service implemented as a ServiceImporter. Sets up and exposes DataSources that can be used in the application.
@@ -48,9 +59,6 @@ public interface DataSourceService
       Map<String, ComboPooledDataSource> pools = new HashMap<String, ComboPooledDataSource>();
       Map<String, DataSourceConfiguration> configs = new HashMap<String, DataSourceConfiguration>();
 
-      @Structure
-      UnitOfWorkFactory uowf;
-
       Logger logger = LoggerFactory.getLogger( DataSourceService.class );
 
       public void activate() throws Exception
@@ -67,7 +75,7 @@ public interface DataSourceService
 
          for (DataSourceConfiguration dataSourceConfiguration : configs.values())
          {
-            uowf.getUnitOfWork( dataSourceConfiguration ).discard();
+            module.unitOfWorkFactory().getUnitOfWork(dataSourceConfiguration).discard();
          }
          configs.clear();
       }
@@ -144,7 +152,7 @@ public interface DataSourceService
          DataSourceConfiguration config = configs.get( identity );
          if (config == null)
          {
-            UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Create DataSource pool configuration" ) );
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Create DataSource pool configuration"));
 
             try
             {
@@ -178,7 +186,7 @@ public interface DataSourceService
                   // save
                   uow.complete();
                   // create new uow and fetch entity
-                  uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Create DataSource pool configuration" ) );
+                  uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Create DataSource pool configuration"));
                   config = uow.get( DataSourceConfiguration.class, identity );
                } catch (UnitOfWorkCompletionException e2)
                {

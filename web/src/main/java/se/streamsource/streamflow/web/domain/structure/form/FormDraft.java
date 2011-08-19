@@ -22,11 +22,22 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.api.administration.form.*;
-import se.streamsource.streamflow.api.workspace.cases.form.*;
+import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
+import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
@@ -34,8 +45,10 @@ import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * JAVADOC
@@ -77,7 +90,7 @@ public interface FormDraft
    {
 
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public FormDraftDTO getFormDraftValue()
       {
@@ -310,7 +323,7 @@ public interface FormDraft
          ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
          FieldSubmissionDTO field = findField( builder.prototype(), fieldAttachment.field().get() );
 
-         ValueBuilder<AttachmentFieldSubmission> valueBuilder = vbf.newValueBuilder( AttachmentFieldSubmission.class );
+         ValueBuilder<AttachmentFieldSubmission> valueBuilder = module.valueBuilderFactory().newValueBuilder(AttachmentFieldSubmission.class);
          valueBuilder.prototype().attachment().set( fieldAttachment.attachment().get() );
          valueBuilder.prototype().name().set( fieldAttachment.name().get() );
 

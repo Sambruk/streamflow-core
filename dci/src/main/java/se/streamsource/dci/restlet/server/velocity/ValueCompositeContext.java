@@ -17,13 +17,15 @@
 
 package se.streamsource.dci.restlet.server.velocity;
 
-import org.apache.velocity.context.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.apache.velocity.context.AbstractContext;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.value.ValueComposite;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC

@@ -22,8 +22,6 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
-import org.restlet.Client;
-import org.restlet.data.Protocol;
 
 /**
  * JAVADOC

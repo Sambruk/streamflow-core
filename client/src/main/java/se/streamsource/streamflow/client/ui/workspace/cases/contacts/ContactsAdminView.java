@@ -19,8 +19,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 
 import javax.swing.*;
@@ -35,15 +34,12 @@ import java.awt.*;
 public class ContactsAdminView
       extends JPanel
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
-   public ContactsAdminView( @Uses final ContactsModel model, @Structure final ObjectBuilderFactory obf)
+   public ContactsAdminView( @Uses final ContactsModel model, @Structure Module module)
    {
       super( new BorderLayout() );
 
-      final ContactsView contactsView = obf.newObjectBuilder( ContactsView.class ).use( model ).newInstance();
-      final ContactView contactView = obf.newObject( ContactView.class );
+      final ContactsView contactsView = module.objectBuilderFactory().newObjectBuilder(ContactsView.class).use( model ).newInstance();
+      final ContactView contactView = module.objectBuilderFactory().newObject(ContactView.class);
 
       contactsView.getModel().addObserver( new RefreshComponents().enabledOn( "add", contactView ) );
 

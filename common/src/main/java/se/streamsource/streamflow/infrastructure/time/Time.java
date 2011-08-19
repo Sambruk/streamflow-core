@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.time;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * This is a service interface for giving the current time.

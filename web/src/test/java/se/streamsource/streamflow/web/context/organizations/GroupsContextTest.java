@@ -17,10 +17,6 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import static org.qi4j.api.util.Iterables.count;
-
-import java.io.IOException;
-
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -28,7 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.administration.GroupContext;
@@ -38,6 +33,10 @@ import se.streamsource.streamflow.web.context.administration.OrganizationsContex
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+
+import java.io.IOException;
+
+import static org.qi4j.api.util.Iterables.count;
 
 /**
  * JAVADOC
@@ -55,7 +54,7 @@ public class GroupsContextTest
       playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
       playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
 
-      context(GroupsContext.class).creategroup( stringValue(name) );
+      context(GroupsContext.class).create(name);
 
       uow.complete();
    }

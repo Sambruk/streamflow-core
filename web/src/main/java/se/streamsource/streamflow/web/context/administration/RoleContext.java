@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import se.streamsource.dci.api.*;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
-import se.streamsource.streamflow.web.domain.structure.role.*;
+import se.streamsource.streamflow.web.domain.structure.role.Roles;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

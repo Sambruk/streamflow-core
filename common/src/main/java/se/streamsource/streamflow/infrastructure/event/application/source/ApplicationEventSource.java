@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source;
 
-import org.qi4j.api.io.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import org.qi4j.api.io.Input;
+import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * An ApplicationEventSource is a source of application events that can be pulled in chunks. Events are grouped in the transactions in which they were created.

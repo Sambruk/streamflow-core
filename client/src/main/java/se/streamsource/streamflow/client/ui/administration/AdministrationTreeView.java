@@ -32,8 +32,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
@@ -77,22 +76,14 @@ public class AdministrationTreeView
 
    @Service
    DialogService dialogs;
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
 
    private AdministrationModel model;
 
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    public AdministrationTreeView( @Service ApplicationContext context,
-                                  @Uses final AdministrationModel model, @Structure ObjectBuilderFactory obf ) throws Exception
+                                  @Uses final AdministrationModel model) throws Exception
    {
       super( new BorderLayout() );
       this.model = model;
@@ -209,7 +200,7 @@ public class AdministrationTreeView
    {
       final Object node = tree.getSelectionPath().getLastPathComponent();
 
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_ou_title ) );
       if (!Strings.empty( dialog.name() ))
       {
@@ -235,7 +226,7 @@ public class AdministrationTreeView
    {
       final Object node = tree.getSelectionPath().getLastPathComponent();
 
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
       if (!Strings.empty( dialog.name() ))
       {
@@ -257,7 +248,7 @@ public class AdministrationTreeView
    {
       final Object node = tree.getSelectionPath().getLastPathComponent();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
       String name = ((ContextItem) mutableTreeNode.getUserObject()).getName();
 
@@ -283,7 +274,7 @@ public class AdministrationTreeView
    public Task move()
    {
       EventList<LinkValue> targets = model.possibleMoveTo( tree.getSelectionPath().getLastPathComponent() );
-      final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
+      final SelectLinkDialog listDialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.move_to ) );
       if (listDialog.getSelectedLink() != null)
@@ -305,7 +296,7 @@ public class AdministrationTreeView
    public Task merge()
    {
       EventList<LinkValue> targets = model.possibleMergeWith( tree.getSelectionPath().getLastPathComponent() );
-      final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
+      final SelectLinkDialog listDialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.merge_to ) );
       if (listDialog.getSelectedLink() != null)

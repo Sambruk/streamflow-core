@@ -17,10 +17,11 @@
 
 package se.streamsource.dci.test;
 
-import org.apache.log4j.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.slf4j.bridge.*;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
+import org.restlet.Component;
+import org.restlet.data.Protocol;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * JAVADOC

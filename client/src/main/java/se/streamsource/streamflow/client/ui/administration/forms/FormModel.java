@@ -17,15 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormPagesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesModel;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -41,13 +39,10 @@ public class FormModel
       implements Refreshable, TransactionListener
 
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
    public FormModel()
    {
       relationModelMapping("forminfo", FormModel.class);
-      relationModelMapping("pages", FormElementsModel.class);
+      relationModelMapping("pages", FormPagesModel.class);
       relationModelMapping("signatures", FormSignaturesModel.class);
    }
 
@@ -61,9 +56,11 @@ public class FormModel
       client.putCommand( "changenote", note );
    }
 
-   public void changeFormId( StringValue id )
+   public void changeFormId( String id )
    {
-      client.putCommand( "changeformid", id );
+      Form form = new Form();
+      form.set("id", id);
+      client.putCommand( "changeformid", form );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

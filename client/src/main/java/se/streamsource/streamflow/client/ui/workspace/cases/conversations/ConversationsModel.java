@@ -22,9 +22,9 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -46,10 +46,7 @@ public class ConversationsModel
    CommandQueryClient client;
 
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
 
@@ -66,9 +63,11 @@ public class ConversationsModel
 
    public void createConversation( String topic )
    {
-      ValueBuilder<StringValue> newTopic = vbf.newValue( StringValue.class ).buildWith();
+      ValueBuilder<StringValue> newTopic = module.valueBuilderFactory().newValue(StringValue.class).buildWith();
       newTopic.prototype().string().set( topic );
-      client.postCommand( "create", newTopic.newInstance() );
+      Form form = new Form();
+      form.set("topic", topic);
+      client.postCommand( "create", form );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -80,6 +79,6 @@ public class ConversationsModel
 
    public ConversationModel newConversationModel(LinkValue selectedValue)
    {
-      return obf.newObjectBuilder(ConversationModel.class).use(client.getClient(selectedValue)).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(ConversationModel.class).use(client.getClient(selectedValue)).newInstance();
    }
 }

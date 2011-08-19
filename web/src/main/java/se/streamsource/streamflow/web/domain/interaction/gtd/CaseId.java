@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.Matches;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Human readable id

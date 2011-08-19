@@ -26,7 +26,6 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
@@ -57,7 +56,7 @@ public class SearchView
    private JPanel search;
 
    public SearchView(@Service ApplicationContext context,
-                     @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf)
+                     @Uses SearchResultTableModel searchResultTableModel)
    {
       setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
       this.searchResultTableModel = searchResultTableModel;

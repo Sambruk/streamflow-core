@@ -17,7 +17,7 @@
 
 package se.streamsource.dci.value.link;
 
-import org.qi4j.api.property.*;
+import org.qi4j.api.property.Property;
 
 /**
  * A single link that has an additional title.

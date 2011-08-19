@@ -22,9 +22,8 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -49,10 +48,7 @@ public interface LabelEntity
       implements Removable
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Label label;
@@ -66,9 +62,9 @@ public interface LabelEntity
          {
             {
                SelectedLabels.Data selectedLabels = QueryExpressions.templateFor( SelectedLabels.Data.class );
-               Query<SelectedLabels> labelUsages = qbf.newQueryBuilder( SelectedLabels.class ).
-                     where( QueryExpressions.contains(selectedLabels.selectedLabels(), label )).
-                     newQuery( uowf.currentUnitOfWork() );
+               Query<SelectedLabels> labelUsages = module.queryBuilderFactory().newQueryBuilder(SelectedLabels.class).
+                     where(QueryExpressions.contains(selectedLabels.selectedLabels(), label)).
+                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
                for (SelectedLabels labelUsage : labelUsages)
                {
@@ -78,9 +74,9 @@ public interface LabelEntity
 
             {
                Labelable.Data selectedLabels = QueryExpressions.templateFor( Labelable.Data.class );
-               Query<Labelable> labelUsages = qbf.newQueryBuilder( Labelable.class ).
-                     where( QueryExpressions.contains(selectedLabels.labels(), label )).
-                     newQuery( uowf.currentUnitOfWork() );
+               Query<Labelable> labelUsages = module.queryBuilderFactory().newQueryBuilder(Labelable.class).
+                     where(QueryExpressions.contains(selectedLabels.labels(), label)).
+                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
                for (Labelable labelUsage : labelUsages)
                {

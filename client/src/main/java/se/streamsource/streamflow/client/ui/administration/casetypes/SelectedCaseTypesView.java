@@ -23,8 +23,9 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -52,8 +53,8 @@ public class SelectedCaseTypesView
    @Service
    DialogService dialogs;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> caseTypesDialogs;
+   @Structure
+   Module module;
 
    public JList caseTypeList;
 
@@ -87,7 +88,7 @@ public class SelectedCaseTypesView
    @Action
    public Task add()
    {
-      final SelectLinkDialog dialog = caseTypesDialogs.use( model.getPossible() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossible() ).newInstance();
       dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_casetypes_title ) );

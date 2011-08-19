@@ -20,13 +20,9 @@ package se.streamsource.streamflow.web.context.overview;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Function;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
@@ -34,7 +30,6 @@ import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Locale;
 
 /**
@@ -43,13 +38,16 @@ import java.util.Locale;
 public class OverviewContext
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
+
+   @Uses
+   Locale locale;
+
+   @Uses OverviewQueries queries;
 
    public TableValue index(TableQuery tq)
    {
-      OverviewQueries queries = RoleMap.role(OverviewQueries.class);
-
-      return new TableBuilderFactory(vbf).
+      return new TableBuilderFactory(module.valueBuilderFactory()).
             column("description", "Description", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
             {
                public Object map(ProjectSummaryDTO projectSummaryDTO)
@@ -81,25 +79,12 @@ public class OverviewContext
             newInstance(tq).rows(queries.getProjectsSummary()).orderBy().paging().newTable();
    }
 
-   public OutputRepresentation generateexcelprojectsummary() throws IOException
+   public Workbook generateexcelprojectsummary() throws IOException
    {
-      Locale locale = RoleMap.role(Locale.class);
-
       final Workbook workbook = new HSSFWorkbook();
-
-      OverviewQueries queries = RoleMap.role(OverviewQueries.class);
 
       queries.generateExcelProjectSummary(locale, workbook);
 
-      OutputRepresentation representation = new OutputRepresentation(MediaType.APPLICATION_EXCEL)
-      {
-         @Override
-         public void write(OutputStream outputStream) throws IOException
-         {
-            workbook.write(outputStream);
-         }
-      };
-
-      return representation;
+      return workbook;
    }
 }

@@ -25,7 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
@@ -52,8 +52,8 @@ public class ConversationsView
       extends JSplitPane
       implements TransactionListener
 {
-   @Uses
-   Iterable<NameDialog> topicDialogs;
+   @Structure
+   Module module;
 
    @Service
    DialogService dialogs;
@@ -62,7 +62,7 @@ public class ConversationsView
 
    private JList list;
 
-   public ConversationsView( @Service final ApplicationContext context, @Structure final ObjectBuilderFactory obf, @Uses final ConversationsModel model )
+   public ConversationsView( @Service final ApplicationContext context, @Uses final ConversationsModel model )
    {
       this.model = model;
 
@@ -95,7 +95,7 @@ public class ConversationsView
          {
             if (list.getSelectedIndex() != -1 && !e.getValueIsAdjusting())
             {
-               final ConversationView conversationView = obf.newObjectBuilder( ConversationView.class ).use(model.newConversationModel((LinkValue) list.getSelectedValue())).newInstance();
+               final ConversationView conversationView = module.objectBuilderFactory().newObjectBuilder( ConversationView.class ).use(model.newConversationModel((LinkValue) list.getSelectedValue())).newInstance();
                setRightComponent( conversationView );
             } else
             {
@@ -127,7 +127,7 @@ public class ConversationsView
    @Action
    public Task addConversation() throws ResourceException, IOException
    {
-      final NameDialog dialog = topicDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( CaseResources.new_conversation_topic ) );
 
       if ( !Strings.empty( dialog.name() ) )

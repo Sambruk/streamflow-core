@@ -29,7 +29,6 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsM
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 
 /**
  * Represents an organization in the administration model.

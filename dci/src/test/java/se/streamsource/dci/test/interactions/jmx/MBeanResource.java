@@ -17,12 +17,17 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.link.LinksBuilder;
+import se.streamsource.dci.value.link.LinksValue;
 
-import javax.management.*;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 /**
  * JAVADOC
@@ -34,6 +39,24 @@ public class MBeanResource
    public MBeanResource()
    {
       super( MBeanContext.class );
+   }
+
+   public LinksValue index()
+   {
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      for (MBeanAttributeInfo attribute : context(MBeanContext.class).index())
+      {
+         try
+         {
+            Object value = RoleMap.role( MBeanServer.class ).getAttribute( RoleMap.role( ObjectName.class ), attribute.getName() );
+            builder.addLink( attribute.getDescription() + (value instanceof String ? "=" + value.toString() : ""), attribute.getName() );
+         } catch (Exception e)
+         {
+            e.printStackTrace();
+         }
+      }
+
+      return builder.newLinks();
    }
 
    public void resource( String segment ) throws ResourceException

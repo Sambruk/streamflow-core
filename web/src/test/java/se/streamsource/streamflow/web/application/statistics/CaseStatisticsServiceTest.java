@@ -40,29 +40,39 @@ import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEven
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.context.administration.GroupsContext;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.entity.project.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
-import se.streamsource.streamflow.web.infrastructure.event.*;
+import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
+import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 
-import java.security.*;
-import java.util.*;
-import java.util.regex.*;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * JAVADOC
@@ -103,6 +113,7 @@ public class CaseStatisticsServiceTest
       module.values(ContactDTO.class, ParticipantRolesValue.class);
 
       module.objects(TimeService.class, CaseStatisticsServiceTest.class);
+      module.transients(GroupsContext.class);
 
       module.values(DomainEvent.class, TransactionDomainEvents.class);
       module.values(CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class);
@@ -144,7 +155,7 @@ public class CaseStatisticsServiceTest
       Organizations orgs = uow.newEntity(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       Organization org = orgs.createOrganization("Organization1");
       OrganizationalUnit ou1 = org.createOrganizationalUnit("OU1");
-      Group group1 = ou1.createGroup("Group1");
+      Group group1 = moduleInstance.transientBuilderFactory().newTransientBuilder(GroupsContext.class).use(ou1).newInstance().create("Group1");
       group1.addParticipant(user1);
       Project project1 = ou1.createProject("Project1");
       project1.addMember(group1);

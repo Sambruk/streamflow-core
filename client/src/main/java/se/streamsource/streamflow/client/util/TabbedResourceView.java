@@ -20,7 +20,7 @@ package se.streamsource.streamflow.client.util;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
@@ -109,7 +109,7 @@ public class TabbedResourceView
       views.put( name, viewClass );
    }
 
-   public TabbedResourceView( @Uses ResourceModel model, @Structure ObjectBuilderFactory obf )
+   public TabbedResourceView( @Uses ResourceModel model, @Structure Module module )
    {
       setTabLayoutPolicy( JTabbedPane.WRAP_TAB_LAYOUT );
 
@@ -126,7 +126,7 @@ public class TabbedResourceView
             try
             {
                Object resourceModel = model.newResourceModel(linkedResource);
-               addTab(tabNameText, obf.newObjectBuilder(tabClass).use(resourceModel).newInstance());
+               addTab(tabNameText, module.objectBuilderFactory().newObjectBuilder(tabClass).use(resourceModel).newInstance());
                setMnemonicAt( index, KeyEvent.VK_1 + index );
                index++;
             } catch (Exception e)

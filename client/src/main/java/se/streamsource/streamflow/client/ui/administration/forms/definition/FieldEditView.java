@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
@@ -66,13 +66,13 @@ public class FieldEditView
    }
 
    private FieldValueEditModel model;
-   private final ObjectBuilderFactory obf;
+   private final Module module;
 
-   public FieldEditView( @Uses FieldValueEditModel model, @Structure ObjectBuilderFactory obf )
+   public FieldEditView( @Uses FieldValueEditModel model, @Structure Module module)
    {
       super(new BorderLayout());
 
-      this.obf = obf;
+      this.module = module;
       this.model = model;
       
       refresh();
@@ -86,7 +86,7 @@ public class FieldEditView
       FieldValue value = fieldDefinitionValue.fieldValue().get();
 
       Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) value.getClass().getInterfaces()[0];
-      add(obf.newObjectBuilder( editors.get( fieldValueType )).use( model ).newInstance());
+      add(module.objectBuilderFactory().newObjectBuilder(editors.get(fieldValueType)).use(model).newInstance());
 
       invalidate();
       repaint(  );

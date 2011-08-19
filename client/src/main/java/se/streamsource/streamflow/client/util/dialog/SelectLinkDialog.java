@@ -24,9 +24,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
@@ -52,8 +50,7 @@ public class SelectLinkDialog
    private JTextField filterField;
 
    public SelectLinkDialog( final @Service ApplicationContext context,
-                                     @Uses EventList<? extends LinkValue> links,
-                                      @Structure ObjectBuilderFactory obf )
+                                     @Uses EventList<? extends LinkValue> links)
    {
       super( new BorderLayout());
       setPreferredSize( new Dimension( 250, 200 ) );

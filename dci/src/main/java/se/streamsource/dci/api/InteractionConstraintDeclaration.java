@@ -17,7 +17,8 @@
 
 package se.streamsource.dci.api;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * JAVADOC

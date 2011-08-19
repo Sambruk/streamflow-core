@@ -74,7 +74,7 @@ public class UserContextTest
          playRole(User.class, "test");
          try
          {
-            context( AccountContext.class).changepassword( value( ChangePasswordDTO.class, "{'oldPassword':'test','newPassword':'test2'}") );
+            context( AccountContext.class).changepassword( "test", "test2");
          } catch (WrongPasswordException e)
          {
             Assert.fail( "Should have been able to change password" );
@@ -90,7 +90,7 @@ public class UserContextTest
          playRole(User.class, "test");
          try
          {
-            context(AccountContext.class).changepassword( value( ChangePasswordDTO.class, "{'oldPassword':'test','newPassword':'test3'}") );
+            context(AccountContext.class).changepassword( "test", "test3");
             Assert.fail( "Should not have been able to change password" );
          } catch (WrongPasswordException e)
          {

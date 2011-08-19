@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.EventList;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
@@ -31,8 +30,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
@@ -75,7 +74,7 @@ public class CaseSubmittedFormView
    DialogService dialogs;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Service
    ApplicationContext context;
@@ -170,7 +169,7 @@ public class CaseSubmittedFormView
          component = new JLabel("<html>" + fieldValue.replace("\n", "<br/>") + "</html>");
       } else if (fieldType.equals(AttachmentFieldValue.class.getName()))
       {
-         final AttachmentFieldSubmission attachment = vbf.newValueFromJSON(AttachmentFieldSubmission.class, fieldValue);
+         final AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldValue);
          JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
          panel.setBackground(Color.WHITE);
          panel.add(new JLabel(attachment.name().get()));

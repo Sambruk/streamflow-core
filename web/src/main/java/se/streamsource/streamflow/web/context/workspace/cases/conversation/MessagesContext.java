@@ -17,25 +17,27 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * JAVADOC
@@ -77,15 +79,9 @@ public class MessagesContext
       return links.newLinks();
    }
 
-   public void createmessage( StringValue message ) throws ResourceException
+   public void createmessage( StringValue message )
    {
-      try
-      {
-         Messages messages = RoleMap.role( Messages.class );
-         messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
-      } catch (IllegalArgumentException e)
-      {
-         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
-      }
+      Messages messages = RoleMap.role( Messages.class );
+      messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
    }
 }

@@ -17,13 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -49,7 +53,7 @@ public interface Messages
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       ConversationParticipants participants;
@@ -73,7 +77,7 @@ public interface Messages
 
       public Message createdMessage( DomainEvent event, String id, String body, ConversationParticipant participant )
       {
-         EntityBuilder<Message> builder = uowf.currentUnitOfWork().newEntityBuilder( Message.class, id );
+         EntityBuilder<Message> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Message.class, id );
          builder.instanceFor( Message.Data.class ).body().set( body );
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );

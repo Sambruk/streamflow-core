@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import org.apache.solr.analysis.*;
+import org.apache.solr.analysis.BaseTokenizerFactory;
 
-import java.io.*;
+import java.io.Reader;
 
 /**
  * JAVADOC

@@ -24,8 +24,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.StateBinder;
@@ -51,11 +50,11 @@ public class ChangePasswordDialog
 
    private ChangePasswordDTO DTO;
 
-   public ChangePasswordDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf )
+   public ChangePasswordDialog( @Service ApplicationContext context, @Structure Module module )
    {
       setActionMap( context.getActionMap( this ) );
 
-      StateBinder binder = obf.newObject( StateBinder.class );
+      StateBinder binder = module.objectBuilderFactory().newObject(StateBinder.class);
       binder.bindingTemplate( ChangePasswordDTO.class );
 
       FormLayout layout = new FormLayout(
@@ -63,10 +62,10 @@ public class ChangePasswordDialog
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
 //      builder.setDefaultDialogBorder();
 
-      StateBinder passwordBinder = obf.newObject( StateBinder.class );
+      StateBinder passwordBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       passwordBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
-      DTO = vbf.newValue( ChangePasswordDTO.class ).<ChangePasswordDTO>buildWith().prototype();
+      DTO = module.valueBuilderFactory().newValue(ChangePasswordDTO.class).<ChangePasswordDTO>buildWith().prototype();
       
       JLabel confirmPasswordLabel;
       builder.add(new JLabel( i18n.text( AdministrationResources.old_password ) ));

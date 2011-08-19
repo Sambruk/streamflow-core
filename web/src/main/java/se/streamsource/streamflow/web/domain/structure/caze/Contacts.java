@@ -23,11 +23,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -62,7 +62,7 @@ public interface Contacts
       Data state;
 
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public void addContact( ContactDTO newContact )
       {

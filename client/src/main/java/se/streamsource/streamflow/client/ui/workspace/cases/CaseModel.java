@@ -24,7 +24,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -51,7 +51,7 @@ public class CaseModel
    extends ResourceModel<CaseDTO>
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    @Uses
    CasesModel casesModel;
@@ -148,9 +148,9 @@ public class CaseModel
       client.postLink( linkValue );
    }
 
-   public File print( CaseOutputConfigDTO config ) throws IOException
+   public File export(CaseOutputConfigDTO config) throws IOException
    {
-      Representation representation = client.queryRepresentation( "exportpdf", config );
+      Representation representation = client.query("exportpdf", Representation.class, config);
 
       String name = representation.getDisposition().getFilename();
       String[] fileNameParts = name.split( "\\." );
@@ -168,31 +168,31 @@ public class CaseModel
 
    public CaseGeneralModel newGeneralModel()
    {
-      return obf.newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();
    }
 
    public CaseSubmittedFormsModel newSubmittedFormsModel()
    {
-      return obf.newObjectBuilder(CaseSubmittedFormsModel.class).use(client.getSubClient("submittedforms" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormsModel.class).use(client.getSubClient("submittedforms" )).newInstance();
    }
 
    public ContactsModel newContactsModel()
    {
-      return obf.newObjectBuilder(ContactsModel.class).use(client.getSubClient("contacts" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(ContactsModel.class).use(client.getSubClient("contacts" )).newInstance();
    }
 
    public ConversationsModel newConversationsModel()
    {
-      return obf.newObjectBuilder(ConversationsModel.class).use(client.getSubClient("conversations" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(ConversationsModel.class).use(client.getSubClient("conversations" )).newInstance();
    }
 
    public AttachmentsModel newAttachmentsModel()
    {
-      return obf.newObjectBuilder(AttachmentsModel.class).use(client.getSubClient("attachments" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(AttachmentsModel.class).use(client.getSubClient("attachments" )).newInstance();
    }
 
    public ConversationModel newHistoryModel()
    {
-      return obf.newObjectBuilder(ConversationModel.class).use(client.getSubClient("history" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(ConversationModel.class).use(client.getSubClient("history" )).newInstance();
    }
 }

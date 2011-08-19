@@ -21,8 +21,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -51,13 +50,13 @@ public class CaseAccessDefaultsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> possibleDefaultAccessTypes;
+   @Structure
+   Module module;
 
    private CaseAccessDefaultsModel model;
    private final ApplicationContext context;
 
-   public CaseAccessDefaultsView( @Service ApplicationContext context, @Uses CaseAccessDefaultsModel model, @Structure ObjectBuilderFactory obf )
+   public CaseAccessDefaultsView( @Service ApplicationContext context, @Uses CaseAccessDefaultsModel model )
    {
       this.context = context;
       this.model = model;
@@ -81,7 +80,7 @@ public class CaseAccessDefaultsView
          {
             public void actionPerformed( ActionEvent e )
             {
-               final SelectLinkDialog dialog = possibleDefaultAccessTypes.use(model.getPossibleDefaultAccessTypes( linkValue )).newInstance();
+               final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleDefaultAccessTypes( linkValue )).newInstance();
                dialog.setPreferredSize( new Dimension(200,100) );
 
                dialogs.showOkCancelHelpDialog( CaseAccessDefaultsView.this, dialog, i18n.text( AdministrationResources.choose_default_access_type ) );

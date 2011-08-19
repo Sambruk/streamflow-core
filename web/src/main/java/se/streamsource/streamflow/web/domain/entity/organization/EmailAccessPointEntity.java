@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPointS
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * An Email Access Point

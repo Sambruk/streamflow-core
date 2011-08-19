@@ -17,15 +17,20 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.structure.created.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 /**
  * JAVADOC
@@ -50,7 +55,7 @@ public interface SubCases
       implements SubCases, Data
    {
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @Service
       IdentityGenerator idGenerator;
@@ -66,11 +71,11 @@ public interface SubCases
 
       public CaseEntity createdSubCase( DomainEvent event, String id )
       {
-         EntityBuilder<CaseEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( CaseEntity.class, id );
+         EntityBuilder<CaseEntity> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( CaseEntity.class, id );
          CreatedOn createdOn = builder.instanceFor( CreatedOn.class );
          createdOn.createdOn().set( event.on().get() );
 
-         createdOn.createdBy().set( uowf.currentUnitOfWork().get( Creator.class, event.by().get() ));
+         createdOn.createdBy().set( module.unitOfWorkFactory().currentUnitOfWork().get( Creator.class, event.by().get() ));
 
          CaseEntity caseEntity = builder.newInstance();
          subCases().add(caseEntity  );

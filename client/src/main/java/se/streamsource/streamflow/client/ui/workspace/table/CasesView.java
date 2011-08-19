@@ -23,7 +23,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -53,16 +53,14 @@ public class CasesView
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
    private JComponent blank;
-   private final ObjectBuilderFactory obf;
    private CasesModel casesModel;
    private JTextField searchField;
    private JPanel topPanel;
 
-   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CasesModel casesModel,
+   public CasesView( @Structure Module module, @Service ApplicationContext context, @Uses CasesModel casesModel,
                      @Optional @Uses JTextField searchField)
    {
       super();
-      this.obf = obf;
       this.casesModel = casesModel;
       this.searchField = searchField;
 
@@ -70,7 +68,7 @@ public class CasesView
 
       setLayout( cardLayout );
 
-      this.detailsView = obf.newObjectBuilder( CasesDetailView.class ).use(casesModel).newInstance();
+      this.detailsView = module.objectBuilderFactory().newObjectBuilder(CasesDetailView.class).use(casesModel).newInstance();
       
       
       splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );

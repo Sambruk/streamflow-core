@@ -17,8 +17,8 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.concern.*;
-import org.qi4j.api.mixin.*;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.mixin.Mixins;
 
 /**
  * Abstract composite that enables the service to use the @BreakCircuitOnThrowable annotation

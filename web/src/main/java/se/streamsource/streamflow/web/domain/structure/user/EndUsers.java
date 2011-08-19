@@ -23,9 +23,8 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
@@ -49,10 +48,7 @@ public interface EndUsers
          implements EndUsers, Data
    {
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @This
       Identity identity;
@@ -71,14 +67,14 @@ public interface EndUsers
       {
          // End-user id == <proxyuser-id>/<given id>
          String endUserId = identity.identity().get()+"/"+id;
-         return uowf.currentUnitOfWork().get(EndUser.class, endUserId);
+         return module.unitOfWorkFactory().currentUnitOfWork().get(EndUser.class, endUserId);
       }
 
       public EndUser createdEndUser( DomainEvent event, String id )
       {
-         EntityBuilder<EndUser> builder = uowf.currentUnitOfWork().newEntityBuilder( EndUser.class, id );
+         EntityBuilder<EndUser> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( EndUser.class, id );
          Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
-         contacts.contact().set( vbf.newValue( ContactDTO.class ) );
+         contacts.contact().set(module.valueBuilderFactory().newValue(ContactDTO.class));
 
          return builder.newInstance();
       }

@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.service.*;
-import org.qi4j.spi.*;
-import org.slf4j.*;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.spi.Qi4jSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Log all statistics information

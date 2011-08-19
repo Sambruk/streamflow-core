@@ -17,12 +17,12 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.infrastructure.circuitbreaker.*;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.concern.GenericConcern;
+import org.qi4j.api.injection.scope.This;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 /**
  * This concern will update the circuit breaker on method invocation success

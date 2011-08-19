@@ -17,16 +17,19 @@
 
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import org.apache.solr.client.solrj.*;
-import org.apache.solr.client.solrj.embedded.*;
-import org.apache.solr.core.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import se.streamsource.streamflow.infrastructure.configuration.*;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.SolrConfig;
+import org.apache.solr.core.SolrCore;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
-import java.io.*;
-import java.lang.reflect.*;
+import java.io.File;
+import java.lang.reflect.Field;
 
 @Mixins(EmbeddedSolrService.EmbeddedSolrServiceMixin.class)
 public interface EmbeddedSolrService extends Activatable, ServiceComposite

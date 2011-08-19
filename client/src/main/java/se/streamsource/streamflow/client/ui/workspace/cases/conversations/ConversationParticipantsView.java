@@ -25,8 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
@@ -52,13 +51,13 @@ public class ConversationParticipantsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> participantsDialog;
+   @Structure
+   Module module;
 
    ConversationParticipantsModel model;
    private JPanel participants;
 
-   public ConversationParticipantsView(@Service ApplicationContext context, @Uses ConversationParticipantsModel model, @Structure ObjectBuilderFactory obf)
+   public ConversationParticipantsView(@Service ApplicationContext context, @Uses ConversationParticipantsModel model)
    {
       super(new BorderLayout());
 
@@ -109,7 +108,7 @@ public class ConversationParticipantsView
    @Action
    public Task addParticipants()
    {
-      final SelectLinkDialog dialog = participantsDialog.use( model.possibleParticipants() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.possibleParticipants() ).newInstance();
       dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( CaseResources.choose_participant ) );
 

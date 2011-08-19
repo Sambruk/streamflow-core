@@ -19,7 +19,6 @@ package se.streamsource.streamflow.api.workspace.cases.form;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 
 /**
  * JAVADOC

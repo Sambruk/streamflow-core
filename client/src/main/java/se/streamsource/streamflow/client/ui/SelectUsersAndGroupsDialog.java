@@ -23,10 +23,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -45,18 +42,13 @@ import java.util.Set;
 public class SelectUsersAndGroupsDialog
       extends JPanel
 {
-   private ValueBuilderFactory vbf;
-
    private GroupedFilteredList groupList;
    private GroupedFilteredList userList;
 
-   private Set<String> usersAndGroups;
    private Set<LinkValue> selectedEntities;
 
    public SelectUsersAndGroupsDialog( @Service ApplicationContext context,
-                                      @Uses UsersAndGroupsModel model,
-                                      @Structure ObjectBuilderFactory obf,
-                                      final @Structure ValueBuilderFactory vbf)
+                                      @Uses UsersAndGroupsModel model)
    {
       super( new GridLayout(1, 2) );
       setActionMap( context.getActionMap( this ) );

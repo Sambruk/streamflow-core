@@ -21,9 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
@@ -41,21 +39,15 @@ public interface UsersQueries
          implements UsersQueries
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Organizations.Data state;
 
       public Query<UserEntity> users()
       {
-         Query<UserEntity> usersQuery = qbf.newQueryBuilder( UserEntity.class ).
-               newQuery( uowf.currentUnitOfWork() );
+         Query<UserEntity> usersQuery = module.queryBuilderFactory().newQueryBuilder(UserEntity.class).
+               newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          usersQuery.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
@@ -64,7 +56,7 @@ public interface UsersQueries
 
       public UserEntity getUserByName( String name )
       {
-         return uowf.currentUnitOfWork().get( UserEntity.class, name );
+         return module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, name );
       }
    }
 }

@@ -23,8 +23,9 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -33,7 +34,6 @@ import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -53,13 +53,10 @@ public class SelectedResolutionsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   @Structure
+   Module module;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> labelsDialogs;
-
-   public JList list;
+   private JList list;
 
    private SelectedResolutionsModel model;
 
@@ -91,7 +88,7 @@ public class SelectedResolutionsView
    @Action
    public Task add()
    {
-      final SelectLinkDialog dialog = labelsDialogs.use( model.getPossible() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossible() ).newInstance();
       dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_resolution_title ) );

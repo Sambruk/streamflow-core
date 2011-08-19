@@ -31,7 +31,7 @@ public class LabelsModel
 {
    public LabelsModel( )
    {
-      super( "createlabel" );
+      super( "create" );
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)

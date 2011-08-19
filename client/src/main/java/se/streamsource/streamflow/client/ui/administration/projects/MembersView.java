@@ -24,8 +24,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -56,11 +57,8 @@ public class MembersView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
+   @Structure
+   Module module;
 
    private UsersAndGroupsModel usersAndGroupsModel;
 
@@ -97,7 +95,7 @@ public class MembersView
    @Action
    public Task add()
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( usersAndGroupsModel ).newInstance();
+      SelectUsersAndGroupsDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectUsersAndGroupsDialog.class).use( usersAndGroupsModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 
       final Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
@@ -121,7 +119,7 @@ public class MembersView
    {
       final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( membersList.getSelectedValues() );
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       String str = "";
       for (LinkValue linkValue : selected)
       {

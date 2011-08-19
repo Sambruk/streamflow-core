@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source;
 
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Store of application-events.

@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.client;
 
-import org.qi4j.bootstrap.*;
-import org.qi4j.envisage.*;
-import org.qi4j.spi.structure.*;
-import se.streamsource.streamflow.client.assembler.*;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.Energy4Java;
+import org.qi4j.envisage.Envisage;
+import org.qi4j.spi.structure.ApplicationModelSPI;
+import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 
 /**
  * Run this to start Envisage to visualize the Streamflow client application.

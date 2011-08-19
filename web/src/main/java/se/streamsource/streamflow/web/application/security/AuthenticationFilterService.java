@@ -17,18 +17,32 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import net.sf.ehcache.*;
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.usecase.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.service.*;
-import org.restlet.*;
-import org.restlet.data.*;
+import net.sf.ehcache.Element;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.spi.service.ServiceDescriptor;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -42,15 +56,18 @@ import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreak
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
-import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
-import se.streamsource.streamflow.server.plugin.authentication.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
-import se.streamsource.streamflow.web.infrastructure.caching.*;
-import se.streamsource.streamflow.web.infrastructure.plugin.*;
+import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+import se.streamsource.streamflow.web.infrastructure.caching.Caches;
+import se.streamsource.streamflow.web.infrastructure.caching.Caching;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
+import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
-import java.io.*;
+import java.io.IOException;
 
 @Mixins(AuthenticationFilterService.Mixin.class)
 public interface AuthenticationFilterService extends ServiceComposite, Configuration, Activatable, ServiceCircuitBreaker
@@ -79,10 +96,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
       Caching caching;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       CircuitBreaker circuitBreaker;
 
@@ -118,7 +132,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
             String username = challengeResponse.getIdentifier();
             String password = new String(challengeResponse.getSecret());
 
-            UnitOfWork unitOfWork = uowf.newUnitOfWork(verifyUsecase);
+            UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(verifyUsecase);
 
             Authentication localUser = null;
             try
@@ -161,7 +175,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
                         throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED,
                               "Could not get userdetails for externally validated user");
                      }
-                     UserDetailsValue externalUser = vbf.newValueFromJSON(UserDetailsValue.class, json);
+                     UserDetailsValue externalUser = module.valueBuilderFactory().newValueFromJSON(UserDetailsValue.class, json);
 
                      if (localUser == null)
                      {
@@ -258,17 +272,17 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
          {
             try
             {
-               UnitOfWork unitOfWork = uowf.newUnitOfWork(updateUsecase);
+               UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(updateUsecase);
                UserEntity userEntity = unitOfWork.get(UserEntity.class, EntityReference.getEntityReference(user)
                      .identity());
                userEntity.resetPassword(password);
 
-               ValueBuilder<ContactDTO> contactBuilder = vbf.newValueBuilder(ContactDTO.class);
+               ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
                contactBuilder.prototype().name().set(externalUser.name().get());
-               ValueBuilder<ContactEmailDTO> emailBuilder = vbf.newValueBuilder(ContactEmailDTO.class);
+               ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
                emailBuilder.prototype().emailAddress().set(externalUser.emailAddress().get());
                contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
-               ValueBuilder<ContactPhoneDTO> phoneBuilder = vbf.newValueBuilder(ContactPhoneDTO.class);
+               ValueBuilder<ContactPhoneDTO> phoneBuilder = module.valueBuilderFactory().newValueBuilder(ContactPhoneDTO.class);
                phoneBuilder.prototype().phoneNumber().set(externalUser.phoneNumber().get());
                contactBuilder.prototype().phoneNumbers().get().add(phoneBuilder.newInstance());
                ((Contactable) userEntity).updateContact(contactBuilder.newInstance());
@@ -288,17 +302,17 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
       {
          try
          {
-            UnitOfWork unitOfWork = uowf.newUnitOfWork(addUsecase);
+            UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(addUsecase);
             UsersEntity usersEntity = unitOfWork.get(UsersEntity.class, UsersEntity.USERS_ID);
             se.streamsource.streamflow.web.domain.structure.user.User user = usersEntity.createUser(username, password);
             user.changeEnabled(true);
 
-            ValueBuilder<ContactDTO> contactBuilder = vbf.newValueBuilder(ContactDTO.class);
+            ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
             contactBuilder.prototype().name().set(externalUser.name().get());
-            ValueBuilder<ContactEmailDTO> emailBuilder = vbf.newValueBuilder(ContactEmailDTO.class);
+            ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
             emailBuilder.prototype().emailAddress().set(externalUser.emailAddress().get());
             contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
-            ValueBuilder<ContactPhoneDTO> phoneBuilder = vbf.newValueBuilder(ContactPhoneDTO.class);
+            ValueBuilder<ContactPhoneDTO> phoneBuilder = module.valueBuilderFactory().newValueBuilder(ContactPhoneDTO.class);
             phoneBuilder.prototype().phoneNumber().set(externalUser.phoneNumber().get());
             contactBuilder.prototype().phoneNumbers().get().add(phoneBuilder.newInstance());
             ((Contactable) user).updateContact(contactBuilder.newInstance());

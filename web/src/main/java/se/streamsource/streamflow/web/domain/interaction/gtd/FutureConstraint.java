@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.constraint.*;
+import org.qi4j.api.constraint.Constraint;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Check if long-value of time is in the future, compared

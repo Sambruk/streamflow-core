@@ -22,9 +22,9 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import ca.odell.glazedlists.TreeList;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.StringValue;
@@ -50,10 +50,7 @@ public class AdministrationModel
       implements Refreshable, TransactionListener
 {
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    private EventList<LinkValue> links = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
    private TreeList<LinkValue> linkTree = new TreeList<LinkValue>(links, new TreeList.Format<LinkValue>()
@@ -117,7 +114,7 @@ public class AdministrationModel
       DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
       ContextItem client = (ContextItem) treeNode.getUserObject();
 
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( newDescription );
       client.getClient().postCommand( "changedescription", builder.newInstance() );
    }
@@ -127,9 +124,9 @@ public class AdministrationModel
       DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
       ContextItem contextItem = (ContextItem) treeNode.getUserObject();
 
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
-      contextItem.getClient().postCommand( "createorganizationalunit", builder.newInstance() );
+      Form form = new Form();
+      form.set("name", name);
+      contextItem.getClient().postCommand( "create", form );
    }
 
    public void removeOrganizationalUnit( Object node )

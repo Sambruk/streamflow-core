@@ -18,11 +18,11 @@
 package se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints;
 
 import org.qi4j.api.constraint.Name;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * TODO

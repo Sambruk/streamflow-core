@@ -22,23 +22,22 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
 import se.streamsource.dci.restlet.client.ResponseHandler;
-import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 
 import java.io.IOException;
 
@@ -59,13 +58,7 @@ public interface AccountEntity
          implements AccountSettings, AccountConnection
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      ObjectBuilderFactory obf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Account account;
@@ -90,12 +83,15 @@ public interface AccountEntity
          state.settings().set(newAccountSettings);
       }
 
-      public void changePassword( Uniform client, ChangePasswordDTO changePassword ) throws ResourceException
+      public void changePassword( Uniform client, String oldPassword, String newPassword ) throws ResourceException
       {
-         server( client ).getSubClient( "account" ).postCommand( "changepassword", changePassword );
+         Form form = new Form();
+         form.set("oldpassword", oldPassword);
+         form.set("newpassword", newPassword);
+         server(client).getSubClient( "account" ).postCommand( "changepassword", form );
 
          AccountSettingsValue settings = state.settings().get().<AccountSettingsValue>buildWith().prototype();
-         settings.password().set( changePassword.newPassword().get() );
+         settings.password().set( newPassword );
 
          updateSettings( settings );
       }
@@ -107,9 +103,9 @@ public interface AccountEntity
          Reference serverRef = new Reference( settings.server().get() );
          serverRef.setPath( "/streamflow/" );
 
-         AuthenticationFilter filter = new AuthenticationFilter( uowf, account, client );
+         AuthenticationFilter filter = new AuthenticationFilter( module.unitOfWorkFactory(), account, client );
 
-         return obf.newObjectBuilder( CommandQueryClientFactory.class ).use( filter, handler ).newInstance().newClient( serverRef );
+         return module.objectBuilderFactory().newObjectBuilder(CommandQueryClientFactory.class).use( filter, handler ).newInstance().newClient( serverRef );
       }
 
       public CommandQueryClient user( Uniform client )
@@ -120,7 +116,7 @@ public interface AccountEntity
       public String version(Uniform client) throws ResourceException, IOException
       {
          CommandQueryClient server = server( client );
-         Representation in = server.getClient( "/streamflow/static/" ).queryRepresentation( "version.html", null);
+         Representation in = server.getClient( "/streamflow/static/" ).query("version.html", Representation.class);
 
          String version = in.getText();
          return version;

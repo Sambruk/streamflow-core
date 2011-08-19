@@ -27,7 +27,7 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 
-import java.util.*;
+import java.util.List;
 
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;

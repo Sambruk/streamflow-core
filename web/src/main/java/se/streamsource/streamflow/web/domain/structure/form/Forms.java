@@ -17,16 +17,22 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
 /**
  * JAVADOC
@@ -67,10 +73,7 @@ public interface Forms
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Data data;
@@ -109,7 +112,7 @@ public interface Forms
 
       public Form createdForm( @Optional DomainEvent event, String id )
       {
-         EntityBuilder<FormEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FormEntity.class, id );
+         EntityBuilder<FormEntity> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( FormEntity.class, id );
          builder.instance().formId().set( "form"+(forms().count()+1) );
          Form form = builder.newInstance();
          data.forms().add( form );
@@ -134,9 +137,9 @@ public interface Forms
       public Query<SelectedForms> usages( Form form )
       {
          SelectedForms.Data selectedForms = QueryExpressions.templateFor( SelectedForms.Data.class );
-         Query<SelectedForms> formUsages = qbf.newQueryBuilder( SelectedForms.class ).
+         Query<SelectedForms> formUsages = module.queryBuilderFactory().newQueryBuilder(SelectedForms.class).
                where( QueryExpressions.contains( selectedForms.selectedForms(), form ) ).
-               newQuery( uowf.currentUnitOfWork() );
+               newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
          return formUsages;
       }

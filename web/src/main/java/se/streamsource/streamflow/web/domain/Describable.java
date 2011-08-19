@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.web.domain;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Role for maintaining descriptions of entities.

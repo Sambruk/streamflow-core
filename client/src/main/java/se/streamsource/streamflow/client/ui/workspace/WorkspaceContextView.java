@@ -28,9 +28,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
@@ -58,7 +56,6 @@ public class WorkspaceContextView
    private WorkspaceModel workspaceModel;
 
    public WorkspaceContextView(final @Service ApplicationContext context,
-                               final @Structure ObjectBuilderFactory obf,
                                @Uses final WorkspaceModel workspaceModel)
    {
       this.workspaceModel = workspaceModel;

@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.time;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Time service. You can either set a given date to be returned,

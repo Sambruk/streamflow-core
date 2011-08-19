@@ -17,13 +17,14 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.factory;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.concern.GenericConcern;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.This;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 /**
  * Generate event for event method

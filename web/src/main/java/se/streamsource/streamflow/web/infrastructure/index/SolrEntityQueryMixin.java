@@ -17,19 +17,26 @@
 
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import org.apache.solr.client.solrj.*;
-import org.apache.solr.client.solrj.response.*;
-import org.apache.solr.common.*;
-import org.apache.solr.common.params.*;
-import org.apache.solr.common.util.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.grammar.*;
-import org.qi4j.spi.query.*;
-import org.slf4j.*;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.util.NamedList;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.query.grammar.OrderBy;
+import org.qi4j.spi.query.EntityFinderException;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class SolrEntityQueryMixin
       implements NamedEntityFinder, SolrSearch

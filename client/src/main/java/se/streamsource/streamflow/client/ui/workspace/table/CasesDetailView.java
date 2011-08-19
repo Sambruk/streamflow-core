@@ -22,7 +22,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
@@ -51,7 +51,7 @@ public class CasesDetailView
       implements TransactionListener
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    @Uses
    private CasesModel casesModel;
@@ -98,13 +98,13 @@ public class CasesDetailView
          {
             int tab = currentView.getSelectedTab();
             currentCase = model;
-            currentView = obf.newObjectBuilder( CaseDetailView.class ).use( model ).newInstance();
+            currentView = module.objectBuilderFactory().newObjectBuilder(CaseDetailView.class).use( model ).newInstance();
             currentView.setSelectedTab( tab );
             casePanel.setRightComponent(currentView);
 
             if (!isSubCase)
             {
-               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( model ).newInstance();
+               subCasesView = module.objectBuilderFactory().newObjectBuilder(SubCasesView.class).use( model ).newInstance();
                casePanel.setLeftComponent( subCasesView );
                casePanel.setDividerLocation( 0.0 );
                casePanel.setLastDividerLocation( 150 );
@@ -114,12 +114,12 @@ public class CasesDetailView
          } else
          {
             currentCase = model;
-            currentView = obf.newObjectBuilder( CaseDetailView.class ).use( model ).newInstance();
+            currentView = module.objectBuilderFactory().newObjectBuilder(CaseDetailView.class).use( model ).newInstance();
             casePanel.setRightComponent(currentView);
 
             if (!isSubCase)
             {
-               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( model ).newInstance();
+               subCasesView = module.objectBuilderFactory().newObjectBuilder(SubCasesView.class).use( model ).newInstance();
                casePanel.setLeftComponent( subCasesView );
                casePanel.setDividerLocation( 0.0 );
                casePanel.setLastDividerLocation( 150 );

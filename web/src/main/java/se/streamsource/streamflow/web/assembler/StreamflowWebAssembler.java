@@ -17,8 +17,12 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.bootstrap.*;
-import se.streamsource.dci.qi4j.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
 
 /**
  * Assembly of the Streamflow Server
@@ -63,8 +67,8 @@ public class StreamflowWebAssembler
       LayerAssembly webLayer = assembly.layer("Web");
       LayerAssembly managementLayer = assembly.layer("Management");
 
-      managementLayer.uses(appLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
-      webLayer.uses(appLayer, contextLayer, domainLayer, domainInfrastructureLayer);
+      managementLayer.uses(webLayer, appLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
+      webLayer.uses(appLayer, contextLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
       appLayer.uses(domainLayer, domainInfrastructureLayer, configurationLayer);
       contextLayer.uses(domainLayer, appLayer, domainInfrastructureLayer);
       domainLayer.uses(domainInfrastructureLayer);

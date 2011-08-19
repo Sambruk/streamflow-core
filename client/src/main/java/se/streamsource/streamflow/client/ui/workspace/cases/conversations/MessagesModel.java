@@ -21,8 +21,8 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -40,7 +40,7 @@ public class MessagesModel
    CommandQueryClient client;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    BasicEventList<MessageDTO> messages = new BasicEventList<MessageDTO>();
 
@@ -57,7 +57,7 @@ public class MessagesModel
 
    public void createMessage( String message )
    {
-      ValueBuilder<StringValue> stringBuilder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> stringBuilder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       stringBuilder.prototype().string().set( message );
       client.postCommand( "createmessage", stringBuilder.newInstance() );
    }

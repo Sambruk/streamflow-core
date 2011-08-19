@@ -21,9 +21,9 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.account.AccountsModel;
 
 /**
@@ -37,14 +37,14 @@ public interface ApplicationInitializationService
          implements Activatable
    {
       @Structure
-      private ObjectBuilderFactory obf;
+      private Module module;
 
       @Service
       private SingleFrameApplication main;
 
       public void activate() throws Exception
       {
-         obf.newObjectBuilder( SingleFrameApplication.class ).use(obf.newObject(AccountsModel.class)).injectTo(main);
+         module.objectBuilderFactory().newObjectBuilder(SingleFrameApplication.class).use(module.objectBuilderFactory().newObject(AccountsModel.class)).injectTo(main);
       }
 
       public void passivate() throws Exception

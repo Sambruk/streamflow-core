@@ -17,12 +17,14 @@
 
 package se.streamsource.streamflow.web.domain;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Generic interface for removing objects. They are not
@@ -68,7 +70,7 @@ public interface Removable
       Data state;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public boolean removeEntity()
       {
@@ -106,7 +108,7 @@ public interface Removable
 
       public void deletedEntity( DomainEvent event )
       {
-         uowf.currentUnitOfWork().remove( state );
+         module.unitOfWorkFactory().currentUnitOfWork().remove( state );
       }
    }
 }

@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
@@ -55,23 +55,23 @@ public class CaseDetailView
    private CaseActionsView caseActions;
 
    public CaseDetailView( @Uses CaseModel model,
-                          @Structure ObjectBuilderFactory obf )
+                          @Structure Module module)
    {
       super( new BorderLayout() );
       this.model = model;
       this.setBorder( BorderFactory.createEtchedBorder() );
       tabs.setFocusable( true );
 
-      add( caseInfo = obf.newObjectBuilder( CaseInfoView.class ).use( model ).newInstance(), BorderLayout.NORTH );
-      add( caseActions = obf.newObjectBuilder( CaseActionsView.class ).use( model ).newInstance(), BorderLayout.EAST );
+      add( caseInfo = module.objectBuilderFactory().newObjectBuilder(CaseInfoView.class).use( model ).newInstance(), BorderLayout.NORTH );
+      add( caseActions = module.objectBuilderFactory().newObjectBuilder(CaseActionsView.class).use( model ).newInstance(), BorderLayout.EAST );
 
       // TODO This could be changed to use model.getResourceValue().resources()
-      tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), obf.newObjectBuilder( CaseGeneralView.class ).use( model.newGeneralModel()).newInstance(), text( WorkspaceResources.general_tab ) );
-      tabs.addTab( text( WorkspaceResources.contacts_tab ), icon( Icons.projects ), obf.newObjectBuilder( ContactsAdminView.class ).use( model.newContactsModel()).newInstance(), text( WorkspaceResources.contacts_tab ) );
-      tabs.addTab( text( WorkspaceResources.forms_tab ), icon( Icons.forms ), obf.newObjectBuilder( SubmittedFormsAdminView.class ).use( model.newSubmittedFormsModel()).newInstance(), text( WorkspaceResources.forms_tab ) );
-      tabs.addTab( text( WorkspaceResources.conversations_tab ), icon( Icons.conversations ), obf.newObjectBuilder( ConversationsView.class ).use( model.newConversationsModel()).newInstance(), text( WorkspaceResources.conversations_tab ) );
-      tabs.addTab( text( WorkspaceResources.attachments_tab ), icon( Icons.attachments ), obf.newObjectBuilder( AttachmentsView.class ).use(model.newAttachmentsModel()).newInstance(), text( WorkspaceResources.attachments_tab ) );
-      tabs.addTab( text( WorkspaceResources.history_tab ), icon( Icons.history ), obf.newObjectBuilder( HistoryView.class ).use(model.newHistoryModel()).newInstance(), text( WorkspaceResources.history_tab ) );
+      tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), module.objectBuilderFactory().newObjectBuilder(CaseGeneralView.class).use( model.newGeneralModel()).newInstance(), text( WorkspaceResources.general_tab ) );
+      tabs.addTab( text( WorkspaceResources.contacts_tab ), icon( Icons.projects ), module.objectBuilderFactory().newObjectBuilder(ContactsAdminView.class).use( model.newContactsModel()).newInstance(), text( WorkspaceResources.contacts_tab ) );
+      tabs.addTab( text( WorkspaceResources.forms_tab ), icon( Icons.forms ), module.objectBuilderFactory().newObjectBuilder(SubmittedFormsAdminView.class).use( model.newSubmittedFormsModel()).newInstance(), text( WorkspaceResources.forms_tab ) );
+      tabs.addTab( text( WorkspaceResources.conversations_tab ), icon( Icons.conversations ), module.objectBuilderFactory().newObjectBuilder(ConversationsView.class).use( model.newConversationsModel()).newInstance(), text( WorkspaceResources.conversations_tab ) );
+      tabs.addTab( text( WorkspaceResources.attachments_tab ), icon( Icons.attachments ), module.objectBuilderFactory().newObjectBuilder(AttachmentsView.class).use(model.newAttachmentsModel()).newInstance(), text( WorkspaceResources.attachments_tab ) );
+      tabs.addTab( text( WorkspaceResources.history_tab ), icon( Icons.history ), module.objectBuilderFactory().newObjectBuilder(HistoryView.class).use(model.newHistoryModel()).newInstance(), text( WorkspaceResources.history_tab ) );
       
       tabs.setMnemonicAt( 0, KeyEvent.VK_1 );
       tabs.setMnemonicAt( 1, KeyEvent.VK_2 );

@@ -23,7 +23,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.dci.value.table.TableQuery;
@@ -66,7 +65,7 @@ public class OverviewModel
       ValueBuilder<TableQuery> builder = module.valueBuilderFactory().newValueBuilder(TableQuery.class);
       builder.prototype().tq().set("select *");
 
-      TableValue projects = client.query("index", builder.newInstance(), TableValue.class );
+      TableValue projects = client.query("index", TableValue.class, builder.newInstance());
       for (RowValue project : projects.rows().get())
       {
          list.add( new ContextItem(projects.cell(project, "description").f().get(), text( assignments_node), Icons.assign.name(), (Integer) projects.cell(project, "assignments").v().get(), client.getClient( projects.cell(project, "href").f().get() ).getSubClient("assignments" )));

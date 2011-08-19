@@ -17,14 +17,22 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.structure.created.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.Queryable;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.State;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 /**
  * JAVADOC
@@ -52,7 +60,7 @@ public interface Conversations
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       ConversationOwner conversationOwner;
@@ -70,7 +78,7 @@ public interface Conversations
 
       public Conversation createdConversation( DomainEvent event, String id, Creator creator )
       {
-         EntityBuilder<Conversation> builder = uowf.currentUnitOfWork().newEntityBuilder( Conversation.class, id );
+         EntityBuilder<Conversation> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Conversation.class, id );
          builder.instanceFor( CreatedOn.class).createdOn().set( event.on().get() );
          builder.instanceFor( CreatedOn.class).createdBy().set( creator );
          builder.instance().conversationOwner().set( conversationOwner );

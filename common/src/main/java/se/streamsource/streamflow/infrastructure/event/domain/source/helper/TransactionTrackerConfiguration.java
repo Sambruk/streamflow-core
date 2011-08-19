@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.property.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
+import org.qi4j.api.property.Property;
 
 /**
  * Configuration that a service doing event tracking must have. Let the configuration

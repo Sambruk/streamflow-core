@@ -27,12 +27,21 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.RequiresRoles;
+import se.streamsource.dci.api.Requires;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.api.administration.form.*;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
+import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldId;
+import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.Fields;
+import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
 /**
  * JAVADOC
@@ -51,34 +60,34 @@ public interface FormFieldContext
 
    public void changehint( @Name("hint") String hint );
 
-   @RequiresRoles(TextFieldValue.class)
+   @Requires(TextFieldValue.class)
    public void changewidth( @Name("width") int newWidth );
 
-   @RequiresRoles(TextFieldValue.class)
+   @Requires(TextFieldValue.class)
    public void changeregularexpression( @Name("expression") String regularExpression );
 
-   @RequiresRoles(TextAreaFieldValue.class)
+   @Requires(TextAreaFieldValue.class)
    public void changerows( @Name("rows") int newRows );
 
-   @RequiresRoles(TextAreaFieldValue.class)
+   @Requires(TextAreaFieldValue.class)
    public void changecols( @Name("columns") int newRows );
 
-   @RequiresRoles(NumberFieldValue.class)
+   @Requires(NumberFieldValue.class)
    public void changeinteger( @Name("integer") boolean isInteger );
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @Requires(SelectionFieldValue.class)
    public void addselectionelement( @Name("selection") String name );
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @Requires(SelectionFieldValue.class)
    public void removeselectionelement( @Name("index") int index );
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @Requires(SelectionFieldValue.class)
    public void moveselectionelement( @Name("name") String name, @Name("index") int index);
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @Requires(SelectionFieldValue.class)
    public void changeselectionelementname( @Name("name") String name, @Name("index") int index );
 
-   @RequiresRoles(OpenSelectionFieldValue.class)
+   @Requires(OpenSelectionFieldValue.class)
    public void changeopenselectionname( @Name("name") String name );
 
    public void move( @Name("direction") String direction );

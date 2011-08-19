@@ -26,8 +26,8 @@ import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -50,7 +50,8 @@ public class CreateProxyUserDialog
    DialogService dialogs;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
+
    private NewProxyUserDTO DTO;
 
    public CreateProxyUserDialog( @Service ApplicationContext context )
@@ -89,7 +90,7 @@ public class CreateProxyUserDialog
    @Action
    public void execute()
    {
-      ValueBuilder<NewProxyUserDTO> builder = vbf.newValueBuilder( NewProxyUserDTO.class );
+      ValueBuilder<NewProxyUserDTO> builder = module.valueBuilderFactory().newValueBuilder(NewProxyUserDTO.class);
       try
       {
          builder.prototype().description().set( descriptionField.getText() );

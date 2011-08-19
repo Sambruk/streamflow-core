@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.web.domain.generic;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.common.AppliesToFilter;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * Generic mixin for simple event methods that create an entity and add it to a collection. They have to follow this pattern:
@@ -35,12 +37,12 @@ public class EventEntityCreatedMixin
       implements InvocationHandler
 {
    @Structure
-   UnitOfWorkFactory uowf;
+   Module module;
 
    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
    {
       // Create entity
-      EntityComposite entity = (EntityComposite) uowf.currentUnitOfWork().newEntity( method.getReturnType(), (String) args[1] );
+      EntityComposite entity = (EntityComposite) module.unitOfWorkFactory().currentUnitOfWork().newEntity( method.getReturnType(), (String) args[1] );
 
       return entity;
    }

@@ -25,8 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -61,21 +60,14 @@ public class CaseTypesView
 {
    CaseTypesModel model;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectLinkDialog> possibleMoveToDialogs;
+   @Structure
+   Module module;
 
    public CaseTypesView( @Service ApplicationContext context,
-                         @Uses final CaseTypesModel model,
-                         @Structure final ObjectBuilderFactory obf)
+                         @Uses final CaseTypesModel model)
    {
       this.model = model;
 
@@ -98,7 +90,7 @@ public class CaseTypesView
                }
             }.refresh();
 
-            TabbedResourceView view = obf.newObjectBuilder( TabbedResourceView.class ).use( caseTypeModel ).newInstance();
+            TabbedResourceView view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( caseTypeModel ).newInstance();
             return view;
          }
       });
@@ -109,7 +101,7 @@ public class CaseTypesView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_casetype_title ) );
 
@@ -133,7 +125,7 @@ public class CaseTypesView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
 
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
@@ -155,7 +147,7 @@ public class CaseTypesView
    @Action
    public Task rename()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_casetype_title ) );
 
       if (!Strings.empty( dialog.name() ))
@@ -178,7 +170,7 @@ public class CaseTypesView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_casetype_to ) );

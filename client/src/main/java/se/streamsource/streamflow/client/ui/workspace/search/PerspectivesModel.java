@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.client.ui.workspace.search;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -36,7 +36,7 @@ public class PerspectivesModel
         extends LinkValueListModel
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    public void remove(LinkValue link)
    {
@@ -54,7 +54,7 @@ public class PerspectivesModel
 
    public void changeDescription(LinkValue link, String name)
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder(StringValue.class);
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set(name);
       client.getClient(link).postCommand("changedescription", builder.newInstance());
    }

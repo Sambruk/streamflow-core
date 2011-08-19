@@ -21,11 +21,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
@@ -68,17 +67,14 @@ public interface SubmittedFormsQueries
       SubmittedForms.Data submittedForms;
 
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public SubmittedFormsListDTO getSubmittedForms()
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         ValueBuilder<SubmittedFormsListDTO> listBuilder = vbf.newValueBuilder( SubmittedFormsListDTO.class );
-         ValueBuilder<SubmittedFormListDTO> formBuilder = vbf.newValueBuilder( SubmittedFormListDTO.class );
+         ValueBuilder<SubmittedFormsListDTO> listBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormsListDTO.class);
+         ValueBuilder<SubmittedFormListDTO> formBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormListDTO.class);
          SubmittedFormsListDTO list = listBuilder.prototype();
          SubmittedFormListDTO formDTO = formBuilder.prototype();
 
@@ -99,8 +95,8 @@ public interface SubmittedFormsQueries
 
       public SubmittedFormDTO getSubmittedForm( int idx )
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
-         ValueBuilder<SubmittedFormDTO> formBuilder = vbf.newValueBuilder( SubmittedFormDTO.class );
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+         ValueBuilder<SubmittedFormDTO> formBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormDTO.class);
          SubmittedFormDTO formDTO = formBuilder.prototype();
 
          SubmittedFormValue form = submittedForms.submittedForms().get().get( idx );
@@ -113,12 +109,12 @@ public interface SubmittedFormsQueries
          Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
          formDTO.form().set( formName.description().get() );
 
-         ValueBuilder<FieldDTO> fieldBuilder = vbf.newValueBuilder(FieldDTO.class);
+         ValueBuilder<FieldDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(FieldDTO.class);
          FieldDTO fieldDTO = fieldBuilder.prototype();
 
          for (SubmittedPageValue submittedPageValue : form.pages().get())
          {
-            ValueBuilder<SubmittedPageDTO> pageBuilder = vbf.newValueBuilder( SubmittedPageDTO.class );
+            ValueBuilder<SubmittedPageDTO> pageBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedPageDTO.class);
             SubmittedPageDTO pageDTO = pageBuilder.prototype();
 
             Describable.Data page = uow.get(Describable.Data.class, submittedPageValue.page().get().identity());

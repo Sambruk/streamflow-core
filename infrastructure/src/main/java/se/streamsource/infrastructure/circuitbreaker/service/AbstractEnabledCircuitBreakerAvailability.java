@@ -17,11 +17,12 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import se.streamsource.infrastructure.circuitbreaker.*;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.configuration.Enabled;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Availability;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
 /**
  * Abstract composite that determines Availability by

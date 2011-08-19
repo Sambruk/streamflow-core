@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.domain.structure.form;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
 
 /**
  * JAVADOC

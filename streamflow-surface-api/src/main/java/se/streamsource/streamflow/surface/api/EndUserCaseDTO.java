@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.surface.api;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import org.qi4j.library.constraints.annotation.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.MaxLength;
 
 /**
  * Needed information about a surface generated case

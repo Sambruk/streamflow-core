@@ -17,14 +17,14 @@
 
 package se.streamsource.dci.test.interactions;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.dci.test.interactions.file.*;
-import se.streamsource.dci.test.interactions.jmx.*;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.test.interactions.file.FileResource;
+import se.streamsource.dci.test.interactions.jmx.JmxServerResource;
 
-import java.io.*;
-import java.lang.management.*;
+import java.io.File;
+import java.lang.management.ManagementFactory;
 
 /**
  * JAVADOC

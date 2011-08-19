@@ -17,12 +17,12 @@
 
 package se.streamsource.dci.api;
 
-import org.junit.*;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * JAVADOC

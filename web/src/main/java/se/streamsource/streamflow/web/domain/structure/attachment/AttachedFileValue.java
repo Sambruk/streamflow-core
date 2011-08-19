@@ -17,12 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Representation of an attached file. Maintains all the metainfo about the attachment.

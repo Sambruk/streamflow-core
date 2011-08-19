@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * List of events for a single transaction. Events must always be consumed

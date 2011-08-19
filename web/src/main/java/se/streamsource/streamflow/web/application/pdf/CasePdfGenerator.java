@@ -17,48 +17,77 @@
 
 package se.streamsource.streamflow.web.application.pdf;
 
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.pdmodel.font.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.io.Transforms;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.api.administration.form.*;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseOutput;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.created.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.infrastructure.attachment.*;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.*;
-import java.text.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import static se.streamsource.streamflow.util.Strings.empty;
 
@@ -70,10 +99,7 @@ import static se.streamsource.streamflow.util.Strings.empty;
 public class CasePdfGenerator implements CaseOutput
 {
    @Structure
-   UnitOfWorkFactory uowf;
-
-   @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Service
    AttachmentStore store;
@@ -222,6 +248,14 @@ public class CasePdfGenerator implements CaseOutput
 
    private void generateHistory(Input<Message, RuntimeException> history) throws IOException
    {
+      // TODO This needs to be cleaned up. Translations should be in a better place!
+      ResourceBundle bnd = ResourceBundle.getBundle( MessagesContext.class.getName(), locale );
+      final Map<String, String> translations = new HashMap<String, String>();
+      for (String key : bnd.keySet())
+      {
+         translations.put(key, bnd.getString(key));
+      }
+
       history.transferTo(new Output<Message, IOException>()
       {
          public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends Message, SenderThrowableType> sender) throws IOException, SenderThrowableType
@@ -239,7 +273,7 @@ public class CasePdfGenerator implements CaseOutput
                         + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format(
                         data.createdOn().get() ) + ": ";
 
-                  document.print( label, valueFontBold ).print( data.body().get(), valueFont )
+                  document.print( label, valueFontBold ).print( message.translateBody(translations), valueFont )
                         .print("", valueFont);
                }
             });
@@ -387,7 +421,7 @@ public class CasePdfGenerator implements CaseOutput
             printedHeader = true;
          }
 
-         Describable form = uowf.currentUnitOfWork().get( Describable.class, formValue.form().get().identity() );
+         Describable form = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.form().get().identity() );
 
          document.println( form.getDescription() + ":", valueFontBold );
          document.underLine( form.getDescription(), valueFontBold );
@@ -399,21 +433,21 @@ public class CasePdfGenerator implements CaseOutput
                DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( formValue.submissionDate().get() ),
                valueFont, tabStop );
          document.printLabelAndText( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold,
-               uowf.currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont, tabStop );
+               module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont, tabStop );
 
          float fieldNameTabStop = 0;
          for (SubmittedPageValue submittedPageValue : formValue.pages().get())
          {
             if (!submittedPageValue.fields().get().isEmpty())
             {
-               Describable page = uowf.currentUnitOfWork().get( Describable.class, submittedPageValue.page().get().identity() );
+               Describable page = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, submittedPageValue.page().get().identity() );
                document.println( page.getDescription() + ":", valueFontBoldItalic );
                document.println( "", valueFont );
 
                // Calculate fields tabstop
                for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
                {
-                  Describable fieldName = uowf.currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() );
+                  Describable fieldName = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() );
 
                   float tempTabStop = document.calculateTabStop( valueFontBold, fieldName.getDescription() );
                   if (tempTabStop > fieldNameTabStop)
@@ -426,19 +460,19 @@ public class CasePdfGenerator implements CaseOutput
                for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
                {
 
-                  FieldValue fieldValue = uowf.currentUnitOfWork().get( FieldEntity.class, submittedFieldValue.field().get().identity() )
+                  FieldValue fieldValue = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, submittedFieldValue.field().get().identity() )
                         .fieldValue().get();
 
                   if (!empty(submittedFieldValue.value().get()))
                   {
-                     String label = uowf.currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() )
+                     String label = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() )
                            .getDescription();
                      String value = "";
                      // convert JSON String if field type AttachmentFieldValue
                      if (fieldValue instanceof AttachmentFieldValue)
                      {
-                        AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, submittedFieldValue
-                              .value().get() );
+                        AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, submittedFieldValue
+                              .value().get());
                         value = attachment.name().get();
 
                      } else if (fieldValue instanceof DateFieldValue && !empty(submittedFieldValue.value().get()))

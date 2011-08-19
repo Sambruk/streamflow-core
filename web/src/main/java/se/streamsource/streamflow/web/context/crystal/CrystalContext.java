@@ -17,23 +17,31 @@
 
 package se.streamsource.streamflow.web.context.crystal;
 
-import org.json.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.util.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.slf4j.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.web.infrastructure.database.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.DateFunctions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.web.infrastructure.database.Databases;
 
-import javax.sql.*;
-import java.io.*;
-import java.sql.*;
-import java.text.*;
-import java.util.*;
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 /**
  * JAVADOC
@@ -116,7 +124,7 @@ public class CrystalContext
       return tableBuilder.newTable();
    }
 
-   public Representation timeline( final TableQuery query) throws Exception
+   public JSONObject timeline( final TableQuery query) throws Exception
    {
       final JSONObject timeline = new JSONObject();
 
@@ -175,20 +183,7 @@ public class CrystalContext
 
       timeline.put("events", events);
 
-      return new WriterRepresentation(MediaType.APPLICATION_JSON)
-      {
-         @Override
-         public void write( Writer writer ) throws IOException
-         {
-            try
-            {
-               timeline.write( writer );
-            } catch (JSONException e)
-            {
-               throw new IOException(e);
-            }
-         }
-      };
+      return timeline;
    }
 
    public TableValue labelcloud() throws SQLException

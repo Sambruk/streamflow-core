@@ -22,7 +22,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
@@ -39,7 +39,7 @@ public class CaseSubmittedFormsModel
    CommandQueryClient client;
 
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    EventList<SubmittedFormListDTO> submittedForms = new TransactionList<SubmittedFormListDTO>( new BasicEventList<SubmittedFormListDTO>( ) );
 
@@ -55,6 +55,6 @@ public class CaseSubmittedFormsModel
 
    public CaseSubmittedFormModel newSubmittedFormModel(int idx)
    {
-      return obf.newObjectBuilder( CaseSubmittedFormModel.class ).use( client, new Integer(idx) ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormModel.class).use( client, new Integer(idx) ).newInstance();
    }
 }

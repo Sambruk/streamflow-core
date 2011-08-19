@@ -28,10 +28,8 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -58,26 +56,11 @@ public class AccessPointView
       extends JPanel
       implements Observer, TransactionListener
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> projectDialog;
-
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> caseTypeDialog;
-
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> formDialog;
-
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> templateDialog;
-
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
+   @Structure
+   Module module;
 
    private CaseLabelsView labels;
    private JLabel selectedCaseType = new JLabel();
@@ -97,15 +80,15 @@ public class AccessPointView
 
    public AccessPointView( @Service ApplicationContext appContext,
                            @Uses AccessPointModel model,
-                           @Structure ObjectBuilderFactory obf )
+                           @Structure Module module )
    {
       this.model = model;
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( model.getLabelsModel() ).newInstance();
+      this.labels = module.objectBuilderFactory().newObjectBuilder(CaseLabelsView.class).use( model.getLabelsModel() ).newInstance();
       model.addObserver( this );
 
       setLayout( new BorderLayout() );
 
-      accessPointBinder = obf.newObject( StateBinder.class );
+      accessPointBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       accessPointBinder.addObserver( this );
       accessPointBinder.addConverter( new StateBinder.Converter()
       {
@@ -238,7 +221,7 @@ public class AccessPointView
    @Action
    public Task project()
    {
-      final SelectLinkDialog dialog = projectDialog.use( model.getPossibleProjects() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossibleProjects() ).newInstance();
       dialogs.showOkCancelHelpDialog( projectButton, dialog, i18n.text( WorkspaceResources.choose_project ) );
 
       return new CommandTask()
@@ -258,7 +241,7 @@ public class AccessPointView
    @Action
    public Task casetype()
    {
-      final SelectLinkDialog dialog = caseTypeDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             i18n.text( WorkspaceResources.choose_casetype ),
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
@@ -281,7 +264,7 @@ public class AccessPointView
    @Action
    public Task form()
    {
-      final SelectLinkDialog dialog = formDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleForms() ).newInstance();
       dialogs.showOkCancelHelpDialog( formButton, dialog,
             i18n.text( WorkspaceResources.choose_form ) );
@@ -304,7 +287,7 @@ public class AccessPointView
    @Action
    public Task template()
    {
-      final SelectLinkDialog dialog = templateDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleTemplates() ).newInstance();
 
       dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.choose_template ));
@@ -366,7 +349,6 @@ public class AccessPointView
          labelButton.setEnabled( true );
          formButton.setEnabled( true );
       }
-
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

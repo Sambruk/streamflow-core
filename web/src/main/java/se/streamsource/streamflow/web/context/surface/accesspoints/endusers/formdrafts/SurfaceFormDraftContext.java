@@ -19,14 +19,14 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
-import se.streamsource.streamflow.api.workspace.cases.form.*;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -43,7 +43,7 @@ public class SurfaceFormDraftContext
       implements IndexContext<FormDraftDTO>
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    public FormDraftDTO index()
    {
@@ -68,7 +68,7 @@ public class SurfaceFormDraftContext
       EntityReference entityReference = EntityReference.parseEntityReference(fieldId.string().get());
       FieldSubmissionDTO DTO = formDraft.getFieldValue( entityReference );
 
-      ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
+      ValueBuilder<FieldValueDTO> builder = module.valueBuilderFactory().newValueBuilder(FieldValueDTO.class);
       builder.prototype().value().set( DTO.value().get() == null ? "" : DTO.value().get() );
       builder.prototype().field().set( entityReference );
       

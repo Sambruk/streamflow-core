@@ -25,8 +25,8 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
@@ -65,7 +65,7 @@ public class ProfileView
    public JRadioButton noneButton;
    public JRadioButton emailButton;
 
-   public ProfileView(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf, @Uses ProfileModel model)
+   public ProfileView(@Service ApplicationContext context, @Uses ProfileModel model, @Structure Module module)
    {
       ApplicationActionMap am = context.getActionMap(this);
       setActionMap(am);
@@ -81,17 +81,17 @@ public class ProfileView
       FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
             "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
-      contactBinder = obf.newObject( StateBinder.class );
+      contactBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       contactBinder.setResourceMap(context.getResourceMap(getClass()));
       ContactDTO contactTemplate = contactBinder
             .bindingTemplate(ContactDTO.class);
 
-      phoneNumberBinder = obf.newObject( StateBinder.class );
+      phoneNumberBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
       ContactPhoneDTO phoneTemplate = phoneNumberBinder
             .bindingTemplate(ContactPhoneDTO.class);
 
-      emailBinder = obf.newObject( StateBinder.class );
+      emailBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       emailBinder.setResourceMap(context.getResourceMap(getClass()));
       ContactEmailDTO emailTemplate = emailBinder
             .bindingTemplate(ContactEmailDTO.class);

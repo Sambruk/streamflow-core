@@ -24,7 +24,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -61,16 +61,15 @@ public class ContactsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private ContactsModel model;
 
    private JList contacts;
 
    public ContactsView( @Service ApplicationContext context,
-                        @Uses ContactsModel model,
-                        @Structure ObjectBuilderFactory obf )
+                        @Uses ContactsModel model)
    {
       super( new BorderLayout() );
 
@@ -158,7 +157,7 @@ public class ContactsView
    @org.jdesktop.application.Action(block = COMPONENT)
    public Task remove() throws IOException, ResourceException
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( ((ContactDTO) contacts.getSelectedValue()).name().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())

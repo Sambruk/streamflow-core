@@ -31,7 +31,6 @@ import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 import static org.qi4j.api.util.Iterables.*;
-import static org.qi4j.api.util.Iterables.filter;
 
 /**
  * Scan classpath for classes that matches given criteria. Useful for automated assemblies with lots of similar classes
@@ -118,7 +117,7 @@ public class ClassScanner
                      try
                      {
                         return seedClass.getClassLoader().loadClass(fileName);
-                     } catch (ClassNotFoundException e)
+                     } catch (Throwable e)
                      {
                         return null;
                      }

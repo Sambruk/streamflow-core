@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.api.administration.surface;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * Link value

@@ -107,6 +107,10 @@ public class AccountSelector
             Properties p = IOUtil.readProperties( is );
 
             String clientVersion = p.getProperty( "application.version" );
+
+            if (clientVersion.startsWith("$"))
+               return; // Dev mode - skip versioning check
+
             String response = dataModel.accountModel( (LinkValue) getModel().getElementAt((Integer) evt.getNewValue() )).test();
             System.out.print( response );
 

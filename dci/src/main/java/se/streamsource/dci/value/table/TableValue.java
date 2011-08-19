@@ -17,14 +17,13 @@
 
 package se.streamsource.dci.value.table;
 
-import org.qi4j.api.common.*;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.*;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.*;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * A table of rows. RowValue needs to be subtyped in order to add columns.

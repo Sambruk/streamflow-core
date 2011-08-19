@@ -23,9 +23,9 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
@@ -56,14 +56,14 @@ public class FormSubmissionWizardPageModel
    EventStream eventStream;
    
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Uses
    FormDraftModel model;
 
    public void updateField( EntityReference reference, String value ) throws ResourceException
    {
-      ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
+      ValueBuilder<FieldValueDTO> builder = module.valueBuilderFactory().newValueBuilder(FieldValueDTO.class);
       builder.prototype().field().set( reference );
       builder.prototype().value().set( value );
 
@@ -87,7 +87,7 @@ public class FormSubmissionWizardPageModel
          {
             for (DomainEvent domainEvent : filter( withNames("createdFormAttachment" ), Events.events( transactions )))
             {
-               ValueBuilder<UpdateAttachmentDTO> builder = vbf.newValueBuilder( UpdateAttachmentDTO.class );
+               ValueBuilder<UpdateAttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder(UpdateAttachmentDTO.class);
                builder.prototype().name().set( file.getName() );
                builder.prototype().size().set( file.length() );
 
@@ -99,7 +99,7 @@ public class FormSubmissionWizardPageModel
                String attachmentId = EventParameters.getParameter( domainEvent, "param1" );
                model.updateAttachment(attachmentId, builder.newInstance());
 
-               ValueBuilder<AttachmentFieldDTO> valueBuilder = vbf.newValueBuilder( AttachmentFieldDTO.class );
+               ValueBuilder<AttachmentFieldDTO> valueBuilder = module.valueBuilderFactory().newValueBuilder(AttachmentFieldDTO.class);
                valueBuilder.prototype().field().set( field );
                valueBuilder.prototype().name().set( file.getName() );
                valueBuilder.prototype().attachment().set( EntityReference.parseEntityReference( attachmentId ) );

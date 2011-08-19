@@ -17,7 +17,7 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.value.*;
+import org.qi4j.api.value.Value;
 
 /**
  * Standard context for update of existing resoruces.

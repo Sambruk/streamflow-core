@@ -17,12 +17,14 @@
 
 package se.streamsource.streamflow.web.domain.entity.organization;
 
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.sideeffect.*;
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 /**
  * JAVADOC

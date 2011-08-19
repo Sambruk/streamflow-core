@@ -36,7 +36,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
@@ -86,7 +86,7 @@ public class CasesTableView
       implements TransactionListener
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    public static final int MILLIS_IN_DAY = (1000 * 60 * 60 * 24);
    public static final WorkspaceResources[] dueGroups = {WorkspaceResources.overdue, WorkspaceResources.duetoday, WorkspaceResources.duetomorrow, WorkspaceResources.duenextweek, WorkspaceResources.duenextmonth, WorkspaceResources.later, WorkspaceResources.noduedate};
@@ -137,7 +137,7 @@ public class CasesTableView
             CasesTableView.class, this ) );
 
       // Filter
-      filter = obf.newObjectBuilder( PerspectiveView.class ).use( model, searchField ).newInstance();
+      filter = module.objectBuilderFactory().newObjectBuilder(PerspectiveView.class).use( model, searchField ).newInstance();
       add( filter, BorderLayout.NORTH );
 
       // Table

@@ -17,7 +17,10 @@
 
 package se.streamsource.dci.value.table;
 
-import static java.util.Collections.reverseOrder;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -26,10 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.util.Function;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import static java.util.Collections.reverseOrder;
 
 /**
  * JAVADOC

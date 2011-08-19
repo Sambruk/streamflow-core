@@ -17,11 +17,11 @@
 
 package se.streamsource.infrastructure.circuitbreaker.jmx;
 
-import se.streamsource.infrastructure.circuitbreaker.*;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
-import java.beans.*;
-import java.text.*;
-import java.util.*;
+import java.beans.PropertyVetoException;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
 * MBean for circuit breakers

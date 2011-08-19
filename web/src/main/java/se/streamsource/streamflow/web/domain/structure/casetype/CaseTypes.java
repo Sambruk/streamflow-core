@@ -17,16 +17,21 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
 /**
  * JAVADOC
@@ -71,13 +76,7 @@ public interface CaseTypes
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Data data;
@@ -127,7 +126,7 @@ public interface CaseTypes
 
       public CaseType createdCaseType( DomainEvent event, String id )
       {
-         CaseType caseType = uowf.currentUnitOfWork().newEntity( CaseType.class, id );
+         CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().newEntity( CaseType.class, id );
 
          return caseType;
       }
@@ -145,9 +144,9 @@ public interface CaseTypes
       public Query<SelectedCaseTypes> usages( CaseType caseType )
       {
          SelectedCaseTypes.Data selectedCaseTypes = QueryExpressions.templateFor( SelectedCaseTypes.Data.class );
-         Query<SelectedCaseTypes> caseTypeUsages = qbf.newQueryBuilder( SelectedCaseTypes.class ).
-               where( QueryExpressions.contains( selectedCaseTypes.selectedCaseTypes(), caseType ) ).
-               newQuery( uowf.currentUnitOfWork() );
+         Query<SelectedCaseTypes> caseTypeUsages = module.queryBuilderFactory().newQueryBuilder(SelectedCaseTypes.class).
+               where(QueryExpressions.contains(selectedCaseTypes.selectedCaseTypes(), caseType)).
+               newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          return caseTypeUsages;
       }

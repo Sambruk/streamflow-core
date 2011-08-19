@@ -25,8 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
@@ -35,7 +34,6 @@ import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -55,21 +53,18 @@ public class AdministratorsView
 {
    AdministratorsModel model;
 
+   @Structure
+   Module module;
+
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroupsDialogs;
    private UsersAndGroupsModel usersAndGroupsModel;
 
    public JList administratorList;
 
    public AdministratorsView( @Service ApplicationContext context,
-                              @Uses AdministratorsModel model,
-                              @Structure ObjectBuilderFactory obf)
+                              @Uses AdministratorsModel model)
    {
       super( new BorderLayout() );
       this.model = model;
@@ -95,7 +90,7 @@ public class AdministratorsView
    @Action
    public Task add()
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroupsDialogs.use( usersAndGroupsModel ).newInstance();
+      SelectUsersAndGroupsDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectUsersAndGroupsDialog.class).use( usersAndGroupsModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_user_or_group_title ) );
 
       final Set<LinkValue> linkValueSet = dialog.getSelectedEntities();

@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -49,7 +49,7 @@ public interface SelectedCaseTypes
          implements SelectedCaseTypes, Data
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public void addSelectedCaseType( CaseType caseType )
       {

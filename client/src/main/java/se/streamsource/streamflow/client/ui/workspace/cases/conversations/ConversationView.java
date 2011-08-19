@@ -22,7 +22,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,15 +30,15 @@ import java.awt.*;
 public class ConversationView extends JPanel
 {
    public ConversationView( @Service final ApplicationContext context,
-                                @Structure ObjectBuilderFactory obf,
+                                @Structure Module module,
                                 @Uses ConversationModel model)
    {
       super( new BorderLayout() );
 
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      add( obf.newObjectBuilder( ConversationParticipantsView.class ).use(model.newParticipantsModel()).newInstance(), BorderLayout.NORTH );
-      add( obf.newObjectBuilder( MessagesConversationView.class ).use( model.newMessagesModel()).newInstance(), BorderLayout.CENTER );
+      add( module.objectBuilderFactory().newObjectBuilder(ConversationParticipantsView.class).use(model.newParticipantsModel()).newInstance(), BorderLayout.NORTH );
+      add( module.objectBuilderFactory().newObjectBuilder(MessagesConversationView.class).use( model.newMessagesModel()).newInstance(), BorderLayout.CENTER );
       
    }
 }

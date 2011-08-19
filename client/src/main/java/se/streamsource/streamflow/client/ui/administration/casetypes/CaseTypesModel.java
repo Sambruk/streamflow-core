@@ -31,7 +31,7 @@ public class CaseTypesModel
 {
    public CaseTypesModel()
    {
-      super( "createcasetype" );
+      super( "create" );
 
       relationModelMapping("resource", CaseTypeModel.class);
    }

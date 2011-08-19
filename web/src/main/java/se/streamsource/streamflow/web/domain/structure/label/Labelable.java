@@ -17,13 +17,14 @@
 
 package se.streamsource.streamflow.web.domain.structure.label;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC

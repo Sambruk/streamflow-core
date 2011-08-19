@@ -23,7 +23,7 @@ import org.jdesktop.swingx.JXFrame;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountSelector;
 import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
@@ -45,7 +45,7 @@ public class AdministrationWindow
          @Service JavaHelp javaHelp,
          @Uses AdministrationMenuBar menu,
          @Uses final AccountSelector accountSelector,
-         @Structure final ObjectBuilderFactory obf )
+         @Structure final Module module )
    {
       super( application );
 
@@ -72,7 +72,7 @@ public class AdministrationWindow
                   frame.getContentPane().removeAll();
 
                   AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                  AdministrationView administrationView = obf.newObjectBuilder( AdministrationView.class ).use( selectedAccount.newAdministrationModel()).newInstance();
+                  AdministrationView administrationView = module.objectBuilderFactory().newObjectBuilder(AdministrationView.class).use( selectedAccount.newAdministrationModel()).newInstance();
 
                   frame.getContentPane().add( administrationView );
                }

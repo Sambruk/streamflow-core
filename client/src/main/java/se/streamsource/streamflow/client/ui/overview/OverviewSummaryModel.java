@@ -40,7 +40,7 @@ public class OverviewSummaryModel
 
    public Representation generateExcelProjectSummary() throws IOException, ResourceException
    {
-      return client.queryRepresentation( "generateexcelprojectsummary", null );
+      return client.query( "generateexcelprojectsummary", Representation.class );
    }
 
    public EventList<RowValue> getProjectOverviews()

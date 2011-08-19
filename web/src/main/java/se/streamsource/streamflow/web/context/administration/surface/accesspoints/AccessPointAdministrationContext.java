@@ -17,18 +17,19 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.qi4j.library.constraints.annotation.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -51,9 +52,10 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -130,7 +132,7 @@ public interface AccessPointAdministrationContext
          return linkBuilder.newInstance();
       }
 
-      public void delete() throws ResourceException
+      public void delete()
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
          AccessPoints accessPoints = RoleMap.role( AccessPoints.class );

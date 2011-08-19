@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import se.streamsource.streamflow.web.domain.structure.created.*;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 /**
  * An Actor is an entity that can participate in work.

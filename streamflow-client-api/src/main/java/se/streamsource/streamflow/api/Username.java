@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.api;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.library.constraints.annotation.*;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.library.constraints.annotation.Matches;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
 
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Constraint for usernames

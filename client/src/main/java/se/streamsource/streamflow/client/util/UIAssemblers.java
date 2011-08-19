@@ -60,6 +60,6 @@ public final class UIAssemblers
 
    public static void addTasks( ModuleAssembly module, Class<? extends Task>... taskClasses ) throws AssemblyException
    {
-      module.objects( taskClasses );
+      module.objects( taskClasses ).visibleIn(Visibility.layer);
    }
 }

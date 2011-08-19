@@ -29,7 +29,9 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.ProxyUserDTO;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -56,14 +58,8 @@ public class ProxyUsersView
 {
    private ProxyUsersModel model;
 
-   @Uses
-   Iterable<CreateProxyUserDialog> userDialogs;
-
-   @Uses
-   Iterable<ResetPasswordDialog> resetPwdDialogs;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    @Service
    DialogService dialogs;
@@ -110,7 +106,7 @@ public class ProxyUsersView
    @org.jdesktop.application.Action
    public Task add()
    {
-      final CreateProxyUserDialog dialog = userDialogs.iterator().next();
+      final CreateProxyUserDialog dialog = module.objectBuilderFactory().newObject(CreateProxyUserDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
 
       if ( dialog.userCommand() != null )
@@ -131,7 +127,7 @@ public class ProxyUsersView
    @org.jdesktop.application.Action
    public Task resetPassword()
    {
-      final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
+      final ResetPasswordDialog dialog = module.objectBuilderFactory().newObject(ResetPasswordDialog.class);
 
       final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.convertRowIndexToModel( proxyUsersTable.getSelectedRow()) );
 
@@ -155,7 +151,7 @@ public class ProxyUsersView
       @Action
    public Task remove()
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.convertRowIndexToView( proxyUsersTable.getSelectedRow()) );
       dialog.setRemovalMessage( proxyUser.description().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.remove_proxyuser_title ) );

@@ -17,10 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
@@ -33,12 +30,6 @@ public class EmailAccessPointsModel
    extends LinkValueListModel
       implements Refreshable
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
    @Uses
    CommandQueryClient client;
 

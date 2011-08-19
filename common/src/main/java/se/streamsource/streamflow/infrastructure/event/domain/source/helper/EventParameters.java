@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import org.json.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Utility class to pick out parameters by name or index as strings from a DomainEvent

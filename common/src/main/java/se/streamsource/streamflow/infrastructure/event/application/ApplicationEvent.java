@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.infrastructure.event.application;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Representation of an application-event. An application event is triggered by calling a method

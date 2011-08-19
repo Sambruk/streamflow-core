@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.sideeffect.*;
+import org.qi4j.api.sideeffect.SideEffects;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Add this to methods which when invoked change the ownership

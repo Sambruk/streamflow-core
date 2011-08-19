@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.replay;
 
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 
 /**
  * An event replay failed.

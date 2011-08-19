@@ -26,7 +26,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -59,15 +59,15 @@ public class ManagePerspectivesDialog
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   @Structure
+   Module module;
 
    private PerspectivesModel model;
 
    private JList perspective;
    private JButton optionButton;
 
-   public ManagePerspectivesDialog(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf, @Uses PerspectivesModel model)
+   public ManagePerspectivesDialog(@Service ApplicationContext context, @Uses PerspectivesModel model)
    {
       super(new BorderLayout());
       setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -132,7 +132,7 @@ public class ManagePerspectivesDialog
    public Task rename()
    {
       final LinkValue selected = (LinkValue) perspective.getSelectedValue();
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog(this, dialog, text(WorkspaceResources.change_perspective_title));
 
       if (!Strings.empty(dialog.name()))

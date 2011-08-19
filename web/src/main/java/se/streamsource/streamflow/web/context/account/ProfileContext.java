@@ -18,30 +18,24 @@
 package se.streamsource.streamflow.web.context.account;
 
 import org.qi4j.api.constraint.Name;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.interaction.profile.*;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 
 /**
  * JAVADOC
  */
 public class ProfileContext
 {
-   @Structure
-   ValueBuilderFactory vbf;
+   @Uses MessageRecipient recipient;
+   @Uses MessageRecipient.Data recipientData;
 
    public void changemessagedeliverytype( @Name("messagedeliverytype") MessageRecipient.MessageDeliveryTypes newDeliveryType )
    {
-      MessageRecipient recipient = RoleMap.role( MessageRecipient.class );
-
       recipient.changeMessageDeliveryType( newDeliveryType );
    }
 
    public String messagedeliverytype()
    {
-      MessageRecipient.Data recipientData = RoleMap.role( MessageRecipient.Data.class );
       return recipientData.delivery().get().name();
    }
 

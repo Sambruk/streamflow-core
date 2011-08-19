@@ -21,7 +21,7 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -38,7 +38,7 @@ public class EmailAccessPointModel
         implements Refreshable
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    @Uses
    protected CommandQueryClient client;
@@ -104,6 +104,6 @@ public class EmailAccessPointModel
 
    public CaseLabelsModel createLabelsModel()
    {
-      return obf.newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient("labels")).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient("labels")).newInstance();
    }
 }

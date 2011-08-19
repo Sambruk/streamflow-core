@@ -20,7 +20,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
@@ -47,7 +47,7 @@ public class WorkspaceModel
       extends ResourceModel
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    EventList<ContextItem> items = new BasicEventList<ContextItem>();
 
@@ -133,21 +133,21 @@ public class WorkspaceModel
 
    public CasesModel newCasesModel()
    {
-      return obf.newObjectBuilder(CasesModel.class).use(client.getSubClient("cases")).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(CasesModel.class).use(client.getSubClient("cases")).newInstance();
    }
 
    public SearchResultTableModel newSearchModel()
    {
-      return obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search") ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(SearchResultTableModel.class).use( client.getSubClient("search") ).newInstance();
    }
 
    public PerspectivesModel newPerspectivesModel()
    {
-      return obf.newObjectBuilder(PerspectivesModel.class).use(client.getSubClient("perspectives")).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(PerspectivesModel.class).use(client.getSubClient("perspectives")).newInstance();
    }
 
    public CasesTableModel newCasesTableModel(CommandQueryClient client)
    {
-      return obf.newObjectBuilder(CasesTableModel.class).use(client).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(CasesTableModel.class).use(client).newInstance();
    }
 }

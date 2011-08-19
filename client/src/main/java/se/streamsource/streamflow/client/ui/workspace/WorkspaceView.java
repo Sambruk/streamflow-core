@@ -28,7 +28,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.ContextItem;
@@ -68,8 +68,7 @@ public class WorkspaceView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   Module module;
 
    SearchResultTableModel searchResultTableModel;
 
@@ -85,7 +84,6 @@ public class WorkspaceView
    private CardLayout topLayout = new CardLayout();
 
    private CasesView casesView;
-   private final ObjectBuilderFactory obf;
    private WorkspaceModel model;
 
    private SearchView searchView;
@@ -96,10 +94,10 @@ public class WorkspaceView
 
 
    public WorkspaceView(final @Service ApplicationContext context,
-                        final @Structure ObjectBuilderFactory obf,
+                        final @Structure Module module,
                         final @Uses WorkspaceModel model)
    {
-      this.obf = obf;
+      this.module = module;
       this.model = model;
       setLayout(new BorderLayout());
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
@@ -125,9 +123,9 @@ public class WorkspaceView
 
       searchResultTableModel = model.newSearchModel();
 
-      searchView = obf.newObjectBuilder(SearchView.class).use(searchResultTableModel).newInstance();
+      searchView = module.objectBuilderFactory().newObjectBuilder(SearchView.class).use(searchResultTableModel).newInstance();
 
-      casesView = obf.newObjectBuilder(CasesView.class).use(model.newCasesModel(), searchView.getTextField()).newInstance();
+      casesView = module.objectBuilderFactory().newObjectBuilder(CasesView.class).use(model.newCasesModel(), searchView.getTextField()).newInstance();
 
       // Create Case
       javax.swing.Action createCaseAction = am.get("createCase");
@@ -170,7 +168,7 @@ public class WorkspaceView
       add(topPanel, BorderLayout.NORTH);
       add(casesView, BorderLayout.CENTER);
 
-      contextView = obf.newObjectBuilder(WorkspaceContextView.class).use(model).newInstance();
+      contextView = module.objectBuilderFactory().newObjectBuilder(WorkspaceContextView.class).use(model).newInstance();
       JList workspaceContextList = contextView.getWorkspaceContextList();
       workspaceContextList.addListSelectionListener(new ListSelectionListener()
       {
@@ -218,8 +216,8 @@ public class WorkspaceView
                            break;
                         }
                      }
-                     casesTable = obf.newObjectBuilder(CasesTableView.class)
-                           .use(obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null)
+                     casesTable = module.objectBuilderFactory().newObjectBuilder(CasesTableView.class)
+                           .use(isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null)
                            .newInstance();
 
                      casesTable.getModel().setFilter(perspectiveDTO);
@@ -229,8 +227,8 @@ public class WorkspaceView
 
                   } else
                   {
-                     casesTable = obf.newObjectBuilder(CasesTableView.class)
-                           .use(obf, isSearch ? searchResultTableModel : model.newCasesTableModel(contextItem.getClient()), tableFormat, isSearch ? searchView.getTextField() : null)
+                     casesTable = module.objectBuilderFactory().newObjectBuilder(CasesTableView.class)
+                           .use(isSearch ? searchResultTableModel : model.newCasesTableModel(contextItem.getClient()), tableFormat, isSearch ? searchView.getTextField() : null)
                            .newInstance();
 
                      searchView.getTextField().setText( "" );
@@ -393,14 +391,14 @@ public class WorkspaceView
    @Action
    public void managePerspectives()
    {
-      ManagePerspectivesDialog dialog = obf.newObjectBuilder(ManagePerspectivesDialog.class).use(model.newPerspectivesModel()).newInstance();
+      ManagePerspectivesDialog dialog = module.objectBuilderFactory().newObjectBuilder(ManagePerspectivesDialog.class).use(model.newPerspectivesModel()).newInstance();
       dialogs.showButtonLessDialog(this, dialog, i18n.text(WorkspaceResources.manage_perspectives));
    }
 
    @Action
    public Task savePerspective()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(WorkspaceResources.save_perspective));
       if (!Strings.empty(dialog.name()))
       {
@@ -410,7 +408,7 @@ public class WorkspaceView
             public void command()
                   throws Exception
             {
-               PerspectivesModel perspectivesModel = obf.newObjectBuilder(PerspectivesModel.class).use(model.newPerspectivesModel()).newInstance();
+               PerspectivesModel perspectivesModel = module.objectBuilderFactory().newObjectBuilder(PerspectivesModel.class).use(model.newPerspectivesModel()).newInstance();
                PerspectiveDTO perspective = casesView.getCaseTableView().getModel().getPerspective(dialog.name(), searchView.isVisible() ? searchView.getTextField().getText() : "");
                perspectivesModel.savePerspective(perspective);
             }

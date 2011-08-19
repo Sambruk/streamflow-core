@@ -17,11 +17,13 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import java.io.IOException;
+
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -29,7 +31,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 public class OrganizationUserContext
       implements DeleteContext
 {
-   public void delete() throws ResourceException
+   public void delete() throws IOException
    {
       Organization org = role( Organization.class );
       OrganizationParticipations uop = role( OrganizationParticipations.class );

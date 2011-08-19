@@ -17,10 +17,9 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.unitofwork.*;
-import org.restlet.data.*;
-import org.restlet.security.*;
+import org.restlet.data.ClientInfo;
+import org.restlet.security.Enroler;
+import org.restlet.security.User;
 
 /**
  * Accept login if user with the given username has the given password
@@ -29,9 +28,6 @@ import org.restlet.security.*;
 public class DefaultEnroler
       implements Enroler
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
    public void enrole( ClientInfo clientInfo )
    {
       User user = clientInfo.getUser();

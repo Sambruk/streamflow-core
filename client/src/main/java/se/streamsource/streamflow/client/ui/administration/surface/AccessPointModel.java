@@ -21,9 +21,8 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
@@ -32,7 +31,6 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -46,17 +44,17 @@ public class AccessPointModel extends Observable
    CaseLabelsModel labelsModel;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Uses
    private CommandQueryClient client;
 
    private AccessPointDTO accessPoint;
 
-   public AccessPointModel(@Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public AccessPointModel(@Uses CommandQueryClient client, @Structure Module module)
    {
       this.client = client;
-      labelsModel = obf.newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient( "labels" )).newInstance();
+      labelsModel = module.objectBuilderFactory().newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient( "labels" )).newInstance();
    }
 
    public AccessPointDTO getAccessPointValue()
@@ -151,7 +149,7 @@ public class AccessPointModel extends Observable
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
          LinksValue listValue = client.query( "possibleformtemplates",
-               getStringValue( "pdf" ), LinksValue.class );
+               LinksValue.class, getStringValue( "pdf" ));
          list.addAll( listValue.links().get() );
 
          return list;
@@ -169,14 +167,14 @@ public class AccessPointModel extends Observable
          client.postLink( link );
       } else
       {
-         ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
+         ValueBuilder<EntityValue> builder = module.valueBuilderFactory().newValueBuilder(EntityValue.class);
          client.postCommand( "setformtemplate", builder.newInstance() );
       }
    }
 
    private StringValue getStringValue( String id )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( id );
       return builder.newInstance();
    }

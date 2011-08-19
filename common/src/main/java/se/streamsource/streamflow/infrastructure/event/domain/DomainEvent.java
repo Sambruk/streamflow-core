@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Representation of a domain-event. An event is triggered by calling a method

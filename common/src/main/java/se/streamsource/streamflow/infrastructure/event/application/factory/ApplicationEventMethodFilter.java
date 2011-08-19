@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.factory;
 
-import org.qi4j.api.common.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import org.qi4j.api.common.AppliesToFilter;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 /**
  * Filter for Event methods. Event methods

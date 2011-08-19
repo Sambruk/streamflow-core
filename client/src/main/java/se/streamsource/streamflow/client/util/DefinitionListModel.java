@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.util;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -61,11 +62,12 @@ public class DefinitionListModel
 
    public void create( String name )
    {
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
+      Form form = new Form();
+      form.set("name", name);
+
       try
       {
-         client.postCommand( create, builder.newInstance() );
+         client.postCommand( create, form );
       } catch (ResourceException e)
       {
          handleException( e );

@@ -17,16 +17,23 @@
 
 package se.streamsource.streamflow.web.domain;
 
-import org.qi4j.api.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.composite.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.common.AppliesToFilter;
+import org.qi4j.api.composite.Composite;
+import org.qi4j.api.concern.GenericConcern;
+import org.qi4j.api.constraint.Constraint;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.api.constraint.ConstraintViolation;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.injection.scope.Invocation;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 
-import java.lang.annotation.*;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Collections;
 
 /**
  * Check method constraints. A method constraint is an 

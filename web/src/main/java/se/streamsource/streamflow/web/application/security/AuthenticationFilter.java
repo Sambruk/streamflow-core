@@ -17,10 +17,14 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import org.qi4j.api.injection.scope.*;
-import org.restlet.*;
-import org.restlet.routing.*;
-import org.slf4j.*;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.routing.Filter;
+import org.slf4j.MDC;
 
 /**
  * Accept login if user with the given username has the given password in the

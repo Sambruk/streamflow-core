@@ -26,8 +26,7 @@ import org.netbeans.spi.wizard.WizardPage;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
@@ -51,10 +50,7 @@ public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable, TransactionListener
 {
    @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private
    @Service
@@ -63,7 +59,7 @@ public class PossibleFormsView extends JPanel
    private PossibleFormsModel modelForms;
    private Wizard wizard;
 
-   public PossibleFormsView(@Uses PossibleFormsModel possibleFormsModel, @Structure ObjectBuilderFactory obf)
+   public PossibleFormsView(@Uses PossibleFormsModel possibleFormsModel)
    {
       this.modelForms = possibleFormsModel;
       setLayout( new GridLayout( 0, 1 ) );
@@ -83,7 +79,7 @@ public class PossibleFormsView extends JPanel
 
       for (LinkValue itemValue : formList)
       {
-         PossibleFormView formView = obf.newObjectBuilder(PossibleFormView.class).use(itemValue).newInstance();
+         PossibleFormView formView = module.objectBuilderFactory().newObjectBuilder(PossibleFormView.class).use(itemValue).newInstance();
          formView.addActionListener( this );
          add( formView, Component.LEFT_ALIGNMENT );
       }
@@ -119,7 +115,7 @@ public class PossibleFormsView extends JPanel
             PageSubmissionDTO page = formDraftDTO.pages().get().get( i );
             if ( page.fields().get() != null && page.fields().get().size() >0 )
             {
-               wizardPages[i] = obf.newObjectBuilder( FormSubmissionWizardPageView.class ).
+               wizardPages[i] = module.objectBuilderFactory().newObjectBuilder(FormSubmissionWizardPageView.class).
                      use( formDraftModel, page ).newInstance();
             }
          }

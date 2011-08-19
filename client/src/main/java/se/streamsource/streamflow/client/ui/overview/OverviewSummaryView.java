@@ -22,12 +22,9 @@ import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.streamflow.client.StreamflowApplication;
@@ -59,9 +56,7 @@ public class OverviewSummaryView extends JPanel
    protected OverviewSummaryModel model;
 
    public void init(@Service ApplicationContext context,
-                    @Uses final OverviewSummaryModel model,
-                    @Structure final ObjectBuilderFactory obf,
-                    @Structure ValueBuilderFactory vbf)
+                    @Uses final OverviewSummaryModel model)
    {
       this.model = model;
       setLayout(new BorderLayout());

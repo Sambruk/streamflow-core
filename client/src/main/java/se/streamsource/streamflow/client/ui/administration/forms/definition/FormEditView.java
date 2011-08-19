@@ -24,10 +24,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -54,27 +53,26 @@ public class FormEditView
       implements Observer, Refreshable
 {
    StateBinder formValueBinder;
-   private ValueBuilderFactory vbf;
    private FormModel model;
+   private Module module;
 
    public FormEditView( @Service ApplicationContext context,
                         @Uses final FormModel model,
-                        @Structure final ObjectBuilderFactory obf,
-                        @Structure ValueBuilderFactory vbf )
+                        @Structure Module module)
    {
       super();
 
       this.model = model;
+      this.module = module;
       setBorder(BorderFactory.createEmptyBorder());
 
-      this.vbf = vbf;
       FormLayout formLayout = new FormLayout(
             "200dlu", "" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
       formBuilder.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      formValueBinder = obf.newObject( StateBinder.class );
+      formValueBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       formValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FormValue formValueTemplate = formValueBinder.bindingTemplate( FormValue.class );
 
@@ -92,7 +90,7 @@ public class FormEditView
    public void refresh()
    {
       model.refresh();
-      FormValue value = vbf.newValueBuilder( FormValue.class ).withPrototype( model.getIndex() ).prototype();
+      FormValue value = module.valueBuilderFactory().newValueBuilder(FormValue.class).withPrototype( model.getIndex() ).prototype();
       formValueBinder.updateWith( value );
    }
 
@@ -101,7 +99,7 @@ public class FormEditView
       Property property = (Property) arg;
       if (property.qualifiedName().name().equals( "description" ))
       {
-         final ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         final ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
          builder.prototype().string().set( (String) property.get() );
          new CommandTask()
          {
@@ -114,7 +112,7 @@ public class FormEditView
          }.execute();
       } else if (property.qualifiedName().name().equals( "note" ))
       {
-         final ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         final ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
          builder.prototype().string().set( (String) property.get() );
          new CommandTask()
          {
@@ -127,15 +125,14 @@ public class FormEditView
          }.execute();
       }else if (property.qualifiedName().name().equals( "id" ))
       {
-         final ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( (String) property.get() );
+         final String id = (String) property.get();
          new CommandTask()
          {
             @Override
             public void command()
                throws Exception
             {
-               model.changeFormId( builder.newInstance() );
+               model.changeFormId( id );
             }
          }.execute();
       }

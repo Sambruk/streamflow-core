@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.web.domain.entity.organization;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -40,27 +43,21 @@ public interface OrganizationParticipationsQueries
          implements OrganizationParticipationsQueries
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       OrganizationEntity organization;
 
       public QueryBuilder<User> users()
       {
-         QueryBuilder<User> usersQuery = qbf.newQueryBuilder( User.class );
+         QueryBuilder<User> usersQuery = module.queryBuilderFactory().newQueryBuilder(User.class);
          return usersQuery.where( contains( templateFor( OrganizationParticipations.Data.class).organizations(), organization ));
       }
 
       public Query<User> possibleUsers()
       {
-         QueryBuilder<User> builder = qbf.newQueryBuilder( User.class );
-         Query<User> query = builder.newQuery( uowf.currentUnitOfWork() ).orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
+         QueryBuilder<User> builder = module.queryBuilderFactory().newQueryBuilder(User.class);
+         Query<User> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy(orderBy(templateFor(UserAuthentication.Data.class).userName()));
          List<User> possibleUsers = new ArrayList<User>( );
          for (User user : query)
          {
@@ -70,7 +67,7 @@ public interface OrganizationParticipationsQueries
             }
          }
 
-         return qbf.newQueryBuilder( User.class ).newQuery( possibleUsers );
+         return module.queryBuilderFactory().newQueryBuilder(User.class).newQuery( possibleUsers );
       }
    }
 }

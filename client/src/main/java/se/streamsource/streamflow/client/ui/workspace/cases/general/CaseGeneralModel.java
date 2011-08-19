@@ -80,10 +80,9 @@ public class CaseGeneralModel
          return; // No change
 
       general.description().set( newDescription );
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory()
-            .newValueBuilder(StringValue.class);
-      builder.prototype().string().set( newDescription );
-      client.postCommand( "changedescription", builder.newInstance() );
+      Form form = new Form();
+      form.set("description", newDescription);
+      client.postCommand( "changedescription", form );
 
    }
 
@@ -130,7 +129,7 @@ public class CaseGeneralModel
 
    public void refresh()
    {
-      resourceValue = client.queryResource();
+      resourceValue = client.query();
       general = (CaseGeneralDTO) resourceValue.index().get().buildWith().prototype();
 
       setChanged();

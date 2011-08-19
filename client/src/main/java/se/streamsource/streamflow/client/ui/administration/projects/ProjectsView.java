@@ -24,7 +24,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -52,16 +52,13 @@ public class ProjectsView
 {
    ProjectsModel model;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
-   public ProjectsView( @Structure final ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses final ProjectsModel model)
+   public ProjectsView( @Service ApplicationContext context, @Uses final ProjectsModel model)
    {
       this.model = model;
 
@@ -72,7 +69,7 @@ public class ProjectsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            TabbedResourceView view = obf.newObjectBuilder( TabbedResourceView.class ).use( model.newResourceModel(detailLink)).newInstance();
+            TabbedResourceView view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( model.newResourceModel(detailLink)).newInstance();
             return view;
          }
       });
@@ -83,7 +80,7 @@ public class ProjectsView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_project_title ) );
 
@@ -107,7 +104,7 @@ public class ProjectsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -129,7 +126,7 @@ public class ProjectsView
    public Task rename()
    {
       final LinkValue selected = (LinkValue)list.getSelectedValue();
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_project_title ) );
 
       if (!Strings.empty( dialog.name() ) )

@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import info.ineighborhood.cardme.engine.*;
-import info.ineighborhood.cardme.vcard.*;
-import info.ineighborhood.cardme.vcard.features.*;
-import org.qi4j.api.configuration.*;
+import info.ineighborhood.cardme.engine.VCardEngine;
+import info.ineighborhood.cardme.vcard.VCard;
+import info.ineighborhood.cardme.vcard.features.AddressFeature;
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -36,7 +36,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
-import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
@@ -60,14 +59,20 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import javax.mail.*;
-import javax.mail.internet.*;
-import java.io.*;
-import java.nio.*;
-import java.nio.charset.*;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeUtility;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 /**
  * Receive emails and create cases through Access Points

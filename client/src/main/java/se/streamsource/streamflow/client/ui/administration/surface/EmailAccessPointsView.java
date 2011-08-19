@@ -24,8 +24,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -50,16 +49,13 @@ public class EmailAccessPointsView
 {
    EmailAccessPointsModel model;
 
-   @Uses
-   ObjectBuilder<InputDialog> inputDialogs;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
-   public EmailAccessPointsView( @Service ApplicationContext context, @Uses final EmailAccessPointsModel model, @Structure final ObjectBuilderFactory obf )
+   public EmailAccessPointsView( @Service ApplicationContext context, @Uses final EmailAccessPointsModel model)
    {
       this.model = model;
 
@@ -70,7 +66,7 @@ public class EmailAccessPointsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            return obf.newObjectBuilder( EmailAccessPointView.class ).use( model.newResourceModel(detailLink)).newInstance();
+            return module.objectBuilderFactory().newObjectBuilder(EmailAccessPointView.class).use( model.newResourceModel(detailLink)).newInstance();
          }
       });
 
@@ -80,7 +76,7 @@ public class EmailAccessPointsView
    @Action
    public Task add()
    {
-      final InputDialog dialog = inputDialogs.use(i18n.text(AdministrationResources.email)).newInstance();
+      final InputDialog dialog = module.objectBuilderFactory().newObjectBuilder(InputDialog.class).use(i18n.text(AdministrationResources.email)).newInstance();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_email_accesspoint ) );
 
@@ -104,7 +100,7 @@ public class EmailAccessPointsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage(selected.text().get());
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())

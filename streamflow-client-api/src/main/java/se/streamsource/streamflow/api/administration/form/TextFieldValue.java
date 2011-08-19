@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.api.administration.form;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC

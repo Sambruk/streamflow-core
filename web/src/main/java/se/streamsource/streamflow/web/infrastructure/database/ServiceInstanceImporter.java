@@ -17,8 +17,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.service.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.service.ImportedServiceDescriptor;
+import org.qi4j.api.service.ServiceFinder;
+import org.qi4j.api.service.ServiceImporter;
+import org.qi4j.api.service.ServiceImporterException;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Module;
 
 /**
  * Use a registered service that implements ServiceImporter to do the actual
@@ -31,7 +36,7 @@ public class ServiceInstanceImporter
         implements ServiceImporter
 {
    @Structure
-   ServiceFinder finder;
+   Module module;
 
    ServiceImporter service;
 
@@ -58,7 +63,7 @@ public class ServiceInstanceImporter
    {
       if (service == null)
       {
-         for (ServiceReference<ServiceImporter> reference : finder.<ServiceImporter>findServices(ServiceImporter.class))
+         for (ServiceReference<ServiceImporter> reference : module.serviceFinder().<ServiceImporter>findServices(ServiceImporter.class))
          {
             if (reference.identity().equals(serviceId))
             {

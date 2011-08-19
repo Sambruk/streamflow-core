@@ -17,19 +17,20 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.*;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 import static se.streamsource.streamflow.util.Strings.empty;
 

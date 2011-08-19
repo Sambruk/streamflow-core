@@ -24,7 +24,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.Links;
@@ -51,18 +51,15 @@ import static se.streamsource.streamflow.client.util.i18n.text;
 public class GroupsView
       extends ListDetailView
 {
-   @Uses
-   private Iterable<NameDialog> nameDialogs;
-
-   @Uses
-   private Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private GroupsModel model;
 
    @Service
    private DialogService dialogs;
 
-   public GroupsView( @Service ApplicationContext context, @Uses final GroupsModel model, @Structure final ObjectBuilderFactory obf)
+   public GroupsView( @Service ApplicationContext context, @Uses final GroupsModel model)
    {
       this.model = model;
 
@@ -78,7 +75,7 @@ public class GroupsView
             Iterable<LinkValue> participants1 = Iterables.filter(Links.withRel("participants"), (Iterable<LinkValue>) groupModel.getResources());
             LinkValue participants = Iterables.first(participants1);
 
-            return obf.newObjectBuilder( ParticipantsView.class ).use( groupModel.newResourceModel(participants)).newInstance();
+            return module.objectBuilderFactory().newObjectBuilder(ParticipantsView.class).use( groupModel.newResourceModel(participants)).newInstance();
          }
       });
 
@@ -88,7 +85,7 @@ public class GroupsView
    @Action
    public Task add()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_group_title ) );
       final String name = dialog.name();
       if (!Strings.empty( name ))
@@ -111,7 +108,7 @@ public class GroupsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -134,7 +131,7 @@ public class GroupsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_group_title ) );
 
       if (!Strings.empty( dialog.name() ) )

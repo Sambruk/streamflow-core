@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
 /**
  * Configuration for the SendMailService.

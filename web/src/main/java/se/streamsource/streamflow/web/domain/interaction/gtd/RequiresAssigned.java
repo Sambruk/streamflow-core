@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.constraint.*;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.api.constraint.Constraints;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Check that an assignable is assigned or not

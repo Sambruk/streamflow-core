@@ -17,13 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.entity;
 
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.sideeffect.*;
-import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
-import se.streamsource.streamflow.web.domain.generic.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffects;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.EventCreationConcern;
+import se.streamsource.streamflow.web.domain.generic.CommandPropertyChangeMixin;
+import se.streamsource.streamflow.web.domain.generic.EventEntityAddedMixin;
+import se.streamsource.streamflow.web.domain.generic.EventEntityCreatedMixin;
+import se.streamsource.streamflow.web.domain.generic.EventEntityRemovedMixin;
+import se.streamsource.streamflow.web.domain.generic.EventPropertyChangedMixin;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangeOwnerSideEffect;
 
 /**
  * Base Composite for all domain entities

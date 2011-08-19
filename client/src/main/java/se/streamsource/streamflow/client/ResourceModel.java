@@ -19,10 +19,9 @@ package se.streamsource.streamflow.client;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.TransactionList;
-import org.apache.commons.collections.map.HashedMap;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -42,7 +41,7 @@ public abstract class ResourceModel<INDEXTYPE>
       implements Refreshable
 {
    @Structure
-   ObjectBuilderFactory obf;
+   protected Module module;
 
    @Uses
    protected CommandQueryClient client;
@@ -57,7 +56,7 @@ public abstract class ResourceModel<INDEXTYPE>
 
    public void refresh()
    {
-      resourceValue = client.queryResource();
+      resourceValue = client.query();
 
       EventListSynch.synchronize( resourceValue.commands().get(), commands );
       EventListSynch.synchronize( resourceValue.queries().get(), queries );
@@ -99,7 +98,7 @@ public abstract class ResourceModel<INDEXTYPE>
       if (modelClass == null)
          throw new IllegalArgumentException("Unknown relation type:"+resource.rel().get());
 
-      return obf.newObjectBuilder(modelClass).use(client.getClient(resource)).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(modelClass).use(client.getClient(resource)).newInstance();
    }
 
    @Override

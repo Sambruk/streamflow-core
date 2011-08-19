@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.web.infrastructure.caching;
 
-import net.sf.ehcache.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
+import net.sf.ehcache.CacheManager;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
 
 /**
  * Service wrapper for Ehcache. Manages a CacheManager instance.

@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.web.application.pdf;
 
-import org.apache.pdfbox.encoding.*;
-import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 
-import java.io.*;
+import java.io.IOException;
 
 
 public class PdfFont

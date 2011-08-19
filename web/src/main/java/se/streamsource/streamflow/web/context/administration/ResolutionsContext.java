@@ -17,27 +17,28 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 
 /**
  * JAVADOC
  */
 @Mixins(ResolutionsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface ResolutionsContext
-      extends Context, IndexContext<LinksValue>
+      extends Context, IndexContext<LinksValue>, CreateContext<String, Resolution>
 {
-   void createresolution( @MaxLength(50) StringValue name );
+   Resolution create( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements ResolutionsContext
@@ -50,11 +51,11 @@ public interface ResolutionsContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "resolution" ).addDescribables( RoleMap.role( Resolutions.class ).getResolutions() ).newLinks();
       }
 
-      public void createresolution( StringValue name )
+      public Resolution create( String name )
       {
          Resolutions resolutions = RoleMap.role( Resolutions.class );
 
-         resolutions.createResolution( name.string().get() );
+         return resolutions.createResolution( name );
       }
    }
 }

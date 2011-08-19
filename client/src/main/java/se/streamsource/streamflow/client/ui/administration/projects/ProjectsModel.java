@@ -27,7 +27,7 @@ public class ProjectsModel
 {
    public ProjectsModel()
    {
-      super( "createproject" );
+      super( "create" );
 
       relationModelMapping("resource", ProjectModel.class);
    }

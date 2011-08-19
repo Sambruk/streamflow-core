@@ -17,24 +17,25 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 
 /**
  * JAVADOC
  */
 @Mixins(OrganizationalUnitsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface OrganizationalUnitsContext
       extends IndexContext<Iterable<OrganizationalUnit>>, Context
 {
-   public void createorganizationalunit( @MaxLength(50) @Name("string") String value );
+   public void create( @MaxLength(50) @Name("name") String value );
 
    abstract class Mixin
          implements OrganizationalUnitsContext
@@ -47,7 +48,7 @@ public interface OrganizationalUnitsContext
          return module.queryBuilderFactory().newQueryBuilder(OrganizationalUnit.class).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
       }
 
-      public void createorganizationalunit( String name )
+      public void create( String name )
       {
          OrganizationalUnits ous = RoleMap.role( OrganizationalUnits.class );
 

@@ -17,8 +17,8 @@
 
 package se.streamsource.dci.value.link;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
 
 /**
  * A list of links

@@ -32,9 +32,9 @@ import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -87,8 +87,8 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    @Service
    private UncaughtExceptionHandler exception;
 
-   @Uses
-   private ObjectBuilder<SelectLinkDialog> caseTypeDialog;
+   @Structure
+   Module module;
 
    private ActionBinder actionBinder;
    private ValueBinder valueBinder;
@@ -109,13 +109,13 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
    public CaseGeneralView( @Service ApplicationContext appContext,
                            @Uses CaseGeneralModel generalModel,
-                           @Structure ObjectBuilderFactory obf )
+                           @Structure Module module)
    {
       this.appContext = appContext;
       this.model = generalModel;
       RefreshComponents refreshComponents = new RefreshComponents();
       model.addObserver( refreshComponents );
-
+      ObjectBuilderFactory obf = module.objectBuilderFactory();
       this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( generalModel.newLabelsModel() ).newInstance();
 
       RefreshComponents refreshLabelComponents = new RefreshComponents();
@@ -382,7 +382,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    @Action
    public Task changeCaseType()
    {
-      final SelectLinkDialog dialog = caseTypeDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.choose_casetype ) );
 

@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -60,13 +61,18 @@ public interface Status
    {
       @UseDefaults
       Property<CaseStates> status();
+   }
 
+   interface Events
+   {
       void changedStatus( @Optional DomainEvent event, CaseStates status );
    }
 
    abstract class Mixin
-         implements Status, Data
+         implements Status, Events
    {
+      @This
+      Data data;
 
       public void open()
       {
@@ -95,7 +101,12 @@ public interface Status
 
       public boolean isStatus( CaseStates status )
       {
-         return status().get().equals(status);
+         return data.status().get().equals(status);
+      }
+
+      public void changedStatus(@Optional DomainEvent event, CaseStates status)
+      {
+         data.status().set(status);
       }
    }
 

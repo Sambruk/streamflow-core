@@ -24,8 +24,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
 
@@ -41,12 +40,6 @@ import java.awt.*;
 public class AdministrationView
       extends JPanel
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   UnitOfWorkFactory uowf;
-
    JSplitPane mainView = new JSplitPane();
    JPanel detailView;
 
@@ -55,11 +48,12 @@ public class AdministrationView
    private AdministrationTreeView adminTreeView;
 
    public AdministrationView( @Service ApplicationContext context,
-                              @Uses final AdministrationModel model, @Structure final ObjectBuilderFactory obf )
+                              @Uses final AdministrationModel model,
+                              @Structure final Module module)
    {
       am = context.getActionMap( this );
       setActionMap( am );
-      this.adminTreeView = obf.newObjectBuilder( AdministrationTreeView.class ).use( model ).newInstance();
+      this.adminTreeView = module.objectBuilderFactory().newObjectBuilder(AdministrationTreeView.class).use( model ).newInstance();
 
       setLayout( viewSwitch );
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
@@ -96,7 +90,7 @@ public class AdministrationView
 
                Object linkedModel = model.newResourceModel(link);
 
-               JComponent view = obf.newObjectBuilder( TabbedResourceView.class ).use( linkedModel ).newInstance();
+               JComponent view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( linkedModel ).newInstance();
 
                mainView.setRightComponent( view );
             } 

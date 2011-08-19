@@ -24,7 +24,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -47,7 +47,7 @@ public class FieldEditorOpenSelectionFieldValueView
 
    public FieldEditorOpenSelectionFieldValueView( @Service ApplicationContext context,
                                                @Uses FieldValueEditModel model,
-                                               @Structure ObjectBuilderFactory obf )
+                                               @Structure Module module)
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
@@ -61,11 +61,11 @@ public class FieldEditorOpenSelectionFieldValueView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
-      fieldDefinitionBinder = obf.newObject( StateBinder.class );
+      fieldDefinitionBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
-      fieldValueBinder = obf.newObject( StateBinder.class );
+      fieldValueBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       OpenSelectionFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( OpenSelectionFieldValue.class );
 
@@ -98,7 +98,7 @@ public class FieldEditorOpenSelectionFieldValueView
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.openSelectionName()) );
 
-      FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
+      FieldValueObserver observer = module.objectBuilderFactory().newObjectBuilder(FieldValueObserver.class).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );
       fieldDefinitionBinder.addObserver( observer );
 
@@ -106,7 +106,7 @@ public class FieldEditorOpenSelectionFieldValueView
       fieldDefinitionBinder.updateWith( model.getFieldDefinition() );
 
       panel.add( fieldPanel, BorderLayout.CENTER );
-      panel.add( obf.newObjectBuilder( SelectionElementsView.class ).use( model.newSelectionElementsModel() ).newInstance(),
+      panel.add( module.objectBuilderFactory().newObjectBuilder(SelectionElementsView.class).use( model.newSelectionElementsModel() ).newInstance(),
             BorderLayout.SOUTH );
 
       setViewportView( panel );

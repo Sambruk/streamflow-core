@@ -17,12 +17,12 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.value.*;
+import org.qi4j.api.value.Value;
 
 /**
  * Standard interface for creation of new resources.
  */
-public interface CreateContext<T extends Value>
+public interface CreateContext<INPUT, RESULT>
 {
-   void create( T value );
+   RESULT create( INPUT value );
 }

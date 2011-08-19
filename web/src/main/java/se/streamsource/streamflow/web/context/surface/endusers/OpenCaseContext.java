@@ -18,21 +18,14 @@
 package se.streamsource.streamflow.web.context.surface.endusers;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.util.Function;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.table.TableBuilder;
-import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.surface.api.OpenCaseDTO;
-import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.caze.History;

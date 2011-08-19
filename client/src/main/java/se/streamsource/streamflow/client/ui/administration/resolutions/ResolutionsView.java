@@ -24,7 +24,9 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.OptionsAction;
@@ -55,14 +57,11 @@ public class ResolutionsView
 {
    ResolutionsModel model;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
    @Service
    DialogService dialogs;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   
+   @Structure
+   Module module;
 
    public JList list;
 
@@ -101,7 +100,7 @@ public class ResolutionsView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_resolution_title ) );
 
@@ -125,7 +124,7 @@ public class ResolutionsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -161,7 +160,7 @@ public class ResolutionsView
    @Action
    public Task rename()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog );
 
       if (!Strings.empty( dialog.name() ))

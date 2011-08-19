@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * Login roleMap

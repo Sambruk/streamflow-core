@@ -17,14 +17,6 @@
 
 package se.streamsource.streamflow.web.context.cases;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.api.util.Iterables.first;
-
-import java.lang.reflect.Method;
-import java.util.List;
-
 import org.apache.commons.collections.ArrayStack;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,7 +25,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-
 import se.streamsource.dci.api.Contexts;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
@@ -65,6 +56,14 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+
+import java.lang.reflect.Method;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.qi4j.api.util.Iterables.first;
 
 /**
  * Check lifecycle of a case
@@ -98,14 +97,14 @@ public class CaseCommandsContextTest
          playRole(project1);
 
          CaseTypesContext caseTypes = context(CaseTypesContext.class);
-         caseTypes.createcasetype(stringValue("CaseType1"));
+         caseTypes.create("CaseType1");
 
          SelectedCaseTypesContext selectedCaseTypes = context(SelectedCaseTypesContext.class);
          selectedCaseTypes.addcasetype(entityValue(findLink(selectedCaseTypes.possiblecasetypes(), "CaseType1")));
 
          playRole( findDescribable(caseTypes.index(), "CaseType1") );
          ResolutionsContext resolutionsContext = context( ResolutionsContext.class );
-         resolutionsContext.createresolution( stringValue( "Resolution1" ) );
+         resolutionsContext.create( "Resolution1" );
          SelectedResolutionsContext selectedResolutionsContext = context( SelectedResolutionsContext.class );
          selectedResolutionsContext.addresolution( entityValue( findLink( selectedResolutionsContext.possibleresolutions(), "Resolution1" ) ) );
 
@@ -117,7 +116,7 @@ public class CaseCommandsContextTest
          RoleMap.newCurrentRoleMap();
          playRole(org);
          playRole(project1);
-         context(LabelsContext.class).createlabel(stringValue("Label1"));
+         context(LabelsContext.class).create("Label1");
          SelectedLabelsContext context = context(SelectedLabelsContext.class);
          context.addlabel(CaseCommandsContextTest.<Label>entity(findLink(context.possiblelabels(), "Label1")));
          uow.complete();
@@ -180,7 +179,7 @@ public class CaseCommandsContextTest
          RoleMap.current().set(new UserPrincipal("test"));
          playRole(caze);
 
-         context(CaseGeneralCommandsContext.class).changedescription(stringValue("Case1"));
+         context(CaseGeneralCommandsContext.class).changedescription("Case1");
          uow.complete();
          eventsOccurred("changedDescription");
       }

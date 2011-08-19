@@ -24,7 +24,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.StateBinder;
@@ -46,7 +46,7 @@ public class FieldEditorCheckboxesFieldValueView
 
    public FieldEditorCheckboxesFieldValueView( @Service ApplicationContext context,
                                                @Uses FieldValueEditModel model,
-                                               @Structure ObjectBuilderFactory obf )
+                                               @Structure Module module )
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
@@ -60,11 +60,11 @@ public class FieldEditorCheckboxesFieldValueView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
-      fieldDefinitionBinder = obf.newObject( StateBinder.class );
+      fieldDefinitionBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
-      fieldValueBinder = obf.newObject( StateBinder.class );
+      fieldValueBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.checkboxes ) ) );
@@ -89,7 +89,7 @@ public class FieldEditorCheckboxesFieldValueView
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.fieldId() ) );
 
-      FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
+      FieldValueObserver observer = module.objectBuilderFactory().newObjectBuilder(FieldValueObserver.class).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );
       fieldDefinitionBinder.addObserver( observer );
 
@@ -97,7 +97,7 @@ public class FieldEditorCheckboxesFieldValueView
       fieldDefinitionBinder.updateWith( model.getFieldDefinition() );
 
       panel.add( fieldPanel, BorderLayout.CENTER );
-      panel.add( obf.newObjectBuilder( SelectionElementsView.class ).use( model.newSelectionElementsModel() ).newInstance(),
+      panel.add( module.objectBuilderFactory().newObjectBuilder(SelectionElementsView.class).use( model.newSelectionElementsModel() ).newInstance(),
             BorderLayout.SOUTH );
 
       setViewportView( panel );

@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
 /**
  * TODO

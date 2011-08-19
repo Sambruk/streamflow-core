@@ -17,20 +17,27 @@
 
 package se.streamsource.streamflow.reference.contact;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.*;
-import org.qi4j.spi.property.*;
-import org.qi4j.spi.value.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyTypeDescriptor;
+import org.qi4j.spi.value.ValueDescriptor;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
 
 @Mixins(StreamflowContactLookupPlugin.Mixin.class)
@@ -45,7 +52,7 @@ public interface StreamflowContactLookupPlugin
       Configuration<StreamflowContactLookupPluginConfiguration> config;
 
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Structure
       private Qi4jSPI spi;
@@ -69,12 +76,12 @@ public interface StreamflowContactLookupPlugin
 
             // Parse response
             String json = result.getText();
-            return vbf.newValueFromJSON( ContactList.class, json );
+            return module.valueBuilderFactory().newValueFromJSON(ContactList.class, json);
          } catch (Exception e)
          {
 
             // Return empty list
-            return vbf.newValue( ContactList.class );
+            return module.valueBuilderFactory().newValue(ContactList.class);
          }
       }
 

@@ -26,7 +26,8 @@ import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Memberships;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC

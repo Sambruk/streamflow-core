@@ -20,15 +20,12 @@ package se.streamsource.streamflow.client.ui.account;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
@@ -45,16 +42,10 @@ import java.util.Observable;
 public class AccountModel extends Observable
 {
    @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   UnitOfWorkFactory uowf;
+   Module module;
 
    @Service
    IndividualRepository individualRepository;
-
-   @Structure
-   ValueBuilderFactory vbf;
 
    @Service
    Uniform client;
@@ -64,7 +55,7 @@ public class AccountModel extends Observable
 
    public AccountSettingsValue settings()
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
       Account acc = uow.get( account );
       try
       {
@@ -78,7 +69,7 @@ public class AccountModel extends Observable
    public void updateSettings( AccountSettingsValue value )
          throws UnitOfWorkCompletionException
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
       uow.get( account ).updateSettings( value );
       uow.complete();
       setChanged();
@@ -87,7 +78,7 @@ public class AccountModel extends Observable
 
    public String test() throws IOException, ResourceException
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
       try
       {
          return uow.get( account ).version( client );
@@ -99,27 +90,27 @@ public class AccountModel extends Observable
 
    public ProfileModel newProfileModel()
    {
-      return obf.newObjectBuilder(ProfileModel.class).use(serverResource().getSubClient("account").getSubClient("profile")).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(ProfileModel.class).use(serverResource().getSubClient("account").getSubClient("profile")).newInstance();
    }
 
    public OverviewModel newOverviewModel()
    {
-      return obf.newObjectBuilder(OverviewModel.class).use(serverResource().getSubClient("overview")).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(OverviewModel.class).use(serverResource().getSubClient("overview")).newInstance();
    }
 
    public WorkspaceModel newWorkspaceModel()
    {
-      return obf.newObjectBuilder(WorkspaceModel.class).use(serverResource().getSubClient("workspace")).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(WorkspaceModel.class).use(serverResource().getSubClient("workspace")).newInstance();
    }
 
    public AdministrationModel newAdministrationModel()
    {
-      return obf.newObjectBuilder(AdministrationModel.class).use(serverResource().getSubClient( "administration" )).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(AdministrationModel.class).use(serverResource().getSubClient( "administration" )).newInstance();
    }
 
    private CommandQueryClient serverResource()
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
 
       try
       {
@@ -132,21 +123,21 @@ public class AccountModel extends Observable
 
    public void remove() throws UnitOfWorkCompletionException
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
       Account acc = uow.get( account );
       individualRepository.individual().removeAccount( acc );
       uow.complete();
    }
 
-   public void changePassword( ChangePasswordDTO changePasswordDTO)
+   public void changePassword( String oldPassword, String newPassword)
          throws Exception
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
 
       try
       {
          Account account1 = uow.get( account );
-         account1.changePassword( client, changePasswordDTO);
+         account1.changePassword( client, oldPassword, newPassword);
          uow.complete();
       } catch (Exception ex)
       {

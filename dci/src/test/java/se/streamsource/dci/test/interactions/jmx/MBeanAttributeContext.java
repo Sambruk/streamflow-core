@@ -17,15 +17,30 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.Value;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 
-import javax.management.*;
-import javax.management.openmbean.*;
-import java.util.*;
+import javax.management.Attribute;
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.TabularDataSupport;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -73,9 +88,9 @@ public class MBeanAttributeContext
       }
    }
 
-   public void update( StringValue newValue ) throws InstanceNotFoundException, InvalidAttributeValueException, ReflectionException, AttributeNotFoundException, MBeanException
+   public void update( @Name("value") String newValue ) throws InstanceNotFoundException, InvalidAttributeValueException, ReflectionException, AttributeNotFoundException, MBeanException
    {
-      Attribute attribute = new Attribute( RoleMap.role( MBeanAttributeInfo.class ).getName(), newValue.string().get() );
+      Attribute attribute = new Attribute( RoleMap.role( MBeanAttributeInfo.class ).getName(), newValue );
       RoleMap.role( MBeanServer.class ).setAttribute( RoleMap.role( ObjectName.class ), attribute );
    }
 }

@@ -17,10 +17,11 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.spi.service.*;
-import se.streamsource.infrastructure.circuitbreaker.*;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Initializable;
+import org.qi4j.api.mixin.InitializationException;
+import org.qi4j.spi.service.ServiceDescriptor;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
 /**
  * Helper implementation of ServiceCircuitBreaker. Fetches the CircuitBreaker from meta-info

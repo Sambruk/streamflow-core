@@ -17,20 +17,23 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
-import se.streamsource.dci.api.*;
+import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
 
 /**
  * JAVADOC
  */
 public class EndUsersContext
-   implements CreateContext<StringValue>
+   implements CreateContext<StringValue, EndUser>
 {
-   public void create(StringValue userId)
+   public EndUser create(StringValue userId)
    {
       EndUsers endUsers = RoleMap.role( EndUsers.class );
       EndUser user = endUsers.createEndUser(userId.string().get());
       user.changeDescription( "Anonymous" );
+      return user;
    }
 }

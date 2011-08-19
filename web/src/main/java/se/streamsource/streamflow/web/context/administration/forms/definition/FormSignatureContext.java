@@ -17,16 +17,15 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 
-import java.io.*;
+import java.io.IOException;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -44,7 +43,7 @@ public class FormSignatureContext
       role( RequiredSignatures.class ).updateRequiredSignature( role( Integer.class ), newValue );
    }
 
-   public void delete() throws ResourceException, IOException
+   public void delete() throws IOException
    {
       role( RequiredSignatures.class ).removeRequiredSignature( role( Integer.class ) );
    }

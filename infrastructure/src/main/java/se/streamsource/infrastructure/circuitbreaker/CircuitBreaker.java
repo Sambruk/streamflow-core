@@ -17,12 +17,17 @@
 
 package se.streamsource.infrastructure.circuitbreaker;
 
-import org.qi4j.api.specification.*;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.specification.Specifications;
 
-import java.beans.*;
-import java.util.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
+import java.util.Date;
 
-import static org.qi4j.api.specification.Specifications.*;
+import static org.qi4j.api.specification.Specifications.not;
 
 /**
  * Implementation of CircuitBreaker pattern

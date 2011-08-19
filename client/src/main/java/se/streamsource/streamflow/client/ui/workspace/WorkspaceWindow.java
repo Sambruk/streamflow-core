@@ -23,7 +23,7 @@ import org.jdesktop.swingx.JXFrame;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountSelectionView;
 import se.streamsource.streamflow.client.ui.account.AccountSelector;
@@ -51,7 +51,7 @@ public class WorkspaceWindow
                           @Uses WorkspaceMenuBar menu,
                           @Uses AccountSelectionView view,
                           @Uses final AccountSelector accountSelector,
-                          @Structure final ObjectBuilderFactory obf)
+                          @Structure final Module module)
    {
       super(application);
 
@@ -94,7 +94,7 @@ public class WorkspaceWindow
                         {
                            currentWorkspace.killPopup();
                         }
-                        currentWorkspace = obf.newObjectBuilder(WorkspaceView.class).use(accountModel.newWorkspaceModel()).newInstance();
+                        currentWorkspace = module.objectBuilderFactory().newObjectBuilder(WorkspaceView.class).use(accountModel.newWorkspaceModel()).newInstance();
                         frame.getContentPane().add(currentWorkspace, "workspace");
                         cardLayout.show(frame.getContentPane(), "workspace");
                      }

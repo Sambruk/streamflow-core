@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.representation.EmptyRepresentation;
@@ -50,7 +50,7 @@ public interface ClientEventSourceService
          implements EventStream, ResponseHandler, Activatable
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public void activate() throws Exception
       {
@@ -98,7 +98,7 @@ public interface ClientEventSourceService
                {
                   String source = entity.getText();
 
-                  final TransactionDomainEvents transactionDomainEvents = vbf.newValueFromJSON( TransactionDomainEvents.class, source );
+                  final TransactionDomainEvents transactionDomainEvents = module.valueBuilderFactory().newValueFromJSON(TransactionDomainEvents.class, source);
                   notifyTransactionListeners( transactionDomainEvents );
                }
             } catch (Exception e)

@@ -17,14 +17,23 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.json.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.AbstractEventStoreMixin;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.TreeMap;
 
 /**
  * In-Memory EventStore. Mainly used for testing.

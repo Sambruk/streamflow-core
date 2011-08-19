@@ -18,15 +18,7 @@
 package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Disposition;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
-import org.restlet.representation.Representation;
+import org.qi4j.api.io.Input;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
@@ -35,11 +27,13 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 
-import static se.streamsource.dci.api.RoleMap.*;
-import static se.streamsource.streamflow.util.Strings.*;
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.util.Strings.empty;
 
 /**
  * JAVADOC
@@ -47,13 +41,10 @@ import static se.streamsource.streamflow.util.Strings.*;
 public class AttachmentContext
       implements UpdateContext<UpdateAttachmentDTO>, DeleteContext
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Service
    AttachmentStore store;
 
-   public void delete() //throws IOException
+   public void delete()
    {
       Attachments attachments = role( Attachments.class );
       Attachment attachment = role( Attachment.class );
@@ -83,36 +74,12 @@ public class AttachmentContext
          file.changeUri( uri );
    }
 
-   public Representation download() throws IOException, URISyntaxException
+   public Input<ByteBuffer, IOException> download() throws IOException, URISyntaxException
    {
       AttachedFile.Data fileData = role( AttachedFile.Data.class );
 
       final String id = new URI( fileData.uri().get() ).getSchemeSpecificPart();
 
-      OutputRepresentation outputRepresentation = new OutputRepresentation( new MediaType( fileData.mimeType().get() ), store.getAttachmentSize(id) )
-      {
-         @Override
-         public void write(OutputStream outputStream) throws IOException
-         {
-            store.attachment(id).transferTo(Outputs.<Object>byteBuffer(outputStream));
-         }
-      };
-
-      Form downloadParams = new Form();
-      downloadParams.set( Disposition.NAME_FILENAME, fileData.name().get() );
-
-      if (fileData.size().get() != null)
-      {
-         downloadParams.set( Disposition.NAME_SIZE, Long.toString( fileData.size().get() ) );
-         outputRepresentation.setSize(fileData.size().get());
-      }
-      if (fileData.modificationDate().get() != null)
-      {
-         downloadParams.set( Disposition.NAME_CREATION_DATE, DateFunctions.toUtcString( fileData.modificationDate().get() ) );
-         outputRepresentation.setModificationDate(fileData.modificationDate().get());
-      }
-
-      outputRepresentation.setDisposition(new Disposition(Disposition.TYPE_ATTACHMENT, downloadParams));
-      return outputRepresentation;
+      return store.attachment(id);
    }
 }

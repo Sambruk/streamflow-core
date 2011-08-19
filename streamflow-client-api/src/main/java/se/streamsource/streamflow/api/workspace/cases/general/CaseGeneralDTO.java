@@ -24,7 +24,7 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * General information about a case

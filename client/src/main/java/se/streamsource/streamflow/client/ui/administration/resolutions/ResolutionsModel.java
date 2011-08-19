@@ -27,6 +27,6 @@ public class ResolutionsModel
 {
    public ResolutionsModel()
    {
-      super( "createresolution" );
+      super( "create" );
    }
 }

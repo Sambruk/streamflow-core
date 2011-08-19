@@ -17,17 +17,34 @@
 
 package se.streamsource.dci.test;
 
-import org.qi4j.api.common.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.spi.service.importer.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.test.interactions.*;
-import se.streamsource.dci.test.interactions.file.*;
-import se.streamsource.dci.test.interactions.jmx.*;
-import se.streamsource.dci.value.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
+import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.dci.restlet.server.CommandResult;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.NullCommandResult;
+import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.dci.restlet.server.ResponseWriterDelegator;
+import se.streamsource.dci.test.interactions.RootResource;
+import se.streamsource.dci.test.interactions.file.FileContext;
+import se.streamsource.dci.test.interactions.file.FileResource;
+import se.streamsource.dci.test.interactions.jmx.DomainContext;
+import se.streamsource.dci.test.interactions.jmx.DomainResource;
+import se.streamsource.dci.test.interactions.jmx.JmxServerContext;
+import se.streamsource.dci.test.interactions.jmx.JmxServerResource;
+import se.streamsource.dci.test.interactions.jmx.MBeanAttributeContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanResource;
+import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
+import se.streamsource.dci.value.ValueAssembler;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -68,10 +85,10 @@ public class TestAssembler
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.objects( TestCommandQueryRestlet2.class );
+      module.objects( TestCommandQueryRestlet.class );
 
       // Use defaults
-      module.objects( ResultWriterDelegator.class,
+      module.objects( ResponseWriterDelegator.class,
             NullCommandResult.class );
 
       module.objects( RootResource.class,

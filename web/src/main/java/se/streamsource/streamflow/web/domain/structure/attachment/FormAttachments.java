@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.Queryable;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * List of attached files
@@ -63,14 +66,8 @@ public interface FormAttachments
    abstract class Mixin
          implements FormAttachments, Data
    {
-      @State
-      ManyAssociation<Attachment> formAttachments;
-
       @Service
       IdentityGenerator idGen;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       public Attachment createFormAttachment( String uri ) throws URISyntaxException
       {
@@ -126,7 +123,7 @@ public interface FormAttachments
 
       public void moveAttachments( FormAttachments toAttachments )
       {
-         for (Attachment fromAttachment : formAttachments)
+         for (Attachment fromAttachment : formAttachments())
          {
             toAttachments.addFormAttachment( fromAttachment );
             removedFormAttachment( null, fromAttachment );

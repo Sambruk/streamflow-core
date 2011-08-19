@@ -24,7 +24,7 @@ import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * List of required signatures of a form

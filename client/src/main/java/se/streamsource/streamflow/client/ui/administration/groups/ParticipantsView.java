@@ -25,8 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.link.LinkValue;
@@ -36,7 +35,6 @@ import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -60,19 +58,15 @@ public class ParticipantsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
+   @Structure
+   Module module;
 
    public JList participantList;
 
    private ParticipantsModel model;
 
    public ParticipantsView( @Service ApplicationContext context,
-                            @Uses ParticipantsModel model,
-                            @Structure ObjectBuilderFactory obf)
+                            @Uses ParticipantsModel model)
    {
       super( new BorderLayout() );
       this.model = model;
@@ -99,7 +93,7 @@ public class ParticipantsView
    public Task add() throws ResourceException
    {
       UsersAndGroupsModel dialogModel = model.newUsersAndGroupsModel();
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( dialogModel ).newInstance();
+      SelectUsersAndGroupsDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectUsersAndGroupsDialog.class).use( dialogModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 
       final Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
@@ -119,7 +113,6 @@ public class ParticipantsView
    {
       final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( participantList.getSelectedValues() );
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
       return new CommandTask()
       {
          @Override

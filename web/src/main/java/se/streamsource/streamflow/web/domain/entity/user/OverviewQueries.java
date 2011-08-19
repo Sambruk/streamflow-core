@@ -31,11 +31,9 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -63,13 +61,7 @@ public interface OverviewQueries
    class Mixin implements OverviewQueries
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Identity id;
@@ -79,11 +71,11 @@ public interface OverviewQueries
 
       public Iterable<ProjectSummaryDTO> getProjectsSummary()
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          List<ProjectSummaryDTO> projectList = new ArrayList<ProjectSummaryDTO>();
 
-         ValueBuilder<ProjectSummaryDTO> summaryBuilder = vbf.newValueBuilder( ProjectSummaryDTO.class );
+         ValueBuilder<ProjectSummaryDTO> summaryBuilder = module.valueBuilderFactory().newValueBuilder(ProjectSummaryDTO.class);
          ProjectSummaryDTO summaryPrototype = summaryBuilder.prototype();
 
          for (Project project : projects.allProjects())
@@ -94,7 +86,7 @@ public interface OverviewQueries
             Association<Assignee> assigneeAssociation = templateFor( Assignable.Data.class ).assignedTo();
             Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
 
-            QueryBuilder<CaseEntity> ownerQueryBuilder = qbf.newQueryBuilder( CaseEntity.class ).where(
+            QueryBuilder<CaseEntity> ownerQueryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseEntity.class).where(
                   eq( ownableId, (Owner) project ));
 
             QueryBuilder<CaseEntity> inboxQueryBuilder = ownerQueryBuilder.where( and(

@@ -17,22 +17,54 @@
 
 package se.streamsource.streamflow.web.context.account;
 
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.Role;
+import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
 /**
  * JAVADOC
  */
-public class AccountContext
+@Mixins(AccountContext.Mixin.class)
+public interface AccountContext
+   extends TransientComposite
 {
-   public void changepassword( ChangePasswordDTO newPassword )
-         throws WrongPasswordException
-   {
-      UserAuthentication user = RoleMap.role( UserAuthentication.class );
+   public void changepassword(@Name("oldpassword") @Password String oldPassword, @Name("newpassword") @Password String newPassword)
+         throws WrongPasswordException;
 
-      user.changePassword( newPassword.oldPassword().get(), newPassword
-            .newPassword().get() );
+   abstract class Mixin
+         implements AccountContext
+   {
+      AccountAdmin accountAdmin = new AccountAdmin();
+
+      public void bind(@Uses UserAuthentication.Data user)
+      {
+         accountAdmin.bind(user);
+      }
+
+      public void changepassword(String oldPassword, String newPassword)
+            throws WrongPasswordException
+      {
+         accountAdmin.changePassword(oldPassword, newPassword);
+      }
+
+      private class AccountAdmin
+            extends Role<UserAuthentication.Data>
+      {
+         void changePassword(String oldPassword, String newPassword) throws WrongPasswordException
+         {
+            // Check if current password is correct
+            if (!self.isCorrectPassword(oldPassword))
+            {
+               throw new WrongPasswordException();
+            }
+
+            self.changedPassword(null, self.hashPassword(newPassword));
+         }
+      }
    }
 }

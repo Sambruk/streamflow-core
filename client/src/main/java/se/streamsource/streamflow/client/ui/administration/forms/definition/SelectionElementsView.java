@@ -23,7 +23,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -58,12 +60,8 @@ public class SelectionElementsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
+   @Structure
+   Module module;
 
    public SelectionElementsView( @Service ApplicationContext context,
                                  @Uses SelectionElementsModel model )
@@ -136,7 +134,7 @@ public class SelectionElementsView
    @org.jdesktop.application.Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
 
@@ -161,7 +159,7 @@ public class SelectionElementsView
    {
       final int index = elementList.getSelectedIndex();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( elementList.getStringAt( index ));
 
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
@@ -224,7 +222,7 @@ public class SelectionElementsView
    @org.jdesktop.application.Action
    public Task rename()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.rename ));
 

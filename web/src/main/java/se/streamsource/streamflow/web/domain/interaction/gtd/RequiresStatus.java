@@ -22,7 +22,8 @@ import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Check that a Case is in a particular state

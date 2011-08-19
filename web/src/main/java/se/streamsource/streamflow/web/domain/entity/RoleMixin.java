@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.entity;
 
-import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.injection.scope.This;
 
 /**
  * Base class for role mixins

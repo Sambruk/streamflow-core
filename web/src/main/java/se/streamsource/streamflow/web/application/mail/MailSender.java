@@ -17,17 +17,13 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
-import se.streamsource.streamflow.infrastructure.event.application.factory.*;
+import org.qi4j.api.common.Optional;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreator;
 
 /**
  * Factory for sending emails. Inject with @This MailSender and then invoke sentEmail.
  */
-@Mixins(NoopMixin.class)
-@Concerns(ApplicationEventCreationConcern.class)
 public interface MailSender
    extends ApplicationEventCreator
 {

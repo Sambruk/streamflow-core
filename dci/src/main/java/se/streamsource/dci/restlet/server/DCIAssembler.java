@@ -17,14 +17,26 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.apache.velocity.app.*;
-import org.qi4j.bootstrap.*;
-import org.restlet.service.*;
-import se.streamsource.dci.restlet.server.resultwriter.*;
+import org.apache.velocity.app.VelocityEngine;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.restlet.service.MetadataService;
+import se.streamsource.dci.restlet.server.requestreader.DefaultRequestReader;
+import se.streamsource.dci.restlet.server.responsewriter.DefaultResponseWriter;
+import se.streamsource.dci.restlet.server.responsewriter.FormResponseWriter;
+import se.streamsource.dci.restlet.server.responsewriter.JSONResponseWriter;
+import se.streamsource.dci.restlet.server.responsewriter.LinksResponseWriter;
+import se.streamsource.dci.restlet.server.responsewriter.ResourceResponseWriter;
+import se.streamsource.dci.restlet.server.responsewriter.ResourceTemplateResponseWriter;
+import se.streamsource.dci.restlet.server.responsewriter.TableResponseWriter;
+import se.streamsource.dci.restlet.server.responsewriter.ValueCompositeResponseWriter;
 
-import java.util.*;
+import java.util.Properties;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -52,15 +64,24 @@ public class DCIAssembler
 
       module.importedServices(MetadataService.class);
 
-      module.importedServices(ResultWriterDelegator.class).identifiedBy("resultwriterdelegator").importedBy(NEW_OBJECT);
-      module.objects(ResultWriterDelegator.class);
+      module.importedServices(ResponseWriterDelegator.class).identifiedBy("responsewriterdelegator").importedBy(NEW_OBJECT).visibleIn(Visibility.layer);
+      module.objects(ResponseWriterDelegator.class);
+
+      module.importedServices(RequestReaderDelegator.class).identifiedBy("requestreaderdelegator").importedBy(NEW_OBJECT).visibleIn(Visibility.layer);
+      module.objects(RequestReaderDelegator.class);
 
       // Standard result writers
-      module.objects(ResourceTemplateResultWriter.class,
-              LinksResultWriter.class,
-              TableResultWriter.class,
-              ResourceResultWriter.class,
-              ValueCompositeResultWriter.class,
-              FormResultWriter.class);
+      module.objects(ResourceTemplateResponseWriter.class,
+              DefaultResponseWriter.class,
+              LinksResponseWriter.class,
+              TableResponseWriter.class,
+              ResourceResponseWriter.class,
+              ValueCompositeResponseWriter.class,
+              JSONResponseWriter.class,
+              FormResponseWriter.class);
+
+      // Standard request readers
+      module.objects(DefaultRequestReader.class);
+
    }
 }

@@ -17,8 +17,8 @@
 
 package se.streamsource.dci.value;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.library.constraints.annotation.*;
+import org.qi4j.api.constraint.Constraint;
+import org.qi4j.library.constraints.annotation.MaxLength;
 
 /**
  *

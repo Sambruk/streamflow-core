@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
@@ -25,8 +25,6 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 
@@ -34,11 +32,10 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
  * JAVADOC
  */
 @Mixins(CaseTypesContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface CaseTypesContext
       extends IndexContext<Iterable<CaseType>>, Context
 {
-   public void createcasetype( @MaxLength(50) StringValue name );
+   public void create( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements CaseTypesContext
@@ -52,10 +49,10 @@ public interface CaseTypesContext
          return caseTypes.caseTypes();
       }
 
-      public void createcasetype( StringValue name )
+      public void create( String name )
       {
          CaseTypes caseTypes = RoleMap.role( CaseTypes.class );
-         caseTypes.createCaseType( name.string().get() );
+         caseTypes.createCaseType( name );
       }
    }
 }

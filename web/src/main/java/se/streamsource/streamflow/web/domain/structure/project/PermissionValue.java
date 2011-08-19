@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.structure.project;
 
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import org.qi4j.library.constraints.annotation.*;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.NotEmpty;
 
 /**
  * JAVADOC

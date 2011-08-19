@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.NotEmpty;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Technical id for a form. May not be empty.

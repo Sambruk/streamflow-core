@@ -23,8 +23,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
@@ -45,11 +45,11 @@ public interface ServiceConfiguration
       FileConfiguration config;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public void activate() throws Exception
       {
-         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Service configuration" ) );
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
          String jdbmPath = new File( config.dataDirectory(), "jdbm.data" ).getAbsolutePath();
          EntityBuilder<JdbmConfiguration> jdbm = uow.newEntityBuilder( JdbmConfiguration.class, "JdbmEntityStoreService" );
          jdbm.instance().file().set( jdbmPath );

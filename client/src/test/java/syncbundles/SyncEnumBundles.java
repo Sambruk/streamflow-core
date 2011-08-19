@@ -33,12 +33,27 @@ package syncbundles;
  * limitations under the License.
  */
 
-import org.qi4j.api.io.*;
-import org.qi4j.api.specification.*;
-import org.slf4j.*;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.io.Transforms;
+import org.qi4j.api.specification.Specification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.zip.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * When executed, this tool will find all properties files that are ResourceBundles and try to locate

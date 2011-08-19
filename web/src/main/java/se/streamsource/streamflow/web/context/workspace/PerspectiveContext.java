@@ -17,19 +17,18 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.Perspective;
 import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
-import java.util.*;
+import java.util.Collections;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -37,7 +36,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 public class PerspectiveContext
         implements DeleteContext, IndexContext<PerspectiveDTO>
 {
-   public void delete() throws ResourceException
+   public void delete()
    {
       role(Perspectives.class).removePerspective(RoleMap.role(Perspective.class));
    }

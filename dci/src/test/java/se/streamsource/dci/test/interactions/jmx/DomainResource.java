@@ -17,13 +17,16 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.*;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.link.LinksBuilder;
+import se.streamsource.dci.value.link.LinksValue;
 
-import javax.management.*;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 /**
  * JAVADOC
@@ -35,6 +38,17 @@ public class DomainResource
    public DomainResource( )
    {
       super( DomainContext.class );
+   }
+
+   public LinksValue index()
+   {
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      for (ObjectName mbean : context(DomainContext.class).index())
+      {
+         builder.addLink( mbean.getCanonicalKeyPropertyListString(), mbean.getCanonicalKeyPropertyListString() );
+      }
+
+      return builder.newLinks();
    }
 
    public void resource( String segment ) throws ResourceException

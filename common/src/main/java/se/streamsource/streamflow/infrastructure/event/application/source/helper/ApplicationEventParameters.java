@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source.helper;
 
-import org.json.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 
 /**
  * Utility class to pick out parameters by name or index as strings from a ApplicationEvent

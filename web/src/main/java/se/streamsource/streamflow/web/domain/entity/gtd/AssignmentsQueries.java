@@ -24,14 +24,16 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -46,15 +48,8 @@ public interface AssignmentsQueries
    abstract class Mixin
            implements AssignmentsQueries
    {
-
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Owner owner;
@@ -65,7 +60,7 @@ public interface AssignmentsQueries
          Association<Owner> ownedId = templateFor(Ownable.Data.class).owner();
 
          // Find all my OPEN cases assigned to optional assignee
-         QueryBuilder<Case> openQueryBuilder = qbf.newQueryBuilder(Case.class);
+         QueryBuilder<Case> openQueryBuilder = module.queryBuilderFactory().newQueryBuilder(Case.class);
          openQueryBuilder = openQueryBuilder.where(and(or(
                  eq(templateFor(Status.Data.class).status(), CaseStates.OPEN),
                  eq(templateFor(Status.Data.class).status(), CaseStates.ON_HOLD)),
@@ -93,14 +88,14 @@ public interface AssignmentsQueries
 
       public boolean assignmentsHaveActiveCases()
       {
-         QueryBuilder<CaseEntity> queryBuilder = qbf.newQueryBuilder(CaseEntity.class);
+         QueryBuilder<CaseEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseEntity.class);
          Association<Assignee> assignedId = templateFor(Assignable.Data.class).assignedTo();
          Association<Owner> ownedId = templateFor(Ownable.Data.class).owner();
          Query<CaseEntity> assignmentsQuery = queryBuilder.where(and(
-                 isNotNull(assignedId),
-                 eq(ownedId, owner),
-                 eq(templateFor(Status.Data.class).status(), CaseStates.OPEN))).
-                 newQuery(uowf.currentUnitOfWork());
+               isNotNull(assignedId),
+               eq(ownedId, owner),
+               eq(templateFor(Status.Data.class).status(), CaseStates.OPEN))).
+                 newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          return assignmentsQuery.count() > 0;
       }

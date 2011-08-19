@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.replay;
 
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * An event replay failed.

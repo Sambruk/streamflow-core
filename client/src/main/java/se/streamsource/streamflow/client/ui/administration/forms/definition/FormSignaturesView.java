@@ -24,9 +24,8 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -61,19 +60,12 @@ public class FormSignaturesView
    DialogService dialogs;
 
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Uses
-   Iterable<NameDialog> nameDialog;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   Module module;
 
    private FormSignaturesModel model;
 
    public FormSignaturesView( @Service ApplicationContext context,
-                              @Uses final FormSignaturesModel model,
-                              @Structure final ObjectBuilderFactory obf )
+                              @Uses final FormSignaturesModel model)
    {
       this.model = model;
       ActionMap am = context.getActionMap( this );
@@ -83,7 +75,7 @@ public class FormSignaturesView
             {
                public Component createDetail( LinkValue detailLink )
                {
-                  return obf.newObjectBuilder( FormSignatureView.class ).use( model.newResourceModel(detailLink)).newInstance();
+                  return module.objectBuilderFactory().newObjectBuilder( FormSignatureView.class ).use( model.newResourceModel(detailLink)).newInstance();
                }
             } );
 
@@ -93,13 +85,13 @@ public class FormSignaturesView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialog.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_signature_title ) );
 
       if (!Strings.empty( dialog.name() ))
       {
          list.clearSelection();
-         final ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class );
+         final ValueBuilder<RequiredSignatureValue> builder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
          builder.prototype().name().set( dialog.name() );
 
          return new CommandTask()
@@ -121,7 +113,7 @@ public class FormSignaturesView
       final LinkValue selected = getSelectedValue();
       if (selected != null)
       {
-         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
          dialog.setRemovalMessage( selected.text().get() );
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())

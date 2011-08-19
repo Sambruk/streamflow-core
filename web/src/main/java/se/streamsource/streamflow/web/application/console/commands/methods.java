@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.web.application.console.commands;
 
-import bsh.*;
+import bsh.CallStack;
+import bsh.Interpreter;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 /**
  * JAVADOC

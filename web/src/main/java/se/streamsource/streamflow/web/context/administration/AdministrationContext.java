@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinkValue;
@@ -32,9 +32,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
-
-import java.util.*;
 
 /**
  * JAVADOC
@@ -43,16 +40,16 @@ public class AdministrationContext
       implements IndexContext<LinksValue>
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    public LinksValue index()
    {
       // TODO This needs to consider roles for server+org
 
-      LinksBuilder linksBuilder = new LinksBuilder(vbf);
+      LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
 
       // Add server admin link as root
-      ValueBuilder<LinkValue> linkBuilder = vbf.newValueBuilder( LinkValue.class );
+      ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
       linkBuilder.prototype().text().set( "Server" );
       linkBuilder.prototype().id().set( "server" );
       linkBuilder.prototype().rel().set( "server" );
@@ -65,9 +62,9 @@ public class AdministrationContext
 
       for (Organization organization : participations.organizations())
       {
-         ValueBuilder<LinkTree> orgLinkBuilder = vbf.newValueBuilder( LinkTree.class );
+         ValueBuilder<LinkTree> orgLinkBuilder = module.valueBuilderFactory().newValueBuilder(LinkTree.class);
 
-         linkBuilder = vbf.newValueBuilder( LinkValue.class );
+         linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
          linkBuilder.prototype().text().set( organization.getDescription() );
          linkBuilder.prototype().id().set( organization.toString() );
          linkBuilder.prototype().rel().set( "organization" );
@@ -92,9 +89,9 @@ public class AdministrationContext
    {
       if (ou.hasRoles( participant ) || participant.toString().equals( UserEntity.ADMINISTRATOR_USERNAME ))
       {
-         ValueBuilder<LinkTree> orgLinkBuilder = vbf.newValueBuilder( LinkTree.class );
+         ValueBuilder<LinkTree> orgLinkBuilder = module.valueBuilderFactory().newValueBuilder(LinkTree.class);
 
-         ValueBuilder<LinkValue> linkBuilder = vbf.newValueBuilder( LinkValue.class );
+         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
          linkBuilder.prototype().text().set( ou.getDescription() );
          linkBuilder.prototype().id().set( ou.toString() );
          linkBuilder.prototype().rel().set( "organizationalunit" );

@@ -17,12 +17,18 @@
 
 package se.streamsource.streamflow.web;
 
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.engine.http.*;
-import org.restlet.routing.*;
-import org.slf4j.*;
-import se.streamsource.streamflow.web.rest.*;
+import org.restlet.Application;
+import org.restlet.Component;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.Protocol;
+import org.restlet.engine.http.HttpResponse;
+import org.restlet.routing.Filter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
 
 /**
  * JAVADOC

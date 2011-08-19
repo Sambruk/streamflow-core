@@ -25,14 +25,13 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.Links;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.BottomBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -64,9 +63,9 @@ public class PerspectiveView extends JPanel implements Observer
 
    @Service
    DialogService dialogs;
-   
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+
+   @Structure
+   Module module;
 
    private CasesTableModel model;
 
@@ -74,7 +73,6 @@ public class PerspectiveView extends JPanel implements Observer
    private JTextField searchField;
    private JPanel optionsPanel;
    private ApplicationContext context;
-   private ObjectBuilderFactory obf;
    private JPanel filterPanel;
    private JPanel viewPanel;
    private JList groupByList;
@@ -96,12 +94,11 @@ public class PerspectiveView extends JPanel implements Observer
       viewGrouping
    }
 
-   public void initView(final @Service ApplicationContext context, final @Structure ObjectBuilderFactory obf,
+   public void initView(final @Service ApplicationContext context,
          final @Uses CasesTableModel model, @Optional @Uses JTextField searchField)
    {
       this.context = context;
 
-      this.obf = obf;
       this.model = model;
       model.addObserver( this );
       this.searchField = searchField;
@@ -227,7 +224,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>( model.getPossibleCaseTypes(),
             new SelectedLinkValueComparator(model.getSelectedCaseTypes()));
       
-      PerspectiveOptions panel = new PerspectiveOptions(context, sortedCaseTypes, model.getSelectedCaseTypeIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions(context, sortedCaseTypes, model.getSelectedCaseTypeIds(), false);
       optionsPanel.add( panel );
    }
 
@@ -237,7 +234,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(),
             new SelectedLinkValueComparator( model.getSelectedLabels() ) );
       
-      PerspectiveOptions panel = new PerspectiveOptions( context, sortedLabels, model.getSelectedLabelIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedLabels, model.getSelectedLabelIds(), false);
       optionsPanel.add(panel);
    }
 
@@ -247,7 +244,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>( model.getPossibleAssignees(),
             new SelectedLinkValueComparator( model.getSelectedAssignees() ) );
 
-      PerspectiveOptions panel = new PerspectiveOptions( context, sortedAssignees, model.getSelectedAssigneeIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedAssignees, model.getSelectedAssigneeIds(), false);
       optionsPanel.add(panel);
    }
 
@@ -257,21 +254,21 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>( model.getPossibleProjects(),
             new SelectedLinkValueComparator( model.getSelectedProjects() ) );
 
-      PerspectiveOptions panel = new PerspectiveOptions( context, sortedProjects, model.getSelectedProjectIds(), true, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedProjects, model.getSelectedProjectIds(), true);
       optionsPanel.add( panel );
    }
    
    @Action
    public void filterCreatedOn(ActionEvent event)
    {
-      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model.getCreatedOnModel() ).newInstance();
+      PerspectivePeriodView period = module.objectBuilderFactory().newObjectBuilder( PerspectivePeriodView.class ).use( model.getCreatedOnModel() ).newInstance();
       optionsPanel.add(period);
    }
 
    @Action
    public void filterDueOn(ActionEvent event)
    {
-      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model.getDueOnModel() ).newInstance();
+      PerspectivePeriodView period = module.objectBuilderFactory().newObjectBuilder( PerspectivePeriodView.class ).use( model.getDueOnModel() ).newInstance();
       optionsPanel.add(period);
    }
 
@@ -281,7 +278,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>( model.getPossibleCreatedBy(),
             new SelectedLinkValueComparator( model.getSelectedCreatedBy() ) );
       
-      PerspectiveOptions panel = new PerspectiveOptions( context, sortedCreatedBy, model.getSelectedCreatedByIds(), false, obf );
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedCreatedBy, model.getSelectedCreatedByIds(), false);
       optionsPanel.add(panel);
    }
 

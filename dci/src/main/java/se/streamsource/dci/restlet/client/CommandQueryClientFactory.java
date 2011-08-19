@@ -17,27 +17,27 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.*;
-import org.qi4j.spi.property.*;
-import org.qi4j.spi.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
+import org.restlet.data.Reference;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Locale;
 
 /**
  * Builder for CommandQueryClient
  */
 public class CommandQueryClientFactory
 {
-   @Structure
-   private Qi4jSPI spi;
-
    @Structure
    private Module module;
 
@@ -50,6 +50,9 @@ public class CommandQueryClientFactory
 
    @Uses
    private ResponseReaderDelegator readerDelegator;
+
+   @Uses
+   private RequestWriterDelegator requestWriterDelegator;
 
    @Uses
    private Uniform client;
@@ -97,41 +100,12 @@ public class CommandQueryClientFactory
 
    <T> T readResponse( Response response, Class<T> queryResult)
    {
-      return readerDelegator.readResponse( response, queryResult );
+      return (T) readerDelegator.readResponse( response, queryResult );
    }
 
    public void writeRequest( Request request, Object queryRequest )
    {
-      if (queryRequest != null)
-         if (queryRequest instanceof ValueComposite)
-            setQueryParameters( request.getResourceRef(), (ValueComposite) queryRequest );
-         else if (queryRequest instanceof Form)
-            request.getResourceRef().setQuery(((Form)queryRequest).getQueryString());
-         else
-            throw new IllegalArgumentException("Illegal query request type:"+queryRequest.getClass().getName());
+      if (!requestWriterDelegator.writeRequest(queryRequest, request))
+         throw new IllegalArgumentException("Illegal query request type:"+queryRequest.getClass().getName());
    }
-
-   private void setQueryParameters( final Reference ref, ValueComposite queryValue )
-   {
-      // Value as parameter
-      StateHolder holder = spi.getState( queryValue );
-      final ValueDescriptor descriptor = spi.getValueDescriptor( queryValue );
-
-      ref.setQuery( null );
-
-      holder.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
-      {
-         public void visitProperty( QualifiedName
-               name, Object value )
-         {
-            if (value != null)
-            {
-               PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName( name );
-               String queryParam = propertyDesc.propertyType().type().toQueryParameter( value );
-               ref.addQueryParameter( name.name(), queryParam );
-            }
-         }
-      } );
-   }
-
 }

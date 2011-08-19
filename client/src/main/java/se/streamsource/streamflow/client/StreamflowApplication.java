@@ -31,8 +31,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.io.Receiver;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -97,9 +95,6 @@ public class StreamflowApplication
 
    final Logger logger = LoggerFactory.getLogger(getClass().getName());
    final Logger streamflowLogger = LoggerFactory.getLogger(LoggerCategories.STREAMFLOW);
-
-   @Structure
-   ObjectBuilderFactory obf;
 
    @Structure
    ModuleSPI module;
@@ -195,7 +190,6 @@ public class StreamflowApplication
    }
 
    public void init(@Uses final AccountsModel accountsModel,
-                    @Structure final ObjectBuilderFactory obf,
                     @Uses final AccountSelector accountSelector,
                     @Service EventStream stream
    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
@@ -241,10 +235,10 @@ public class StreamflowApplication
 
 
       this.accountSelector = accountSelector;
-      this.workspaceWindow = obf.newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
-      this.overviewWindow = obf.newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
-      this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountSelector).newInstance();
-      this.debugWindow = obf.newObjectBuilder(DebugWindow.class).newInstance();
+      this.workspaceWindow = module.objectBuilderFactory().newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
+      this.overviewWindow = module.objectBuilderFactory().newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
+      this.administrationWindow = module.objectBuilderFactory().newObjectBuilder(AdministrationWindow.class).use(accountSelector).newInstance();
+      this.debugWindow = module.objectBuilderFactory().newObjectBuilder(DebugWindow.class).newInstance();
       setMainFrame(workspaceWindow.getFrame());
 
       this.accountsModel = accountsModel;
@@ -329,14 +323,11 @@ public class StreamflowApplication
 
    // Menu actions
 
-   @Uses
-   private ObjectBuilder<AccountsDialog> accountsDialog;
-
    @Action
    public void manageAccounts()
    {
       LinkValue selectedValue = (LinkValue) accountSelector.getSelectedValue();
-      AccountsDialog dialog = accountsDialog.use(accountsModel).newInstance();
+      AccountsDialog dialog = module.objectBuilderFactory().newObjectBuilder(AccountsDialog.class).use(accountsModel).newInstance();
       dialog.setSelectedAccount(selectedValue);
       dialogs.showOkDialog(getMainFrame(), dialog, text(AccountResources.account_title));
    }
@@ -355,7 +346,7 @@ public class StreamflowApplication
    @Action
    public void myProfile()
    {
-      ProfileView profile = obf.newObjectBuilder(ProfileView.class).use(accountSelector.getSelectedAccount().newProfileModel()).newInstance();
+      ProfileView profile = module.objectBuilderFactory().newObjectBuilder(ProfileView.class).use(accountSelector.getSelectedAccount().newProfileModel()).newInstance();
       dialogs.showOkDialog(getMainFrame(), profile, text(AccountResources.profile_title));
    }
 

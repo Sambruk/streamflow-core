@@ -24,8 +24,8 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -51,7 +51,7 @@ public class PageEditView
 
    public PageEditView( @Service ApplicationContext context,
                         @Uses PageEditModel model,
-                        @Structure ObjectBuilderFactory obf)
+                        @Structure Module module)
    {
       this.model = model;
       JPanel panel = new JPanel( new BorderLayout() );
@@ -64,7 +64,7 @@ public class PageEditView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
       
-      nameBinder = obf.newObject( StateBinder.class );
+      nameBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       nameBinder.setResourceMap( context.getResourceMap( getClass() ) );
       PageDefinitionValue definitionValue = nameBinder.bindingTemplate( PageDefinitionValue.class );
 

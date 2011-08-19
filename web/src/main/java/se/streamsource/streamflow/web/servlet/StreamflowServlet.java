@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.web.servlet;
 
-import org.restlet.ext.servlet.*;
-import se.streamsource.streamflow.web.*;
-import se.streamsource.streamflow.web.rest.*;
+import org.restlet.ext.servlet.ServletAdapter;
+import se.streamsource.streamflow.web.MainWeb;
+import se.streamsource.streamflow.web.rest.LoggerFilter;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Servlet that starts Streamflow and delegates requests to it

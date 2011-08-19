@@ -17,8 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ResourceModel;
 
 /**
@@ -27,11 +25,8 @@ import se.streamsource.streamflow.client.ResourceModel;
 public class CasesModel
       extends ResourceModel
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
    public CaseModel newCaseModel(String href)
    {
-      return obf.newObjectBuilder(CaseModel.class).use(this, client.getClient(href)).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(CaseModel.class).use(this, client.getClient(href)).newInstance();
    }
 }

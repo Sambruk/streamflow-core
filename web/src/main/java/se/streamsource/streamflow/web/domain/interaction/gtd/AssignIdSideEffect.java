@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.sideeffect.*;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.sideeffect.SideEffectOf;
 
 /**
  * Assign id to case if sent to project inbox
