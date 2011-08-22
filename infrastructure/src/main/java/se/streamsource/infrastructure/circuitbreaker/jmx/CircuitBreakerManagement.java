@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 
+import javax.management.AttributeChangeNotification;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMException;
 import javax.management.MBeanRegistrationException;
@@ -98,7 +99,7 @@ public interface CircuitBreakerManagement
             }
          }
 
-         CircuitBreakerJMX bean = new CircuitBreakerJMX(circuitBreaker);
+         CircuitBreakerJMX bean = new CircuitBreakerJMX(circuitBreaker, name);
 
          try
          {
@@ -123,9 +124,13 @@ public interface CircuitBreakerManagement
                if (evt.getPropertyName().equals( "status" ))
                {
                   if (evt.getNewValue().equals(CircuitBreaker.Status.on))
+                  {
                      LoggerFactory.getLogger( CircuitBreakerManagement.class ).info( "Circuit breaker "+name+" is now on" );
+                  }
                   else
+                  {
                      LoggerFactory.getLogger( CircuitBreakerManagement.class ).error( "Circuit breaker "+name+" is now off" );
+                  }
                }
             }
          });

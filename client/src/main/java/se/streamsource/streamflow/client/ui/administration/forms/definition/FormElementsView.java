@@ -85,7 +85,7 @@ public class FormElementsView
    public FormElementsView( @Service ApplicationContext context,
                             @Uses final FormPagesModel model)
    {
-      this.model = obf.newObjectBuilder( FormElementsModel.class ).use( client).newInstance();
+      this.model = model;
 
       final ActionMap am = context.getActionMap( this );
 
@@ -96,7 +96,6 @@ public class FormElementsView
 
       setDividerLocation( 350 );
       setOneTouchExpandable( true );
-
 
       initMaster( new EventListModel<LinkValue>( model.getUnsortedList() ),
             new DetailFactory() {

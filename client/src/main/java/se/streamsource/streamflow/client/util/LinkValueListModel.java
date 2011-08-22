@@ -48,12 +48,6 @@ public class LinkValueListModel
    extends ResourceModel<LinksValue>
    implements Refreshable, TransactionListener
 {
-   @Uses
-   protected CommandQueryClient client;
-
-   @Structure
-   protected Module module;
-
    protected EventList<LinkValue> linkValues = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
    protected EventList<LinkValue> sortedValues = new SortedList<LinkValue>(linkValues, new LinkComparator());
 

@@ -86,10 +86,10 @@ public class CircuitBreaker
          }
 
          status = Status.off;
-         pcs.firePropertyChange( "status", Status.on, Status.off );
-
+         lastThrowable = new Exception("Manually tripped");
          trippedOn = System.currentTimeMillis();
          enableOn = trippedOn+timeout;
+         pcs.firePropertyChange( "status", Status.on, Status.off );
       }
    }
 

@@ -24,6 +24,8 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
+import se.streamsource.streamflow.web.management.InstantMessagingAdminConfiguration;
+import se.streamsource.streamflow.web.management.InstantMessagingAdminService;
 import se.streamsource.streamflow.web.management.CompositeMBean;
 import se.streamsource.streamflow.web.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.web.management.ErrorLogService;
@@ -69,5 +71,8 @@ public class ManagementAssembler
 
       module.services(JmxConnectorService.class).identifiedBy("jmxconnector").instantiateOnStartup();
       configuration().entities(JmxConnectorConfiguration.class).visibleIn(Visibility.application);
+
+      module.services(InstantMessagingAdminService.class).identifiedBy("imadmin").instantiateOnStartup();
+      configuration().entities(InstantMessagingAdminConfiguration.class).visibleIn(Visibility.application);
    }
 }
