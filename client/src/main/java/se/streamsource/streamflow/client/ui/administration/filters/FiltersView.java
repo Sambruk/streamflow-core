@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.filters;
 
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
@@ -28,6 +28,7 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
@@ -37,6 +38,7 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
@@ -47,10 +49,10 @@ import static se.streamsource.streamflow.client.util.i18n.text;
 /**
  * JAVADOC
  */
-public class ProjectsView
+public class FiltersView
       extends ListDetailView
 {
-   ProjectsModel model;
+   FiltersModel model;
 
    @Service
    DialogService dialogs;
@@ -58,19 +60,18 @@ public class ProjectsView
    @Structure
    Module module;
 
-   public ProjectsView( @Service ApplicationContext context, @Uses final ProjectsModel model)
+   public FiltersView(@Service ApplicationContext context, @Uses final FiltersModel model)
    {
       this.model = model;
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "rename" ), am.get( "remove" )}, new DetailFactory()
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "remove" )}, new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {
-            TabbedResourceView view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( model.newResourceModel(detailLink)).newInstance();
-            return view;
+            return module.objectBuilderFactory().newObjectBuilder(FilterView.class).use( model.newResourceModel(detailLink)).newInstance();
          }
       });
 
@@ -82,7 +83,7 @@ public class ProjectsView
    {
       final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_project_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_filter_title ) );
 
       if (!Strings.empty( dialog.name() ) )
       {
@@ -122,32 +123,11 @@ public class ProjectsView
          return null;
    }
 
-   @Action
-   public Task rename()
-   {
-      final LinkValue selected = (LinkValue)list.getSelectedValue();
-      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_project_title ) );
-
-      if (!Strings.empty( dialog.name() ) )
-      {
-         return new CommandTask()
-         {
-            @Override
-            public void command()
-               throws Exception
-            {
-               model.changeDescription( selected, dialog.name() );
-            }
-         };
-      } else
-         return null;
-   }
-
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions(transactions);
 
-//      super.notifyTransactions( transactions );
+      if (Events.matches(Events.withNames("updatedFilter"), transactions))
+         model.refresh();
    }
 }

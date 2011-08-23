@@ -22,6 +22,7 @@ import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
 import se.streamsource.streamflow.web.context.administration.ProjectContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.rest.resource.organizations.filters.FiltersResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
 
 /**

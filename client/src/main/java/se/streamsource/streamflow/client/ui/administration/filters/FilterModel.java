@@ -15,32 +15,38 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.filters;
 
+import org.restlet.data.Form;
+import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
-import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.projects.MembersModel;
 
 /**
  * Represents a Project in the administration model
  */
-public class ProjectModel
-   extends ResourceModel
+public class FilterModel
+   extends ResourceModel<Form>
 {
-   public ProjectModel()
+   public FilterModel()
    {
-      relationModelMapping("members", MembersModel.class);
-      relationModelMapping("forms", FormsModel.class);
-      relationModelMapping("casetypes", CaseTypesModel.class);
-      relationModelMapping("labels", LabelsModel.class);
-      relationModelMapping("selectedlabels", SelectedLabelsModel.class);
-      relationModelMapping("selectedcasetypes", SelectedCaseTypesModel.class);
-      relationModelMapping("filters", FiltersModel.class);
-      relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
+      relationModelMapping("rules", RulesModel.class);
+      relationModelMapping("actions", ActionsModel.class);
+   }
+
+   public Form getIndex()
+   {
+      return client.query("index", Form.class);
+   }
+
+   public void update(Form form)
+   {
+      client.putCommand("update", form);
    }
 }

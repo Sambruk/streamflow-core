@@ -135,6 +135,9 @@ public interface InstantMessagingAdminService
                                     out.println("* info");
                                     out.println("* threaddump");
                                     out.println("* configuration");
+                                    out.println("* configure <service-name>");
+                                    out.println("* subscribe <debug/info/warn/error>");
+                                    out.println("* unsubscribe");
 
                                     chat.sendMessage(msg.toString());
                                  } else if (txt.equals("status"))

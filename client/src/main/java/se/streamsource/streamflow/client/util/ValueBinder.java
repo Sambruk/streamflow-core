@@ -23,8 +23,11 @@ import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.ListMap;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 
@@ -44,7 +47,7 @@ public class ValueBinder
    Qi4jSPI spi;
 
    Map<Class<? extends Component>, Binder> binders = new HashMap<Class<? extends Component>, Binder>();
-   Map<String, Binding> bindings = new HashMap<String, Binding>();
+   ListMap<String, Binding> bindings = new ListMap<String, Binding>();
 
    public ValueBinder()
    {
@@ -59,6 +62,7 @@ public class ValueBinder
             JCheckBox.class,
             JXDatePicker.class,
             JComboBox.class,
+            JRadioButton.class,
             RemovableLabel.class);
    }
 
@@ -88,7 +92,7 @@ public class ValueBinder
       if (binder == null)
          throw new IllegalArgumentException( "No binder registered for component type:" + boundComponent.getClass().getSimpleName() );
 
-      bindings.put( name, new Binding(converter, boundComponent, binder) );
+      bindings.add(name, new Binding(converter, boundComponent, binder));
 
       return component;
 
@@ -100,23 +104,32 @@ public class ValueBinder
       {
          public void visitProperty( QualifiedName name, Object value ) throws RuntimeException
          {
-            Binding binding = bindings.get( name.name() );
-            if (binding != null)
+            Iterable<Binding> binding = bindings.get( name.name() );
+            for (Binding binding1 : binding)
             {
-               binding.update( value );
+               binding1.update( value );
             }
          }
       } );
    }
 
+   public void update(Form form)
+   {
+      for (Parameter parameter : form)
+      {
+         for (Binding binding : bindings.get(parameter.getName()))
+         {
+            binding.update(parameter.getValue());
+         }
+      }
+   }
+
    public void update( String name, Object value )
    {
-      Binding binding = bindings.get( name );
-      if (binding != null)
+      for (Binding binding : bindings.get(name))
       {
          binding.update( value );
-      } else
-         throw new IllegalArgumentException( "No binding named '" + name + "'" );
+      }
    }
 
    public class Binding
@@ -174,6 +187,12 @@ public class ValueBinder
          } else if (component instanceof JCheckBox)
          {
             JCheckBox checkBox = (JCheckBox) component;
+
+            if (value instanceof String)
+            {
+               value = Boolean.parseBoolean(value.toString());
+            }
+
             checkBox.setSelected( ((Boolean) value) );
          } else if (component instanceof JLabel)
          {
@@ -197,6 +216,10 @@ public class ValueBinder
          {
             JComboBox box = (JComboBox) component;
             box.setSelectedItem( value );
+         } else if (component instanceof JRadioButton)
+         {
+            JRadioButton button = (JRadioButton) component;
+            button.setSelected(button.getActionCommand().equals(value.toString()));
          } else if (component instanceof RemovableLabel)
          {
             RemovableLabel label = (RemovableLabel) component;

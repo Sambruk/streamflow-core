@@ -138,5 +138,16 @@ public enum AdministrationResources
    email,
    subject, emailTemplates,
    add_email_accesspoint,
-   formsignatures_tab
+   formsignatures_tab,
+
+   choose_recipient_title,
+   filters_tab,
+   add_filter_title,
+   enabled,
+   all,
+   any,
+   filter_rules,
+   filter_actions,
+   send_email_to,
+   match_label,
 }

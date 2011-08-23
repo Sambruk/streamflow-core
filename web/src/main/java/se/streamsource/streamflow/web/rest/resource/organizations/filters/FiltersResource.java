@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.rest.resource.organizations;
+package se.streamsource.streamflow.web.rest.resource.organizations.filters;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
@@ -24,8 +24,7 @@ import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.context.administration.FilterContext;
-import se.streamsource.streamflow.web.context.administration.FiltersContext;
+import se.streamsource.streamflow.web.context.administration.filters.FiltersContext;
 import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 
 /**
@@ -57,6 +56,6 @@ public class FiltersResource
    {
       findList(RoleMap.role(Filters.Data.class).filters().get(), segment);
 
-      subResourceContexts(FilterContext.class);
+      subResource(FilterResource.class);
    }
 }

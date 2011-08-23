@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.structure.Module;
 import org.qi4j.bootstrap.Energy4Java;

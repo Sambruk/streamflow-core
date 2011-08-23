@@ -28,6 +28,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormEditView;
@@ -88,6 +89,8 @@ public class TabbedResourceView
       addTab( "selectedresolutions", AdministrationResources.selected_resolutions_tab, SelectedResolutionsView.class );
 
       addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
+
+      addTab( "filters", AdministrationResources.filters_tab, FiltersView.class );
 
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
       addTab( "emailaccesspoints", AdministrationResources.emailaccesspoints_tab, EmailAccessPointsView.class );

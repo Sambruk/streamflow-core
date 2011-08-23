@@ -39,6 +39,8 @@ public interface Filters
 
    void removeFilter(FilterValue filter);
 
+   int indexOf(FilterValue filter);
+
    interface Data
    {
       @UseDefaults
@@ -96,6 +98,11 @@ public interface Filters
          List<FilterValue> filterValues = data.filters().get();
          filterValues.remove(filter);
          data.filters().set(filterValues);
+      }
+
+      public int indexOf(FilterValue filter)
+      {
+         return data.filters().get().indexOf(filter);
       }
    }
 }
