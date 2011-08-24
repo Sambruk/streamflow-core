@@ -17,16 +17,16 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.*;
+import java.text.MessageFormat;
 
 /**
  * A general confirmation dialog

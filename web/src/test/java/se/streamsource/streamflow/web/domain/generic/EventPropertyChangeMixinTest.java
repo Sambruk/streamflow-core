@@ -19,19 +19,25 @@ package se.streamsource.streamflow.web.domain.generic;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.spi.service.importer.*;
-import org.qi4j.test.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
-import se.streamsource.streamflow.infrastructure.time.*;
-import se.streamsource.streamflow.web.infrastructure.event.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
+import org.qi4j.test.AbstractQi4jTest;
+import org.qi4j.test.EntityTestAssembler;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.time.Time;
+import se.streamsource.streamflow.infrastructure.time.TimeService;
+import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 
 /**
  * JAVADOC

@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.web.context.administration.surface;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.*;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
@@ -32,9 +32,10 @@ import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplat
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 
 /**

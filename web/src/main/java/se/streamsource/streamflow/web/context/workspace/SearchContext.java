@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.query.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.OrderBy.Order;
@@ -41,7 +41,8 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC

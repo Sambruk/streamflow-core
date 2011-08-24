@@ -19,14 +19,10 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -38,9 +34,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class SubmittedFormsAdminView
       extends JSplitPane
 {
-   public SubmittedFormsAdminView( @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf, @Structure final ValueBuilderFactory vbf)
+   public SubmittedFormsAdminView( @Uses final CaseSubmittedFormsModel model, @Structure final Module module)
    {
-      final CaseSubmittedFormsView submittedFormsView = obf.newObjectBuilder( CaseSubmittedFormsView.class ).use( client ).newInstance();
+      final CaseSubmittedFormsView submittedFormsView = module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormsView.class).use( model ).newInstance();
       setLeftComponent( submittedFormsView );
       setRightComponent( new JPanel() );
 
@@ -55,8 +51,8 @@ public class SubmittedFormsAdminView
             if (idx != -1)
             {
 
-               CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).
-                     use( client, idx ).newInstance();
+               CaseSubmittedFormView submittedFormView = module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormView.class).
+                     use(model.newSubmittedFormModel(idx)).newInstance();
                setRightComponent( submittedFormView );
             } else
             {

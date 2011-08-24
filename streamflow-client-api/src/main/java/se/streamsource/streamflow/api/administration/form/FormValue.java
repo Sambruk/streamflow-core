@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.api.administration.form;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * Value for forms.

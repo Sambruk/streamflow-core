@@ -17,18 +17,21 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.spi.structure.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.routing.*;
-import org.restlet.security.*;
-import org.slf4j.*;
-import se.streamsource.streamflow.web.application.security.*;
-import se.streamsource.streamflow.web.assembler.*;
-import se.streamsource.streamflow.web.resource.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.bootstrap.Energy4Java;
+import org.qi4j.spi.structure.ApplicationSPI;
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.data.MediaType;
+import org.restlet.routing.Router;
+import org.restlet.security.Enroler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.web.application.security.DefaultEnroler;
+import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
+import se.streamsource.streamflow.web.rest.resource.APIRouter;
 
 /**
  * JAVADOC
@@ -41,7 +44,7 @@ public class StreamflowRestApplication
    final Logger logger = LoggerFactory.getLogger("streamflow");
 
    @Structure
-   ObjectBuilderFactory factory;
+   Module module;
 
    Enroler enroler = new DefaultEnroler();
 
@@ -71,7 +74,7 @@ public class StreamflowRestApplication
 
       Router versions = new Router(getContext());
 
-      Router api = factory.newObjectBuilder(APIRouter.class).use(getContext()).newInstance();
+      Router api = module.objectBuilderFactory().newObjectBuilder(APIRouter.class).use(getContext()).newInstance();
       versions.attachDefault(api);
 
       return versions;

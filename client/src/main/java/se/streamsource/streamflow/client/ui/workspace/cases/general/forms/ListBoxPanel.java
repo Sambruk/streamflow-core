@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
@@ -31,7 +31,7 @@ import se.streamsource.streamflow.client.util.StateBinder;
 
 import javax.swing.*;
 
-import static javax.swing.ListSelectionModel.*;
+import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 
 public class ListBoxPanel
       extends AbstractFieldPanel

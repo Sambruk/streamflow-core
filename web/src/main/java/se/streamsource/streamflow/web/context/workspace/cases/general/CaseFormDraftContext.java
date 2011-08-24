@@ -17,20 +17,19 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
-import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
-import java.io.*;
+import java.io.IOException;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -66,7 +65,7 @@ public class CaseFormDraftContext
       role( SubmittedForms.class ).submitForm( formDraft, submitter );
    }
 
-   public void delete() throws ResourceException, IOException
+   public void delete() throws IOException
    {
       FormDrafts formDrafts = role( FormDrafts.class );
       FormDraft formDraft = role( FormDraft.class);

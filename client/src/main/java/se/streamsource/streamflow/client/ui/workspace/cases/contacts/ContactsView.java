@@ -24,25 +24,29 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.IOException;
 
-import static org.jdesktop.application.Task.BlockingScope.*;
+import static org.jdesktop.application.Task.BlockingScope.COMPONENT;
 
 /**
  * JAVADOC
@@ -57,20 +61,19 @@ public class ContactsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private ContactsModel model;
 
    private JList contacts;
 
    public ContactsView( @Service ApplicationContext context,
-                        @Uses CommandQueryClient client,
-                        @Structure ObjectBuilderFactory obf )
+                        @Uses ContactsModel model)
    {
       super( new BorderLayout() );
 
-      model = obf.newObjectBuilder( ContactsModel.class ).use(client).newInstance();
+      this.model = model;
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -154,7 +157,7 @@ public class ContactsView
    @org.jdesktop.application.Action(block = COMPONENT)
    public Task remove() throws IOException, ResourceException
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( ((ContactDTO) contacts.getSelectedValue()).name().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())

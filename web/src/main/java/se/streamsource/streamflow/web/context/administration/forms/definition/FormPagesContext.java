@@ -17,14 +17,14 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
@@ -36,13 +36,10 @@ import se.streamsource.streamflow.web.domain.structure.form.Pages;
  * JAVADOC
  */
 @Mixins(FormPagesContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface FormPagesContext
       extends IndexContext<LinksValue>, Context
 {
-   public void create( @MaxLength(50) StringValue name );
-
-   LinksValue formelements();
+   public void create( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements FormPagesContext
@@ -72,33 +69,11 @@ public interface FormPagesContext
          return linksBuilder.newLinks();
       }
 
-      public void create( StringValue name )
+      public void create( String name )
       {
          Pages pages = RoleMap.role( Pages.class );
 
-         pages.createPage( name.string().get() );
-      }
-
-      public LinksValue formelements()
-      {
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-
-         Pages.Data pages = RoleMap.role( Pages.Data.class );
-         for (Page page : pages.pages())
-         {
-            linksBuilder.path( null );
-            linksBuilder.rel( "page" );
-            linksBuilder.addDescribable( page );
-            Fields.Data fields = (Fields.Data) page;
-            linksBuilder.path( page.toString() );
-            linksBuilder.rel( "field" );
-            for (Field field : fields.fields())
-            {
-               linksBuilder.addDescribable( field );
-            }
-         }
-
-         return linksBuilder.newLinks();
+         pages.createPage( name );
       }
    }
 }

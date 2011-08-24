@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.swing.*;
-import org.jdesktop.swingx.*;
-import se.streamsource.streamflow.client.ui.administration.forms.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
+import org.jdesktop.swingx.JXList;
+import se.streamsource.streamflow.client.ui.administration.forms.FormElementItem;
 
 import javax.swing.*;
 import java.awt.*;

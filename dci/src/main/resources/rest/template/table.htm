@@ -31,9 +31,15 @@
         #foreach($cell in $row.c)
         <td>
             #if($cell.f)
+               #if($cell.v.startsWith("http://"))
+                <a href="$cell.v">$cell.f</a>
+               #else
                 $cell.f
+               #end
+            #elseif($cell.v)
+                $cell.v
             #else
-                $!{cell.v}
+            &nbsp;
             #end
         </td>
         #end

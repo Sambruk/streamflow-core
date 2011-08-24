@@ -17,8 +17,8 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.restlet.*;
-import org.restlet.resource.*;
+import org.restlet.Response;
+import org.restlet.resource.ResourceException;
 
 /**
  */

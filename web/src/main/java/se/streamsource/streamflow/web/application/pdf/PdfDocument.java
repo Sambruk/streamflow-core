@@ -17,15 +17,16 @@
 
 package se.streamsource.streamflow.web.application.pdf;
 
-import org.apache.pdfbox.pdmodel.*;
-import org.apache.pdfbox.pdmodel.common.*;
-import org.apache.pdfbox.pdmodel.edit.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PdfDocument

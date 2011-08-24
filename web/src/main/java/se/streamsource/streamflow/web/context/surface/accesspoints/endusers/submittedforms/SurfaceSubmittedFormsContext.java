@@ -24,8 +24,8 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 
 /**

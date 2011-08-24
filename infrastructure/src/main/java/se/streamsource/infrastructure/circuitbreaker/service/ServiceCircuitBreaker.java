@@ -17,7 +17,7 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import se.streamsource.infrastructure.circuitbreaker.*;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
 /**
  * Services that have CircuitBreakers can implement this. The CB will

@@ -17,9 +17,9 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.spi.structure.*;
+import org.qi4j.spi.structure.ModuleSPI;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 /**
  * Service interface for checking whether a particular method or a whole class is not

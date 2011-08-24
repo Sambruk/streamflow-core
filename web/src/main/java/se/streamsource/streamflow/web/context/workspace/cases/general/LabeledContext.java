@@ -21,14 +21,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -42,7 +44,7 @@ public class LabeledContext
    @Service
    KnowledgebaseService knowledgebaseService;
 
-   public void delete() throws ResourceException
+   public void delete()
    {
       role( Labelable.class ).removeLabel( role( Label.class ) );
    }

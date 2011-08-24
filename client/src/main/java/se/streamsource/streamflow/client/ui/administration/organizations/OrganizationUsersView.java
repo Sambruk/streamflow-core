@@ -17,41 +17,47 @@
 
 package se.streamsource.streamflow.client.ui.administration.organizations;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.util.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 
 public class OrganizationUsersView
       extends JPanel
       implements TransactionListener
 {
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
+
    @Service
    DialogService dialogs;
 
@@ -60,10 +66,10 @@ public class OrganizationUsersView
    private OrganizationUsersModel model;
    public EventList<LinkValue> linkValues;
 
-   public OrganizationUsersView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+   public OrganizationUsersView( @Service ApplicationContext context, @Uses OrganizationUsersModel model )
    {
       super( new BorderLayout() );
-      this.model = obf.newObjectBuilder( OrganizationUsersModel.class ).use( client ).newInstance();
+      this.model = model;
 
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
@@ -92,7 +98,7 @@ public class OrganizationUsersView
    @org.jdesktop.application.Action
    public Task add() throws ResourceException
    {
-      final SelectLinksDialog dialog = obf.newObjectBuilder( SelectLinksDialog.class )
+      final SelectLinksDialog dialog = module.objectBuilderFactory().newObjectBuilder( SelectLinksDialog.class )
             .use( model.getPossible() ).newInstance();
       dialogs.showOkCancelHelpDialog(
             WindowUtils.findWindow( this ),
@@ -119,7 +125,7 @@ public class OrganizationUsersView
    @org.jdesktop.application.Action
    public Task remove() throws ResourceException
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( i18n.text( AdministrationResources.users_tab) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())

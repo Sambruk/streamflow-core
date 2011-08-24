@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.infrastructure.caching;
 
-import net.sf.ehcache.*;
+import net.sf.ehcache.CacheManager;
 
 /**
  * Service wrapper for Ehcache.

@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.common.*;
-import org.qi4j.bootstrap.*;
+import org.jdesktop.application.Task;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 import javax.swing.*;
 
@@ -36,12 +37,20 @@ public final class UIAssemblers
 
    public static void addModels( ModuleAssembly module, Class... modelClasses ) throws AssemblyException
    {
-      module.objects( modelClasses ).visibleIn( Visibility.layer );
+      module.objects( modelClasses ).visibleIn(Visibility.layer);
    }
 
    public static void addViews( ModuleAssembly module, Class<? extends JComponent>... viewClasses ) throws AssemblyException
    {
       module.objects( viewClasses ).visibleIn( Visibility.layer );
+   }
+
+   public static void views(ModuleAssembly module, Iterable<Class> viewClasses) throws AssemblyException
+   {
+      for (Class viewClass : viewClasses)
+      {
+         module.objects( viewClass ).visibleIn( Visibility.layer );
+      }
    }
 
    public static void addDialogs( ModuleAssembly module, Class<? extends JComponent>... dialogClasses ) throws AssemblyException
@@ -51,6 +60,6 @@ public final class UIAssemblers
 
    public static void addTasks( ModuleAssembly module, Class<? extends Task>... taskClasses ) throws AssemblyException
    {
-      module.objects( taskClasses );
+      module.objects( taskClasses ).visibleIn(Visibility.layer);
    }
 }

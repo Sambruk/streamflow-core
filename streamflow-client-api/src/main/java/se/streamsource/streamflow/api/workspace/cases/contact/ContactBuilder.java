@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.api.workspace.cases.contact;
 
-import org.qi4j.api.value.*;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Builder for ContactDTO. Can be used during creation or updating of existing contact

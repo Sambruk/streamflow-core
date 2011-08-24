@@ -17,14 +17,14 @@
 
 package se.streamsource.streamflow.web.context.administration.forms;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -34,11 +34,10 @@ import se.streamsource.streamflow.web.domain.structure.form.Forms;
  * JAVADOC
  */
 @Mixins(FormsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface FormsContext
       extends IndexContext<LinksValue>, Context
 {
-   void createform( @MaxLength(50) StringValue formName );
+   void create( @MaxLength(50) @Name("name") String formName );
 
    abstract class Mixin
          implements FormsContext
@@ -53,11 +52,11 @@ public interface FormsContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "form" ).addDescribables( forms.forms() ).newLinks();
       }
 
-      public void createform( StringValue formName )
+      public void create( String formName )
       {
          Forms forms = RoleMap.role( Forms.class );
          Form form = forms.createForm();
-         form.changeDescription( formName.string().get() );
+         form.changeDescription( formName );
       }
    }
 }

@@ -17,9 +17,9 @@
 
 package se.streamsource.dci.value;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * Simple value that represents a single string.

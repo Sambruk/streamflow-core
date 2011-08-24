@@ -19,8 +19,8 @@ package se.streamsource.streamflow.web.domain.structure.user;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.web.domain.Describable;
 
 
 @Mixins(Perspective.Mixin.class)

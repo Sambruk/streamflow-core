@@ -21,7 +21,6 @@ import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -31,14 +30,18 @@ import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPoin
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Collections;
 
-import static org.qi4j.api.query.QueryExpressions.*;
-import static se.streamsource.dci.api.RoleMap.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * TODO
@@ -49,7 +52,7 @@ public class EmailAccessPointAdministrationContext
    @Structure
    Module module;
 
-   public void delete() throws ResourceException, IOException
+   public void delete() throws IOException
    {
       role(EmailAccessPoints.class).removeEmailAccessPoint(role(EmailAccessPoint.class));
    }

@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.reference.contact;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.property.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 public interface StreamflowContactLookupPluginConfiguration
       extends ConfigurationComposite

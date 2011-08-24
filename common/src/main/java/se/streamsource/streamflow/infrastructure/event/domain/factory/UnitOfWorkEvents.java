@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.factory;
 
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * List of events for the current UnitOfWork. This will be updated by the DomainEventFactory.

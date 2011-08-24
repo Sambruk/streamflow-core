@@ -30,9 +30,8 @@ import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.administration.UserEntityDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -46,9 +45,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Comparator;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class UsersAdministrationView
       extends JPanel
@@ -56,11 +55,8 @@ public class UsersAdministrationView
 {
    private UsersAdministrationModel model;
 
-   @Uses
-   Iterable<CreateUserDialog> userDialogs;
-
-   @Uses
-   Iterable<ResetPasswordDialog> resetPwdDialogs;
+   @Structure
+   Module module;
 
    @Service
    DialogService dialogs;
@@ -68,12 +64,12 @@ public class UsersAdministrationView
    JXTable usersTable;
    private EventJXTableModel<UserEntityDTO> tableModel;
 
-   public UsersAdministrationView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public UsersAdministrationView( @Service ApplicationContext context, @Uses UsersAdministrationModel model)
    {
       ApplicationActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      this.model = obf.newObjectBuilder( UsersAdministrationModel.class ).use( client ).newInstance();
+      this.model = model;
 
       TableFormat<UserEntityDTO> userAdminTableFormat = new UserAdminTableFormat();
 
@@ -104,7 +100,7 @@ public class UsersAdministrationView
    @org.jdesktop.application.Action
    public Task createUser()
    {
-      final CreateUserDialog dialog = userDialogs.iterator().next();
+      final CreateUserDialog dialog = module.objectBuilderFactory().newObject(CreateUserDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
 
       if ( dialog.userCommand() != null )
@@ -156,7 +152,7 @@ public class UsersAdministrationView
    @org.jdesktop.application.Action
    public Task resetPassword()
    {
-      final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
+      final ResetPasswordDialog dialog = module.objectBuilderFactory().newObject(ResetPasswordDialog.class);
       final UserEntityDTO userLink = tableModel.getElementAt( usersTable.convertRowIndexToModel( usersTable.getSelectedRow() ) );
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + userLink.text().get() );
 

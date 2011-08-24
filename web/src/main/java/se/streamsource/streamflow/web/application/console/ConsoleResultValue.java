@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.application.console;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
-import java.util.logging.*;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.LogRecord;
 
 /**
  * JAVADOC

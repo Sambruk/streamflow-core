@@ -20,20 +20,19 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -51,7 +50,7 @@ public class SubCasesView
    private JLabel subcasesLabel;
    private JScrollPane subCaseListScroll;
 
-   public SubCasesView(@Service ApplicationContext context, @Uses final CaseModel model, @Structure ObjectBuilderFactory obf)
+   public SubCasesView(@Service ApplicationContext context, @Uses final CaseModel model)
    {
       this.model = model;
       setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
@@ -85,20 +84,20 @@ public class SubCasesView
 
       setActionMap(context.getActionMap(this));
 
-      parentLabel = new JLabel("Parent");
+      parentLabel = new JLabel(i18n.text( CaseResources.parent ));
       parentLabel.setForeground( Color.GRAY );
       parentLabel.setLabelFor( parentCaseButton );
 
       add(parentLabel);
       add(parentCaseButton);
 
-      JLabel caseLabel = new JLabel( "Case", JLabel.RIGHT );
+      JLabel caseLabel = new JLabel( i18n.text( CaseResources.caze ), JLabel.RIGHT );
       caseLabel.setForeground( Color.GRAY );
       caseLabel.setLabelFor( caseButton );
       add( caseLabel );
       add(caseButton);
 
-      subcasesLabel = new JLabel( "Subcases", JLabel.RIGHT );
+      subcasesLabel = new JLabel( i18n.text( CaseResources.subcases ), JLabel.RIGHT );
       subcasesLabel.setForeground( Color.GRAY );
       add( subcasesLabel );
       subCaseListScroll = new JScrollPane( subCaseList );

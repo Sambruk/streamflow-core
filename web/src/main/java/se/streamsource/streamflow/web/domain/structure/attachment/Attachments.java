@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.Queryable;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * List of attached files
@@ -59,14 +62,8 @@ public interface Attachments
    abstract class Mixin
          implements Attachments, Data
    {
-      @State
-      ManyAssociation<Attachment> attachments;
-
       @Service
       IdentityGenerator idGen;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       public Attachment createAttachment( String uri ) throws URISyntaxException
       {
@@ -100,7 +97,7 @@ public interface Attachments
          // Delete the attachment entity
          removedAttachment( null, attachment );
 
-         attachment.removeEntity();
+         attachment.deleteEntity();
       }
 
       public Attachment getAttachment( String id )

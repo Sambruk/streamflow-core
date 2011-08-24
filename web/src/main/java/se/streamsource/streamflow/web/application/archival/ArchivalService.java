@@ -65,7 +65,6 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -250,6 +249,9 @@ public interface ArchivalService
                out.close();
             file.delete();
             throw e;
+         } finally
+         {
+            pdf.close();
          }
       }
 

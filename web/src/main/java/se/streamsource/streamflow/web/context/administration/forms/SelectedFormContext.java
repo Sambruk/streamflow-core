@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.context.administration.forms;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 /**
  * JAVADOC

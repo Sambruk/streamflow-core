@@ -17,10 +17,20 @@
 
 package se.streamsource.dci.value;
 
-import org.qi4j.api.common.*;
-import org.qi4j.bootstrap.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.dci.value.table.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.dci.value.link.TitledLinksValue;
+import se.streamsource.dci.value.table.CellValue;
+import se.streamsource.dci.value.table.ColumnValue;
+import se.streamsource.dci.value.table.RowValue;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableResponseValue;
+import se.streamsource.dci.value.table.TableValue;
 
 /**
  * Assembler all DCI values.

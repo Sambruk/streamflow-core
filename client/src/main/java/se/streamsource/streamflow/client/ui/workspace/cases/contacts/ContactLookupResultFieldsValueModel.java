@@ -18,11 +18,12 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.table.*;
-import java.util.*;
+import javax.swing.table.AbstractTableModel;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.

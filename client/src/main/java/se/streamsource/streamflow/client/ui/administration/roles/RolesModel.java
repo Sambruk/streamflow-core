@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.roles;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * JAVADOC
@@ -27,6 +27,6 @@ public class RolesModel
 {
    public RolesModel()
    {
-      super( "createrole" );
+      super( "create" );
    }
 }

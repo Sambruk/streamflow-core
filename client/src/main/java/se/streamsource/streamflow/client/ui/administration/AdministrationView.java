@@ -17,18 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.TreeList;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationActionMap;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.util.TabbedResourceView;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 
 /**
@@ -37,12 +40,6 @@ import java.awt.*;
 public class AdministrationView
       extends JPanel
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   UnitOfWorkFactory uowf;
-
    JSplitPane mainView = new JSplitPane();
    JPanel detailView;
 
@@ -51,11 +48,12 @@ public class AdministrationView
    private AdministrationTreeView adminTreeView;
 
    public AdministrationView( @Service ApplicationContext context,
-                              @Uses CommandQueryClient client, @Structure final ObjectBuilderFactory obf )
+                              @Uses final AdministrationModel model,
+                              @Structure final Module module)
    {
       am = context.getActionMap( this );
       setActionMap( am );
-      this.adminTreeView = obf.newObjectBuilder( AdministrationTreeView.class ).use( client ).newInstance();
+      this.adminTreeView = module.objectBuilderFactory().newObjectBuilder(AdministrationTreeView.class).use( model ).newInstance();
 
       setLayout( viewSwitch );
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
@@ -88,11 +86,11 @@ public class AdministrationView
             {
                Object node = path.getLastPathComponent();
 
-               DefaultMutableTreeNode mutableNode = (DefaultMutableTreeNode) node;
+               LinkValue link = (LinkValue) ((TreeList.Node)node).getElement();
 
-               ContextItem clientInfo = (ContextItem) mutableNode.getUserObject();
+               Object linkedModel = model.newResourceModel(link);
 
-               JComponent view = obf.newObjectBuilder( TabbedResourceView.class ).use( clientInfo.getClient() ).newInstance();
+               JComponent view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( linkedModel ).newInstance();
 
                mainView.setRightComponent( view );
             } 

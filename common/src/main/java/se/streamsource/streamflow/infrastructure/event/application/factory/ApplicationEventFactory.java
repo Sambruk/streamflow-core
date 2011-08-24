@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.factory;
 
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 
 /**
  * Factory for ApplicationEvents

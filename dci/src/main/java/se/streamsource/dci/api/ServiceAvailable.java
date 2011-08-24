@@ -17,10 +17,13 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.service.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.service.ServiceFinder;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Module;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotate interaction methods with ServiceAvailable. They will only be valid
@@ -36,11 +39,11 @@ public @interface ServiceAvailable
          implements InteractionConstraint<ServiceAvailable>
    {
       @Structure
-      ServiceFinder finder;
+      Module module;
 
       public boolean isValid( ServiceAvailable serviceAvailable, RoleMap roleMap )
       {
-         ServiceReference ref = finder.findService( serviceAvailable.value() );
+         ServiceReference ref = module.serviceFinder().findService( serviceAvailable.value() );
          return ref != null && ref.isAvailable();
       }
    }

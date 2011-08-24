@@ -17,20 +17,27 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.resource.*;
-import org.slf4j.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.domain.individual.*;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.Uniform;
+import org.restlet.resource.ClientResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
+import se.streamsource.streamflow.client.domain.individual.Individual;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * JAVADOC
@@ -45,10 +52,7 @@ public interface DummyDataService
       final Logger logger = LoggerFactory.getLogger( getClass().getName() );
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Service
       IndividualRepository individualRepository;
@@ -61,16 +65,13 @@ public interface DummyDataService
 
       public void activate() throws Exception
       {
-         if (!app.mode().equals( Application.Mode.development ))
-            return;
-
          try
          {
-            UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Create account" ) );
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Create account"));
 
             Individual individual = individualRepository.individual();
 
-            ValueBuilder<AccountSettingsValue> builder = vbf.newValueBuilder( AccountSettingsValue.class );
+            ValueBuilder<AccountSettingsValue> builder = module.valueBuilderFactory().newValueBuilder(AccountSettingsValue.class);
             builder.prototype().name().set( "Test server administrator" );
             builder.prototype().server().set( "http://localhost:8040/streamflow" );
             builder.prototype().userName().set( "administrator" );

@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
-import se.streamsource.streamflow.web.domain.structure.role.*;
+import se.streamsource.streamflow.web.domain.structure.role.Roles;
 
 /**
  * JAVADOC

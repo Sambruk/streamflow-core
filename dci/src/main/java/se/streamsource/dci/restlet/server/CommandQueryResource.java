@@ -17,55 +17,65 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.json.JSONException;
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.constraint.ConstraintViolation;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyDescriptor;
-import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import org.slf4j.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.restlet.server.api.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
+import org.restlet.data.Form;
+import org.restlet.data.Language;
+import org.restlet.data.Preference;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ResourceException;
+import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.InteractionConstraints;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.restlet.server.api.ResourceValidity;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
 
-import java.io.*;
-import java.lang.annotation.*;
-import java.lang.reflect.*;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static org.qi4j.api.util.Annotations.*;
+import static org.qi4j.api.util.Annotations.isType;
 import static org.qi4j.api.util.Iterables.*;
 
 /**
@@ -75,19 +85,13 @@ public class CommandQueryResource
         implements Uniform
 {
    private static final String ARGUMENTS = "arguments";
-   private Map<Class, List<Method>> contextClassMethods = new ConcurrentHashMap<Class, List<Method>>();
-   private Map<String, Object> contexts = new ConcurrentHashMap<String, Object>();
-
-   private
-   @Structure
-   UnitOfWorkFactory uowf;
+   private Map<String, Class> interactionClasses = new ConcurrentHashMap<String, Class>();
+   private Map<String, Method> resourceMethods = new ConcurrentHashMap<String, Method>();
+   private Map<String, Method> contextMethods = new ConcurrentHashMap<String, Method>();
 
    private
    @Structure
    Qi4jSPI spi;
-
-   @Structure
-   private ValueBuilderFactory vbf;
 
    protected
    @Structure
@@ -95,7 +99,10 @@ public class CommandQueryResource
 
    private
    @Service
-   ResultWriterDelegator resultWriter;
+   ResponseWriterDelegator resultWriter;
+
+   @Service
+   RequestReaderDelegator requestReader;
 
    private
    @Service
@@ -108,15 +115,46 @@ public class CommandQueryResource
 
    private
    @Uses
-   CommandQueryRestlet2 restlet;
+   CommandQueryRestlet restlet;
 
    private Class[] contextClasses;
 
    public CommandQueryResource(@Uses Class... contextClasses)
    {
       this.contextClasses = contextClasses;
+
+      // Resource method mappings
+      for (Method method : getClass().getMethods())
+      {
+         if (CommandQueryResource.class.isAssignableFrom(method.getDeclaringClass()) && !CommandQueryResource.class.equals(method.getDeclaringClass()))
+         {
+            Method oldMethod = resourceMethods.put(method.getName().toLowerCase(), method);
+
+            if (oldMethod != null)
+            {
+               throw new IllegalStateException("Two methods in resource "+getClass().getName()+" with same name "+oldMethod.getName()+", which is not allowed");
+            }
+         }
+      }
+
+      // Context method mappings
+      for (Class contextClass : contextClasses)
+      {
+         for (Method method : contextClass.getMethods())
+         {
+            if (!method.isSynthetic())
+            {
+               if (!interactionClasses.containsKey(method.getName().toLowerCase()))
+               {
+                  interactionClasses.put(method.getName().toLowerCase(), contextClass);
+                  contextMethods.put(method.getName().toLowerCase(), method);
+               }
+            }
+         }
+      }
    }
 
+   // Uniform implementation
    public final void handle(Request request, Response response)
    {
       RoleMap roleMap = RoleMap.current();
@@ -146,363 +184,33 @@ public class CommandQueryResource
       }
    }
 
-   private void handleSubResource(String segment)
-   {
-      if (this instanceof SubResources)
-      {
-         SubResources subResources = (SubResources) this;
-         try
-         {
-            StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get("template");
-            template.append("resource/");
-            subResources.resource(URLDecoder.decode(segment, "UTF-8"));
-         } catch (UnsupportedEncodingException e)
-         {
-            subResources.resource(segment);
-         }
-      } else
-      {
-         // Find @SubResource annotated method
-         try
-         {
-            Method method = getSubResourceMethod(segment);
-
-            StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get("template");
-            template.append(segment).append("/");
-
-            method.invoke(this);
-         } catch (Throwable e)
-         {
-            handleException(Response.getCurrent(), e);
-         }
-      }
-   }
-
-   protected Method getSubResourceMethod(String resourceName)
-   {
-      for (Method method : getClass().getMethods())
-      {
-         if (method.getName().equalsIgnoreCase(resourceName) && method.getAnnotation(SubResource.class) != null)
-            return method;
-      }
-
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-   }
-
-   public void resource()
-   {
-      if (Request.getCurrent().getMethod().equals(org.restlet.data.Method.GET))
-      {
-         RoleMap roleMap = RoleMap.current();
-
-         final List<Method> queries = new ArrayList<Method>();
-         final List<Method> commands = new ArrayList<Method>();
-         final List<Method> subResources = new ArrayList<Method>();
-
-         // Add commands+queries from the context classes
-         for (Class contextClass : contextClasses)
-         {
-            // Check context class constraints
-            if (!constraints.isValid(contextClass, roleMap, module))
-               continue; // Skip this class entirely
-
-            // Filter out methods first.
-            // TODO Cache this
-            Iterable<Method> methods = Iterables.filter(new Specification<Method>()
-            {
-               public boolean satisfiedBy(Method method)
-               {
-                  return !method.isSynthetic() &&
-                          !(method.getDeclaringClass().isAssignableFrom(TransientComposite.class)) &&
-                          !(method.getName().equals("isValid"));
-
-               }
-            }, Iterables.iterable(contextClass.getMethods()));
-
-            for (Method method : methods)
-            {
-               if (constraints.isValid(method, roleMap, module))
-                  if (isCommand(method))
-                  {
-                     commands.add(method);
-                  } else
-                  {
-                     queries.add(method);
-                  }
-            }
-         }
-
-         // Add subresources available from this resource
-         if (!SubResources.class.isAssignableFrom(getClass()))
-         {
-            Iterable<Method> methods = Arrays.asList(getClass().getMethods());
-
-            for (Method method : methods)
-            {
-               if (method.getAnnotation(SubResource.class) != null && constraints.isValid(method, roleMap, module))
-                  subResources.add(method);
-            }
-         }
-
-         Value index = null;
-         try
-         {
-            index = (Value) convert(invoke("index"));
-
-         } catch (Throwable e)
-         {
-            // Ignore
-         }
-
-         ValueBuilder<ResourceValue> builder = vbf.newValueBuilder(ResourceValue.class);
-         ValueBuilder<LinkValue> linkBuilder = vbf.newValueBuilder(LinkValue.class);
-         LinkValue prototype = linkBuilder.prototype();
-
-         if (queries.size() > 0)
-         {
-            List<LinkValue> queriesProperty = builder.prototype().queries().get();
-            prototype.classes().set("query");
-            for (Method query : queries)
-            {
-               prototype.text().set(humanReadable(query.getName()));
-               prototype.href().set(query.getName().toLowerCase());
-               prototype.rel().set(query.getName().toLowerCase());
-               prototype.id().set(query.getName().toLowerCase());
-               queriesProperty.add(linkBuilder.newInstance());
-            }
-         }
-
-         if (commands.size() > 0)
-         {
-            List<LinkValue> commandsProperty = builder.prototype().commands().get();
-            prototype.classes().set("command");
-            for (Method command : commands)
-            {
-               prototype.text().set(humanReadable(command.getName()));
-               prototype.href().set(command.getName().toLowerCase());
-               prototype.rel().set(command.getName().toLowerCase());
-               prototype.id().set(command.getName().toLowerCase());
-               commandsProperty.add(linkBuilder.newInstance());
-            }
-         }
-
-         if (subResources.size() > 0)
-         {
-            List<LinkValue> resourcesProperty = builder.prototype().resources().get();
-            prototype.classes().set("resource");
-            for (Method subResource : subResources)
-            {
-               prototype.text().set(humanReadable(subResource.getName()));
-               prototype.href().set(subResource.getName().toLowerCase() + "/");
-               prototype.rel().set(subResource.getName().toLowerCase());
-               prototype.id().set(subResource.getName().toLowerCase());
-               resourcesProperty.add(linkBuilder.newInstance());
-            }
-         }
-
-         if (index != null)
-         {
-            builder.prototype().index().set((ValueComposite) index);
-         }
-
-         try
-         {
-            resultWriter.write(builder.newInstance(), Response.getCurrent());
-         } catch (Throwable e)
-         {
-            handleException(Response.getCurrent(), e);
-         }
-      } else
-      {
-         Response.getCurrent().setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-      }
-
-   }
-
+   // API methods
    protected void setResourceValidity(EntityComposite entity)
    {
       ResourceValidity validity = new ResourceValidity(entity, spi);
       RoleMap.current().set(validity);
    }
 
-   private boolean isCommand(Method method)
+   protected <T> T context(Class<T> contextClass)
    {
-      return method.getReturnType().equals(Void.TYPE);
-   }
-
-   /**
-    * Transform a Java name to a human readable string by replacing uppercase characters
-    * with space+toLowerCase(char)
-    * Example:
-    * changeDescription -> Change description
-    * doStuffNow -> Do stuff now
-    *
-    * @param name
-    * @return
-    */
-   private String humanReadable(String name)
-   {
-      StringBuilder humanReadableString = new StringBuilder();
-
-      for (int i = 0; i < name.length(); i++)
+      if (TransientComposite.class.isAssignableFrom(contextClass))
       {
-         char character = name.charAt(i);
-         if (i == 0)
+         TransientBuilder<T> builder = module.transientBuilderFactory().newTransientBuilder(contextClass);
+         for (Object rolePlayer : RoleMap.current().getAll(Object.class))
          {
-            // Capitalize first character
-            humanReadableString.append(Character.toUpperCase(character));
-         } else if (Character.isLowerCase(character))
-         {
-            humanReadableString.append(character);
-         } else
-         {
-            humanReadableString.append(' ').append(Character.toLowerCase(character));
-         }
-      }
-
-      return humanReadableString.toString();
-   }
-
-   protected Object createContext(String interactionName)
-   {
-      Object context = contexts.get(interactionName);
-
-      if (context == null)
-      {
-         // Instantiate correct context class for this name
-         // TODO Move this to constructor?
-         next:
-         for (Class contextClass : contextClasses)
-         {
-            for (Method method : getContextMethods(contextClass))
-            {
-               if (method.getName().equalsIgnoreCase(interactionName))
-               {
-                  if (TransientComposite.class.isAssignableFrom(contextClass))
-                  {
-                     context = module.transientBuilderFactory().newTransient(contextClass);
-                     break next;
-                  } else
-                  {
-                     context = module.objectBuilderFactory().newObject(contextClass);
-                     break next;
-                  }
-               }
-            }
+            builder.use(rolePlayer);
          }
 
-         // Save it
-         contexts.put(interactionName, context);
-      }
-
-      if (context == null)
-         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-
-      return context;
-   }
-
-   protected void result(Object resultValue) throws Exception
-   {
-      if (resultValue != null)
-      {
-         if (!resultWriter.write(resultValue, Response.getCurrent()))
-         {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "No result writer for type " + resultValue.getClass().getName());
-         }
-      }
-   }
-
-   protected Object[] getArguments()
-   {
-      return (Object[])Request.getCurrent().getAttributes().get(ARGUMENTS);
-   }
-
-   protected Object invoke() throws Throwable
-   {
-      return invoke(Request.getCurrent().getResourceRef().getLastSegment());
-   }
-
-   protected Object invoke(String interactionName) throws Throwable
-   {
-      Object context = createContext(interactionName);
-
-      Method method = getInteractionMethod(interactionName);
-      Object[] arguments;
-
-      // Check context class constraints
-      if (!constraints.isValid(method.getDeclaringClass(), RoleMap.current(), module))
-         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-
-      // Check method constraints
-      if (!constraints.isValid(method, RoleMap.current(), module))
-         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-
-      if (isCommand(method))
-      {
-         // Command
-
-         // Create argument
-         arguments = getCommandArguments(method);
-         Request.getCurrent().getAttributes().put(ARGUMENTS, arguments);
-
-         // Invoke method
-         try
-         {
-            method.invoke(context, arguments);
-            return null; // TODO Get events here
-         } catch (IllegalAccessException e)
-         {
-            throw e;
-         } catch (IllegalArgumentException e)
-         {
-            throw e;
-         } catch (InvocationTargetException e)
-         {
-            throw e.getCause();
-         }
+         return builder.newInstance();
       } else
       {
-         // Query
-
-         // Create argument
-         if (method.getParameterTypes().length > 0)
+         ObjectBuilder<T> builder = module.objectBuilderFactory().newObjectBuilder(contextClass);
+         for (Object rolePlayer : RoleMap.current().getAll(Object.class))
          {
-            try
-            {
-               arguments = getQueryArguments(method);
-
-               if (arguments == null)
-               {
-                  // Show form
-                  return formForMethod(method);
-               }
-            } catch (IllegalArgumentException e)
-            {
-               // Still missing some values - show form
-               return formForMethod(method);
-            }
-
-         } else
-         {
-            // No arguments to this query
-            arguments = new Object[0];
+            builder.use(rolePlayer);
          }
 
-         // Invoke method
-         try
-         {
-            Request.getCurrent().getAttributes().put(ARGUMENTS, arguments);
-            return method.invoke(context, arguments);
-         } catch (IllegalAccessException e)
-         {
-            throw e;
-         } catch (IllegalArgumentException e)
-         {
-            throw e;
-         } catch (InvocationTargetException e)
-         {
-            throw e.getCause();
-         }
+         return builder.newInstance();
       }
    }
 
@@ -514,25 +222,6 @@ public class CommandQueryResource
    protected void subResourceContexts(Class<?>... contextClasses)
    {
       restlet.subResourceContexts(contextClasses);
-   }
-
-   protected Method getInteractionMethod(String methodName) throws ResourceException
-   {
-      for (Class contextClass : contextClasses)
-      {
-         for (Method method : getContextMethods(contextClass))
-         {
-            if (method.getName().toLowerCase().equals(methodName))
-               return method;
-         }
-      }
-
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-   }
-
-   protected List<String> getSegments()
-   {
-      return (List<String>) Request.getCurrent().getAttributes().get("segments");
    }
 
    protected <T> T setRole(Class<T> entityClass, String id, Class... roleClasses)
@@ -581,6 +270,366 @@ public class CommandQueryResource
 
    }
 
+   protected Locale getLocale()
+   {
+      Request request = Request.getCurrent();
+
+      List<Preference<Language>> preferenceList = request.getClientInfo().getAcceptedLanguages();
+
+      if (preferenceList.isEmpty())
+         return Locale.getDefault();
+
+      Language language = preferenceList
+            .get( 0 ).getMetadata();
+      String[] localeStr = language.getName().split( "-" );
+
+      Locale locale;
+      switch (localeStr.length)
+      {
+         case 1:
+            locale = new Locale( localeStr[0] );
+            break;
+         case 2:
+            locale = new Locale( localeStr[0], localeStr[1] );
+            break;
+         case 3:
+            locale = new Locale( localeStr[0], localeStr[1], localeStr[2] );
+            break;
+         default:
+            locale = Locale.getDefault();
+      }
+      return locale;
+   }
+
+   // Private implementation
+   private void handleSubResource(String segment)
+   {
+      if (this instanceof SubResources)
+      {
+         SubResources subResources = (SubResources) this;
+         try
+         {
+            StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get("template");
+            template.append("resource/");
+            subResources.resource(URLDecoder.decode(segment, "UTF-8"));
+         } catch (UnsupportedEncodingException e)
+         {
+            subResources.resource(segment);
+         }
+      } else
+      {
+         // Find @SubResource annotated method
+         try
+         {
+            Method method = getSubResourceMethod(segment);
+
+            StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get("template");
+            template.append(segment).append("/");
+
+            method.invoke(this);
+         } catch (Throwable e)
+         {
+            handleException(Response.getCurrent(), e);
+         }
+      }
+   }
+
+   private Method getSubResourceMethod(String resourceName)
+   {
+      for (Method method : getClass().getMethods())
+      {
+         if (method.getName().equalsIgnoreCase(resourceName) && method.getAnnotation(SubResource.class) != null)
+            return method;
+      }
+
+      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+   }
+
+   private void resource()
+   {
+      if (Request.getCurrent().getMethod().equals(org.restlet.data.Method.GET))
+      {
+         RoleMap roleMap = RoleMap.current();
+
+         final List<Method> queries = new ArrayList<Method>();
+         final List<Method> commands = new ArrayList<Method>();
+         final List<Method> subResources = new ArrayList<Method>();
+
+         // Add commands+queries from the context classes
+         for (Class contextClass : contextClasses)
+         {
+            // Check context class constraints
+            if (!constraints.isValid(contextClass, roleMap, module))
+               continue; // Skip this class entirely
+
+            // Filter out methods first.
+            // TODO Cache this
+            Iterable<Method> methods = filter(new Specification<Method>()
+            {
+               public boolean satisfiedBy(Method method)
+               {
+                  return !method.isSynthetic() &&
+                        !(method.getDeclaringClass().isAssignableFrom(TransientComposite.class)) &&
+                        !(method.getName().equals("isValid")) && !(method.getName().equals("bind"));
+
+               }
+            }, iterable(contextClass.getMethods()));
+
+            for (Method method : methods)
+            {
+               if (constraints.isValid(method, roleMap, module))
+                  if (isCommand(method))
+                  {
+                     commands.add(method);
+                  } else
+                  {
+                     queries.add(method);
+                  }
+            }
+         }
+
+         // Add subresources available from this resource
+         if (!SubResources.class.isAssignableFrom(getClass()))
+         {
+            Iterable<Method> methods = Arrays.asList(getClass().getMethods());
+
+            for (Method method : methods)
+            {
+               if (method.getAnnotation(SubResource.class) != null && constraints.isValid(method, roleMap, module))
+                  subResources.add(method);
+            }
+         }
+
+         ValueBuilder<ResourceValue> builder = module.valueBuilderFactory().newValueBuilder(ResourceValue.class);
+         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
+         LinkValue prototype = linkBuilder.prototype();
+
+         if (queries.size() > 0)
+         {
+            List<LinkValue> queriesProperty = builder.prototype().queries().get();
+            prototype.classes().set("query");
+            for (Method query : queries)
+            {
+               prototype.text().set(humanReadable(query.getName()));
+               prototype.href().set(query.getName().toLowerCase());
+               prototype.rel().set(query.getName().toLowerCase());
+               prototype.id().set(query.getName().toLowerCase());
+               queriesProperty.add(linkBuilder.newInstance());
+            }
+         }
+
+         if (commands.size() > 0)
+         {
+            List<LinkValue> commandsProperty = builder.prototype().commands().get();
+            prototype.classes().set("command");
+            for (Method command : commands)
+            {
+               prototype.text().set(humanReadable(command.getName()));
+               prototype.href().set(command.getName().toLowerCase());
+               prototype.rel().set(command.getName().toLowerCase());
+               prototype.id().set(command.getName().toLowerCase());
+               commandsProperty.add(linkBuilder.newInstance());
+            }
+         }
+
+         if (subResources.size() > 0)
+         {
+            List<LinkValue> resourcesProperty = builder.prototype().resources().get();
+            prototype.classes().set("resource");
+            for (Method subResource : subResources)
+            {
+               prototype.text().set(humanReadable(subResource.getName()));
+               prototype.href().set(subResource.getName().toLowerCase() + "/");
+               prototype.rel().set(subResource.getName().toLowerCase());
+               prototype.id().set(subResource.getName().toLowerCase());
+               resourcesProperty.add(linkBuilder.newInstance());
+            }
+         }
+
+
+         try
+         {
+            Object index = convert(invokeResource(getInteractionMethod("index")));
+
+            if (index != null && index instanceof ValueComposite)
+            {
+               builder.prototype().index().set((ValueComposite) index);
+            }
+
+         } catch (Throwable e)
+         {
+            // Ignore
+         }
+
+         try
+         {
+            resultWriter.write(builder.newInstance(), Response.getCurrent());
+         } catch (Throwable e)
+         {
+            handleException(Response.getCurrent(), e);
+         }
+      } else
+      {
+         Response.getCurrent().setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+      }
+
+   }
+
+   private boolean isCommand(Method method)
+   {
+      return method.getReturnType().equals(Void.TYPE) || method.getName().equals("create");
+   }
+
+   /**
+    * Transform a Java name to a human readable string by replacing uppercase characters
+    * with space+toLowerCase(char)
+    * Example:
+    * changeDescription -> Change description
+    * doStuffNow -> Do stuff now
+    *
+    * @param name
+    * @return
+    */
+   private String humanReadable(String name)
+   {
+      StringBuilder humanReadableString = new StringBuilder();
+
+      for (int i = 0; i < name.length(); i++)
+      {
+         char character = name.charAt(i);
+         if (i == 0)
+         {
+            // Capitalize first character
+            humanReadableString.append(Character.toUpperCase(character));
+         } else if (Character.isLowerCase(character))
+         {
+            humanReadableString.append(character);
+         } else
+         {
+            humanReadableString.append(' ').append(Character.toLowerCase(character));
+         }
+      }
+
+      return humanReadableString.toString();
+   }
+
+   private Object createContext(final String interactionName)
+   {
+      Class contextClass = interactionClasses.get(interactionName);
+
+      if (contextClass == null)
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+
+      return context(contextClass);
+   }
+
+   private void result(Object resultValue) throws Exception
+   {
+      if (resultValue != null)
+      {
+         if (!resultWriter.write(resultValue, Response.getCurrent()))
+         {
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "No result writer for type " + resultValue.getClass().getName());
+         }
+      }
+   }
+
+   private Object invoke(Object target, Method method, Method contextMethod) throws Throwable
+   {
+      Object[] arguments;
+
+      // Check context class constraints
+      if (!constraints.isValid(contextMethod.getDeclaringClass(), RoleMap.current(), module))
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+
+      // Check method constraints
+      if (!constraints.isValid(contextMethod, RoleMap.current(), module))
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+
+      if (isCommand(contextMethod))
+      {
+         // Command
+
+         // Create argument
+         arguments = requestReader.readRequest(Request.getCurrent(), method);
+         Request.getCurrent().getAttributes().put(ARGUMENTS, arguments);
+
+         // Invoke method
+         try
+         {
+            method.invoke(target, arguments);
+            return null; // TODO Get events here
+         } catch (IllegalAccessException e)
+         {
+            throw e;
+         } catch (IllegalArgumentException e)
+         {
+            throw e;
+         } catch (InvocationTargetException e)
+         {
+            throw e.getCause();
+         }
+      } else
+      {
+         // Query
+
+         // Create argument
+         if (method.getParameterTypes().length > 0)
+         {
+            try
+            {
+               arguments = requestReader.readRequest(Request.getCurrent(), method);
+
+               if (arguments == null)
+               {
+                  // Show form
+                  return formForMethod(method);
+               }
+            } catch (IllegalArgumentException e)
+            {
+               // Still missing some values - show form
+               return formForMethod(method);
+            }
+
+         } else
+         {
+            // No arguments to this query
+            arguments = new Object[0];
+         }
+
+         // Invoke method
+         try
+         {
+            Request.getCurrent().getAttributes().put(ARGUMENTS, arguments);
+            return method.invoke(target, arguments);
+         } catch (IllegalAccessException e)
+         {
+            throw e;
+         } catch (IllegalArgumentException e)
+         {
+            throw e;
+         } catch (InvocationTargetException e)
+         {
+            throw e.getCause();
+         }
+      }
+   }
+
+   private Method getInteractionMethod(String methodName) throws ResourceException
+   {
+      Method method = contextMethods.get(methodName);
+
+      if (method == null)
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+
+      return method;
+   }
+
+   private List<String> getSegments()
+   {
+      return (List<String>) Request.getCurrent().getAttributes().get("segments");
+   }
+
    private void handleResource(String segment)
    {
       if (segment.equals("") || segment.equals("."))
@@ -595,7 +644,23 @@ public class CommandQueryResource
          StringBuilder template = (StringBuilder) Request.getCurrent().getAttributes().get("template");
          template.append(segment);
 
-         Method contextMethod = getInteractionMethod(segment);
+         Method contextMethod = null;
+         try
+         {
+            contextMethod = getInteractionMethod(segment);
+         } catch (ResourceException e)
+         {
+            // Not found as interaction, try SubResource
+            Method resourceMethod = resourceMethods.get(segment);
+            if (resourceMethod != null && resourceMethod.getAnnotation(SubResource.class) != null)
+            {
+               Response.getCurrent().setStatus(Status.REDIRECTION_FOUND);
+               Response.getCurrent().setLocationRef(new Reference(Request.getCurrent().getResourceRef().toString()+"/").toString());
+               return;
+            } else
+               throw e;
+
+         }
 
          if (isCommand(contextMethod))
          {
@@ -637,42 +702,33 @@ public class CommandQueryResource
          // We have input data - do command
          try
          {
-            Method method = getClass().getMethod(contextMethod.getName().toLowerCase());
+            Object result = invokeResource(contextMethod);
 
-            // Command
-            try
+            if (result != null)
             {
-               method.invoke(this);
-            } catch (IllegalArgumentException e)
-            {
-               Response.getCurrent().setStatus(Status.SERVER_ERROR_INTERNAL);
-
-            } catch (IllegalAccessException e)
-            {
-               Response.getCurrent().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-
-            } catch (InvocationTargetException e)
-            {
-               handleException(Response.getCurrent(), e);
-            }
-         } catch (NoSuchMethodException e)
-         {
-            try
-            {
-               Object result = invoke(contextMethod.getName().toLowerCase());
                if (result instanceof Representation)
                {
                   Response.getCurrent().setEntity((Representation) result);
                } else
                   result(convert(result));
-            } catch (Throwable throwable)
-            {
-               handleException(Response.getCurrent(), throwable);
             }
-         } catch (Exception ex)
+         } catch (Throwable e)
          {
-            handleException(Response.getCurrent(), ex);
+            handleException(Response.getCurrent(), e);
          }
+      }
+   }
+
+   private Object invokeResource(Method contextMethod) throws Throwable
+   {
+      Method method = resourceMethods.get(contextMethod.getName().toLowerCase());
+
+      if (method != null)
+         return invoke(this, method, contextMethod);  // Invoke on resource
+      else
+      {
+         Object context = createContext(contextMethod.getName().toLowerCase());
+         return invoke(context, contextMethod, contextMethod); // Invoke directly on context
       }
    }
 
@@ -720,38 +776,97 @@ public class CommandQueryResource
          // We have input data - do query
          try
          {
-            Method method = getClass().getMethod(contextMethod.getName().toLowerCase());
-
-            // Query
-            try
+            Object result = invokeResource(contextMethod);
+            if (result != null)
             {
-               method.invoke(this);
-            } catch (IllegalAccessException e)
-            {
-               Response.getCurrent().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-
-            } catch (InvocationTargetException e)
-            {
-               handleException(Response.getCurrent(), e);
-            }
-         } catch (NoSuchMethodException e)
-         {
-            try
-            {
-               Object result = invoke(contextMethod.getName().toLowerCase());
                if (result instanceof Representation)
                {
                   Response.getCurrent().setEntity((Representation) result);
                } else
                   result(convert(result));
-            } catch (Throwable throwable)
-            {
-               handleException(Response.getCurrent(), throwable);
             }
-         } catch (Exception ex)
+         } catch (IllegalAccessException e)
          {
-            handleException(Response.getCurrent(), ex);
+            Response.getCurrent().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+
+         } catch (Throwable e)
+         {
+            handleException(Response.getCurrent(), e);
          }
+      }
+   }
+
+   private Object convert( Object result )
+   {
+      if (converter != null)
+         result = converter.convert(result, Request.getCurrent(), (Object[]) Request.getCurrent().getAttributes().get(ARGUMENTS));
+
+      return result;
+   }
+
+   private void handleException(Response response, Throwable ex)
+   {
+      while (ex instanceof InvocationTargetException)
+      {
+         ex = ex.getCause();
+      }
+
+      try
+      {
+         throw ex;
+      } catch (ResourceException e)
+      {
+         // IAE (or subclasses) are considered client faults
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(e.getStatus());
+      } catch (ConstraintViolationException e)
+      {
+         try
+         {
+            ConstraintViolationMessages cvm = new ConstraintViolationMessages();
+
+            // CVE are considered client faults
+            String messages = "";
+            Locale locale = RoleMap.role(Locale.class);
+            for (ConstraintViolation constraintViolation : e.constraintViolations())
+            {
+               if (!messages.equals(""))
+                  messages += "\n";
+               messages += cvm.getMessage(constraintViolation, locale);
+            }
+
+            response.setEntity(new StringRepresentation(messages));
+            response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+         } catch (Exception e1)
+         {
+            response.setEntity(new StringRepresentation(e.getMessage()));
+            response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+         }
+      } catch (IllegalArgumentException e)
+      {
+         // IAE (or subclasses) are considered client faults
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+      } catch (RuntimeException e)
+      {
+         // RuntimeExceptions are considered server faults
+         LoggerFactory.getLogger(getClass()).warn("Exception thrown during processing", e);
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
+      } catch (Exception e)
+      {
+         // Checked exceptions are considered client faults
+         String s = e.getMessage();
+         if (s == null)
+            s = e.getClass().getSimpleName();
+         response.setEntity(new StringRepresentation(s));
+         response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+      } catch (Throwable e)
+      {
+         // Anything else are considered server faults
+         LoggerFactory.getLogger(getClass()).error("Exception thrown during processing", e);
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
 
@@ -782,6 +897,10 @@ public class CommandQueryResource
 
             form.add(propertyDescriptor.qualifiedName().name(), value);
          }
+      } else if (valueType.isInterface() && contextMethod.getParameterTypes().length == 1)
+      {
+         // Single entity as input
+         form.add("entity", getValue("entity", queryAsForm, entityAsForm));
       } else
       {
          // Construct form out of individual parameters instead
@@ -808,370 +927,6 @@ public class CommandQueryResource
       }
 
       return form;
-   }
-
-   private Object convert( Object result )
-   {
-      if (converter != null)
-         result = converter.convert(result, Request.getCurrent(), (Object[]) Request.getCurrent().getAttributes().get(ARGUMENTS));
-
-      return result;
-   }
-
-   private Variant getVariant(Request request)
-   {
-      List<Language> possibleLanguages = Arrays.asList(Language.ENGLISH);
-      Language language = Request.getCurrent().getClientInfo().getPreferredLanguage(possibleLanguages);
-
-      if (language == null)
-         language = Language.ENGLISH;
-
-      List<MediaType> possibleMediaTypes = Arrays.asList(MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM);
-      MediaType ResponseType = Request.getCurrent().getClientInfo().getPreferredMediaType(possibleMediaTypes);
-
-      if (ResponseType == null)
-         ResponseType = MediaType.TEXT_HTML;
-
-      Variant variant = new Variant(ResponseType, language);
-      variant.setCharacterSet(CharacterSet.UTF_8);
-
-      return variant;
-   }
-
-   protected Object[] getQueryArguments(Method method)
-           throws ResourceException
-   {
-      Object[] args = new Object[method.getParameterTypes().length];
-
-      Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
-      Form entityAsForm = null;
-      Representation representation = Request.getCurrent().getEntity();
-      if (representation != null && !EmptyRepresentation.class.isInstance(representation))
-      {
-         entityAsForm = new Form(representation);
-      } else
-         entityAsForm = new Form();
-
-      if (queryAsForm.isEmpty() && entityAsForm.isEmpty())
-      {
-         // Nothing submitted yet - show form
-         return null;
-      }
-
-      if (args.length == 1)
-      {
-         if (ValueComposite.class.isAssignableFrom(method.getParameterTypes()[0]))
-         {
-            Class<?> valueType = method.getParameterTypes()[0];
-
-            args[0] = getValueFromForm((Class<ValueComposite>) valueType, queryAsForm, entityAsForm);
-            return args;
-         } else if (Form.class.equals(method.getParameterTypes()[0]))
-         {
-            args[0] = queryAsForm.isEmpty() ? entityAsForm : queryAsForm;
-            return args;
-         } else if (Response.class.equals(method.getParameterTypes()[0]))
-         {
-            args[0] = Response.getCurrent();
-            return args;
-         }
-      }
-      parseMethodArguments(method, args, queryAsForm, entityAsForm);
-
-
-      return args;
-   }
-
-   protected Object[] getCommandArguments(Method method) throws ResourceException
-   {
-      if (method.getParameterTypes().length > 0)
-      {
-         Object[] args = new Object[method.getParameterTypes().length];
-
-         Class<? extends ValueComposite> commandType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
-
-         if (method.getParameterTypes()[0].equals(Response.class))
-         {
-            return new Object[]{Response.getCurrent()};
-         }
-         Representation representation = Request.getCurrent().getEntity();
-         MediaType type = representation.getMediaType();
-         if (type == null)
-         {
-            Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm(CharacterSet.UTF_8);
-            if (ValueComposite.class.isAssignableFrom(method.getParameterTypes()[0]))
-            {
-               args[0] = getValueFromForm(commandType, queryAsForm, new Form());
-            } else
-            {
-               parseMethodArguments(method, args, queryAsForm, new Form());
-            }
-            return args;
-         } else
-         {
-            if (method.getParameterTypes()[0].equals(Representation.class))
-            {
-               // Command method takes Representation as input
-               return new Object[]{representation};
-            } else if (method.getParameterTypes()[0].equals(Form.class))
-            {
-               // Command method takes Form as input
-               return new Object[]{new Form(representation)};
-            } else if (ValueComposite.class.isAssignableFrom(method.getParameterTypes()[0]))
-            {
-               // Need to parse input into ValueComposite
-               if (type.equals(MediaType.APPLICATION_JSON))
-               {
-                  String json = Request.getCurrent().getEntityAsText();
-                  if (json == null)
-                  {
-                     LoggerFactory.getLogger(getClass()).error("Restlet bugg http://restlet.tigris.org/issues/show_bug.cgi?id=843 detected. Notify developers!");
-                     throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
-                  }
-
-                  Object command = vbf.newValueFromJSON(commandType, json);
-                  args[0] = command;
-                  return args;
-               } else if (type.equals(MediaType.TEXT_PLAIN))
-               {
-                  String text = Request.getCurrent().getEntityAsText();
-                  if (text == null)
-                  {
-                     LoggerFactory.getLogger(getClass()).error("Restlet bugg http://restlet.tigris.org/issues/show_bug.cgi?id=843 detected. Notify developers!");
-                     throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
-                  }
-                  args[0] = text;
-                  return args;
-               } else if (type.equals((MediaType.APPLICATION_WWW_FORM)))
-               {
-
-                  Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
-                  Form entityAsForm;
-                  if (representation != null && !EmptyRepresentation.class.isInstance(representation) && representation.isAvailable())
-                  {
-                     entityAsForm = new Form(representation);
-                  } else
-                     entityAsForm = new Form();
-
-                  Class<?> valueType = method.getParameterTypes()[0];
-                  args[0] = getValueFromForm((Class<ValueComposite>) valueType, queryAsForm, entityAsForm);
-                  return args;
-               } else
-                  throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format");
-            } else
-            {
-               Form queryAsForm = Request.getCurrent().getResourceRef().getQueryAsForm();
-               Form entityAsForm;
-               if (representation != null && !EmptyRepresentation.class.isInstance(representation) && representation.isAvailable())
-               {
-                  entityAsForm = new Form(representation);
-               } else
-                  entityAsForm = new Form();
-
-               parseMethodArguments(method, args, queryAsForm, entityAsForm);
-
-               return args;
-            }
-         }
-      } else
-      {
-         return new Object[0];
-      }
-   }
-
-   private void parseMethodArguments(Method method, Object[] args, Form queryAsForm, Form entityAsForm)
-   {
-      // Parse each argument separately using the @Name annotation as help
-      int idx = 0;
-      for (Annotation[] annotations : method.getParameterAnnotations())
-      {
-         Name name = (Name) first(filter(isType(Name.class), iterable(annotations)));
-         String argString = getValue(name.value(), queryAsForm, entityAsForm);
-
-         // Parameter conversion
-         Class<?> parameterType = method.getParameterTypes()[idx];
-         Object arg = null;
-         if (parameterType.equals(String.class))
-         {
-            arg = argString;
-         } else if (parameterType.equals(EntityReference.class))
-         {
-            arg = EntityReference.parseEntityReference(argString);
-         } else if (parameterType.isEnum())
-         {
-            arg = Enum.valueOf((Class<Enum>) parameterType, argString);
-         } else if (Integer.TYPE.isAssignableFrom(parameterType))
-         {
-            arg = Integer.valueOf(argString);
-         } else if (Integer.class.isAssignableFrom(parameterType))
-         {
-            if (argString != null)
-               arg = Integer.valueOf(argString);
-         } else if (Long.TYPE.isAssignableFrom(parameterType))
-         {
-            arg = Long.valueOf(argString);
-         } else if (Long.class.isAssignableFrom(parameterType))
-         {
-            if (argString != null)
-               arg = Long.valueOf(argString);
-         } else if (Short.TYPE.isAssignableFrom(parameterType))
-         {
-            arg = Short.valueOf(argString);
-         } else if (Short.class.isAssignableFrom(parameterType))
-         {
-            if (argString != null)
-               arg = Short.valueOf(argString);
-         } else if (Double.TYPE.isAssignableFrom(parameterType))
-         {
-            arg = Double.valueOf(argString);
-         } else if (Double.class.isAssignableFrom(parameterType))
-         {
-            if (argString != null)
-               arg = Double.valueOf(argString);
-         } else if (Float.TYPE.isAssignableFrom(parameterType))
-         {
-            arg = Float.valueOf(argString);
-         } else if (Float.class.isAssignableFrom(parameterType))
-         {
-            if (argString != null)
-               arg = Float.valueOf(argString);
-         } else if (Character.TYPE.isAssignableFrom(parameterType))
-         {
-            arg = argString.charAt(0);
-         } else if (Character.class.isAssignableFrom(parameterType))
-         {
-            if (argString != null)
-               arg = argString.charAt(0);
-         } else if (Boolean.TYPE.isAssignableFrom(parameterType))
-         {
-            arg = Boolean.valueOf(argString);
-         } else if (Boolean.class.isAssignableFrom(parameterType))
-         {
-            if (argString != null)
-               arg = Boolean.valueOf(argString);
-         } else if (Date.class.isAssignableFrom(parameterType))
-         {
-            arg = DateFunctions.fromString(argString);
-         } else if (parameterType.isInterface())
-         {
-            arg = uowf.currentUnitOfWork().get(parameterType, argString);
-         } else
-            throw new IllegalArgumentException("Don't know how to parse parameter "+name.value()+" of type "+parameterType.getName());
-
-         if (arg == null && !Iterables.matchesAny(isType(Optional.class), iterable(annotations)))
-               throw new IllegalArgumentException("Parameter "+name.value()+" was not set");
-
-         args[idx++] = arg;
-      }
-   }
-
-   private ValueComposite getValueFromForm(Class<? extends ValueComposite> valueType, final Form queryAsForm, final Form entityAsForm)
-   {
-      ValueBuilder<? extends ValueComposite> builder = vbf.newValueBuilder(valueType);
-      final ValueDescriptor descriptor = spi.getValueDescriptor(builder.prototype());
-      builder.withState(new StateHolder()
-      {
-         public <T> Property<T> getProperty(QualifiedName name)
-         {
-            return null;
-         }
-
-         public <T> Property<T> getProperty(Method propertyMethod)
-         {
-            return null;
-         }
-
-         public <ThrowableType extends Throwable> void visitProperties(StateVisitor<ThrowableType> visitor)
-                 throws ThrowableType
-         {
-            for (PropertyType propertyType : descriptor.valueType().types())
-            {
-               Parameter param = queryAsForm.getFirst(propertyType.qualifiedName().name());
-
-               if (param == null)
-                  param = entityAsForm.getFirst(propertyType.qualifiedName().name());
-
-               if (param != null)
-               {
-                  String value = param.getValue();
-                  if (value != null)
-                  {
-                     try
-                     {
-                        Object valueObject = propertyType.type().fromQueryParameter(value, module);
-                        visitor.visitProperty(propertyType.qualifiedName(), valueObject);
-                     } catch (JSONException e)
-                     {
-                        throw new IllegalArgumentException("Query parameter has invalid JSON format", e);
-                     }
-                  }
-               }
-            }
-         }
-      });
-      return builder.newInstance();
-   }
-
-   private Iterable<Method> getContextMethods(Class resourceClass)
-   {
-      List<Method> methods = contextClassMethods.get(resourceClass);
-
-      if (methods == null)
-      {
-         methods = new ArrayList<Method>();
-         Method[] allMethods = resourceClass.getMethods();
-         for (Method allMethod : allMethods)
-         {
-            if (!allMethod.isSynthetic())
-               methods.add(allMethod);
-         }
-         contextClassMethods.put(resourceClass, methods);
-      }
-
-      return methods;
-   }
-
-   private void handleException(Response response, Throwable ex)
-   {
-      while (ex instanceof InvocationTargetException)
-      {
-         ex = ex.getCause();
-      }
-
-      try
-      {
-         throw ex;
-      } catch (ResourceException e)
-      {
-         // IAE (or subclasses) are considered client faults
-         Response.getCurrent().setEntity(new StringRepresentation(e.getMessage()));
-         Response.getCurrent().setStatus(e.getStatus());
-      } catch (IllegalArgumentException e)
-      {
-         // IAE (or subclasses) are considered client faults
-         Response.getCurrent().setEntity(new StringRepresentation(e.getMessage()));
-         Response.getCurrent().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-      } catch (RuntimeException e)
-      {
-         // RuntimeExceptions are considered server faults
-         LoggerFactory.getLogger(getClass()).warn("Exception thrown during processing", e);
-         Response.getCurrent().setEntity(new StringRepresentation(e.getMessage()));
-         Response.getCurrent().setStatus(Status.SERVER_ERROR_INTERNAL);
-      } catch (Exception e)
-      {
-         // Checked exceptions are considered client faults
-         String s = e.getMessage();
-         if (s == null)
-            s = e.getClass().getSimpleName();
-         Response.getCurrent().setEntity(new StringRepresentation(s));
-         Response.getCurrent().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-      } catch (Throwable e)
-      {
-         // Anything else are considered server faults
-         LoggerFactory.getLogger(getClass()).error("Exception thrown during processing", e);
-         Response.getCurrent().setEntity(new StringRepresentation(e.getMessage()));
-         Response.getCurrent().setStatus(Status.SERVER_ERROR_INTERNAL);
-      }
    }
 
    private String getValue(String name, Form queryAsForm, Form entityAsForm)

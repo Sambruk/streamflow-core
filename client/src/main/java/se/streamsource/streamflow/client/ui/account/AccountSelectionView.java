@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.awt.*;

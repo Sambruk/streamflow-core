@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.injection.scope.Uses;
 
 import javax.swing.*;
 

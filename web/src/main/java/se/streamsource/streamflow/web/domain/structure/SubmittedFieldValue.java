@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.structure;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC

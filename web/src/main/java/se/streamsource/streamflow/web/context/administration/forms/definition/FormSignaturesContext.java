@@ -27,22 +27,23 @@ import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class FormSignaturesContext
-      implements CreateContext<RequiredSignatureValue>, IndexContext<LinksValue>
+      implements CreateContext<RequiredSignatureValue, RequiredSignatures>, IndexContext<LinksValue>
 {
    @Structure
    Module module;
 
-   public void create( RequiredSignatureValue requiredSignature )
+   public RequiredSignatures create( RequiredSignatureValue requiredSignature )
    {
       RequiredSignatures signatures = RoleMap.role( RequiredSignatures.class );
 
       signatures.createRequiredSignature( requiredSignature );
+      return signatures;
    }
 
    public LinksValue index()
@@ -50,6 +51,7 @@ public class FormSignaturesContext
       List<RequiredSignatureValue> signatureValues = RoleMap.role( RequiredSignatures.Data.class ).requiredSignatures().get();
       int index = 0;
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      builder.rel("resource");
       for (RequiredSignatureValue signatureValue : signatureValues)
       {
          builder.addLink( signatureValue.name().get(), "" + index );

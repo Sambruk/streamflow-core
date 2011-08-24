@@ -17,30 +17,26 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 
-import javax.management.*;
+import javax.management.MBeanServer;
+
+import static org.qi4j.api.util.Iterables.iterable;
 
 /**
  * JAVADOC
  */
 public class JmxServerContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<String>>
 {
    @Structure
    Module module;
 
-   public LinksValue index()
+   public Iterable<String> index()
    {
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-      for (String domain : RoleMap.role( MBeanServer.class ).getDomains())
-      {
-         builder.addLink( domain, domain );
-      }
-
-      return builder.newLinks();
+      return iterable(RoleMap.role(MBeanServer.class).getDomains());
    }
 }

@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.users;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
@@ -27,13 +27,13 @@ import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +52,7 @@ public class CreateUserDialog
    DialogService dialogs;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
    private NewUserDTO DTO;
 
    public CreateUserDialog( @Service ApplicationContext context )
@@ -105,7 +105,7 @@ public class CreateUserDialog
          return;
       }
 
-      ValueBuilder<NewUserDTO> builder = vbf.newValueBuilder( NewUserDTO.class );
+      ValueBuilder<NewUserDTO> builder = module.valueBuilderFactory().newValueBuilder(NewUserDTO.class);
       try
       {
          builder.prototype().username().set( usernameField.getText() );

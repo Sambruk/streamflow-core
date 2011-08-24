@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.web.domain.generic;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.common.AppliesToFilter;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.State;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.property.StateHolder;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic mixin for simple command methods that update a property.

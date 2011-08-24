@@ -23,13 +23,10 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.domain.individual.Account;
@@ -39,7 +36,8 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.WeakModelMap;
 
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
@@ -47,19 +45,10 @@ import java.util.*;
 public class AccountsModel
 {
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    @Service
    IndividualRepository repository;
-
-   @Structure
-   UnitOfWorkFactory uowf;
-
-   @Service
-   Uniform client;
 
    TransactionList<LinkValue> accounts = new TransactionList<LinkValue>( new SortedList<LinkValue>( new BasicEventList<LinkValue>(), new LinkComparator() ) );
 
@@ -67,10 +56,10 @@ public class AccountsModel
    {
       protected AccountModel newModel( String key )
       {
-         UnitOfWork uow = uowf.newUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
          Account acc = uow.get( Account.class, key );
          uow.discard();
-         AccountModel accountModel = obf.newObjectBuilder( AccountModel.class ).use( acc ).newInstance();
+         AccountModel accountModel = module.objectBuilderFactory().newObjectBuilder(AccountModel.class).use( acc ).newInstance();
          accountModel.addObserver( new Observer()
          {
             public void update( Observable o, Object arg )
@@ -99,7 +88,7 @@ public class AccountsModel
 
    public void newAccount( AccountSettingsValue accountSettingsValue ) throws UnitOfWorkCompletionException, ResourceException
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
 
       repository.individual().newAccount( accountSettingsValue );
 
@@ -116,8 +105,8 @@ public class AccountsModel
 
    private void refresh()
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
-      final ValueBuilder<LinkValue> itemBuilder = vbf.newValueBuilder( LinkValue.class );
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
+      final ValueBuilder<LinkValue> itemBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
       accounts.beginEvent();
       accounts.clear();
       repository.individual().visitAccounts( new AccountVisitor()

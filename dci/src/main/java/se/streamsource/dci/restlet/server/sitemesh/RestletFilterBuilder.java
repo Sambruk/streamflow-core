@@ -17,9 +17,10 @@
 
 package se.streamsource.dci.restlet.server.sitemesh;
 
-import org.restlet.*;
-import org.restlet.routing.*;
-import org.sitemesh.builder.*;
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.routing.Filter;
+import org.sitemesh.builder.BaseSiteMeshBuilder;
 
 /**
  * JAVADOC

@@ -17,12 +17,14 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an email
@@ -37,7 +39,7 @@ public interface EmailValue
    Property<String> subject();
    Property<String> content();
    Property<String> contentType();
-   Property<String> messageId();
+   @Optional Property<String> messageId();
 
    @UseDefaults
    Property<List<AttachedFileValue>> attachments();

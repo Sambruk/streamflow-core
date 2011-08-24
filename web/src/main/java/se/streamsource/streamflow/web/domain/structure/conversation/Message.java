@@ -17,14 +17,16 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.util.*;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Immutable;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.util.Strings;
 
-import java.text.*;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * JAVADOC

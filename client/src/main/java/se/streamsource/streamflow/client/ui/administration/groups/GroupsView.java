@@ -17,24 +17,33 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.util.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.ListDetailView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -42,20 +51,17 @@ import static se.streamsource.streamflow.client.util.i18n.*;
 public class GroupsView
       extends ListDetailView
 {
-   @Uses
-   private Iterable<NameDialog> nameDialogs;
-
-   @Uses
-   private Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private GroupsModel model;
 
    @Service
    private DialogService dialogs;
 
-   public GroupsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf)
+   public GroupsView( @Service ApplicationContext context, @Uses final GroupsModel model)
    {
-      this.model = obf.newObjectBuilder( GroupsModel.class ).use( client ).newInstance();
+      this.model = model;
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -64,8 +70,12 @@ public class GroupsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient participantsClient = client.getClient( detailLink ).getSubClient( "participants" );
-            return obf.newObjectBuilder( ParticipantsView.class ).use( participantsClient).newInstance();
+            GroupModel groupModel = (GroupModel) model.newResourceModel(detailLink);
+            groupModel.refresh();
+            Iterable<LinkValue> participants1 = Iterables.filter(Links.withRel("participants"), (Iterable<LinkValue>) groupModel.getResources());
+            LinkValue participants = Iterables.first(participants1);
+
+            return module.objectBuilderFactory().newObjectBuilder(ParticipantsView.class).use( groupModel.newResourceModel(participants)).newInstance();
          }
       });
 
@@ -75,7 +85,7 @@ public class GroupsView
    @Action
    public Task add()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_group_title ) );
       final String name = dialog.name();
       if (!Strings.empty( name ))
@@ -98,7 +108,7 @@ public class GroupsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -121,7 +131,7 @@ public class GroupsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_group_title ) );
 
       if (!Strings.empty( dialog.name() ) )

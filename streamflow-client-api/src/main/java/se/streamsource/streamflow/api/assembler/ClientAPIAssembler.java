@@ -20,7 +20,6 @@ package se.streamsource.streamflow.api.assembler;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
@@ -30,6 +29,12 @@ import se.streamsource.streamflow.api.administration.ProxyUserDTO;
 import se.streamsource.streamflow.api.administration.ProxyUserListDTO;
 import se.streamsource.streamflow.api.administration.RegisterUserDTO;
 import se.streamsource.streamflow.api.administration.UserEntityDTO;
+import se.streamsource.streamflow.api.administration.filter.AssignActionValue;
+import se.streamsource.streamflow.api.administration.filter.ChangeOwnerActionValue;
+import se.streamsource.streamflow.api.administration.filter.CloseActionValue;
+import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
+import se.streamsource.streamflow.api.administration.filter.FilterValue;
+import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
@@ -142,6 +147,11 @@ public class ClientAPIAssembler
 
       // Queries
       administration.values(LinkTree.class, UserEntityDTO.class, ProxyUserListDTO.class, ProxyUserDTO.class);
+
+      // Filters
+      administration.values(FilterValue.class);
+      administration.values(LabelRuleValue.class); // Rules
+      administration.values(AssignActionValue.class, ChangeOwnerActionValue.class, EmailActionValue.class, CloseActionValue.class); // Actions
 
       // Forms
       administration.values(

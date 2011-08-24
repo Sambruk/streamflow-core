@@ -17,13 +17,18 @@
 
 package se.streamsource.dci.value.table;
 
-import org.apache.log4j.pattern.IntegerPatternConverter;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.*;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Query value for Google Data queries.

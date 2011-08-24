@@ -17,14 +17,16 @@
 
 package se.streamsource.streamflow.web.configuration;
 
-import org.hamcrest.*;
-import org.junit.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.test.*;
-import se.streamsource.streamflow.infrastructure.configuration.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Test;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.test.AbstractQi4jTest;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
-import java.io.*;
+import java.io.File;
 
 /**
  * Test of FileConfiguration service

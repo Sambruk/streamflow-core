@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.client.util;
 
-import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.util.*;
+import java.util.StringTokenizer;
 
 /**
  * List renderer for lists that use LinkValue as items.

@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.util.*;
+import org.jdesktop.swingx.util.WindowUtils;
 
 import javax.swing.*;
 import java.awt.*;

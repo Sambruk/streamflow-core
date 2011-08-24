@@ -17,11 +17,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import org.qi4j.api.query.grammar.*;
-import org.qi4j.spi.query.*;
+import org.qi4j.api.query.grammar.OrderBy;
+import org.qi4j.spi.query.NamedQueryDescriptor;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class NamedSolrDescriptor
    implements NamedQueryDescriptor,Serializable

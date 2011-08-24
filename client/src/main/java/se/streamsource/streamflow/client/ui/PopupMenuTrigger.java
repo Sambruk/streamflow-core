@@ -18,7 +18,8 @@
 package se.streamsource.streamflow.client.ui;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Generic trigger for opening up a popup menu.

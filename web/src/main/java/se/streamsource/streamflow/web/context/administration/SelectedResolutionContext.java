@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
 
 /**
  * JAVADOC

@@ -17,14 +17,16 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.api.administration.form.*;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
@@ -33,6 +35,7 @@ import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldTypes;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
@@ -64,14 +67,14 @@ public class FormPageContext
       return builder.newInstance();
    }
 
-   public void move( StringValue direction )
+   public void move( @Name("direction") String direction )
    {
       Page page = RoleMap.role( Page.class );
       Pages.Data pagesData = RoleMap.role( Pages.Data.class );
       Pages pages = RoleMap.role( Pages.class );
 
       int index = pagesData.pages().toList().indexOf( page );
-      if (direction.string().get().equalsIgnoreCase( "up" ))
+      if (direction.equalsIgnoreCase( "up" ))
       {
          try
          {

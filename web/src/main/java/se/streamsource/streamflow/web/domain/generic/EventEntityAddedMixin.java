@@ -17,17 +17,20 @@
 
 package se.streamsource.streamflow.web.domain.generic;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.common.AppliesToFilter;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.association.EntityStateHolder;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.State;
+import org.qi4j.api.injection.scope.This;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.beans.*;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.beans.Introspector;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic mixin for simple event methods that add an entity to a collection. They have to follow this pattern:
@@ -42,9 +45,6 @@ public class EventEntityAddedMixin
 
    @State
    EntityStateHolder state;
-
-   @Structure
-   UnitOfWorkFactory uowf;
 
    @This
    EntityComposite composite;

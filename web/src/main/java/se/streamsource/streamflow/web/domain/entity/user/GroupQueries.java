@@ -17,10 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
+import org.qi4j.api.injection.scope.This;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Participants;
+import se.streamsource.streamflow.web.domain.structure.group.Participation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC

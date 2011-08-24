@@ -17,10 +17,12 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.jdesktop.swingx.renderer.*;
+import org.jdesktop.swingx.renderer.DefaultListRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
+import org.jdesktop.swingx.renderer.WrappingProvider;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.awt.*;

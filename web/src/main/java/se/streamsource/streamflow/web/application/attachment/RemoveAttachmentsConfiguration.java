@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.application.attachment;
 
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
 /**
  * Configuration for the RemoveAttachmentsService

@@ -17,10 +17,13 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.event.*;
-import ca.odell.glazedlists.swing.*;
-import se.streamsource.dci.value.link.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.swing.EventListModel;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+import se.streamsource.dci.value.link.LinkValue;
 
 import javax.swing.*;
 import java.awt.*;

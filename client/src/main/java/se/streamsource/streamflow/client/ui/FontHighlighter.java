@@ -17,7 +17,9 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.jdesktop.swingx.decorator.*;
+import org.jdesktop.swingx.decorator.AbstractHighlighter;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
 
 import java.awt.*;
 

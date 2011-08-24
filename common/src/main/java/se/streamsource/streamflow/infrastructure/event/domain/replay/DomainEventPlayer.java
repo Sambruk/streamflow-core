@@ -17,7 +17,8 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.replay;
 
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 
 /**
  * Service that can replay transactions and individual domain events.

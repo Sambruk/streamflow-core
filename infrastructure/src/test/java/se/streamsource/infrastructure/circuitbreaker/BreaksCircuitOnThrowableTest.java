@@ -17,14 +17,19 @@
 
 package se.streamsource.infrastructure.circuitbreaker;
 
-import org.junit.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.test.*;
-import se.streamsource.infrastructure.circuitbreaker.service.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.test.AbstractQi4jTest;
+import se.streamsource.infrastructure.circuitbreaker.service.AbstractBreakOnThrowable;
+import se.streamsource.infrastructure.circuitbreaker.service.BreaksCircuitOnThrowable;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 
-import java.beans.*;
+import java.beans.PropertyVetoException;
 
 /**
  * Test @BreaksCircuitOnThrowable annotation

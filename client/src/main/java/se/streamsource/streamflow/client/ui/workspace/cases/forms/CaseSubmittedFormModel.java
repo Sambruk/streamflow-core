@@ -17,20 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
-import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
-import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.io.IOException;
@@ -43,14 +38,14 @@ public class CaseSubmittedFormModel
    @Uses Integer index;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
    SubmittedFormDTO form;
 
    public void refresh()
    {
       Form form = new Form();
       form.set("index", index.toString());
-      this.form = client.query( "submittedform", form, SubmittedFormDTO.class );
+      this.form = client.query( "submittedform", SubmittedFormDTO.class, form);
    }
 
    public SubmittedFormDTO getForm()
@@ -60,10 +55,12 @@ public class CaseSubmittedFormModel
 
    public Representation download( String attachmentId ) throws IOException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( attachmentId );
 
-      return client.queryRepresentation( "download", builder.newInstance() );
+      Form form = new Form();
+      form.set("id", attachmentId);
+      return client.query( "download", Representation.class, form.getWebRepresentation() );
    }
    
 }

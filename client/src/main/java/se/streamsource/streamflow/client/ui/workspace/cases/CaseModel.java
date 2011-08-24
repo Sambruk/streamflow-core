@@ -20,8 +20,11 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
+import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -29,10 +32,17 @@ import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
 import se.streamsource.streamflow.client.util.EventListSynch;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Model for the info and actions on a case.
@@ -40,6 +50,12 @@ import java.util.*;
 public class CaseModel
    extends ResourceModel<CaseDTO>
 {
+   @Structure
+   Module module;
+
+   @Uses
+   CasesModel casesModel;
+
    private TransactionList<LinkValue> subcases = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
 
    public void refresh()
@@ -132,9 +148,9 @@ public class CaseModel
       client.postLink( linkValue );
    }
 
-   public File print( CaseOutputConfigDTO config ) throws IOException
+   public File export(CaseOutputConfigDTO config) throws IOException
    {
-      Representation representation = client.queryRepresentation( "exportpdf", config );
+      Representation representation = client.query("exportpdf", Representation.class, config);
 
       String name = representation.getDisposition().getFilename();
       String[] fileNameParts = name.split( "\\." );
@@ -143,5 +159,40 @@ public class CaseModel
       Inputs.byteBuffer( representation.getStream(), 1024 ).transferTo( Outputs.byteBuffer( file ) );
 
       return file;
+   }
+
+   public CaseModel newParentCase()
+   {
+      return casesModel.newCaseModel(getIndex().parentCase().get().href().get());
+   }
+
+   public CaseGeneralModel newGeneralModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();
+   }
+
+   public CaseSubmittedFormsModel newSubmittedFormsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormsModel.class).use(client.getSubClient("submittedforms" )).newInstance();
+   }
+
+   public ContactsModel newContactsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(ContactsModel.class).use(client.getSubClient("contacts" )).newInstance();
+   }
+
+   public ConversationsModel newConversationsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(ConversationsModel.class).use(client.getSubClient("conversations" )).newInstance();
+   }
+
+   public AttachmentsModel newAttachmentsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(AttachmentsModel.class).use(client.getSubClient("attachments" )).newInstance();
+   }
+
+   public ConversationModel newHistoryModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(ConversationModel.class).use(client.getSubClient("history" )).newInstance();
    }
 }

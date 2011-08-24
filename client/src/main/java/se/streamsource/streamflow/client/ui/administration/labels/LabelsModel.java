@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.labels;
 
-import ca.odell.glazedlists.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
-
-import java.net.URL;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * Management of labels
@@ -31,7 +31,7 @@ public class LabelsModel
 {
    public LabelsModel( )
    {
-      super( "createlabel" );
+      super( "create" );
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)

@@ -17,15 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.streamflow.client.ui.account.*;
-import se.streamsource.streamflow.client.ui.menu.*;
-import se.streamsource.streamflow.client.util.*;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
+import org.jdesktop.swingx.JXFrame;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.client.ui.account.AccountModel;
+import se.streamsource.streamflow.client.ui.account.AccountSelector;
+import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
+import se.streamsource.streamflow.client.util.JavaHelp;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
@@ -39,7 +45,7 @@ public class AdministrationWindow
          @Service JavaHelp javaHelp,
          @Uses AdministrationMenuBar menu,
          @Uses final AccountSelector accountSelector,
-         @Structure final ObjectBuilderFactory obf )
+         @Structure final Module module )
    {
       super( application );
 
@@ -66,7 +72,7 @@ public class AdministrationWindow
                   frame.getContentPane().removeAll();
 
                   AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                  AdministrationView administrationView = obf.newObjectBuilder( AdministrationView.class ).use( selectedAccount.serverResource().getSubClient( "administration" )).newInstance();
+                  AdministrationView administrationView = module.objectBuilderFactory().newObjectBuilder(AdministrationView.class).use( selectedAccount.newAdministrationModel()).newInstance();
 
                   frame.getContentPane().add( administrationView );
                }

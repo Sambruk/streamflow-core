@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.factory;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.concern.GenericConcern;
+import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 /**
  * Generate application event for event method

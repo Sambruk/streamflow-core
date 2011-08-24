@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.entity.user.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 
 /**
  * JAVADOC

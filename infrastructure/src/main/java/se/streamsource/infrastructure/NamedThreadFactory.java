@@ -17,8 +17,8 @@
 
 package se.streamsource.infrastructure;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ThreadFactory that allows setting of a specific thread name prefix

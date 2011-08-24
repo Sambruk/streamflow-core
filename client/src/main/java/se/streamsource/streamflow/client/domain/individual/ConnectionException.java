@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.restlet.data.*;
+import org.restlet.data.Status;
 
 /**
  * JAVADOC

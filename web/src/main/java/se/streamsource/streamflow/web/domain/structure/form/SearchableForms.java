@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.Structure;
@@ -25,8 +24,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Iterables;
+import org.qi4j.api.structure.Module;
 import org.qi4j.spi.Qi4jSPI;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
@@ -67,7 +65,7 @@ public interface SearchableForms
       SubmittedFormsQueries forms;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @Structure
       Qi4jSPI qi4j;
@@ -86,7 +84,7 @@ public interface SearchableForms
             {
                for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
                {
-                  FieldEntity field = uowf.currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
+                  FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
                   if (Specifications.in(TextFieldValue.class, TextAreaFieldValue.class).satisfiedBy((Class<FieldValue>)  field.fieldValue().get().type()))
                   {
                      newSearchableFormValues.add(submittedFieldValue.value().get());

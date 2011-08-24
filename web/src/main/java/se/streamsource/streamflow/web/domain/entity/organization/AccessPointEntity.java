@@ -34,7 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * an Access Point

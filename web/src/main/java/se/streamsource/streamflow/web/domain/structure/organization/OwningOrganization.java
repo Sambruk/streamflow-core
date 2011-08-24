@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.property.*;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.property.Immutable;
 
 /**
  * Reference to the Organization of an OU

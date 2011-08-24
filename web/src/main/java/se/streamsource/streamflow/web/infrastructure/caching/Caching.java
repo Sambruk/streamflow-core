@@ -17,7 +17,9 @@
 
 package se.streamsource.streamflow.web.infrastructure.caching;
 
-import net.sf.ehcache.*;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
 
 /**
  * Utility methods for working with caches. Handles the case where no caching is available.

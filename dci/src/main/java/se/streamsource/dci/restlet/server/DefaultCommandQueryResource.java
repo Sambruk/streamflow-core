@@ -17,7 +17,7 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.injection.scope.Uses;
 
 /**
  * This is a hack to get around Qi4j's picky object lookup algo.

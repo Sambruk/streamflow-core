@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import java.util.*;
+import java.util.Comparator;
 
 /**
  * JAVADOC

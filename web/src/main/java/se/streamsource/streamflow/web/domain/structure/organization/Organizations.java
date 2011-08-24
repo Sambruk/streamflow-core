@@ -17,14 +17,15 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -42,17 +43,11 @@ public interface Organizations
    abstract class Mixin
          implements Organizations, Data
    {
-      @Structure
-      UnitOfWorkFactory uowf;
-
       @Service
       IdentityGenerator idGen;
 
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public Organization createOrganization(String name)
       {
@@ -67,7 +62,7 @@ public interface Organizations
 
       public Organization createdOrganization( DomainEvent event, String id )
       {
-         EntityBuilder<Organization> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( Organization.class, id );
+         EntityBuilder<Organization> entityBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Organization.class, id );
          entityBuilder.instanceFor( OwningOrganization.class ).organization().set( entityBuilder.instance() );
          return entityBuilder.newInstance();
       }

@@ -18,8 +18,9 @@
 package se.streamsource.streamflow.client.util;
 
 import javax.swing.filechooser.FileFilter;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public class FileNameExtensionFilter extends FileFilter
 {

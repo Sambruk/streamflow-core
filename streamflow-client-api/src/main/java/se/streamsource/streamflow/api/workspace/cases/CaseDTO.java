@@ -23,7 +23,7 @@ import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * JAVADOC

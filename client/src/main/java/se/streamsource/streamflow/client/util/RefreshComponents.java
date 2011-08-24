@@ -17,14 +17,20 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.qi4j.api.specification.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.specification.Specifications;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
-import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.flatten;
+import static org.qi4j.api.util.Iterables.matchesAny;
 
 /**
  * Register components here that should be visible/invisible, enabled/disabled depending on available commands.
@@ -35,20 +41,20 @@ public class RefreshComponents
    Map<Specification<LinkValue>, Component> visibles = new HashMap<Specification<LinkValue>, Component>(  );
    Map<Specification<LinkValue>, Component> enableds = new HashMap<Specification<LinkValue>, Component>(  );
 
-   public RefreshComponents visibleOn(String command, Component... components)
+   public RefreshComponents visibleOn(String commandOrQuery, Component... components)
    {
       for (Component component : components)
       {
-         visibles.put( Links.withRel( command ), component );
+         visibles.put( Links.withRel( commandOrQuery ), component );
       }
       return this;
    }
 
-   public RefreshComponents enabledOn(String command, Component... components)
+   public RefreshComponents enabledOn(String commandOrQuery, Component... components)
    {
       for (Component component : components)
       {
-         enableds.put( Links.withRel( command ), component );
+         enableds.put( Links.withRel( commandOrQuery ), component );
       }
       return this;
    }
@@ -67,7 +73,7 @@ public class RefreshComponents
 
          for (Component component : Components.components( Specifications.<Component>TRUE(), value ))
          {
-            component.setVisible( resourceValue != null && matchesAny( en.getKey(), resourceValue.commands().get() ) );
+            component.setVisible( resourceValue != null && matchesAny( en.getKey(), flatten(resourceValue.queries().get(), resourceValue.commands().get()) ) );
          }
       }
 
@@ -77,7 +83,7 @@ public class RefreshComponents
 
          for (Component component : Components.components( Specifications.<Component>TRUE(), value ))
          {
-            boolean enabled = resourceValue != null && matchesAny( en.getKey(), resourceValue.commands().get() );
+            boolean enabled = resourceValue != null && matchesAny( en.getKey(), flatten(resourceValue.queries().get(), resourceValue.commands().get() ));
             component.setEnabled( enabled );
          }
 

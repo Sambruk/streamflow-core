@@ -17,21 +17,24 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.util.GroupedFilteredList;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -39,18 +42,13 @@ import java.util.*;
 public class SelectUsersAndGroupsDialog
       extends JPanel
 {
-   private ValueBuilderFactory vbf;
-
    private GroupedFilteredList groupList;
    private GroupedFilteredList userList;
 
-   private Set<String> usersAndGroups;
    private Set<LinkValue> selectedEntities;
 
    public SelectUsersAndGroupsDialog( @Service ApplicationContext context,
-                                      @Uses UsersAndGroupsModel model,
-                                      @Structure ObjectBuilderFactory obf,
-                                      final @Structure ValueBuilderFactory vbf)
+                                      @Uses UsersAndGroupsModel model)
    {
       super( new GridLayout(1, 2) );
       setActionMap( context.getActionMap( this ) );

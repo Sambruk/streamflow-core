@@ -17,22 +17,26 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
-import java.security.*;
-import java.util.*;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.qi4j.api.entity.EntityReference.*;
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
 
 /**
  * Policy for managging Roles assigned to Participants. Participants
@@ -73,10 +77,7 @@ public interface RolePolicy
          implements RolePolicy, Data
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       OwningOrganization orgOwner;
@@ -104,7 +105,7 @@ public interface RolePolicy
             ParticipantRolesValue roles = getRoles( participant );
             for (EntityReference entityReference : roles.roles().get())
             {
-               Role role = uowf.currentUnitOfWork().get( Role.class, entityReference.identity() );
+               Role role = module.unitOfWorkFactory().currentUnitOfWork().get( Role.class, entityReference.identity() );
                revokeRole( participant, role );
             }
          }
@@ -113,7 +114,7 @@ public interface RolePolicy
       public void grantAdministratorToCurrentUser()
       {
          Principal principal = RoleMap.role( Principal.class );
-         Participant user = uowf.currentUnitOfWork().get( Participant.class, principal.getName() );
+         Participant user = module.unitOfWorkFactory().currentUnitOfWork().get( Participant.class, principal.getName() );
          Organization org = orgOwner.organization().get();
          Role administrator = org.getAdministratorRole();
          grantRole( user, administrator );
@@ -123,10 +124,10 @@ public interface RolePolicy
       {
          for (ParticipantRolesValue participantRolesValue : policy().get())
          {
-            Participant participant = uowf.currentUnitOfWork().get( Participant.class, participantRolesValue.participant().get().identity() );
+            Participant participant = module.unitOfWorkFactory().currentUnitOfWork().get( Participant.class, participantRolesValue.participant().get().identity() );
             for (EntityReference entityReference : participantRolesValue.roles().get())
             {
-               Role role = uowf.currentUnitOfWork().get( Role.class, entityReference.identity() );
+               Role role = module.unitOfWorkFactory().currentUnitOfWork().get( Role.class, entityReference.identity() );
                to.grantRole( participant, role);
             }
          }
@@ -154,7 +155,7 @@ public interface RolePolicy
 
          // Participant is not in list - add it
          EntityReference roleRef = getEntityReference( role );
-         ValueBuilder<ParticipantRolesValue> builder = vbf.newValueBuilder( ParticipantRolesValue.class );
+         ValueBuilder<ParticipantRolesValue> builder = module.valueBuilderFactory().newValueBuilder(ParticipantRolesValue.class);
          builder.prototype().participant().set( participantRef );
          builder.prototype().roles().get().add( roleRef );
          List<ParticipantRolesValue> policy = policy().get();
@@ -201,7 +202,7 @@ public interface RolePolicy
 
       public boolean participantHasPermission( String participantId, String permission )
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          Participant participant = uow.get( Participant.class, participantId );
 
@@ -236,7 +237,7 @@ public interface RolePolicy
 
       public List<Participant> participantsWithRole( Role role )
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          List<Participant> participants = new ArrayList<Participant>();
          EntityReference roleRef = getEntityReference( role );
          for (ParticipantRolesValue participantRolesValue : policy().get())

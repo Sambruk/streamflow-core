@@ -17,19 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.administration.templates;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -47,7 +47,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 
 public class SelectedTemplatesView extends JPanel
@@ -56,8 +57,8 @@ public class SelectedTemplatesView extends JPanel
    @Service
    DialogService dialogs;
 
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> templateDialog;
+   @Structure
+   Module module;
 
    private StateBinder selectedTemplatesBinder;
 
@@ -72,13 +73,13 @@ public class SelectedTemplatesView extends JPanel
    private SelectedTemplatesModel model;
 
    public SelectedTemplatesView( @Service ApplicationContext appContext,
-                                @Uses CommandQueryClient client,
-                                @Structure ObjectBuilderFactory obf )
+                                @Uses SelectedTemplatesModel model,
+                                @Structure Module module)
    {
-      this.model = obf.newObjectBuilder( SelectedTemplatesModel.class ).use( client ).newInstance();
+      this.model = model;
       model.addObserver( this );
 
-      selectedTemplatesBinder = obf.newObject( StateBinder.class );
+      selectedTemplatesBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       selectedTemplatesBinder.addObserver( this );
       selectedTemplatesBinder.addConverter( new StateBinder.Converter()
       {
@@ -190,7 +191,7 @@ public class SelectedTemplatesView extends JPanel
          public void command()
                throws Exception
          {
-            SelectLinkDialog dialog = templateDialog.use(
+            SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
                   i18n.text( WorkspaceResources.choose_template ),
                   model.getPossibleTemplates( "possibledefaulttemplates") ).newInstance();
 
@@ -214,7 +215,7 @@ public class SelectedTemplatesView extends JPanel
          public void command()
                throws Exception
          {
-            SelectLinkDialog dialog = templateDialog.use(
+            SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
                   i18n.text( WorkspaceResources.choose_template ),
                   model.getPossibleTemplates( "possibleformtemplates") ).newInstance();
 
@@ -238,7 +239,7 @@ public class SelectedTemplatesView extends JPanel
          public void command()
                throws Exception
          {
-            SelectLinkDialog dialog = templateDialog.use(
+            SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
                   i18n.text( WorkspaceResources.choose_template ),
                   model.getPossibleTemplates( "possiblecasetemplates") ).newInstance();
 

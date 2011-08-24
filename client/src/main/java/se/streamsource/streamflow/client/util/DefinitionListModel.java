@@ -17,11 +17,14 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 
 /**
  * Management of owned entities
@@ -39,13 +42,6 @@ public class DefinitionListModel
 
    public DefinitionListModel( String changedescription, String create )
    {
-      this("index", changedescription, create);
-   }
-
-   public DefinitionListModel(String refresh, String changedescription, String create)
-   {
-      super(refresh);
-
       this.changeDescription = changedescription;
       this.create = create;
    }
@@ -66,11 +62,12 @@ public class DefinitionListModel
 
    public void create( String name )
    {
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
+      Form form = new Form();
+      form.set("name", name);
+
       try
       {
-         client.postCommand( create, builder.newInstance() );
+         client.postCommand( create, form );
       } catch (ResourceException e)
       {
          handleException( e );

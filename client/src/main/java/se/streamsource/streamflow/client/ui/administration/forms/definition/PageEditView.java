@@ -24,20 +24,20 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
  * JAVADOC
@@ -50,10 +50,10 @@ public class PageEditView
    private PageEditModel model;
 
    public PageEditView( @Service ApplicationContext context,
-                        @Uses CommandQueryClient client,
-                        @Structure ObjectBuilderFactory obf)
+                        @Uses PageEditModel model,
+                        @Structure Module module)
    {
-      this.model = obf.newObjectBuilder( PageEditModel.class ).use( client ).newInstance();
+      this.model = model;
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
@@ -64,7 +64,7 @@ public class PageEditView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
       
-      nameBinder = obf.newObject( StateBinder.class );
+      nameBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       nameBinder.setResourceMap( context.getResourceMap( getClass() ) );
       PageDefinitionValue definitionValue = nameBinder.bindingTemplate( PageDefinitionValue.class );
 

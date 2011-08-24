@@ -27,6 +27,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseType
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 
 /**
  * JAVADOC
@@ -34,6 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 public interface Project
    extends
       Members,
+      Filters,
       Forms,
       CaseTypes,
       CaseAccessDefaults,

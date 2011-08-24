@@ -17,27 +17,27 @@
 
 package se.streamsource.streamflow.web.context.administration.labels;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 @Mixins(LabelsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface LabelsContext
-      extends Context, IndexContext<Iterable<Label>>
+      extends Context, IndexContext<Iterable<Label>>, CreateContext<String, Label>
 {
-   void createlabel( @MaxLength(50) StringValue name );
+   Label create( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements LabelsContext
@@ -50,11 +50,11 @@ public interface LabelsContext
          return role( Labels.Data.class ).labels();
       }
 
-      public void createlabel( StringValue name )
+      public Label create( String name )
       {
          Labels labels = role( Labels.class );
 
-         labels.createLabel( name.string().get() );
+         return labels.createLabel( name );
       }
    }
 }

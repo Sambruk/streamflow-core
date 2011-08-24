@@ -17,14 +17,19 @@
 
 package se.streamsource.streamflow.web.domain.entity.project;
 
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Mixins(ProjectLabelsQueries.Mixin.class)
 public interface ProjectLabelsQueries

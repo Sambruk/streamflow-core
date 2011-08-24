@@ -17,27 +17,48 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.util.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.FormElementItemListCellRenderer;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.Action;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
 import static org.qi4j.api.util.Iterables.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
@@ -53,25 +74,18 @@ public class FormElementsView
    @Service
    private DialogService dialogs;
 
-   @Uses
-   private Iterable<NameDialog> pageCreationDialog;
-
-   @Uses
-   private Iterable<FieldCreationDialog> fieldCreationDialog;
-
-   @Uses
-   private Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private JList list;
 
-   private FormElementsModel model;
+   private FormPagesModel model;
 
 
    public FormElementsView( @Service ApplicationContext context,
-                            @Uses final CommandQueryClient client,
-                            @Structure final ObjectBuilderFactory obf)
+                            @Uses final FormPagesModel model)
    {
-      this.model = obf.newObjectBuilder( FormElementsModel.class ).use( client).newInstance();
+      this.model = model;
 
       final ActionMap am = context.getActionMap( this );
 
@@ -83,7 +97,6 @@ public class FormElementsView
       setDividerLocation( 350 );
       setOneTouchExpandable( true );
 
-
       initMaster( new EventListModel<LinkValue>( model.getUnsortedList() ),
             new DetailFactory() {
                public Component createDetail( LinkValue detailLink )
@@ -92,9 +105,9 @@ public class FormElementsView
                   LinkValue link = getSelectedValue();
                   if (link.rel().get().equals("page"))
                   {
-                     return obf.newObjectBuilder( PageEditView.class ).use( client.getClient( link ) ).newInstance();
+                     return module.objectBuilderFactory().newObjectBuilder(PageEditView.class).use( model.newResourceModel( link ) ).newInstance();
                   } else
-                     return obf.newObjectBuilder( FieldEditView.class ).use( client.getClient( link )).newInstance();
+                     return module.objectBuilderFactory().newObjectBuilder(FieldEditView.class).use( model.newResourceModel( link )).newInstance();
                }
             },
             am.get( "addPage" ), am.get( "addField" ), am.get( "remove" ), am.get( "up" ), am.get( "down" ));
@@ -172,7 +185,7 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task addField()
    {
-      final FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
+      final FieldCreationDialog dialog = module.objectBuilderFactory().newObject(FieldCreationDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_field_to_form ) );
 
       if ( !Strings.empty( dialog.name() ) )
@@ -193,9 +206,6 @@ public class FormElementsView
       return null;
    }
 
-   @Structure
-   ValueBuilderFactory vbf;
-
    private LinkValue findSelectedPage( LinkValue selected )
    {
       if (selected.rel().get().equals("page"))
@@ -204,7 +214,7 @@ public class FormElementsView
       } else
       {
          int i1 = selected.href().get().indexOf( selected.id().get() );
-         ValueBuilder<LinkValue> builder = vbf.newValueBuilder( LinkValue.class ).withPrototype( selected );
+         ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder(LinkValue.class).withPrototype( selected );
          builder.prototype().href().set( selected.href().get().substring( 0, i1 ));
          return builder.newInstance();
       }
@@ -213,7 +223,7 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task addPage()
    {
-      final NameDialog dialog = pageCreationDialog.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_page_title ) );
 
       if (!Strings.empty( dialog.name() ))
@@ -239,7 +249,7 @@ public class FormElementsView
       final LinkValue selected = getSelectedValue();
       if (selected != null)
       {
-         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
          dialog.setRemovalMessage( selected.text().get() );
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
@@ -295,8 +305,15 @@ public class FormElementsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( withNames("changedDescription", "removedPage","removedField", "movedField" ), transactions ))
+      if (Events.matches( withNames("removedPage","removedField" ), transactions ))
+      {
+         list.clearSelection();
+      }
+
+      if (Events.matches( withNames("changedDescription", "removedPage","removedField", "movedField", "movedPage" ), transactions ))
+      {
          model.refresh();
+      }
 
       DomainEvent event = first( filter( withNames("createdField", "createdPage", "movedField", "movedPage"), events(transactions ) ));
       if (event != null)

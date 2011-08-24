@@ -17,15 +17,19 @@
 
 package se.streamsource.dci.restlet.client.responsereader;
 
-import org.json.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.table.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.DateFunctions;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.ResponseReader;
+import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableValue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,9 +41,9 @@ public class TableResponseReader
    implements ResponseReader
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
-   public <T> T readResponse( Response response, Class<T> resultType ) throws ResourceException
+   public Object readResponse( Response response, Class<?> resultType ) throws ResourceException
    {
       if (response.getEntity().getMediaType().equals( MediaType.APPLICATION_JSON) && TableValue.class.isAssignableFrom( resultType ))
       {
@@ -49,7 +53,7 @@ public class TableResponseReader
             JSONObject jsonObject = new JSONObject(jsonValue);
 
             JSONObject table = jsonObject.getJSONObject( "table" );
-            TableBuilder builder = new TableBuilder(vbf);
+            TableBuilder builder = new TableBuilder(module.valueBuilderFactory());
 
             JSONArray cols = table.getJSONArray( "cols" );
             for (int i = 0; i < cols.length(); i++)
@@ -94,7 +98,7 @@ public class TableResponseReader
                builder.endRow();
             }
 
-            return (T) builder.newTable();
+            return builder.newTable();
          } catch (JSONException e)
          {
             throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);

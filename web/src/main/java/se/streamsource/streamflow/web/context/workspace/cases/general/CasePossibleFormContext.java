@@ -17,15 +17,14 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
 /**
  * JAVADOC
@@ -51,7 +50,7 @@ public class CasePossibleFormContext
 
       FormDraft formDraft = formDrafts.getFormDraft( form );
       if (formDraft == null)
-         throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+         throw new IllegalStateException("No form draft available");
 
       ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
       builder.prototype().id().set( formDraft.toString() );

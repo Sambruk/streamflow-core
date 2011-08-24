@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Represents a subcase. Keeps track of the parent of the subcase, which can be null.

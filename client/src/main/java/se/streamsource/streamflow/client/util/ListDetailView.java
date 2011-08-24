@@ -17,16 +17,17 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
@@ -52,6 +53,7 @@ public abstract class ListDetailView
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory)
    {
       list = new JList(listModel);
+      list.setPreferredSize(new Dimension(250, 100));
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       list.setCellRenderer( new LinkListCellRenderer() );
 

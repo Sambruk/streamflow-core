@@ -17,12 +17,13 @@
 
 package se.streamsource.dci.value.link;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
-import java.io.*;
-import java.net.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Builder for making it easier to create LinksValue/LinkValue
@@ -48,13 +49,7 @@ public class LinksBuilder<T extends LinksBuilder>
 
    public T path( @Optional String subPath )
    {
-      try
-      {
-         path = subPath == null ? null : URLEncoder.encode( subPath, "UTF-8" );
-      } catch (UnsupportedEncodingException e)
-      {
-         e.printStackTrace();
-      }
+      path = subPath;
 
       return (T) this;
    }

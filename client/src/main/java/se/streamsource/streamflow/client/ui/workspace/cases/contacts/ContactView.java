@@ -25,14 +25,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.util.Iterables;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
@@ -68,11 +63,8 @@ public class ContactView
    @Service
    DialogService dialogs;
 
-   @Uses
-   protected ObjectBuilder<ContactLookupResultDialog> contactLookupResultDialog;
-
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private StateBinder contactBinder;
    private StateBinder phoneNumberBinder;
@@ -101,7 +93,7 @@ public class ContactView
    private ValueBinder addressViewBinder;
    private ValueBinder emailViewBinder;
 
-   public ContactView(@Service ApplicationContext appContext, @Structure ObjectBuilderFactory obf)
+   public ContactView(@Service ApplicationContext appContext, @Structure Module module)
    {
       setLayout(layout);
 
@@ -113,8 +105,8 @@ public class ContactView
       // Edit panel
       {
          FormLayout formLayout = new FormLayout(
-                     "right:70dlu, 5dlu, 150dlu:grow",
-                     "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+               "right:70dlu, 5dlu, 150dlu:grow",
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
          form = new JPanel();
@@ -123,19 +115,19 @@ public class ContactView
          scrollPane.setBorder(BorderFactory.createEmptyBorder());
          DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
 
-         contactBinder = obf.newObject(StateBinder.class);
+         contactBinder = module.objectBuilderFactory().newObject(StateBinder.class);
          contactBinder.setResourceMap(context.getResourceMap(getClass()));
          ContactDTO template = contactBinder.bindingTemplate(ContactDTO.class);
 
-         phoneNumberBinder = obf.newObject(StateBinder.class);
+         phoneNumberBinder = module.objectBuilderFactory().newObject(StateBinder.class);
          phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
          ContactPhoneDTO phoneTemplate = phoneNumberBinder.bindingTemplate(ContactPhoneDTO.class);
 
-         addressBinder = obf.newObject(StateBinder.class);
+         addressBinder = module.objectBuilderFactory().newObject(StateBinder.class);
          addressBinder.setResourceMap(context.getResourceMap(getClass()));
          ContactAddressDTO addressTemplate = addressBinder.bindingTemplate(ContactAddressDTO.class);
 
-         emailBinder = obf.newObject(StateBinder.class);
+         emailBinder = module.objectBuilderFactory().newObject(StateBinder.class);
          emailBinder.setResourceMap(context.getResourceMap(getClass()));
          ContactEmailDTO emailTemplate = emailBinder.bindingTemplate(ContactEmailDTO.class);
 
@@ -203,8 +195,8 @@ public class ContactView
       // View panel
       {
          FormLayout formLayout = new FormLayout(
-                     "right:70dlu, 5dlu, 150dlu:grow",
-                     "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+               "right:70dlu, 5dlu, 150dlu:grow",
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
          form = new JPanel();
@@ -213,10 +205,10 @@ public class ContactView
          scrollPane.setBorder(BorderFactory.createEmptyBorder());
          DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
 
-         viewBinder = obf.newObject(ValueBinder.class);
-         phoneViewBinder = obf.newObject(ValueBinder.class);
-         addressViewBinder = obf.newObject(ValueBinder.class);
-         emailViewBinder = obf.newObject(ValueBinder.class);
+         viewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+         phoneViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+         addressViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+         emailViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
 
          builder.add(new JButton(getActionMap().get("edit")));
          builder.nextLine();
@@ -228,7 +220,7 @@ public class ContactView
          builder.nextColumn(2);
          builder.add(phoneViewBinder.bind("phoneNumber", visibleIfNotEmpty(new JLabel("!"))));
          builder.nextLine();
-         
+
          builder.add(createLabel(WorkspaceResources.address_label));
          builder.nextColumn(2);
          builder.add(addressViewBinder.bind("address", visibleIfNotEmpty(new JLabel("!"))));
@@ -375,7 +367,7 @@ public class ContactView
       {
          ContactDTO query = createContactQuery();
 
-         ContactDTO emptyCriteria = vbf.newValueBuilder(ContactDTO.class).newInstance();
+         ContactDTO emptyCriteria = module.valueBuilderFactory().newValueBuilder(ContactDTO.class).newInstance();
          if (emptyCriteria.equals(query))
          {
             String msg = i18n.text(CaseResources.could_not_find_search_criteria);
@@ -393,7 +385,7 @@ public class ContactView
             } else
             {
 
-               ContactLookupResultDialog dialog = contactLookupResultDialog.use(
+               ContactLookupResultDialog dialog = module.objectBuilderFactory().newObjectBuilder(ContactLookupResultDialog.class).use(
                      contacts.contacts().get()).newInstance();
                dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), dialog, i18n.text(WorkspaceResources.contacts_tab));
 
@@ -459,7 +451,7 @@ public class ContactView
 
    private ContactDTO createContactQuery()
    {
-      ValueBuilder<ContactDTO> contactBuilder = vbf.newValueBuilder(ContactDTO.class);
+      ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
 
       if (!defaultFocusField.getText().isEmpty())
       {
@@ -468,21 +460,21 @@ public class ContactView
 
       if (!phoneField.getText().isEmpty())
       {
-         ValueBuilder<ContactPhoneDTO> builder = vbf.newValueBuilder(ContactPhoneDTO.class);
+         ValueBuilder<ContactPhoneDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactPhoneDTO.class);
          builder.prototype().phoneNumber().set(phoneField.getText());
          contactBuilder.prototype().phoneNumbers().get().add(builder.newInstance());
       }
 
       if (!addressField.getText().isEmpty())
       {
-         ValueBuilder<ContactAddressDTO> builder = vbf.newValueBuilder(ContactAddressDTO.class);
+         ValueBuilder<ContactAddressDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactAddressDTO.class);
          builder.prototype().address().set(addressField.getText());
          contactBuilder.prototype().addresses().get().add(builder.newInstance());
       }
 
       if (!emailField.getText().isEmpty())
       {
-         ValueBuilder<ContactEmailDTO> builder = vbf.newValueBuilder(ContactEmailDTO.class);
+         ValueBuilder<ContactEmailDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
          builder.prototype().emailAddress().set(emailField.getText());
          contactBuilder.prototype().emailAddresses().get().add(builder.newInstance());
       }
@@ -513,7 +505,7 @@ public class ContactView
                Component component = container.getComponents()[i];
                if (component == label)
                {
-                  JLabel labelForLabel = (JLabel) container.getComponent(i-1);
+                  JLabel labelForLabel = (JLabel) container.getComponent(i - 1);
                   labelForLabel.setVisible(label.isVisible());
                }
             }

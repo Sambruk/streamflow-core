@@ -23,9 +23,8 @@ import ca.odell.glazedlists.TransactionList;
 import ca.odell.glazedlists.UniqueList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -57,7 +56,7 @@ public class CasesTableModel extends Observable
       implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
+   protected Module module;
 
    @Uses
    protected CommandQueryClient client;
@@ -83,10 +82,11 @@ public class CasesTableModel extends Observable
    private PerspectivePeriodModel createdOnModel;
    private PerspectivePeriodModel dueOnModel;
    
-   public CasesTableModel(@Structure ObjectBuilderFactory obf  )
+   public CasesTableModel(@Structure Module module  )
    {
-      createdOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
-      dueOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
+      this.module = module;
+      createdOnModel = module.objectBuilderFactory().newObjectBuilder(PerspectivePeriodModel.class).use( Period.none ).newInstance();
+      dueOnModel = module.objectBuilderFactory().newObjectBuilder(PerspectivePeriodModel.class).use( Period.none ).newInstance();
    }
 
    protected EventList<CaseTableValue> eventList = new TransactionList<CaseTableValue>(new BasicEventList<CaseTableValue>());
@@ -103,7 +103,7 @@ public class CasesTableModel extends Observable
 
    public void refresh()
    {
-      ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
+      ValueBuilder<TableQuery> builder = module.valueBuilderFactory().newValueBuilder(TableQuery.class);
       String queryString = "select *";
       String whereClause = addWhereClauseFromFilter();
       String sorting = addSortingFromFilter();
@@ -118,7 +118,7 @@ public class CasesTableModel extends Observable
       TableQuery query = builder.newInstance();
 
 
-      TableValue table = client.query( "cases", query, TableValue.class );
+      TableValue table = client.query( "cases", TableValue.class, query);
       List<CaseTableValue> caseTableValues = caseTableValues( table );
 
       eventList.getReadWriteLock().writeLock().lock();
@@ -146,7 +146,7 @@ public class CasesTableModel extends Observable
       List<CaseTableValue> caseTableValues = new ArrayList<CaseTableValue>(  );
       for(RowValue row : table.rows().get())
       {
-         ValueBuilder<CaseTableValue> caseBuilder = vbf.newValueBuilder( CaseTableValue.class );
+         ValueBuilder<CaseTableValue> caseBuilder = module.valueBuilderFactory().newValueBuilder(CaseTableValue.class);
          CaseTableValue prototype = caseBuilder.prototype();
          List<CellValue> cells = row.c().get();
          for (int i = 0; i < table.cols().get().size(); i++)
@@ -178,21 +178,21 @@ public class CasesTableModel extends Observable
             else if (columnValue.id().get().equals("labels"))
             {
                String json = cell.v().get().toString();
-               prototype.labels().set(vbf.newValueFromJSON( LinksValue.class, json ));
+               prototype.labels().set(module.valueBuilderFactory().newValueFromJSON(LinksValue.class, json));
             }
             else if (columnValue.id().get().equals("owner"))
                prototype.owner().set(cell.f().get());
             else if (columnValue.id().get().equals("parent") && cell.v().get() != null)
-               prototype.parentCase().set(vbf.newValueFromJSON( LinkValue.class, cell.v().get().toString() ));
+               prototype.parentCase().set(module.valueBuilderFactory().newValueFromJSON(LinkValue.class, cell.v().get().toString()));
             else if (columnValue.id().get().equals("resolution"))
                prototype.resolution().set(cell.f().get());
             else if (columnValue.id().get().equals("status"))
                prototype.status().set( CaseStates.valueOf( cell.v().get().toString() ));
             else if (columnValue.id().get().equals("subcases"))
             {
-               prototype.subcases().set( vbf.newValueFromJSON( LinksValue.class, cell.v().get().toString() ) );
+               prototype.subcases().set( module.valueBuilderFactory().newValueFromJSON(LinksValue.class, cell.v().get().toString()) );
             } else if (columnValue.id().get().equals( "href" ))
-               prototype.href().set( cell.f().get() );
+               prototype.href().set( cell.v().get().toString() );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }
@@ -341,7 +341,7 @@ public class CasesTableModel extends Observable
 
    public PerspectiveDTO getPerspective(String name, String query)
    {
-      ValueBuilder<PerspectiveDTO> builder = vbf.newValueBuilder( PerspectiveDTO.class );
+      ValueBuilder<PerspectiveDTO> builder = module.valueBuilderFactory().newValueBuilder(PerspectiveDTO.class);
       builder.prototype().query().set( query );
       builder.prototype().name().set( name );
       builder.prototype().labels().set( selectedLabelIds );
@@ -387,12 +387,12 @@ public class CasesTableModel extends Observable
 
    public List<LinkValue> possibleFilterLinks()
    {
-      return client.queryResource().queries().get();
+      return client.query().queries().get();
    }
 
    public void setFilter(PerspectiveDTO perspectiveDTO)
    {
-      perspectiveDTO = vbf.newValueBuilder( PerspectiveDTO.class ).withPrototype(perspectiveDTO).prototype();
+      perspectiveDTO = module.valueBuilderFactory().newValueBuilder(PerspectiveDTO.class).withPrototype(perspectiveDTO).prototype();
       selectedStatuses = perspectiveDTO.statuses().get();
       selectedCaseTypeIds = perspectiveDTO.caseTypes().get();
       selectedLabelIds = perspectiveDTO.labels().get();

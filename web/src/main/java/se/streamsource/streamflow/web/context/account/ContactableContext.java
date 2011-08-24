@@ -17,22 +17,15 @@
 
 package se.streamsource.streamflow.web.context.account;
 
-import org.qi4j.api.common.*;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.dci.api.ServiceAvailable;
 
 /**
  * JAVADOC
@@ -41,7 +34,7 @@ public class ContactableContext
       implements IndexContext<ContactDTO>
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    public ContactDTO index()
    {
@@ -66,7 +59,7 @@ public class ContactableContext
       Contactable contactable = RoleMap.role( Contactable.class );
       ContactDTO contact = contactable.getContact();
 
-      ContactBuilder builder = new ContactBuilder(contact, vbf);
+      ContactBuilder builder = new ContactBuilder(contact, module.valueBuilderFactory());
 
       if (name != null)
          builder.name(name );

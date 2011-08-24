@@ -17,12 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Handles selection of an attachment as some form of template.
@@ -43,9 +42,6 @@ public interface FormPdfTemplate
    abstract class Mixin
          implements FormPdfTemplate, Data
    {
-      @Structure
-      ValueBuilderFactory vbf;
-
       @This
       Data data;
 

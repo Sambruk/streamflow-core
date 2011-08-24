@@ -24,8 +24,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -42,7 +41,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -56,18 +54,14 @@ public class EmailAccessPointView
    @Service
    DialogService dialogs;
 
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> projectDialog;
-
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> caseTypeDialog;
+   @Structure
+   Module module;
 
    private EmailAccessPointModel model;
    private JTextField subject;
 
    private JList emailTemplateList = new JList();
    private JTextArea emailTemplateText = new JTextArea();
-   private ObjectBuilderFactory obf;
    private JLabel project;
    private JLabel casetype;
    private JButton casetypeButton;
@@ -75,13 +69,12 @@ public class EmailAccessPointView
    private JButton labelsButton;
    private CaseLabelsView labels;
 
-   public EmailAccessPointView(@Service ApplicationContext context, @Uses final EmailAccessPointModel model, @Structure ObjectBuilderFactory obf)
+   public void init(@Service ApplicationContext context, @Uses final EmailAccessPointModel model)
    {
-      this.obf = obf;
       setActionMap(context.getActionMap(this));
 
       this.model = model;
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( model.createLabelsModel() ).newInstance();
+      this.labels = module.objectBuilderFactory().newObjectBuilder(CaseLabelsView.class).use( model.createLabelsModel() ).newInstance();
 
 
       FormLayout layout = new FormLayout(
@@ -129,7 +122,7 @@ public class EmailAccessPointView
    @org.jdesktop.application.Action
    public Task project()
    {
-      final SelectLinkDialog dialog = projectDialog.use( model.getPossibleProjects() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossibleProjects() ).newInstance();
       dialogs.showOkCancelHelpDialog( projectButton, dialog, i18n.text( WorkspaceResources.choose_project ) );
 
       return new CommandTask()
@@ -149,7 +142,7 @@ public class EmailAccessPointView
    @org.jdesktop.application.Action
    public Task casetype()
    {
-      final SelectLinkDialog dialog = caseTypeDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             i18n.text( WorkspaceResources.choose_casetype ),
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( casetypeButton, dialog );
@@ -173,7 +166,7 @@ public class EmailAccessPointView
    {
       model.refresh();
 
-      ValueBinder binder = obf.newObject(ValueBinder.class);
+      ValueBinder binder = module.objectBuilderFactory().newObject(ValueBinder.class);
 
       binder.bind("project", project);
       binder.bind("caseType", casetype);

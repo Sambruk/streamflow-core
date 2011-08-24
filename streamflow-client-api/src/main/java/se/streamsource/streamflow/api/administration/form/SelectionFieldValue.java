@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.api.administration.form;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * JAVADOC

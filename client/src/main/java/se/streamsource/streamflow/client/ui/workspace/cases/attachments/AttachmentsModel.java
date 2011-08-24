@@ -24,9 +24,9 @@ import eu.medsea.mimeutil.MimeUtil;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
@@ -35,10 +35,10 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
@@ -46,11 +46,15 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Observable;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -63,7 +67,7 @@ public class AttachmentsModel
    EventStream eventStream;
 
    @Structure
-   private ValueBuilderFactory vbf;
+   private Module module;
 
    @Uses
    private CommandQueryClient client;
@@ -92,7 +96,7 @@ public class AttachmentsModel
          {
             for (DomainEvent domainEvent : filter( withNames("createdAttachment" ), Events.events( transactions )))
             {
-               ValueBuilder<UpdateAttachmentDTO> builder = vbf.newValueBuilder( UpdateAttachmentDTO.class );
+               ValueBuilder<UpdateAttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder(UpdateAttachmentDTO.class);
                builder.prototype().name().set( file.getName() );
                builder.prototype().size().set( file.length() );
 
@@ -119,7 +123,7 @@ public class AttachmentsModel
 
    public void refresh() throws OperationException
    {
-      ResourceValue resource = client.queryResource();
+      ResourceValue resource = client.query();
       final LinksValue newRoot = (LinksValue) resource.index().get();
       EventListSynch.synchronize( newRoot.links().get(), eventList );
 
@@ -134,6 +138,6 @@ public class AttachmentsModel
 
    public Representation download( AttachmentDTO attachment ) throws IOException
    {
-      return client.getClient( attachment ).queryRepresentation( "download", null );
+      return client.getClient( attachment ).query("download", Representation.class);
    }
 }

@@ -17,21 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.administration.caseaccessdefaults;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
@@ -43,16 +50,16 @@ public class CaseAccessDefaultsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> possibleDefaultAccessTypes;
+   @Structure
+   Module module;
 
    private CaseAccessDefaultsModel model;
    private final ApplicationContext context;
 
-   public CaseAccessDefaultsView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+   public CaseAccessDefaultsView( @Service ApplicationContext context, @Uses CaseAccessDefaultsModel model )
    {
       this.context = context;
-      model = obf.newObjectBuilder( CaseAccessDefaultsModel.class ).use( client ).newInstance();
+      this.model = model;
       model.addObserver( this );
 
       setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
@@ -73,7 +80,7 @@ public class CaseAccessDefaultsView
          {
             public void actionPerformed( ActionEvent e )
             {
-               final SelectLinkDialog dialog = possibleDefaultAccessTypes.use(model.getPossibleDefaultAccessTypes( linkValue )).newInstance();
+               final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleDefaultAccessTypes( linkValue )).newInstance();
                dialog.setPreferredSize( new Dimension(200,100) );
 
                dialogs.showOkCancelHelpDialog( CaseAccessDefaultsView.this, dialog, i18n.text( AdministrationResources.choose_default_access_type ) );

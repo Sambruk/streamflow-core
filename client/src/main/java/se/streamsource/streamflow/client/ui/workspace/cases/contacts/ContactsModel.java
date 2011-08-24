@@ -22,15 +22,18 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.util.*;
+import java.util.Observable;
 
 /**
  * List of contacts for a case
@@ -40,7 +43,7 @@ public class ContactsModel
    implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Uses
    private CommandQueryClient client;
@@ -49,7 +52,7 @@ public class ContactsModel
 
    public void refresh()
    {
-      ResourceValue resource = client.queryResource();
+      ResourceValue resource = client.query();
       ContactsDTO contactsDTO = (ContactsDTO) resource.index().get().buildWith().prototype();
       EventListSynch.synchronize( contactsDTO.contacts().get(), eventList );
       setChanged();
@@ -63,11 +66,38 @@ public class ContactsModel
 
    public void createContact()
    {
-      client.postCommand( "add", vbf.newValue( ContactDTO.class ) );
+      client.postCommand("add", module.valueBuilderFactory().newValue(ContactDTO.class));
    }
 
    public void removeElement( int selectedIndex )
    {
       client.getSubClient( selectedIndex+"" ).delete();
+   }
+
+   public ContactModel newContactModel(int idx)
+   {
+      ContactDTO contactValue = eventList.get(idx);
+      
+      // Set empty initial values for phoneNumber, email and address.
+      if (contactValue.phoneNumbers().get().isEmpty())
+      {
+         ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class).<ContactPhoneDTO>buildWith().prototype();
+         contactValue.phoneNumbers().get().add( phone );
+      }
+
+      if (contactValue.addresses().get().isEmpty())
+      {
+         ContactAddressDTO address = module.valueBuilderFactory().newValue(ContactAddressDTO.class).<ContactAddressDTO>buildWith().prototype();
+         contactValue.addresses().get().add( address );
+
+      }
+
+      if (contactValue.emailAddresses().get().isEmpty())
+      {
+         ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class).<ContactEmailDTO>buildWith().prototype();
+         contactValue.emailAddresses().get().add( email );
+      }
+
+      return module.objectBuilderFactory().newObjectBuilder(ContactModel.class).use( eventList.get(idx), client.getSubClient( ""+idx ) ).newInstance();
    }
 }

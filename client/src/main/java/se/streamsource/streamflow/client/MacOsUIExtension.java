@@ -17,8 +17,13 @@
 
 package se.streamsource.streamflow.client;
 
-import com.apple.eawt.*;
-import se.streamsource.streamflow.client.util.*;
+import com.apple.eawt.AboutHandler;
+import com.apple.eawt.AppEvent;
+import com.apple.eawt.Application;
+import com.apple.eawt.OpenFilesHandler;
+import com.apple.eawt.QuitHandler;
+import com.apple.eawt.QuitResponse;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 

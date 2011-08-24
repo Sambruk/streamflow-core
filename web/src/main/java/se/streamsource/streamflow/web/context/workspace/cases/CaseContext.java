@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 /**
  * JAVADOC

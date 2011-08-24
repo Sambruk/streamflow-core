@@ -35,10 +35,16 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
-import java.beans.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.Properties;
 
 /**
  * Selection of active account
@@ -101,6 +107,10 @@ public class AccountSelector
             Properties p = IOUtil.readProperties( is );
 
             String clientVersion = p.getProperty( "application.version" );
+
+            if (clientVersion.startsWith("$"))
+               return; // Dev mode - skip versioning check
+
             String response = dataModel.accountModel( (LinkValue) getModel().getElementAt((Integer) evt.getNewValue() )).test();
             System.out.print( response );
 

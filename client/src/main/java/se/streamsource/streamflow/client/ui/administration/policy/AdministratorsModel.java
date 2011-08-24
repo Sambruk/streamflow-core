@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.client.ui.administration.policy;
 
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 /**
  * JAVADOC
@@ -29,5 +30,10 @@ public class AdministratorsModel
    public void addAdministrator( LinkValue link )
    {
       client.postLink( link );
+   }
+
+   public UsersAndGroupsModel newUsersAndGroupsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder( UsersAndGroupsModel.class ).use( client ).newInstance();
    }
 }

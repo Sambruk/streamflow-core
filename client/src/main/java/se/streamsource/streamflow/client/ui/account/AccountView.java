@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import com.jgoodies.forms.builder.*;
-import com.jgoodies.forms.layout.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -27,27 +27,25 @@ import org.jdesktop.application.TaskListener;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.PASSWORD;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
  * JAVADOC
@@ -56,22 +54,13 @@ public class AccountView extends JScrollPane
 {
 
    @Structure
-   private ValueBuilderFactory vbf;
-
-   @Structure
-   private UnitOfWorkFactory uowf;
+   private Module module;
 
    @Uses
    private AccountModel model;
 
-   @Uses
-   private ObjectBuilder<TestConnectionTask> testConnectionTasks;
-
    @Service
    private DialogService dialogs;
-
-   @Uses
-   Iterable<ChangePasswordDialog> changePasswords;
 
    private ValueBuilder<AccountSettingsValue> accountSettingsBuilder;
    private StateBinder accountBinder;
@@ -82,7 +71,7 @@ public class AccountView extends JScrollPane
    public JPanel accountForm;
    public JPanel contactForm;
 
-   public AccountView(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf )
+   public AccountView(@Service ApplicationContext context, @Structure Module module )
    {
       this.context = context;
       ActionMap am = context.getActionMap(this);
@@ -100,9 +89,9 @@ public class AccountView extends JScrollPane
             accountForm);
       // accountBuilder.setDefaultDialogBorder();
 
-      accountBinder = obf.newObject( StateBinder.class );
+      accountBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       accountBinder.setResourceMap(context.getResourceMap(getClass()));
-      connectedBinder = obf.newObject( StateBinder.class );
+      connectedBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       AccountSettingsValue accountTemplate = accountBinder
             .bindingTemplate(AccountSettingsValue.class);
 
@@ -164,7 +153,7 @@ public class AccountView extends JScrollPane
    @Action(block = Task.BlockingScope.APPLICATION)
    public Task test()
    {
-      Task<String, Void> task = testConnectionTasks.use(model).newInstance();
+      Task<String, Void> task = module.objectBuilderFactory().newObjectBuilder(TestConnectionTask.class).use(model).newInstance();
 
       task.addTaskListener(new TaskListener.Adapter<String, Void>()
       {
@@ -204,8 +193,7 @@ public class AccountView extends JScrollPane
    @Action
    public void changePassword() throws Exception
    {
-      ChangePasswordDialog changePasswordDialog = changePasswords.iterator()
-            .next();
+      ChangePasswordDialog changePasswordDialog = module.objectBuilderFactory().newObject(ChangePasswordDialog.class);
       dialogs.showOkCancelHelpDialog(this, changePasswordDialog, i18n
             .text(WorkspaceResources.change_password_title));
 
@@ -219,7 +207,7 @@ public class AccountView extends JScrollPane
                   .text( AdministrationResources.old_password_incorrect)));
          } else
          {
-            model.changePassword(DTO);
+            model.changePassword(DTO.oldPassword().get(), DTO.newPassword().get());
          }
       }
    }

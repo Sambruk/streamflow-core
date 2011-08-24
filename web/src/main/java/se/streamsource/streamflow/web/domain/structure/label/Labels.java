@@ -17,15 +17,20 @@
 
 package se.streamsource.streamflow.web.domain.structure.label;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.entity.label.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 
 /**
  * JAVADOC
@@ -64,10 +69,7 @@ public interface Labels
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Data data;
@@ -117,16 +119,16 @@ public interface Labels
       public Query<SelectedLabels> usages( Label label )
       {
          SelectedLabels.Data selectedLabels = QueryExpressions.templateFor( SelectedLabels.Data.class );
-         Query<SelectedLabels> labelUsages = qbf.newQueryBuilder( SelectedLabels.class ).
+         Query<SelectedLabels> labelUsages = module.queryBuilderFactory().newQueryBuilder(SelectedLabels.class).
                where( QueryExpressions.contains( selectedLabels.selectedLabels(), label ) ).
-               newQuery( uowf.currentUnitOfWork() );
+               newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
          return labelUsages;
       }
 
       public Label createdLabel( DomainEvent event, String identity )
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          Label label = uow.newEntity( Label.class, identity );
          data.labels().add( data.labels().count(), label );
          return label;

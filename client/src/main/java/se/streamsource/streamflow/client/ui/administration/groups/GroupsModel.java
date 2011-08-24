@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * JAVADOC
@@ -27,6 +27,8 @@ public class GroupsModel
 {
    public GroupsModel( )
    {
-      super( "creategroup" );
+      super( "create" );
+
+      relationModelMapping("resource", GroupModel.class);
    }
 }

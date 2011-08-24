@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.*;
-import se.streamsource.dci.value.link.*;
+import ca.odell.glazedlists.SeparatorList;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 import javax.swing.*;
 import java.awt.*;

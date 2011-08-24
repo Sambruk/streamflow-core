@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.web.context.structure;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
+import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.web.domain.Describable;

@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.reference.eventlogger;
 
-import org.slf4j.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
 /**
  * JAVADOC

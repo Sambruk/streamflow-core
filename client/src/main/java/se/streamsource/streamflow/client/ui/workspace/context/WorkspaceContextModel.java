@@ -17,19 +17,25 @@
 
 package se.streamsource.streamflow.client.ui.workspace.context;
 
-import ca.odell.glazedlists.*;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.restlet.data.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.data.Reference;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC

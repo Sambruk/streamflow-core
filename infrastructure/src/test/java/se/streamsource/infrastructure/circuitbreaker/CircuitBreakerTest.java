@@ -17,11 +17,16 @@
 
 package se.streamsource.infrastructure.circuitbreaker;
 
-import org.hamcrest.*;
-import org.junit.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.beans.*;
-import java.io.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.io.IOException;
 
 /**
  * JAVADOC

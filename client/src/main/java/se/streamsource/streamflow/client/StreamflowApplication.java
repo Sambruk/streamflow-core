@@ -18,7 +18,10 @@
 package se.streamsource.streamflow.client;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ProxyActions;
+import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.TaskService;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -28,8 +31,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.io.Receiver;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -43,9 +44,14 @@ import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.ui.DebugWindow;
-import se.streamsource.streamflow.client.ui.account.*;
+import se.streamsource.streamflow.client.ui.account.AccountResources;
+import se.streamsource.streamflow.client.ui.account.AccountSelector;
+import se.streamsource.streamflow.client.ui.account.AccountsDialog;
+import se.streamsource.streamflow.client.ui.account.AccountsModel;
+import se.streamsource.streamflow.client.ui.account.ProfileView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
@@ -56,19 +62,24 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 
-import javax.jnlp.*;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.SingleInstanceListener;
+import javax.jnlp.SingleInstanceService;
+import javax.jnlp.UnavailableServiceException;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.Component;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EventObject;
+import java.util.concurrent.Executors;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * Controller for the application
@@ -84,9 +95,6 @@ public class StreamflowApplication
 
    final Logger logger = LoggerFactory.getLogger(getClass().getName());
    final Logger streamflowLogger = LoggerFactory.getLogger(LoggerCategories.STREAMFLOW);
-
-   @Structure
-   ObjectBuilderFactory obf;
 
    @Structure
    ModuleSPI module;
@@ -182,7 +190,6 @@ public class StreamflowApplication
    }
 
    public void init(@Uses final AccountsModel accountsModel,
-                    @Structure final ObjectBuilderFactory obf,
                     @Uses final AccountSelector accountSelector,
                     @Service EventStream stream
    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
@@ -228,10 +235,10 @@ public class StreamflowApplication
 
 
       this.accountSelector = accountSelector;
-      this.workspaceWindow = obf.newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
-      this.overviewWindow = obf.newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
-      this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountSelector).newInstance();
-      this.debugWindow = obf.newObjectBuilder(DebugWindow.class).newInstance();
+      this.workspaceWindow = module.objectBuilderFactory().newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
+      this.overviewWindow = module.objectBuilderFactory().newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
+      this.administrationWindow = module.objectBuilderFactory().newObjectBuilder(AdministrationWindow.class).use(accountSelector).newInstance();
+      this.debugWindow = module.objectBuilderFactory().newObjectBuilder(DebugWindow.class).newInstance();
       setMainFrame(workspaceWindow.getFrame());
 
       this.accountsModel = accountsModel;
@@ -316,14 +323,11 @@ public class StreamflowApplication
 
    // Menu actions
 
-   @Uses
-   private ObjectBuilder<AccountsDialog> accountsDialog;
-
    @Action
    public void manageAccounts()
    {
       LinkValue selectedValue = (LinkValue) accountSelector.getSelectedValue();
-      AccountsDialog dialog = accountsDialog.use(accountsModel).newInstance();
+      AccountsDialog dialog = module.objectBuilderFactory().newObjectBuilder(AccountsDialog.class).use(accountsModel).newInstance();
       dialog.setSelectedAccount(selectedValue);
       dialogs.showOkDialog(getMainFrame(), dialog, text(AccountResources.account_title));
    }
@@ -342,7 +346,7 @@ public class StreamflowApplication
    @Action
    public void myProfile()
    {
-      ProfileView profile = obf.newObjectBuilder(ProfileView.class).use(accountSelector.getSelectedAccount().serverResource().getSubClient("account").getSubClient("profile")).newInstance();
+      ProfileView profile = module.objectBuilderFactory().newObjectBuilder(ProfileView.class).use(accountSelector.getSelectedAccount().newProfileModel()).newInstance();
       dialogs.showOkDialog(getMainFrame(), profile, text(AccountResources.profile_title));
    }
 

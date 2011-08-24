@@ -17,23 +17,19 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.entity.conversation.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
@@ -84,13 +80,10 @@ public interface History
       IdentityGenerator idgen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Case caze;
-
-      @Structure
-      QueryBuilderFactory qbf;
 
       public Conversation getHistory()
       {
@@ -125,7 +118,7 @@ public interface History
 
       public Conversation createdHistory( @Optional DomainEvent event, String id )
       {
-         EntityBuilder<ConversationEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( ConversationEntity.class, id );
+         EntityBuilder<ConversationEntity> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( ConversationEntity.class, id );
          builder.instance().conversationOwner().set( caze );
          builder.instance().createdBy().set( caze.createdBy().get() );
          builder.instance().createdOn().set( caze.createdOn().get() );
@@ -140,17 +133,20 @@ public interface History
       public EmailAccessPoint getOriginalEmailAccessPoint()
       {
          Messages.Data messages = ((Messages.Data) data.history().get());
-         for (Message message : messages.messages())
+         if (messages != null)
          {
-            String body = ((Message.Data) message).body().get();
-            if (body.startsWith("{accesspoint"))
+            for (Message message : messages.messages())
             {
-               // This is the history message that the case has been received through a particular AccessPoint
-               String accessPointName = body.substring(body.indexOf(",")+1, body.length()-1);
+               String body = ((Message.Data) message).body().get();
+               if (body.startsWith("{accesspoint"))
+               {
+                  // This is the history message that the case has been received through a particular AccessPoint
+                  String accessPointName = body.substring(body.indexOf(",")+1, body.length()-1);
 
-               // Now find it
-               EmailAccessPointEntity ap = qbf.newQueryBuilder(EmailAccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(uowf.currentUnitOfWork()).find();
-               return ap;
+                  // Now find it
+                  EmailAccessPointEntity ap = module.queryBuilderFactory().newQueryBuilder(EmailAccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(module.unitOfWorkFactory().currentUnitOfWork()).find();
+                  return ap;
+               }
             }
          }
 

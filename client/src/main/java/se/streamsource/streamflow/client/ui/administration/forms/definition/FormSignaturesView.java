@@ -17,28 +17,26 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.ListDetailView;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
@@ -46,8 +44,10 @@ import se.streamsource.streamflow.util.Strings;
 import javax.swing.*;
 import java.awt.*;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.first;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 
 /**
@@ -60,21 +60,14 @@ public class FormSignaturesView
    DialogService dialogs;
 
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Uses
-   Iterable<NameDialog> nameDialog;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   Module module;
 
    private FormSignaturesModel model;
 
    public FormSignaturesView( @Service ApplicationContext context,
-                              @Uses final CommandQueryClient client,
-                              @Structure final ObjectBuilderFactory obf )
+                              @Uses final FormSignaturesModel model)
    {
-      this.model = obf.newObjectBuilder( FormSignaturesModel.class ).use( client ).newInstance();
+      this.model = model;
       ActionMap am = context.getActionMap( this );
 
       initMaster( new EventListModel<LinkValue>( model.getList() ), am.get( "add" ), new javax.swing.Action[]{am.get( "remove" )},
@@ -82,7 +75,7 @@ public class FormSignaturesView
             {
                public Component createDetail( LinkValue detailLink )
                {
-                  return obf.newObjectBuilder( FormSignatureView.class ).use( client.getClient( detailLink ) ).newInstance();
+                  return module.objectBuilderFactory().newObjectBuilder( FormSignatureView.class ).use( model.newResourceModel(detailLink)).newInstance();
                }
             } );
 
@@ -92,13 +85,13 @@ public class FormSignaturesView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialog.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_signature_title ) );
 
       if (!Strings.empty( dialog.name() ))
       {
          list.clearSelection();
-         final ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class );
+         final ValueBuilder<RequiredSignatureValue> builder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
          builder.prototype().name().set( dialog.name() );
 
          return new CommandTask()
@@ -120,7 +113,7 @@ public class FormSignaturesView
       final LinkValue selected = getSelectedValue();
       if (selected != null)
       {
-         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
          dialog.setRemovalMessage( selected.text().get() );
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())

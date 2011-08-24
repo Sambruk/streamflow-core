@@ -17,27 +17,35 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.util.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXList;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -49,11 +57,8 @@ public class MembersView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
+   @Structure
+   Module module;
 
    private UsersAndGroupsModel usersAndGroupsModel;
 
@@ -61,14 +66,13 @@ public class MembersView
    private MembersModel membersModel;
 
    public MembersView( @Service ApplicationContext context,
-                              @Uses final CommandQueryClient client,
-                              @Structure ObjectBuilderFactory obf)
+                              @Uses final MembersModel model)
    {
       super( new BorderLayout() );
-      this.membersModel = obf.newObjectBuilder( MembersModel.class ).use( client ).newInstance();
+      this.membersModel = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      usersAndGroupsModel = obf.newObjectBuilder( UsersAndGroupsModel.class ).use( client ).newInstance();
+      usersAndGroupsModel = membersModel.newUsersAndGroupsModel();
       setActionMap( context.getActionMap( this ) );
 
       membersList = new JXList( new EventListModel<LinkValue>(membersModel.getList()) );
@@ -91,7 +95,7 @@ public class MembersView
    @Action
    public Task add()
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( usersAndGroupsModel ).newInstance();
+      SelectUsersAndGroupsDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectUsersAndGroupsDialog.class).use( usersAndGroupsModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 
       final Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
@@ -115,7 +119,7 @@ public class MembersView
    {
       final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( membersList.getSelectedValues() );
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       String str = "";
       for (LinkValue linkValue : selected)
       {

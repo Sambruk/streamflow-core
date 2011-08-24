@@ -17,34 +17,52 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TreeList;
+import ca.odell.glazedlists.swing.EventTreeModel;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.renderer.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXTree;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.util.*;
+import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static org.qi4j.api.specification.Specifications.and;
+import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -58,28 +76,20 @@ public class AdministrationTreeView
 
    @Service
    DialogService dialogs;
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
 
    private AdministrationModel model;
 
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    public AdministrationTreeView( @Service ApplicationContext context,
-                                  @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf ) throws Exception
+                                  @Uses final AdministrationModel model) throws Exception
    {
       super( new BorderLayout() );
-      this.model = obf.newObjectBuilder( AdministrationModel.class ).use( client ).newInstance();
-      tree = new JXTree( model );
+      this.model = model;
+      tree = new JXTree( new EventTreeModel<LinkValue>(model.getLinkTree()) );
 
-      tree.setRootVisible( true );
+      tree.setRootVisible( false );
       tree.setShowsRootHandles( true );
 
       DefaultTreeRenderer renderer = new DefaultTreeRenderer( new WrappingProvider(
@@ -87,24 +97,28 @@ public class AdministrationTreeView
             {
                public Icon getIcon( Object o )
                {
-                  DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
-                  ContextItem clientInfo = (ContextItem) node.getUserObject();
-                  if (clientInfo == null)
-                     return i18n.icon( Icons.server );
-                  else
-                     return i18n.icon( Icons.valueOf( clientInfo.getRelation() ) );
+                  if (o instanceof TreeList.Node)
+                  {
+                     TreeList.Node node = (TreeList.Node) o;
+                     LinkValue link = (LinkValue)node.getElement();
+                     return i18n.icon( Icons.valueOf( link.rel().get() ) );
+                  } else
+                  {
+                     return i18n.icon(Icons.server);
+                  }
                }
             },
             new StringValue()
             {
                public String getString( Object o )
                {
-                  DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
-                  ContextItem clientInfo = (ContextItem) node.getUserObject();
-                  if (clientInfo == null)
-                     return "...";
-                  else
-                     return clientInfo.getName();
+                  if (o instanceof TreeList.Node)
+                  {
+                     TreeList.Node node = (TreeList.Node) o;
+                     LinkValue link = (LinkValue)node.getElement();
+                     return link.text().get();
+                  } else
+                     return o.toString();
                }
             },
             false
@@ -141,6 +155,7 @@ public class AdministrationTreeView
          public void valueChanged( TreeSelectionEvent e )
          {
             final TreePath path = e.getNewLeadSelectionPath();
+/*
             if (path != null && !path.getLastPathComponent().equals( model.getRoot() ))
             {
                createOUButton.setEnabled( true );
@@ -150,6 +165,7 @@ public class AdministrationTreeView
                createOUButton.setEnabled( false );
                optionsButton.setEnabled( false );
             }
+*/
          }
       } );
 
@@ -164,10 +180,11 @@ public class AdministrationTreeView
       )
       {
          @Override
-         protected CommandQueryClient getClient()
+         protected ResourceValue getResource()
          {
-            ContextItem contextItem = (ContextItem) ((DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent())).getUserObject();
-            return contextItem.getClient();
+            ResourceModel resourceModel = (ResourceModel) model.newResourceModel((LinkValue) tree.getSelectionPath().getLastPathComponent());
+            resourceModel.refresh();
+            return resourceModel.getResourceValue();
          }
       } );
    }
@@ -181,25 +198,21 @@ public class AdministrationTreeView
    @Action
    public Task changeDescription()
    {
-      Object node = tree.getSelectionPath().getLastPathComponent();
+      final Object node = tree.getSelectionPath().getLastPathComponent();
 
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_ou_title ) );
       if (!Strings.empty( dialog.name() ))
       {
          if (node instanceof MutableTreeNode)
          {
-            DefaultMutableTreeNode orgNode = (DefaultMutableTreeNode) node;
-            final ContextItem client = (ContextItem) orgNode.getUserObject();
-            final ValueBuilder<se.streamsource.dci.value.StringValue> builder = vbf.newValueBuilder( se.streamsource.dci.value.StringValue.class );
-            builder.prototype().string().set( dialog.name() );
             return new CommandTask()
             {
                @Override
                public void command()
                      throws Exception
                {
-                  client.getClient().putCommand( "changedescription", builder.newInstance() );
+                  model.changeDescription(node, dialog.name());
                }
             };
          }
@@ -213,7 +226,7 @@ public class AdministrationTreeView
    {
       final Object node = tree.getSelectionPath().getLastPathComponent();
 
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
       if (!Strings.empty( dialog.name() ))
       {
@@ -235,7 +248,7 @@ public class AdministrationTreeView
    {
       final Object node = tree.getSelectionPath().getLastPathComponent();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
       String name = ((ContextItem) mutableTreeNode.getUserObject()).getName();
 
@@ -261,7 +274,7 @@ public class AdministrationTreeView
    public Task move()
    {
       EventList<LinkValue> targets = model.possibleMoveTo( tree.getSelectionPath().getLastPathComponent() );
-      final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
+      final SelectLinkDialog listDialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.move_to ) );
       if (listDialog.getSelectedLink() != null)
@@ -283,7 +296,7 @@ public class AdministrationTreeView
    public Task merge()
    {
       EventList<LinkValue> targets = model.possibleMergeWith( tree.getSelectionPath().getLastPathComponent() );
-      final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
+      final SelectLinkDialog listDialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.merge_to ) );
       if (listDialog.getSelectedLink() != null)

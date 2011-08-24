@@ -17,19 +17,29 @@
 
 package se.streamsource.streamflow.web.domain.entity.conversation;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.structure.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC

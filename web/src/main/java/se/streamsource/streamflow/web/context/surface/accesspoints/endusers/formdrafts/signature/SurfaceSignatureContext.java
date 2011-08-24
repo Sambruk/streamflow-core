@@ -25,9 +25,9 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.UpdateCaseCountFormSummaryConcern;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
@@ -35,7 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

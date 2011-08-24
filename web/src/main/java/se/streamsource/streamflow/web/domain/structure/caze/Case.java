@@ -17,17 +17,27 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.created.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
 /**
  * Case entity.

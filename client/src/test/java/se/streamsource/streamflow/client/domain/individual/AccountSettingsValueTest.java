@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.junit.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.value.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.test.*;
+import org.junit.Test;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.test.AbstractQi4jTest;
 
 /**
  * Test of AccountSettingsValue

@@ -21,24 +21,22 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.ContextItem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.assignments_node;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -53,7 +51,7 @@ public class OverviewModel
    CommandQueryClient client;
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    public EventList<ContextItem> getItems()
    {
@@ -64,15 +62,20 @@ public class OverviewModel
    {
       List<ContextItem> list = new ArrayList<ContextItem>( );
 
-      ValueBuilder<TableQuery> builder = vbf.newValueBuilder(TableQuery.class);
+      ValueBuilder<TableQuery> builder = module.valueBuilderFactory().newValueBuilder(TableQuery.class);
       builder.prototype().tq().set("select *");
 
-      TableValue projects = client.query("index", builder.newInstance(), TableValue.class );
+      TableValue projects = client.query("index", TableValue.class, builder.newInstance());
       for (RowValue project : projects.rows().get())
       {
          list.add( new ContextItem(projects.cell(project, "description").f().get(), text( assignments_node), Icons.assign.name(), (Integer) projects.cell(project, "assignments").v().get(), client.getClient( projects.cell(project, "href").f().get() ).getSubClient("assignments" )));
       }
 
       EventListSynch.synchronize( list, items );
+   }
+
+   public OverviewSummaryModel newOverviewSummaryModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(OverviewSummaryModel.class).use(client).newInstance();
    }
 }

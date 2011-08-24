@@ -29,9 +29,9 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import java.util.*;
+import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

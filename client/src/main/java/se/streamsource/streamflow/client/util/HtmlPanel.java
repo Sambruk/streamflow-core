@@ -18,12 +18,13 @@
 package se.streamsource.streamflow.client.util;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.html.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Generic HTML viewer pane. Links that have protocol will be opened in dekstop browser. Others

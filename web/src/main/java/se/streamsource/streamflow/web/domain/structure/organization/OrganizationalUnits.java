@@ -17,16 +17,21 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.role.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import se.streamsource.streamflow.web.domain.structure.role.Roles;
 
 /**
  * JAVADOC
@@ -63,7 +68,7 @@ public interface OrganizationalUnits
       IdentityGenerator idGenerator;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       RolePolicy policy;
@@ -107,7 +112,7 @@ public interface OrganizationalUnits
 
       public OrganizationalUnit createdOrganizationalUnit( @Optional DomainEvent event, @Name("id") String id )
       {
-         EntityBuilder<OrganizationalUnit> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder( OrganizationalUnit.class, id );
+         EntityBuilder<OrganizationalUnit> ouBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( OrganizationalUnit.class, id );
          ouBuilder.instanceFor(OwningOrganization.class).organization().set( orgOwner.organization().get() );
          OrganizationalUnit ou = ouBuilder.newInstance();
          return ou;

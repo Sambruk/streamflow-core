@@ -25,11 +25,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Removable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -63,9 +63,6 @@ public interface Participation
    {
       @Structure
       Module module;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       @This
       Participation participant;

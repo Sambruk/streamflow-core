@@ -17,15 +17,21 @@
 
 package se.streamsource.streamflow.web.domain.structure.project;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 
 /**
  * JAVADOC
@@ -64,7 +70,7 @@ public interface Projects
       IdentityGenerator idgen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This Data data;
 
@@ -81,7 +87,7 @@ public interface Projects
 
       public Project createdProject( DomainEvent event, String id )
       {
-         EntityBuilder<Project> builder = uowf.currentUnitOfWork().newEntityBuilder( Project.class, id );
+         EntityBuilder<Project> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Project.class, id );
          builder.instanceFor( OwningOrganizationalUnit.Data.class).organizationalUnit().set( ou );
          return builder.newInstance();
       }

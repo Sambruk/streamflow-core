@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
 /**
  * Takes a list of TransactionDomainEvents and filters them according to a given event specification.

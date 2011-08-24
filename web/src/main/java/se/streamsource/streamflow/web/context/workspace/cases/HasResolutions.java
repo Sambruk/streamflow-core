@@ -17,12 +17,18 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.dci.api.InteractionConstraint;
+import se.streamsource.dci.api.InteractionConstraintDeclaration;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.first;
 
 /**
  * Check if current case has any possible resolutions

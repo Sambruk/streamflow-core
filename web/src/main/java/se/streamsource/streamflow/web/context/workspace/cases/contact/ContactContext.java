@@ -17,22 +17,26 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.contact;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.api.workspace.cases.contact.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.service.ServiceImporterException;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
-import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -41,7 +45,7 @@ public class ContactContext
       implements DeleteContext
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Optional
    @Service
@@ -72,7 +76,7 @@ public class ContactContext
       Integer index = RoleMap.role( Integer.class );
       ContactDTO contact = RoleMap.role( ContactDTO.class );
 
-      ContactBuilder builder = new ContactBuilder(contact, vbf);
+      ContactBuilder builder = new ContactBuilder(contact, module.valueBuilderFactory());
 
       if (name != null)
          builder.name(name );
@@ -108,8 +112,8 @@ public class ContactContext
       // This method has to convert between the internal ContactDTO and the plugin API ContactDTO,
       // hence the use of JSON as intermediary
       ContactDTO contact = RoleMap.role( ContactDTO.class );
-      se.streamsource.streamflow.server.plugin.contact.ContactValue pluginContact = vbf.newValueFromJSON( se.streamsource.streamflow.server.plugin.contact.ContactValue.class, contact.toJSON() );
-      ValueBuilder<ContactsDTO> builder = vbf.newValueBuilder( ContactsDTO.class );
+      se.streamsource.streamflow.server.plugin.contact.ContactValue pluginContact = module.valueBuilderFactory().newValueFromJSON(se.streamsource.streamflow.server.plugin.contact.ContactValue.class, contact.toJSON());
+      ValueBuilder<ContactsDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactsDTO.class);
 
       try
       {
@@ -121,7 +125,7 @@ public class ContactContext
 
             for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts.contacts().get())
             {
-               contactList.add( vbf.newValueFromJSON( ContactDTO.class, possibleContact.toJSON() ) );
+               contactList.add( module.valueBuilderFactory().newValueFromJSON(ContactDTO.class, possibleContact.toJSON()) );
             }
             return builder.newInstance();
          } else

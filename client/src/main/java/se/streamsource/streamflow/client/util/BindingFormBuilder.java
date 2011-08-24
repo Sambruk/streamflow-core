@@ -17,16 +17,18 @@
 
 package se.streamsource.streamflow.client.util;
 
-import com.jgoodies.forms.builder.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.qi4j.api.property.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXDatePicker;
+import org.qi4j.api.property.Property;
 
-import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
-import java.text.*;
-import java.util.*;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Deprected: Use BindingFormBuilder2 instead.

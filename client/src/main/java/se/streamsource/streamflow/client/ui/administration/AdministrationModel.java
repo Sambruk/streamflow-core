@@ -17,69 +17,96 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import ca.odell.glazedlists.TreeList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.api.administration.LinkTree;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class AdministrationModel
-      extends DefaultTreeModel
+   extends ResourceModel<LinksValue>
       implements Refreshable, TransactionListener
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
-   @Structure
-   ObjectBuilderFactory obf;
-
-   private final CommandQueryClient client;
-
-   public AdministrationModel( @Uses CommandQueryClient client )
+   private EventList<LinkValue> links = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
+   private TreeList<LinkValue> linkTree = new TreeList<LinkValue>(links, new TreeList.Format<LinkValue>()
    {
-      super( new DefaultMutableTreeNode() );
-      this.client = client;
+      public void getPath(List<LinkValue> linkValues, LinkValue linkValue)
+      {
+         String classes = linkValue.classes().get();
+         if (classes != null)
+            for (LinkValue value : links)
+            {
+               if (classes.contains(value.id().get()))
+               {
+                  getPath(linkValues, value);
+                  break;
+               }
+            }
+
+         linkValues.add(linkValue);
+      }
+
+      public boolean allowsChildren(LinkValue linkValue)
+      {
+         for (LinkValue link : links)
+         {
+            String classes = link.classes().get();
+            if (classes != null && classes.contains(linkValue.id().get()))
+               return true;
+         }
+         return false;
+      }
+
+      public Comparator<? extends LinkValue> getComparator(int i)
+      {
+         return null;
+      }
+   }, TreeList.NODES_START_EXPANDED);
+
+   public AdministrationModel()
+   {
+      relationModelMapping("server", ServerModel.class);
+      relationModelMapping("organization", OrganizationModel.class);
+      relationModelMapping("organizationalunit", OrganizationalUnitModel.class);
    }
 
    public void refresh()
    {
-      LinkTree administration = client.query( "index", LinkTree.class );
+      super.refresh();
 
-      DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
-      sync( root, client, administration );
-      reload( (TreeNode) getRoot() );
+      LinksValue administration = getIndex();
+
+      EventListSynch.synchronize(administration.links().get(), links);
    }
 
-   private void sync( DefaultMutableTreeNode node, CommandQueryClient parentClient, LinkTree treeNode )
+   public TreeList<LinkValue> getLinkTree()
    {
-      LinkValue link = treeNode.link().get();
-      CommandQueryClient nodeClient = parentClient.getClient( link );
-      ContextItem clientInfo = new ContextItem( "", link.text().get(), link.rel().get(), -1, nodeClient );
-
-      node.setUserObject( clientInfo );
-
-      node.removeAllChildren();
-      for (LinkTree childTree : treeNode.children().get())
-      {
-         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
-         node.add( childNode );
-         sync( childNode, parentClient, childTree );
-      }
+      return linkTree;
    }
 
    public void changeDescription( Object node, String newDescription )
@@ -87,7 +114,7 @@ public class AdministrationModel
       DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
       ContextItem client = (ContextItem) treeNode.getUserObject();
 
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( newDescription );
       client.getClient().postCommand( "changedescription", builder.newInstance() );
    }
@@ -97,9 +124,9 @@ public class AdministrationModel
       DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
       ContextItem contextItem = (ContextItem) treeNode.getUserObject();
 
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
-      contextItem.getClient().postCommand( "createorganizationalunit", builder.newInstance() );
+      Form form = new Form();
+      form.set("name", name);
+      contextItem.getClient().postCommand( "create", form );
    }
 
    public void removeOrganizationalUnit( Object node )

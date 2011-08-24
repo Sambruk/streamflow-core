@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.api.administration.form;
 
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import org.qi4j.library.constraints.annotation.*;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.MaxLength;
 
 /**
  * JAVADOC

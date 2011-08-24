@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.SelectionListModel;
 
 /**
  * Management of selected forms on a casetype

@@ -17,14 +17,17 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 
 /**
  * JAVADOC

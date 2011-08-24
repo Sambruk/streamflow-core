@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -25,8 +24,6 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
@@ -54,7 +51,7 @@ public interface AccessPointsAdministrationContext
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
-         linksBuilder.addDescribables( data.accessPoints() );
+         linksBuilder.rel("accesspoint").addDescribables( data.accessPoints() );
 
          return linksBuilder.newLinks();
       }

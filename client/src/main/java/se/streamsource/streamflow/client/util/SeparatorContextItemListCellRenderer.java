@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.*;
-import se.streamsource.streamflow.client.ui.*;
+import ca.odell.glazedlists.SeparatorList;
+import se.streamsource.streamflow.client.ui.ContextItem;
 
 import javax.swing.*;
 import java.awt.*;

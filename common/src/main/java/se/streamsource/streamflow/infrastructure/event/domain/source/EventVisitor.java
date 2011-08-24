@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source;
 
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Visitor for a single DomainEvent in a TransactionDomainEvents.

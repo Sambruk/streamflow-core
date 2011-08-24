@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
-import ca.odell.glazedlists.gui.*;
-import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
@@ -30,24 +30,32 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,8 +68,8 @@ public class AttachmentsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private JXTable attachments;
 
@@ -69,81 +77,81 @@ public class AttachmentsView
 
    private AttachmentsModel attachmentsModel;
 
-   public AttachmentsView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+   public AttachmentsView(@Service ApplicationContext context, @Uses AttachmentsModel model)
    {
-      setLayout( new BorderLayout() );
+      setLayout(new BorderLayout());
 
-      final ActionMap am = context.getActionMap( this );
+      final ActionMap am = context.getActionMap(this);
 
-      this.attachmentsModel = obf.newObjectBuilder( AttachmentsModel.class ).use( client ).newInstance();
+      this.attachmentsModel = model;
       TableFormat tableFormat = new AttachmentsTableFormatter();
-      tableModel = new EventJXTableModel<AttachmentDTO>( attachmentsModel.getEventList(), tableFormat );
+      tableModel = new EventJXTableModel<AttachmentDTO>(attachmentsModel.getEventList(), tableFormat);
 
       attachments = new JXTable(tableModel);
 
-      attachments.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+      attachments.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
             KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                  .getDefaultFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS ) );
-      attachments.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+                  .getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+      attachments.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
             KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                  .getDefaultFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
+                  .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
 
-      attachments.getColumn( 1 ).setPreferredWidth( 100 );
-      attachments.getColumn( 1 ).setMaxWidth( 100 );
-      attachments.getColumn( 2 ).setPreferredWidth( 100 );
-      attachments.getColumn( 2 ).setMaxWidth( 100 );
+      attachments.getColumn(1).setPreferredWidth(100);
+      attachments.getColumn(1).setMaxWidth(100);
+      attachments.getColumn(2).setPreferredWidth(100);
+      attachments.getColumn(2).setMaxWidth(100);
 
-      attachments.setAutoCreateColumnsFromModel( false );
+      attachments.setAutoCreateColumnsFromModel(false);
 
-      attachments.addHighlighter( HighlighterFactory.createAlternateStriping() );
+      attachments.addHighlighter(HighlighterFactory.createAlternateStriping());
 
-      attachments.setModel( tableModel );
-      attachments.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      attachments.setModel(tableModel);
+      attachments.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
       JPanel toolbar = new JPanel();
-      JButton addButton = new JButton( am.get( "add" ) );
-      toolbar.add( addButton );
-      JButton removeButton = new JButton( am.get( "remove" ) );
-      toolbar.add( removeButton );
-      toolbar.add( new JButton( am.get( "open" ) ) );
-      attachments.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "open" ) ) );
-      attachmentsModel.addObserver(new RefreshComponents().visibleOn( "createattachment", addButton, removeButton ));
+      JButton addButton = new JButton(am.get("add"));
+      toolbar.add(addButton);
+      JButton removeButton = new JButton(am.get("remove"));
+      toolbar.add(removeButton);
+      toolbar.add(new JButton(am.get("open")));
+      attachments.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove"), am.get("open")));
+      attachmentsModel.addObserver(new RefreshComponents().visibleOn("createattachment", addButton, removeButton));
 
-      attachments.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "open" );
-      attachments.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "remove" );
-      attachments.setActionMap( am );
+      attachments.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "open");
+      attachments.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remove");
+      attachments.setActionMap(am);
 
-      attachments.addMouseListener( new MouseAdapter()
+      attachments.addMouseListener(new MouseAdapter()
       {
-         public void mouseClicked( MouseEvent me )
+         public void mouseClicked(MouseEvent me)
          {
             int obj = attachments.getSelectedRow();
             if (obj == -1) return;
             if (me.getClickCount() == 2)
             {
-               am.get( "open" ).actionPerformed( new ActionEvent( this,
+               am.get("open").actionPerformed(new ActionEvent(this,
                      ActionEvent.ACTION_PERFORMED,
-                     "open" ) );
+                     "open"));
                me.consume();
             }
          }
-      } );
+      });
 
-      JScrollPane attachmentsScrollPane = new JScrollPane( attachments );
+      JScrollPane attachmentsScrollPane = new JScrollPane(attachments);
 
-      add( attachmentsScrollPane, BorderLayout.CENTER );
-      add( toolbar, BorderLayout.SOUTH );
+      add(attachmentsScrollPane, BorderLayout.CENTER);
+      add(toolbar, BorderLayout.SOUTH);
 
-      new RefreshWhenShowing( this, attachmentsModel );
+      new RefreshWhenShowing(this, attachmentsModel);
    }
 
    @Action(block = Task.BlockingScope.APPLICATION)
    public Task add() throws IOException
    {
       JFileChooser fileChooser = new JFileChooser();
-      fileChooser.setMultiSelectionEnabled( true );
+      fileChooser.setMultiSelectionEnabled(true);
 
-      if (fileChooser.showDialog( this, i18n.text( WorkspaceResources.create_attachment ) ) == JFileChooser.APPROVE_OPTION)
+      if (fileChooser.showDialog(this, i18n.text(WorkspaceResources.create_attachment)) == JFileChooser.APPROVE_OPTION)
       {
          final File[] selectedFiles = fileChooser.getSelectedFiles();
 
@@ -155,18 +163,18 @@ public class AttachmentsView
    @Action
    public Task remove()
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( i18n.text( attachments.getSelectedRows().length > 1
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setRemovalMessage(i18n.text(attachments.getSelectedRows().length > 1
             ? WorkspaceResources.attachments
-            : WorkspaceResources.attachment ) );
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+            : WorkspaceResources.attachment));
+      dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamflowResources.confirmation));
 
       if (dialog.isConfirmed())
       {
-         final List<AttachmentDTO> removedAttachments = new ArrayList<AttachmentDTO>( );
+         final List<AttachmentDTO> removedAttachments = new ArrayList<AttachmentDTO>();
          for (int i : attachments.getSelectedRows())
          {
-            removedAttachments.add(attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) ));
+            removedAttachments.add(attachmentsModel.getEventList().get(attachments.convertRowIndexToModel(i)));
          }
 
          return new CommandTask()
@@ -179,7 +187,7 @@ public class AttachmentsView
                {
                   for (AttachmentDTO removedAttachment : removedAttachments)
                   {
-                     attachmentsModel.removeAttachment( removedAttachment );
+                     attachmentsModel.removeAttachment(removedAttachment);
                   }
                } catch (Throwable e)
                {
@@ -196,40 +204,40 @@ public class AttachmentsView
    {
       for (int i : attachments.getSelectedRows())
       {
-         AttachmentDTO attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
+         AttachmentDTO attachment = attachmentsModel.getEventList().get(attachments.convertRowIndexToModel(i));
 
-         return new OpenAttachmentTask( attachment );
+         return new OpenAttachmentTask(attachment);
       }
 
       return null;
    }
 
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (Events.matches( Events.withNames("changedStatus", "addedAttachment", "removedAttachment" ), transactions ))
+      if (Events.matches(Events.withNames("changedStatus", "addedAttachment", "removedAttachment"), transactions))
          attachmentsModel.refresh();
    }
 
    private class AddAttachmentTask
-      extends CommandTask
+         extends CommandTask
    {
       File[] selectedFiles;
 
-      private AddAttachmentTask( File[] selectedFiles )
+      private AddAttachmentTask(File[] selectedFiles)
       {
          this.selectedFiles = selectedFiles;
       }
 
       @Override
       public void command()
-         throws Exception
+            throws Exception
       {
-         setMessage( getResourceMap().getString( "description" ) );
+         setMessage(getResourceMap().getString("description"));
 
          for (File file : selectedFiles)
          {
-            FileInputStream fin = new FileInputStream( file );
-            attachmentsModel.createAttachment( file, fin );
+            FileInputStream fin = new FileInputStream(file);
+            attachmentsModel.createAttachment(file, fin);
          }
       }
    }
@@ -238,46 +246,46 @@ public class AttachmentsView
    {
       private final AttachmentDTO attachment;
 
-      public OpenAttachmentTask( AttachmentDTO attachment )
+      public OpenAttachmentTask(AttachmentDTO attachment)
       {
-         super( Application.getInstance() );
+         super(Application.getInstance());
          this.attachment = attachment;
 
-         setUserCanCancel( false );
+         setUserCanCancel(false);
       }
 
       @Override
       protected File doInBackground() throws Exception
       {
-         setMessage( getResourceMap().getString( "description" ) );
+         setMessage(getResourceMap().getString("description"));
 
          String fileName = attachment.text().get();
-         String[] fileNameParts = fileName.split( "\\." );
-         Representation representation = attachmentsModel.download( attachment );
+         String[] fileNameParts = fileName.split("\\.");
+         Representation representation = attachmentsModel.download(attachment);
 
-         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
+         File file = File.createTempFile(fileNameParts[0] + "_", "." + fileNameParts[1]);
 
-         Inputs.byteBuffer( representation.getStream(), 8192 ).transferTo( Outputs.byteBuffer( file ));
+         Inputs.byteBuffer(representation.getStream(), 8192).transferTo(Outputs.byteBuffer(file));
 
          return file;
       }
 
       @Override
-      protected void succeeded( File file )
+      protected void succeeded(File file)
       {
          // Open file
          Desktop desktop = Desktop.getDesktop();
          try
          {
-            desktop.edit( file );
+            desktop.edit(file);
          } catch (IOException e)
          {
             try
             {
-               desktop.open( file );
+               desktop.open(file);
             } catch (IOException e1)
             {
-               dialogs.showMessageDialog( AttachmentsView.this, i18n.text( WorkspaceResources.could_not_open_attachment ), "" );
+               dialogs.showMessageDialog(AttachmentsView.this, i18n.text(WorkspaceResources.could_not_open_attachment), "");
             }
          }
       }

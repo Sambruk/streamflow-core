@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.server.plugin.contact;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import org.qi4j.library.constraints.annotation.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Matches;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Contact information for either a person or a company

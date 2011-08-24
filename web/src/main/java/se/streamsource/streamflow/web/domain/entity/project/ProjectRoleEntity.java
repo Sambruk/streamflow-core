@@ -25,7 +25,7 @@ import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * JAVADOC

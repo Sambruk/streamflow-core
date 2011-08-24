@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.entity.conversation;
 
-import se.streamsource.streamflow.web.domain.entity.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
 /**
  * JAVADOC

@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.api.administration.form;
 
-import org.qi4j.api.value.*;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC

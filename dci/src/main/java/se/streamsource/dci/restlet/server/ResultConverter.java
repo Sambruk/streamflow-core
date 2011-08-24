@@ -17,7 +17,7 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.restlet.*;
+import org.restlet.Request;
 
 /**
  * JAVADOC

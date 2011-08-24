@@ -17,8 +17,10 @@
 
 package se.streamsource.infrastructure.circuitbreaker;
 
-import org.qi4j.api.io.*;
-import org.qi4j.api.specification.*;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.specification.Specification;
 
 /**
  * CircuitBreaker helper methods.

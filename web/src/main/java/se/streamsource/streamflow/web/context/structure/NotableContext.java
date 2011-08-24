@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.context.structure;
 
-import se.streamsource.dci.api.*;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.Notable;
 

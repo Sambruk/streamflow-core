@@ -17,10 +17,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import se.streamsource.streamflow.util.*;
+import se.streamsource.streamflow.util.Visitor;
 
-import javax.sql.*;
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Utility methods for performing SQL calls

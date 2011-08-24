@@ -25,7 +25,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * JAVADOC

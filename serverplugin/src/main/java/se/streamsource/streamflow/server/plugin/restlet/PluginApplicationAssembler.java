@@ -17,14 +17,26 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.api.common.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.entitystore.prefs.*;
-import org.qi4j.library.jmx.*;
-import se.streamsource.streamflow.server.plugin.authentication.*;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
+import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
+import org.qi4j.library.jmx.JMXAssembler;
+import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
+import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
 
 /**
  * Assembler for the plugin application

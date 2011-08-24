@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.structure.form.FormId;
@@ -50,9 +51,9 @@ public class FormInfoContext
       return builder.newInstance();
    }
 
-   public void changeformid( StringValue stringValue )
+   public void changeformid( @Name("id") String newId )
    {
       FormId form = RoleMap.role( FormId.class );
-      form.changeFormId( stringValue.string().get() );
+      form.changeFormId( newId );
    }
 }

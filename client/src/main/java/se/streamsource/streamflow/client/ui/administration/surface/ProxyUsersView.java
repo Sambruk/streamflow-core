@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.gui.*;
-import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.gui.AdvancedTableFormat;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.gui.WritableTableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
@@ -29,26 +31,26 @@ import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.administration.ProxyUserDTO;
 import se.streamsource.streamflow.client.ui.OptionsAction;
-import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.api.administration.ProxyUserDTO;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.Comparator;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 public class ProxyUsersView
       extends JPanel
@@ -56,14 +58,8 @@ public class ProxyUsersView
 {
    private ProxyUsersModel model;
 
-   @Uses
-   Iterable<CreateProxyUserDialog> userDialogs;
-
-   @Uses
-   Iterable<ResetPasswordDialog> resetPwdDialogs;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    @Service
    DialogService dialogs;
@@ -71,12 +67,12 @@ public class ProxyUsersView
    JXTable proxyUsersTable;
    private EventJXTableModel<ProxyUserDTO> tableModel;
 
-   public ProxyUsersView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public ProxyUsersView( @Service ApplicationContext context, @Uses ProxyUsersModel model)
    {
       ApplicationActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      this.model = obf.newObjectBuilder( ProxyUsersModel.class ).use( client ).newInstance();
+      this.model = model;
       TableFormat<ProxyUserDTO> tableFormat = new ProxyUsersTableFormat();
 
       tableModel = new EventJXTableModel<ProxyUserDTO>( model.getEventList(), tableFormat );
@@ -110,7 +106,7 @@ public class ProxyUsersView
    @org.jdesktop.application.Action
    public Task add()
    {
-      final CreateProxyUserDialog dialog = userDialogs.iterator().next();
+      final CreateProxyUserDialog dialog = module.objectBuilderFactory().newObject(CreateProxyUserDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
 
       if ( dialog.userCommand() != null )
@@ -131,7 +127,7 @@ public class ProxyUsersView
    @org.jdesktop.application.Action
    public Task resetPassword()
    {
-      final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
+      final ResetPasswordDialog dialog = module.objectBuilderFactory().newObject(ResetPasswordDialog.class);
 
       final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.convertRowIndexToModel( proxyUsersTable.getSelectedRow()) );
 
@@ -155,7 +151,7 @@ public class ProxyUsersView
       @Action
    public Task remove()
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.convertRowIndexToView( proxyUsersTable.getSelectedRow()) );
       dialog.setRemovalMessage( proxyUser.description().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.remove_proxyuser_title ) );

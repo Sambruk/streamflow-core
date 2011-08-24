@@ -18,14 +18,13 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.StateBinder;
 
-import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Container;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Abstract class that each field type must extend
@@ -36,7 +35,7 @@ public abstract class AbstractFieldPanel extends JPanel
    protected StateBinder.Binding binding;
 
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    public AbstractFieldPanel( FieldSubmissionDTO field )
    {
@@ -56,7 +55,7 @@ public abstract class AbstractFieldPanel extends JPanel
          setToolTipText( DTO.field().get().note().get() );
       }
 
-      StateBinder stateBinder = obf.newObject( StateBinder.class );
+      StateBinder stateBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       FieldSubmissionDTO value1 = stateBinder.bindingTemplate( FieldSubmissionDTO.class );
 
       bb.append( componentName(), this, value1.value(), stateBinder );

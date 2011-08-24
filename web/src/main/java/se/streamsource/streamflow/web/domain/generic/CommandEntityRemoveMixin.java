@@ -21,21 +21,19 @@ import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.spi.Qi4jSPI;
-import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Removable;
 
-import java.beans.*;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.beans.Introspector;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic mixin for simple command methods that remove an entity from a collection. They have to follow this pattern:
@@ -53,12 +51,6 @@ public class CommandEntityRemoveMixin
 
    @Service
    IdentityGenerator idGen;
-
-   @State
-   EntityStateHolder state;
-
-   @Structure
-   UnitOfWorkFactory uowf;
 
    @Structure
    Qi4jSPI spi;

@@ -17,17 +17,24 @@
 
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.io.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import se.streamsource.streamflow.infrastructure.configuration.*;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.util.Visitor;
 
-import java.io.*;
-import java.nio.*;
-import java.text.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
+import java.util.Random;
 
 /**
  * JAVADOC

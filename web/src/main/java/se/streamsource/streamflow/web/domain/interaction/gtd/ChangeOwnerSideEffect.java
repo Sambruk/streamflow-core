@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.sideeffect.*;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.sideeffect.GenericSideEffect;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 /**
  * Change ownership of first argument to "this".

@@ -36,7 +36,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
@@ -54,25 +54,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.KeyboardFocusManager;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeEvent;
@@ -90,8 +75,8 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * Base class for all views of case lists.
@@ -101,7 +86,7 @@ public class CasesTableView
       implements TransactionListener
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    public static final int MILLIS_IN_DAY = (1000 * 60 * 60 * 24);
    public static final WorkspaceResources[] dueGroups = {WorkspaceResources.overdue, WorkspaceResources.duetoday, WorkspaceResources.duetomorrow, WorkspaceResources.duenextweek, WorkspaceResources.duenextmonth, WorkspaceResources.later, WorkspaceResources.noduedate};
@@ -152,7 +137,7 @@ public class CasesTableView
             CasesTableView.class, this ) );
 
       // Filter
-      filter = obf.newObjectBuilder( PerspectiveView.class ).use( model, searchField ).newInstance();
+      filter = module.objectBuilderFactory().newObjectBuilder(PerspectiveView.class).use( model, searchField ).newInstance();
       add( filter, BorderLayout.NORTH );
 
       // Table

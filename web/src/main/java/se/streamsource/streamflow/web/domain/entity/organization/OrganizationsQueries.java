@@ -21,14 +21,13 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 @Mixins(OrganizationsQueries.Mixin.class)
 public interface OrganizationsQueries
@@ -41,13 +40,7 @@ public interface OrganizationsQueries
          implements OrganizationsQueries
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Organizations.Data state;
@@ -55,14 +48,14 @@ public interface OrganizationsQueries
       public OrganizationEntity getOrganizationByName( String name )
       {
          Describable.Data template = templateFor( Describable.Data.class );
-         return qbf.newQueryBuilder( OrganizationEntity.class ).
+         return module.queryBuilderFactory().newQueryBuilder(OrganizationEntity.class).
                where( eq( template.description(), name ) ).
-               newQuery( uowf.currentUnitOfWork() ).find();
+               newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).find();
       }
 
       public QueryBuilder<OrganizationEntity> organizations()
       {
-         return qbf.newQueryBuilder( OrganizationEntity.class ).where( eq( templateFor( Removable.Data.class ).removed(), false ) );
+         return module.queryBuilderFactory().newQueryBuilder(OrganizationEntity.class).where( eq( templateFor( Removable.Data.class ).removed(), false ) );
       }
    }
 }

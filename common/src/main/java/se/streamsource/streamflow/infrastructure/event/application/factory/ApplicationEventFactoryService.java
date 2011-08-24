@@ -17,17 +17,22 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.factory;
 
-import org.json.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
-import se.streamsource.streamflow.infrastructure.time.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Application;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.time.Time;
 
 /**
  * DomainEvent factory
@@ -41,10 +46,7 @@ public interface ApplicationEventFactoryService
          implements ApplicationEventFactory
    {
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Service
       IdentityGenerator idGenerator;
@@ -61,7 +63,7 @@ public interface ApplicationEventFactoryService
 
       public ApplicationEvent createEvent( String name, Object[] args )
       {
-         ValueBuilder<ApplicationEvent> builder = vbf.newValueBuilder( ApplicationEvent.class );
+         ValueBuilder<ApplicationEvent> builder = module.valueBuilderFactory().newValueBuilder(ApplicationEvent.class);
 
          ApplicationEvent prototype = builder.prototype();
          prototype.name().set( name );
@@ -69,7 +71,7 @@ public interface ApplicationEventFactoryService
 
          prototype.identity().set( idGenerator.generate( ApplicationEvent.class ) );
 
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          prototype.usecase().set( uow.usecase().name() );
          prototype.version().set( version );
 

@@ -17,11 +17,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.qi4j.api.io.*;
+import org.qi4j.api.io.Input;
 import se.streamsource.streamflow.util.Visitor;
 
-import java.io.*;
-import java.nio.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  * Store for the binary part of an attachment

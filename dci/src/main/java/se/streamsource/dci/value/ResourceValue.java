@@ -17,12 +17,13 @@
 
 package se.streamsource.dci.value;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.link.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.link.LinkValue;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Value representing a whole resource in a URL path. Allows listing of available

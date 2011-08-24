@@ -17,15 +17,16 @@
 
 package se.streamsource.streamflow.web.domain.structure.role;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
 /**
  * JAVADOC
@@ -60,9 +61,6 @@ public interface Roles
    {
       @Service
       IdentityGenerator idGen;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       @This
       Data data;

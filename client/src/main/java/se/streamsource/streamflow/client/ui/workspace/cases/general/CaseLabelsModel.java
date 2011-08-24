@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 /**
  * Model for the list of currently selected labels of a case
@@ -52,13 +55,8 @@ public class CaseLabelsModel
 
    public EventList<LinkValue> getPossibleLabels()
    {
-      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
-
-      LinksValue listValue = client.query( "possiblelabels",
-            LinksValue.class );
-      list.addAll( listValue.links().get() );
-
-      return list;
+      return EventListSynch.synchronize(client.query( "possiblelabels",
+            LinksValue.class ).links().get(), new BasicEventList<LinkValue>());
    }
 
    public void addLabel( LinkValue addLabel )

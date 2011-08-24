@@ -326,6 +326,14 @@
             <artifactId>joda-time</artifactId>
             <version>1.6.2</version>
         </dependency>
+
+        <!-- Admin -->
+        <dependency>
+            <groupId>jivesoftware</groupId>
+            <artifactId>smack</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

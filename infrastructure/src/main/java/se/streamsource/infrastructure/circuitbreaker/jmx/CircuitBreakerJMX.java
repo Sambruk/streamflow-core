@@ -17,23 +17,51 @@
 
 package se.streamsource.infrastructure.circuitbreaker.jmx;
 
-import se.streamsource.infrastructure.circuitbreaker.*;
+import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
-import java.beans.*;
-import java.text.*;
-import java.util.*;
+import javax.management.AttributeChangeNotification;
+import javax.management.MBeanNotificationInfo;
+import javax.management.NotificationBroadcasterSupport;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
 * MBean for circuit breakers
 */
 public class CircuitBreakerJMX
+   extends NotificationBroadcasterSupport
    implements CircuitBreakerJMXMBean
 {
    CircuitBreaker circuitBreaker;
 
-   public CircuitBreakerJMX( CircuitBreaker circuitBreaker )
+   long seqNr = 1;
+
+   public CircuitBreakerJMX(final CircuitBreaker circuitBreaker, final String name)
    {
+      super(new MBeanNotificationInfo(new String[]{AttributeChangeNotification.ATTRIBUTE_CHANGE}, AttributeChangeNotification.class.getName(), "CircuitBreaker status has changed"));
       this.circuitBreaker = circuitBreaker;
+
+      circuitBreaker.addPropertyChangeListener( new PropertyChangeListener()
+      {
+         public void propertyChange( PropertyChangeEvent evt )
+         {
+            if (evt.getPropertyName().equals( "status" ))
+            {
+               if (evt.getNewValue().equals(CircuitBreaker.Status.on))
+               {
+                  sendNotification(new AttributeChangeNotification(CircuitBreakerJMX.this, seqNr++, System.currentTimeMillis(), "Status changed for "+name, "Status", String.class.getName(), CircuitBreaker.Status.off, CircuitBreaker.Status.on));
+               }
+               else
+               {
+                  sendNotification(new AttributeChangeNotification(CircuitBreakerJMX.this, seqNr++, System.currentTimeMillis(), "Status changed for "+name, "Status", String.class.getName(), CircuitBreaker.Status.on, CircuitBreaker.Status.off));
+               }
+            }
+         }
+      });
    }
 
    public String getStatus()

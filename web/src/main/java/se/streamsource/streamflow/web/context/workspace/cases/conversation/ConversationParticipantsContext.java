@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * JAVADOC

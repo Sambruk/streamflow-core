@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.resolutions;
 
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * Management of eventList
@@ -27,6 +27,6 @@ public class ResolutionsModel
 {
    public ResolutionsModel()
    {
-      super( "createresolution" );
+      super( "create" );
    }
 }

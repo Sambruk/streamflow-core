@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.api.workspace.cases.attachment;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC

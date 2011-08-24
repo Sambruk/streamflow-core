@@ -17,26 +17,54 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.bootstrap.*;
-import org.qi4j.library.rdf.entity.*;
-import org.qi4j.library.rest.*;
-import org.restlet.security.*;
-import se.streamsource.dci.restlet.server.*;
-import se.streamsource.streamflow.web.application.security.*;
-import se.streamsource.streamflow.web.resource.*;
-import se.streamsource.streamflow.web.resource.admin.*;
-import se.streamsource.streamflow.web.resource.events.*;
-import se.streamsource.streamflow.web.rest.*;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.configuration.Enabled;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.library.rdf.entity.EntityStateSerializer;
+import org.qi4j.library.rdf.entity.EntityTypeSerializer;
+import org.qi4j.library.rest.EntitiesResource;
+import org.qi4j.library.rest.EntityResource;
+import org.qi4j.library.rest.IndexResource;
+import org.qi4j.library.rest.SPARQLResource;
+import org.restlet.security.ChallengeAuthenticator;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.dci.restlet.server.ResultConverter;
+import se.streamsource.streamflow.util.ClassScanner;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
+import se.streamsource.streamflow.web.rest.StreamflowCaseResponseWriter;
+import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
+import se.streamsource.streamflow.web.rest.StreamflowRestlet;
+import se.streamsource.streamflow.web.rest.StreamflowResultConverter;
+import se.streamsource.streamflow.web.rest.resource.APIRouter;
+import se.streamsource.streamflow.web.rest.resource.RootResource;
+import se.streamsource.streamflow.web.rest.service.conversation.ConversationResponseService;
+import se.streamsource.streamflow.web.rest.service.conversation.NotificationService;
+import se.streamsource.streamflow.web.rest.service.filter.FilterConfiguration;
+import se.streamsource.streamflow.web.rest.service.filter.FilterService;
+
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 /**
  * JAVADOC
  */
 public class WebAssembler
+   extends AbstractLayerAssembler
 {
    public void assemble(LayerAssembly layer)
            throws AssemblyException
    {
+      super.assemble(layer);
+
       rest(layer.module("REST"));
+      services(layer.module("Services"));
    }
 
    private void rest(ModuleAssembly module) throws AssemblyException
@@ -56,15 +84,47 @@ public class WebAssembler
       // Resources
       module.objects(
               APIRouter.class,
-              AuthenticationFilter.class,
-
-              // Events
-              DomainEventsServerResource.class,
-              ApplicationEventsServerResource.class,
-
-              // Admin
-              ConsoleServerResource.class,
-              SolrSearchServerResource.class
+              AuthenticationFilter.class
       );
+
+      new DCIAssembler().assemble(module);
+
+      // Import file handling service for file uploads
+      DiskFileItemFactory factory = new DiskFileItemFactory();
+      factory.setSizeThreshold(1024 * 1000 * 30); // 30 Mb threshold TODO Make this into real service and make this number configurable
+      module.importedServices(FileItemFactory.class).importedBy(INSTANCE).setMetaInfo(factory);
+
+      module.importedServices(ResultConverter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
+      module.objects(StreamflowResultConverter.class);
+
+      module.importedServices(StreamflowCaseResponseWriter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
+      module.objects(StreamflowCaseResponseWriter.class);
+
+      module.objects(StreamflowRestlet.class).visibleIn(Visibility.application);
+
+      // Register all resources
+      for (Class aClass : Iterables.filter(ClassScanner.matches(".*Resource"), ClassScanner.getClasses(RootResource.class)))
+      {
+         module.objects(aClass);
+      }
+   }
+
+   private void services(ModuleAssembly module)
+   {
+      module.services(FilterService.class).identifiedBy("filter").visibleIn(application).instantiateOnStartup();
+      configuration().entities(FilterConfiguration.class);
+
+      module.services( NotificationService.class )
+            .identifiedBy( "notification" )
+            .instantiateOnStartup()
+            .visibleIn(application);
+
+      module.services( ConversationResponseService.class )
+            .identifiedBy("conversationresponse")
+            .instantiateOnStartup()
+            .visibleIn(application);
+
+      module.forMixin(Enabled.class).declareDefaults().enabled().set(true);
+
    }
 }

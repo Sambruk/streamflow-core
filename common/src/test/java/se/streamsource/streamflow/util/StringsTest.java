@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.util;
 
-import org.hamcrest.*;
-import org.junit.*;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Test of Strings utility

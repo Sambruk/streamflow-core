@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 public class CaseStatusTableCellRenderer extends DefaultTableCellRenderer

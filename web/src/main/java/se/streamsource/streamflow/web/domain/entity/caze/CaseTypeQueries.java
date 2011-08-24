@@ -22,9 +22,9 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.web.domain.Describable;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
@@ -38,10 +38,20 @@ import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -58,7 +68,7 @@ public interface CaseTypeQueries
          implements CaseTypeQueries
    {
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       CreatedOn created;
@@ -189,7 +199,7 @@ public interface CaseTypeQueries
             {
                CaseTypesQueries caseTypesQueries = (CaseTypesQueries) organization;
                QueryBuilder<Project> builder = caseTypesQueries.possibleProjects( typedCase.caseType().get() );
-               Query<Project> query = builder.newQuery( uowf.currentUnitOfWork() );
+               Query<Project> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
                for (Project project : query)
                {
                   // dont allow duplicates
@@ -207,7 +217,7 @@ public interface CaseTypeQueries
 
             List<Project> projects = new ArrayList<Project>();
             QueryBuilder<Project> builder = org.possibleProjects( typedCase.caseType().get() );
-            Query<Project> query = builder.newQuery( uowf.currentUnitOfWork() );
+            Query<Project> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
             for (Project project : query)
             {
                projects.add( project );

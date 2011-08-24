@@ -17,8 +17,8 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.restlet.*;
-import org.restlet.resource.*;
+import org.restlet.Request;
+import org.restlet.resource.ResourceException;
 
 /**
  * JAVADOC
@@ -33,6 +33,6 @@ public interface RequestWriter
     * @return
     * @throws org.restlet.resource.ResourceException
     */
-   public boolean write(Object requestObject, Request request)
+   public boolean writeRequest(Object requestObject, Request request)
       throws ResourceException;
 }

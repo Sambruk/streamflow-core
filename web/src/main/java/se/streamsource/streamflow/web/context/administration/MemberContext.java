@@ -17,9 +17,12 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.mixin.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Members;
 
 /**
  * JAVADOC

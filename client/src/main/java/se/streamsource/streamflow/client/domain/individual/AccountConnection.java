@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.restlet.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import org.restlet.Uniform;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * JAVADOC

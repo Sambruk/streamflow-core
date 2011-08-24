@@ -17,13 +17,13 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.restlet.*;
-import org.restlet.resource.*;
+import org.restlet.Response;
+import org.restlet.resource.ResourceException;
 
 /**
  * JAVADOC
  */
 public interface ResponseReader
 {
-   <T> T readResponse(Response response, Class<T> resultType) throws ResourceException;
+   Object readResponse(Response response, Class<?> resultType) throws ResourceException;
 }

@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.web.application.migration;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.configuration.*;
-import org.qi4j.api.property.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 /**
  * Configuration of the startup migration service

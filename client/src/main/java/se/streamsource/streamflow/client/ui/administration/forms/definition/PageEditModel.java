@@ -17,10 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -35,7 +37,7 @@ public class PageEditModel
    private CommandQueryClient client;
 
    @Structure
-   private ValueBuilderFactory vbf;
+   private Module module;
 
    private PageDefinitionValue page;
 
@@ -46,7 +48,7 @@ public class PageEditModel
 
    public void changeDescription( String pageName ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( pageName );
 
       client.putCommand( "changedescription", builder.newInstance() );
@@ -59,7 +61,7 @@ public class PageEditModel
 
    public void move( String direction ) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( direction );
 
 

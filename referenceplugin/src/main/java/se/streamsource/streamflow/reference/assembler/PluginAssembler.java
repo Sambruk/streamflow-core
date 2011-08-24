@@ -17,9 +17,12 @@
 
 package se.streamsource.streamflow.reference.assembler;
 
-import org.qi4j.api.common.*;
-import org.qi4j.bootstrap.*;
-import se.streamsource.streamflow.reference.contact.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.reference.contact.StreamflowContactLookupPlugin;
+import se.streamsource.streamflow.reference.contact.StreamflowContactLookupPluginConfiguration;
 
 /**
  * Register reference plugins in the plugin application

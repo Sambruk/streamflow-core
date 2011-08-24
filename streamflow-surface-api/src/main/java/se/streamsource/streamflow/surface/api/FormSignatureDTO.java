@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.surface.api;
 
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * Signature for a form

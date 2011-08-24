@@ -17,8 +17,8 @@
 
 package se.streamsource.dci.value.link;
 
-import org.qi4j.api.specification.*;
-import org.qi4j.api.util.*;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.util.Function;
 
 /**
  * Helper methods for links

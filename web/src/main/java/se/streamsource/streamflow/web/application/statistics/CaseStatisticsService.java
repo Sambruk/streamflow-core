@@ -86,7 +86,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Date;
 
-import static org.qi4j.api.specification.Specifications.*;
+import static org.qi4j.api.specification.Specifications.and;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**

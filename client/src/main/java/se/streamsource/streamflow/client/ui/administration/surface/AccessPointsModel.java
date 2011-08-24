@@ -17,17 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 
 public class AccessPointsModel
@@ -35,21 +38,23 @@ public class AccessPointsModel
       implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    @Uses
    CommandQueryClient client;
+
+   public AccessPointsModel()
+   {
+      relationModelMapping("accesspoint", AccessPointModel.class);
+   }
 
    public void createAccessPoint( String accessPointName )
    {
       try
       {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( accessPointName );
-         client.postCommand( "createaccesspoint", builder.newInstance() );
+         Form form = new Form();
+         form.set( "name", accessPointName );
+         client.postCommand( "createaccesspoint", form.getWebRepresentation() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -62,7 +67,7 @@ public class AccessPointsModel
 
    public void changeDescription( LinkValue link, String newName )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( newName );
 
       try

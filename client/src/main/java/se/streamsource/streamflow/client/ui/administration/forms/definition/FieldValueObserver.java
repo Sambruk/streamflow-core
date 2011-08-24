@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.property.*;
-import se.streamsource.streamflow.client.util.*;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.client.util.CommandTask;
 
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
 
 public class FieldValueObserver
       implements Observer

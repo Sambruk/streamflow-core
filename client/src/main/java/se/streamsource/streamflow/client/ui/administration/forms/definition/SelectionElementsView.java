@@ -17,22 +17,31 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.factories.*;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.util.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXList;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
@@ -51,12 +60,8 @@ public class SelectionElementsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
+   @Structure
+   Module module;
 
    public SelectionElementsView( @Service ApplicationContext context,
                                  @Uses SelectionElementsModel model )
@@ -129,7 +134,7 @@ public class SelectionElementsView
    @org.jdesktop.application.Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
 
@@ -154,7 +159,7 @@ public class SelectionElementsView
    {
       final int index = elementList.getSelectedIndex();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( elementList.getStringAt( index ));
 
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
@@ -217,7 +222,7 @@ public class SelectionElementsView
    @org.jdesktop.application.Action
    public Task rename()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.rename ));
 

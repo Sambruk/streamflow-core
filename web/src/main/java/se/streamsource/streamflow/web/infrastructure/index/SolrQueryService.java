@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.service.*;
-import org.qi4j.spi.entitystore.*;
-import org.qi4j.spi.query.*;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.spi.entitystore.StateChangeListener;
+import org.qi4j.spi.query.NamedEntityFinder;
 
 @Mixins({SolrEntityIndexerMixin.class, SolrEntityQueryMixin.class})
 public interface SolrQueryService

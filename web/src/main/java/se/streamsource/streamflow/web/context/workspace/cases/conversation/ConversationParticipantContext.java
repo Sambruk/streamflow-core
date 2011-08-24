@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
-import se.streamsource.dci.api.*;
-import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 
 /**
  * JAVADOC

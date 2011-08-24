@@ -19,8 +19,11 @@ package se.streamsource.streamflow.client.ui;
 
 import se.streamsource.streamflow.util.Dates;
 
-import java.text.*;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class DateFormats
 {

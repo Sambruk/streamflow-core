@@ -17,16 +17,19 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.proxyusers;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.api.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import java.io.IOException;
+
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -43,14 +46,14 @@ public class ProxyUserContext
       userAuth.changeEnabled( enabled );
    }
 
-   public void resetpassword( StringValue newPassword )
+   public void resetpassword( @Name("password") String newPassword )
    {
       UserAuthentication authentication = role( UserAuthentication.class );
 
-      authentication.resetPassword( newPassword.string().get() );
+      authentication.resetPassword( newPassword );
    }
 
-   public void delete() throws ResourceException
+   public void delete() throws IOException
    {
       ProxyUsers.Data proxyUsers = role( ProxyUsers.Data.class );
       ProxyUser proxyUser = role( ProxyUser.class );

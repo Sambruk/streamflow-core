@@ -17,11 +17,15 @@
 
 package se.streamsource.dci.value.table;
 
-import org.junit.*;
-import org.qi4j.api.value.*;
-import org.qi4j.bootstrap.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.SingletonAssembler;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 /**
  * TODO

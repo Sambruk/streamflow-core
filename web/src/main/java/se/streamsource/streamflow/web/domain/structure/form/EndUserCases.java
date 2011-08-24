@@ -17,15 +17,22 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.web.domain.entity.caze.*;
-import se.streamsource.streamflow.web.domain.entity.gtd.*;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.user.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
+
+import static se.streamsource.streamflow.util.Strings.empty;
 
 /**
  * JAVADOC
@@ -58,7 +65,7 @@ public interface EndUserCases
       Labelable.Data labelable;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public CaseEntity createCaseWithForm( EndUser endUser )
       {
@@ -69,6 +76,21 @@ public interface EndUserCases
 
       public void submitForm( Case caze, FormDraft formSubmission, Submitter submitter )
       {
+         // Transfer contact information from submitter
+         // TODO Also add from typed form data
+         Contactable contactable = (Contactable) caze.createdBy().get();
+         if (!empty(contactable.getContact().contactId().get()))
+            caze.addContact(contactable.getContact());
+
+         // Add contact info for signatories
+         for (FormSignatureDTO signature : formSubmission.getFormDraftValue().signatures().get())
+         {
+            ContactBuilder builder = new ContactBuilder(module.valueBuilderFactory());
+            builder.name(signature.signerName().get()).contactId(signature.signerId().get());
+            caze.addContact(builder.newInstance());
+         }
+
+         // Submit the form
          caze.submitForm( formSubmission, submitter );
       }
 
@@ -102,7 +124,7 @@ public interface EndUserCases
 
       public void discardCase( Case caze )
       {
-         uowf.currentUnitOfWork().remove( caze );
+         caze.deleteEntity();
       }
    }
 }

@@ -17,7 +17,7 @@
 
 package se.streamsource.dci.restlet.server.api;
 
-import org.restlet.resource.*;
+import org.restlet.resource.ResourceException;
 
 /**
  * Resources that have a collection of sub-resources should extends this interface.

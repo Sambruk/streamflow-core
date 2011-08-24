@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.factory;
 
-import org.qi4j.api.concern.*;
-import org.qi4j.api.mixin.*;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.mixin.NoopMixin;
 
 /**
  * JAVADOC

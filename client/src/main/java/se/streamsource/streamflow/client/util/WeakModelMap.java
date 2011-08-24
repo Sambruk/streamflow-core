@@ -17,8 +17,12 @@
 
 package se.streamsource.streamflow.client.util;
 
-import java.lang.ref.*;
-import java.util.*;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Map that helps maintain models. The model instances are weakly referenced

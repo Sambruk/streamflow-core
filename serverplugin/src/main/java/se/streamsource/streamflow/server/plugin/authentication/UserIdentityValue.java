@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.server.plugin.authentication;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * Describes the identity of a user with username and password.

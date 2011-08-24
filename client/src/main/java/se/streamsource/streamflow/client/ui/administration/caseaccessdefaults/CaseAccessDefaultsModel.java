@@ -17,9 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.caseaccessdefaults;
 
-import ca.odell.glazedlists.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.ResourceModel;
 
 /**
  * JAVADOC

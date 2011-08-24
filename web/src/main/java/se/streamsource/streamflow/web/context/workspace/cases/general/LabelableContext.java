@@ -37,7 +37,7 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 import java.util.HashSet;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

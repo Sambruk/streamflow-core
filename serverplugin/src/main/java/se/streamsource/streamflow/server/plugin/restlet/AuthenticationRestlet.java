@@ -17,14 +17,26 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.resource.*;
-import se.streamsource.streamflow.server.plugin.authentication.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
+import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
+import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 
 /**
  * Empty restlet...
@@ -32,7 +44,7 @@ import se.streamsource.streamflow.server.plugin.authentication.*;
 public class AuthenticationRestlet extends Restlet
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Optional
    @Service
@@ -53,7 +65,7 @@ public class AuthenticationRestlet extends Restlet
                response.getChallengeRequests().add(new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Streamflow"));
             } else
             {
-               ValueBuilder<UserIdentityValue> builder = vbf.newValueBuilder(UserIdentityValue.class);
+               ValueBuilder<UserIdentityValue> builder = module.valueBuilderFactory().newValueBuilder(UserIdentityValue.class);
                builder.prototype().username().set(request.getChallengeResponse().getIdentifier());
                builder.prototype().password().set(new String(request.getChallengeResponse().getSecret()));
 

@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 
 /**
  * JAVADOC

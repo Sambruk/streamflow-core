@@ -17,20 +17,24 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import se.streamsource.streamflow.client.ui.administration.*;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
-import javax.swing.Action;
 import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Bind components to actions, which are invoked when the components state is updated

@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Generic mixin for anything that is ownable. Represents a child-parent relationship.
@@ -39,19 +39,22 @@ public interface Ownable
    {
       @Optional
       Association<Owner> owner();
+   }
 
+   interface Events
+   {
       void changedOwner( @Optional DomainEvent event, Owner newOwner );
    }
 
-   abstract class Mixin
-         implements Ownable, Data
+   class Mixin
+         implements Ownable, Events
    {
       @This
       Data state;
 
       public void changeOwner( Owner owner )
       {
-         if (owner != null && owner.equals( owner().get() ))
+         if (owner.equals( state.owner().get() ))
             return; // Don't try to set to the same owner
 
          changedOwner( null, owner );
@@ -59,12 +62,12 @@ public interface Ownable
 
       public boolean hasOwner()
       {
-         return owner().get() != null;
+         return state.owner().get() != null;
       }
 
       public boolean isOwnedBy( Owner owner )
       {
-         return owner.equals( owner().get() );
+         return owner.equals( state.owner().get() );
       }
 
       public void changedOwner( @Optional DomainEvent event, Owner newOwner )

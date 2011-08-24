@@ -17,10 +17,16 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.restlet.*;
-import org.restlet.data.*;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Tag;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Cache for the CommandQueryClient. This is primarily used to keep track of ETags and lastmodified timestamps for now.

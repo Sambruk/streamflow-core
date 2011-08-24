@@ -17,15 +17,20 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.factory;
 
-import org.qi4j.api.concern.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.unitofwork.*;
-import org.slf4j.*;
-import se.streamsource.streamflow.infrastructure.event.application.*;
-import se.streamsource.streamflow.infrastructure.event.application.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCallback;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStore;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactory;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Notify transaction listeners when a complete transaction of domain events is available.
@@ -38,13 +43,13 @@ public class TransactionNotificationConcern
    ApplicationEventStore eventStore;
 
    @Structure
-   UnitOfWorkFactory uowf;
+   Module module;
 
    Logger logger = LoggerFactory.getLogger( DomainEventFactory.class );
 
    public ApplicationEvent createEvent( String name, Object[] args )
    {
-      final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
+      final UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
 
       ApplicationEvent event = next.createEvent( name, args );
 

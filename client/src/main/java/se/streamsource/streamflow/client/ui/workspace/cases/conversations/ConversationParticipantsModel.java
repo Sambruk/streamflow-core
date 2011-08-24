@@ -17,14 +17,18 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.restlet.resource.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 
 public class ConversationParticipantsModel
    implements Refreshable

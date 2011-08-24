@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import org.qi4j.api.specification.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import org.qi4j.api.specification.Specification;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventVisitor;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Event handling router. Add specification->visitor routes. When an event comes in

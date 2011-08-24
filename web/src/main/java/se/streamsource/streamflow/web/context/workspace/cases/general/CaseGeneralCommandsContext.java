@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -28,12 +27,11 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.web.domain.Notable;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
@@ -50,7 +48,6 @@ import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
  * Commands for the General view of a Case. They all require the "write" permission
  */
 @Mixins(CaseGeneralCommandsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 @RequiresPermission(PermissionType.write)
 public interface CaseGeneralCommandsContext
       extends
@@ -63,7 +60,7 @@ public interface CaseGeneralCommandsContext
    void casetype( EntityValue dto );
 
    @RequiresStatus({DRAFT, OPEN})
-   void changedescription( @MaxLength(50) StringValue stringValue );
+   void changedescription( @MaxLength(50) @Name("description") String stringValue );
 
    @RequiresStatus({DRAFT, OPEN})
    void changenote( StringValue noteValue );
@@ -76,10 +73,10 @@ public interface CaseGeneralCommandsContext
       @Structure
       Module module;
 
-      public void changedescription( StringValue stringValue )
+      public void changedescription( String stringValue )
       {
          Describable describable = RoleMap.role( Describable.class );
-         describable.changeDescription( stringValue.string().get() );
+         describable.changeDescription( stringValue );
       }
 
       public void changenote( StringValue noteValue )

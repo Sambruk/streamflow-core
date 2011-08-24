@@ -54,6 +54,7 @@ public interface OrganizationalUnitEntity
       OrganizationalUnits.Data,
       Forms.Data,
       Groups.Data,
+      Groups.Events,
       Projects.Data,
       Removable.Data,
       RolePolicy.Data,

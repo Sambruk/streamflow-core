@@ -17,27 +17,27 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 @Mixins(ProjectsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface ProjectsContext
-      extends IndexContext<Iterable<Project>>, Context
+      extends IndexContext<Iterable<Project>>, CreateContext<String, Project>, Context
 {
-   void createproject( @MaxLength(50) StringValue name );
+   Project create( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements ProjectsContext
@@ -50,11 +50,11 @@ public interface ProjectsContext
          return role( Projects.Data.class ).projects();
       }
 
-      public void createproject( StringValue name )
+      public Project create( String name )
       {
          Projects projects = role( Projects.class );
 
-         projects.createProject( name.string().get() );
+         return projects.createProject( name );
       }
    }
 }

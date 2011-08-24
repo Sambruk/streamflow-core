@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.*;
-import se.streamsource.dci.value.link.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 
 /**
  * Management of selected entities
@@ -30,13 +32,6 @@ public class SelectionListModel
 
    public SelectionListModel( String possible )
    {
-      this("index", possible);
-   }
-
-   public SelectionListModel(String refresh, String possible)
-   {
-      super(refresh);
-
       this.possible = possible;
    }
 

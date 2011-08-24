@@ -17,16 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.ui.workspace.table.*;
-import se.streamsource.streamflow.client.util.*;
-
-import java.util.*;
+import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 
 /**
  * Model for search results
@@ -34,14 +31,11 @@ import java.util.*;
 public class SearchResultTableModel
         extends CasesTableModel
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
    private String searchString;
 
-   public SearchResultTableModel(@Structure ObjectBuilderFactory obf)
+   public SearchResultTableModel(@Structure Module module)
    {
-      super(obf);
+      super(module);
    }
 
    public void search(String text)
@@ -56,31 +50,27 @@ public class SearchResultTableModel
    {
       if (searchString != null)
       {
-         new Task<TableValue, Void>(Application.getInstance())
+         TableValue result = performSearch();
+
+         eventList.getReadWriteLock().writeLock().lock();
+         try
          {
-            @Override
-            protected TableValue doInBackground() throws Exception
-            {
-               return performSearch();
-            }
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).beginEvent();
 
-            @Override
-            protected void succeeded(TableValue result)
-            {
-               EventListSynch.synchronize(Collections.<CaseTableValue>emptyList(), eventList);
-               EventListSynch.synchronize(caseTableValues(result), eventList);
-            }
+               eventList.clear();
+               eventList.addAll( caseTableValues(result) );
 
-            @Override
-            protected void failed(Throwable cause)
-            {
-               throw (RuntimeException) cause;
-            }
-         }.execute();
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).commitEvent();
+         } finally
+         {
+            eventList.getReadWriteLock().writeLock().unlock();
+         }
+
+         setChanged();
+         notifyObservers();
       }
-
-      setChanged();
-      notifyObservers();
    }
 
    private TableValue performSearch()
@@ -89,7 +79,7 @@ public class SearchResultTableModel
 
       translatedQuery += addWhereClauseFromFilter();
 
-      ValueBuilder<TableQuery> builder = vbf.newValueBuilder(TableQuery.class);
+      ValueBuilder<TableQuery> builder = module.valueBuilderFactory().newValueBuilder(TableQuery.class);
       String query = "select * where " + translatedQuery;
 
       query += addSortingFromFilter();
@@ -97,6 +87,10 @@ public class SearchResultTableModel
       query += " limit 1000";
       builder.prototype().tq().set(query);
 
-      return client.query("cases", builder.newInstance(), TableValue.class);
+      return client.query("cases", TableValue.class, builder.newInstance());
    }
+
+    public void clearSearchString() {
+        searchString = "";
+    }
 }

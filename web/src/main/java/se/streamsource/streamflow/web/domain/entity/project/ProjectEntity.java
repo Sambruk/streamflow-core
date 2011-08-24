@@ -23,23 +23,32 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
-import se.streamsource.streamflow.web.domain.structure.form.*;
-import se.streamsource.streamflow.web.domain.structure.label.*;
-import se.streamsource.streamflow.web.domain.structure.organization.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Members;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 
 /**
  * JAVADOC
@@ -54,7 +63,6 @@ public interface ProjectEntity
         IdGenerator,
 
         // Structure
-        Members,
         Project,
         OwningOrganizationalUnit,
 
@@ -64,12 +72,15 @@ public interface ProjectEntity
         Describable.Data,
         OwningOrganizationalUnit.Data,
         Ownable.Data,
+        Ownable.Events,
         Forms.Data,
         Labels.Data,
         SelectedLabels.Data,
         CaseTypes.Data,
         Removable.Data,
         SelectedCaseTypes.Data,
+        Filters.Data,
+        Filters.Events,
 
         // Queries
         AssignmentsQueries,
@@ -97,12 +108,12 @@ public interface ProjectEntity
       AssignmentsQueries assignments;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public void removeMember(Member member)
       {
          // Get all active cases in a project for a particular user and unassign.
-         for (Assignable caze : assignments.assignments((Assignee) member, null).newQuery(uowf.currentUnitOfWork()))
+         for (Assignable caze : assignments.assignments((Assignee) member, null).newQuery(module.unitOfWorkFactory().currentUnitOfWork()))
          {
             caze.unassign();
          }
@@ -113,15 +124,6 @@ public interface ProjectEntity
            extends ConcernOf<Removable>
            implements Removable
    {
-      @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
-
       @This
       Identity id;
 

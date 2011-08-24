@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.client;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Locale;
 
 /**
  * Main class for client.
@@ -46,6 +46,8 @@ public class MainClient
          Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
       else
          Locale.setDefault(Locale.ENGLISH);
+
+      Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
 
       org.jdesktop.application.Application.launch( StreamflowApplication.class, args );
 

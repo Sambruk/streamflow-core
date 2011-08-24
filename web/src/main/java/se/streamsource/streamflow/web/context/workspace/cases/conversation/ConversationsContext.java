@@ -17,20 +17,21 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.api.value.*;
-import org.qi4j.library.constraints.annotation.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
@@ -43,12 +44,11 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
  * JAVADOC
  */
 @Mixins(ConversationsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface ConversationsContext
       extends
-      IndexContext<LinksValue>, Context
+      IndexContext<LinksValue>, Context, CreateContext<String, Conversation>
 {
-   public void create( @MaxLength(50) StringValue topic );
+   public Conversation create( @MaxLength(50) @Name("topic") String topic );
 
    abstract class Mixin
          implements ConversationsContext
@@ -78,12 +78,12 @@ public interface ConversationsContext
          return links.newLinks();
       }
 
-      public void create( StringValue topic )
+      public Conversation create( String topic )
       {
          Conversations conversations = RoleMap.role( Conversations.class );
-         Conversation conversation = conversations.createConversation( topic.string().get(), RoleMap.role( Creator.class ) );
+         Conversation conversation = conversations.createConversation( topic, RoleMap.role( Creator.class ) );
          ((ConversationEntity) conversation).addParticipant( RoleMap.role( ConversationParticipant.class ) );
-
+         return conversation;
       }
    }
 }

@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.slf4j.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.ResourceMap;
+import org.qi4j.api.injection.scope.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.Action;
 import javax.swing.*;
 
 /**

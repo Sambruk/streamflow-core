@@ -26,58 +26,45 @@ import org.netbeans.spi.wizard.WizardPage;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable, TransactionListener
 {
    @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private
    @Service
    StreamflowApplication main;
 
-   private LinkValueListModel modelForms;
-   public Wizard wizard;
-   private final CommandQueryClient client;
+   private PossibleFormsModel modelForms;
+   private Wizard wizard;
 
-   public PossibleFormsView(@Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public PossibleFormsView(@Uses PossibleFormsModel possibleFormsModel)
    {
-      this.client = client;
+      this.modelForms = possibleFormsModel;
       setLayout( new GridLayout( 0, 1 ) );
       setBorder( BorderFactory.createEmptyBorder( 2, 0, 2, 2 ) );
       setFocusable( false );
-
-      modelForms = obf.newObjectBuilder( PossibleFormsModel.class ).use( client ).newInstance();
 
       new RefreshWhenShowing(this, this);
    }
@@ -92,7 +79,7 @@ public class PossibleFormsView extends JPanel
 
       for (LinkValue itemValue : formList)
       {
-         PossibleFormView formView = new PossibleFormView( itemValue );
+         PossibleFormView formView = module.objectBuilderFactory().newObjectBuilder(PossibleFormView.class).use(itemValue).newInstance();
          formView.addActionListener( this );
          add( formView, Component.LEFT_ALIGNMENT );
       }
@@ -119,15 +106,8 @@ public class PossibleFormsView extends JPanel
       {
          final PossibleFormView form = (PossibleFormView) e.getSource();
 
-         CommandQueryClient possibleFormClient = client.getSubClient( form.form().id().get() );
-
-         possibleFormClient.postCommand( "create" );
-         LinkValue formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
-
-         // get the form submission value;
-         final CommandQueryClient formDraftClient = client.getClient( formDraftLink );
-         FormDraftDTO formDraftDTO = (FormDraftDTO) formDraftClient.query( "index", FormDraftDTO.class )
-               .buildWith().prototype();
+         final FormDraftModel formDraftModel = modelForms.getFormDraftModel(form.form().id().get());
+         FormDraftDTO formDraftDTO = (FormDraftDTO) ((FormDraftModel) formDraftModel).getFormDraftDTO().buildWith().prototype();
 
          final WizardPage[] wizardPages = new WizardPage[ formDraftDTO.pages().get().size() ];
          for (int i = 0; i < formDraftDTO.pages().get().size(); i++)
@@ -135,8 +115,8 @@ public class PossibleFormsView extends JPanel
             PageSubmissionDTO page = formDraftDTO.pages().get().get( i );
             if ( page.fields().get() != null && page.fields().get().size() >0 )
             {
-               wizardPages[i] = obf.newObjectBuilder( FormSubmissionWizardPageView.class ).
-                     use( formDraftClient, page ).newInstance();
+               wizardPages[i] = module.objectBuilderFactory().newObjectBuilder(FormSubmissionWizardPageView.class).
+                     use( formDraftModel, page ).newInstance();
             }
          }
          wizard = WizardPage.createWizard( formDraftDTO.description().get(), wizardPages, new WizardPage.WizardResultProducer()
@@ -154,7 +134,7 @@ public class PossibleFormsView extends JPanel
                      @Override
                      protected void command() throws Exception
                      {
-                        formDraftClient.putCommand( "submit" );
+                        formDraftModel.submit();
                      }
                   }.execute();
                }
@@ -169,7 +149,7 @@ public class PossibleFormsView extends JPanel
                   public void command()
                      throws Exception
                   {
-                     formDraftClient.delete();
+                     formDraftModel.delete();
                   }
                }.execute();
                return true;

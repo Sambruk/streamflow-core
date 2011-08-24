@@ -17,15 +17,27 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.api.common.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.index.reindexer.*;
-import org.qi4j.library.jmx.*;
-import se.streamsource.infrastructure.circuitbreaker.jmx.*;
-import se.streamsource.streamflow.web.application.management.*;
-import se.streamsource.streamflow.web.application.management.jmxconnector.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.index.reindexer.ReindexerService;
+import org.qi4j.library.jmx.JMXAssembler;
+import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
+import se.streamsource.streamflow.web.management.InstantMessagingAdminConfiguration;
+import se.streamsource.streamflow.web.management.InstantMessagingAdminService;
+import se.streamsource.streamflow.web.management.CompositeMBean;
+import se.streamsource.streamflow.web.management.DatasourceConfigurationManagerService;
+import se.streamsource.streamflow.web.management.ErrorLogService;
+import se.streamsource.streamflow.web.management.EventManagerService;
+import se.streamsource.streamflow.web.management.ManagerComposite;
+import se.streamsource.streamflow.web.management.ManagerService;
+import se.streamsource.streamflow.web.management.ReindexOnStartupService;
+import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfiguration;
+import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorService;
 
-import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
 
 /**
  * Assembler for management layer
@@ -59,5 +71,8 @@ public class ManagementAssembler
 
       module.services(JmxConnectorService.class).identifiedBy("jmxconnector").instantiateOnStartup();
       configuration().entities(JmxConnectorConfiguration.class).visibleIn(Visibility.application);
+
+      module.services(InstantMessagingAdminService.class).identifiedBy("imadmin").instantiateOnStartup();
+      configuration().entities(InstantMessagingAdminConfiguration.class).visibleIn(Visibility.application);
    }
 }

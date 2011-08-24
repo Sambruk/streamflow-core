@@ -17,29 +17,41 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.*;
-import se.streamsource.streamflow.client.ui.administration.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
-import se.streamsource.streamflow.util.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.ListDetailView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.first;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -50,21 +62,15 @@ public class FormsView
 {
    private FormsModel model;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   @Structure
+   Module module;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> possibleMoveToDialogs;
-
-   public FormsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf)
+   public FormsView( @Service ApplicationContext context, @Uses final FormsModel model)
    {
-      this.model = obf.newObjectBuilder( FormsModel.class ).use( client ).newInstance();
+      this.model = model;
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -73,9 +79,7 @@ public class FormsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient formClient = client.getClient( detailLink );
-
-            return obf.newObjectBuilder( FormView.class ).use( formClient).newInstance();
+            return module.objectBuilderFactory().newObjectBuilder(FormView.class).use( model.newResourceModel(detailLink)).newInstance();
          }
       });
 
@@ -85,7 +89,7 @@ public class FormsView
    @Action
    public Task add()
    {
-      NameDialog formDialog = nameDialogs.iterator().next();
+      NameDialog formDialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, formDialog, i18n.text( AdministrationResources.create_new_form ) );
 
@@ -110,7 +114,7 @@ public class FormsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -136,7 +140,7 @@ public class FormsView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );

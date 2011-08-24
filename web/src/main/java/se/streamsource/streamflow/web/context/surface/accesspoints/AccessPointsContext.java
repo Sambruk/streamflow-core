@@ -67,6 +67,7 @@ public class AccessPointsContext
       AccessPoints.Data data = (AccessPoints.Data) organization;
 
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      linksBuilder.rel("accesspoint");
 
       linksBuilder.addDescribables( Iterables.filter(new Specification<AccessPoint>()
       {

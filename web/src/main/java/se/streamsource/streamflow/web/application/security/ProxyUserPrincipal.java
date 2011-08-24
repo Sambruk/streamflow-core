@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import java.io.*;
-import java.security.*;
+import java.io.Serializable;
+import java.security.Principal;
 
 /**
  * JAVADOC

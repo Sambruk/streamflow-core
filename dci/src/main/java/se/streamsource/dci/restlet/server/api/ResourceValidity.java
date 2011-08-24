@@ -17,15 +17,18 @@
 
 package se.streamsource.dci.restlet.server.api;
 
-import org.qi4j.api.entity.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.spi.*;
-import org.qi4j.spi.entity.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.resource.*;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entity.EntityState;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.Status;
+import org.restlet.data.Tag;
+import org.restlet.resource.ResourceException;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * JAVADOC

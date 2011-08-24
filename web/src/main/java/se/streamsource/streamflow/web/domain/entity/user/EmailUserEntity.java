@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
@@ -26,6 +25,7 @@ import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipien
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
 /**
  * User representing an external email address

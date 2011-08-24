@@ -17,17 +17,24 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.composite.*;
-import org.qi4j.api.constraint.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.spi.structure.*;
-import org.slf4j.*;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.constraint.Constraint;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.NoSuchObjectException;
+import org.qi4j.api.structure.Module;
+import org.qi4j.spi.structure.ModuleSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.*;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * JAVADOC
@@ -36,7 +43,7 @@ public class InteractionConstraintsService
       implements InteractionConstraints
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    Logger logger = LoggerFactory.getLogger( InteractionConstraintsService.class );
 
@@ -126,7 +133,7 @@ public class InteractionConstraintsService
             {
                try
                {
-                  constraint = obf.newObject( constraintClass );
+                  constraint = module.objectBuilderFactory().newObject(constraintClass);
                } catch (NoSuchObjectException e)
                {
                   constraint = constraintClass.newInstance();
@@ -182,7 +189,7 @@ public class InteractionConstraintsService
             {
                try
                {
-                  constraint = obf.newObject( constraintClass );
+                  constraint = module.objectBuilderFactory().newObject(constraintClass);
                } catch (NoSuchObjectException e)
                {
                   constraint = constraintClass.newInstance();

@@ -28,7 +28,7 @@ public class FormSignaturesModel
 {
    public FormSignaturesModel()
    {
-      super( "index" );
+      relationModelMapping("resource", FormSignatureModel.class);
    }
 
    public void create( RequiredSignatureValue requiredSignature )

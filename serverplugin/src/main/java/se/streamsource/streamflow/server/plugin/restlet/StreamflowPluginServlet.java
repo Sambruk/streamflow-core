@@ -17,13 +17,16 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.bootstrap.*;
-import org.restlet.*;
-import org.restlet.ext.servlet.*;
+import org.qi4j.bootstrap.Assembler;
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.ext.servlet.ServletAdapter;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Servlet that starts Streamflow plugins and delegates requests to them

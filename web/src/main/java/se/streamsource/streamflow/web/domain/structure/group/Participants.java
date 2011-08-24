@@ -24,9 +24,9 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.web.domain.Removable;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Removable;
 
 /**
  * JAVADOC
@@ -62,7 +62,7 @@ public interface Participants
          implements Participants
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @This
       Group group;

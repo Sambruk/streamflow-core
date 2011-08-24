@@ -26,14 +26,11 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
@@ -57,27 +54,12 @@ public class AccountsDialog
    AccountsModel model;
 
    @Structure
-   UnitOfWorkFactory uowf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Service
-   IndividualRepository individualRepository;
+   Module module;
 
    @Service
    DialogService dialogs;
 
    public JList accountList;
-
-   @Uses
-   Iterable<CreateAccountDialog> createAccountDialog;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
 
    AccountView accountView;
 
@@ -126,7 +108,7 @@ public class AccountsDialog
                if (accountList.getSelectedIndex() != -1)
                {
                   AccountModel account = model.accountModel( (LinkValue) accountList.getSelectedValue() );
-                  accountView = obf.newObjectBuilder( AccountView.class ).use( account ).newInstance();
+                  accountView = module.objectBuilderFactory().newObjectBuilder( AccountView.class ).use( account ).newInstance();
                   viewPanel.add( accountView, "VIEW" );
                   cardLayout.show( viewPanel, "VIEW" );
                } else
@@ -148,7 +130,7 @@ public class AccountsDialog
    @Action
    public void add() throws ResourceException, UnitOfWorkCompletionException
    {
-      CreateAccountDialog dialog = createAccountDialog.iterator().next();
+      CreateAccountDialog dialog = module.objectBuilderFactory().newObject(CreateAccountDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AccountResources.create_account_title ) );
 
       if (dialog.settings() != null)
@@ -161,7 +143,7 @@ public class AccountsDialog
    @Action
    public void remove() throws UnitOfWorkCompletionException
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( ((LinkValue)accountList.getSelectedValue()).text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())

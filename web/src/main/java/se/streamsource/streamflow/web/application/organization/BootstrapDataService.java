@@ -24,11 +24,10 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.specification.Specifications;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.RoleMap;
@@ -50,7 +49,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * Ensure that the most basic entities are always created. This includes:
@@ -69,14 +68,11 @@ public interface BootstrapDataService
    {
       final Logger logger = LoggerFactory.getLogger( getClass().getName() );
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public void activate() throws Exception
       {
-         UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Bootstrap data" ) );
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Bootstrap data"));
          RoleMap.newCurrentRoleMap();
          try
          {
@@ -112,7 +108,7 @@ public interface BootstrapDataService
                // Create admin
                admin = (UserEntity) users.createUser( UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME );
 
-               ValueBuilder<ContactDTO> contactBuilder = vbf.newValueBuilder( ContactDTO.class );
+               ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
                contactBuilder.prototype().name().set( "Administrator" );
                ContactDTO contact = contactBuilder.newInstance();
                admin.updateContact( contact );
@@ -126,7 +122,7 @@ public interface BootstrapDataService
                // Create default organization
                organizations.createOrganization( "Organization" );
                uow.complete();
-               uow = uowf.newUnitOfWork( newUsecase( "Bootstrap data" ) );
+               uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Bootstrap data"));
                orgs = uow.get( organizations ).organizations().newQuery( uow );
                admin = uow.get(admin);
             }

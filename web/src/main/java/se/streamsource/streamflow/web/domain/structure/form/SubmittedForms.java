@@ -26,12 +26,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Iterables;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.api.administration.form.*;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -41,7 +39,8 @@ import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Maintains list of submitted forms on a case
@@ -71,10 +70,7 @@ public interface SubmittedForms
          implements SubmittedForms, Data
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Data state;
@@ -88,16 +84,16 @@ public interface SubmittedForms
       public void submitForm( FormDraft formSubmission, Submitter submitter )
       {
          FormDraftDTO DTO = formSubmission.getFormDraftValue();
-         ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
+         ValueBuilder<SubmittedFormValue> formBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormValue.class);
 
          formBuilder.prototype().submitter().set( EntityReference.getEntityReference(submitter) );
          formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
-         ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder( SubmittedFieldValue.class );
+         ValueBuilder<SubmittedFieldValue> fieldBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFieldValue.class);
          for (PageSubmissionDTO pageDTO : DTO.pages().get())
          {
-            ValueBuilder<SubmittedPageValue> pageBuilder = vbf.newValueBuilder(SubmittedPageValue.class);
+            ValueBuilder<SubmittedPageValue> pageBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedPageValue.class);
             pageBuilder.prototype().page().set(pageDTO.page().get());
 
             for (FieldSubmissionDTO field : pageDTO.fields().get())
@@ -119,8 +115,8 @@ public interface SubmittedForms
                   {
                      try
                      { 
-                        AttachmentFieldSubmission currentFormDraftAttachmentField = vbf.newValueFromJSON( AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get() );
-                        AttachmentEntity attachment = uowf.currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+                        AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get());
+                        AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
                         ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
                      } catch (ConstructionException e)
                      {

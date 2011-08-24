@@ -19,16 +19,20 @@ package se.streamsource.streamflow.client.ui.workspace.search;
 
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.structure.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.ui.workspace.table.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,8 +55,8 @@ public class SearchView
 
    private JPanel search;
 
-   public SearchView(@Service ApplicationContext context, @Uses final CommandQueryClient client,
-                     @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf)
+   public SearchView(@Service ApplicationContext context,
+                     @Uses SearchResultTableModel searchResultTableModel)
    {
       setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
       this.searchResultTableModel = searchResultTableModel;
@@ -90,21 +94,41 @@ public class SearchView
    }
 
    @Action
-   public void search()
+   public Task search()
    {
       // close all open perspective popups without triggering search twice
       if (!closedOpenPerspectivePopups(WindowUtils.findWindow(this)))
       {
-         String searchString = getTextField().getText();
+         final String searchString = getTextField().getText();
 
          if (searchString.length() > 500)
          {
             dialogs.showMessageDialog(this, i18n.text(WorkspaceResources.too_long_query), "");
          } else
          {
-            searchResultTableModel.search(searchString);
+            return new Task<Void, Void>(Application.getInstance())
+            {
+               @Override
+               protected Void doInBackground() throws Exception
+               {
+                  searchResultTableModel.search(searchString);
+                  return null;
+               }
+
+               @Override
+               protected void succeeded(Void result)
+               {
+               }
+
+               @Override
+               protected void failed(Throwable cause)
+               {
+               }
+            };
          }
       }
+
+      return null;
    }
 
    private boolean closedOpenPerspectivePopups(Container container)

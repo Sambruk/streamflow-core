@@ -17,15 +17,21 @@
 
 package se.streamsource.dci.restlet.server.sitemesh;
 
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import org.restlet.routing.*;
-import org.sitemesh.*;
-import org.sitemesh.content.*;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.representation.WriterRepresentation;
+import org.restlet.routing.Filter;
+import org.sitemesh.DecoratorSelector;
+import org.sitemesh.content.Content;
+import org.sitemesh.content.ContentProcessor;
 
-import java.io.*;
-import java.nio.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.CharBuffer;
 
 /**
  * JAVADOC

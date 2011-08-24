@@ -17,30 +17,44 @@
 
 package se.streamsource.streamflow.web.context;
 
-import org.junit.*;
-import org.qi4j.api.*;
-import org.qi4j.api.composite.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.query.*;
-import org.qi4j.api.service.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import org.qi4j.bootstrap.*;
-import org.qi4j.spi.*;
-import org.qi4j.spi.structure.*;
-import se.streamsource.dci.api.*;
-import se.streamsource.dci.value.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.composite.TransientBuilder;
+import org.qi4j.api.composite.TransientBuilderFactory;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.service.ServiceFinder;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.Energy4Java;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.structure.ApplicationModelSPI;
+import org.qi4j.spi.structure.ApplicationSPI;
+import org.qi4j.spi.structure.ModuleSPI;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.test.StreamflowWebContextTestAssembler;
+import se.streamsource.streamflow.web.domain.Describable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Base class for roleMap tests. RoleMap tests should subclass this test and use the fluent API provided
@@ -182,9 +196,23 @@ public abstract class ContextTest
    protected static <T> T context( Class<T> contextClass )
    {
       if (TransientComposite.class.isAssignableFrom( contextClass ))
-         return transientBuilderFactory.newTransient( contextClass );
+      {
+         TransientBuilder<T> builder = transientBuilderFactory.newTransientBuilder( contextClass );
+         for (Object rolePlayer : RoleMap.current().getAll(Object.class))
+         {
+            builder.use(rolePlayer);
+         }
+         return builder.newInstance();
+      }
       else
-         return objectBuilderFactory.newObject( contextClass );
+      {
+         ObjectBuilder<T> builder = objectBuilderFactory.newObjectBuilder( contextClass );
+         for (Object rolePlayer : RoleMap.current().getAll(Object.class))
+         {
+            builder.use(rolePlayer);
+         }
+         return builder.newInstance();
+      }
    }
 
    protected static <T> T playRole( T oldEntity )

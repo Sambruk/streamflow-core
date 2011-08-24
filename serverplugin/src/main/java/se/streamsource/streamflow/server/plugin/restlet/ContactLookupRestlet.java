@@ -17,19 +17,34 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.json.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.*;
-import org.qi4j.spi.property.*;
-import org.qi4j.spi.structure.*;
-import org.qi4j.spi.value.*;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.representation.*;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import org.json.JSONException;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.structure.ModuleSPI;
+import org.qi4j.spi.value.ValueDescriptor;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Form;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Parameter;
+import org.restlet.data.Status;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.StringRepresentation;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
 /**
  * Delegate Restlet calls to the ContactLookup service.
@@ -40,9 +55,6 @@ public class ContactLookupRestlet
    @Optional
    @Service
    ContactLookup contactLookup;
-
-   @Structure
-   ValueBuilderFactory vbf;
 
    @Structure
    private Qi4jSPI spi;
@@ -98,7 +110,7 @@ public class ContactLookupRestlet
 
    private ValueComposite getValueFromForm( Class<? extends ValueComposite> valueType, final Form asForm )
    {
-      ValueBuilder<? extends ValueComposite> builder = vbf.newValueBuilder( valueType );
+      ValueBuilder<? extends ValueComposite> builder = module.valueBuilderFactory().newValueBuilder(valueType);
       final ValueDescriptor descriptor = spi.getValueDescriptor( builder.prototype() );
       builder.withState( new StateHolder()
       {

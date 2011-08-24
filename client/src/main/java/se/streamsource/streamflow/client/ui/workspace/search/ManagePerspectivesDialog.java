@@ -17,29 +17,36 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import ca.odell.glazedlists.swing.*;
-import com.jgoodies.forms.builder.*;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.builder.ButtonBarBuilder2;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.*;
-import org.jdesktop.swingx.util.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.*;
-import se.streamsource.streamflow.client.ui.workspace.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.util.*;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static org.qi4j.api.specification.Specifications.and;
+import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -52,22 +59,22 @@ public class ManagePerspectivesDialog
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   @Structure
+   Module module;
 
    private PerspectivesModel model;
 
    private JList perspective;
    private JButton optionButton;
 
-   public ManagePerspectivesDialog(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client)
+   public ManagePerspectivesDialog(@Service ApplicationContext context, @Uses PerspectivesModel model)
    {
       super(new BorderLayout());
       setBorder(new EmptyBorder(5, 5, 5, 5));
       ActionMap am;
       setActionMap(am = context.getActionMap(this));
 
-      this.model = obf.newObjectBuilder(PerspectivesModel.class).use(client).newInstance();
+      this.model = model;
 
       perspective = new JList();
       perspective.setCellRenderer(new LinkListCellRenderer());
@@ -125,7 +132,7 @@ public class ManagePerspectivesDialog
    public Task rename()
    {
       final LinkValue selected = (LinkValue) perspective.getSelectedValue();
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog(this, dialog, text(WorkspaceResources.change_perspective_title));
 
       if (!Strings.empty(dialog.name()))

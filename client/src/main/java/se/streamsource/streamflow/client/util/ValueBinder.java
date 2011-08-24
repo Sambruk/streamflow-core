@@ -17,20 +17,25 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.*;
-import org.qi4j.api.common.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.property.*;
-import org.qi4j.api.util.*;
-import org.qi4j.api.value.*;
-import org.qi4j.spi.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.*;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXLabel;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.ListMap;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Bind components to value names to allow them to be updated from a given source
@@ -41,7 +46,7 @@ public class ValueBinder
    Qi4jSPI spi;
 
    Map<Class<? extends Component>, Binder> binders = new HashMap<Class<? extends Component>, Binder>();
-   Map<String, Binding> bindings = new HashMap<String, Binding>();
+   ListMap<String, Binding> bindings = new ListMap<String, Binding>();
 
    public ValueBinder()
    {
@@ -56,6 +61,7 @@ public class ValueBinder
             JCheckBox.class,
             JXDatePicker.class,
             JComboBox.class,
+            JRadioButton.class,
             RemovableLabel.class);
    }
 
@@ -85,7 +91,7 @@ public class ValueBinder
       if (binder == null)
          throw new IllegalArgumentException( "No binder registered for component type:" + boundComponent.getClass().getSimpleName() );
 
-      bindings.put( name, new Binding(converter, boundComponent, binder) );
+      bindings.add(name, new Binding(converter, boundComponent, binder));
 
       return component;
 
@@ -97,23 +103,37 @@ public class ValueBinder
       {
          public void visitProperty( QualifiedName name, Object value ) throws RuntimeException
          {
-            Binding binding = bindings.get( name.name() );
+            Iterable<Binding> binding = bindings.get( name.name() );
             if (binding != null)
-            {
-               binding.update( value );
-            }
+               for (Binding binding1 : binding)
+               {
+                  binding1.update( value );
+               }
          }
       } );
    }
 
+   public void update(Form form)
+   {
+      for (Parameter parameter : form)
+      {
+         List<Binding> bindings1 = bindings.get(parameter.getName());
+         if (bindings1 != null)
+            for (Binding binding : bindings1)
+            {
+               binding.update(parameter.getValue());
+            }
+      }
+   }
+
    public void update( String name, Object value )
    {
-      Binding binding = bindings.get( name );
-      if (binding != null)
-      {
-         binding.update( value );
-      } else
-         throw new IllegalArgumentException( "No binding named '" + name + "'" );
+      List<Binding> bindings1 = bindings.get(name);
+      if (bindings1 != null)
+         for (Binding binding : bindings1)
+         {
+            binding.update( value );
+         }
    }
 
    public class Binding
@@ -171,6 +191,12 @@ public class ValueBinder
          } else if (component instanceof JCheckBox)
          {
             JCheckBox checkBox = (JCheckBox) component;
+
+            if (value instanceof String)
+            {
+               value = Boolean.parseBoolean(value.toString());
+            }
+
             checkBox.setSelected( ((Boolean) value) );
          } else if (component instanceof JLabel)
          {
@@ -194,6 +220,10 @@ public class ValueBinder
          {
             JComboBox box = (JComboBox) component;
             box.setSelectedItem( value );
+         } else if (component instanceof JRadioButton)
+         {
+            JRadioButton button = (JRadioButton) component;
+            button.setSelected(button.getActionCommand().equals(value.toString()));
          } else if (component instanceof RemovableLabel)
          {
             RemovableLabel label = (RemovableLabel) component;

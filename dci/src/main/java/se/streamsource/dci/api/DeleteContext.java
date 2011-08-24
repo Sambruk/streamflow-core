@@ -17,9 +17,7 @@
 
 package se.streamsource.dci.api;
 
-import org.restlet.resource.*;
-
-import java.io.*;
+import java.io.IOException;
 
 /**
  * JAVADOC
@@ -27,5 +25,5 @@ import java.io.*;
 public interface DeleteContext
 {
    void delete()
-         throws ResourceException, IOException;
+         throws IOException;
 }

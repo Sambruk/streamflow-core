@@ -20,27 +20,25 @@ package se.streamsource.streamflow.web.context.workspace.cases.form;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Disposition;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
-import org.restlet.representation.Representation;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.api.workspace.cases.form.*;
-import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 
 /**
  * JAVADOC
@@ -52,10 +50,7 @@ public class CaseSubmittedFormsContext
    AttachmentStore store;
 
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   UnitOfWorkFactory uowf;
+   Module module;
 
    public SubmittedFormsListDTO index()
    {
@@ -70,33 +65,20 @@ public class CaseSubmittedFormsContext
    }
 
 
-   public Representation download( StringValue id ) throws IOException, URISyntaxException
+   public Input<ByteBuffer, IOException> download( @Name("id") String id ) throws IOException, URISyntaxException
    {
-      AttachmentFieldSubmission value = getAttachmentFieldValue( id.string().get() );
+      AttachmentFieldSubmission value = getAttachmentFieldValue( id );
       if ( value != null )
       {
-         AttachedFile.Data data = uowf.currentUnitOfWork().get( AttachedFile.Data.class, id.string().get() );
+         AttachedFile.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( AttachedFile.Data.class, id );
          final String fileId = new URI( data.uri().get() ).getSchemeSpecificPart();
 
-         OutputRepresentation outputRepresentation = new OutputRepresentation(  new MediaType( data.mimeType().get() ), store.getAttachmentSize(fileId) )
-         {
-            @Override
-            public void write(OutputStream outputStream) throws IOException
-            {
-               store.attachment(fileId).transferTo(Outputs.<Object>byteBuffer(outputStream));
-            }
-         };
-         Form downloadParams = new Form();
-         downloadParams.set( Disposition.NAME_FILENAME, value.name().get() );
-
-         outputRepresentation.setDisposition(new Disposition(Disposition.TYPE_ATTACHMENT, downloadParams));
-         return outputRepresentation;
+         return store.attachment(fileId);
       } else
       {
          // 404
-         return null;
+         throw new IllegalArgumentException("No such attached file:"+id);
       }
-
    }
 
    // find the attachment in all fields every submitted form on this case
@@ -113,7 +95,7 @@ public class CaseSubmittedFormsContext
                {
                   if (!Strings.empty(fieldDTO.value().get()))
                   {
-                     AttachmentFieldSubmission submission = vbf.newValueFromJSON(AttachmentFieldSubmission.class, fieldDTO.value().get());
+                     AttachmentFieldSubmission submission = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldDTO.value().get());
                      if (submission.attachment().get().identity().equals(id)) return submission;
                   }
                }

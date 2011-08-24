@@ -17,15 +17,19 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.concern.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.structure.group.*;
-import se.streamsource.streamflow.web.domain.structure.project.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * List of organizations a participant is a member of.
@@ -89,9 +93,6 @@ public interface OrganizationParticipations
 
       @This
       Participant participant;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       public void leave( Organization ou )
       {

@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import org.restlet.representation.*;
-import se.streamsource.streamflow.client.util.*;
+import org.restlet.representation.Representation;
+import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  */

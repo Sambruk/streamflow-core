@@ -21,7 +21,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Contacts for a case

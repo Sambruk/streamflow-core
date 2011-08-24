@@ -18,21 +18,24 @@
 package se.streamsource.streamflow.test;
 
 import org.apache.velocity.app.VelocityEngine;
-import org.qi4j.api.common.*;
-import org.qi4j.api.structure.*;
-import org.qi4j.bootstrap.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.infrastructure.event.domain.source.*;
-import se.streamsource.streamflow.web.application.contact.*;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
+import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
-import se.streamsource.streamflow.web.application.organization.*;
-import se.streamsource.streamflow.web.application.pdf.*;
-import se.streamsource.streamflow.web.assembler.*;
+import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
+import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
+import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 
 import java.util.Properties;
 
-import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 /**

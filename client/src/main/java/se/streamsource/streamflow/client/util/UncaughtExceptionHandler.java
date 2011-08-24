@@ -32,12 +32,11 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Dimension;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.logging.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.logging.Level;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC

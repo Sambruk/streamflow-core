@@ -19,18 +19,17 @@ package se.streamsource.streamflow.client.ui.account;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.client.util.Refreshable;
 
-import java.util.*;
+import java.util.Observable;
 
 /**
  * JAVADOC
@@ -40,7 +39,7 @@ public class ProfileModel
    implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Uses
    private CommandQueryClient client;
@@ -79,7 +78,7 @@ public class ProfileModel
    {
       if (contact.phoneNumbers().get().isEmpty())
       {
-         ContactPhoneDTO phone = vbf.newValue( ContactPhoneDTO.class )
+         ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class)
                .<ContactPhoneDTO>buildWith().prototype();
          contact.phoneNumbers().get().add( phone );
       }
@@ -90,7 +89,7 @@ public class ProfileModel
    {
       if (contact.emailAddresses().get().isEmpty())
       {
-         ContactEmailDTO email = vbf.newValue( ContactEmailDTO.class )
+         ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class)
                .<ContactEmailDTO>buildWith().prototype();
          contact.emailAddresses().get().add( email );
       }

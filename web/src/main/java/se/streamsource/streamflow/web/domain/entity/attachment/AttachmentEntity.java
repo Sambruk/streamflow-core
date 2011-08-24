@@ -24,9 +24,8 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
@@ -36,7 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplat
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * Attachment
@@ -59,10 +58,7 @@ public interface AttachmentEntity
       Qi4j api;
 
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Attachment attachment;
@@ -77,9 +73,9 @@ public interface AttachmentEntity
             {
                // Remove all default pdf template usage of this attachement
                Association<Attachment> defaultPdfTemplate = templateFor( DefaultPdfTemplate.Data.class ).defaultPdfTemplate();
-               Query<DefaultPdfTemplate> defaultPdfTemplateQuery = qbf.newQueryBuilder( DefaultPdfTemplate.class ).
-                     where( QueryExpressions.eq( defaultPdfTemplate, api.dereference( attachment ) ) ).
-                     newQuery( uowf.currentUnitOfWork() );
+               Query<DefaultPdfTemplate> defaultPdfTemplateQuery = module.queryBuilderFactory().newQueryBuilder(DefaultPdfTemplate.class).
+                     where(QueryExpressions.eq(defaultPdfTemplate, api.dereference(attachment))).
+                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
                for (DefaultPdfTemplate defaultPdfTemplateUsage : defaultPdfTemplateQuery)
                {
@@ -88,9 +84,9 @@ public interface AttachmentEntity
 
                // Remove all form template usage of this attachement
                Association<Attachment> formPdfTemplate = templateFor( FormPdfTemplate.Data.class ).formPdfTemplate();
-               Query<FormPdfTemplate> formPdfTemplateQuery = qbf.newQueryBuilder( FormPdfTemplate.class ).
-                     where( QueryExpressions.eq( formPdfTemplate, api.dereference( attachment ) ) ).
-                     newQuery( uowf.currentUnitOfWork() );
+               Query<FormPdfTemplate> formPdfTemplateQuery = module.queryBuilderFactory().newQueryBuilder(FormPdfTemplate.class).
+                     where(QueryExpressions.eq(formPdfTemplate, api.dereference(attachment))).
+                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
                for (FormPdfTemplate formPdfTemplateUsage : formPdfTemplateQuery)
                {
@@ -99,9 +95,9 @@ public interface AttachmentEntity
 
                // Remove all case template usage of this attachement
                Association<Attachment> casePdfTemplate = templateFor( CasePdfTemplate.Data.class ).casePdfTemplate();
-               Query<CasePdfTemplate> casePdfTemplateUsages = qbf.newQueryBuilder( CasePdfTemplate.class ).
-                     where( QueryExpressions.eq( casePdfTemplate, api.dereference( attachment ) ) ).
-                     newQuery( uowf.currentUnitOfWork() );
+               Query<CasePdfTemplate> casePdfTemplateUsages = module.queryBuilderFactory().newQueryBuilder(CasePdfTemplate.class).
+                     where(QueryExpressions.eq(casePdfTemplate, api.dereference(attachment))).
+                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
                for (CasePdfTemplate casePdfTemplateUsage : casePdfTemplateUsages)
                {
