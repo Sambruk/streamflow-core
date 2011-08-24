@@ -20,6 +20,8 @@ package se.streamsource.dci.restlet.server;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.constraint.ConstraintViolation;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -62,12 +64,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.qi4j.api.util.Annotations.isType;
 import static org.qi4j.api.util.Iterables.*;
@@ -138,8 +144,11 @@ public class CommandQueryResource
          {
             if (!method.isSynthetic())
             {
-               interactionClasses.put(method.getName().toLowerCase(), contextClass);
-               contextMethods.put(method.getName().toLowerCase(), method);
+               if (!interactionClasses.containsKey(method.getName().toLowerCase()))
+               {
+                  interactionClasses.put(method.getName().toLowerCase(), contextClass);
+                  contextMethods.put(method.getName().toLowerCase(), method);
+               }
             }
          }
       }
@@ -810,6 +819,29 @@ public class CommandQueryResource
          // IAE (or subclasses) are considered client faults
          response.setEntity(new StringRepresentation(e.getMessage()));
          response.setStatus(e.getStatus());
+      } catch (ConstraintViolationException e)
+      {
+         try
+         {
+            ConstraintViolationMessages cvm = new ConstraintViolationMessages();
+
+            // CVE are considered client faults
+            String messages = "";
+            Locale locale = RoleMap.role(Locale.class);
+            for (ConstraintViolation constraintViolation : e.constraintViolations())
+            {
+               if (!messages.equals(""))
+                  messages += "\n";
+               messages += cvm.getMessage(constraintViolation, locale);
+            }
+
+            response.setEntity(new StringRepresentation(messages));
+            response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+         } catch (Exception e1)
+         {
+            response.setEntity(new StringRepresentation(e.getMessage()));
+            response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+         }
       } catch (IllegalArgumentException e)
       {
          // IAE (or subclasses) are considered client faults

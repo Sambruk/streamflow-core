@@ -115,6 +115,12 @@ public class CaseTypesView
             {
                model.create( dialog.name() );
             }
+
+            @Override
+            protected void failed(Throwable throwable)
+            {
+               super.failed(throwable);    //To change body of overridden methods use File | Settings | File Templates.
+            }
          };
       } else
          return null;

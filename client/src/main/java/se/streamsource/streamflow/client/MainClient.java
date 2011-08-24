@@ -47,6 +47,8 @@ public class MainClient
       else
          Locale.setDefault(Locale.ENGLISH);
 
+      Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
+
       org.jdesktop.application.Application.launch( StreamflowApplication.class, args );
 
       Logger.getLogger( "status" ).setAdditivity( false );

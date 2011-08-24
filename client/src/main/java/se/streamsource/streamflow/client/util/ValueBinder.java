@@ -34,9 +34,8 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLab
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * Bind components to value names to allow them to be updated from a given source
@@ -105,10 +104,11 @@ public class ValueBinder
          public void visitProperty( QualifiedName name, Object value ) throws RuntimeException
          {
             Iterable<Binding> binding = bindings.get( name.name() );
-            for (Binding binding1 : binding)
-            {
-               binding1.update( value );
-            }
+            if (binding != null)
+               for (Binding binding1 : binding)
+               {
+                  binding1.update( value );
+               }
          }
       } );
    }
@@ -117,19 +117,23 @@ public class ValueBinder
    {
       for (Parameter parameter : form)
       {
-         for (Binding binding : bindings.get(parameter.getName()))
-         {
-            binding.update(parameter.getValue());
-         }
+         List<Binding> bindings1 = bindings.get(parameter.getName());
+         if (bindings1 != null)
+            for (Binding binding : bindings1)
+            {
+               binding.update(parameter.getValue());
+            }
       }
    }
 
    public void update( String name, Object value )
    {
-      for (Binding binding : bindings.get(name))
-      {
-         binding.update( value );
-      }
+      List<Binding> bindings1 = bindings.get(name);
+      if (bindings1 != null)
+         for (Binding binding : bindings1)
+         {
+            binding.update( value );
+         }
    }
 
    public class Binding

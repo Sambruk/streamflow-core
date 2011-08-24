@@ -18,18 +18,30 @@
 package se.streamsource.streamflow.client.util;
 
 import org.jdesktop.application.Application;
+import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.util.Iterables;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * All Swing actions that want to trigger commands in the domain model
@@ -40,9 +52,24 @@ public abstract class CommandTask
       extends Task<Iterable<TransactionDomainEvents>, Object>
       implements TransactionListener
 {
+
+   protected Object source;
+
    public CommandTask()
    {
       super( Application.getInstance() );
+
+      source = null;
+      try
+      {
+         source = EventQueue.getCurrentEvent().getSource();
+      } catch (NullPointerException npe)
+      {
+         // STREAMFLOW-75 Unchaught exception visitor does not popup on
+         // Windows
+         // therefor we have to consume any nullpointer here to be able to
+         // continue
+      }
    }
 
    private List<TransactionDomainEvents> transactionDomains = new ArrayList<TransactionDomainEvents>( );
@@ -90,7 +117,18 @@ public abstract class CommandTask
    @Override
    protected void failed( Throwable throwable )
    {
-      if (throwable instanceof OperationException)
+      if (throwable instanceof ResourceException)
+      {
+         ResourceException re = (ResourceException) throwable;
+         if (re.getStatus().equals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY))
+         {
+            // Show error dialog
+            final Frame frame = source instanceof Component ? (Frame) SwingUtilities.getAncestorOfClass(Frame.class,
+                  (Component) source) : ((SingleFrameApplication)Application.getInstance()).getMainFrame();
+
+            JOptionPane.showMessageDialog(frame, new JLabel(re.getStatus().getDescription()), "", JOptionPane.ERROR_MESSAGE);
+         }
+      } else if (throwable instanceof OperationException)
          throw (OperationException) throwable;
       else
          throw new OperationException( ErrorResources.error, throwable );

@@ -37,6 +37,7 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
@@ -148,6 +149,7 @@ public class ProjectsView
    {
       model.notifyTransactions(transactions);
 
-//      super.notifyTransactions( transactions );
+      if (Events.matches(Events.withNames("removedProject"), transactions))
+         super.notifyTransactions( transactions );
    }
 }

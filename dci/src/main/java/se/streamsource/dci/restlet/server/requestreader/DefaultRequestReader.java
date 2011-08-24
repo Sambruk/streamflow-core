@@ -253,7 +253,7 @@ public class DefaultRequestReader
          Name name = (Name) first(filter(isType(Name.class), iterable(annotations)));
 
          if (name == null)
-            throw new IllegalStateException("No @Name annotation found on parameter of method:"+method.getName());
+            throw new IllegalStateException("No @Name annotation found on parameter of method:"+method);
 
          String argString = getValue(name.value(), queryAsForm, entityAsForm);
 

@@ -27,6 +27,6 @@ public class GroupModel
 {
    public GroupModel()
    {
-      relationModelMapping("resource", ParticipantsModel.class);
+      relationModelMapping("participants", ParticipantsModel.class);
    }
 }
