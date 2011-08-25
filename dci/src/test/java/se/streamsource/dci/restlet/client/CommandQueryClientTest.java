@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.composite.TransientComposite;
@@ -343,8 +344,7 @@ public class CommandQueryClientTest
    @Test
    public void testContext()
    {
-      DescribableContext context = objectBuilderFactory.newObject(DescribableContext.class);
-      context.bind(transientBuilderFactory.newTransient(TestComposite.class ));
+      DescribableContext context = objectBuilderFactory.newObjectBuilder(DescribableContext.class).use(transientBuilderFactory.newTransient(TestComposite.class )).newInstance();
       context.changeDescription( "Foo" );
       assertThat(context.description(), equalTo("Foo"));
    }
@@ -609,7 +609,7 @@ public class CommandQueryClientTest
          describable.changeDescription(newDesc);
       }
 
-      public class Describable
+      public static class Describable
          extends Role<DescribableData>
       {
             public void changeDescription( String newDesc )
@@ -633,6 +633,7 @@ public class CommandQueryClientTest
    public interface TestComposite
          extends TransientComposite, DescribableData
    {
-
+      @Optional
+      Property<String> foo();
    }
 }

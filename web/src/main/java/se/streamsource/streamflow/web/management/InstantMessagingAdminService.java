@@ -106,201 +106,207 @@ public interface InstantMessagingAdminService
                   configuration.server().get() != null)
             {
                connection = new XMPPConnection(configuration.server().get());
-               connection.connect();
-               connection.login(configuration.user().get(), configuration.password().get());
-               circuitBreakerTracker.start();
-
-               connection.getRoster().setSubscriptionMode(Roster.SubscriptionMode.accept_all);
-
-               connection.getChatManager().addChatListener(new ChatManagerListener()
+               try
                {
-                  public void chatCreated(Chat chat, boolean b)
+                  connection.connect();
+                  connection.login(configuration.user().get(), configuration.password().get());
+                  circuitBreakerTracker.start();
+
+                  connection.getRoster().setSubscriptionMode(Roster.SubscriptionMode.accept_all);
+
+                  connection.getChatManager().addChatListener(new ChatManagerListener()
                   {
-                     chat.addMessageListener(new MessageListener()
+                     public void chatCreated(Chat chat, boolean b)
                      {
-                        public void processMessage(final Chat chat, Message message)
+                        chat.addMessageListener(new MessageListener()
                         {
-                           try
+                           public void processMessage(final Chat chat, Message message)
                            {
-                              String txt = message.getBody();
-                              if (txt != null)
+                              try
                               {
-                                 txt = txt.toLowerCase();
-                                 if (txt.equals("help"))
+                                 String txt = message.getBody();
+                                 if (txt != null)
                                  {
-                                    StringWriter msg = new StringWriter();
-                                    PrintWriter out = new PrintWriter(msg);
-                                    out.println("Available commands:");
-                                    out.println("* status");
-                                    out.println("* info");
-                                    out.println("* threaddump");
-                                    out.println("* configuration");
-                                    out.println("* configure <service-name>");
-                                    out.println("* subscribe <debug/info/warn/error>");
-                                    out.println("* unsubscribe");
-
-                                    chat.sendMessage(msg.toString());
-                                 } else if (txt.equals("status"))
-                                 {
-                                    StringWriter msg = new StringWriter();
-                                    PrintWriter out = new PrintWriter(msg);
-                                    for (ObjectName breaker : circuitBreakerTracker.getTracked())
+                                    txt = txt.toLowerCase();
+                                    if (txt.equals("help"))
                                     {
-                                       out.println(breaker.getKeyProperty("service") + ":" + mbeanServer.getAttribute(breaker, "ServiceLevel"));
-                                       if (mbeanServer.getAttribute(breaker, "Status").equals("off"))
+                                       StringWriter msg = new StringWriter();
+                                       PrintWriter out = new PrintWriter(msg);
+                                       out.println("Available commands:");
+                                       out.println("* status");
+                                       out.println("* info");
+                                       out.println("* threaddump");
+                                       out.println("* configuration");
+                                       out.println("* configure <service-name>");
+                                       out.println("* subscribe <debug/info/warn/error>");
+                                       out.println("* unsubscribe");
+
+                                       chat.sendMessage(msg.toString());
+                                    } else if (txt.equals("status"))
+                                    {
+                                       StringWriter msg = new StringWriter();
+                                       PrintWriter out = new PrintWriter(msg);
+                                       for (ObjectName breaker : circuitBreakerTracker.getTracked())
                                        {
-                                          out.println("  Circuit breaker is off:" + mbeanServer.getAttribute(breaker, "LastErrorMessage") + "(" + mbeanServer.getAttribute(breaker, "TrippedOn") + ")");
+                                          out.println(breaker.getKeyProperty("service") + ":" + mbeanServer.getAttribute(breaker, "ServiceLevel"));
+                                          if (mbeanServer.getAttribute(breaker, "Status").equals("off"))
+                                          {
+                                             out.println("  Circuit breaker is off:" + mbeanServer.getAttribute(breaker, "LastErrorMessage") + "(" + mbeanServer.getAttribute(breaker, "TrippedOn") + ")");
+                                          }
                                        }
-                                    }
 
-                                    chat.sendMessage(msg.toString());
-                                 } else if (txt.equals("info"))
-                                 {
-                                    StringWriter msg = new StringWriter();
-                                    PrintWriter out = new PrintWriter(msg);
-
-                                    out.println("Installed in:" + new File(".").getAbsolutePath());
-                                    out.println("System:" + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
-                                    out.println("Java:" + System.getProperty("java.vm.name") + " " + System.getProperty("java.version"));
-                                    out.println("Max memory: " + Runtime.getRuntime().maxMemory() / (1024 * 1000) + "M");
-                                    out.println("Total memory: " + Runtime.getRuntime().totalMemory() / (1024 * 1000) + "M");
-                                    out.println("Available memory: " + Runtime.getRuntime().freeMemory() / (1024 * 1000) + "M");
-
-                                    chat.sendMessage(msg.toString());
-                                 } else if (txt.equals("threaddump"))
-                                 {
-                                    Map<Thread, StackTraceElement[]> dumps = Thread.getAllStackTraces();
-
-                                    StringWriter msg = new StringWriter();
-                                    PrintWriter out = new PrintWriter(msg);
-                                    for (Map.Entry<Thread, StackTraceElement[]> threadEntry : dumps.entrySet())
-                                    {
-                                       out.println(threadEntry.getKey().getName() + ":");
-                                       for (StackTraceElement stackTraceElement : threadEntry.getValue())
-                                       {
-                                          out.println(stackTraceElement.toString());
-                                       }
-                                       out.println();
-                                    }
-                                    chat.sendMessage(msg.toString());
-                                 } else if (txt.equals("configuration"))
-                                 {
-                                    Set<ObjectName> breakers = mbeanServer.queryNames(new ObjectName("*:*,name=Configuration"), null);
-                                    StringWriter msg = new StringWriter();
-                                    PrintWriter out = new PrintWriter(msg);
-                                    for (ObjectName breaker : breakers)
-                                    {
-                                       out.println(breaker.getKeyProperty("service"));
-                                    }
-                                    out.println("Configure service with 'configure <name>'");
-                                    chat.sendMessage(msg.toString());
-
-                                 } else if (txt.startsWith("configure"))
-                                 {
-                                    String service = txt.split(" ")[1];
-                                    ObjectName configuration = Iterables.first(mbeanServer.queryNames(new ObjectName("*:*,service=" + service + ",name=Configuration"), null));
-                                    if (configuration != null)
+                                       chat.sendMessage(msg.toString());
+                                    } else if (txt.equals("info"))
                                     {
                                        StringWriter msg = new StringWriter();
                                        PrintWriter out = new PrintWriter(msg);
 
-                                       for (MBeanAttributeInfo mBeanAttributeInfo : mbeanServer.getMBeanInfo(configuration).getAttributes())
-                                       {
-                                          Object value = mbeanServer.getAttribute(configuration, mBeanAttributeInfo.getName());
-                                          out.println(mBeanAttributeInfo.getName() + ": " + value);
-                                       }
+                                       out.println("Installed in:" + new File(".").getAbsolutePath());
+                                       out.println("System:" + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
+                                       out.println("Java:" + System.getProperty("java.vm.name") + " " + System.getProperty("java.version"));
+                                       out.println("Max memory: " + Runtime.getRuntime().maxMemory() / (1024 * 1000) + "M");
+                                       out.println("Total memory: " + Runtime.getRuntime().totalMemory() / (1024 * 1000) + "M");
+                                       out.println("Available memory: " + Runtime.getRuntime().freeMemory() / (1024 * 1000) + "M");
 
                                        chat.sendMessage(msg.toString());
-
-                                       selectedMBean.put(chat.getParticipant(), configuration);
-                                    }
-                                 } else if (txt.startsWith("subscribe"))
-                                 {
-                                    if (appenders.get(chat.getParticipant()) != null)
-                                       Logger.getRootLogger().removeAppender(appenders.get(chat.getParticipant()));
-
-                                    String level = txt.split(" ")[1];
-                                    AppenderSkeleton appender = new AppenderSkeleton()
+                                    } else if (txt.equals("threaddump"))
                                     {
-                                       @Override
-                                       protected void append(LoggingEvent event)
+                                       Map<Thread, StackTraceElement[]> dumps = Thread.getAllStackTraces();
+
+                                       StringWriter msg = new StringWriter();
+                                       PrintWriter out = new PrintWriter(msg);
+                                       for (Map.Entry<Thread, StackTraceElement[]> threadEntry : dumps.entrySet())
                                        {
-                                          try
+                                          out.println(threadEntry.getKey().getName() + ":");
+                                          for (StackTraceElement stackTraceElement : threadEntry.getValue())
                                           {
-                                             if (event.getThrowableStrRep() == null)
-                                                chat.sendMessage(layout.format(event));
-                                             else
-                                             {
-                                                String msg = layout.format(event);
-                                                for (String s : event.getThrowableStrRep())
-                                                {
-                                                   msg+=s+"\n";
-                                                }
-                                                chat.sendMessage(msg);
-                                             }
-                                          } catch (XMPPException e)
-                                          {
-                                             // Ignore
+                                             out.println(stackTraceElement.toString());
                                           }
+                                          out.println();
                                        }
+                                       chat.sendMessage(msg.toString());
+                                    } else if (txt.equals("configuration"))
+                                    {
+                                       Set<ObjectName> breakers = mbeanServer.queryNames(new ObjectName("*:*,name=Configuration"), null);
+                                       StringWriter msg = new StringWriter();
+                                       PrintWriter out = new PrintWriter(msg);
+                                       for (ObjectName breaker : breakers)
+                                       {
+                                          out.println(breaker.getKeyProperty("service"));
+                                       }
+                                       out.println("Configure service with 'configure <name>'");
+                                       chat.sendMessage(msg.toString());
 
-                                       public void close()
+                                    } else if (txt.startsWith("configure"))
+                                    {
+                                       String service = txt.split(" ")[1];
+                                       ObjectName configuration = Iterables.first(mbeanServer.queryNames(new ObjectName("*:*,service=" + service + ",name=Configuration"), null));
+                                       if (configuration != null)
                                        {
-                                          //To change body of implemented methods use File | Settings | File Templates.
-                                       }
+                                          StringWriter msg = new StringWriter();
+                                          PrintWriter out = new PrintWriter(msg);
 
-                                       public boolean requiresLayout()
-                                       {
-                                          return false;
+                                          for (MBeanAttributeInfo mBeanAttributeInfo : mbeanServer.getMBeanInfo(configuration).getAttributes())
+                                          {
+                                             Object value = mbeanServer.getAttribute(configuration, mBeanAttributeInfo.getName());
+                                             out.println(mBeanAttributeInfo.getName() + ": " + value);
+                                          }
+
+                                          chat.sendMessage(msg.toString());
+
+                                          selectedMBean.put(chat.getParticipant(), configuration);
                                        }
-                                    };
-                                    appender.setLayout(new SimpleLayout());
-                                    try
+                                    } else if (txt.startsWith("subscribe"))
                                     {
-                                       appender.setThreshold(Level.toLevel(level));
-                                    } catch (IllegalArgumentException e)
-                                    {
-                                       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                    }
-                                    Logger.getRootLogger().addAppender(appender);
-                                    appenders.put(chat.getParticipant(), appender);
-                                    chat.sendMessage("Subscribe to log messages with priority "+level);
-                                 } else if (txt.equals("unsubscribe"))
-                                 {
-                                    if (appenders.get(chat.getParticipant()) != null)
-                                    {
-                                       Logger.getRootLogger().removeAppender(appenders.get(chat.getParticipant()));
-                                       appenders.remove(chat.getParticipant()).close();
-                                       chat.sendMessage("Unsubscribed from log messages");
-                                    }
-                                 } else
-                                 {
-                                    ObjectName selected = selectedMBean.get(chat.getParticipant());
-                                    if (selected != null)
-                                    {
-                                       if (txt.equals("restart"))
+                                       if (appenders.get(chat.getParticipant()) != null)
+                                          Logger.getRootLogger().removeAppender(appenders.get(chat.getParticipant()));
+
+                                       String level = txt.split(" ")[1];
+                                       AppenderSkeleton appender = new AppenderSkeleton()
                                        {
-                                          mbeanServer.invoke(selected, "restart", null, null);
-                                          chat.sendMessage("Service restarted");
+                                          @Override
+                                          protected void append(LoggingEvent event)
+                                          {
+                                             try
+                                             {
+                                                if (event.getThrowableStrRep() == null)
+                                                   chat.sendMessage(layout.format(event));
+                                                else
+                                                {
+                                                   String msg = layout.format(event);
+                                                   for (String s : event.getThrowableStrRep())
+                                                   {
+                                                      msg+=s+"\n";
+                                                   }
+                                                   chat.sendMessage(msg);
+                                                }
+                                             } catch (XMPPException e)
+                                             {
+                                                // Ignore
+                                             }
+                                          }
+
+                                          public void close()
+                                          {
+                                             //To change body of implemented methods use File | Settings | File Templates.
+                                          }
+
+                                          public boolean requiresLayout()
+                                          {
+                                             return false;
+                                          }
+                                       };
+                                       appender.setLayout(new SimpleLayout());
+                                       try
+                                       {
+                                          appender.setThreshold(Level.toLevel(level));
+                                       } catch (IllegalArgumentException e)
+                                       {
+                                          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                       }
+                                       Logger.getRootLogger().addAppender(appender);
+                                       appenders.put(chat.getParticipant(), appender);
+                                       chat.sendMessage("Subscribe to log messages with priority "+level);
+                                    } else if (txt.equals("unsubscribe"))
+                                    {
+                                       if (appenders.get(chat.getParticipant()) != null)
+                                       {
+                                          Logger.getRootLogger().removeAppender(appenders.get(chat.getParticipant()));
+                                          appenders.remove(chat.getParticipant()).close();
+                                          chat.sendMessage("Unsubscribed from log messages");
+                                       }
+                                    } else
+                                    {
+                                       ObjectName selected = selectedMBean.get(chat.getParticipant());
+                                       if (selected != null)
+                                       {
+                                          if (txt.equals("restart"))
+                                          {
+                                             mbeanServer.invoke(selected, "restart", null, null);
+                                             chat.sendMessage("Service restarted");
+                                          } else
+                                          {
+                                             chat.sendMessage("Unknown command. Try 'help'");
+                                          }
+
                                        } else
                                        {
                                           chat.sendMessage("Unknown command. Try 'help'");
                                        }
-
-                                    } else
-                                    {
-                                       chat.sendMessage("Unknown command. Try 'help'");
                                     }
                                  }
+                              } catch (Exception e)
+                              {
+                                 LoggerFactory.getLogger(InstantMessagingAdminService.class).error("Chat error", e);
                               }
-                           } catch (Exception e)
-                           {
-                              LoggerFactory.getLogger(InstantMessagingAdminService.class).error("Chat error", e);
                            }
-                        }
-                     });
-                  }
-               });
+                        });
+                     }
+                  });
+               } catch (Exception ex)
+               {
+                  LoggerFactory.getLogger(InstantMessagingAdminService.class).warn("Could not connect to IM server", ex);
+               }
             }
          }
       }
