@@ -125,6 +125,7 @@ public class FormSubmissionWizardPageView
                                         @Uses FormDraftModel model)
    {
       super( page.title().get() );
+      this.module = module;
       this.model = module.objectBuilderFactory().newObjectBuilder(FormSubmissionWizardPageModel.class).use( model ).newInstance();
       componentFieldMap = new HashMap<String, AbstractFieldPanel>();
       validationResultModel = new DefaultValidationResultModel();

@@ -26,7 +26,45 @@ import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountsModel;
 import se.streamsource.streamflow.client.ui.account.ProfileModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
+import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;
+import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
+import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldValueEditModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormPagesModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignatureModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsModel;
+import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
+import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersModel;
+import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationsModel;
+import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
+import se.streamsource.streamflow.client.ui.administration.projects.MembersModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
+import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
+import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointModel;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
+import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointModel;
+import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
+import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
+import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
@@ -53,11 +91,8 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodModel;
 import se.streamsource.streamflow.client.util.LinksListModel;
 
-import static org.qi4j.api.common.Visibility.layer;
-import static org.qi4j.api.util.Iterables.filter;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addModels;
-import static se.streamsource.streamflow.util.ClassScanner.getClasses;
-import static se.streamsource.streamflow.util.ClassScanner.matches;
+import static org.qi4j.api.common.Visibility.*;
+import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * TODO
@@ -130,12 +165,12 @@ public class ModelAssembler
 
    private void administration(ModuleAssembly module) throws AssemblyException
    {
-      for (Class aClass : filter(matches(".*Model"), getClasses(AdministrationModel.class)))
+      /**for (Class aClass : filter(matches(".*Model"), getClasses(AdministrationModel.class)))
       {
          module.objects( aClass ).visibleIn(Visibility.layer);
-      }
+      }*/
 
- /*     addModels(module,
+      addModels(module,
             AdministrationModel.class,
             OrganizationModel.class,
             OrganizationalUnitModel.class,
@@ -146,10 +181,11 @@ public class ModelAssembler
             FieldValueEditModel.class,
             FormsModel.class,
             FormModel.class,
-            FormElementsModel.class,
+            //FormElementsModel.class,
             FormSignaturesModel.class,
             FormSignatureModel.class,
             GroupsModel.class,
+            GroupModel.class,
             LabelsModel.class,
             MembersModel.class,
             OrganizationsModel.class,
@@ -157,6 +193,8 @@ public class ModelAssembler
             PageEditModel.class,
             ParticipantsModel.class,
             ProjectsModel.class,
+            ProjectsModel.class,
+            ProjectModel.class,
             RolesModel.class,
             ResolutionsModel.class,
             SelectedCaseTypesModel.class,
@@ -165,19 +203,23 @@ public class ModelAssembler
             SelectedResolutionsModel.class,
             SelectedTemplatesModel.class,
             SelectedFormsModel.class,
-            UsersAdministrationModel.class);
-*/
+            UsersAdministrationModel.class,
+            ServerModel.class,
+            FiltersModel.class,
+            FormPagesModel.class,
+            FormModel.class);
+
 
       addModels(module, LinksListModel.class,
             UsersAndGroupsModel.class);
 
       // Surface
-/*      addModels(module,
+      addModels(module,
             AccessPointsModel.class,
             AccessPointModel.class,
             EmailAccessPointModel.class,
             EmailAccessPointsModel.class,
             ProxyUsersModel.class);
-            */
+
    }
 }
