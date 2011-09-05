@@ -82,7 +82,8 @@ public class StreamflowResultConverter
          if (arguments.length > 0 && arguments[0] instanceof TableQuery)
             return caseTable(Collections.singleton((CaseEntity) result), module, request, arguments);
          else
-            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().toString());
+            //needs to be relative path in case there is a proxy in front of streamflow server
+            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath());
       } else if (result instanceof Query)
       {
          Query query = (Query) result;
@@ -91,7 +92,8 @@ public class StreamflowResultConverter
             if (arguments.length > 0 && arguments[0] instanceof TableQuery)
                return caseTable(query, module, request, arguments);
             else
-               return buildCaseList(query, module, request.getResourceRef().getBaseRef().toString());
+               //same here relative path needed
+               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath());
          }
       }
 
@@ -219,7 +221,8 @@ public class StreamflowResultConverter
 
    private TableValue caseTable(Iterable<CaseEntity> cases, final Module module, final Request request, Object[] arguments)
    {
-      final String basePath = request.getResourceRef().getBaseRef().toString();
+      //needs relative path in case there is a proxy in front of streamflow server
+      final String basePath = request.getResourceRef().getBaseRef().getPath();
       TableQuery query = (TableQuery) arguments[0];
 
       TableBuilderFactory tbf = new TableBuilderFactory(module.valueBuilderFactory());

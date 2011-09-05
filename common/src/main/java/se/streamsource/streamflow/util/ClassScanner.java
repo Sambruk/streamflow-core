@@ -52,7 +52,14 @@ public class ClassScanner
       if (!location.getProtocol().equals("file"))
          throw new IllegalArgumentException("Can only enumerate classes from file system locations. URL is:" + location);
 
-      final File file = new File(location.getPath());
+      // JDK: Location is directory, Tomcat: Location is actual class file
+      String tmpFileName = location.getPath();
+      if( tmpFileName.endsWith( ".class" ))
+      {
+         tmpFileName = tmpFileName.substring( 0, tmpFileName.length() - (seedClass.getName().length() + 6) );
+      }
+
+      final File file = new File(tmpFileName);
 
       if (file.getName().endsWith(".jar"))
       {

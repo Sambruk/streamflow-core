@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.ConstraintViolation;
 import org.qi4j.api.constraint.Constraints;
-import org.qi4j.api.util.Iterables;
 import org.qi4j.library.constraints.MaxLengthConstraint;
 import org.qi4j.library.constraints.annotation.MaxLength;
 

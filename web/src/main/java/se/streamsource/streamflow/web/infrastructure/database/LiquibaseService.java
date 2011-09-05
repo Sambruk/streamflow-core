@@ -42,7 +42,7 @@ import java.sql.SQLException;
  */
 @Mixins(LiquibaseService.Mixin.class)
 public interface LiquibaseService
-      extends Activatable, ServiceComposite
+      extends Activatable, ServiceComposite, Configuration<LiquibaseConfiguration>
 {
    class Mixin
          implements Activatable

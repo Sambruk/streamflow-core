@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.assembler;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.util.Iterables;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -36,13 +35,60 @@ import se.streamsource.streamflow.client.ui.account.ChangePasswordDialog;
 import se.streamsource.streamflow.client.ui.account.CreateAccountDialog;
 import se.streamsource.streamflow.client.ui.account.ProfileView;
 import se.streamsource.streamflow.client.ui.account.TestConnectionTask;
+import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
+import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
+import se.streamsource.streamflow.client.ui.administration.forms.FormView;
+import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
+import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldCreationDialog;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorAttachmentFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorCheckboxesFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorComboBoxFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorCommentFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorDateFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorListBoxFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorNumberFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorOpenSelectionFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorOptionButtonsFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorTextAreaFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorTextFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldValueObserver;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormEditView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignatureView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsView;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
+import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsView;
+import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
+import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
+import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersView;
+import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
+import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
+import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
+import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
+import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointView;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
 import se.streamsource.streamflow.client.ui.administration.surface.CreateProxyUserDialog;
+import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointView;
+import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
+import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
+import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesView;
+import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.CreateUserDialog;
 import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
 import se.streamsource.streamflow.client.ui.menu.AccountMenu;
 import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 import se.streamsource.streamflow.client.ui.menu.EditMenu;
@@ -56,11 +102,50 @@ import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryView;
 import se.streamsource.streamflow.client.ui.overview.OverviewView;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceContextView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseActionsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactLookupResultDialog;
+import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactView;
+import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OptionButtonsPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
+import se.streamsource.streamflow.client.ui.workspace.cases.history.MessagesHistoryView;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.ExceptionHandlerService;
 import se.streamsource.streamflow.client.util.JavaHelp;
@@ -75,12 +160,8 @@ import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.util.UIAssemblers.*;
-import static se.streamsource.streamflow.util.ClassScanner.getClasses;
-import static se.streamsource.streamflow.util.ClassScanner.matches;
 
 /**
  * JAVADOC
@@ -152,18 +233,18 @@ public class UIAssembler
 
    private void workspace(ModuleAssembly module) throws AssemblyException
    {
-      views(module, filter(matches(".*View|.*Panel"), getClasses(WorkspaceView.class)));
+      //views(module, filter(matches(".*View|.*Panel"), getClasses(WorkspaceView.class)));
 
-/*
-      views(module,
+
+      addViews( module,
             WorkspaceView.class,
             WorkspaceContextView.class,
             SearchView.class,
             CasesView.class,
             CasesTableView.class,
-            PerspectivePeriodView.class);
+            PerspectivePeriodView.class );
 
-      views(module,
+      addViews( module,
             CaseActionsView.class,
             CaseInfoView.class,
             CasesDetailView.class,
@@ -179,6 +260,7 @@ public class UIAssembler
             SubmittedFormsAdminView.class,
             FormSubmissionWizardPageView.class,
             PossibleFormsView.class,
+            PossibleFormView.class,
             CheckboxesPanel.class,
             ComboBoxPanel.class,
             OptionButtonsPanel.class,
@@ -198,7 +280,7 @@ public class UIAssembler
             MessagesHistoryView.class,
             PerspectiveView.class
       );
-      */
+
 
       addDialogs(module, ContactLookupResultDialog.class);
 
@@ -231,9 +313,11 @@ public class UIAssembler
 
    private void administration(ModuleAssembly module) throws AssemblyException
    {
-      views(module, Iterables.filter(matches(".*View"), getClasses(AdministrationView.class)));
+      //views(module, Iterables.filter(matches(".*View"), getClasses(AdministrationView.class)));
 
-      /*
+
+      module.objects(ProjectModel.class ).visibleIn(layer);
+      
       addMV(module, SelectedFormsModel.class, SelectedFormsView.class);
 
       addViews(module,
@@ -262,7 +346,17 @@ public class UIAssembler
             SelectedLabelsView.class,
             SelectedResolutionsView.class,
             CaseAccessDefaultsView.class,
-            UsersAdministrationView.class);
+            UsersAdministrationView.class,
+            ProxyUsersView.class,
+            AccessPointsView.class,
+            AccessPointView.class,
+            TemplatesView.class,
+            SelectedTemplatesView.class,
+            TabbedResourceView.class,
+            EmailAccessPointsView.class,
+            EmailAccessPointView.class,
+            FiltersView.class,
+            FormEditView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,
@@ -276,7 +370,6 @@ public class UIAssembler
             FieldEditorOpenSelectionFieldValueView.class,
             FieldEditorTextAreaFieldValueView.class,
             FieldEditorTextFieldValueView.class);
-*/
 
       addDialogs(module, FieldCreationDialog.class);
 
