@@ -17,12 +17,20 @@
 
 package se.streamsource.streamflow.client.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addDialogs;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addMV;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addTasks;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addViews;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
+
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -41,7 +49,12 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.filters.ActionsView;
+import se.streamsource.streamflow.client.ui.administration.filters.EmailActionView;
+import se.streamsource.streamflow.client.ui.administration.filters.FilterView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
+import se.streamsource.streamflow.client.ui.administration.filters.LabelRuleView;
+import se.streamsource.streamflow.client.ui.administration.filters.RulesView;
 import se.streamsource.streamflow.client.ui.administration.forms.FormView;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
@@ -159,9 +172,6 @@ import se.streamsource.streamflow.client.util.dialog.InputDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
-
-import static org.qi4j.api.common.Visibility.*;
-import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * JAVADOC
@@ -356,7 +366,12 @@ public class UIAssembler
             EmailAccessPointsView.class,
             EmailAccessPointView.class,
             FiltersView.class,
-            FormEditView.class);
+            FilterView.class,
+            RulesView.class,
+            FormEditView.class,
+            ActionsView.class,
+            EmailActionView.class,
+            LabelRuleView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,
