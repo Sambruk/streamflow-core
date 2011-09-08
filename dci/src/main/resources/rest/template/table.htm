@@ -31,13 +31,13 @@
         #foreach($cell in $row.c)
         <td>
             #if($cell.f)
-               #if($cell.v.startsWith("http://"))
-                <a href="$cell.v">$cell.f</a>
+               #if($cell.v.startsWith("/"))
+                  <a href="$cell.v">$cell.v</a>
                #else
-                $cell.f
+                  $cell.f
                #end
             #elseif($cell.v)
-                $cell.v
+                <a href="$cell.v">$cell.v</a>
             #else
             &nbsp;
             #end
