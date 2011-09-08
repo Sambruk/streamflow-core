@@ -17,11 +17,15 @@
 
 package se.streamsource.streamflow.client.assembler;
 
+import static org.qi4j.api.common.Visibility.layer;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addModels;
+
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.specification.Specifications;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+
 import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountsModel;
 import se.streamsource.streamflow.client.ui.account.ProfileModel;
@@ -34,7 +38,12 @@ import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.Ca
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.filters.ActionsModel;
+import se.streamsource.streamflow.client.ui.administration.filters.EmailActionModel;
+import se.streamsource.streamflow.client.ui.administration.filters.FilterModel;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;
+import se.streamsource.streamflow.client.ui.administration.filters.LabelRuleModel;
+import se.streamsource.streamflow.client.ui.administration.filters.RulesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
@@ -90,9 +99,6 @@ import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableMo
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodModel;
 import se.streamsource.streamflow.client.util.LinksListModel;
-
-import static org.qi4j.api.common.Visibility.*;
-import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * TODO
@@ -206,8 +212,13 @@ public class ModelAssembler
             UsersAdministrationModel.class,
             ServerModel.class,
             FiltersModel.class,
+            FilterModel.class,
+            RulesModel.class,
             FormPagesModel.class,
-            FormModel.class);
+            FormModel.class,
+            ActionsModel.class,
+            EmailActionModel.class,
+            LabelRuleModel.class);
 
 
       addModels(module, LinksListModel.class,
