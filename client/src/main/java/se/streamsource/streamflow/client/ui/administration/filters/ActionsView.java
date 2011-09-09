@@ -82,7 +82,7 @@ public class ActionsView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_recipient_title ) );
 
-      if (dialog.getSelectedLinks() != null)
+      if (dialog.getSelectedLinks() != null && !dialog.getSelectedLinks().isEmpty())
       {
          return new CommandTask()
          {
