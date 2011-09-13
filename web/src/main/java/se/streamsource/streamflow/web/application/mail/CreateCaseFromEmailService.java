@@ -171,7 +171,8 @@ public interface CreateCaseFromEmailService
                   // Create attachments
                   for (AttachedFileValue attachedFileValue : email.attachments().get())
                   {
-                     if (attachedFileValue.mimeType().get().contains("text/x-vcard"))
+                     if (attachedFileValue.mimeType().get().contains("text/x-vcard") 
+                           || attachedFileValue.mimeType().get().contains("text/directory"))
                      {
                         addVCardAsContact((Contactable.Data) user, attachedFileValue);
                      } else

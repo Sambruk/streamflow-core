@@ -274,6 +274,18 @@ public interface ReceiveMailService
                               body = (String) part.getContent();
                               builder.prototype().content().set(body);
                               builder.prototype().contentType().set(part.getContentType());
+                           } else if (part.getContent() instanceof Multipart) {
+                              Multipart bodyMultipart = (Multipart) part.getContent();
+                              for (int j = 0, k = bodyMultipart.getCount(); j < k; j++)
+                              {
+                                 BodyPart bodyPart = bodyMultipart.getBodyPart(i);
+                                 if (bodyPart.isMimeType("text/plain"))
+                                 {
+                                    body = (String) bodyPart.getContent();
+                                    builder.prototype().content().set(body);
+                                    builder.prototype().contentType().set(bodyPart.getContentType());
+                                 }
+                              }
                            }
                         }
                      }

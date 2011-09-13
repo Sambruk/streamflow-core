@@ -167,8 +167,8 @@ public interface ArchivalService
                   {
                      try
                      {
-                        caseEntity.deleteEntity();
                         logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was deleted");
+                        caseEntity.deleteEntity();
                      } catch (Exception e)
                      {
                         logger.warn("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", could not be archived", e);
