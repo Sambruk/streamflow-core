@@ -322,6 +322,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       forms.setEnabled( enabled );
 
       valueBinder.update( model.getGeneral() );
+      selectedCaseType.setClickLink( model.getGeneral().caseType().get() );
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
@@ -398,7 +399,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                LinkValue selected = dialog.getSelectedLink();
                model.changeCaseType( selected );
 
-               selectedCaseType.setRemoveLink(selected);
+              // selectedCaseType.setRemoveLink(selected);
 
                String labelQuery = dialog.getFilterField().getText();
                // if the query string has any match inside label descriptions

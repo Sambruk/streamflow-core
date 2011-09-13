@@ -159,6 +159,15 @@ public class RemovableLabel extends JPanel
       this.setVisible( link != null );
    }
 
+   public void setClickLink(LinkValue link)
+   {
+      this.clickLink = link;
+      if (link != null)
+      {
+         label.setLink(clickLink, this.removeLink.text().get() );
+      }
+   }
+   
    public void setLinks(LinkValue removeLink, LinkValue clickLink)
    {
       this.clickLink = clickLink;
