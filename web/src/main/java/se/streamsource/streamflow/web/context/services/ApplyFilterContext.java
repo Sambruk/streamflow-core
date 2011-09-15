@@ -284,7 +284,7 @@ public class ApplyFilterContext
                   config.prototype().conversations().set(true);
                   config.prototype().submittedForms().set(true);
                   config.prototype().history().set(true);
-                  RoleMap.current().set(Locale.getDefault());
+                  RoleMap.current().set(new Locale( "SV", "se" ));
                   RoleMap.current().set(self);
                   final PDDocument pdf = module.transientBuilderFactory().newTransient(CaseCommandsContext.class).exportpdf(config.newInstance());
 
