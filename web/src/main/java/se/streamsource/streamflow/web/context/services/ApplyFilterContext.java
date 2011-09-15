@@ -270,8 +270,8 @@ public class ApplyFilterContext
 
                builder.prototype().from().set(administrator.contact().get().defaultEmail().emailAddress().get());
                builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
-               builder.prototype().subject().set("Nytt Ã¤rende:" + self.caseId().get()); // TODO These texts need to use the locale for the user
-               builder.prototype().content().set("Du har ett nytt Ã¤rende att hantera. Se bifogad PDF");
+               builder.prototype().subject().set("Nytt Šrende:" + self.caseId().get()); // TODO These texts need to use the locale for the user
+               builder.prototype().content().set("Du har ett nytt Šrende att hantera. Se bifogad PDF");
                builder.prototype().contentType().set("text/plain");
                builder.prototype().to().set(email.emailAddress().get());
 
