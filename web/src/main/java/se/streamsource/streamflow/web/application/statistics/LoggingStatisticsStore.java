@@ -78,6 +78,11 @@ public interface LoggingStatisticsStore
          log.info("Removed statistics about "+id);
       }
 
+      public void structure(OrganizationalStructureValue structureValue)
+      {
+         log.info("New organizational structure:"+structureValue.toString());
+      }
+
       public void clearAll()
       {
          log.info("Cleared statistics");

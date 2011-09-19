@@ -42,6 +42,8 @@ public interface StatisticsStore
    void removedCase(String id)
       throws StatisticsStoreException;
 
+   void structure(OrganizationalStructureValue structureValue) throws StatisticsStoreException;
+
    /**
     * Clear out all statistics from the store. This is usually
     * done before repopulating the statistics store from scratch.
