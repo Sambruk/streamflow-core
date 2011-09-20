@@ -63,7 +63,8 @@ public class APIRouter
 
       Filter authenticationFilter = factory.newObjectBuilder(AuthenticationFilter.class).use(getContext(), cqr, this.filterService).newInstance();
 
-      Filter performanceLoggingFilter = new PerformanceLoggingFilter(context, authenticationFilter);
+      Filter noCacheFilter = new NoCacheFilter(context, authenticationFilter);
+      Filter performanceLoggingFilter = new PerformanceLoggingFilter(context, noCacheFilter);
 
       attachDefault(new ExtensionMediaTypeFilter(getContext(), performanceLoggingFilter));
 
