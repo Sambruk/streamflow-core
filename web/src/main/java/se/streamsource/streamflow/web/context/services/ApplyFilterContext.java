@@ -48,6 +48,7 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
+import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -68,6 +69,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static se.streamsource.streamflow.util.ForEach.forEach;
 
@@ -81,6 +83,7 @@ public class ApplyFilterContext
    private Module module;
    private MailSender mailSender;
    private AttachmentStore attachmentStore;
+   private ResourceBundle bundle;
 
    public ApplyFilterContext(@Structure Module module, @Uses MailSender mailSender, @Service AttachmentStore attachmentStore)
    {
@@ -89,6 +92,7 @@ public class ApplyFilterContext
       this.attachmentStore = attachmentStore;
       this.filterCheck = new FilterCheck();
       this.filterable = new Filterable();
+      this.bundle = ResourceBundle.getBundle( ApplyFilterContext.class.getName(), new Locale("SV","se") ); // TODO These texts need to use the locale for the user
    }
 
    public ApplyFilterContext rebind(Filters.Data filters, CaseEntity caze)
@@ -270,8 +274,8 @@ public class ApplyFilterContext
 
                builder.prototype().from().set(administrator.contact().get().defaultEmail().emailAddress().get());
                builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
-               builder.prototype().subject().set("Nytt Šrende:" + self.caseId().get()); // TODO These texts need to use the locale for the user
-               builder.prototype().content().set("Du har ett nytt Šrende att hantera. Se bifogad PDF");
+               builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
+               builder.prototype().content().set(bundle.getString( "message" ));
                builder.prototype().contentType().set("text/plain");
                builder.prototype().to().set(email.emailAddress().get());
 
