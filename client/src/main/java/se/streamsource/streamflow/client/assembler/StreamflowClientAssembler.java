@@ -50,7 +50,7 @@ public class StreamflowClientAssembler
       LayerAssembly uiLayer = assembly.layer( "UI" );
 
       // Define layer usage
-      uiLayer.uses( modelLayer, domainInfrastructureLayer, restLayer );
+      uiLayer.uses( modelLayer, domainLayer, domainInfrastructureLayer, restLayer );
       domainLayer.uses( domainInfrastructureLayer, restLayer );
       modelLayer.uses(domainLayer, domainInfrastructureLayer, restLayer);
       restLayer.uses(domainInfrastructureLayer);
