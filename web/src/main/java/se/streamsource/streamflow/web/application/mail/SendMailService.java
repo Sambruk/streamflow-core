@@ -182,7 +182,7 @@ public interface SendMailService
                   msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get(), "ISO-8859-1" ) );
 
                msg.setRecipient( javax.mail.Message.RecipientType.TO, new InternetAddress( email.to().get() ) );
-               msg.setSubject( email.subject().get() );
+               msg.setSubject( email.subject().get(), "UTF-8" );
                for (Map.Entry<String, String> header : email.headers().get().entrySet())
                {
                   msg.setHeader( header.getKey(), header.getValue() );
