@@ -38,7 +38,6 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
@@ -55,9 +54,6 @@ import se.streamsource.streamflow.util.Strings;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -140,21 +136,47 @@ public class AdministrationTreeView
       adminPopup.add( am.get( "merge" ) );
 
       JPanel actions = new JPanel();
-      final JButton createOUButton = new JButton( am.get( "createOrganizationalUnit" ) );
+      final JButton createOUButton = new JButton( am.get( "create" ) );
       createOUButton.setEnabled( false );
       actions.add( createOUButton );
 
       final JButton optionsButton = new JButton( new OptionsAction( adminPopup ) );
-      optionsButton.setEnabled( false );
-      actions.add( optionsButton );
+//      optionsButton.setEnabled( false );
+      actions.add(optionsButton);
 
-      add( actions, BorderLayout.SOUTH );
+      add(actions, BorderLayout.SOUTH);
+
+      new RefreshWhenShowing( this, model );
+
+      final ResourceActionEnabler resourceActionEnabler = new ResourceActionEnabler(
+            am.get("changeDescription"),
+            am.get("delete"),
+            am.get("move"),
+            am.get("merge"),
+            am.get("create")
+      )
+      {
+         @Override
+         protected ResourceValue getResource()
+         {
+            ResourceModel resourceModel = (ResourceModel) model.newResourceModel((LinkValue) ((TreeList.Node)tree.getSelectionPath().getLastPathComponent()).getElement());
+            resourceModel.refresh();
+            return resourceModel.getResourceValue();
+         }
+      };
+      new RefreshWhenShowing( adminPopup, resourceActionEnabler);
 
       tree.addTreeSelectionListener( new TreeSelectionListener()
       {
          public void valueChanged( TreeSelectionEvent e )
          {
-            final TreePath path = e.getNewLeadSelectionPath();
+            if (tree.isSelectionEmpty())
+            {
+               am.get("create").setEnabled(false);
+            } else
+            {
+               resourceActionEnabler.refresh();
+            }
 /*
             if (path != null && !path.getLastPathComponent().equals( model.getRoot() ))
             {
@@ -169,24 +191,6 @@ public class AdministrationTreeView
          }
       } );
 
-      new RefreshWhenShowing( this, model );
-
-      new RefreshWhenShowing( adminPopup, new ResourceActionEnabler(
-            am.get( "changeDescription" ),
-            am.get( "delete" ),
-            am.get( "move" ),
-            am.get( "merge" ),
-            am.get( "createOrganizationalUnit" )
-      )
-      {
-         @Override
-         protected ResourceValue getResource()
-         {
-            ResourceModel resourceModel = (ResourceModel) model.newResourceModel((LinkValue) tree.getSelectionPath().getLastPathComponent());
-            resourceModel.refresh();
-            return resourceModel.getResourceValue();
-         }
-      } );
    }
 
 
@@ -204,7 +208,7 @@ public class AdministrationTreeView
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_ou_title ) );
       if (!Strings.empty( dialog.name() ))
       {
-         if (node instanceof MutableTreeNode)
+         if (node instanceof TreeList.Node)
          {
             return new CommandTask()
             {
@@ -222,9 +226,9 @@ public class AdministrationTreeView
    }
 
    @Action
-   public Task createOrganizationalUnit()
+   public Task create()
    {
-      final Object node = tree.getSelectionPath().getLastPathComponent();
+      final LinkValue node = (LinkValue) ((TreeList.Node)tree.getSelectionPath().getLastPathComponent()).getElement();
 
       final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
@@ -249,8 +253,8 @@ public class AdministrationTreeView
       final Object node = tree.getSelectionPath().getLastPathComponent();
 
       ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
-      DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
-      String name = ((ContextItem) mutableTreeNode.getUserObject()).getName();
+      TreeList.Node treeNode = (TreeList.Node) node;
+      String name = ((LinkValue) treeNode.getElement()).text().get();
 
       dialog.setRemovalMessage( name );
       dialogs.showOkCancelHelpDialog( this, dialog, text( StreamflowResources.confirmation ) );

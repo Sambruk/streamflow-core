@@ -32,13 +32,11 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Comparator;
 import java.util.List;
 
@@ -100,7 +98,7 @@ public class AdministrationModel
       super.refresh();
 
       LinksValue administration = getIndex();
-
+      links.clear();
       EventListSynch.synchronize(administration.links().get(), links);
    }
 
@@ -111,31 +109,28 @@ public class AdministrationModel
 
    public void changeDescription( Object node, String newDescription )
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem client = (ContextItem) treeNode.getUserObject();
+      TreeList.Node treeNode = (TreeList.Node) node;
+      LinkValue link = (LinkValue) treeNode.getElement();
 
       ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( newDescription );
-      client.getClient().postCommand( "changedescription", builder.newInstance() );
+      client.getClient(link).postCommand( "changedescription", builder.newInstance() );
    }
 
-   public void createOrganizationalUnit( Object node, String name )
+   public void createOrganizationalUnit( LinkValue node, String name )
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
-
       Form form = new Form();
       form.set("name", name);
-      contextItem.getClient().postCommand( "create", form );
+      client.getClient(node).postCommand( "create", form );
    }
 
    public void removeOrganizationalUnit( Object node )
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
+      TreeList.Node treeNode = (TreeList.Node) node;
+      LinkValue link = (LinkValue) treeNode.getElement();
       try
       {
-         contextItem.getClient().delete();
+         client.getClient(link).delete();;
       } catch (ResourceException e)
       {
          if (Status.SERVER_ERROR_INTERNAL.equals( e.getStatus() ))
@@ -148,34 +143,36 @@ public class AdministrationModel
 
    public EventList<LinkValue> possibleMoveTo(Object node)
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
+      TreeList.Node treeNode = (TreeList.Node) node;
+      LinkValue link = (LinkValue) treeNode.getElement();
+
       EventList<LinkValue> links = new BasicEventList<LinkValue>();
-      EventListSynch.synchronize(contextItem.getClient().query( "possiblemoveto", LinksValue.class ).links().get(), links);
+      EventListSynch.synchronize(client.getClient(link).query( "possiblemoveto", LinksValue.class ).links().get(), links);
       return links;
    }
 
-   public void move(Object node, LinkValue link)
+   public void move(Object node, LinkValue moveTo)
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
-      contextItem.getClient().postLink( link );
+      TreeList.Node treeNode = (TreeList.Node) node;
+      LinkValue link = (LinkValue) treeNode.getElement();
+
+      client.getClient(link).postLink( moveTo );
    }
 
    public EventList<LinkValue> possibleMergeWith(Object node)
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
+      TreeList.Node treeNode = (TreeList.Node) node;
+      LinkValue link = (LinkValue) treeNode.getElement();
       EventList<LinkValue> links = new BasicEventList<LinkValue>();
-      EventListSynch.synchronize(contextItem.getClient().query( "possiblemergewith", LinksValue.class ).links().get(), links);
+      EventListSynch.synchronize(client.getClient(link).query( "possiblemergewith", LinksValue.class ).links().get(), links);
       return links;
    }
 
-   public void merge(Object node, LinkValue link)
+   public void merge(Object node, LinkValue mergeWith)
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
-      contextItem.getClient().postLink( link );
+      TreeList.Node treeNode = (TreeList.Node) node;
+      LinkValue link = (LinkValue) treeNode.getElement();
+      client.getClient(link).postLink( link );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
