@@ -173,13 +173,15 @@ public class EmailAccessPointView
       binder.bind("subject", subject);
       EmailAccessPointDTO value = model.getValue();
       binder.update(value);
-
+      
+      int selectedIndex = emailTemplateList.getSelectedIndex();
       DefaultListModel emailTemplateListModel = new DefaultListModel();
       for (String key : value.messages().get().keySet())
       {
          emailTemplateListModel.addElement(key);
       }
       emailTemplateList.setModel(emailTemplateListModel);
+      emailTemplateList.setSelectedIndex( selectedIndex );
    }
 
    @org.jdesktop.application.Action
