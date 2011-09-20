@@ -62,6 +62,8 @@ import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue
 import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
 import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.OrganizationalStructureValue;
+import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitValue;
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
@@ -213,7 +215,7 @@ public class AppAssembler
                visibleIn( Visibility.module );
       }
 
-      module.values(RelatedStatisticsValue.class, FormFieldStatisticsValue.class, CaseStatisticsValue.class).visibleIn(layer);
+      module.values(RelatedStatisticsValue.class, FormFieldStatisticsValue.class, OrganizationalStructureValue.class, OrganizationalUnitValue.class, CaseStatisticsValue.class).visibleIn(layer);
    }
 
    private void security( ModuleAssembly module ) throws AssemblyException

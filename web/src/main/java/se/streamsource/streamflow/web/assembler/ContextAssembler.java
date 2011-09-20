@@ -64,7 +64,7 @@ public class ContextAssembler
       module.objects(InteractionConstraintsService.class);
 
       module.objects(RequiresPermission.RequiresPermissionConstraint.class,
-              ServiceAvailable.ServiceAvailableConstraint.class).visibleIn( Visibility.application );
+              ServiceAvailable.ServiceAvailableConstraint.class).visibleIn(Visibility.application);
 
       // Named queries
       NamedQueries namedQueries = new NamedQueries();
