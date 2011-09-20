@@ -18,7 +18,9 @@
 package se.streamsource.streamflow.web.application.statistics;
 
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -116,7 +118,7 @@ public class CaseStatisticsServiceTest
       module.transients(GroupsContext.class);
 
       module.values(DomainEvent.class, TransactionDomainEvents.class);
-      module.values(CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class);
+      module.values(CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class, OrganizationalStructureValue.class, OrganizationalUnitValue.class);
    }
 
    @Test
@@ -195,6 +197,7 @@ public class CaseStatisticsServiceTest
       // Verify log records
       int idx = 0;
       assertThat(appender.getEvents().get(idx).getMessage().toString(), new ContainsMatcher("description:Organization1, type:organization"));
+      assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("New organizational structure:"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:OU1, type:organizationalUnit"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:Group1, type:group"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:Project1"));
@@ -222,7 +225,8 @@ public class CaseStatisticsServiceTest
       @Override
       protected void append(LoggingEvent event)
       {
-         events.add(event);
+         if (event.getLevel().isGreaterOrEqual(Level.INFO))
+            events.add(event);
       }
 
       public boolean requiresLayout()

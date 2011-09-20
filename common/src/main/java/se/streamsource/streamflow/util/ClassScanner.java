@@ -23,8 +23,10 @@ import org.qi4j.api.util.Iterables;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -53,10 +55,17 @@ public class ClassScanner
          throw new IllegalArgumentException("Can only enumerate classes from file system locations. URL is:" + location);
 
       // JDK: Location is directory, Tomcat: Location is actual class file
-      String tmpFileName = location.getPath();
-      if( tmpFileName.endsWith( ".class" ))
+      String tmpFileName = null;
+      try
       {
-         tmpFileName = tmpFileName.substring( 0, tmpFileName.length() - (seedClass.getName().length() + 6) );
+         tmpFileName = URLDecoder.decode(location.getPath(), "UTF-8");
+         if( tmpFileName.endsWith( ".class" ))
+         {
+            tmpFileName = tmpFileName.substring( 0, tmpFileName.length() - (seedClass.getName().length() + 6) );
+         }
+      } catch (UnsupportedEncodingException e)
+      {
+         // Ignore
       }
 
       final File file = new File(tmpFileName);
