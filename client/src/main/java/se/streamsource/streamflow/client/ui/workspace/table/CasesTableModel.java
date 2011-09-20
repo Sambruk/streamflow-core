@@ -112,7 +112,7 @@ public class CasesTableModel extends Observable
          queryString += " where " + whereClause;
 
       if( !Strings.empty( sorting ))
-         queryString += " " + sorting;
+         queryString += sorting;
 
       builder.prototype().tq().set( queryString );
       TableQuery query = builder.newInstance();
