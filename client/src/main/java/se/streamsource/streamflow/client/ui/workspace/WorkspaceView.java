@@ -120,6 +120,7 @@ public class WorkspaceView
       ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get("savePerspective");
       savePerspective = context.getActionMap().get("savePerspective");
       savePerspective.putValue("proxy", savePerspectiveAction);
+      savePerspectiveAction.setEnabled(false);
 
       searchResultTableModel = model.newSearchModel();
 
@@ -268,7 +269,6 @@ public class WorkspaceView
                } else
                {
                   context.getActionMap().get("managePerspectives").setEnabled(true);
-                  context.getActionMap().get("savePerspective").setEnabled(true);
                }
             }
          }
@@ -408,9 +408,8 @@ public class WorkspaceView
             public void command()
                   throws Exception
             {
-               PerspectivesModel perspectivesModel = module.objectBuilderFactory().newObjectBuilder(PerspectivesModel.class).use(model.newPerspectivesModel()).newInstance();
                PerspectiveDTO perspective = casesView.getCaseTableView().getModel().getPerspective(dialog.name(), searchView.isVisible() ? searchView.getTextField().getText() : "");
-               perspectivesModel.savePerspective(perspective);
+               model.newPerspectivesModel().savePerspective(perspective);
             }
          };
       } else

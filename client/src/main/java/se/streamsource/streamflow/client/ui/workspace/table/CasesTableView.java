@@ -17,12 +17,48 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
-import ca.odell.glazedlists.swing.EventTableModel;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.TimeZone;
+
+import javax.swing.ActionMap;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.AbstractHighlighter;
@@ -37,6 +73,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
@@ -53,30 +90,12 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.TimeZone;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import ca.odell.glazedlists.swing.EventTableModel;
 
 /**
  * Base class for all views of case lists.
@@ -120,7 +139,7 @@ public class CasesTableView
    private PerspectiveView filter;
 
 
-   public void init( @Service ApplicationContext context,
+   public void init( final @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
                      final @Uses TableFormat tableFormat,
                      @Optional @Uses JTextField searchField )
@@ -368,7 +387,20 @@ public class CasesTableView
             sortedProjects.add( 0, text( WorkspaceResources.all ) );
          }
       } );
-
+      
+      addHierarchyListener(new HierarchyListener()
+      {
+         public void hierarchyChanged(HierarchyEvent e)
+         {
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) > 0)
+            {
+               if (CasesTableView.this.isShowing())
+               {
+                  context.getActionMap().get("savePerspective").setEnabled(true);
+               }
+            }
+         }
+      });
       new RefreshWhenShowing( this, model );
    }
 
