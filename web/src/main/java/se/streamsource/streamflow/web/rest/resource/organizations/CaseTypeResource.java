@@ -23,6 +23,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.ArchivalSettingsContext;
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
+import se.streamsource.streamflow.web.context.administration.CaseDefaultDaysToCompleteContext;
 import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
@@ -89,7 +90,13 @@ public class CaseTypeResource
    @SubResource
    public void caseaccessdefaults()
    {
-      subResourceContexts( CaseAccessDefaultsContext.class );
+      subResourceContexts(CaseAccessDefaultsContext.class);
+   }
+
+   @SubResource
+   public void defaultdaystocomplete()
+   {
+      subResourceContexts( CaseDefaultDaysToCompleteContext.class );
    }
 
    @SubResource

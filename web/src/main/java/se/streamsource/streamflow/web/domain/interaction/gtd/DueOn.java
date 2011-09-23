@@ -32,6 +32,8 @@ public interface DueOn
 {
    void dueOn( @Future Date dueDate );
 
+   void defaultDueOn(@Future Date dueDate);
+
    interface Data
    {
       @Optional
@@ -47,6 +49,12 @@ public interface DueOn
       public void dueOn( Date dueDate )
       {
          changedDueOn( null, dueDate );
+      }
+
+      public void defaultDueOn(Date dueDate)
+      {
+         if (dueOn().get() == null)
+            dueOn(dueDate);
       }
 
       public void changedDueOn( @Optional DomainEvent event, Date dueDate )

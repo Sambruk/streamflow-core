@@ -130,7 +130,9 @@ public enum AdministrationResources
    group_title,
    user_title,
    choose_default_access_type,
-   caseaccessdefaults_tab,
+   casesettings_tab,
+   caseaccessdefaults_separator,
+   default_days_to_complete_separator,
    choose_move_casetype_to,
    choose_accesspoint_title,
    emailaccesspoints_tab,
@@ -139,7 +141,6 @@ public enum AdministrationResources
    subject, emailTemplates,
    add_email_accesspoint,
    formsignatures_tab,
-
    choose_recipient_title,
    filters_tab,
    add_filter_title,
@@ -150,4 +151,5 @@ public enum AdministrationResources
    filter_actions,
    send_email_to,
    match_label,
+   default_days_to_complete,
 }

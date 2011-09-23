@@ -35,6 +35,7 @@ public interface CaseType
    extends
       ArchivalSettings,
       CaseAccessDefaults,
+      DefaultDaysToComplete,
       Describable,
       Forms,
       Labels,

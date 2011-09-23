@@ -32,6 +32,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
@@ -52,6 +53,8 @@ public interface CaseTypeEntity
       ArchivalSettings.Data,
       ArchivalSettings.Events,
       CaseAccessDefaults.Data,
+      DefaultDaysToComplete.Data,
+      DefaultDaysToComplete.Events,
       Describable.Data,
       Notable.Data,
       Labels.Data,

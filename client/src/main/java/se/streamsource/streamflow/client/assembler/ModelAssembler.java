@@ -34,7 +34,8 @@ import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
 import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
-import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
@@ -181,6 +182,7 @@ public class ModelAssembler
             OrganizationModel.class,
             OrganizationalUnitModel.class,
             CaseAccessDefaultsModel.class,
+            CaseDefaultDaysToCompleteModel.class,
             CaseTypesModel.class,
             CaseTypeModel.class,
             AdministratorsModel.class,

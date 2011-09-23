@@ -22,9 +22,11 @@ import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
@@ -76,9 +78,19 @@ public abstract class ResourceModel<INDEXTYPE>
       return commands;
    }
 
+   public LinkValue command(String rel)
+   {
+      return Iterables.first(Iterables.filter(Links.withRel(rel), getCommands()));
+   }
+
    public TransactionList<LinkValue> getQueries()
    {
       return queries;
+   }
+
+   public LinkValue query(String rel)
+   {
+      return Iterables.first(Iterables.filter(Links.withRel(rel), getQueries()));
    }
 
    public TransactionList<LinkValue> getResources()

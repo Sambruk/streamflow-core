@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.caseaccessdefaults;
+package se.streamsource.streamflow.client.ui.administration.casesettings;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;

@@ -18,7 +18,8 @@
 package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
@@ -41,6 +42,7 @@ public class CaseTypeModel
       relationModelMapping("resolutions", ResolutionsModel.class);
       relationModelMapping("selectedresolutions", SelectedResolutionsModel.class);
       relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
+      relationModelMapping("defaultdaystocomplete", CaseDefaultDaysToCompleteModel.class);
       //TODO Archival
    }
 }

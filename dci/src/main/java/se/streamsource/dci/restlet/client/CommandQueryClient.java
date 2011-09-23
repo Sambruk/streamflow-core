@@ -110,6 +110,11 @@ public class CommandQueryClient
       postCommand( link.href().get(), new EmptyRepresentation() );
    }
 
+   public synchronized void postLink( LinkValue link, Object requestObject ) throws ResourceException
+   {
+      postCommand( link.href().get(), requestObject );
+   }
+
    public synchronized void postCommand( String operation ) throws ResourceException
    {
       postCommand( operation, new EmptyRepresentation() );

@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;

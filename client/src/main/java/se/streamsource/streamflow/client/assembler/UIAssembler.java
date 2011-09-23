@@ -46,7 +46,8 @@ import se.streamsource.streamflow.client.ui.account.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
-import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsView;
@@ -356,6 +357,7 @@ public class UIAssembler
             SelectedLabelsView.class,
             SelectedResolutionsView.class,
             CaseAccessDefaultsView.class,
+            CaseDefaultDaysToCompleteView.class,
             UsersAdministrationView.class,
             ProxyUsersView.class,
             AccessPointsView.class,

@@ -22,7 +22,7 @@ import org.qi4j.api.value.Value;
 /**
  * Standard context for update of existing resoruces.
  */
-public interface UpdateContext<T extends Value>
+public interface UpdateContext<T>
 {
    void update(T value);
 }

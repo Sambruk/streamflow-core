@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.filters;
+package se.streamsource.streamflow.client.ui.administration.casesettings;
 
 import org.restlet.data.Form;
+import se.streamsource.dci.value.FormValue;
 import se.streamsource.streamflow.client.ResourceModel;
 
 /**
- * Represents a Project in the administration model
+ * JAVADOC
  */
-public class FilterModel
-   extends ResourceModel<Form>
+public class CaseDefaultDaysToCompleteModel
+      extends ResourceModel<FormValue>
 {
-   public FilterModel()
+   public void changeDefaultDaysToComplete( Integer newSetting )
    {
-      relationModelMapping("rules", RulesModel.class);
-      relationModelMapping("actions", ActionsModel.class);
-   }
+      Form form = new Form();
+      form.set("defaultdaystocomplete", newSetting.toString());
 
-   public Form getIndex()
-   {
-      return client.query("index", Form.class);
-   }
-
-   public void update(Form form)
-   {
-      client.putCommand("update", form);
+      client.postLink(command("update"), form);
    }
 }

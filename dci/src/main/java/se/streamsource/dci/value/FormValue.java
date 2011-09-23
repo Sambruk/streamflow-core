@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.filters;
+package se.streamsource.dci.value;
 
-import org.restlet.data.Form;
-import se.streamsource.streamflow.client.ResourceModel;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.Map;
 
 /**
- * Represents a Project in the administration model
+ * Value that represents a form. This can be used to mimic a HTML form.
  */
-public class FilterModel
-   extends ResourceModel<Form>
+public interface FormValue
+      extends ValueComposite
 {
-   public FilterModel()
-   {
-      relationModelMapping("rules", RulesModel.class);
-      relationModelMapping("actions", ActionsModel.class);
-   }
-
-   public Form getIndex()
-   {
-      return client.query("index", Form.class);
-   }
-
-   public void update(Form form)
-   {
-      client.putCommand("update", form);
-   }
+   @UseDefaults
+   Property<Map<String,String>> form();
 }

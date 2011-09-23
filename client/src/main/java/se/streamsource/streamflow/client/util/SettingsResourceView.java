@@ -26,6 +26,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseSettingsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
@@ -51,6 +52,7 @@ import se.streamsource.streamflow.client.ui.administration.templates.TemplatesVi
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -59,78 +61,56 @@ import static se.streamsource.dci.value.link.Links.withRel;
 import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
- * Show a REST resource as a tabbed view. To determine tabs, do a query to the resources directory URL ("/") to get
- * a ResourceValue. Then iterate through the registered views and check if they are in ResourceValue.resources(). By using
+ * Show settings for a REST resource, with each part as its own panel with a separator. To determine panels, do a query
+ * to the resources directory URL ("/") to get a ResourceValue. Then iterate through the registered views and check if
+ * they are in ResourceValue.resources(). By using xzm
  * the order of the registered views we ensure that the UI order of the tabs is always the same, regardless of the order
  * returned from the server.
  */
-public class TabbedResourceView
-      extends JTabbedPane
+public class SettingsResourceView
+      extends JPanel
 {
    private static final Map<String, Class<? extends JComponent>> views = new LinkedHashMap<String, Class<? extends JComponent>>();
-   private static final Map<String, Enum> tabNames = new LinkedHashMap<String, Enum>();
+   private static final Map<String, Enum> settingsNames = new LinkedHashMap<String, Enum>();
 
    static
    {
-      addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
+      addSettings("caseaccessdefaults", AdministrationResources.caseaccessdefaults_separator, CaseAccessDefaultsView.class);
 
-      addTab( "members", AdministrationResources.members_tab, MembersView.class );
-      addTab( "projects", AdministrationResources.projects_tab, ProjectsView.class );
-      addTab( "groups", AdministrationResources.groups_tab, GroupsView.class );
-      addTab( "forms", AdministrationResources.forms_tab, FormsView.class );
-      addTab( "selectedforms", AdministrationResources.selected_forms_tab, SelectedFormsView.class );
-
-      addTab( "casetypes", AdministrationResources.casetypes_tab, CaseTypesView.class );
-      addTab( "selectedcasetypes", AdministrationResources.selected_casetypes_tab, SelectedCaseTypesView.class );
-
-      addTab( "labels", AdministrationResources.labels_tab, LabelsView.class );
-      addTab( "selectedlabels", AdministrationResources.selected_labels_tab, SelectedLabelsView.class );
-
-      addTab( "resolutions", AdministrationResources.resolutions_tab, ResolutionsView.class );
-      addTab( "selectedresolutions", AdministrationResources.selected_resolutions_tab, SelectedResolutionsView.class );
-
-      addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
-
-      addTab( "filters", AdministrationResources.filters_tab, FiltersView.class );
-
-      addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
-      addTab( "emailaccesspoints", AdministrationResources.emailaccesspoints_tab, EmailAccessPointsView.class );
-      addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
-      addTab( "templates", AdministrationResources.templates_tab, TemplatesView.class );
-
-      addTab( "forminfo", AdministrationResources.forminfo_tab, FormEditView.class );
-      addTab( "pages", AdministrationResources.formpages_tab, FormElementsView.class );
-      addTab( "signatures", AdministrationResources.formsignatures_tab, FormSignaturesView.class );
-
-      addTab( "administrators", AdministrationResources.administrators_tab, AdministratorsView.class );
+      addSettings("defaultdaystocomplete", AdministrationResources.default_days_to_complete_separator, CaseDefaultDaysToCompleteView.class);
    }
 
-   private static void addTab( String name, Enum tabName, Class<? extends JComponent> viewClass )
+   private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)
    {
-      tabNames.put( name, tabName );
+      settingsNames.put( name, tabName );
       views.put( name, viewClass );
    }
 
-   public TabbedResourceView( @Uses ResourceModel model, @Structure Module module )
+   public SettingsResourceView(@Uses ResourceModel model, @Structure Module module)
    {
-      setTabLayoutPolicy( JTabbedPane.WRAP_TAB_LAYOUT );
+      setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
       model.refresh();
       EventList<LinkValue> resources = model.getResources();
-      int index = 0;
       for (Map.Entry<String, Class<? extends JComponent>> stringClassEntry : views.entrySet())
       {
          LinkValue linkedResource = Iterables.first(Iterables.filter(withRel(stringClassEntry.getKey()), resources));
          if (linkedResource != null)
          {
-            String tabNameText = text( tabNames.get( stringClassEntry.getKey() ) );
+            String separatorText = text( settingsNames.get( stringClassEntry.getKey() ) );
             Class<? extends JComponent> tabClass = stringClassEntry.getValue();
             try
             {
                Object resourceModel = model.newResourceModel(linkedResource);
-               addTab(tabNameText, module.objectBuilderFactory().newObjectBuilder(tabClass).use(resourceModel).newInstance());
-               setMnemonicAt( index, KeyEvent.VK_1 + index );
-               index++;
+
+               JLabel jLabel = new JLabel(separatorText, JLabel.LEFT);
+               jLabel.setFont(jLabel.getFont().deriveFont(Font.BOLD));
+               jLabel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+               add(jLabel);
+               JComponent view = module.objectBuilderFactory().newObjectBuilder(tabClass).use(resourceModel).newInstance();
+               view.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+               add(view);
+               view.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
             } catch (Exception e)
             {
                e.printStackTrace();
@@ -138,8 +118,6 @@ public class TabbedResourceView
          }
       }
 
-      SettingsResourceView settings = new SettingsResourceView(model, module);
-      if (settings.getComponentCount() > 1)
-         addTab("Settings", settings);
+      add(Box.createVerticalGlue());
    }
 }

@@ -50,6 +50,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
@@ -72,13 +73,15 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 /**
  * This represents a single Case in the system
  */
 @SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
-@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
+@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -190,6 +193,31 @@ public interface CaseEntity
             for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data) newCaseType).accessPermissionDefaults().get().entrySet())
             {
                caseAccess.changeAccess( entry.getKey(), entry.getValue() );
+            }
+         }
+      }
+   }
+
+   class TypedCaseDefaultDueOnConcern
+         extends ConcernOf<TypedCase>
+         implements TypedCase
+   {
+      @This
+      DueOn dueOn;
+
+      public void changeCaseType( @Optional CaseType newCaseType )
+      {
+         next.changeCaseType( newCaseType );
+
+         if (newCaseType != null)
+         {
+            // If no due on is set, then set it to "now" plus the given number of days
+            DefaultDaysToComplete.Data defaultDaysToComplete = (DefaultDaysToComplete.Data) newCaseType;
+            if (defaultDaysToComplete.defaultDaysToComplete().get() > 0)
+            {
+               Calendar now = Calendar.getInstance();
+               now.add(Calendar.DAY_OF_MONTH,defaultDaysToComplete.defaultDaysToComplete().get() );
+               dueOn.defaultDueOn(now.getTime());
             }
          }
       }

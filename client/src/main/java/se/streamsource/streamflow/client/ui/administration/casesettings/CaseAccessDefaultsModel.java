@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.caseaccessdefaults;
+package se.streamsource.streamflow.client.ui.administration.casesettings;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
