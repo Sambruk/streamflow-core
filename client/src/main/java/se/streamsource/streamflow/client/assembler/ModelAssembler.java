@@ -40,7 +40,6 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeMod
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsModel;
-import se.streamsource.streamflow.client.ui.administration.filters.EmailActionModel;
 import se.streamsource.streamflow.client.ui.administration.filters.FilterModel;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;
 import se.streamsource.streamflow.client.ui.administration.filters.LabelRuleModel;
@@ -219,7 +218,6 @@ public class ModelAssembler
             FormPagesModel.class,
             FormModel.class,
             ActionsModel.class,
-            EmailActionModel.class,
             LabelRuleModel.class);
 
 

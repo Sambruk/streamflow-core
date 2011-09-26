@@ -24,6 +24,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.filter.ActionValue;
+import se.streamsource.streamflow.api.administration.filter.CloseActionValue;
 import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
@@ -65,6 +66,10 @@ public class ActionsResource
             String id = ((EmailActionValue) action).participant().get().identity();
             Describable describable = module.unitOfWorkFactory().currentUnitOfWork().get(Describable.class, id);
             links.addLink(describable.getDescription(), idx + "", "emailaction", idx + "/", "");
+         }
+         else if (action instanceof CloseActionValue)
+         {
+            links.addLink("", idx + "", "closeaction", idx + "/", "");
          }
          idx++;
       }

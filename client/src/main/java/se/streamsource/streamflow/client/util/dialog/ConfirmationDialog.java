@@ -59,6 +59,12 @@ public class ConfirmationDialog
       msgLabel.setText( new MessageFormat( i18n.text( StreamflowResources.removal_confirmation )).format( new Object[]{description} ));
    }
 
+
+   public void setCustomMessage( String message )
+   {
+      msgLabel.setText( message );
+   }
+   
    @org.jdesktop.application.Action
    public void execute()
    {

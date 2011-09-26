@@ -26,6 +26,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.filter.ActionValue;
+import se.streamsource.streamflow.api.administration.filter.CloseActionValue;
 import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
@@ -92,6 +93,16 @@ public class ActionsContext
    {
       ValueBuilder<EmailActionValue> builder = module.valueBuilderFactory().newValueBuilder(EmailActionValue.class);
       builder.prototype().participant().set(EntityReference.getEntityReference(member));
+
+      ValueBuilder<FilterValue> filterBuilder = filter.buildWith();
+      filterBuilder.prototype().actions().get().add(builder.newInstance());
+
+      filterable.updateFilter(index, filterBuilder.newInstance());
+   }
+   
+   public void closeCase()
+   {
+      ValueBuilder<CloseActionValue> builder = module.valueBuilderFactory().newValueBuilder(CloseActionValue.class);
 
       ValueBuilder<FilterValue> filterBuilder = filter.buildWith();
       filterBuilder.prototype().actions().get().add(builder.newInstance());
