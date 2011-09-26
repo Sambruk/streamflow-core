@@ -149,7 +149,11 @@ public enum AdministrationResources
    any,
    filter_rules,
    filter_actions,
+   remove_action_confirmation,
    send_email_to,
+   close_case,
    match_label,
    default_days_to_complete,
+   add_filter_action,
+   add_filter_close_action_confirmation
 }

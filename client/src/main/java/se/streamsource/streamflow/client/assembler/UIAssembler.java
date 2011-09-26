@@ -51,7 +51,6 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefa
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsView;
-import se.streamsource.streamflow.client.ui.administration.filters.EmailActionView;
 import se.streamsource.streamflow.client.ui.administration.filters.FilterView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
 import se.streamsource.streamflow.client.ui.administration.filters.LabelRuleView;
@@ -372,7 +371,6 @@ public class UIAssembler
             RulesView.class,
             FormEditView.class,
             ActionsView.class,
-            EmailActionView.class,
             LabelRuleView.class);
 
       addViews(module,

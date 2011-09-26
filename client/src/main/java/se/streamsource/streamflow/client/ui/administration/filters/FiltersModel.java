@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.filters;
 
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
