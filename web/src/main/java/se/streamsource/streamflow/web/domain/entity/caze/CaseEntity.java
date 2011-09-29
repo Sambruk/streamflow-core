@@ -310,7 +310,7 @@ public interface CaseEntity
 
       public void assignTo( Assignee assignee )
       {
-         history.addHistoryComment( "{assigned," + ((Describable) assignee).getDescription() +"}", RoleMap.role( ConversationParticipant.class ) );
+         history.addHistoryComment( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void unassign()
@@ -345,18 +345,18 @@ public interface CaseEntity
 
       public void resolve( Resolution resolution )
       {
-         history.addHistoryComment( "{resolved," + resolution.getDescription()+"}", RoleMap.role( ConversationParticipant.class ) );
+         history.addHistoryComment( "{resolved,resolution=" + resolution.getDescription()+"}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
-         history.addHistoryComment( newCaseType != null ? "{changedCaseType," + newCaseType.getDescription() +"}"
+         history.addHistoryComment( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
                : "{removedCaseType}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void changeOwner( Owner owner )
       {
-         history.addHistoryComment( "{changedOwner," + ((Project)owner).getDescription() +"}"
+         history.addHistoryComment( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}"
                , RoleMap.role( ConversationParticipant.class ) );
       }
 

@@ -22,10 +22,12 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.util.Strings;
 
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -70,7 +72,15 @@ public interface Message
                return "";
             String[] args = new String[tokens.length-1];
             System.arraycopy(tokens, 1, args, 0, args.length);
-            body = new MessageFormat( translation ).format( args );
+
+            Map<String,String> variables = new HashMap<String,String>();
+            for (String arg : args)
+            {
+               String[] variable = arg.split("=", 1);
+               variables.put(variable[0],variable[1]);
+            }
+
+            body = MessageTemplate.text(translation, variables);
             return body;
          } else
             return body;

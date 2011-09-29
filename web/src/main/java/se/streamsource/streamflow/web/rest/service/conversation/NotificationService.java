@@ -39,6 +39,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventRouter;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
+import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
@@ -161,7 +162,7 @@ public interface NotificationService
                   if (emailAccessPoint != null)
                   {
                      formattedMsg = message.translateBody(emailAccessPoint.emailTemplates().get());
-                     subject = MessageFormat.format(emailAccessPoint.subject().get(), caseId, conversation.getDescription());
+                     subject = MessageTemplate.text(emailAccessPoint.subject().get()).bind("caseid", caseId).bind("subject", conversation.getDescription()).eval();
                   } else
                   {
                      formattedMsg = message.translateBody(templateDefaults);
