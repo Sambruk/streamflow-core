@@ -26,6 +26,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseSettingsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
@@ -78,6 +79,8 @@ public class SettingsResourceView
       addSettings("caseaccessdefaults", AdministrationResources.caseaccessdefaults_separator, CaseAccessDefaultsView.class);
 
       addSettings("defaultdaystocomplete", AdministrationResources.default_days_to_complete_separator, CaseDefaultDaysToCompleteView.class);
+
+      addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
    }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)

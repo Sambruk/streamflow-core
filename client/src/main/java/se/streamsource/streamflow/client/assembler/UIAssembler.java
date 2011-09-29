@@ -47,6 +47,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationTreeVie
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
@@ -357,6 +358,7 @@ public class UIAssembler
             SelectedResolutionsView.class,
             CaseAccessDefaultsView.class,
             CaseDefaultDaysToCompleteView.class,
+            CaseArchivalSettingView.class,
             UsersAdministrationView.class,
             ProxyUsersView.class,
             AccessPointsView.class,

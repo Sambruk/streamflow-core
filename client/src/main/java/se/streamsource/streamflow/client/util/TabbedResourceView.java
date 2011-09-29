@@ -17,16 +17,24 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.EventList;
+import static se.streamsource.dci.value.link.Links.withRel;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.event.KeyEvent;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseSettingsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
@@ -49,14 +57,7 @@ import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPo
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
-
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static se.streamsource.dci.value.link.Links.withRel;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import ca.odell.glazedlists.EventList;
 
 /**
  * Show a REST resource as a tabbed view. To determine tabs, do a query to the resources directory URL ("/") to get
@@ -140,6 +141,6 @@ public class TabbedResourceView
 
       SettingsResourceView settings = new SettingsResourceView(model, module);
       if (settings.getComponentCount() > 1)
-         addTab("Settings", settings);
+         addTab(text( AdministrationResources.settings_tab), settings);
    }
 }

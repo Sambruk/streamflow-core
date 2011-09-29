@@ -155,5 +155,11 @@ public enum AdministrationResources
    match_label,
    default_days_to_complete,
    add_filter_action,
-   add_filter_close_action_confirmation
+   add_filter_close_action_confirmation,
+   settings_tab,
+   max_age,
+   archival_type,
+   archival_settings_separator,
+   delete,
+   export
 }
