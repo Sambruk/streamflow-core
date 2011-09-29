@@ -53,7 +53,6 @@ public abstract class ListDetailView
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory)
    {
       list = new JList(listModel);
-      list.setPreferredSize(new Dimension(250, 100));
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       list.setCellRenderer( new LinkListCellRenderer() );
 
