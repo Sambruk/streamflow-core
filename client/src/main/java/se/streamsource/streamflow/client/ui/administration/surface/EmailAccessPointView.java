@@ -48,7 +48,7 @@ import javax.swing.event.ListSelectionListener;
  * TODO
  */
 public class EmailAccessPointView
-        extends JPanel
+        extends JScrollPane
         implements TransactionListener, Refreshable
 {
    @Service
@@ -72,14 +72,16 @@ public class EmailAccessPointView
    public void init(@Service ApplicationContext context, @Uses final EmailAccessPointModel model)
    {
       setActionMap(context.getActionMap(this));
-
+      JPanel panel = new JPanel();
+      this.setViewportView( panel );
+      
       this.model = model;
       this.labels = module.objectBuilderFactory().newObjectBuilder(CaseLabelsView.class).use( model.createLabelsModel() ).newInstance();
 
 
       FormLayout layout = new FormLayout(
               "75dlu, 5dlu, fill:p:grow", "pref, pref, pref, pref, pref, fill:p:grow, pref");
-      DefaultFormBuilder formBuilder = new DefaultFormBuilder(layout, this);
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder(layout, panel);
 
       formBuilder.append(projectButton = new JButton(getActionMap().get("project")));
       formBuilder.append(project = new JLabel());
