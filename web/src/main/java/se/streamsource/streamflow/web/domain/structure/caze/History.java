@@ -141,7 +141,7 @@ public interface History
                if (body.startsWith("{accesspoint"))
                {
                   // This is the history message that the case has been received through a particular AccessPoint
-                  String accessPointName = body.substring(body.indexOf(",")+1, body.length()-1);
+                  String accessPointName = body.substring(body.indexOf("=")+1, body.length()-1);
 
                   // Now find it
                   EmailAccessPointEntity ap = module.queryBuilderFactory().newQueryBuilder(EmailAccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(module.unitOfWorkFactory().currentUnitOfWork()).find();
