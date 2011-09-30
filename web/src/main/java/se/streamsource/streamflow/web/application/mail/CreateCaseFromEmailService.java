@@ -159,7 +159,7 @@ public interface CreateCaseFromEmailService
 
                   CaseEntity caze = ap.createCase(user);
 
-                  caze.getHistory().createMessage("{accesspoint,"+ap.getDescription()+"}", participant);
+                  caze.getHistory().createMessage("{accesspoint,description="+ap.getDescription()+"}", participant);
 
                   caze.changeDescription(email.subject().get());
                   caze.changeNote(email.content().get());
@@ -199,7 +199,7 @@ public interface CreateCaseFromEmailService
                   UserEntity administrator = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
                   RoleMap.current().set(administrator);
 
-                  caze.getHistory().createMessage("{received,"+caze.caseId().get()+"}", administrator);
+                  caze.getHistory().createMessage("{received,caseid="+caze.caseId().get()+"}", administrator);
                }
 
                uow.complete();

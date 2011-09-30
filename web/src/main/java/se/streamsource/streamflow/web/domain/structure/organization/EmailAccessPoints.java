@@ -90,7 +90,7 @@ public interface EmailAccessPoints
       public EmailAccessPoint createdEmailAccessPoint( @Optional DomainEvent event, String id )
       {
          EntityBuilder<EmailAccessPointEntity> entityBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( EmailAccessPointEntity.class, id );
-         entityBuilder.instance().subject().set("[{0}] {1}");
+         entityBuilder.instance().subject().set("[{caseid}] {subject}");
 
          // TODO Default templates
          

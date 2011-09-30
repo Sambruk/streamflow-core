@@ -124,7 +124,7 @@ public interface History
          builder.instance().createdOn().set( caze.createdOn().get() );
          ConversationEntity history = builder.newInstance();
          history.changeDescription( "History" );
-         history.createMessage( "{created," + ((Describable)caze.createdBy().get()).getDescription() +"}", RoleMap.role( ConversationParticipant.class ));
+         history.createMessage( "{created,creator=" + ((Describable)caze.createdBy().get()).getDescription() +"}", RoleMap.role( ConversationParticipant.class ));
          history().set(history);
 
          return history;

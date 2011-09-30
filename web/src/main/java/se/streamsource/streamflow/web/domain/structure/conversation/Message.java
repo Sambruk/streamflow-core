@@ -24,6 +24,9 @@ import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -74,10 +77,20 @@ public interface Message
             System.arraycopy(tokens, 1, args, 0, args.length);
 
             Map<String,String> variables = new HashMap<String,String>();
+
+            // Bind standard variables
+            ConversationOwner owner = data.conversation().get().conversationOwner().get();
+            if (owner instanceof Case)
+            {
+               variables.put("caseid", ((CaseId.Data)owner).caseId().get());
+            }
+            variables.put("subject", ((Describable.Data)data.conversation().get()).description().get());
+
             for (String arg : args)
             {
-               String[] variable = arg.split("=", 1);
-               variables.put(variable[0],variable[1]);
+               String[] variable = arg.split("=", 2);
+               if (variable.length == 2)
+                  variables.put(variable[0],variable[1]);
             }
 
             body = MessageTemplate.text(translation, variables);
