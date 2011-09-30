@@ -135,7 +135,7 @@ public abstract class ListDetailView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches(Events.withUsecases( "delete" ), transactions))
+      if (Events.matches(Events.withUsecases( "delete", "move" ), transactions))
          list.clearSelection();
    }
 }
