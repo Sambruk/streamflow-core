@@ -43,6 +43,23 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>cardme</groupId>
+            <artifactId>cardme</artifactId>
+            <name>Cardme</name>
+            <organization>
+                <name>dma.pixel-act.com/</name>
+                <url>http://sourceforge.net/projects/cardme/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>BSD-style license (Packaged inside the library)</name>
+                    <url>licenses/license.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>com.jgoodies</groupId>
             <artifactId>forms</artifactId>
             <name>JGoodies Forms</name>
@@ -415,6 +432,23 @@
                 <license>
                     <name>JDBM BSD-style license (Packaged inside the library)</name>
                     <url>/LICENSE.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>jivesoftware</groupId>
+            <artifactId>smack</artifactId>
+            <name>Smack</name>
+            <organization>
+                <name>Jive Software</name>
+                <url>http://www.jivesoftware.org/smack/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>Apache License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0</url>
                 </license>
             </licenses>
         </project>
