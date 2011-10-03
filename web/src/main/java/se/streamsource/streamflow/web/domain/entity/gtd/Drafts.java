@@ -25,9 +25,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.RoleMixin;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -52,10 +51,7 @@ public interface Drafts
       implements Drafts, Data
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @Service
       IdentityGenerator idGenerator;
@@ -65,14 +61,14 @@ public interface Drafts
       public CaseEntity createDraft()
       {
          CaseEntity aCase = data.createdCase( null, idGenerator.generate( Identity.class ) );
-         aCase.addContact( vbf.newValue( ContactValue.class ) );
+         aCase.addContact( module.valueBuilderFactory().newValue(ContactDTO.class) );
 
          return aCase;
       }
 
       public CaseEntity createdCase( DomainEvent event, String id )
       {
-         EntityBuilder<CaseEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( CaseEntity.class, id );
+         EntityBuilder<CaseEntity> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( CaseEntity.class, id );
          CreatedOn createdOn = builder.instanceFor( CreatedOn.class );
          createdOn.createdOn().set( event.on().get() );
 

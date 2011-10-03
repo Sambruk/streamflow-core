@@ -25,7 +25,7 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
@@ -39,20 +39,21 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC
  */
 public class ParticipantsContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<Participant>>
 {
    @Structure
    Module module;
 
-   public LinksValue index()
+   public Iterable<Participant> index()
    {
-      return new LinksBuilder( module.valueBuilderFactory() ).rel( "participant" ).addDescribables( RoleMap.role( Participants.Data.class ).participants() ).newLinks();
+      return RoleMap.role( Participants.Data.class ).participants();
    }
 
    public void addparticipant( EntityValue participantId )

@@ -26,36 +26,35 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * JAVADOC
+ * Maintains list of submitted forms on a case
  */
 @Mixins(SubmittedForms.Mixin.class)
 public interface SubmittedForms
 {
    void submitForm( FormDraft formSubmission, Submitter submitter );
 
+   /**
+    * Check if there are any submitted forms at all
+    *
+    * @return
+    */
    boolean hasSubmittedForms();
 
    interface Data
@@ -64,21 +63,14 @@ public interface SubmittedForms
       @Queryable(false)
       Property<List<SubmittedFormValue>> submittedForms();
 
-      @Optional
-      @Queryable(false)
-      Property<EffectiveFormFieldsValue> effectiveFieldValues();
-
-      void submittedForm( @Optional DomainEvent event, EffectiveFormFieldsValue effectiveFieldsValue, SubmittedFormValue form );
+      void submittedForm( @Optional DomainEvent event, SubmittedFormValue form );
    }
 
    abstract class Mixin
          implements SubmittedForms, Data
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Data state;
@@ -91,36 +83,20 @@ public interface SubmittedForms
 
       public void submitForm( FormDraft formSubmission, Submitter submitter )
       {
-         boolean effectiveFieldsChanged = false;
-         ValueBuilder<EffectiveFieldValue> eFieldBuilder = vbf.newValueBuilder( EffectiveFieldValue.class );
+         FormDraftDTO DTO = formSubmission.getFormDraftValue();
+         ValueBuilder<SubmittedFormValue> formBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormValue.class);
 
-         LinkedHashMap<EntityReference, EffectiveFieldValue> effectiveValues = new LinkedHashMap<EntityReference, EffectiveFieldValue>();
-         if ( effectiveFieldValues().get() != null)
-         {
-            for (EffectiveFieldValue fieldValue : effectiveFieldValues().get().fields().get())
-            {
-               effectiveValues.put( fieldValue.field().get(), fieldValue );
-            }
-         }
-
-         FormDraftValue value = formSubmission.getFormDraftValue();
-         ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
-
-         formBuilder.prototype().submitter().set( EntityReference.getEntityReference( submitter ) );
-         formBuilder.prototype().form().set( value.form().get() );
+         formBuilder.prototype().submitter().set( EntityReference.getEntityReference(submitter) );
+         formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
-         eFieldBuilder.prototype().form().set( formSubmission.getFormDraftValue().form().get() );
-         eFieldBuilder.prototype().submissionDate().set( formBuilder.prototype().submissionDate().get() );
-         eFieldBuilder.prototype().submitter().set( EntityReference.getEntityReference( submitter ) );
-
-         ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder( SubmittedFieldValue.class );
-         for (PageSubmissionValue pageValue : value.pages().get())
+         ValueBuilder<SubmittedFieldValue> fieldBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFieldValue.class);
+         for (PageSubmissionDTO pageDTO : DTO.pages().get())
          {
-            ValueBuilder<SubmittedPageValue> pageBuilder = vbf.newValueBuilder(SubmittedPageValue.class);
-            pageBuilder.prototype().page().set(pageValue.page().get());
+            ValueBuilder<SubmittedPageValue> pageBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedPageValue.class);
+            pageBuilder.prototype().page().set(pageDTO.page().get());
 
-            for (FieldSubmissionValue field : pageValue.fields().get())
+            for (FieldSubmissionDTO field : pageDTO.fields().get())
             {
                // ignore comment fields when submitting
                if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
@@ -139,26 +115,14 @@ public interface SubmittedForms
                   {
                      try
                      { 
-                        AttachmentFieldSubmission currentFormDraftAttachmentField = vbf.newValueFromJSON( AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get() );
-                        AttachmentEntity attachment = uowf.currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+                        AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get());
+                        AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
                         ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
                      } catch (ConstructionException e)
                      {
                         // ignore
                      }
                   }
-
-                  // update effective field
-                  EffectiveFieldValue effectiveFieldValue = effectiveValues.get( field.field().get().field().get() );
-                  if (effectiveFieldValue == null || !effectiveFieldValue.value().get().equals( fieldBuilder.prototype().value().get() ))
-                  {
-                     eFieldBuilder.prototype().page().set( pageValue.page().get() );
-                     eFieldBuilder.prototype().field().set( field.field().get().field().get() );
-                     eFieldBuilder.prototype().value().set( fieldBuilder.prototype().value().get() );
-                     effectiveValues.put( field.field().get().field().get(), eFieldBuilder.newInstance() );
-                     effectiveFieldsChanged = true;
-                  }
-
                   pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
                }
             }
@@ -166,27 +130,18 @@ public interface SubmittedForms
             formBuilder.prototype().pages().get().add(pageBuilder.newInstance());
          }
 
-         // update the effective fields and submitted forms
-         // only do this if effective fields has changed
-         if ( effectiveFieldsChanged )
-         {
-            ValueBuilder<EffectiveFormFieldsValue> fieldsBuilder = vbf.newValueBuilder( EffectiveFormFieldsValue.class );
-            List<EffectiveFieldValue> effectiveFieldValues = fieldsBuilder.prototype().fields().get();
-            effectiveFieldValues.addAll( effectiveValues.values() );
+         // Transfer signatures
+         formBuilder.prototype().signatures().get().addAll(DTO.signatures().get());
 
-            EffectiveFormFieldsValue effectiveFormFieldsValue = fieldsBuilder.newInstance();
-
-            submittedForm( null, effectiveFormFieldsValue, formBuilder.newInstance() );
-         }
+         submittedForm( null, formBuilder.newInstance() );
 
          // Now discard it
          submissions.discardFormDraft( formSubmission );
       }
 
 
-      public void submittedForm( @Optional DomainEvent event, EffectiveFormFieldsValue effectiveFieldsValue, SubmittedFormValue form )
+      public void submittedForm( @Optional DomainEvent event, SubmittedFormValue form )
       {
-         effectiveFieldValues().set( effectiveFieldsValue );
          List<SubmittedFormValue> forms = submittedForms().get();
          forms.add( form );
          submittedForms().set( forms );

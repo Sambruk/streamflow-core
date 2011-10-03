@@ -24,10 +24,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.State;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.net.URI;
@@ -69,14 +66,8 @@ public interface FormAttachments
    abstract class Mixin
          implements FormAttachments, Data
    {
-      @State
-      ManyAssociation<Attachment> formAttachments;
-
       @Service
       IdentityGenerator idGen;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       public Attachment createFormAttachment( String uri ) throws URISyntaxException
       {
@@ -110,7 +101,7 @@ public interface FormAttachments
          // Delete the attachment entity
          removedFormAttachment( null, attachment );
 
-         attachment.removeEntity();
+         attachment.deleteEntity();
       }
 
       public Attachment getFormAttachment( String id )
@@ -132,7 +123,7 @@ public interface FormAttachments
 
       public void moveAttachments( FormAttachments toAttachments )
       {
-         for (Attachment fromAttachment : formAttachments)
+         for (Attachment fromAttachment : formAttachments())
          {
             toAttachments.addFormAttachment( fromAttachment );
             removedFormAttachment( null, fromAttachment );

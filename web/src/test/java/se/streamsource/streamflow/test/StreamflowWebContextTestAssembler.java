@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.test;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembly;
@@ -26,11 +27,16 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 
-import static org.qi4j.api.common.Visibility.*;
+import java.util.Properties;
+
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 /**
  * JAVADOC
@@ -59,10 +65,30 @@ public class StreamflowWebContextTestAssembler
             applicationAssembly.layer( "Context" ),
             applicationAssembly.layer( "Domain infrastructure" ),
             applicationAssembly.layer( "Domain" ) );
-      ModuleAssembly moduleAssembly = layer1.module( "Module 1" );
-      moduleAssembly.values( EntityValue.class );
+      ModuleAssembly module = layer1.module( "Module 1" );
+      module.values( EntityValue.class );
       applicationAssembly.layer( "Domain infrastructure" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
       applicationAssembly.layer( "Context" ).module( "Contact Lookup" ).importedServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
+
+
+      ModuleAssembly knowledgebase = appLayer.module("Knowledgebase");
+      Properties props = new Properties();
+      try
+      {
+         props.load(getClass().getResourceAsStream("/velocity.properties"));
+
+         VelocityEngine velocity = new VelocityEngine(props);
+
+         knowledgebase.importedServices(VelocityEngine.class)
+                 .importedBy(INSTANCE).setMetaInfo(velocity);
+
+      } catch (Exception e)
+      {
+         throw new AssemblyException("Could not load velocity properties", e);
+      }
+
+      knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
+      module.layer().application().layer("Configuration").module("Configuration").entities(KnowledgebaseConfiguration.class).visibleIn(Visibility.application);
 
    }
 

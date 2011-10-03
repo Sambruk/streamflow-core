@@ -20,12 +20,14 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 
 /**
  * List of contacts for a case
@@ -35,6 +37,9 @@ public class CaseSubmittedFormsModel
 {
    @Uses
    CommandQueryClient client;
+
+   @Structure
+   Module module;
 
    EventList<SubmittedFormListDTO> submittedForms = new TransactionList<SubmittedFormListDTO>( new BasicEventList<SubmittedFormListDTO>( ) );
 
@@ -46,5 +51,10 @@ public class CaseSubmittedFormsModel
    public EventList<SubmittedFormListDTO> getSubmittedForms()
    {
       return submittedForms;
+   }
+
+   public CaseSubmittedFormModel newSubmittedFormModel(int idx)
+   {
+      return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormModel.class).use( client, new Integer(idx) ).newInstance();
    }
 }

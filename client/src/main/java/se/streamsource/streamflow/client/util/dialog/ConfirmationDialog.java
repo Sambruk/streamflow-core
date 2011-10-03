@@ -24,9 +24,8 @@ import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.text.MessageFormat;
 
 /**
@@ -60,6 +59,12 @@ public class ConfirmationDialog
       msgLabel.setText( new MessageFormat( i18n.text( StreamflowResources.removal_confirmation )).format( new Object[]{description} ));
    }
 
+
+   public void setCustomMessage( String message )
+   {
+      msgLabel.setText( message );
+   }
+   
    @org.jdesktop.application.Action
    public void execute()
    {

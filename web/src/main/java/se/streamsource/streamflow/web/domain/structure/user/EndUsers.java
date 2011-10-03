@@ -18,15 +18,14 @@
 package se.streamsource.streamflow.web.domain.structure.user;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
-import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -35,67 +34,49 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins(EndUsers.Mixin.class)
 public interface EndUsers
 {
-   AnonymousEndUser createAnonymousEndUser( );
+   EndUser createEndUser(String id );
 
-   boolean removeAnonymousEndUser( AnonymousEndUser user );
-
-   void addAnonymousEndUser( AnonymousEndUser user);
+   EndUser getEndUser(String id)
+           throws NoSuchEntityException;
 
    interface Data
    {
-      @Aggregated
-      ManyAssociation<AnonymousEndUser> anonymousEndUsers();
-
-      AnonymousEndUser createdAnonymousEndUser( @Optional DomainEvent event, String id );
-
-      void removedAnonymousEndUser( @Optional DomainEvent event, AnonymousEndUser user );
-
-      void addedAnonymousEndUser( @Optional DomainEvent event, AnonymousEndUser user );
+      EndUser createdEndUser( @Optional DomainEvent event, String id );
    }
 
    abstract class Mixin
          implements EndUsers, Data
    {
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
-      @Service
-      IdentityGenerator idgen;
+      @This
+      Identity identity;
 
-      public AnonymousEndUser createAnonymousEndUser( )
+      public EndUser createEndUser(String id )
       {
-         String id = idgen.generate( Identity.class );
+         String endUserId = identity.identity().get()+"/"+id;
 
-         AnonymousEndUser anonymousEndUser = createdAnonymousEndUser( null, id );
-         addedAnonymousEndUser( null, anonymousEndUser );
+         EndUser endUser = createdEndUser(null, endUserId);
 
-         return anonymousEndUser;
+         return endUser;
       }
 
-      public AnonymousEndUser createdAnonymousEndUser( DomainEvent event, String id )
+      public EndUser getEndUser(String id)
+              throws NoSuchEntityException
       {
-         EntityBuilder<AnonymousEndUser> builder = uowf.currentUnitOfWork().newEntityBuilder( AnonymousEndUser.class, id );
+         // End-user id == <proxyuser-id>/<given id>
+         String endUserId = identity.identity().get()+"/"+id;
+         return module.unitOfWorkFactory().currentUnitOfWork().get(EndUser.class, endUserId);
+      }
+
+      public EndUser createdEndUser( DomainEvent event, String id )
+      {
+         EntityBuilder<EndUser> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( EndUser.class, id );
+         Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
+         contacts.contact().set(module.valueBuilderFactory().newValue(ContactDTO.class));
+
          return builder.newInstance();
-      }
-
-      public void addAnonymousEndUser( AnonymousEndUser user )
-      {
-
-         if (anonymousEndUsers().contains( user ))
-         {
-            return;
-         }
-         addedAnonymousEndUser( null, user );
-      }
-
-      public boolean removeAnonymousEndUser( AnonymousEndUser user )
-      {
-         if (!anonymousEndUsers().contains( user ))
-            return false;
-
-         removedAnonymousEndUser( null, user );
-         user.removeEntity();
-         return true;
       }
    }
 }

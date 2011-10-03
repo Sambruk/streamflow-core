@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.api.administration.NewUserDTO;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.administration.OrganizationUserContext;
 import se.streamsource.streamflow.web.context.administration.OrganizationUsersContext;
@@ -37,7 +37,7 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 /**
  * JAVADOC
@@ -52,7 +52,7 @@ public class UsersContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( Users.class, UsersEntity.USERS_ID);
-         context( UsersContext.class).createuser( value( NewUserCommand.class, "{'username':'"+name+"','password':'"+name+"'}") );
+         context( UsersContext.class).createuser( value( NewUserDTO.class, "{'username':'"+name+"','password':'"+name+"'}") );
          uow.complete();
       }
 

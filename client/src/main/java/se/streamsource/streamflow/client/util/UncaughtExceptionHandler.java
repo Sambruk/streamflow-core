@@ -24,23 +24,19 @@ import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.logging.Level;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC

@@ -17,30 +17,22 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.data.Disposition;
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -50,14 +42,11 @@ public class SurfaceSubmittedFormContext
    @Service
    SubmittedFormPdfGenerator pdfGenerator;
 
-   @Structure
-   UnitOfWorkFactory uowFactory;
+   @Uses Locale locale;
 
-   public OutputRepresentation generateformaspdf() throws IOException, URISyntaxException
+   public PDDocument generateformaspdf() throws IOException, URISyntaxException
    {
       SubmittedFormValue submittedFormValue = role(SubmittedFormValue.class);
-
-      Locale locale = role(Locale.class);
 
       FormPdfTemplate.Data selectedTemplate = role( FormPdfTemplate.Data.class);
       AttachedFile.Data template = (AttachedFile.Data) selectedTemplate.formPdfTemplate().get();
@@ -80,43 +69,8 @@ public class SurfaceSubmittedFormContext
 
       CaseId.Data idData = role( CaseId.Data.class);
 
-      Form form = uowFactory.currentUnitOfWork().get(Form.class, submittedFormValue.form().get().identity());
+      PDDocument pdf = pdfGenerator.generatepdf(submittedFormValue, idData, uri, locale);
 
-      final PDDocument pdf = pdfGenerator.generatepdf(submittedFormValue, idData, uri, locale);
-
-      OutputRepresentation representation = new OutputRepresentation(MediaType.APPLICATION_PDF)
-      {
-         @Override
-         public void write(OutputStream outputStream) throws IOException
-         {
-            COSWriter writer = null;
-            try
-            {
-               writer = new COSWriter(outputStream);
-               writer.write(pdf);
-            } catch (COSVisitorException e)
-            {
-               // Todo Handle this error more gracefully...
-               e.printStackTrace();
-            } finally
-            {
-               if (pdf != null)
-               {
-                  pdf.close();
-               }
-               if (writer != null)
-               {
-                  writer.close();
-               }
-            }
-         }
-      };
-
-      Disposition disposition = new Disposition();
-      disposition.setFilename(form.getDescription() + ".pdf");
-      disposition.setType(Disposition.TYPE_ATTACHMENT);
-      representation.setDisposition(disposition);
-
-      return representation;
+      return pdf;
    }
 }

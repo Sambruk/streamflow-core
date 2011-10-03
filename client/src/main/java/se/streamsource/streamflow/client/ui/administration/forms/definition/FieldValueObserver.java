@@ -110,17 +110,6 @@ public class FieldValueObserver
                model.changeCols( Integer.parseInt( (String) property.get() ) );
             }
          }.execute();
-      } else if (property.qualifiedName().name().equals( "multiple" ))
-      {
-         new CommandTask()
-         {
-            @Override
-            public void command()
-               throws Exception
-            {
-               model.changeMultiple( (Boolean) property.get() );
-            }
-         }.execute();
       } else if (property.qualifiedName().name().equals( "comment" ))
       {
          new CommandTask()

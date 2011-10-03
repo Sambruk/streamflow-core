@@ -268,8 +268,16 @@ public interface JdbmEventStoreService
       protected void storeEvents(TransactionDomainEvents transactionDomain)
               throws IOException
       {
-         String jsonString = transactionDomain.toJSON();
-         index.insert(transactionDomain.timestamp().get(), jsonString.getBytes("UTF-8"), false);
+         try
+         {
+            String jsonString = transactionDomain.toJSON();
+            index.insert(transactionDomain.timestamp().get(), jsonString.getBytes("UTF-8"), false);
+            recordManager.commit();
+         } catch (IOException e)
+         {
+            recordManager.rollback();
+            throw e;
+         }
       }
 
       private void initialize(String name, Properties properties)

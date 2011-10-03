@@ -24,8 +24,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -38,12 +37,13 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -53,18 +53,15 @@ public class ProjectsView
 {
    ProjectsModel model;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
-   public ProjectsView( @Structure final ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses final CommandQueryClient client)
+   public ProjectsView( @Service ApplicationContext context, @Uses final ProjectsModel model)
    {
-      this.model = obf.newObjectBuilder( ProjectsModel.class ).use( client ).newInstance();
+      this.model = model;
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -73,9 +70,7 @@ public class ProjectsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient projectClient = client.getClient( detailLink );
-
-            TabbedResourceView view = obf.newObjectBuilder( TabbedResourceView.class ).use( projectClient).newInstance();
+            TabbedResourceView view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( model.newResourceModel(detailLink)).newInstance();
             return view;
          }
       });
@@ -86,7 +81,7 @@ public class ProjectsView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_project_title ) );
 
@@ -110,7 +105,7 @@ public class ProjectsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -132,7 +127,7 @@ public class ProjectsView
    public Task rename()
    {
       final LinkValue selected = (LinkValue)list.getSelectedValue();
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_project_title ) );
 
       if (!Strings.empty( dialog.name() ) )
@@ -154,6 +149,7 @@ public class ProjectsView
    {
       model.notifyTransactions(transactions);
 
-      super.notifyTransactions( transactions );
+      if (Events.matches(Events.withNames("removedProject"), transactions))
+         super.notifyTransactions( transactions );
    }
 }

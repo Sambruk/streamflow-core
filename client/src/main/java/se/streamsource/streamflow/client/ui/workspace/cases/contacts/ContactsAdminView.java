@@ -19,20 +19,13 @@ package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.util.RefreshComponents;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 
 /**
@@ -41,15 +34,12 @@ import java.awt.BorderLayout;
 public class ContactsAdminView
       extends JPanel
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
-   public ContactsAdminView( @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf)
+   public ContactsAdminView( @Uses final ContactsModel model, @Structure Module module)
    {
       super( new BorderLayout() );
 
-      final ContactsView contactsView = obf.newObjectBuilder( ContactsView.class ).use( client ).newInstance();
-      final ContactView contactView = obf.newObject( ContactView.class );
+      final ContactsView contactsView = module.objectBuilderFactory().newObjectBuilder(ContactsView.class).use( model ).newInstance();
+      final ContactView contactView = module.objectBuilderFactory().newObject(ContactView.class);
 
       contactsView.getModel().addObserver( new RefreshComponents().enabledOn( "add", contactView ) );
 
@@ -66,30 +56,7 @@ public class ContactsAdminView
                int idx = list.getSelectedIndex();
                if (idx != -1)
                {
-                  ContactValue contactValue = (ContactValue) list.getModel().getElementAt( idx );
-                  // Set empty initial values for phoneNumber, email and address.
-                  if (contactValue.phoneNumbers().get().isEmpty())
-                  {
-                     ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class ).<ContactPhoneValue>buildWith().prototype();
-                     contactValue.phoneNumbers().get().add( phone );
-
-                  }
-
-                  if (contactValue.addresses().get().isEmpty())
-                  {
-                     ContactAddressValue address = vbf.newValue( ContactAddressValue.class ).<ContactAddressValue>buildWith().prototype();
-                     contactValue.addresses().get().add( address );
-
-                  }
-
-                  if (contactValue.emailAddresses().get().isEmpty())
-                  {
-                     ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
-                     contactValue.emailAddresses().get().add( email );
-
-                  }
-
-                  ContactModel contactModel = obf.newObjectBuilder( ContactModel.class ).use( contactValue, client.getSubClient( ""+idx ) ).newInstance();
+                  ContactModel contactModel = model.newContactModel(idx);
                   contactView.setModel( contactModel );
 
                   contactView.setFocusOnName();

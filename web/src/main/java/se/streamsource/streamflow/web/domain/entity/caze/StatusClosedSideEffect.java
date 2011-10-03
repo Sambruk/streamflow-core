@@ -20,8 +20,8 @@ package se.streamsource.streamflow.web.domain.entity.caze;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.sideeffect.SideEffectOf;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
@@ -31,21 +31,21 @@ import se.streamsource.streamflow.web.domain.structure.caze.Closed;
  * When a case is closed, then update the Closed data.
  */
 public abstract class StatusClosedSideEffect
-   extends SideEffectOf<Status.Data>
-   implements Status.Data
+   extends SideEffectOf<Status.Events>
+   implements Status.Events
 {
    @This
    Closed closed;
 
    @Structure
-   UnitOfWorkFactory uowf;
+   Module module;
 
    public void changedStatus( DomainEvent event, CaseStates status )
    {
       if (status.equals( CaseStates.CLOSED ))
       {
          closed.closedOn().set( event.on().get() );
-         closed.closedBy().set( uowf.currentUnitOfWork().get( Assignee.class, event.by().get() ));
+         closed.closedBy().set( module.unitOfWorkFactory().currentUnitOfWork().get( Assignee.class, event.by().get() ));
       }
    }
 }

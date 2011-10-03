@@ -25,11 +25,9 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -37,22 +35,18 @@ import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Set;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.specification.Specifications.not;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -64,27 +58,18 @@ public class ParticipantsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
-
-   @Uses
-   ObjectBuilder<UsersAndGroupsModel> usersAndGroupsModel;
+   @Structure
+   Module module;
 
    public JList participantList;
 
    private ParticipantsModel model;
-   private final CommandQueryClient client;
 
    public ParticipantsView( @Service ApplicationContext context,
-                            @Uses CommandQueryClient client,
-                            @Structure ObjectBuilderFactory obf)
+                            @Uses ParticipantsModel model)
    {
       super( new BorderLayout() );
-      this.client = client;
-      this.model = obf.newObjectBuilder( ParticipantsModel.class ).use(client).newInstance();
+      this.model = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
@@ -107,8 +92,8 @@ public class ParticipantsView
    @Action
    public Task add() throws ResourceException
    {
-      UsersAndGroupsModel dialogModel = usersAndGroupsModel.use( client ).newInstance();
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( dialogModel ).newInstance();
+      UsersAndGroupsModel dialogModel = model.newUsersAndGroupsModel();
+      SelectUsersAndGroupsDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectUsersAndGroupsDialog.class).use( dialogModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 
       final Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
@@ -128,7 +113,6 @@ public class ParticipantsView
    {
       final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( participantList.getSelectedValues() );
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
       return new CommandTask()
       {
          @Override

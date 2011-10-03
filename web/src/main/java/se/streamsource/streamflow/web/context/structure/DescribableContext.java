@@ -24,7 +24,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.Describable;
 
 /**
  * JAVADOC

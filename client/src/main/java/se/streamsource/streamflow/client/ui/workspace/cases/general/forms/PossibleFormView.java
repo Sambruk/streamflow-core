@@ -17,16 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import java.awt.Color;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -35,7 +31,7 @@ public class PossibleFormView extends JButton
 {
    LinkValue itemValue;
 
-   public PossibleFormView( LinkValue itemValue )
+   public PossibleFormView( @Uses LinkValue itemValue )
    {
       super(itemValue.text().get(), i18n.icon( Icons.formSubmit, 16 ) ) ;
       this.setHorizontalAlignment( SwingConstants.LEFT );

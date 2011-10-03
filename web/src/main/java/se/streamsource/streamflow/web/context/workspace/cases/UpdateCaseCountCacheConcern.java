@@ -22,7 +22,7 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;

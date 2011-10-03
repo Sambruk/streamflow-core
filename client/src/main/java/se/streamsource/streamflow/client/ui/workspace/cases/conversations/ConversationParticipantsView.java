@@ -25,9 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
@@ -39,18 +37,12 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 public class ConversationParticipantsView
       extends JPanel
@@ -59,19 +51,19 @@ public class ConversationParticipantsView
    @Service
    DialogService dialogs;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> participantsDialog;
+   @Structure
+   Module module;
 
    ConversationParticipantsModel model;
    private JPanel participants;
 
-   public ConversationParticipantsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public ConversationParticipantsView(@Service ApplicationContext context, @Uses ConversationParticipantsModel model)
    {
       super(new BorderLayout());
 
       setActionMap( context.getActionMap(this ));
 
-      model = obf.newObjectBuilder( ConversationParticipantsModel.class ).use( client ).newInstance();
+      this.model = model;
       model.participants().addListEventListener( this );
 
       participants = new JPanel(new FlowLayout( FlowLayout.LEFT ));
@@ -98,7 +90,7 @@ public class ConversationParticipantsView
       for (int i = 0; i < model.participants().size(); i++)
       {
          LinkValue link = model.participants().get( i );
-         RemovableLabel label = new RemovableLabel( link, RemovableLabel.LEFT );
+         RemovableLabel label = new RemovableLabel( link, null);
          label.getButton().addActionListener( getActionMap().get("removeParticipant" ));
          participants.add( label );
       }
@@ -116,7 +108,7 @@ public class ConversationParticipantsView
    @Action
    public Task addParticipants()
    {
-      final SelectLinkDialog dialog = participantsDialog.use( model.possibleParticipants() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.possibleParticipants() ).newInstance();
       dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( CaseResources.choose_participant ) );
 
@@ -146,7 +138,7 @@ public class ConversationParticipantsView
          {
             Component component = ((Component) e.getSource());
             RemovableLabel label = (RemovableLabel) component.getParent();
-            model.removeParticipant( label.link() );
+            model.removeParticipant( label.getRemoveLink() );
          }
       };
    }

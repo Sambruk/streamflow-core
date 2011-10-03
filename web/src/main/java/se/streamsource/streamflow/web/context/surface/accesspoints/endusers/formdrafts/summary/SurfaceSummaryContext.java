@@ -25,14 +25,14 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
-import se.streamsource.streamflow.domain.form.RequiredSignaturesValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 /**
  * JAVADOC
@@ -40,7 +40,7 @@ import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 @Concerns(UpdateCaseCountFormSummaryConcern.class)
 @Mixins(SurfaceSummaryContext.Mixin.class)
 public interface SurfaceSummaryContext
-      extends Context, IndexContext<FormDraftValue>
+      extends Context, IndexContext<FormDraftDTO>
 {
    void submit();
 
@@ -54,15 +54,15 @@ public interface SurfaceSummaryContext
       @Structure
       Module module;
 
-      public FormDraftValue index()
+      public FormDraftDTO index()
       {
-         return RoleMap.role( FormDraftValue.class );
+         return RoleMap.role( FormDraftDTO.class );
       }
 
       public void submit()
       {
          EndUserCases userCases = RoleMap.role( EndUserCases.class );
-         AnonymousEndUser user = RoleMap.role( AnonymousEndUser.class );
+         EndUser user = RoleMap.role( EndUser.class );
          FormDraft formSubmission = RoleMap.role( FormDraft.class );
          Case aCase = RoleMap.role( Case.class );
 
@@ -72,7 +72,7 @@ public interface SurfaceSummaryContext
       public void submitandsend()
       {
          EndUserCases userCases = RoleMap.role( EndUserCases.class );
-         AnonymousEndUser user = RoleMap.role( AnonymousEndUser.class );
+         EndUser user = RoleMap.role( EndUser.class );
          FormDraft formSubmission = RoleMap.role( FormDraft.class );
          Case aCase = RoleMap.role( Case.class );
 
@@ -81,7 +81,7 @@ public interface SurfaceSummaryContext
 
       public RequiredSignaturesValue signatures()
       {
-         FormDraftValue form = RoleMap.role( FormDraftValue.class );
+         FormDraftDTO form = RoleMap.role( FormDraftDTO.class );
 
          RequiredSignatures.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, form.form().get().identity() );
 

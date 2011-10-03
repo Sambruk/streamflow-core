@@ -22,12 +22,12 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsView;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -41,14 +41,14 @@ public class HistoryView extends JPanel
    private static final long serialVersionUID = 3540488243544689740L;
 
    public HistoryView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
-                           @Structure ObjectBuilderFactory obf )
+                           @Uses ConversationModel model,
+                           @Structure Module module)
    {
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       this.setLayout( new BorderLayout());
 
-      add( obf.newObjectBuilder( ConversationParticipantsView.class ).use(client.getSubClient( "participants" )).newInstance(), BorderLayout.NORTH );
-      add( obf.newObjectBuilder( MessagesHistoryView.class ).use( client.getSubClient("messages" )).newInstance(), BorderLayout.CENTER );
+      add( module.objectBuilderFactory().newObjectBuilder(ConversationParticipantsView.class).use(model.newParticipantsModel()).newInstance(), BorderLayout.NORTH );
+      add( module.objectBuilderFactory().newObjectBuilder(MessagesHistoryView.class).use( model.newMessagesModel()).newInstance(), BorderLayout.CENTER );
    }
 }

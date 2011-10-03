@@ -23,17 +23,12 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.api.administration.form.FieldTypes;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.form.FieldTypes;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.TextField;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A dialog for creating a form field. One must provide a name and a type of the field.

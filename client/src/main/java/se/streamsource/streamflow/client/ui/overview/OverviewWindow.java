@@ -23,7 +23,7 @@ import org.jdesktop.swingx.JXFrame;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountSelector;
 import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
@@ -32,7 +32,7 @@ import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Overview window
@@ -44,7 +44,7 @@ public class OverviewWindow
          @Service Application application,
          @Service JavaHelp javaHelp,
          @Uses OverviewMenuBar menu,
-         @Structure final ObjectBuilderFactory obf,
+         @Structure final Module module,
          @Uses final AccountSelector accountSelector )
    {
       super( application );
@@ -72,7 +72,7 @@ public class OverviewWindow
                   frame.getContentPane().removeAll();
 
                   AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                  OverviewView overviewView = obf.newObjectBuilder( OverviewView.class ).use( selectedAccount.serverResource().getSubClient("overview" )).newInstance();
+                  OverviewView overviewView = module.objectBuilderFactory().newObjectBuilder(OverviewView.class).use( selectedAccount.newOverviewModel(), selectedAccount.newWorkspaceModel().newCasesModel()).newInstance();
 
                   frame.getContentPane().add( overviewView );
                }

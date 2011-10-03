@@ -20,10 +20,10 @@ package se.streamsource.streamflow.infrastructure.event.application.factory;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
@@ -43,13 +43,13 @@ public class TransactionNotificationConcern
    ApplicationEventStore eventStore;
 
    @Structure
-   UnitOfWorkFactory uowf;
+   Module module;
 
    Logger logger = LoggerFactory.getLogger( DomainEventFactory.class );
 
    public ApplicationEvent createEvent( String name, Object[] args )
    {
-      final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
+      final UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
 
       ApplicationEvent event = next.createEvent( name, args );
 

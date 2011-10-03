@@ -26,31 +26,23 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -62,27 +54,12 @@ public class AccountsDialog
    AccountsModel model;
 
    @Structure
-   UnitOfWorkFactory uowf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Service
-   IndividualRepository individualRepository;
+   Module module;
 
    @Service
    DialogService dialogs;
 
    public JList accountList;
-
-   @Uses
-   Iterable<CreateAccountDialog> createAccountDialog;
-
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
 
    AccountView accountView;
 
@@ -99,7 +76,7 @@ public class AccountsDialog
       setActionMap( context.getActionMap( this ) );
 
       accountList = new JList( new EventListModel(model.getAccounts()) );
-      accountList.setCellRenderer( new ListItemListCellRenderer() );
+      accountList.setCellRenderer( new LinkListCellRenderer() );
 
       JPanel listPanel = new JPanel(new BorderLayout());
       JScrollPane scroll = new JScrollPane( accountList );
@@ -130,8 +107,8 @@ public class AccountsDialog
             {
                if (accountList.getSelectedIndex() != -1)
                {
-                  AccountModel account = model.accountModel( accountList.getSelectedIndex() );
-                  accountView = obf.newObjectBuilder( AccountView.class ).use( account ).newInstance();
+                  AccountModel account = model.accountModel( (LinkValue) accountList.getSelectedValue() );
+                  accountView = module.objectBuilderFactory().newObjectBuilder( AccountView.class ).use( account ).newInstance();
                   viewPanel.add( accountView, "VIEW" );
                   cardLayout.show( viewPanel, "VIEW" );
                } else
@@ -153,7 +130,7 @@ public class AccountsDialog
    @Action
    public void add() throws ResourceException, UnitOfWorkCompletionException
    {
-      CreateAccountDialog dialog = createAccountDialog.iterator().next();
+      CreateAccountDialog dialog = module.objectBuilderFactory().newObject(CreateAccountDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AccountResources.create_account_title ) );
 
       if (dialog.settings() != null)
@@ -166,12 +143,12 @@ public class AccountsDialog
    @Action
    public void remove() throws UnitOfWorkCompletionException
    {
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( ((ListItemValue)accountList.getSelectedValue()).description().get() );
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setRemovalMessage( ((LinkValue)accountList.getSelectedValue()).text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeAccount( accountList.getSelectedIndex() );
+         model.removeAccount( (LinkValue) accountList.getSelectedValue() );
          listChanged(null);
       }
    }
@@ -179,13 +156,13 @@ public class AccountsDialog
    public void listChanged( ListEvent listEvent )
    {
       int prevSelected = accountList.getSelectedIndex();
-      accountList.setModel( new EventListModel<ListItemValue>( model.accounts ) );
+      accountList.setModel( new EventListModel<LinkValue>( model.accounts ) );
       accountList.repaint();
       accountList.setSelectedIndex( prevSelected );
 
    }
 
-   public void setSelectedAccount(ListItemValue selectedValue)
+   public void setSelectedAccount(LinkValue selectedValue)
    {
       accountList.setSelectedValue(selectedValue, true);
    }

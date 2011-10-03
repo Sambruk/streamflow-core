@@ -24,17 +24,15 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
@@ -47,7 +45,7 @@ public class FieldEditorTextAreaFieldValueView
 
    public FieldEditorTextAreaFieldValueView( @Service ApplicationContext context,
                                              @Uses FieldValueEditModel model,
-                                             @Structure ObjectBuilderFactory obf )
+                                             @Structure Module module)
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
@@ -59,11 +57,11 @@ public class FieldEditorTextAreaFieldValueView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
-      StateBinder fieldDefinitionBinder = obf.newObject( StateBinder.class );
+      StateBinder fieldDefinitionBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
-      StateBinder fieldValueBinder = obf.newObject( StateBinder.class );
+      StateBinder fieldValueBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       TextAreaFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( TextAreaFieldValue.class );
 
@@ -99,7 +97,7 @@ public class FieldEditorTextAreaFieldValueView
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.fieldId() ) );
 
-      FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
+      FieldValueObserver observer = module.objectBuilderFactory().newObjectBuilder(FieldValueObserver.class).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );
       fieldDefinitionBinder.addObserver( observer );
 

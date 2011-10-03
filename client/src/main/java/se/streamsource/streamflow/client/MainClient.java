@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import java.util.Locale;
 
 /**
@@ -46,6 +46,8 @@ public class MainClient
          Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
       else
          Locale.setDefault(Locale.ENGLISH);
+
+      Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
 
       org.jdesktop.application.Application.launch( StreamflowApplication.class, args );
 

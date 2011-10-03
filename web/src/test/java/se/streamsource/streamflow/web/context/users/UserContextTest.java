@@ -24,11 +24,12 @@ import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;
 import se.streamsource.streamflow.web.context.administration.UserContext;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
@@ -73,7 +74,7 @@ public class UserContextTest
          playRole(User.class, "test");
          try
          {
-            context( AccountContext.class).changepassword( value( ChangePasswordCommand.class, "{'oldPassword':'test','newPassword':'test2'}") );
+            context( AccountContext.class).changepassword( "test", "test2");
          } catch (WrongPasswordException e)
          {
             Assert.fail( "Should have been able to change password" );
@@ -89,7 +90,7 @@ public class UserContextTest
          playRole(User.class, "test");
          try
          {
-            context(AccountContext.class).changepassword( value( ChangePasswordCommand.class, "{'oldPassword':'test','newPassword':'test3'}") );
+            context(AccountContext.class).changepassword( "test", "test3");
             Assert.fail( "Should not have been able to change password" );
          } catch (WrongPasswordException e)
          {
@@ -109,7 +110,7 @@ public class UserContextTest
          RoleMap.newCurrentRoleMap();
          playRole(User.class, "test");
 
-         context( ProfileContext.class).changemessagedeliverytype( stringValue( "none") );
+         context(ProfileContext.class).changemessagedeliverytype(MessageRecipient.MessageDeliveryTypes.none);
          uow.complete();
          eventsOccurred( "changedMessageDeliveryType" );
       }
@@ -119,7 +120,7 @@ public class UserContextTest
          RoleMap.newCurrentRoleMap();
          playRole(User.class, "test");
 
-         context( ProfileContext.class).changemessagedeliverytype( stringValue( "none") );
+         context( ProfileContext.class).changemessagedeliverytype( MessageRecipient.MessageDeliveryTypes.email );
          uow.complete();
          eventsOccurred( );
       }

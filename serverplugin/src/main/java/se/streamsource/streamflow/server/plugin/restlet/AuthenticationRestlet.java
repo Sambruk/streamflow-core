@@ -20,8 +20,8 @@ package se.streamsource.streamflow.server.plugin.restlet;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -44,7 +44,7 @@ import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue
 public class AuthenticationRestlet extends Restlet
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Optional
    @Service
@@ -65,7 +65,7 @@ public class AuthenticationRestlet extends Restlet
                response.getChallengeRequests().add(new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Streamflow"));
             } else
             {
-               ValueBuilder<UserIdentityValue> builder = vbf.newValueBuilder(UserIdentityValue.class);
+               ValueBuilder<UserIdentityValue> builder = module.valueBuilderFactory().newValueBuilder(UserIdentityValue.class);
                builder.prototype().username().set(request.getChallengeResponse().getIdentifier());
                builder.prototype().password().set(new String(request.getChallengeResponse().getSecret()));
 

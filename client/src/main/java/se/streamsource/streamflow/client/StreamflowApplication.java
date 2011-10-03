@@ -28,8 +28,9 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Receiver;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -42,6 +43,8 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.account.AccountResources;
@@ -55,48 +58,43 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.client.util.JavaHelp;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.SingleInstanceListener;
+import javax.jnlp.SingleInstanceService;
+import javax.jnlp.UnavailableServiceException;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.concurrent.Executors;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * Controller for the application
  */
 @ProxyActions({"cut", "copy", "paste",
-      "createDraft", "complete", "assign", "drop", "forward", // Case related proxy actions
-      "find", "selectTree", "selectTable", "selectDetails"})
+        "createDraft", "complete", "assign", "drop", "forward", // Case related proxy actions
+        "find", "selectTree", "selectTable", "selectDetails"})
 public class StreamflowApplication
-      extends SingleFrameApplication
-   implements TransactionListener
+        extends SingleFrameApplication
+        implements TransactionListener, SingleInstanceListener
 {
    public static ValueType DOMAIN_EVENT_TYPE;
 
-   final Logger logger = LoggerFactory.getLogger( getClass().getName() );
-   final Logger streamflowLogger = LoggerFactory.getLogger( LoggerCategories.STREAMFLOW );
-
-   @Structure
-   ObjectBuilderFactory obf;
+   final Logger logger = LoggerFactory.getLogger(getClass().getName());
+   final Logger streamflowLogger = LoggerFactory.getLogger(LoggerCategories.STREAMFLOW);
 
    @Structure
    ModuleSPI module;
@@ -120,6 +118,7 @@ public class StreamflowApplication
    DebugWindow debugWindow;
 
    public ApplicationSPI app;
+   private String openCaseJson;
 
    public StreamflowApplication()
    {
@@ -127,19 +126,75 @@ public class StreamflowApplication
 
       // We have to ensure that calls to the server are done in the order they were executed,
       // so make it single threaded
-      getContext().removeTaskService( getContext().getTaskService() );
+      getContext().removeTaskService(getContext().getTaskService());
       getContext().addTaskService(new TaskService("default", Executors.newSingleThreadExecutor()));
 
-      getContext().getResourceManager().setApplicationBundleNames( Arrays.asList( "se.streamsource.streamflow.client.resources.StreamflowApplication" ) );
+      getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamflowApplication"));
    }
 
-   public void init( @Uses final AccountsModel accountsModel,
-                     @Structure final ObjectBuilderFactory obf,
-                     @Uses final AccountSelector accountSelector,
-                     @Service EventStream stream
+   @Override
+   protected void initialize(String[] args)
+   {
+      // Check if we are supposed to open a particular case
+      final File[] openFile = new File[1];
+      if (args.length > 0)
+      {
+         if (args[0].equals("-open"))
+         {
+            openFile(new File(args[1]));
+         }
+      }
+
+      try
+      {
+         SingleInstanceService singleInstanceService = (SingleInstanceService) ServiceManager.lookup(SingleInstanceService.class.getName());
+         singleInstanceService.addSingleInstanceListener(this);
+      } catch (UnavailableServiceException e)
+      {
+         // Ignore
+      }
+   }
+
+   public void newActivation(String[] args)
+   {
+      System.out.println("New args:" + Arrays.asList(args));
+
+      if (args.length > 0)
+      {
+         initialize(args);
+         CaseDTO caseDTO = module.valueBuilderFactory().newValueFromJSON(CaseDTO.class, openCaseJson);
+         openCaseJson = null;
+         workspaceWindow.getCurrentWorkspace().openCase(caseDTO.caseId().get());
+      }
+   }
+
+   public void openFile(File file)
+   {
+      System.out.println("Opening: " + file);
+      try
+      {
+         final StringBuffer buf = new StringBuffer();
+         Inputs.text(file.getAbsoluteFile()).transferTo(Outputs.withReceiver(new Receiver<String, RuntimeException>()
+         {
+            public void receive(String item) throws RuntimeException
+            {
+               buf.append(item);
+            }
+         }));
+         openCaseJson = buf.toString();
+         System.out.println(buf);
+      } catch (IOException e)
+      {
+         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+   }
+
+   public void init(@Uses final AccountsModel accountsModel,
+                    @Uses final AccountSelector accountSelector,
+                    @Service EventStream stream
    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
    {
-      DOMAIN_EVENT_TYPE = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
+      DOMAIN_EVENT_TYPE = module.valueDescriptor(DomainEvent.class.getName()).valueType();
 
       this.stream = stream;
 
@@ -148,9 +203,10 @@ public class StreamflowApplication
       try
       {
          //Check for Mac OS - and load if we are on Mac
-         getClass().getClassLoader().loadClass( "com.apple.eawt.Application" );
-         MacOsUIExtension osUIExtension = new MacOsUIExtension( this );
+         getClass().getClassLoader().loadClass("com.apple.eawt.Application");
+         MacOsUIExtension osUIExtension = new MacOsUIExtension(this);
          osUIExtension.attachMacUIExtension();
+         osUIExtension.attachMacOpenFileExtension();
          osUIExtension.convertAccelerators();
       } catch (Throwable e)
       {
@@ -159,58 +215,65 @@ public class StreamflowApplication
 
 
       // General UI settings
-      String toolTipDismissDelay = i18n.text( StreamflowResources.tooltip_delay_dismiss );
-      String toolTipInitialDelay = i18n.text( StreamflowResources.tooltip_delay_initial );
-      String toolTipReshowDelay = i18n.text( StreamflowResources.tooltip_delay_reshow );
-      if (toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals( "" ))
+      String toolTipDismissDelay = i18n.text(StreamflowResources.tooltip_delay_dismiss);
+      String toolTipInitialDelay = i18n.text(StreamflowResources.tooltip_delay_initial);
+      String toolTipReshowDelay = i18n.text(StreamflowResources.tooltip_delay_reshow);
+      if (toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals(""))
       {
-         ToolTipManager.sharedInstance().setInitialDelay( Integer.parseInt( toolTipInitialDelay ) );
+         ToolTipManager.sharedInstance().setInitialDelay(Integer.parseInt(toolTipInitialDelay));
       }
-      if (toolTipDismissDelay != null && !toolTipDismissDelay.trim().equals( "" ))
+      if (toolTipDismissDelay != null && !toolTipDismissDelay.trim().equals(""))
       {
-         ToolTipManager.sharedInstance().setDismissDelay( Integer.parseInt( toolTipDismissDelay ) );
+         ToolTipManager.sharedInstance().setDismissDelay(Integer.parseInt(toolTipDismissDelay));
       }
-      if (toolTipReshowDelay != null && !toolTipReshowDelay.trim().equals( "" ))
+      if (toolTipReshowDelay != null && !toolTipReshowDelay.trim().equals(""))
       {
-         ToolTipManager.sharedInstance().setReshowDelay( Integer.parseInt( toolTipReshowDelay ) );
+         ToolTipManager.sharedInstance().setReshowDelay(Integer.parseInt(toolTipReshowDelay));
       }
 
-      getContext().getActionMap().get( "myProfile" ).setEnabled( false );
+      getContext().getActionMap().get("myProfile").setEnabled(false);
 
 
       this.accountSelector = accountSelector;
-      this.workspaceWindow = obf.newObjectBuilder( WorkspaceWindow.class ).use( accountSelector ).newInstance();
-      this.overviewWindow = obf.newObjectBuilder( OverviewWindow.class ).use( accountSelector ).newInstance();
-      this.administrationWindow = obf.newObjectBuilder( AdministrationWindow.class ).use( accountSelector ).newInstance();
-      this.debugWindow = obf.newObjectBuilder( DebugWindow.class ).newInstance();
-      setMainFrame( workspaceWindow.getFrame() );
+      this.workspaceWindow = module.objectBuilderFactory().newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
+      this.overviewWindow = module.objectBuilderFactory().newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
+      this.administrationWindow = module.objectBuilderFactory().newObjectBuilder(AdministrationWindow.class).use(accountSelector).newInstance();
+      this.debugWindow = module.objectBuilderFactory().newObjectBuilder(DebugWindow.class).newInstance();
+      setMainFrame(workspaceWindow.getFrame());
 
       this.accountsModel = accountsModel;
 
       showWorkspaceWindow();
 
       // Auto-select first account if only one available
-      SwingUtilities.invokeLater( new Runnable()
+      SwingUtilities.invokeLater(new Runnable()
       {
          public void run()
          {
             if (accountsModel.getAccounts().size() == 1)
             {
-               accountSelector.setSelectedIndex( 0 );
+               accountSelector.setSelectedIndex(0);
+
+               if (openCaseJson != null)
+               {
+                  CaseDTO caseDTO = module.valueBuilderFactory().newValueFromJSON(CaseDTO.class, openCaseJson);
+                  openCaseJson = null;
+                  workspaceWindow.getCurrentWorkspace().openCase(caseDTO.caseId().get());
+               }
             }
          }
-      } );
+      });
 
-      accountSelector.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+      accountSelector.getSelectionModel().addListSelectionListener(new ListSelectionListener()
       {
-         public void valueChanged( ListSelectionEvent e )
+         public void valueChanged(ListSelectionEvent e)
          {
-            StreamflowApplication.this.getContext().getActionMap().get( "myProfile" ).setEnabled( !accountSelector.getSelectionModel().isSelectionEmpty() );
+            StreamflowApplication.this.getContext().getActionMap().get("myProfile").setEnabled(!accountSelector.getSelectionModel().isSelectionEmpty());
          }
-      } );
+      });
 
-      getContext().getActionMap().get( "savePerspective" ).setEnabled( false );
-      getContext().getActionMap().get( "managePerspectives" ).setEnabled( false );
+      getContext().getActionMap().get("savePerspective").setEnabled(false);
+      getContext().getActionMap().get("managePerspectives").setEnabled(false);
    }
 
    @Override
@@ -218,58 +281,55 @@ public class StreamflowApplication
    {
       try
       {
-         Client client = new Client( Protocol.HTTP );
+         Client client = new Client(Protocol.HTTP);
          client.start();
          // Make it slower to get it more realistic
-         Restlet restlet = new Filter( client.getContext(), client )
+         Restlet restlet = new Filter(client.getContext(), client)
          {
             @Override
-            protected int beforeHandle( Request request, Response response )
+            protected int beforeHandle(Request request, Response response)
             {
                workspaceWindow.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-               return super.beforeHandle( request, response );
+               return super.beforeHandle(request, response);
             }
 
             @Override
-            protected void afterHandle( Request request, Response response )
+            protected void afterHandle(Request request, Response response)
             {
                workspaceWindow.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-               super.afterHandle( request, response );
+               super.afterHandle(request, response);
             }
          };
 
          Energy4Java is = new Energy4Java();
-         app = is.newApplication( new StreamflowClientAssembler( this,
-               org.jdesktop.application.Application.getInstance().getContext(),
-               restlet ) );
+         app = is.newApplication(new StreamflowClientAssembler(this,
+                 org.jdesktop.application.Application.getInstance().getContext(),
+                 restlet));
 
-         logger.info( "Starting in " + app.mode() + " mode" );
+         logger.info("Starting in " + app.mode() + " mode");
 
          app.activate();
       } catch (Throwable e)
       {
-         JXErrorPane.showDialog( getMainFrame(), new ErrorInfo( i18n.text( StreamflowResources.startup_error ), e.getMessage(), null, "#error", e, java.util.logging.Level.SEVERE, Collections.<String, String>emptyMap() ) );
+         JXErrorPane.showDialog(getMainFrame(), new ErrorInfo(i18n.text(StreamflowResources.startup_error), e.getMessage(), null, "#error", e, java.util.logging.Level.SEVERE, Collections.<String, String>emptyMap()));
          shutdown();
       }
 
-      streamflowLogger.info( "Startup done" );
+      streamflowLogger.info("Startup done");
 
    }
 
    // Menu actions
 
-   @Uses
-   private ObjectBuilder<AccountsDialog> accountsDialog;
-
    @Action
    public void manageAccounts()
    {
-      ListItemValue selectedValue = (ListItemValue) accountSelector.getSelectedValue();
-      AccountsDialog dialog = accountsDialog.use( accountsModel ).newInstance();
+      LinkValue selectedValue = (LinkValue) accountSelector.getSelectedValue();
+      AccountsDialog dialog = module.objectBuilderFactory().newObjectBuilder(AccountsDialog.class).use(accountsModel).newInstance();
       dialog.setSelectedAccount(selectedValue);
-      dialogs.showOkDialog( getMainFrame(), dialog, text( AccountResources.account_title ) );
+      dialogs.showOkDialog(getMainFrame(), dialog, text(AccountResources.account_title));
    }
 
    @Action
@@ -278,38 +338,28 @@ public class StreamflowApplication
       accountSelector.clearSelection();
       if (administrationWindow.getFrame().isVisible())
       {
-         administrationWindow.getFrame().setVisible( false );
-         overviewWindow.getFrame().setVisible( false );
+         administrationWindow.getFrame().setVisible(false);
+         overviewWindow.getFrame().setVisible(false);
       }
    }
 
    @Action
    public void myProfile()
    {
-      ProfileView profile = obf.newObjectBuilder( ProfileView.class ).use( accountSelector.getSelectedAccount().serverResource().getSubClient( "account" ).getSubClient( "profile" )).newInstance();
-      dialogs.showOkDialog( getMainFrame(), profile, text( AccountResources.profile_title ) );
+      ProfileView profile = module.objectBuilderFactory().newObjectBuilder(ProfileView.class).use(accountSelector.getSelectedAccount().newProfileModel()).newInstance();
+      dialogs.showOkDialog(getMainFrame(), profile, text(AccountResources.profile_title));
    }
 
    @Action
-   public void savePerspective( ActionEvent e)
+   public void savePerspective(ActionEvent e)
    {
-      ((ApplicationAction)getContext().getActionMap().get( "savePerspective" ).getValue( "proxy" )).actionPerformed( e );
+      ((ApplicationAction) getContext().getActionMap().get("savePerspective").getValue("proxy")).actionPerformed(e);
    }
 
    @Action
-   public void managePerspectives( ActionEvent e)
+   public void managePerspectives(ActionEvent e)
    {
-      ((ApplicationAction)getContext().getActionMap().get( "managePerspectives" ).getValue( "proxy" )).actionPerformed( e );
-   }
-   
-   public AccountsModel accountsModel()
-   {
-      return accountsModel;
-   }
-
-   public String getSelectedUser()
-   {
-      return accountSelector.isSelectionEmpty() ? null : accountSelector.getSelectedAccount().settings().userName().get();
+      ((ApplicationAction) getContext().getActionMap().get("managePerspectives").getValue("proxy")).actionPerformed(e);
    }
 
    public EventStream getSource()
@@ -317,26 +367,21 @@ public class StreamflowApplication
       return stream;
    }
 
-   public AccountSelector getAccountSelector()
-   {
-      return accountSelector;
-   }
-
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
       for (Window window : Frame.getWindows())
       {
-         dispatchTransactions( window, transactions );
+         dispatchTransactions(window, transactions);
       }
    }
 
-   private void dispatchTransactions( Component component, Iterable<TransactionDomainEvents> transactionEventsIterable )
+   private void dispatchTransactions(Component component, Iterable<TransactionDomainEvents> transactionEventsIterable)
    {
       if (!component.isShowing())
          return;
 
       if (component instanceof TransactionListener)
-         ((TransactionListener) component).notifyTransactions( transactionEventsIterable );
+         ((TransactionListener) component).notifyTransactions(transactionEventsIterable);
 
       if (component instanceof Container)
       {
@@ -344,7 +389,7 @@ public class StreamflowApplication
          for (Component childComponent : container.getComponents())
          {
             // Only dispatch to visible components - they will refresh once visible anyway
-               dispatchTransactions( childComponent, transactionEventsIterable );
+            dispatchTransactions(childComponent, transactionEventsIterable);
          }
       }
    }
@@ -359,7 +404,7 @@ public class StreamflowApplication
    {
       if (!workspaceWindow.getFrame().isVisible())
       {
-         show( workspaceWindow );
+         show(workspaceWindow);
       }
       workspaceWindow.getFrame().toFront();
    }
@@ -369,7 +414,7 @@ public class StreamflowApplication
    {
       if (!overviewWindow.getFrame().isVisible())
       {
-         show( overviewWindow );
+         show(overviewWindow);
       }
       overviewWindow.getFrame().toFront();
    }
@@ -378,7 +423,7 @@ public class StreamflowApplication
    public void showAdministrationWindow() throws Exception
    {
       if (!administrationWindow.getFrame().isVisible())
-         show( administrationWindow );
+         show(administrationWindow);
       administrationWindow.getFrame().toFront();
    }
 
@@ -386,39 +431,39 @@ public class StreamflowApplication
    public void showDebugWindow() throws Exception
    {
       if (!debugWindow.getFrame().isVisible())
-         show( debugWindow );
+         show(debugWindow);
       debugWindow.getFrame().toFront();
    }
 
    @Action
-   public void close( ActionEvent e )
+   public void close(ActionEvent e)
    {
-      WindowUtils.findWindow( (Component) e.getSource() ).dispose();
+      WindowUtils.findWindow((Component) e.getSource()).dispose();
    }
 
    @Action
-   public void cancel( ActionEvent e )
+   public void cancel(ActionEvent e)
    {
-      WindowUtils.findWindow( (Component) e.getSource() ).dispose();
+      WindowUtils.findWindow((Component) e.getSource()).dispose();
    }
 
    @Action
    public void showAbout()
    {
-      dialogs.showOkDialog( getMainFrame(), new AboutDialog( getContext() ) );
+      dialogs.showOkDialog(getMainFrame(), new AboutDialog(getContext()));
    }
 
    @Action
-   public void showHelp( ActionEvent event )
+   public void showHelp(ActionEvent event)
    {
       // Turn off java help for 1.0 release
       // javaHelp.init();
    }
 
    @Override
-   public void exit( EventObject eventObject )
+   public void exit(EventObject eventObject)
    {
-      super.exit( eventObject );
+      super.exit(eventObject);
    }
 
    @Override
@@ -426,20 +471,26 @@ public class StreamflowApplication
    {
       try
       {
+         SingleInstanceService singleInstanceService = (SingleInstanceService) ServiceManager.lookup(SingleInstanceService.class.getName());
+         singleInstanceService.removeSingleInstanceListener(this);
+      } catch (UnavailableServiceException e)
+      {
+         // Ignore
+      }
+
+      try
+      {
          if (app != null)
             app.passivate();
-
-         super.shutdown();
       } catch (Exception e)
       {
          e.printStackTrace();
       }
-
    }
 
    @Override
-   protected void show( JComponent jComponent )
+   protected void show(JComponent jComponent)
    {
-      super.show( jComponent );
+      super.show(jComponent);
    }
 }

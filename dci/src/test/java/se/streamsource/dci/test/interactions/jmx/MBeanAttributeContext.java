@@ -17,6 +17,7 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.Value;
@@ -87,9 +88,9 @@ public class MBeanAttributeContext
       }
    }
 
-   public void update( StringValue newValue ) throws InstanceNotFoundException, InvalidAttributeValueException, ReflectionException, AttributeNotFoundException, MBeanException
+   public void update( @Name("value") String newValue ) throws InstanceNotFoundException, InvalidAttributeValueException, ReflectionException, AttributeNotFoundException, MBeanException
    {
-      Attribute attribute = new Attribute( RoleMap.role( MBeanAttributeInfo.class ).getName(), newValue.string().get() );
+      Attribute attribute = new Attribute( RoleMap.role( MBeanAttributeInfo.class ).getName(), newValue );
       RoleMap.role( MBeanServer.class ).setAttribute( RoleMap.role( ObjectName.class ), attribute );
    }
 }

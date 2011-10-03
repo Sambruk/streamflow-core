@@ -25,9 +25,8 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -35,6 +34,7 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.ResourceActionEnabler;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -44,12 +44,13 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.JList;
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -59,34 +60,37 @@ public class CaseTypesView
 {
    CaseTypesModel model;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectLinkDialog> possibleMoveToDialogs;
+   @Structure
+   Module module;
 
    public CaseTypesView( @Service ApplicationContext context,
-                         @Uses final CommandQueryClient client,
-                         @Structure final ObjectBuilderFactory obf )
+                         @Uses final CaseTypesModel model)
    {
-      this.model = obf.newObjectBuilder( CaseTypesModel.class ).use( client ).newInstance();
+      this.model = model;
 
-      ActionMap am = context.getActionMap( this );
+      final ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get("move"), am.get( "rename" ), am.get("showUsages"), am.get( "remove" )}, new DetailFactory()
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get("move"), am.get( "rename" ), am.get("showUsages"), am.get("knowledgeBase"), am.get( "remove" )}, new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient caseTypeClient = client.getClient( detailLink );
+            final CaseTypeModel caseTypeModel = (CaseTypeModel) model.newResourceModel(detailLink);
 
-            TabbedResourceView view = obf.newObjectBuilder( TabbedResourceView.class ).use( caseTypeClient).newInstance();
+            new ResourceActionEnabler(am.get("knowledgeBase"))
+            {
+               @Override
+               protected ResourceValue getResource()
+               {
+                  caseTypeModel.refresh();
+                  return caseTypeModel.getResourceValue();
+               }
+            }.refresh();
+
+            TabbedResourceView view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( caseTypeModel ).newInstance();
             return view;
          }
       });
@@ -97,7 +101,7 @@ public class CaseTypesView
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_casetype_title ) );
 
@@ -111,6 +115,12 @@ public class CaseTypesView
             {
                model.create( dialog.name() );
             }
+
+            @Override
+            protected void failed(Throwable throwable)
+            {
+               super.failed(throwable);    //To change body of overridden methods use File | Settings | File Templates.
+            }
          };
       } else
          return null;
@@ -121,7 +131,7 @@ public class CaseTypesView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
 
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
@@ -143,7 +153,7 @@ public class CaseTypesView
    @Action
    public Task rename()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_casetype_title ) );
 
       if (!Strings.empty( dialog.name() ))
@@ -166,7 +176,7 @@ public class CaseTypesView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_casetype_to ) );
@@ -184,6 +194,16 @@ public class CaseTypesView
          };
       } else
          return null;
+   }
+
+   @Action
+   public void knowledgeBase() throws URISyntaxException, IOException
+   {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+
+      LinkValue url = model.getKnowledgeBaseLink(selected);
+
+      Desktop.getDesktop().browse(new URI(url.href().get()));
    }
 
    @Action

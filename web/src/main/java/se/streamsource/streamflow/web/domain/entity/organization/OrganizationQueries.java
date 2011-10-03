@@ -23,6 +23,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.spi.structure.ModuleSPI;
+import se.streamsource.streamflow.util.HierarchicalVisitor;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
@@ -51,6 +52,9 @@ import static org.qi4j.api.query.QueryExpressions.*;
 public interface OrganizationQueries
 {
    public QueryBuilder<UserEntity> findUsersByUsername( String query );
+
+   public <ThrowableType extends Throwable> boolean accept(HierarchicalVisitor<Object, Object, ThrowableType> visitor)
+      throws ThrowableType;
 
    public void visitOrganization(OrganizationVisitor visitor, Specification<Class> typeSelector);
 
@@ -81,6 +85,58 @@ public interface OrganizationQueries
          }
 
          return queryBuilder;
+      }
+
+      public <ThrowableType extends Throwable> boolean accept(HierarchicalVisitor<Object, Object, ThrowableType> visitor) throws ThrowableType
+      {
+         if (visitor.visitEnter(org))
+         {
+            if (visitor.visitEnter(Labels.class))
+            {
+               for (Label label : ((Labels.Data) org).labels())
+               {
+                  if (!visitor.visit( label ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Labels.class))
+               return false;
+
+            if (visitor.visitEnter(Forms.class))
+            {
+               for (Form form : ((Forms.Data) org).forms())
+               {
+                  if (!visitor.visit( form ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Forms.class))
+               return false;
+
+            if (visitor.visitEnter(CaseTypes.class))
+            {
+               for (CaseType caseType : ((CaseTypes.Data) org).caseTypes())
+               {
+                  if (!visitor.visit( caseType ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(CaseTypes.class))
+               return false;
+
+            if (visitor.visitEnter(OrganizationalUnits.class))
+            {
+               for (OrganizationalUnit ou : ((OrganizationalUnits.Data) org).organizationalUnits())
+               {
+                  if (!acceptOu(visitor, ou))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(OrganizationalUnits.class))
+               return false;
+         }
+
+         return visitor.visitLeave(org);
       }
 
       public void visitOrganization( OrganizationVisitor visitor, Specification<Class> typeSpecification)
@@ -252,6 +308,165 @@ public interface OrganizationQueries
             }
 
          return true;
+      }
+
+      private <ThrowableType extends Throwable> boolean acceptOu( HierarchicalVisitor<Object, Object, ThrowableType> visitor, OrganizationalUnit organizationalUnit)
+            throws ThrowableType
+      {
+         if (visitor.visitEnter(organizationalUnit))
+         {
+            if (visitor.visitEnter(Labels.class))
+            {
+               for (Label label : ((Labels.Data) organizationalUnit).labels())
+               {
+                  if (!visitor.visit( label ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Labels.class))
+               return false;
+
+            if (visitor.visitEnter(Forms.class))
+            {
+               for (Form form : ((Forms.Data) organizationalUnit).forms())
+               {
+                  if (!visitor.visit( form ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Forms.class))
+               return false;
+
+            if (visitor.visitEnter(Groups.class))
+            {
+               for (Group group : ((Groups.Data) organizationalUnit).groups())
+               {
+                  if (!visitor.visit( group ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Groups.class))
+               return false;
+
+            if (visitor.visitEnter(CaseTypes.class))
+            {
+               for (CaseType caseType : ((CaseTypes.Data) organizationalUnit).caseTypes())
+               {
+                  if (!acceptCaseType(visitor, caseType))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(CaseTypes.class))
+               return false;
+
+            if (visitor.visitEnter(Projects.class))
+            {
+               for (Project project : ((Projects.Data) organizationalUnit).projects())
+               {
+                  if (!acceptProject(visitor, project))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Projects.class))
+               return false;
+
+            if (visitor.visitEnter(OrganizationalUnits.class))
+            {
+               for (OrganizationalUnit ou : ((OrganizationalUnits.Data) organizationalUnit).organizationalUnits())
+               {
+                  if (!acceptOu(visitor, ou))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(OrganizationalUnits.class))
+               return false;
+         }
+
+         return visitor.visitLeave(organizationalUnit);
+      }
+
+      private <ThrowableType extends Throwable> boolean acceptProject( HierarchicalVisitor<Object, Object, ThrowableType> visitor, Project project)
+            throws ThrowableType
+      {
+         if (visitor.visitEnter(project))
+         {
+            if (visitor.visitEnter(Labels.class))
+            {
+               for (Label label : ((Labels.Data) project).labels())
+               {
+                  if (!visitor.visit( label ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Labels.class))
+               return false;
+
+            if (visitor.visitEnter(Forms.class))
+            {
+               for (Form form : ((Forms.Data) project).forms())
+               {
+                  if (!visitor.visit( form ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Forms.class))
+               return false;
+
+            if (visitor.visitEnter(CaseTypes.class))
+            {
+               for (CaseType caseType : ((CaseTypes.Data) project).caseTypes())
+               {
+                  if (!acceptCaseType(visitor, caseType))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(CaseTypes.class))
+               return false;
+         }
+
+         return visitor.visitLeave(project);
+      }
+
+      private <ThrowableType extends Throwable> boolean acceptCaseType( HierarchicalVisitor<Object, Object, ThrowableType> visitor, CaseType caseType)
+            throws ThrowableType
+      {
+         if (visitor.visitEnter(caseType))
+         {
+            if (visitor.visitEnter(Labels.class))
+            {
+               for (Label label : ((Labels.Data) caseType).labels())
+               {
+                  if (!visitor.visit( label ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Labels.class))
+               return false;
+
+            if (visitor.visitEnter(Forms.class))
+            {
+               for (Form form : ((Forms.Data) caseType).forms())
+               {
+                  if (!visitor.visit( form ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Forms.class))
+               return false;
+
+            if (visitor.visitEnter(Resolutions.class))
+            {
+               for (Resolution resolution : ((Resolutions.Data) caseType).resolutions())
+               {
+                  if (!visitor.visit( resolution ))
+                     break;
+               }
+            }
+            if (!visitor.visitLeave(Forms.class))
+               return false;
+         }
+
+         return visitor.visitLeave(caseType);
       }
    }
 

@@ -17,43 +17,21 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
-import se.streamsource.dci.value.link.LinksValue;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
 /**
  * JAVADOC
  */
 public class MBeanContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<MBeanAttributeInfo>>
 {
-   @Structure
-   Module module;
-
-   public LinksValue index()
+   public Iterable<MBeanAttributeInfo> index()
    {
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-      MBeanAttributeInfo[] attributes = RoleMap.role( MBeanInfo.class ).getAttributes();
-      for (MBeanAttributeInfo attribute : attributes)
-      {
-         try
-         {
-            Object value = RoleMap.role( MBeanServer.class ).getAttribute( RoleMap.role( ObjectName.class ), attribute.getName() );
-            builder.addLink( attribute.getDescription() + (value instanceof String ? "=" + value.toString() : ""), attribute.getName() );
-         } catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-
-      return builder.newLinks();
+      return Iterables.iterable(RoleMap.role(MBeanInfo.class).getAttributes());
    }
 }

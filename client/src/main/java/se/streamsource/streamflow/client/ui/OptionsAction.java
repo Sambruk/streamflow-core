@@ -20,9 +20,8 @@ package se.streamsource.streamflow.client.ui;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.AbstractAction;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**

@@ -26,10 +26,8 @@ import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
@@ -45,10 +43,8 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Set;
 
 /**
@@ -61,11 +57,8 @@ public class MembersView
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
+   @Structure
+   Module module;
 
    private UsersAndGroupsModel usersAndGroupsModel;
 
@@ -73,14 +66,13 @@ public class MembersView
    private MembersModel membersModel;
 
    public MembersView( @Service ApplicationContext context,
-                              @Uses final CommandQueryClient client,
-                              @Structure ObjectBuilderFactory obf)
+                              @Uses final MembersModel model)
    {
       super( new BorderLayout() );
-      this.membersModel = obf.newObjectBuilder( MembersModel.class ).use( client ).newInstance();
+      this.membersModel = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      usersAndGroupsModel = obf.newObjectBuilder( UsersAndGroupsModel.class ).use( client ).newInstance();
+      usersAndGroupsModel = membersModel.newUsersAndGroupsModel();
       setActionMap( context.getActionMap( this ) );
 
       membersList = new JXList( new EventListModel<LinkValue>(membersModel.getList()) );
@@ -103,7 +95,7 @@ public class MembersView
    @Action
    public Task add()
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( usersAndGroupsModel ).newInstance();
+      SelectUsersAndGroupsDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectUsersAndGroupsDialog.class).use( usersAndGroupsModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 
       final Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
@@ -127,7 +119,7 @@ public class MembersView
    {
       final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( membersList.getSelectedValues() );
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       String str = "";
       for (LinkValue linkValue : selected)
       {

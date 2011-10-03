@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import javax.swing.DefaultListSelectionModel;
+import javax.swing.*;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;

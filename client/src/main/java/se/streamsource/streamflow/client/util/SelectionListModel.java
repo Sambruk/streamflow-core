@@ -32,13 +32,6 @@ public class SelectionListModel
 
    public SelectionListModel( String possible )
    {
-      this("index", possible);
-   }
-
-   public SelectionListModel(String refresh, String possible)
-   {
-      super(refresh);
-
       this.possible = possible;
    }
 

@@ -30,7 +30,7 @@ import se.streamsource.dci.restlet.server.CommandResult;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.dci.restlet.server.ResultWriterDelegator;
+import se.streamsource.dci.restlet.server.ResponseWriterDelegator;
 import se.streamsource.dci.test.interactions.RootResource;
 import se.streamsource.dci.test.interactions.file.FileContext;
 import se.streamsource.dci.test.interactions.file.FileResource;
@@ -44,7 +44,7 @@ import se.streamsource.dci.test.interactions.jmx.MBeanResource;
 import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
 import se.streamsource.dci.value.ValueAssembler;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -85,10 +85,10 @@ public class TestAssembler
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.objects( TestCommandQueryRestlet2.class );
+      module.objects( TestCommandQueryRestlet.class );
 
       // Use defaults
-      module.objects( ResultWriterDelegator.class,
+      module.objects( ResponseWriterDelegator.class,
             NullCommandResult.class );
 
       module.objects( RootResource.class,

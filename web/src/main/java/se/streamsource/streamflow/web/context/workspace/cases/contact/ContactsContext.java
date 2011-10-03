@@ -22,14 +22,15 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 
 import java.util.List;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
 
 /**
  * JAVADOC
@@ -43,12 +44,12 @@ public class ContactsContext
    public ContactsDTO index()
    {
       ValueBuilder<ContactsDTO> builder = module.valueBuilderFactory().newValueBuilder( ContactsDTO.class );
-      ValueBuilder<ContactValue> contactBuilder = module.valueBuilderFactory().newValueBuilder( ContactValue.class );
-      List<ContactValue> list = builder.prototype().contacts().get();
+      ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder( ContactDTO.class );
+      List<ContactDTO> list = builder.prototype().contacts().get();
 
       Contacts.Data contacts = RoleMap.role( Contacts.Data.class );
 
-      for (ContactValue contact : contacts.contacts().get())
+      for (ContactDTO contact : contacts.contacts().get())
       {
          contactBuilder.prototype().company().set( contact.company().get() );
          contactBuilder.prototype().name().set( contact.name().get() );
@@ -65,7 +66,7 @@ public class ContactsContext
    }
 
    @RequiresStatus({OPEN, DRAFT})
-   public void add( ContactValue newContact )
+   public void add( ContactDTO newContact )
    {
       Contacts contacts = RoleMap.role( Contacts.class );
       contacts.addContact( newContact );

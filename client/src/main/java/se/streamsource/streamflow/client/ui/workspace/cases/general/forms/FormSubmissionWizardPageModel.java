@@ -23,18 +23,17 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.FieldValueDTO;
+import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
@@ -48,8 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 public class FormSubmissionWizardPageModel
 {
@@ -57,18 +56,18 @@ public class FormSubmissionWizardPageModel
    EventStream eventStream;
    
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Uses
-   CommandQueryClient client;
+   FormDraftModel model;
 
    public void updateField( EntityReference reference, String value ) throws ResourceException
    {
-      ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
+      ValueBuilder<FieldValueDTO> builder = module.valueBuilderFactory().newValueBuilder(FieldValueDTO.class);
       builder.prototype().field().set( reference );
       builder.prototype().value().set( value );
 
-      client.putCommand( "updatefield", builder.newInstance() );
+      model.updateField(builder.newInstance());
    }
 
    public void createAttachment( final EntityReference field, final File file, InputStream in) throws IOException
@@ -88,7 +87,7 @@ public class FormSubmissionWizardPageModel
          {
             for (DomainEvent domainEvent : filter( withNames("createdFormAttachment" ), Events.events( transactions )))
             {
-               ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
+               ValueBuilder<UpdateAttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder(UpdateAttachmentDTO.class);
                builder.prototype().name().set( file.getName() );
                builder.prototype().size().set( file.length() );
 
@@ -98,16 +97,16 @@ public class FormSubmissionWizardPageModel
                builder.prototype().mimeType().set( mimeType.toString() );
 
                String attachmentId = EventParameters.getParameter( domainEvent, "param1" );
-               client.getClient( "formattachments/" + attachmentId +"/" ).postCommand( "update", builder.newInstance() );
+               model.updateAttachment(attachmentId, builder.newInstance());
 
-               ValueBuilder<AttachmentFieldDTO> valueBuilder = vbf.newValueBuilder( AttachmentFieldDTO.class );
+               ValueBuilder<AttachmentFieldDTO> valueBuilder = module.valueBuilderFactory().newValueBuilder(AttachmentFieldDTO.class);
                valueBuilder.prototype().field().set( field );
                valueBuilder.prototype().name().set( file.getName() );
                valueBuilder.prototype().attachment().set( EntityReference.parseEntityReference( attachmentId ) );
 
                // must update lastModified before new update
-               client.queryResource();
-               client.putCommand( "updateattachmentfield",  valueBuilder.newInstance() );
+               model.getFormDraftDTO();
+               model.updateAttachmentField(valueBuilder.newInstance());
             }
          }
       };
@@ -115,7 +114,7 @@ public class FormSubmissionWizardPageModel
 
       try
       {
-         client.getClient( "formattachments/" ).postCommand( "createformattachment", input);
+         model.createAttachment(input);
       } finally
       {
          eventStream.unregisterListener( updateListener );

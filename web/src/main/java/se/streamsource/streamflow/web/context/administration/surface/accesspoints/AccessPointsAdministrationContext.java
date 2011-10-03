@@ -17,30 +17,27 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 @Mixins(AccessPointsAdministrationContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface AccessPointsAdministrationContext
       extends IndexContext<LinksValue>, Context
 {
-   public void createaccesspoint( @MaxLength(50) StringValue name );
+   public void createaccesspoint( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements AccessPointsAdministrationContext
@@ -54,15 +51,15 @@ public interface AccessPointsAdministrationContext
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
-         linksBuilder.addDescribables( data.accessPoints() );
+         linksBuilder.rel("accesspoint").addDescribables( data.accessPoints() );
 
          return linksBuilder.newLinks();
       }
 
-      public void createaccesspoint( StringValue name )
+      public void createaccesspoint( String name )
       {
          AccessPoints accessPoints = role( AccessPoints.class );
-         accessPoints.createAccessPoint( name.string().get() );
+         accessPoints.createAccessPoint( name );
       }
    }
 }

@@ -17,9 +17,23 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 public class PossibleFormsModel
    extends LinkValueListModel
 {
+   public FormDraftModel getFormDraftModel(String id)
+   {
+      CommandQueryClient possibleFormClient = client.getSubClient( id );
+
+      possibleFormClient.postCommand( "create" );
+      LinkValue formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
+
+      // get the form submission value;
+      final CommandQueryClient formDraftClient = client.getClient( formDraftLink );
+
+      return module.objectBuilderFactory().newObjectBuilder(FormDraftModel.class).use(formDraftClient).newInstance();
+   }
 }

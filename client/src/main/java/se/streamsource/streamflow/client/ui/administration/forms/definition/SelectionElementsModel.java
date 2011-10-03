@@ -19,22 +19,17 @@ package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.SelectionFieldValue;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 
 import java.util.List;
 
@@ -46,9 +41,6 @@ public class SelectionElementsModel
 {
    @Uses
    CommandQueryClient client;
-
-   @Structure
-   ValueBuilderFactory vbf;
 
    private EventList<String> elements = new BasicEventList<String>();
 
@@ -78,32 +70,33 @@ public class SelectionElementsModel
 
    public void addElement( String name )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
-      client.postCommand( "addselectionelement", builder.newInstance() );
+      Form form = new Form();
+      form.set("selection", name);
+      client.postCommand( "addselectionelement", form.getWebRepresentation() );
    }
 
    public void removeElement( int index )
    {
-      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
-      builder.prototype().integer().set( index );
-
-      client.postCommand( "removeselectionelement", builder.newInstance() );
+      Form form = new Form();
+      form.set("index", Integer.toString(index));
+      client.postCommand( "removeselectionelement", form.getWebRepresentation() );
    }
 
    public void moveElement( String direction, int index )
    {
-      ValueBuilder<NamedIndexDTO> builder = vbf.newValueBuilder( NamedIndexDTO.class );
-      builder.prototype().index().set( index );
-      builder.prototype().name().set( direction );
-      client.postCommand( "moveselectionelement", builder.newInstance() );
+      Form form = new Form();
+      form.set("name", direction);
+      form.set("index", Integer.toString(index));
+      
+      client.postCommand( "moveselectionelement", form.getWebRepresentation() );
    }
 
    public void changeElementName( String newName, int index )
    {
-      ValueBuilder<NamedIndexDTO> builder = vbf.newValueBuilder( NamedIndexDTO.class );
-      builder.prototype().name().set( newName );
-      builder.prototype().index().set( index );
-      client.postCommand( "changeselectionelementname", builder.newInstance() );
+      Form form = new Form();
+      form.set("name", newName);
+      form.set("index", Integer.toString(index));
+
+      client.postCommand( "changeselectionelementname", form.getWebRepresentation() );
    }
 }

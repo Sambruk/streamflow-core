@@ -25,9 +25,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.WriterRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.value.table.TableBuilder;
@@ -36,8 +33,6 @@ import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.infrastructure.database.Databases;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.Writer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,7 +64,7 @@ public class CrystalContext
 
    public TableValue motionchart()
    {
-      final TableBuilder tableBuilder = new TableBuilder( module.valueBuilderFactory() );
+      final TableBuilder tableBuilder = new TableBuilder( module.valueBuilderFactory());
       tableBuilder.
             column( "CaseType", "Case type", "string" ).
             column( "Week", "Week", "string" ).
@@ -129,7 +124,7 @@ public class CrystalContext
       return tableBuilder.newTable();
    }
 
-   public Representation timeline( final TableQuery query) throws Exception
+   public JSONObject timeline( final TableQuery query) throws Exception
    {
       final JSONObject timeline = new JSONObject();
 
@@ -188,20 +183,7 @@ public class CrystalContext
 
       timeline.put("events", events);
 
-      return new WriterRepresentation(MediaType.APPLICATION_JSON)
-      {
-         @Override
-         public void write( Writer writer ) throws IOException
-         {
-            try
-            {
-               timeline.write( writer );
-            } catch (JSONException e)
-            {
-               throw new IOException(e);
-            }
-         }
-      };
+      return timeline;
    }
 
    public TableValue labelcloud() throws SQLException

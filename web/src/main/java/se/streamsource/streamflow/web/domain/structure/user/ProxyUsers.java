@@ -27,11 +27,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.user.Password;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
 /**
@@ -60,10 +59,7 @@ public interface ProxyUsers
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Organization organization;
@@ -76,7 +72,7 @@ public interface ProxyUsers
 
       public ProxyUser createdProxyUser( @Optional DomainEvent event, String id, String description, String password )
       {
-         EntityBuilder<ProxyUser> builder = uowf.currentUnitOfWork().newEntityBuilder( ProxyUser.class, id );
+         EntityBuilder<ProxyUser> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( ProxyUser.class, id );
          builder.instance().organization().set( organization );
          UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
          userEntity.userName().set( id );

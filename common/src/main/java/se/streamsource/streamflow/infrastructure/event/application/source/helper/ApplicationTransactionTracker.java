@@ -98,7 +98,7 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
       {
          public <SenderThrowableType extends Throwable> void receiveFrom(final Sender<? extends TransactionApplicationEvents, SenderThrowableType> sender) throws ReceiverThrowableType, SenderThrowableType
          {
-            if (!upToSpeed)
+         if (!upToSpeed)
             {
                // The tracker has not handled successfully all transactions before,
                // so it needs to get the backlog first

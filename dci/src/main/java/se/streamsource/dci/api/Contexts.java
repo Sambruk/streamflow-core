@@ -24,7 +24,8 @@ import org.qi4j.spi.structure.ModuleSPI;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.iterable;
 
 /**
  * Helper methods for working with contexts

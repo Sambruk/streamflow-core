@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.domain.entity.user;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;

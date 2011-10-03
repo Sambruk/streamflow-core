@@ -25,5 +25,5 @@ import org.restlet.resource.ResourceException;
  */
 public interface ResponseReader
 {
-   <T> T readResponse(Response response, Class<T> resultType) throws ResourceException;
+   Object readResponse(Response response, Class<?> resultType) throws ResourceException;
 }

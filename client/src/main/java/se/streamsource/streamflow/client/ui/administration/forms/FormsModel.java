@@ -31,7 +31,9 @@ public class FormsModel
 {
    public FormsModel( )
    {
-      super( "createform" );
+      super( "create" );
+
+      relationModelMapping("form", FormModel.class);
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)

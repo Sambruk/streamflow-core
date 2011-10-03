@@ -28,7 +28,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.first;
 
 /**
  * Check if current case has any possible resolutions

@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
 import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -27,20 +27,15 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.RequiresRoles;
+import se.streamsource.dci.api.Requires;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.domain.form.SelectionFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.resource.roles.BooleanDTO;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
+import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
@@ -52,51 +47,50 @@ import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
  * JAVADOC
  */
 @Mixins(FormFieldContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface FormFieldContext
       extends DeleteContext, Context
 {
    public FieldDefinitionValue field();
 
-   public void changedescription( @MaxLength(100) StringValue description );
+   public void changedescription( @MaxLength(100) @Name("description") String description );
 
-   public void changemandatory( BooleanDTO mandatory );
+   public void changemandatory( @Name("mandatory") boolean mandatory );
 
-   public void changefieldid( StringValue id );
+   public void changefieldid( @Name("id") String id );
 
-   public void changehint( StringValue hint );
+   public void changehint( @Name("hint") String hint );
 
-   @RequiresRoles(TextFieldValue.class)
-   public void changewidth( IntegerDTO newWidth );
+   @Requires(TextFieldValue.class)
+   public void changewidth( @Name("width") int newWidth );
 
-   @RequiresRoles(TextFieldValue.class)
-   public void changeregularexpression( StringValue regularExpression );
+   @Requires(TextFieldValue.class)
+   public void changeregularexpression( @Name("expression") String regularExpression );
 
-   @RequiresRoles(TextAreaFieldValue.class)
-   public void changerows( IntegerDTO newRows );
+   @Requires(TextAreaFieldValue.class)
+   public void changerows( @Name("rows") int newRows );
 
-   @RequiresRoles(TextAreaFieldValue.class)
-   public void changecols( IntegerDTO newRows );
+   @Requires(TextAreaFieldValue.class)
+   public void changecols( @Name("columns") int newRows );
 
-   @RequiresRoles(NumberFieldValue.class)
-   public void changeinteger( BooleanDTO integerDto );
+   @Requires(NumberFieldValue.class)
+   public void changeinteger( @Name("integer") boolean isInteger );
 
-   @RequiresRoles(SelectionFieldValue.class)
-   public void addselectionelement( StringValue name );
+   @Requires(SelectionFieldValue.class)
+   public void addselectionelement( @Name("selection") String name );
 
-   @RequiresRoles(SelectionFieldValue.class)
-   public void removeselectionelement( IntegerDTO index );
+   @Requires(SelectionFieldValue.class)
+   public void removeselectionelement( @Name("index") int index );
 
-   @RequiresRoles(SelectionFieldValue.class)
-   public void moveselectionelement( NamedIndexDTO moveElement );
+   @Requires(SelectionFieldValue.class)
+   public void moveselectionelement( @Name("name") String name, @Name("index") int index);
 
-   @RequiresRoles(SelectionFieldValue.class)
-   public void changeselectionelementname( NamedIndexDTO newNameDTO );
+   @Requires(SelectionFieldValue.class)
+   public void changeselectionelementname( @Name("name") String name, @Name("index") int index );
 
-   @RequiresRoles(OpenSelectionFieldValue.class)
-   public void changeopenselectionname( StringValue name );
+   @Requires(OpenSelectionFieldValue.class)
+   public void changeopenselectionname( @Name("name") String name );
 
-   public void move( StringValue direction );
+   public void move( @Name("direction") String direction );
 
    abstract class Mixin
          implements FormFieldContext
@@ -119,162 +113,162 @@ public interface FormFieldContext
          return builder.newInstance();
       }
 
-      public void changedescription( StringValue description )
+      public void changedescription( String description )
       {
          Describable describable = RoleMap.role( Describable.class );
-         describable.changeDescription( description.string().get() );
+         describable.changeDescription( description );
       }
 
-      public void changemandatory( BooleanDTO mandatory )
+      public void changemandatory( boolean mandatory )
       {
          Mandatory mandatoryField = RoleMap.role( Mandatory.class );
 
-         mandatoryField.changeMandatory( mandatory.bool().get() );
+         mandatoryField.changeMandatory( mandatory );
       }
 
-      public void changefieldid( StringValue id )
+      public void changefieldid( String id )
       {
          FieldId fieldId = RoleMap.role( FieldId.class );
 
-         fieldId.changeFieldId( id.string().get() );
+         fieldId.changeFieldId( id );
       }
 
-      public void changehint( StringValue hint )
+      public void changehint( String hint )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          TextFieldValue value = RoleMap.role( TextFieldValue.class );
 
          ValueBuilder<TextFieldValue> builder = value.buildWith();
-         builder.prototype().hint().set( hint.string().get() );
+         builder.prototype().hint().set( hint );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changewidth( IntegerDTO newWidth )
+      public void changewidth( int newWidth )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          TextFieldValue value = RoleMap.role( TextFieldValue.class );
 
          ValueBuilder<TextFieldValue> builder = value.buildWith();
-         builder.prototype().width().set( newWidth.integer().get() );
+         builder.prototype().width().set( newWidth );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changeregularexpression( StringValue regularExpression )
+      public void changeregularexpression( String regularExpression )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          TextFieldValue value = RoleMap.role( TextFieldValue.class );
 
          ValueBuilder<TextFieldValue> builder = value.buildWith();
-         builder.prototype().regularExpression().set( regularExpression.string().get() );
+         builder.prototype().regularExpression().set( regularExpression );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changerows( IntegerDTO newRows )
+      public void changerows( int newRows )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          TextAreaFieldValue value = RoleMap.role( TextAreaFieldValue.class );
 
          ValueBuilder<TextAreaFieldValue> builder = value.buildWith();
-         builder.prototype().rows().set( newRows.integer().get() );
+         builder.prototype().rows().set( newRows );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changecols( IntegerDTO newRows )
+      public void changecols( int newCols )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          TextAreaFieldValue value = RoleMap.role( TextAreaFieldValue.class );
 
          ValueBuilder<TextAreaFieldValue> builder = value.buildWith();
-         builder.prototype().cols().set( newRows.integer().get() );
+         builder.prototype().cols().set( newCols );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changeinteger( BooleanDTO integerDto )
+      public void changeinteger( boolean isInteger )
       {
          FieldValueDefinition definition = RoleMap.role( FieldValueDefinition.class );
          NumberFieldValue value = RoleMap.role( NumberFieldValue.class );
 
          ValueBuilder<NumberFieldValue> builder = value.buildWith();
-         builder.prototype().integer().set( integerDto.bool().get() );
+         builder.prototype().integer().set( isInteger );
 
          definition.changeFieldValue( builder.newInstance() );
       }
 
-      public void addselectionelement( StringValue name )
+      public void addselectionelement( String name )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          SelectionFieldValue value = RoleMap.role( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
-         builder.prototype().values().get().add( name.string().get() );
+         builder.prototype().values().get().add( name );
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void removeselectionelement( IntegerDTO index )
+      public void removeselectionelement( int index )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          SelectionFieldValue value = RoleMap.role( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
-         if (builder.prototype().values().get().size() > index.integer().get())
+         if (builder.prototype().values().get().size() > index)
          {
-            builder.prototype().values().get().remove( index.integer().get().intValue() );
+            builder.prototype().values().get().remove( index );
             fieldValueDefinition.changeFieldValue( builder.newInstance() );
          }
       }
 
-      public void moveselectionelement( NamedIndexDTO moveElement )
+      public void moveselectionelement( String name, int index )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          SelectionFieldValue value = RoleMap.role( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
-         String element = builder.prototype().values().get().remove( moveElement.index().get().intValue() );
-         if ("up".equals( moveElement.name().get() ))
+         String element = builder.prototype().values().get().remove( index );
+         if ("up".equals( name ))
          {
-            builder.prototype().values().get().add( moveElement.index().get() - 1, element );
+            builder.prototype().values().get().add( index - 1, element );
          } else
          {
-            builder.prototype().values().get().add( moveElement.index().get() + 1, element );
+            builder.prototype().values().get().add( index + 1, element );
          }
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changeselectionelementname( NamedIndexDTO newNameDTO )
+      public void changeselectionelementname( String name, int index )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          SelectionFieldValue value = RoleMap.role( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
-         builder.prototype().values().get().set( newNameDTO.index().get(), newNameDTO.name().get() );
+         builder.prototype().values().get().set( index, name );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changeopenselectionname( StringValue name )
+      public void changeopenselectionname( String name )
       {
          FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
          OpenSelectionFieldValue value = RoleMap.role( OpenSelectionFieldValue.class );
 
          ValueBuilder<OpenSelectionFieldValue> builder = value.buildWith();
-         builder.prototype().openSelectionName().set( name.string().get() );
+         builder.prototype().openSelectionName().set( name );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void move( StringValue direction )
+      public void move( String direction )
       {
          Field field = RoleMap.role( Field.class );
          Fields fields = RoleMap.role( Fields.class );
          Fields.Data fieldsData = RoleMap.role( Fields.Data.class );
 
          int index = fieldsData.fields().toList().indexOf( field );
-         if (direction.string().get().equalsIgnoreCase( "up" ))
+         if (direction.equalsIgnoreCase( "up" ))
          {
             try
             {

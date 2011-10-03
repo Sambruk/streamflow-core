@@ -19,15 +19,16 @@ package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import java.util.Observable;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
 
 /**
  * JAVADOC

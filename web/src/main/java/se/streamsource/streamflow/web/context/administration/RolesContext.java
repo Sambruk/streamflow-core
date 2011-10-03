@@ -17,29 +17,28 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 
 /**
  * JAVADOC
  */
 @Mixins(RolesContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface RolesContext
-      extends IndexContext<LinksValue>, Context
+      extends IndexContext<LinksValue>, Context, CreateContext<String, Role>
 {
-   void createrole( @MaxLength(50) StringValue name );
+   Role create( @MaxLength(50) @Name("name") String name );
 
    abstract class Mixin
          implements RolesContext
@@ -54,11 +53,11 @@ public interface RolesContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "role" ).addDescribables( roles.roles() ).newLinks();
       }
 
-      public void createrole( StringValue name )
+      public Role create( String name )
       {
          Roles roles = RoleMap.role( Roles.class );
 
-         roles.createRole( name.string().get() );
+         return roles.createRole( name );
       }
    }
 }

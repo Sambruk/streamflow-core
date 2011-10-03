@@ -25,38 +25,33 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
  * JAVADOC
@@ -68,11 +63,8 @@ public class ContactView
    @Service
    DialogService dialogs;
 
-   @Uses
-   protected ObjectBuilder<ContactLookupResultDialog> contactLookupResultDialog;
-
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private StateBinder contactBinder;
    private StateBinder phoneNumberBinder;
@@ -85,6 +77,10 @@ public class ContactView
    public JPanel form;
    private JTextField defaultFocusField;
    private JTextField addressField = (JTextField) TEXTFIELD.newField();
+   private JTextField zipField = (JTextField) TEXTFIELD.newField();
+   private JTextField cityField = (JTextField) TEXTFIELD.newField();
+   private JTextField regionField = (JTextField) TEXTFIELD.newField();
+   private JTextField countryField = (JTextField) TEXTFIELD.newField();
    private JTextField phoneField = (JTextField) TEXTFIELD.newField();
    private JTextField emailField = (JTextField) TEXTFIELD.newField();
    private JTextField contactIdField = (JTextField) TEXTFIELD.newField();
@@ -92,140 +88,276 @@ public class ContactView
 
    private ApplicationContext context;
    private JPanel lookupPanel;
+   private ValueBinder viewBinder;
+   private ValueBinder phoneViewBinder;
+   private ValueBinder addressViewBinder;
+   private ValueBinder emailViewBinder;
 
-   public ContactView( @Service ApplicationContext appContext, @Structure ObjectBuilderFactory obf )
+   public ContactView(@Service ApplicationContext appContext, @Structure Module module)
    {
-      setLayout( layout );
+      setLayout(layout);
 
       context = appContext;
-      setActionMap( context.getActionMap( this ) );
-      FormLayout formLayout = new FormLayout(
-            "70dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref" );
-      this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
+      setActionMap(context.getActionMap(this));
 
-      form = new JPanel();
-      JScrollPane scrollPane = new JScrollPane( form );
-      scrollPane.getVerticalScrollBar().setUnitIncrement( 30 );
-      scrollPane.setBorder( BorderFactory.createEmptyBorder() );
-      DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
+      add(new JLabel(), "EMPTY");
 
-      contactBinder = obf.newObject( StateBinder.class );
-      contactBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactValue template = contactBinder.bindingTemplate( ContactValue.class );
+      // Edit panel
+      {
+         FormLayout formLayout = new FormLayout(
+               "right:70dlu, 5dlu, 150dlu:grow",
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+         this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      phoneNumberBinder = obf.newObject( StateBinder.class );
-      phoneNumberBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactPhoneValue phoneTemplate = phoneNumberBinder.bindingTemplate( ContactPhoneValue.class );
+         form = new JPanel();
+         JScrollPane scrollPane = new JScrollPane(form);
+         scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+         DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
 
-      addressBinder = obf.newObject( StateBinder.class );
-      addressBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactAddressValue addressTemplate = addressBinder.bindingTemplate( ContactAddressValue.class );
+         contactBinder = module.objectBuilderFactory().newObject(StateBinder.class);
+         contactBinder.setResourceMap(context.getResourceMap(getClass()));
+         ContactDTO template = contactBinder.bindingTemplate(ContactDTO.class);
 
-      emailBinder = obf.newObject( StateBinder.class );
-      emailBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ContactEmailValue emailTemplate = emailBinder.bindingTemplate( ContactEmailValue.class );
+         phoneNumberBinder = module.objectBuilderFactory().newObject(StateBinder.class);
+         phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
+         ContactPhoneDTO phoneTemplate = phoneNumberBinder.bindingTemplate(ContactPhoneDTO.class);
 
-      builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( contactBinder.bind( defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name() ) );
-      builder.nextLine();
-      builder.add( new JLabel( i18n.text( WorkspaceResources.phone_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( phoneNumberBinder.bind( phoneField, phoneTemplate.phoneNumber() ) );
-      builder.nextLine();
-      builder.add( new JLabel( i18n.text( WorkspaceResources.address_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( addressBinder.bind( addressField, addressTemplate.address() ) );
-      builder.nextLine();
-      builder.add( new JLabel( i18n.text( WorkspaceResources.email_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( emailBinder.bind( emailField, emailTemplate.emailAddress() ) );
-      builder.nextLine();
-      builder.add( new JLabel( i18n.text( WorkspaceResources.contact_id_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( contactBinder.bind( contactIdField, template.contactId() ) );
-      builder.nextLine();
-      builder.add( new JLabel( i18n.text( WorkspaceResources.company_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( contactBinder.bind( companyField, template.company() ) );
-      builder.nextLine( 2 );
-      builder.add( new JLabel( i18n.text( WorkspaceResources.note_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( contactBinder.bind( TEXTAREA.newField(), template.note() ) );
+         addressBinder = module.objectBuilderFactory().newObject(StateBinder.class);
+         addressBinder.setResourceMap(context.getResourceMap(getClass()));
+         ContactAddressDTO addressTemplate = addressBinder.bindingTemplate(ContactAddressDTO.class);
 
-      builder.nextLine( 2 );
-      builder.nextColumn( 2 );
-      lookupPanel = new JPanel( new FlowLayout( FlowLayout.CENTER ) );
-      lookupPanel.add( new JButton( getActionMap().get( "lookupContact" ) ) );
-      builder.add( lookupPanel );
+         emailBinder = module.objectBuilderFactory().newObject(StateBinder.class);
+         emailBinder.setResourceMap(context.getResourceMap(getClass()));
+         ContactEmailDTO emailTemplate = emailBinder.bindingTemplate(ContactEmailDTO.class);
 
-      contactBinder.addObserver( this );
-      phoneNumberBinder.addObserver( this );
-      addressBinder.addObserver( this );
-      emailBinder.addObserver( this );
+         builder.add(new JButton(getActionMap().get("view")));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.name_label));
+         builder.nextColumn(2);
+         builder.add(contactBinder.bind(defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name()));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.phone_label));
+         builder.nextColumn(2);
+         builder.add(phoneNumberBinder.bind(phoneField, phoneTemplate.phoneNumber()));
+         builder.nextLine();
 
-      add( new JLabel(), "EMPTY" );
-      add( scrollPane, "CONTACT" );
+         builder.add(createLabel(WorkspaceResources.address_label));
+         builder.nextColumn(2);
+         builder.add(addressBinder.bind(addressField, addressTemplate.address()));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.zip_label));
+         builder.nextColumn(2);
+         builder.add(addressBinder.bind(zipField, addressTemplate.zipCode()));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.city_label));
+         builder.nextColumn(2);
+         builder.add(addressBinder.bind(cityField, addressTemplate.city()));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.region_label));
+         builder.nextColumn(2);
+         builder.add(addressBinder.bind(regionField, addressTemplate.region()));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.country_label));
+         builder.nextColumn(2);
+         builder.add(addressBinder.bind(countryField, addressTemplate.country()));
+         builder.nextLine();
+
+         builder.add(createLabel(WorkspaceResources.email_label));
+         builder.nextColumn(2);
+         builder.add(emailBinder.bind(emailField, emailTemplate.emailAddress()));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.contact_id_label));
+         builder.nextColumn(2);
+         builder.add(contactBinder.bind(contactIdField, template.contactId()));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.company_label));
+         builder.nextColumn(2);
+         builder.add(contactBinder.bind(companyField, template.company()));
+         builder.nextLine(2);
+         builder.add(createLabel(WorkspaceResources.note_label));
+         builder.nextColumn(2);
+         builder.add(contactBinder.bind(TEXTAREA.newField(), template.note()));
+
+         builder.nextLine(2);
+         builder.nextColumn(2);
+         lookupPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+         lookupPanel.add(new JButton(getActionMap().get("lookupContact")));
+         builder.add(lookupPanel);
+
+         contactBinder.addObserver(this);
+         phoneNumberBinder.addObserver(this);
+         addressBinder.addObserver(this);
+         emailBinder.addObserver(this);
+         add(scrollPane, "EDIT");
+      }
+
+      // View panel
+      {
+         FormLayout formLayout = new FormLayout(
+               "right:70dlu, 5dlu, 150dlu:grow",
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+         this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+
+         form = new JPanel();
+         JScrollPane scrollPane = new JScrollPane(form);
+         scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+         DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
+
+         viewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+         phoneViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+         addressViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+         emailViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+
+         builder.add(new JButton(getActionMap().get("edit")));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.name_label));
+         builder.nextColumn(2);
+         builder.add(viewBinder.bind("name", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.phone_label));
+         builder.nextColumn(2);
+         builder.add(phoneViewBinder.bind("phoneNumber", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+
+         builder.add(createLabel(WorkspaceResources.address_label));
+         builder.nextColumn(2);
+         builder.add(addressViewBinder.bind("address", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.zip_label));
+         builder.nextColumn(2);
+         builder.add(addressViewBinder.bind("zipCode", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.city_label));
+         builder.nextColumn(2);
+         builder.add(addressViewBinder.bind("city", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.region_label));
+         builder.nextColumn(2);
+         builder.add(addressViewBinder.bind("region", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.country_label));
+         builder.nextColumn(2);
+         builder.add(addressViewBinder.bind("country", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+
+         builder.add(createLabel(WorkspaceResources.email_label));
+         builder.nextColumn(2);
+         builder.add(emailViewBinder.bind("emailAddress", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.contact_id_label));
+         builder.nextColumn(2);
+         builder.add(viewBinder.bind("contactId", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine();
+         builder.add(createLabel(WorkspaceResources.company_label));
+         builder.nextColumn(2);
+         builder.add(viewBinder.bind("company", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextLine(2);
+         builder.add(createLabel(WorkspaceResources.note_label));
+         builder.nextColumn(2);
+         builder.add(viewBinder.bind("note", visibleIfNotEmpty(new JLabel("!"))));
+
+         add(scrollPane, "VIEW");
+      }
    }
 
+   private JLabel createLabel(Enum key)
+   {
+      JLabel label = new JLabel(i18n.text(key));
+      label.setForeground(Color.gray);
+      return label;
+   }
 
-   public void setModel( ContactModel model )
+   public void setModel(ContactModel model)
    {
       this.model = model;
       if (model != null)
       {
-         contactBinder.updateWith( model.getContact() );
-         phoneNumberBinder.updateWith( model.getPhoneNumber() );
-         addressBinder.updateWith( model.getAddress() );
-         emailBinder.updateWith( model.getEmailAddress() );
+         contactBinder.updateWith(model.getContact());
+         phoneNumberBinder.updateWith(model.getPhoneNumber());
+         addressBinder.updateWith(model.getAddress());
+         emailBinder.updateWith(model.getEmailAddress());
 
-         javax.swing.Action action = getActionMap().get( "lookupContact" );
-         action.setEnabled( model.isContactLookupEnabled() );
-         lookupPanel.setVisible( action.isEnabled() );
+         viewBinder.update(model.getContact());
+         phoneViewBinder.update(model.getPhoneNumber());
+         addressViewBinder.update(model.getAddress());
+         emailViewBinder.update(model.getEmailAddress());
 
-         layout.show( this, "CONTACT" );
+         javax.swing.Action action = getActionMap().get("lookupContact");
+         action.setEnabled(model.isContactLookupEnabled());
+         lookupPanel.setVisible(action.isEnabled());
+
+         if (model.getContact().toJSON().equals("{\"addresses\":[{\"address\":\"\",\"city\":\"\",\"contactType\":\"HOME\",\"country\":\"\",\"region\":\"\",\"zipCode\":\"\"}],\"company\":\"\",\"contactId\":\"\",\"emailAddresses\":[{\"contactType\":\"HOME\",\"emailAddress\":\"\"}],\"isCompany\":false,\"name\":\"\",\"note\":\"\",\"phoneNumbers\":[{\"contactType\":\"HOME\",\"phoneNumber\":\"\"}],\"picture\":\"\"}"))
+            layout.show(this, "EDIT");
+         else
+            layout.show(this, "VIEW");
 
       } else
       {
-         layout.show( this, "EMPTY" );
+         layout.show(this, "EMPTY");
       }
    }
 
-   public void update( Observable observable, Object arg )
+   public void update(Observable observable, Object arg)
    {
       final Property property = (Property) arg;
       new CommandTask()
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             String propertyName = property.qualifiedName().name();
-            if (propertyName.equals( "name" ))
+            if (propertyName.equals("name"))
             {
-               model.changeName( (String) property.get() );
-            } else if (propertyName.equals( "note" ))
+               model.changeName((String) property.get());
+            } else if (propertyName.equals("note"))
             {
-               model.changeNote( (String) property.get() );
-            } else if (propertyName.equals( "company" ))
+               model.changeNote((String) property.get());
+            } else if (propertyName.equals("company"))
             {
-               model.changeCompany( (String) property.get() );
-            } else if (propertyName.equals( "phoneNumber" ))
+               model.changeCompany((String) property.get());
+            } else if (propertyName.equals("phoneNumber"))
             {
-               model.changePhoneNumber( (String) property.get() );
-            } else if (propertyName.equals( "address" ))
+               model.changePhoneNumber((String) property.get());
+            } else if (propertyName.equals("address"))
             {
-               model.changeAddress( (String) property.get() );
-            } else if (propertyName.equals( "emailAddress" ))
+               model.changeAddress((String) property.get());
+            } else if (propertyName.equals("zipCode"))
             {
-               model.changeEmailAddress( (String) property.get() );
-            } else if (propertyName.equals( "contactId" ))
+               model.changeZipCode((String) property.get());
+            } else if (propertyName.equals("city"))
             {
-               model.changeContactId( (String) property.get() );
+               model.changeCity((String) property.get());
+            } else if (propertyName.equals("region"))
+            {
+               model.changeRegion((String) property.get());
+            } else if (propertyName.equals("country"))
+            {
+               model.changeCountry((String) property.get());
+            } else if (propertyName.equals("emailAddress"))
+            {
+               model.changeEmailAddress((String) property.get());
+            } else if (propertyName.equals("contactId"))
+            {
+               model.changeContactId((String) property.get());
             }
          }
       }.execute();
+   }
+
+   @Action
+   public void edit()
+   {
+      layout.show(this, "EDIT");
+   }
+
+   @Action
+   public void view()
+   {
+      setModel(model);
+      layout.show(this, "VIEW");
    }
 
    @Action
@@ -233,79 +365,79 @@ public class ContactView
    {
       try
       {
-         ContactValue query = createContactQuery();
+         ContactDTO query = createContactQuery();
 
-         ContactValue emptyCriteria = vbf.newValueBuilder( ContactValue.class ).newInstance();
-         if (emptyCriteria.equals( query ))
+         ContactDTO emptyCriteria = module.valueBuilderFactory().newValueBuilder(ContactDTO.class).newInstance();
+         if (emptyCriteria.equals(query))
          {
-            String msg = i18n.text( CaseResources.could_not_find_search_criteria );
-            dialogs.showMessageDialog( this, msg, "Info" );
+            String msg = i18n.text(CaseResources.could_not_find_search_criteria);
+            dialogs.showMessageDialog(this, msg, "Info");
 
          } else
          {
 
-            ContactsDTO contacts = model.searchContacts( query );
+            ContactsDTO contacts = model.searchContacts(query);
 
             if (contacts.contacts().get().isEmpty())
             {
-               String msg = i18n.text( CaseResources.could_not_find_contacts );
-               dialogs.showMessageDialog( this, msg, "Info" );
+               String msg = i18n.text(CaseResources.could_not_find_contacts);
+               dialogs.showMessageDialog(this, msg, "Info");
             } else
             {
 
-               ContactLookupResultDialog dialog = contactLookupResultDialog.use(
-                     contacts.contacts().get() ).newInstance();
-               dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), dialog, i18n.text( WorkspaceResources.contacts_tab ) );
+               ContactLookupResultDialog dialog = module.objectBuilderFactory().newObjectBuilder(ContactLookupResultDialog.class).use(
+                     contacts.contacts().get()).newInstance();
+               dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), dialog, i18n.text(WorkspaceResources.contacts_tab));
 
-               ContactValue contactValue = dialog.getSelectedContact();
+               ContactDTO contactValue = dialog.getSelectedContact();
 
                if (contactValue != null)
                {
-                  if (defaultFocusField.getText().equals( "" ) && !contactValue.name().get().equals( "" ))
+                  if (defaultFocusField.getText().equals("") && !contactValue.name().get().equals(""))
                   {
-                     model.changeName( contactValue.name().get() );
-                     defaultFocusField.setText( contactValue.name().get() );
+                     model.changeName(contactValue.name().get());
+                     defaultFocusField.setText(contactValue.name().get());
                   }
 
-                  for (ContactPhoneValue contactPhoneValue : contactValue.phoneNumbers().get())
+                  for (ContactPhoneDTO contactPhoneDTO : contactValue.phoneNumbers().get())
                   {
-                     if (!contactPhoneValue.phoneNumber().get().equals( "" ) && model.getPhoneNumber().phoneNumber().get().equals( "" ))
+                     if (!contactPhoneDTO.phoneNumber().get().equals("") && model.getPhoneNumber().phoneNumber().get().equals(""))
                      {
-                        model.changePhoneNumber( contactPhoneValue.phoneNumber().get() );
-                        phoneField.setText( contactPhoneValue.phoneNumber().get() );
+                        model.changePhoneNumber(contactPhoneDTO.phoneNumber().get());
+                        phoneField.setText(contactPhoneDTO.phoneNumber().get());
                      }
                   }
 
-                  List<ContactAddressValue> addressValues = contactValue.addresses().get();
-                  for (ContactAddressValue addressValue : addressValues)
+                  List<ContactAddressDTO> addressDTOs = contactValue.addresses().get();
+                  for (ContactAddressDTO addressDTO : addressDTOs)
                   {
-                     if (!addressValue.address().get().equals( "" ) && model.getAddress().address().get().equals( "" ))
+                     if (!addressDTO.address().get().equals("") && model.getAddress().address().get().equals(""))
                      {
-                        model.changeAddress( addressValue.address().get() );
-                        addressField.setText( addressValue.address().get() );
+                        model.changeAddress(addressDTO.address().get());
+                        addressField.setText(addressDTO.address().get());
                      }
                   }
 
-                  List<ContactEmailValue> emailValues = contactValue.emailAddresses().get();
-                  for (ContactEmailValue emailValue : emailValues)
+                  List<ContactEmailDTO> emailDTOs = contactValue.emailAddresses().get();
+                  for (ContactEmailDTO emailDTO : emailDTOs)
                   {
-                     if (!emailValue.emailAddress().get().equals( "" ) && model.getEmailAddress().emailAddress().get().equals( "" ))
+                     if (!emailDTO.emailAddress().get().equals("") && model.getEmailAddress().emailAddress().get().equals(""))
                      {
-                        model.changeEmailAddress( emailValue.emailAddress().get() );
-                        emailField.setText( emailValue.emailAddress().get() );
+                        model.changeEmailAddress(emailDTO.emailAddress().get());
+                        emailField.setText(emailDTO.emailAddress().get());
                      }
                   }
 
-                  if (contactIdField.getText().equals( "" ) && !contactValue.contactId().get().equals( "" ))
+                  if (contactIdField.getText().equals("") && !contactValue.contactId().get().equals(""))
                   {
-                     model.changeContactId( contactValue.contactId().get() );
-                     contactIdField.setText( contactValue.contactId().get() );
+                     model.changeContactId(contactValue.contactId().get());
+                     contactIdField.setText(contactValue.contactId().get());
                   }
 
-                  if (companyField.getText().equals( "" ) && !contactValue.company().get().equals( "" ))
+                  if (companyField.getText().equals("") && !contactValue.company().get().equals(""))
                   {
-                     model.changeCompany( contactValue.company().get() );
-                     companyField.setText( contactValue.company().get() );
+                     model.changeCompany(contactValue.company().get());
+                     companyField.setText(contactValue.company().get());
                   }
                }
             }
@@ -317,46 +449,69 @@ public class ContactView
       }
    }
 
-   private ContactValue createContactQuery()
+   private ContactDTO createContactQuery()
    {
-      ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder( ContactValue.class );
+      ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
 
       if (!defaultFocusField.getText().isEmpty())
       {
-         contactBuilder.prototype().name().set( defaultFocusField.getText() );
+         contactBuilder.prototype().name().set(defaultFocusField.getText());
       }
 
       if (!phoneField.getText().isEmpty())
       {
-         ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder( ContactPhoneValue.class );
-         builder.prototype().phoneNumber().set( phoneField.getText() );
-         contactBuilder.prototype().phoneNumbers().get().add( builder.newInstance() );
+         ValueBuilder<ContactPhoneDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactPhoneDTO.class);
+         builder.prototype().phoneNumber().set(phoneField.getText());
+         contactBuilder.prototype().phoneNumbers().get().add(builder.newInstance());
       }
 
       if (!addressField.getText().isEmpty())
       {
-         ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder( ContactAddressValue.class );
-         builder.prototype().address().set( addressField.getText() );
-         contactBuilder.prototype().addresses().get().add( builder.newInstance() );
+         ValueBuilder<ContactAddressDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactAddressDTO.class);
+         builder.prototype().address().set(addressField.getText());
+         contactBuilder.prototype().addresses().get().add(builder.newInstance());
       }
 
       if (!emailField.getText().isEmpty())
       {
-         ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder( ContactEmailValue.class );
-         builder.prototype().emailAddress().set( emailField.getText() );
-         contactBuilder.prototype().emailAddresses().get().add( builder.newInstance() );
+         ValueBuilder<ContactEmailDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
+         builder.prototype().emailAddress().set(emailField.getText());
+         contactBuilder.prototype().emailAddresses().get().add(builder.newInstance());
       }
 
       if (!contactIdField.getText().isEmpty())
       {
-         contactBuilder.prototype().contactId().set( contactIdField.getText() );
+         contactBuilder.prototype().contactId().set(contactIdField.getText());
       }
 
       if (!companyField.getText().isEmpty())
       {
-         contactBuilder.prototype().contactId().set( contactIdField.getText() );
+         contactBuilder.prototype().contactId().set(contactIdField.getText());
       }
       return contactBuilder.newInstance();
+   }
+
+   private JLabel visibleIfNotEmpty(final JLabel label)
+   {
+      label.addPropertyChangeListener("text", new PropertyChangeListener()
+      {
+         public void propertyChange(PropertyChangeEvent evt)
+         {
+            label.setVisible(!evt.getNewValue().equals(""));
+
+            Container container = label.getParent();
+            for (int i = 0; i < container.getComponents().length; i++)
+            {
+               Component component = container.getComponents()[i];
+               if (component == label)
+               {
+                  JLabel labelForLabel = (JLabel) container.getComponent(i - 1);
+                  labelForLabel.setVisible(label.isVisible());
+               }
+            }
+         }
+      });
+      return label;
    }
 
    public void setFocusOnName()

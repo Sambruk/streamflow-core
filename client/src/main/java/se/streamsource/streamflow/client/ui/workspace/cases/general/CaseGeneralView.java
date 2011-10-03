@@ -32,19 +32,25 @@ import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
@@ -63,10 +69,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
@@ -81,8 +87,8 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    @Service
    private UncaughtExceptionHandler exception;
 
-   @Uses
-   private ObjectBuilder<SelectLinkDialog> caseTypeDialog;
+   @Structure
+   Module module;
 
    private ActionBinder actionBinder;
    private ValueBinder valueBinder;
@@ -93,7 +99,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private JScrollPane notePane;
    private JXDatePicker dueOnField;
    private JPanel rightForm;
-   private Box leftForm;
+   private JPanel leftForm;
    private CaseLabelsView labels;
    private PossibleFormsView forms;
    private RemovableLabel selectedCaseType = new RemovableLabel();
@@ -102,20 +108,20 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private final ApplicationContext appContext;
 
    public CaseGeneralView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
-                           @Structure ObjectBuilderFactory obf )
+                           @Uses CaseGeneralModel generalModel,
+                           @Structure Module module)
    {
       this.appContext = appContext;
-      this.model = obf.newObjectBuilder( CaseGeneralModel.class ).use( client ).newInstance();
+      this.model = generalModel;
       RefreshComponents refreshComponents = new RefreshComponents();
       model.addObserver( refreshComponents );
-
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
+      ObjectBuilderFactory obf = module.objectBuilderFactory();
+      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( generalModel.newLabelsModel() ).newInstance();
 
       RefreshComponents refreshLabelComponents = new RefreshComponents();
       labels.getModel().addObserver( refreshLabelComponents );
 
-      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../possibleforms/" ) ).newInstance();
+      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( generalModel.newPossibleFormsModel() ).newInstance();
       refreshComponents.visibleOn( "changedescription", forms );
       this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
@@ -139,8 +145,8 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
             Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
 
-      selectedCaseType.setFont( selectedCaseType.getFont().deriveFont(
-            Font.BOLD ) );
+      selectedCaseType.getLabel().setFont(selectedCaseType.getLabel().getFont().deriveFont(
+            Font.BOLD));
       selectedCaseType.getButton().addActionListener(am.get("removeCaseType" ));
       valueBinder.bind( "caseType", selectedCaseType );
 
@@ -150,7 +156,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       descriptionLabel.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
       rightBuilder.nextLine();
       rightBuilder.setExtent( 3, 1 );
-      rightBuilder.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField = (JTextField) TEXTFIELD.newField() ) ) );
+      JPanel descPanel = new JPanel( new BorderLayout());
+      descPanel.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField = (JTextField) TEXTFIELD.newField() ) ), BorderLayout.WEST );
+      rightBuilder.add( descPanel );
       descriptionField.setName("txtCaseDescription");
       rightBuilder.nextLine();
       descriptionLabel.setLabelFor( descriptionField );
@@ -225,9 +233,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       // Limit pickable dates to future
       Calendar calendar = Calendar.getInstance();
-      calendar.setTime(new Date());
+      calendar.setTime( new Date() );
       calendar.add( Calendar.DAY_OF_MONTH, 1 );
-      dueOnField.getMonthView().setLowerBound(calendar.getTime());
+      dueOnField.getMonthView().setLowerBound( calendar.getTime() );
 
       final DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT );
       dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
@@ -254,15 +262,17 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
 
       // Layout and form for the bottom panel
-      FormLayout leftLayout = new FormLayout( "200dlu:grow",
-            "pref,fill:pref:grow" );
-
-      leftForm = Box.createVerticalBox();
+      leftForm = new JPanel();
+      leftForm.setLayout( new BoxLayout( leftForm, BoxLayout.PAGE_AXIS ) );
 
       notePane = (JScrollPane) TEXTAREA.newField();
+      notePane.setMinimumSize( new Dimension( 10, 50 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
-      leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
+      JLabel noteLabel = new JLabel(i18n.text( WorkspaceResources.note_label ));
+      noteLabel.setAlignmentX( Component.LEFT_ALIGNMENT );
+      notePane.setAlignmentX( Component.LEFT_ALIGNMENT );
+      leftForm.add( noteLabel );
       leftForm.add(notePane);
       actionBinder.bind( "changeNote", notePane );
       valueBinder.bind( "note", notePane );
@@ -312,6 +322,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       forms.setEnabled( enabled );
 
       valueBinder.update( model.getGeneral() );
+      selectedCaseType.setClickLink( model.getGeneral().caseType().get() );
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
@@ -372,7 +383,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    @Action
    public Task changeCaseType()
    {
-      final SelectLinkDialog dialog = caseTypeDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.choose_casetype ) );
 
@@ -388,7 +399,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                LinkValue selected = dialog.getSelectedLink();
                model.changeCaseType( selected );
 
-               selectedCaseType.getLabel().setText( selected.text().get() );
+              // selectedCaseType.setRemoveLink(selected);
 
                String labelQuery = dialog.getFilterField().getText();
                // if the query string has any match inside label descriptions

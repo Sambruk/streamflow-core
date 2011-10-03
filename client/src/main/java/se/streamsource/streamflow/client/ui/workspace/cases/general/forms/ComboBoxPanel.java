@@ -18,12 +18,12 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
-import javax.swing.JComboBox;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class ComboBoxPanel
 {
    private JComboBox box;
 
-   public ComboBoxPanel( @Uses FieldSubmissionValue field, @Uses ComboBoxFieldValue fieldValue )
+   public ComboBoxPanel( @Uses FieldSubmissionDTO field, @Uses ComboBoxFieldValue fieldValue )
    {
       super( field );
       setLayout( new BorderLayout( ) );

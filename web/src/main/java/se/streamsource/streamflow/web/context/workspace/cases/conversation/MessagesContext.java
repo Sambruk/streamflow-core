@@ -21,23 +21,22 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.conversation.MessageDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
-import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -55,6 +54,13 @@ public class MessagesContext
       ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
       ConversationEntity conversation = RoleMap.role( ConversationEntity.class );
 
+      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
+      Map<String, String> translations = new HashMap<String, String>();
+      for (String key : bundle.keySet())
+      {
+         translations.put(key, bundle.getString(key));
+      }
+
       for (Message message : conversation.messages())
       {
          Contactable contact = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
@@ -63,7 +69,8 @@ public class MessagesContext
                ? sender
                : EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
          builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
-         builder.prototype().text().set( translate( ( (MessageEntity) message).body().get(),RoleMap.role( Locale.class ) ) );
+
+         builder.prototype().text().set( message.translateBody(translations));
          builder.prototype().href().set( ((MessageEntity) message).identity().get() );
          builder.prototype().id().set( ((MessageEntity) message).identity().get() );
 
@@ -72,27 +79,9 @@ public class MessagesContext
       return links.newLinks();
    }
 
-   public void createmessage( StringValue message ) throws ResourceException
+   public void createmessage( StringValue message )
    {
-      try
-      {
-         Messages messages = RoleMap.role( Messages.class );
-         messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
-      } catch (IllegalArgumentException e)
-      {
-         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
-      }
-   }
-
-   private String translate( String message, Locale locale )
-   {
-      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), locale );
-      if( message.startsWith("{") && message.endsWith("}") )
-      {
-         String[] tokens = message.substring(1,message.length()-1).split( "," );
-         String form = bundle.getString( tokens[0] );
-         message = new MessageFormat( form, locale ).format( form, tokens.length > 1 ? tokens[1] : "" );
-      }
-      return message;
+      Messages messages = RoleMap.role( Messages.class );
+      messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
    }
 }

@@ -22,10 +22,9 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -59,41 +58,41 @@ public class SelectedResolutionsContext
       OrganizationQueries organizationQueries = RoleMap.role(OrganizationQueries.class);
       final SelectedResolutions.Data selectedResolutions = RoleMap.role(SelectedResolutions.Data.class);
 
-      final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addresolution" );
-      organizationQueries.visitOrganization( new OrganizationVisitor()
+      final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command("addresolution");
+      organizationQueries.visitOrganization(new OrganizationVisitor()
       {
 
          Describable owner;
 
          @Override
-         public boolean visitOrganizationalUnit( OrganizationalUnit ou )
+         public boolean visitOrganizationalUnit(OrganizationalUnit ou)
          {
             owner = ou;
 
-            return super.visitOrganizationalUnit( ou );
+            return super.visitOrganizationalUnit(ou);
          }
 
          @Override
-         public boolean visitProject( Project project )
+         public boolean visitProject(Project project)
          {
             owner = project;
 
-            return super.visitProject( project );
+            return super.visitProject(project);
          }
 
          @Override
-         public boolean visitCaseType( CaseType caseType )
+         public boolean visitCaseType(CaseType caseType)
          {
             owner = caseType;
 
-            return super.visitCaseType( caseType );
+            return super.visitCaseType(caseType);
          }
 
          @Override
-         public boolean visitResolution( Resolution resolution )
+         public boolean visitResolution(Resolution resolution)
          {
-            if (!selectedResolutions.selectedResolutions().contains( resolution ))
-               builder.addDescribable( resolution, owner );
+            if (!selectedResolutions.selectedResolutions().contains(resolution))
+               builder.addDescribable(resolution, owner);
 
             return true;
          }
@@ -105,15 +104,6 @@ public class SelectedResolutionsContext
             CaseType.class,
             Resolutions.class));
       return builder.newLinks();
-   }
-
-   public void createresolution( StringValue name )
-   {
-      Resolutions resolutions = RoleMap.role(Resolutions.class);
-      SelectedResolutions selectedResolutions = RoleMap.role(SelectedResolutions.class);
-
-      Resolution resolution = resolutions.createResolution( name.string().get() );
-      selectedResolutions.addSelectedResolution( resolution );
    }
 
    public void addresolution( EntityValue resolutionDTO )

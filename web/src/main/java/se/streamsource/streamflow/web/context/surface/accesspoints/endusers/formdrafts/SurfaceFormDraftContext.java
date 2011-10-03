@@ -19,42 +19,41 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValueDTO;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.FormSignatureValue;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 public class SurfaceFormDraftContext
-      implements IndexContext<FormDraftValue>
+      implements IndexContext<FormDraftDTO>
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
-   public FormDraftValue index()
+   public FormDraftDTO index()
    {
-      return RoleMap.role( FormDraftValue.class );
+      return RoleMap.role( FormDraftDTO.class );
    }
 
-   public void updatefield( FieldDTO field )
+   public void updatefield( FieldValueDTO field )
    {
       FormDraft formDraft = RoleMap.role( FormDraft.class );
-      formDraft.changeFieldValue( EntityReference.parseEntityReference( field.field().get() ), field.value().get() );
+      formDraft.changeFieldValue( field.field().get(), field.value().get() );
    }
 
    public void updateattachmentfield( AttachmentFieldDTO fieldAttachment )
@@ -67,17 +66,17 @@ public class SurfaceFormDraftContext
    {
       FormDraft formDraft = RoleMap.role( FormDraft.class );
       EntityReference entityReference = EntityReference.parseEntityReference(fieldId.string().get());
-      FieldSubmissionValue value = formDraft.getFieldValue( entityReference );
+      FieldSubmissionDTO DTO = formDraft.getFieldValue( entityReference );
 
-      ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
-      builder.prototype().value().set( value.value().get() == null ? "" : value.value().get() );
+      ValueBuilder<FieldValueDTO> builder = module.valueBuilderFactory().newValueBuilder(FieldValueDTO.class);
+      builder.prototype().value().set( DTO.value().get() == null ? "" : DTO.value().get() );
       builder.prototype().field().set( entityReference );
       
       return builder.newInstance();
    }
 
 
-   public void addsignature( FormSignatureValue signature )
+   public void addsignature( FormSignatureDTO signature )
    {
       FormDraft formDraft = role( FormDraft.class );
       formDraft.addFormSignatureValue( signature );

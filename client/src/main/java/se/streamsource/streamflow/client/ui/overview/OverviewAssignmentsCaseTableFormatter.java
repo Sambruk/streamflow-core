@@ -17,15 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
 import java.util.Date;
 
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.assigned_to_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC

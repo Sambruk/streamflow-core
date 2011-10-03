@@ -21,24 +21,20 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransactionList;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.util.ListItemComparator;
+import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.WeakModelMap;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -49,30 +45,21 @@ import java.util.Observer;
 public class AccountsModel
 {
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    @Service
    IndividualRepository repository;
 
-   @Structure
-   UnitOfWorkFactory uowf;
-
-   @Service
-   Uniform client;
-
-   TransactionList<ListItemValue> accounts = new TransactionList<ListItemValue>( new SortedList<ListItemValue>( new BasicEventList<ListItemValue>(), new ListItemComparator() ) );
+   TransactionList<LinkValue> accounts = new TransactionList<LinkValue>( new SortedList<LinkValue>( new BasicEventList<LinkValue>(), new LinkComparator() ) );
 
    WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
    {
       protected AccountModel newModel( String key )
       {
-         UnitOfWork uow = uowf.newUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
          Account acc = uow.get( Account.class, key );
          uow.discard();
-         AccountModel accountModel = obf.newObjectBuilder( AccountModel.class ).use( acc ).newInstance();
+         AccountModel accountModel = module.objectBuilderFactory().newObjectBuilder(AccountModel.class).use( acc ).newInstance();
          accountModel.addObserver( new Observer()
          {
             public void update( Observable o, Object arg )
@@ -89,20 +76,19 @@ public class AccountsModel
       refresh();
    }
 
-   public EventList<ListItemValue> getAccounts()
+   public EventList<LinkValue> getAccounts()
    {
       return accounts;
    }
 
-   public AccountModel accountModel( int index )
+   public AccountModel accountModel( LinkValue accountLink )
    {
-      String id = accounts.get( index ).entity().get().identity();
-      return models.get( id );
+      return models.get( accountLink.id().get() );
    }
 
    public void newAccount( AccountSettingsValue accountSettingsValue ) throws UnitOfWorkCompletionException, ResourceException
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
 
       repository.individual().newAccount( accountSettingsValue );
 
@@ -111,16 +97,16 @@ public class AccountsModel
       refresh();
    }
 
-   public void removeAccount( int index ) throws UnitOfWorkCompletionException
+   public void removeAccount( LinkValue account ) throws UnitOfWorkCompletionException
    {
-      accountModel( index ).remove();
-      accounts.remove( index );
+      accountModel( account ).remove();
+      accounts.remove( account );
    }
 
    private void refresh()
    {
-      UnitOfWork uow = uowf.newUnitOfWork();
-      final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
+      final ValueBuilder<LinkValue> itemBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
       accounts.beginEvent();
       accounts.clear();
       repository.individual().visitAccounts( new AccountVisitor()
@@ -128,8 +114,9 @@ public class AccountsModel
 
          public void visitAccount( Account account )
          {
-            itemBuilder.prototype().description().set( account.accountSettings().name().get() );
-            itemBuilder.prototype().entity().set( EntityReference.getEntityReference( (account) ) );
+            itemBuilder.prototype().text().set( account.accountSettings().name().get() );
+            itemBuilder.prototype().href().set("");
+            itemBuilder.prototype().id().set(account.toString());
             accounts.add( itemBuilder.newInstance() );
          }
       } );

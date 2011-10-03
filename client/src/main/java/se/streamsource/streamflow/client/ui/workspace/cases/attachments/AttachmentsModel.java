@@ -24,9 +24,9 @@ import eu.medsea.mimeutil.MimeUtil;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
@@ -34,11 +34,11 @@ import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.attachment.AttachmentValue;
-import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
@@ -53,8 +53,8 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Observable;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -67,14 +67,14 @@ public class AttachmentsModel
    EventStream eventStream;
 
    @Structure
-   private ValueBuilderFactory vbf;
+   private Module module;
 
    @Uses
    private CommandQueryClient client;
 
-   private EventList<AttachmentValue> eventList = new BasicEventList<AttachmentValue>();
+   private EventList<AttachmentDTO> eventList = new BasicEventList<AttachmentDTO>();
 
-   public EventList<AttachmentValue> getEventList()
+   public EventList<AttachmentDTO> getEventList()
    {
       return eventList;
    }
@@ -96,7 +96,7 @@ public class AttachmentsModel
          {
             for (DomainEvent domainEvent : filter( withNames("createdAttachment" ), Events.events( transactions )))
             {
-               ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
+               ValueBuilder<UpdateAttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder(UpdateAttachmentDTO.class);
                builder.prototype().name().set( file.getName() );
                builder.prototype().size().set( file.length() );
 
@@ -123,7 +123,7 @@ public class AttachmentsModel
 
    public void refresh() throws OperationException
    {
-      ResourceValue resource = client.queryResource();
+      ResourceValue resource = client.query();
       final LinksValue newRoot = (LinksValue) resource.index().get();
       EventListSynch.synchronize( newRoot.links().get(), eventList );
 
@@ -131,13 +131,13 @@ public class AttachmentsModel
       notifyObservers(resource);
    }
 
-   public void removeAttachment( AttachmentValue attachment )
+   public void removeAttachment( AttachmentDTO attachment )
    {
       client.getClient( attachment ).delete();
    }
 
-   public Representation download( AttachmentValue attachment ) throws IOException
+   public Representation download( AttachmentDTO attachment ) throws IOException
    {
-      return client.getClient( attachment ).queryRepresentation( "download", null );
+      return client.getClient( attachment ).query("download", Representation.class);
    }
 }

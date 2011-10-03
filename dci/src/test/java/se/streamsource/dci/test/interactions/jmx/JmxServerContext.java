@@ -21,28 +21,22 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
-import se.streamsource.dci.value.link.LinksValue;
 
 import javax.management.MBeanServer;
+
+import static org.qi4j.api.util.Iterables.iterable;
 
 /**
  * JAVADOC
  */
 public class JmxServerContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<String>>
 {
    @Structure
    Module module;
 
-   public LinksValue index()
+   public Iterable<String> index()
    {
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-      for (String domain : RoleMap.role( MBeanServer.class ).getDomains())
-      {
-         builder.addLink( domain, domain );
-      }
-
-      return builder.newLinks();
+      return iterable(RoleMap.role(MBeanServer.class).getDomains());
    }
 }

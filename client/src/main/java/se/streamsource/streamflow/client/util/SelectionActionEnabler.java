@@ -17,8 +17,7 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.Action;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;

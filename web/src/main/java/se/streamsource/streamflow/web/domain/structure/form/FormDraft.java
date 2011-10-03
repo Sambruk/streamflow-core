@@ -22,26 +22,26 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.FormSignatureValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
+import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
 
@@ -56,29 +56,29 @@ import java.util.regex.Pattern;
 @Mixins(FormDraft.Mixin.class)
 public interface FormDraft
 {
-   FormDraftValue getFormDraftValue();
+   FormDraftDTO getFormDraftValue();
 
-   void changeFormDraftValue( FormDraftValue formDraftValue );
+   void changeFormDraftValue( FormDraftDTO formDraftDTO);
 
    void changeFieldValue( EntityReference fieldId, String fieldValue );
 
-   void addFormSignatureValue( FormSignatureValue formSignatureValue );
+   void addFormSignatureValue( FormSignatureDTO formSignatureDTO);
 
    void removeFormSignatures();
 
    void changeFieldAttachmentValue( AttachmentFieldDTO fieldAttachment );
 
-   FieldSubmissionValue getFieldValue( EntityReference fieldId );
+   FieldSubmissionDTO getFieldValue( EntityReference fieldId );
 
    interface Data
    {
-      Property<FormDraftValue> formDraftValue();
+      Property<FormDraftDTO> formDraftValue();
 
-      void changedFormDraft( @Optional DomainEvent event, FormDraftValue formDraftValue );
+      void changedFormDraft( @Optional DomainEvent event, FormDraftDTO formDraftDTO);
 
       void changedFieldValue( @Optional DomainEvent event, EntityReference fieldId, String fieldValue );
 
-      void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureValue formSignatureValue );
+      void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureDTO formSignatureDTO);
 
       void removedFormSignatures( @Optional DomainEvent event );
 
@@ -90,23 +90,23 @@ public interface FormDraft
    {
 
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
-      public FormDraftValue getFormDraftValue()
+      public FormDraftDTO getFormDraftValue()
       {
          return formDraftValue().get();
       }
 
-      public void changeFormDraftValue( FormDraftValue formDraftValue )
+      public void changeFormDraftValue( FormDraftDTO formDraftDTO)
       {
-         changedFormDraft( null, formDraftValue );
+         changedFormDraft( null, formDraftDTO);
       }
 
       public void changeFieldValue( EntityReference fieldId, String newValue )
       {
-         FormDraftValue formDraft = formDraftValue().get();
+         FormDraftDTO formDraft = formDraftValue().get();
 
-         FieldSubmissionValue field = findField( formDraft, fieldId );
+         FieldSubmissionDTO field = findField( formDraft, fieldId );
 
          boolean update = false;
          if (field.value().get() != null && field.value().get().equals( newValue ))
@@ -154,10 +154,10 @@ public interface FormDraft
       }
 
 
-      public void addFormSignatureValue( FormSignatureValue formSignatureValue )
+      public void addFormSignatureValue( FormSignatureDTO formSignatureDTO)
       {
          //validate
-         addedFormSignatureValue( null, formSignatureValue );
+         addedFormSignatureValue( null, formSignatureDTO);
       }
 
       public void removeFormSignatures()
@@ -257,11 +257,11 @@ public interface FormDraft
          return value != null;
       }
 
-      private FieldSubmissionValue findField( FormDraftValue draft, EntityReference fieldRef )
+      private FieldSubmissionDTO findField( FormDraftDTO draft, EntityReference fieldRef )
       {
-         for (PageSubmissionValue pageSubmissionValue : draft.pages().get())
+         for (PageSubmissionDTO pageSubmissionDTO : draft.pages().get())
          {
-            for (FieldSubmissionValue field : pageSubmissionValue.fields().get())
+            for (FieldSubmissionDTO field : pageSubmissionDTO.fields().get())
             {
                if (field.field().get().field().get().equals( fieldRef ))
                {
@@ -272,46 +272,46 @@ public interface FormDraft
          return null;
       }
 
-      public FieldSubmissionValue getFieldValue( EntityReference fieldId )
+      public FieldSubmissionDTO getFieldValue( EntityReference fieldId )
       {
          return findField( formDraftValue().get(), fieldId );
       }
 
-      public void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue )
+      public void changedFormDraft( DomainEvent event, FormDraftDTO formDraftDTO)
       {
-         formDraftValue().set( formDraftValue );
+         formDraftValue().set(formDraftDTO);
       }
 
       public void changedFieldValue( @Optional DomainEvent event, EntityReference fieldId, String fieldValue )
       {
-         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
-         FieldSubmissionValue field = findField( builder.prototype(), fieldId );
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
+         FieldSubmissionDTO field = findField( builder.prototype(), fieldId );
          field.value().set( fieldValue );
 
          formDraftValue().set( builder.newInstance() );
       }
 
-      public void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureValue formSignatureValue )
+      public void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureDTO formSignatureDTO)
       {
-         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
-         builder.prototype().signatures().get().add( formSignatureValue );
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
+         builder.prototype().signatures().get().add(formSignatureDTO);
 
          formDraftValue().set( builder.newInstance() );
       }
 
       public void removedFormSignatures( @Optional DomainEvent event )
       {
-         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
-         builder.prototype().signatures().set( Collections.<FormSignatureValue>emptyList() );
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
+         builder.prototype().signatures().set( Collections.<FormSignatureDTO>emptyList() );
 
          formDraftValue().set( builder.newInstance() );
       }
 
       public void changeFieldAttachmentValue( AttachmentFieldDTO fieldAttachment )
       {
-         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
 
-         FieldSubmissionValue field = findField( builder.prototype(), fieldAttachment.field().get() );
+         FieldSubmissionDTO field = findField( builder.prototype(), fieldAttachment.field().get() );
          if (field != null)
          {
             changedFieldAttachmentValue( null, fieldAttachment );
@@ -320,10 +320,10 @@ public interface FormDraft
 
       public void changedFieldAttachmentValue( DomainEvent event, AttachmentFieldDTO fieldAttachment )
       {
-         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
-         FieldSubmissionValue field = findField( builder.prototype(), fieldAttachment.field().get() );
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
+         FieldSubmissionDTO field = findField( builder.prototype(), fieldAttachment.field().get() );
 
-         ValueBuilder<AttachmentFieldSubmission> valueBuilder = vbf.newValueBuilder( AttachmentFieldSubmission.class );
+         ValueBuilder<AttachmentFieldSubmission> valueBuilder = module.valueBuilderFactory().newValueBuilder(AttachmentFieldSubmission.class);
          valueBuilder.prototype().attachment().set( fieldAttachment.attachment().get() );
          valueBuilder.prototype().name().set( fieldAttachment.name().get() );
 

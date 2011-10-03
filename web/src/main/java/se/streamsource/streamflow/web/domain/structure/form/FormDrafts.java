@@ -17,20 +17,33 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.common.*;
-import org.qi4j.api.entity.*;
-import org.qi4j.api.entity.association.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.mixin.*;
-import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.value.*;
-import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.infrastructure.event.domain.*;
-import se.streamsource.streamflow.web.domain.entity.form.*;
-import se.streamsource.streamflow.web.domain.structure.attachment.*;
-import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.Queryable;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -59,16 +72,13 @@ public interface FormDrafts
          implements FormDrafts, Data
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @This
       TypedCase.Data typedCase;
 
       @This
       SubmittedForms.Data submittedForms;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       @Service
       IdentityGenerator idgen;
@@ -112,24 +122,24 @@ public interface FormDrafts
       {
          SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
 
-         EntityBuilder<FormDraft> submissionEntityBuilder = uowf.currentUnitOfWork().newEntityBuilder( FormDraft.class, id );
+         EntityBuilder<FormDraft> submissionEntityBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( FormDraft.class, id );
 
-         ValueBuilder<FormDraftValue> builder = vbf.newValueBuilder( FormDraftValue.class );
+         ValueBuilder<FormDraftDTO> builder = module.valueBuilderFactory().newValueBuilder(FormDraftDTO.class);
 
          builder.prototype().description().set( form.getDescription() );
          builder.prototype().form().set( EntityReference.getEntityReference( form ));
 
-         ValueBuilder<PageSubmissionValue> pageBuilder = vbf.newValueBuilder( PageSubmissionValue.class );
-         ValueBuilder<FieldSubmissionValue> fieldBuilder = vbf.newValueBuilder( FieldSubmissionValue.class );
-         ValueBuilder<FieldDefinitionValue> valueBuilder = vbf.newValueBuilder( FieldDefinitionValue.class );
-         builder.prototype().pages().set( new ArrayList<PageSubmissionValue>() );
+         ValueBuilder<PageSubmissionDTO> pageBuilder = module.valueBuilderFactory().newValueBuilder(PageSubmissionDTO.class);
+         ValueBuilder<FieldSubmissionDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(FieldSubmissionDTO.class);
+         ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(FieldDefinitionValue.class);
+         builder.prototype().pages().set( new ArrayList<PageSubmissionDTO>() );
 
          Pages.Data pageEntities = (Pages.Data) form;
          for (Page page : pageEntities.pages())
          {
             pageBuilder.prototype().title().set( page.getDescription() );
             pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ));
-            pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionValue>() );
+            pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionDTO>() );
 
             Fields.Data fieldEntities = (Fields.Data) page;
             for (Field field : fieldEntities.fields())

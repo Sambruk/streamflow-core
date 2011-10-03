@@ -136,13 +136,20 @@ public class Underlay
             templateStream.close();
          }
       }
-      pdfDocument = destination;
 
-      PDDocumentCatalog overlayCatalog = pdfUnderlay.getDocumentCatalog();
-      collectLayoutPages( overlayCatalog.getAllPages() );
+      try
+      {
+         pdfDocument = destination;
 
-      PDDocumentCatalog pdfCatalog = pdfDocument.getDocumentCatalog();
-      processPages( pdfCatalog.getAllPages() );
+         PDDocumentCatalog overlayCatalog = pdfUnderlay.getDocumentCatalog();
+         collectLayoutPages( overlayCatalog.getAllPages() );
+
+         PDDocumentCatalog pdfCatalog = pdfDocument.getDocumentCatalog();
+         processPages( pdfCatalog.getAllPages() );
+      } finally
+      {
+//         pdfUnderlay.close();
+      }
 
       return pdfDocument;
    }

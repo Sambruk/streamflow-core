@@ -17,34 +17,27 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import org.restlet.data.Disposition;
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
@@ -67,13 +60,11 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
-import static se.streamsource.dci.api.RoleMap.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -104,7 +95,7 @@ public interface CaseCommandsContext
    /**
     * Mark the draft case as open
     */
-   @RequiresStatus({DRAFT})
+   @RequiresStatus(DRAFT)
    @RequiresOwner
    public void open();
 
@@ -134,20 +125,20 @@ public interface CaseCommandsContext
    @RequiresStatus({DRAFT,OPEN})
    public void sendto( EntityValue entity );
 
-   @RequiresStatus({CLOSED})
+   @RequiresStatus(CLOSED)
    public void reopen();
 
-   @RequiresStatus(CaseStates.ON_HOLD)
+   @RequiresStatus(ON_HOLD)
    public void resume();
 
    @RequiresAssigned()
-   @RequiresStatus(CaseStates.OPEN)
+   @RequiresStatus(OPEN)
    public void unassign();
 
-   @RequiresStatus({CaseStates.OPEN, CaseStates.DRAFT})
+   @RequiresStatus({OPEN, DRAFT})
    public void delete();
 
-   public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable;
+   public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
    abstract class Mixin
          implements CaseCommandsContext
@@ -303,7 +294,7 @@ public interface CaseCommandsContext
          }
       }
 
-      public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable
+      public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable
       {
          Locale locale = role( Locale.class );
 
@@ -332,40 +323,7 @@ public interface CaseCommandsContext
 
          final PDDocument pdf = exporter.getPdf();
 
-         OutputRepresentation representation = new OutputRepresentation( MediaType.APPLICATION_PDF )
-         {
-            @Override
-            public void write( OutputStream outputStream ) throws IOException
-            {
-               COSWriter writer = null;
-               try
-               {
-                  writer = new COSWriter( outputStream );
-                  writer.write( pdf );
-               } catch (COSVisitorException e)
-               {
-                  // Todo Handle this error more gracefully...
-                  e.printStackTrace();
-               } finally
-               {
-                  if (pdf != null)
-                  {
-                     pdf.close();
-                  }
-                  if (writer != null)
-                  {
-                     writer.close();
-                  }
-               }
-            }
-         };
-
-         Disposition disposition = new Disposition();
-         disposition.setFilename( ((CaseId.Data) caze).caseId().get() + ".pdf" );
-         disposition.setType( Disposition.TYPE_ATTACHMENT );
-         representation.setDisposition( disposition );
-
-         return representation;
+         return pdf;
       }
    }
 }

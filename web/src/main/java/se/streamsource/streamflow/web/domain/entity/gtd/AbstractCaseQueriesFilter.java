@@ -26,7 +26,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.grammar.BooleanExpression;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
@@ -56,51 +56,51 @@ import static org.qi4j.api.query.QueryExpressions.*;
 @Mixins(AbstractCaseQueriesFilter.Mixin.class)
 public interface AbstractCaseQueriesFilter
 {
-   QueryBuilder<Case> applyFilter( QueryBuilder<Case> builder, String filter );
+   QueryBuilder<Case> applyFilter(QueryBuilder<Case> builder, String filter);
 
    abstract class Mixin
-         implements AbstractCaseQueriesFilter
+           implements AbstractCaseQueriesFilter
    {
       @Structure
       Module module;
 
-      public QueryBuilder<Case> applyFilter( QueryBuilder<Case> builder, String filter )
+      public QueryBuilder<Case> applyFilter(QueryBuilder<Case> builder, String filter)
       {
 
-         List<SubQuery> searches = extractSubQueries( filter );
+         List<SubQuery> searches = extractSubQueries(filter);
          for (int i = 0; i < searches.size(); i++)
          {
-            SubQuery search = searches.get( i );
+            SubQuery search = searches.get(i);
 
-            if (search.hasName( "status" ))
+            if (search.hasName("status"))
             {
                int count = 0;
                BooleanExpression expression = null;
-               for (String status : Arrays.asList( search.getValue().split( "," ) ))
+               for (String status : Arrays.asList(search.getValue().split(",")))
                {
                   if (count == 0)
                   {
-                     expression = eq( templateFor( Status.Data.class ).status(), CaseStates.valueOf( status ) );
+                     expression = eq(templateFor(Status.Data.class).status(), CaseStates.valueOf(status));
                   } else
                   {
-                     expression = or( expression, eq( templateFor( Status.Data.class ).status(), CaseStates.valueOf( status ) ) );
+                     expression = or(expression, eq(templateFor(Status.Data.class).status(), CaseStates.valueOf(status)));
                   }
                   count++;
                }
 
-               builder = builder.where( expression );
+               builder = builder.where(expression);
 
 
-            } else if (search.hasName( "label" ))
+            } else if (search.hasName("label"))
             {
                int count = 0;
                BooleanExpression expression = null;
-               for (String label : search.getValue().split( "," ))
+               for (String label : search.getValue().split(","))
                {
                   Label labelEntity = null;
                   try
                   {
-                     labelEntity = module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, label );
+                     labelEntity = module.unitOfWorkFactory().currentUnitOfWork().get(Label.class, label);
                   } catch (NoSuchEntityException e)
                   {
                      // do nothing
@@ -110,10 +110,10 @@ public interface AbstractCaseQueriesFilter
 
                   if (count == 0)
                   {
-                     expression = contains( templateFor( Labelable.Data.class ).labels(), labelEntity );
+                     expression = contains(templateFor(Labelable.Data.class).labels(), labelEntity);
                   } else
                   {
-                     expression = or( expression, contains( templateFor( Labelable.Data.class ).labels(), labelEntity ) );
+                     expression = or(expression, contains(templateFor(Labelable.Data.class).labels(), labelEntity));
                   }
 
                   count++;
@@ -121,18 +121,18 @@ public interface AbstractCaseQueriesFilter
                }
 
                if (expression != null)
-                  builder = builder.where( expression );
+                  builder = builder.where(expression);
 
-            } else if (search.hasName( "caseType" ))
+            } else if (search.hasName("caseType"))
             {
                int count = 0;
                BooleanExpression expression = null;
-               for (String caseType : search.getValue().split( "," ))
+               for (String caseType : search.getValue().split(","))
                {
                   CaseType caseTypeEntity = null;
                   try
                   {
-                     caseTypeEntity = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, caseType );
+                     caseTypeEntity = module.unitOfWorkFactory().currentUnitOfWork().get(CaseType.class, caseType);
                   } catch (NoSuchEntityException e)
                   {
                      // do nothing
@@ -142,28 +142,28 @@ public interface AbstractCaseQueriesFilter
 
                   if (count == 0)
                   {
-                     expression = eq( templateFor( TypedCase.Data.class ).caseType(), caseTypeEntity );
+                     expression = eq(templateFor(TypedCase.Data.class).caseType(), caseTypeEntity);
                   } else
                   {
-                     expression = or( expression, eq( templateFor( TypedCase.Data.class ).caseType(), caseTypeEntity ) );
+                     expression = or(expression, eq(templateFor(TypedCase.Data.class).caseType(), caseTypeEntity));
                   }
 
                   count++;
                }
 
                if (expression != null)
-                  builder = builder.where( expression );
+                  builder = builder.where(expression);
 
-            } else if (search.hasName( "project" ))
+            } else if (search.hasName("project"))
             {
                int count = 0;
                BooleanExpression expression = null;
-               for (String project : search.getValue().split( "," ))
+               for (String project : search.getValue().split(","))
                {
                   Project projectEntity = null;
                   try
                   {
-                     projectEntity = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, project );
+                     projectEntity = module.unitOfWorkFactory().currentUnitOfWork().get(Project.class, project);
                   } catch (NoSuchEntityException e)
                   {
                      // do nothing
@@ -173,28 +173,28 @@ public interface AbstractCaseQueriesFilter
 
                   if (count == 0)
                   {
-                     expression = eq( templateFor( Ownable.Data.class ).owner(), projectEntity );
+                     expression = eq(templateFor(Ownable.Data.class).owner(), projectEntity);
                   } else
                   {
-                     expression = or( expression, eq( templateFor( Ownable.Data.class ).owner(), projectEntity ) );
+                     expression = or(expression, eq(templateFor(Ownable.Data.class).owner(), projectEntity));
                   }
 
                   count++;
                }
 
                if (expression != null)
-                  builder = builder.where( expression );
+                  builder = builder.where(expression);
 
-            } else if (search.hasName( "createdBy" ))
+            } else if (search.hasName("createdBy"))
             {
                int count = 0;
                BooleanExpression expression = null;
-               for (String user : search.getValue().split( "," ))
+               for (String user : search.getValue().split(","))
                {
                   User userEntity = null;
                   try
                   {
-                     userEntity = module.unitOfWorkFactory().currentUnitOfWork().get( User.class, user );
+                     userEntity = module.unitOfWorkFactory().currentUnitOfWork().get(User.class, user);
                   } catch (NoSuchEntityException e)
                   {
                      // do nothing
@@ -204,72 +204,72 @@ public interface AbstractCaseQueriesFilter
 
                   if (count == 0)
                   {
-                     expression = eq( templateFor( CreatedOn.class ).createdBy(), userEntity );
+                     expression = eq(templateFor(CreatedOn.class).createdBy(), userEntity);
                   } else
                   {
-                     expression = or( expression, eq( templateFor( CreatedOn.class ).createdBy(), userEntity ) );
+                     expression = or(expression, eq(templateFor(CreatedOn.class).createdBy(), userEntity));
                   }
 
                   count++;
                }
 
                if (expression != null)
-                  builder = builder.where( expression );
+                  builder = builder.where(expression);
 
 
-            } else if (search.hasName( "createdOn" ) || search.hasName( "dueOn" ))
+            } else if (search.hasName("createdOn") || search.hasName("dueOn"))
             {
                String value = search.getValue();
                DateMidnight lowerDate = null;
                DateMidnight upperDate = null;
-               DateTimeFormatter formatter = DateTimeFormat.forPattern( "yyyyMMdd" );
+               DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");
 
-               if (value.indexOf( "-" ) == -1)
+               if (value.indexOf("-") == -1)
                {
-                  lowerDate = new DateMidnight( formatter.parseDateTime( value ) );
+                  lowerDate = new DateMidnight(formatter.parseDateTime(value));
                } else
                {
-                  lowerDate = new DateMidnight( formatter.parseDateTime( value.substring( 0, value.indexOf( "-" ) ) ) );
-                  upperDate = new DateMidnight( formatter.parseDateTime( value.substring( value.indexOf( "-" ) + 1 ) ) );
+                  lowerDate = new DateMidnight(formatter.parseDateTime(value.substring(0, value.indexOf("-"))));
+                  upperDate = new DateMidnight(formatter.parseDateTime(value.substring(value.indexOf("-") + 1)));
                }
 
-               if (search.hasName( "createdOn" ))
+               if (search.hasName("createdOn"))
                {
                   if (upperDate == null)
                   {
-                     builder = builder.where( and(
-                           ge( templateFor( CreatedOn.class ).createdOn(), lowerDate.toDate() ),
-                           le( templateFor( CreatedOn.class ).createdOn(), lowerDate.plusDays( 1 ).toDate() ) ) );
+                     builder = builder.where(and(
+                             ge(templateFor(CreatedOn.class).createdOn(), lowerDate.toDate()),
+                             le(templateFor(CreatedOn.class).createdOn(), lowerDate.plusDays(1).toDate())));
                   } else
                   {
-                     builder = builder.where( and(
-                           ge( templateFor( CreatedOn.class ).createdOn(), lowerDate.toDate() ),
-                           le( templateFor( CreatedOn.class ).createdOn(), upperDate.plusDays(1).toDate() ) ) );
+                     builder = builder.where(and(
+                             ge(templateFor(CreatedOn.class).createdOn(), lowerDate.toDate()),
+                             le(templateFor(CreatedOn.class).createdOn(), upperDate.plusDays(1).toDate())));
                   }
                } else
                {
                   if (upperDate == null)
                   {
-                     builder = builder.where( and(
-                           ge( templateFor( DueOn.Data.class ).dueOn(), lowerDate.toDate() ),
-                           le( templateFor( DueOn.Data.class ).dueOn(), lowerDate.plusDays( 1 ).toDate() ) ) );
+                     builder = builder.where(and(
+                             ge(templateFor(DueOn.Data.class).dueOn(), lowerDate.toDate()),
+                             le(templateFor(DueOn.Data.class).dueOn(), lowerDate.plusDays(1).toDate())));
                   } else
                   {
-                     builder = builder.where( and(
-                           ge( templateFor( DueOn.Data.class ).dueOn(), lowerDate.toDate() ),
-                           le( templateFor( DueOn.Data.class ).dueOn(), upperDate.plusDays( 1 ).toDate() ) ) );
+                     builder = builder.where(and(
+                             ge(templateFor(DueOn.Data.class).dueOn(), lowerDate.toDate()),
+                             le(templateFor(DueOn.Data.class).dueOn(), upperDate.plusDays(1).toDate())));
                   }
                }
-            } else if (search.hasName( "assignedTo" ))
+            } else if (search.hasName("assignedTo"))
             {
                int count = 0;
                BooleanExpression expression = null;
-               for (String user : search.getValue().split( "," ))
+               for (String user : search.getValue().split(","))
                {
                   UserEntity userEntity = null;
                   try
                   {
-                     userEntity = module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, user );
+                     userEntity = module.unitOfWorkFactory().currentUnitOfWork().get(UserEntity.class, user);
                   } catch (NoSuchEntityException e)
                   {
                      // do nothing
@@ -279,24 +279,24 @@ public interface AbstractCaseQueriesFilter
 
                   if (count == 0)
                   {
-                     expression = eq( templateFor( Assignable.Data.class ).assignedTo(), userEntity );
+                     expression = eq(templateFor(Assignable.Data.class).assignedTo(), userEntity);
                   } else
                   {
-                     expression = or( expression, eq( templateFor( Assignable.Data.class ).assignedTo(), userEntity ) );
+                     expression = or(expression, eq(templateFor(Assignable.Data.class).assignedTo(), userEntity));
                   }
 
                   count++;
                }
 
                if (expression != null)
-                  builder = builder.where( expression );
+                  builder = builder.where(expression);
             }
          }
          return builder;
       }
 
 
-      protected List<SubQuery> extractSubQueries( String query )
+      protected List<SubQuery> extractSubQueries(String query)
       {
          List<SubQuery> subQueries = new ArrayList<SubQuery>();
          // TODO: Extract regular expression to resource file.
@@ -304,24 +304,24 @@ public interface AbstractCaseQueriesFilter
          Pattern p;
          try
          {
-            p = Pattern.compile( regExp );
+            p = Pattern.compile(regExp);
          } catch (PatternSyntaxException e)
          {
             return subQueries;
          }
-         Matcher m = p.matcher( query );
+         Matcher m = p.matcher(query);
          while (m.find())
          {
-            String value = m.group( 5 );
+            String value = m.group(5);
             if (value == null)
-               value = m.group( 3 );
-            subQueries.add( new SubQuery( m.group( 2 ), value ) );
+               value = m.group(3);
+            subQueries.add(new SubQuery(m.group(2), value));
          }
 
          if (subQueries.isEmpty())
          {
             if (query.length() > 0)
-               subQueries.add( new SubQuery( null, query ) );
+               subQueries.add(new SubQuery(null, query));
          }
          return subQueries;
       }
@@ -332,7 +332,7 @@ public interface AbstractCaseQueriesFilter
 
          String value;
 
-         public SubQuery( String name, String value )
+         public SubQuery(String name, String value)
          {
             this.name = name;
             this.value = value;
@@ -348,9 +348,9 @@ public interface AbstractCaseQueriesFilter
             return value;
          }
 
-         public boolean hasName( String... names )
+         public boolean hasName(String... names)
          {
-            return name == null ? false : Arrays.asList( names ).contains( name );
+            return name == null ? false : Arrays.asList(names).contains(name);
          }
 
       }

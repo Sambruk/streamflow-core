@@ -18,10 +18,10 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.JXTable;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
-import javax.swing.Action;
+import javax.swing.*;
 
 /**
  * Action enabler that checks whether the completed flag is set or not

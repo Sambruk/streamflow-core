@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;

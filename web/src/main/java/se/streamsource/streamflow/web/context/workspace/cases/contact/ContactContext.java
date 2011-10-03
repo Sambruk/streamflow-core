@@ -18,21 +18,19 @@
 package se.streamsource.streamflow.web.context.workspace.cases.contact;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.ServiceAvailable;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
@@ -47,7 +45,7 @@ public class ContactContext
       implements DeleteContext
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Optional
    @Service
@@ -61,113 +59,49 @@ public class ContactContext
       contacts.deleteContact( index );
    }
 
-   public void changename( StringValue name )
+   public void update(@Optional @Name("name") String name,
+                      @Optional @Name("contactId") String contactId,
+                      @Optional @Name("company") String company,
+                      @Optional @Name("iscompany") Boolean isCompany,
+                      @Optional @Name("phone") String phone,
+                      @Optional @Name("email") String email,
+                      @Optional @Name("address") String address,
+                      @Optional @Name("zipCode") String zip,
+                      @Optional @Name("city") String city,
+                      @Optional @Name("region") String region,
+                      @Optional @Name("country") String country,
+                      @Optional @Name("note") String note)
    {
       Contacts contacts = RoleMap.role( Contacts.class );
       Integer index = RoleMap.role( Integer.class );
-      ContactValue contact = RoleMap.role( ContactValue.class );
+      ContactDTO contact = RoleMap.role( ContactDTO.class );
 
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-      builder.prototype().name().set( name.string().get() );
-      contacts.updateContact( index, builder.newInstance() );
-   }
+      ContactBuilder builder = new ContactBuilder(contact, module.valueBuilderFactory());
 
-   public void changenote( StringValue note )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactValue contact = RoleMap.role( ContactValue.class );
-
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-      builder.prototype().note().set( note.string().get() );
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changecontactid( StringValue contactId )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactValue contact = RoleMap.role( ContactValue.class );
-
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-      builder.prototype().contactId().set( contactId.string().get() );
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changecompany( StringValue company )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactValue contact = RoleMap.role( ContactValue.class );
-
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-      builder.prototype().company().set( company.string().get() );
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changephonenumber( ContactPhoneValue phoneValue )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactValue contact = RoleMap.role( ContactValue.class );
-
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-
-      // Create an empty phone value if it doesnt exist already
-      if (contact.phoneNumbers().get().isEmpty())
-      {
-         ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class ).<ContactPhoneValue>buildWith().prototype();
-         phone.phoneNumber().set( phoneValue.phoneNumber().get() );
-         builder.prototype().phoneNumbers().get().add( phone );
-      } else
-      {
-         builder.prototype().phoneNumbers().get().get( 0 ).phoneNumber().set( phoneValue.phoneNumber().get() );
-      }
-
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changeaddress( ContactAddressValue addressValue )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactValue contact = RoleMap.role( ContactValue.class );
-
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-
-      // Create an empty address value if it doesnt exist already
-      if (contact.addresses().get().isEmpty())
-      {
-         ContactAddressValue address = vbf.newValue( ContactAddressValue.class ).<ContactAddressValue>buildWith().prototype();
-         address.address().set( addressValue.address().get() );
-         builder.prototype().addresses().get().add( address );
-      } else
-      {
-         builder.prototype().addresses().get().get( 0 ).address().set( addressValue.address().get() );
-      }
-
-      contacts.updateContact( index, builder.newInstance() );
-   }
-
-   public void changeemailaddress( ContactEmailValue emailValue )
-   {
-      Contacts contacts = RoleMap.role( Contacts.class );
-      Integer index = RoleMap.role( Integer.class );
-      ContactValue contact = RoleMap.role( ContactValue.class );
-
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-
-      // Create an empty email value if it doesnt exist already
-      if (contact.emailAddresses().get().isEmpty())
-      {
-         ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
-         email.emailAddress().set( emailValue.emailAddress().get() );
-         builder.prototype().emailAddresses().get().add( email );
-      } else
-      {
-         builder.prototype().emailAddresses().get().get( 0 ).emailAddress().set( emailValue.emailAddress().get() );
-      }
-
+      if (name != null)
+         builder.name(name );
+      if (contactId != null)
+         builder.contactId(contactId);
+      if (company != null)
+         builder.company(company);
+      if (isCompany != null)
+         builder.isCompany(isCompany);
+      if (phone != null)
+         builder.phoneNumber(phone);
+      if (email != null)
+         builder.email(email);
+      if (address != null)
+         builder.address(address);
+      if (zip != null)
+         builder.zipCode(zip);
+      if (city != null)
+         builder.city(city);
+      if (region != null)
+         builder.region(region);
+      if (country != null)
+         builder.country(country);
+      if (note != null)
+         builder.note(note);
 
       contacts.updateContact( index, builder.newInstance() );
    }
@@ -175,11 +109,11 @@ public class ContactContext
    @ServiceAvailable(ContactLookupService.class)
    public ContactsDTO searchcontacts()
    {
-      // This method has to convert between the internal ContactValue and the plugin API ContactValue,
+      // This method has to convert between the internal ContactDTO and the plugin API ContactDTO,
       // hence the use of JSON as intermediary
-      ContactValue contact = RoleMap.role( ContactValue.class );
-      se.streamsource.streamflow.server.plugin.contact.ContactValue pluginContact = vbf.newValueFromJSON( se.streamsource.streamflow.server.plugin.contact.ContactValue.class, contact.toJSON() );
-      ValueBuilder<ContactsDTO> builder = vbf.newValueBuilder( ContactsDTO.class );
+      ContactDTO contact = RoleMap.role( ContactDTO.class );
+      se.streamsource.streamflow.server.plugin.contact.ContactValue pluginContact = module.valueBuilderFactory().newValueFromJSON(se.streamsource.streamflow.server.plugin.contact.ContactValue.class, contact.toJSON());
+      ValueBuilder<ContactsDTO> builder = module.valueBuilderFactory().newValueBuilder(ContactsDTO.class);
 
       try
       {
@@ -187,11 +121,11 @@ public class ContactContext
          {
             ContactLookup lookup = contactLookup.get();
             ContactList possibleContacts = lookup.lookup( pluginContact );
-            List<ContactValue> contactList = builder.prototype().contacts().get();
+            List<ContactDTO> contactList = builder.prototype().contacts().get();
 
             for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts.contacts().get())
             {
-               contactList.add( vbf.newValueFromJSON( ContactValue.class, possibleContact.toJSON() ) );
+               contactList.add( module.valueBuilderFactory().newValueFromJSON(ContactDTO.class, possibleContact.toJSON()) );
             }
             return builder.newInstance();
          } else

@@ -198,6 +198,33 @@ public interface JdbcStatisticsStore
          }
       }
 
+      public void structure(OrganizationalStructureValue structureValue) throws StatisticsStoreException
+      {
+         Databases database = getDatabases();
+
+         try
+         {
+            database.update("DELETE FROM organization");
+            for (final OrganizationalUnitValue organizationalUnitValue : structureValue.structure().get())
+            {
+               database.update("INSERT INTO organization VALUES (?,?,?,?)", new Databases.StatementVisitor()
+               {
+                  public void visit(PreparedStatement preparedStatement) throws SQLException
+                  {
+                     preparedStatement.setString(1, organizationalUnitValue.id().get());
+                     preparedStatement.setString(2, organizationalUnitValue.name().get());
+                     preparedStatement.setInt(3, organizationalUnitValue.left().get());
+                     preparedStatement.setInt(4, organizationalUnitValue.right().get());
+                  }
+               });
+            }
+         } catch (SQLException e)
+         {
+            log.error("Could not update organizational structure", e);
+            throw new StatisticsStoreException("Could not update organizational structure", e);
+         }
+      }
+
       public void clearAll() throws StatisticsStoreException
       {
          Databases databases = getDatabases();

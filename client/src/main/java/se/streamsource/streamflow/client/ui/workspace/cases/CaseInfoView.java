@@ -19,22 +19,15 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
+import se.streamsource.streamflow.client.util.LinkedLabel;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -47,15 +40,19 @@ public class CaseInfoView extends JPanel
    CaseModel model;
 
    private JLabel title = new JLabel("");
-   private JLabel caseType = new JLabel("");
+   private LinkedLabel caseType;
    private JLabel owner = new JLabel("");
    private JLabel assignedTo = new JLabel("");
    private JLabel createdBy = new JLabel("");
 
    private CaseStatusLabel statusLabel = new CaseStatusLabel();
 
-   public CaseInfoView( @Service ApplicationContext appContext, @Uses CaseModel model, @Structure ObjectBuilderFactory obf )
+   public CaseInfoView( @Service ApplicationContext appContext, @Uses CaseModel model)
    {
+      setActionMap(appContext.getActionMap(this));
+
+      caseType = new LinkedLabel();
+
       this.model = model;
 
       this.setFocusable( false );
@@ -97,7 +94,7 @@ public class CaseInfoView extends JPanel
       addBox(createdHeader, createdBy);
       addBox(assignedHeader, assignedTo);
 
-      model.addObserver( this );
+      model.addObserver(this);
    }
 
    private void addBox( JLabel label, JComponent component )
@@ -120,8 +117,9 @@ public class CaseInfoView extends JPanel
       title.setText( titleText );
       title.setToolTipText( titleText );
 
-      caseType.setText( aCase.caseType().get() != null ? aCase.caseType().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") : "" );
-      caseType.setToolTipText( caseType.getText() );
+
+      String text = aCase.caseType().get() != null ? aCase.caseType().get().text().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") : "";
+      caseType.setLink(aCase.caseType().get(), text);
 
       String ownerText = aCase.owner().get();
       owner.setText( ownerText );

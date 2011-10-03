@@ -27,8 +27,6 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.util.Iterables;
-import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
-import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;

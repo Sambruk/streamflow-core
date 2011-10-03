@@ -31,16 +31,11 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
+import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -49,6 +44,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -59,18 +56,12 @@ public interface OverviewQueries
 {
    public void generateExcelProjectSummary( Locale locale, Workbook workbook );
 
-   public LinksValue getProjectsSummary();
+   public Iterable<ProjectSummaryDTO> getProjectsSummary();
 
    class Mixin implements OverviewQueries
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Identity id;
@@ -78,26 +69,24 @@ public interface OverviewQueries
       @This
       ProjectQueries projects;
 
-      public LinksValue getProjectsSummary()
+      public Iterable<ProjectSummaryDTO> getProjectsSummary()
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         LinksBuilder linksBuilder = new LinksBuilder(vbf);
+         List<ProjectSummaryDTO> projectList = new ArrayList<ProjectSummaryDTO>();
 
-         ValueBuilder<ProjectSummaryValue> summaryBuilder = vbf.newValueBuilder( ProjectSummaryValue.class );
-         ProjectSummaryValue summaryPrototype = summaryBuilder.prototype();
-         summaryPrototype.rel().set( "project" );
+         ValueBuilder<ProjectSummaryDTO> summaryBuilder = module.valueBuilderFactory().newValueBuilder(ProjectSummaryDTO.class);
+         ProjectSummaryDTO summaryPrototype = summaryBuilder.prototype();
 
          for (Project project : projects.allProjects())
          {
-            summaryPrototype.text().set( project.getDescription() );
-            summaryPrototype.id().set( project.toString() );
-            summaryPrototype.href().set( project.toString()+"/" );
+            summaryPrototype.identity().set(project.toString());
+            summaryPrototype.description().set( project.getDescription() );
 
             Association<Assignee> assigneeAssociation = templateFor( Assignable.Data.class ).assignedTo();
             Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
 
-            QueryBuilder<CaseEntity> ownerQueryBuilder = qbf.newQueryBuilder( CaseEntity.class ).where(
+            QueryBuilder<CaseEntity> ownerQueryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseEntity.class).where(
                   eq( ownableId, (Owner) project ));
 
             QueryBuilder<CaseEntity> inboxQueryBuilder = ownerQueryBuilder.where( and(
@@ -114,15 +103,14 @@ public interface OverviewQueries
             summaryPrototype.inboxCount().set( inboxQuery.count() );
             summaryPrototype.assignedCount().set( assignedQuery.count() );
 
-            linksBuilder.addLink( summaryBuilder.newInstance() );
+            projectList.add(summaryBuilder.newInstance());
 
          }
-         return linksBuilder.newLinks();
+         return projectList;
       }
 
       public void generateExcelProjectSummary( Locale locale, Workbook workbook )
       {
-         LinksValue projectsSummary = getProjectsSummary();
          ResourceBundle bundle = ResourceBundle.getBundle(
                OverviewQueries.class.getName(), locale );
          Sheet sheet = createSheet( bundle.getString( "projects_summary" ),
@@ -146,27 +134,27 @@ public interface OverviewQueries
                HSSFCellStyle.VERTICAL_CENTER );
          short rowCounter = 0;
          
-         for (LinkValue summaryValue : projectsSummary.links().get())
+         for (ProjectSummaryDTO summaryValue : getProjectsSummary())
          {
-            ProjectSummaryValue projectSummaryValue = (ProjectSummaryValue) summaryValue;
+            ProjectSummaryDTO projectSummaryDTO = summaryValue;
             Row contentRow = sheet.createRow( ++rowCounter );
             // contentRow.setHeightInPoints(30);
 
             // Project
-            createCell( projectSummaryValue.text().get(), workbook, contentRow,
+            createCell( projectSummaryDTO.description().get(), workbook, contentRow,
                   (short) 0, HSSFCellStyle.ALIGN_LEFT,
                   HSSFCellStyle.VERTICAL_TOP );
             // Inbox
-            createCell( String.valueOf( projectSummaryValue.inboxCount().get() ),
+            createCell( String.valueOf( projectSummaryDTO.inboxCount().get() ),
                   workbook, contentRow, (short) 1,
                   HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP );
             // Assigned
-            createCell( String.valueOf( projectSummaryValue.assignedCount().get() ),
+            createCell( String.valueOf( projectSummaryDTO.assignedCount().get() ),
                   workbook, contentRow, (short) 2,
                   HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP );
             // Total
-            createCell( String.valueOf( projectSummaryValue.inboxCount().get()
-                  + projectSummaryValue.assignedCount().get() ), workbook,
+            createCell( String.valueOf( projectSummaryDTO.inboxCount().get()
+                  + projectSummaryDTO.assignedCount().get() ), workbook,
                   contentRow, (short) 3, HSSFCellStyle.ALIGN_RIGHT,
                   HSSFCellStyle.VERTICAL_TOP );
          }

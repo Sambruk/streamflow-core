@@ -25,17 +25,17 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
-import se.streamsource.streamflow.domain.form.RequiredSignaturesValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.UpdateCaseCountFormSummaryConcern;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -43,7 +43,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 @Concerns(UpdateCaseCountFormSummaryConcern.class)
 @Mixins(SurfaceSignatureContext.Mixin.class)
 public interface SurfaceSignatureContext
-   extends Context, IndexContext<FormDraftValue>
+   extends Context, IndexContext<FormDraftDTO>
 {
    void submit();
    
@@ -57,15 +57,15 @@ public interface SurfaceSignatureContext
       @Structure
       Module module;
 
-      public FormDraftValue index()
+      public FormDraftDTO index()
       {
-         return role( FormDraftValue.class );
+         return role( FormDraftDTO.class );
       }
 
       public void submit()
       {
          EndUserCases userCases = role( EndUserCases.class );
-         AnonymousEndUser user = role( AnonymousEndUser.class );
+         EndUser user = role( EndUser.class );
          FormDraft formSubmission = role( FormDraft.class );
          Case aCase = role( Case.class );
 
@@ -75,7 +75,7 @@ public interface SurfaceSignatureContext
       public void submitandsend()
       {
          EndUserCases userCases = role( EndUserCases.class );
-         AnonymousEndUser user = role( AnonymousEndUser.class );
+         EndUser user = role( EndUser.class );
          FormDraft formSubmission = role( FormDraft.class );
          Case aCase = role( Case.class );
 
@@ -84,7 +84,7 @@ public interface SurfaceSignatureContext
 
       public RequiredSignaturesValue signatures()
       {
-         FormDraftValue form = role( FormDraftValue.class );
+         FormDraftDTO form = role( FormDraftDTO.class );
 
          RequiredSignatures.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, form.form().get().identity() );
 

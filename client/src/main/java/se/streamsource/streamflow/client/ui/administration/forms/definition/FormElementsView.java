@@ -24,10 +24,9 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -75,25 +74,18 @@ public class FormElementsView
    @Service
    private DialogService dialogs;
 
-   @Uses
-   private Iterable<NameDialog> pageCreationDialog;
-
-   @Uses
-   private Iterable<FieldCreationDialog> fieldCreationDialog;
-
-   @Uses
-   private Iterable<ConfirmationDialog> confirmationDialog;
+   @Structure
+   Module module;
 
    private JList list;
 
-   private FormElementsModel model;
+   private FormPagesModel model;
 
 
    public FormElementsView( @Service ApplicationContext context,
-                            @Uses final CommandQueryClient client,
-                            @Structure final ObjectBuilderFactory obf)
+                            @Uses final FormPagesModel model)
    {
-      this.model = obf.newObjectBuilder( FormElementsModel.class ).use( client).newInstance();
+      this.model = model;
 
       final ActionMap am = context.getActionMap( this );
 
@@ -105,7 +97,6 @@ public class FormElementsView
       setDividerLocation( 350 );
       setOneTouchExpandable( true );
 
-
       initMaster( new EventListModel<LinkValue>( model.getUnsortedList() ),
             new DetailFactory() {
                public Component createDetail( LinkValue detailLink )
@@ -114,9 +105,9 @@ public class FormElementsView
                   LinkValue link = getSelectedValue();
                   if (link.rel().get().equals("page"))
                   {
-                     return obf.newObjectBuilder( PageEditView.class ).use( client.getClient( link ) ).newInstance();
+                     return module.objectBuilderFactory().newObjectBuilder(PageEditView.class).use( model.newResourceModel( link ) ).newInstance();
                   } else
-                     return obf.newObjectBuilder( FieldEditView.class ).use( client.getClient( link )).newInstance();
+                     return module.objectBuilderFactory().newObjectBuilder(FieldEditView.class).use( model.newResourceModel( link )).newInstance();
                }
             },
             am.get( "addPage" ), am.get( "addField" ), am.get( "remove" ), am.get( "up" ), am.get( "down" ));
@@ -194,7 +185,7 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task addField()
    {
-      final FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
+      final FieldCreationDialog dialog = module.objectBuilderFactory().newObject(FieldCreationDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_field_to_form ) );
 
       if ( !Strings.empty( dialog.name() ) )
@@ -215,9 +206,6 @@ public class FormElementsView
       return null;
    }
 
-   @Structure
-   ValueBuilderFactory vbf;
-
    private LinkValue findSelectedPage( LinkValue selected )
    {
       if (selected.rel().get().equals("page"))
@@ -226,7 +214,7 @@ public class FormElementsView
       } else
       {
          int i1 = selected.href().get().indexOf( selected.id().get() );
-         ValueBuilder<LinkValue> builder = vbf.newValueBuilder( LinkValue.class ).withPrototype( selected );
+         ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder(LinkValue.class).withPrototype( selected );
          builder.prototype().href().set( selected.href().get().substring( 0, i1 ));
          return builder.newInstance();
       }
@@ -235,7 +223,7 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task addPage()
    {
-      final NameDialog dialog = pageCreationDialog.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_page_title ) );
 
       if (!Strings.empty( dialog.name() ))
@@ -261,7 +249,7 @@ public class FormElementsView
       final LinkValue selected = getSelectedValue();
       if (selected != null)
       {
-         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
          dialog.setRemovalMessage( selected.text().get() );
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())

@@ -31,7 +31,9 @@ public class CaseTypesModel
 {
    public CaseTypesModel()
    {
-      super( "createcasetype" );
+      super( "create" );
+
+      relationModelMapping("resource", CaseTypeModel.class);
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)
@@ -44,5 +46,10 @@ public class CaseTypesModel
    public void moveForm( LinkValue selected, LinkValue selectedLink )
    {
       client.getClient( selected ).postLink( selectedLink );
+   }
+
+   public LinkValue getKnowledgeBaseLink(LinkValue selected)
+   {
+      return client.getClient(selected).query("knowledgebase", LinkValue.class);
    }
 }

@@ -21,8 +21,10 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
@@ -30,19 +32,18 @@ import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.interaction.gtd.Actions;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
-import se.streamsource.streamflow.resource.roles.DateDTO;
 
 import java.util.Date;
 import java.util.Observable;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.dci.value.link.Links.*;
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.value.link.Links.withRel;
 
 /**
  * Model for the general info about a case.
@@ -52,7 +53,7 @@ public class CaseGeneralModel
       implements Refreshable
 {
    @Structure
-   private ValueBuilderFactory vbf;
+   private Module module;
 
    private CommandQueryClient client;
 
@@ -68,7 +69,7 @@ public class CaseGeneralModel
    public CaseGeneralDTO getGeneral()
    {
       if (general == null)
-         vbf.newValue( CaseGeneralDTO.class );
+         module.valueBuilderFactory().newValue(CaseGeneralDTO.class);
 
       return general;
    }
@@ -79,10 +80,9 @@ public class CaseGeneralModel
          return; // No change
 
       general.description().set( newDescription );
-      ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newDescription );
-      client.postCommand( "changedescription", builder.newInstance() );
+      Form form = new Form();
+      form.set("description", newDescription);
+      client.postCommand( "changedescription", form );
 
    }
 
@@ -91,8 +91,8 @@ public class CaseGeneralModel
       if (newNote.equals(general.note().get()))
          return; // No change
 
-      ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory()
+            .newValueBuilder(StringValue.class);
       builder.prototype().string().set( newNote );
       client.postCommand( "changenote", builder.newInstance() );
       general.note().set( newNote );
@@ -103,9 +103,9 @@ public class CaseGeneralModel
       if (newDueOn.equals(general.dueOn().get()))
          return; // No change
 
-      ValueBuilder<DateDTO> builder = vbf.newValueBuilder( DateDTO.class );
-      builder.prototype().date().set( newDueOn );
-      client.putCommand( "changedueon", builder.newInstance() );
+      Form form = new Form();
+      form.set("date", DateFunctions.toUtcString(newDueOn));
+      client.putCommand("changedueon", form.getWebRepresentation());
       general.dueOn().set( newDueOn );
    }
 
@@ -129,7 +129,7 @@ public class CaseGeneralModel
 
    public void refresh()
    {
-      resourceValue = client.queryResource();
+      resourceValue = client.query();
       general = (CaseGeneralDTO) resourceValue.index().get().buildWith().prototype();
 
       setChanged();
@@ -143,12 +143,7 @@ public class CaseGeneralModel
 
    public void removeCaseType( )
    {
-      client.postCommand( "casetype", vbf.newValue( EntityValue.class ));
-   }
-
-   public Actions actions()
-   {
-      return client.query( "actions", Actions.class );
+      client.postCommand("casetype", module.valueBuilderFactory().newValue(EntityValue.class));
    }
 
    public boolean getCommandEnabled( String commandName )
@@ -159,5 +154,15 @@ public class CaseGeneralModel
    public CaseStates getCaseStatus()
    {
       return general.status().get();
+   }
+
+   public CaseLabelsModel newLabelsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient("labels")).newInstance();
+   }
+
+   public PossibleFormsModel newPossibleFormsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(PossibleFormsModel.class).use( client.getClient( "../possibleforms/" ) ).newInstance();
    }
 }

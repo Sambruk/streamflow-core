@@ -21,8 +21,8 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.Matches;
-import se.streamsource.streamflow.domain.user.Password;
-import se.streamsource.streamflow.domain.user.Username;
+import se.streamsource.streamflow.api.Password;
+import se.streamsource.streamflow.api.Username;
 
 /**
  * JAVADOC

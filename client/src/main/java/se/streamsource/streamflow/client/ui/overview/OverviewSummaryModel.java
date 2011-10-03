@@ -23,10 +23,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.table.RowValue;
+import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 
 import java.io.IOException;
 
@@ -36,20 +36,20 @@ public class OverviewSummaryModel
    @Uses
    CommandQueryClient client;
 
-   private BasicEventList<ProjectSummaryValue> projectOverviews = new BasicEventList<ProjectSummaryValue>();
+   private BasicEventList<RowValue> projectOverviews = new BasicEventList<RowValue>();
 
    public Representation generateExcelProjectSummary() throws IOException, ResourceException
    {
-      return client.queryRepresentation( "generateexcelprojectsummary", null );
+      return client.query( "generateexcelprojectsummary", Representation.class );
    }
 
-   public EventList<ProjectSummaryValue> getProjectOverviews()
+   public EventList<RowValue> getProjectOverviews()
    {
       return projectOverviews;
    }
 
    public void refresh()
    {
-      EventListSynch.synchronize( client.query( "projectsummary", LinksValue.class ).links().get(), projectOverviews );
+      EventListSynch.synchronize( client.query( "projectsummary", TableValue.class ).rows().get(), projectOverviews );
    }
 }

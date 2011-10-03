@@ -18,24 +18,21 @@
 package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.InteractionValidation;
 import se.streamsource.dci.api.RequiresValid;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
+import se.streamsource.streamflow.web.domain.structure.organization.MergeOrganizationalUnitException;
+import se.streamsource.streamflow.web.domain.structure.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
@@ -49,16 +46,13 @@ public class OrganizationalUnitContext
       implements DeleteContext, InteractionValidation
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
    
-   @Structure
-   UnitOfWorkFactory uowf;
-
    public LinksValue possiblemoveto()
    {
       final OrganizationalUnit thisUnit = RoleMap.role( OrganizationalUnit.class );
 
-      final LinksBuilder links = new LinksBuilder(vbf);
+      final LinksBuilder links = new LinksBuilder(module.valueBuilderFactory());
       links.command( "move" );
       OrganizationQueries queries = RoleMap.role(OrganizationQueries.class);
       queries.visitOrganization( new OrganizationVisitor()
@@ -86,25 +80,19 @@ public class OrganizationalUnitContext
       return links.newLinks();
    }
 
-   public void move( EntityValue moveValue ) throws ResourceException
+   public void move( EntityValue moveValue ) throws MoveOrganizationalUnitException
    {
       OrganizationalUnitRefactoring ou = RoleMap.role( OrganizationalUnitRefactoring.class );
-      OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get() );
+      OrganizationalUnits toEntity = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get() );
 
-      try
-      {
-         ou.moveOrganizationalUnit( toEntity );
-      } catch (MoveOrganizationalUnitException e)
-      {
-         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
-      }
+      ou.moveOrganizationalUnit( toEntity );
    }
 
    public LinksValue possiblemergewith()
    {
       final OrganizationalUnit thisUnit = RoleMap.role( OrganizationalUnit.class );
 
-      final LinksBuilder links = new LinksBuilder(vbf);
+      final LinksBuilder links = new LinksBuilder(module.valueBuilderFactory());
       links.command( "merge" );
       OrganizationQueries queries = RoleMap.role(OrganizationQueries.class);
       queries.visitOrganization( new OrganizationVisitor()
@@ -122,22 +110,16 @@ public class OrganizationalUnitContext
       return links.newLinks();
    }
 
-   public void merge( EntityValue moveValue ) throws ResourceException
+   public void merge( EntityValue moveValue ) throws MergeOrganizationalUnitException
    {
       OrganizationalUnitRefactoring ou = RoleMap.role( OrganizationalUnitRefactoring.class );
-      OrganizationalUnit toEntity = uowf.currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get() );
+      OrganizationalUnit toEntity = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get() );
 
-      try
-      {
-         ou.mergeOrganizationalUnit( toEntity );
-      } catch (MergeOrganizationalUnitException e)
-      {
-         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
-      }
+      ou.mergeOrganizationalUnit( toEntity );
    }
 
    @RequiresValid("delete")
-   public void delete() throws ResourceException
+   public void delete()
    {
       OrganizationalUnitRefactoring ou = RoleMap.role( OrganizationalUnitRefactoring.class );
 

@@ -22,28 +22,28 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.web.domain.structure.user.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
 
 /**
  * JAVADOC
  */
 public class PerspectivesContext
-      implements IndexContext<Iterable<Perspective>>, CreateContext<PerspectiveValue>
+        implements IndexContext<Iterable<Perspective>>, CreateContext<PerspectiveDTO, Perspective>
 {
    @Structure
    Module module;
 
    public Iterable<Perspective> index()
    {
-      Perspectives.Data searches = RoleMap.role( Perspectives.Data.class );
+      Perspectives.Data searches = RoleMap.role(Perspectives.Data.class);
       return searches.perspectives();
    }
 
-   public void create( PerspectiveValue perspective )
+   public Perspective create(PerspectiveDTO perspective)
    {
-      Perspectives perspectives = RoleMap.role( Perspectives.class );
-      perspectives.createPerspective( perspective );
+      Perspectives perspectives = RoleMap.role(Perspectives.class);
+      return perspectives.createPerspective(perspective);
    }
 }

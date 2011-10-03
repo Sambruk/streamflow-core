@@ -26,10 +26,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 
@@ -66,10 +65,7 @@ public interface Resolutions
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Data state;
@@ -103,16 +99,16 @@ public interface Resolutions
       public Query<SelectedResolutions> usages( Resolution resolution )
       {
          SelectedResolutions.Data selectedResolutions = QueryExpressions.templateFor( SelectedResolutions.Data.class );
-         Query<SelectedResolutions> resolutionUsages = qbf.newQueryBuilder( SelectedResolutions.class ).
-               where( QueryExpressions.contains( selectedResolutions.selectedResolutions(), resolution ) ).
-               newQuery( uowf.currentUnitOfWork() );
+         Query<SelectedResolutions> resolutionUsages = module.queryBuilderFactory().newQueryBuilder(SelectedResolutions.class).
+               where(QueryExpressions.contains(selectedResolutions.selectedResolutions(), resolution)).
+               newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          return resolutionUsages;
       }
 
       public Resolution createdResolution( DomainEvent event, String identity )
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          Resolution resolution = uow.newEntity( Resolution.class, identity );
          state.resolutions().add( state.resolutions().count(), resolution );
          return resolution;

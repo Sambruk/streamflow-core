@@ -20,19 +20,14 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ButtonGroup;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -47,7 +42,7 @@ public class OpenSelectionPanel
    private List<JRadioButton> selectionButtons;
    private JTextField openSelectionTextField;
 
-   public OpenSelectionPanel( @Uses FieldSubmissionValue field, @Uses OpenSelectionFieldValue fieldValue )
+   public OpenSelectionPanel( @Uses FieldSubmissionDTO field, @Uses OpenSelectionFieldValue fieldValue )
    {
       super( field );
       JPanel panel = new JPanel( new BorderLayout( ));

@@ -19,7 +19,7 @@ package se.streamsource.streamflow.web.domain.entity.organization;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 

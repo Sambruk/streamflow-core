@@ -25,7 +25,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyType;
@@ -56,9 +55,6 @@ public class ContactLookupRestlet
    @Optional
    @Service
    ContactLookup contactLookup;
-
-   @Structure
-   ValueBuilderFactory vbf;
 
    @Structure
    private Qi4jSPI spi;
@@ -114,7 +110,7 @@ public class ContactLookupRestlet
 
    private ValueComposite getValueFromForm( Class<? extends ValueComposite> valueType, final Form asForm )
    {
-      ValueBuilder<? extends ValueComposite> builder = vbf.newValueBuilder( valueType );
+      ValueBuilder<? extends ValueComposite> builder = module.valueBuilderFactory().newValueBuilder(valueType);
       final ValueDescriptor descriptor = spi.getValueDescriptor( builder.prototype() );
       builder.withState( new StateHolder()
       {

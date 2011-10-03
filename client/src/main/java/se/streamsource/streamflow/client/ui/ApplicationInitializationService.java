@@ -21,10 +21,10 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.client.ui.account.AccountsModel;
 
 /**
  * JAVADOC
@@ -37,17 +37,14 @@ public interface ApplicationInitializationService
          implements Activatable
    {
       @Structure
-      private ObjectBuilderFactory obf;
-
-      @Structure
-      private UnitOfWorkFactory uowf;
+      private Module module;
 
       @Service
       private SingleFrameApplication main;
 
       public void activate() throws Exception
       {
-         obf.newObjectBuilder( SingleFrameApplication.class ).injectTo( main );
+         module.objectBuilderFactory().newObjectBuilder(SingleFrameApplication.class).use(module.objectBuilderFactory().newObject(AccountsModel.class)).injectTo(main);
       }
 
       public void passivate() throws Exception

@@ -17,10 +17,8 @@
 
 package se.streamsource.streamflow.web.context.account;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 
 /**
@@ -28,28 +26,16 @@ import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipien
  */
 public class ProfileContext
 {
-   @Structure
-   ValueBuilderFactory vbf;
+   @Uses MessageRecipient recipient;
+   @Uses MessageRecipient.Data recipientData;
 
-   public void changemessagedeliverytype( StringValue newDeliveryType )
+   public void changemessagedeliverytype( @Name("messagedeliverytype") MessageRecipient.MessageDeliveryTypes newDeliveryType )
    {
-      MessageRecipient recipient = RoleMap.role( MessageRecipient.class );
-
-      if (MessageRecipient.MessageDeliveryTypes.email.toString().equals(
-            newDeliveryType.string().get() ))
-      {
-         recipient
-               .changeMessageDeliveryType( MessageRecipient.MessageDeliveryTypes.email );
-      } else
-      {
-         recipient
-               .changeMessageDeliveryType( MessageRecipient.MessageDeliveryTypes.none );
-      }
+      recipient.changeMessageDeliveryType( newDeliveryType );
    }
 
    public String messagedeliverytype()
    {
-      MessageRecipient.Data recipientData = RoleMap.role( MessageRecipient.Data.class );
       return recipientData.delivery().get().name();
    }
 

@@ -23,9 +23,7 @@ import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.State;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.beans.Introspector;
@@ -47,9 +45,6 @@ public class EventEntityRemovedMixin
 
    @State
    EntityStateHolder state;
-
-   @Structure
-   UnitOfWorkFactory uowf;
 
    @This
    EntityComposite composite;

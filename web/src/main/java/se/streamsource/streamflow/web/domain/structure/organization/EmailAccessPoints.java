@@ -18,96 +18,107 @@
 package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
-import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-
-import java.util.List;
+import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 
 /**
- * TODO
+ * JAVADOC
  */
 @Mixins(EmailAccessPoints.Mixin.class)
 public interface EmailAccessPoints
 {
-   void addEmailAccessPoint(EmailAccessPointValue emailAccessPoint);
-   void removeEmailAccessPoint(String email);
+   EmailAccessPoint createEmailAccessPoint(String email);
 
-   AccessPoint getAccessPoint(String email) throws IllegalArgumentException;
+   boolean removeEmailAccessPoint(EmailAccessPoint accessPoint);
+
+   EmailAccessPoint getEmailAccessPoint(String email);
 
    interface Data
    {
-      @UseDefaults
-      Property<List<EmailAccessPointValue>> emailAccessPoints();
+      @Aggregated
+      ManyAssociation<EmailAccessPoint> emailAccessPoints();
+   }
 
-      void addedEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint);
-      void removedEmailAccessPoint(@Optional DomainEvent event, String email);
+   interface Events
+   {
+      EmailAccessPoint createdEmailAccessPoint(@Optional DomainEvent event, String id);
+
+      void removedEmailAccessPoint(@Optional DomainEvent event, EmailAccessPoint accessPoint);
    }
 
    abstract class Mixin
-      implements EmailAccessPoints, Data
+         implements EmailAccessPoints, Events
    {
+      @This
+      Data data;
+
       @Structure
       Module module;
 
-      public void addEmailAccessPoint(EmailAccessPointValue emailAccessPoint)
+      @Service
+      IdentityGenerator idGen;
+
+      public EmailAccessPoint createEmailAccessPoint( String email )
       {
-         // See first if this is a replacement of existing setting
-         for (EmailAccessPointValue emailAccessPointValue : emailAccessPoints().get())
+         for (EmailAccessPoint accessPoint : data.emailAccessPoints())
          {
-            if (emailAccessPoint.email().get().equals(emailAccessPoint.email().get()))
+            if (accessPoint.getDescription().equals( email ))
             {
-               removedEmailAccessPoint(null, emailAccessPoint.email().get());
-               break;
+               throw new IllegalArgumentException( "accesspoint_already_exists" );
             }
          }
 
-         // Add it
-         addedEmailAccessPoint(null, emailAccessPoint);
+         EmailAccessPoint ap = createdEmailAccessPoint( null, idGen.generate( Identity.class ) );
+
+         ap.changeDescription( email );
+
+         ap.synchronizeTemplates();
+
+         return ap;
       }
 
-      public void removeEmailAccessPoint(String email)
+      public EmailAccessPoint createdEmailAccessPoint( @Optional DomainEvent event, String id )
       {
-         removedEmailAccessPoint(null, email);
+         EntityBuilder<EmailAccessPointEntity> entityBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( EmailAccessPointEntity.class, id );
+         entityBuilder.instance().subject().set("[{caseid}] {subject}");
+
+         // TODO Default templates
+         
+         EmailAccessPoint eap = entityBuilder.newInstance();
+         data.emailAccessPoints().add(eap);
+
+         return eap;
       }
 
-      public AccessPoint getAccessPoint(String email) throws IllegalArgumentException
+      public boolean removeEmailAccessPoint( EmailAccessPoint accessPoint )
       {
-         for (EmailAccessPointValue emailAccessPointValue : emailAccessPoints().get())
+         if (!data.emailAccessPoints().contains( accessPoint ))
+            return false;
+
+         removedEmailAccessPoint( null, accessPoint );
+         accessPoint.deleteEntity();
+         return true;
+      }
+
+      public EmailAccessPoint getEmailAccessPoint(String email)
+      {
+         for (EmailAccessPoint emailAccessPoint : data.emailAccessPoints())
          {
-            if (emailAccessPointValue.email().get().equals(email))
-            {
-               return module.unitOfWorkFactory().currentUnitOfWork().get(AccessPoint.class, emailAccessPointValue.accessPoint().get().identity());
-            }
+            if (emailAccessPoint.getDescription().equals(email))
+               return emailAccessPoint;
          }
 
-         // None found for this email address
-         throw new IllegalArgumentException("No AccessPoint registered for email address:"+email);
-      }
-
-      public void addedEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint)
-      {
-         List<EmailAccessPointValue> list = emailAccessPoints().get();
-         list.add(emailAccessPoint);
-         emailAccessPoints().set(list);
-      }
-
-      public void removedEmailAccessPoint(@Optional DomainEvent event, String email)
-      {
-         List<EmailAccessPointValue> list = emailAccessPoints().get();
-         for (EmailAccessPointValue emailAccessPointValue : list)
-         {
-            if (emailAccessPointValue.email().get().equals(email))
-            {
-               list.remove(emailAccessPointValue);
-               break;
-            }
-         }
-         emailAccessPoints().set(list);
+         throw new IllegalArgumentException("No access point defined for "+email);
       }
    }
 }

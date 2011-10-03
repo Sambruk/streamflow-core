@@ -21,20 +21,16 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 
 public class MessagesConversationView extends MessagesView
 {
 
    private static final long serialVersionUID = 8844722606127717377L;
 
-   public MessagesConversationView(@Service ApplicationContext context, @Uses CommandQueryClient client,
-         @Structure ObjectBuilderFactory obf)
+   public MessagesConversationView(@Service ApplicationContext context, @Uses MessagesModel model)
    {
-      super(context,client,obf);
+      super(context,model);
    }
    
    @Action

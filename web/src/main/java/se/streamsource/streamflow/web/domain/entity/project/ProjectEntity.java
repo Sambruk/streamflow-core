@@ -23,13 +23,11 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
@@ -50,6 +48,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 
 /**
  * JAVADOC
@@ -58,61 +57,63 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 @Mixins({ProjectEntity.ProjectIdGeneratorMixin.class})
 @Concerns(ProjectEntity.RemovableConcern.class)
 public interface ProjectEntity
-      extends DomainEntity,
+        extends DomainEntity,
 
-      // Interactions
-      IdGenerator,
+        // Interactions
+        IdGenerator,
 
-      // Structure
-      Members,
-      Project,
-      OwningOrganizationalUnit,
+        // Structure
+        Project,
+        OwningOrganizationalUnit,
 
-      // Data
-      CaseAccessDefaults.Data,
-      Members.Data,
-      Describable.Data,
-      OwningOrganizationalUnit.Data,
-      Ownable.Data,
-      Forms.Data,
-      Labels.Data,
-      SelectedLabels.Data,
-      CaseTypes.Data,
-      Removable.Data,
-      SelectedCaseTypes.Data,
+        // Data
+        CaseAccessDefaults.Data,
+        Members.Data,
+        Describable.Data,
+        OwningOrganizationalUnit.Data,
+        Ownable.Data,
+        Ownable.Events,
+        Forms.Data,
+        Labels.Data,
+        SelectedLabels.Data,
+        CaseTypes.Data,
+        Removable.Data,
+        SelectedCaseTypes.Data,
+        Filters.Data,
+        Filters.Events,
 
-      // Queries
-      AssignmentsQueries,
-      InboxQueries,
-      ProjectLabelsQueries
+        // Queries
+        AssignmentsQueries,
+        InboxQueries,
+        ProjectLabelsQueries
 {
    class ProjectIdGeneratorMixin
-         implements IdGenerator
+           implements IdGenerator
    {
       @This
       OwningOrganizationalUnit.Data state;
 
-      public void assignId( CaseId aCase )
+      public void assignId(CaseId aCase)
       {
          Organization organization = ((OwningOrganization) state.organizationalUnit().get()).organization().get();
-         ((IdGenerator)organization).assignId( aCase );
+         ((IdGenerator) organization).assignId(aCase);
       }
    }
 
    abstract class RemoveMemberSideEffect
-      extends SideEffectOf<Members>
-      implements Members
+           extends SideEffectOf<Members>
+           implements Members
    {
       @This
       AssignmentsQueries assignments;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
-      public void removeMember( Member member )
+      public void removeMember(Member member)
       {
          // Get all active cases in a project for a particular user and unassign.
-         for (Assignable caze : assignments.assignments( (Assignee) member, null ).newQuery( uowf.currentUnitOfWork() ))
+         for (Assignable caze : assignments.assignments((Assignee) member, null).newQuery(module.unitOfWorkFactory().currentUnitOfWork()))
          {
             caze.unassign();
          }
@@ -120,18 +121,9 @@ public interface ProjectEntity
    }
 
    abstract class RemovableConcern
-         extends ConcernOf<Removable>
-         implements Removable
+           extends ConcernOf<Removable>
+           implements Removable
    {
-      @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
-
       @This
       Identity id;
 
@@ -147,9 +139,9 @@ public interface ProjectEntity
       public boolean removeEntity()
       {
          if (inbox.inboxHasActiveCases()
-               || assignments.assignmentsHaveActiveCases())
+                 || assignments.assignmentsHaveActiveCases())
          {
-            throw new IllegalStateException( "Cannot remove project with OPEN cases." );
+            throw new IllegalStateException("Cannot remove project with OPEN cases.");
 
          } else
          {

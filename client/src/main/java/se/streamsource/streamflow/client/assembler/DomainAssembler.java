@@ -18,41 +18,34 @@
 package se.streamsource.streamflow.client.assembler;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualEntity;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepositoryService;
-import se.streamsource.streamflow.domain.CommonDomainAssembler;
-import se.streamsource.streamflow.resource.CommonResourceAssembler;
+import se.streamsource.streamflow.client.ui.DummyDataService;
 
 /**
  * JAVADOC
  */
 public class DomainAssembler
 {
-   public void assemble( LayerAssembly layer ) throws AssemblyException
+   public void assemble(LayerAssembly layer) throws AssemblyException
    {
-      new CommonDomainAssembler().assemble( layer );
-
-      individual( layer.module( "Individual" ) );
-      restDomainModel( layer.module( "REST domain model" ) );
+      individual(layer.module("Individual"));
    }
 
-   private void individual( ModuleAssembly module ) throws AssemblyException
+   private void individual(ModuleAssembly module) throws AssemblyException
    {
-      module.services( IndividualRepositoryService.class ).visibleIn( Visibility.application );
+      module.services(IndividualRepositoryService.class).visibleIn(Visibility.application);
 
-      module.values( AccountSettingsValue.class ).visibleIn( Visibility.application );
-      module.entities( IndividualEntity.class, AccountEntity.class ).visibleIn( Visibility.application );
-   }
+      module.values(AccountSettingsValue.class).visibleIn(Visibility.application);
+      module.entities(IndividualEntity.class, AccountEntity.class).visibleIn(Visibility.application);
 
-   private void restDomainModel( ModuleAssembly module ) throws AssemblyException
-   {
-      new CommonResourceAssembler().assemble( module );
-      new ClientAssembler().assemble( module );
+      if (module.layer().application().mode().equals(Application.Mode.development))
+         module.services(DummyDataService.class).instantiateOnStartup();
    }
 }

@@ -22,19 +22,13 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -47,17 +41,16 @@ public class FormView
 {
    private FormModel model;
 
-   @Structure
-   ObjectBuilderFactory obf;
    private JTextArea textArea;
-   private final CommandQueryClient client;
+
+   @Structure
+   Module module;
 
    public FormView( @Service ApplicationContext context,
-                    @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+                    @Uses FormModel model)
    {
       super( new BorderLayout() );
-      this.client = client;
-      this.model = obf.newObjectBuilder( FormModel.class ).use(client).newInstance();
+      this.model = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
       
       ActionMap am = context.getActionMap( this );
@@ -77,7 +70,7 @@ public class FormView
    public void edit()
    {
       //FormEditView formEditView = obf.newObjectBuilder( FormEditView.class ).use( client ).newInstance();
-      TabbedResourceView resourceView = obf.newObjectBuilder( TabbedResourceView.class ).use( client ).newInstance();
+      TabbedResourceView resourceView = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( model ).newInstance();
 
       AdministrationView adminView = (AdministrationView) SwingUtilities.getAncestorOfClass( AdministrationView.class, this );
 
@@ -86,6 +79,6 @@ public class FormView
 
    public void update( Observable observable, Object o )
    {
-      textArea.setText( model.getNote() );
+      textArea.setText( model.getIndex().note().get() );
    }
 }

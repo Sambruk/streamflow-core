@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -47,18 +48,24 @@ public interface Assignable
 
       @Optional
       Property<Date> assignedOn();
+   }
 
+   interface Events
+   {
       void assignedTo( @Optional DomainEvent event, Assignee assignee );
 
       void unassigned( @Optional DomainEvent event );
    }
 
    public abstract class Mixin
-         implements Assignable, Data
+         implements Assignable, Events
    {
+      @This
+      Data data;
+
       public void assignTo( Assignee assignee )
       {
-         if (assignedTo().get() == null || !assignee.equals( assignedTo().get() ))
+         if (data.assignedTo().get() == null || !assignee.equals( data.assignedTo().get() ))
          {
             assignedTo( null, assignee );
          }
@@ -66,25 +73,25 @@ public interface Assignable
 
       public void unassign()
       {
-         if (assignedTo().get() != null)
+         if (data.assignedTo().get() != null)
             unassigned( null );
       }
 
       public boolean isAssigned()
       {
-         return assignedTo().get() != null;
+         return data.assignedTo().get() != null;
       }
 
       public void assignedTo( @Optional DomainEvent event, Assignee assignee )
       {
-         assignedTo().set( assignee );
-         assignedOn().set( event.on().get() );
+         data.assignedTo().set( assignee );
+         data.assignedOn().set( event.on().get() );
       }
 
       public void unassigned( @Optional DomainEvent event )
       {
-         assignedTo().set( null );
-         assignedOn().set( null );
+         data.assignedTo().set( null );
+         data.assignedOn().set( null );
       }
    }
 }

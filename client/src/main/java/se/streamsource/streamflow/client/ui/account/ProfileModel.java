@@ -19,15 +19,15 @@ package se.streamsource.streamflow.client.ui.account;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import java.util.Observable;
 
@@ -39,20 +39,19 @@ public class ProfileModel
    implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    @Uses
    private CommandQueryClient client;
 
-   private ContactValue contact;
+   private ContactDTO contact;
 
    public void changeMessageDeliveryType( String newDeliveryType )
          throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newDeliveryType );
-      client.putCommand( "changemessagedeliverytype", builder.newInstance() );
+      Form form = new Form();
+      form.set("messagedeliverytype", newDeliveryType);
+      client.putCommand( "changemessagedeliverytype", form.getWebRepresentation() );
    }
 
    public String getMessageDeliveryType()
@@ -65,33 +64,33 @@ public class ProfileModel
 
    public void refresh()
    {
-      contact = client.query("index", ContactValue.class ).<ContactValue>buildWith().prototype();
+      contact = client.query("index", ContactDTO.class ).<ContactDTO>buildWith().prototype();
       setChanged();
       notifyObservers();
    }
 
-   public ContactValue getContact()
+   public ContactDTO getContact()
    {
       return contact;
    }
 
-   public ContactPhoneValue getPhoneNumber()
+   public ContactPhoneDTO getPhoneNumber()
    {
       if (contact.phoneNumbers().get().isEmpty())
       {
-         ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class )
-               .<ContactPhoneValue>buildWith().prototype();
+         ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class)
+               .<ContactPhoneDTO>buildWith().prototype();
          contact.phoneNumbers().get().add( phone );
       }
       return contact.phoneNumbers().get().get( 0 );
    }
 
-   public ContactEmailValue getEmailAddress()
+   public ContactEmailDTO getEmailAddress()
    {
       if (contact.emailAddresses().get().isEmpty())
       {
-         ContactEmailValue email = vbf.newValue( ContactEmailValue.class )
-               .<ContactEmailValue>buildWith().prototype();
+         ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class)
+               .<ContactEmailDTO>buildWith().prototype();
          contact.emailAddresses().get().add( email );
       }
       return contact.emailAddresses().get().get( 0 );
@@ -99,25 +98,22 @@ public class ProfileModel
 
    public void changeName( String newName )
    {
-      ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newName );
-      client.putCommand( "changename", builder.newInstance() );
+      Form form = new Form();
+      form.set("name", newName);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changePhoneNumber( String newPhoneNumber )
    {
-      ValueBuilder<ContactPhoneValue> builder = vbf
-            .newValueBuilder( ContactPhoneValue.class );
-      builder.prototype().phoneNumber().set( newPhoneNumber );
-      client.putCommand( "changephonenumber", builder.newInstance() );
+      Form form = new Form();
+      form.set("phone", newPhoneNumber);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 
    public void changeEmailAddress( String newEmailAddress )
    {
-      ValueBuilder<ContactEmailValue> builder = vbf
-            .newValueBuilder( ContactEmailValue.class );
-      builder.prototype().emailAddress().set( newEmailAddress );
-      client.putCommand( "changeemailaddress", builder.newInstance() );
+      Form form = new Form();
+      form.set("email", newEmailAddress);
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 }

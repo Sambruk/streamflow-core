@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.qi4j.api.util.Classes.*;
-import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Classes.methodsOf;
+import static org.qi4j.api.util.Iterables.map;
 
 /**
  * Helper methods for working with Iterables of DomainEvents and TransactionDomainEvents.
@@ -52,7 +52,7 @@ public class Events
       }
 
       Iterable<DomainEvent>[] iterables = (Iterable<DomainEvent>[]) new Iterable[events.size()];
-      return Iterables.flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
+      return Iterables.<DomainEvent>flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
    }
 
    public static Iterable<DomainEvent> events( TransactionDomainEvents... transactionDomains )
@@ -64,7 +64,7 @@ public class Events
       }
 
       Iterable<DomainEvent>[] iterables = (Iterable<DomainEvent>[]) new Iterable[events.size()];
-      return Iterables.flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
+      return Iterables.<DomainEvent>flatten( events.<Iterable<DomainEvent>>toArray( iterables ) );
    }
 
    public static TransactionVisitor adapter( final EventVisitor eventVisitor )
@@ -85,7 +85,7 @@ public class Events
 
    public static boolean matches( Specification<DomainEvent> specification, Iterable<TransactionDomainEvents> transactions )
    {
-      return filter( specification, events( transactions ) ).iterator().hasNext();
+      return Iterables.matchesAny(specification, events( transactions ));
    }
 
    // Common specifications

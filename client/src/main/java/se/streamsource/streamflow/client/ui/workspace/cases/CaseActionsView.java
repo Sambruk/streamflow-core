@@ -25,12 +25,11 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -42,26 +41,18 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
 
 /**
  * JAVADOC
@@ -69,20 +60,12 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 public class CaseActionsView extends JPanel
       implements TransactionListener, Observer
 {
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> projectSelectionDialog;
-
-   @Uses
-   private ObjectBuilder<ConfirmationDialog> confirmationDialog;
 
    @Service
    DialogService dialogs;
 
    @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private CaseModel model;
 
@@ -192,7 +175,7 @@ public class CaseActionsView extends JPanel
       if (focusOwner != null)
          focusOwner.transferFocus();
 
-      final SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class )
             .use( model.getPossibleResolutions() ).newInstance();
       dialogs.showOkCancelHelpDialog(
             WindowUtils.findWindow( this ),
@@ -218,7 +201,7 @@ public class CaseActionsView extends JPanel
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task delete()
    {
-      ConfirmationDialog dialog = confirmationDialog.newInstance();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( i18n.text( WorkspaceResources.caze ) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -239,7 +222,7 @@ public class CaseActionsView extends JPanel
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task sendto()
    {
-      final SelectLinkDialog dialog = projectSelectionDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleSendTo() ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( WorkspaceResources.choose_owner_title ) );
 
@@ -317,8 +300,9 @@ public class CaseActionsView extends JPanel
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task exportpdf()
    {
-      //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigValue
-      final ValueBuilder<CaseOutputConfigValue> config = vbf.newValueBuilder( CaseOutputConfigValue.class );
+      //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigDTO
+      final ValueBuilder<CaseOutputConfigDTO> config = module.valueBuilderFactory().newValueBuilder( CaseOutputConfigDTO.class );
+      config.prototype().history().set( true );
       config.prototype().contacts().set( true );
       config.prototype().conversations().set( true );
       config.prototype().submittedForms().set( true );
@@ -369,9 +353,9 @@ public class CaseActionsView extends JPanel
 
    private class PrintCaseTask extends Task<File, Void>
    {
-      private CaseOutputConfigValue config;
+      private CaseOutputConfigDTO config;
 
-      public PrintCaseTask( CaseOutputConfigValue config )
+      public PrintCaseTask( CaseOutputConfigDTO config )
       {
          super( Application.getInstance() );
          this.config = config;
@@ -384,7 +368,7 @@ public class CaseActionsView extends JPanel
       {
          setMessage( getResourceMap().getString( "description" ) );
 
-         File file = model.print( config );
+         File file = model.export(config);
 
          return file;
       }

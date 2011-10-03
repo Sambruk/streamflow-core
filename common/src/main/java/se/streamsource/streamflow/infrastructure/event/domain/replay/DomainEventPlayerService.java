@@ -25,7 +25,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Classes;
 import org.qi4j.api.value.ValueComposite;
@@ -54,9 +53,6 @@ public interface DomainEventPlayerService
       final Logger logger = LoggerFactory.getLogger( DomainEventPlayer.class.getName() );
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
       Module module;
 
       @Structure
@@ -67,7 +63,7 @@ public interface DomainEventPlayerService
       public void playTransaction( TransactionDomainEvents transactionDomain )
             throws EventReplayException
       {
-         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Event replay" ) );
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Event replay"));
          DomainEvent currentEvent = null;
          try
          {
@@ -102,7 +98,7 @@ public interface DomainEventPlayerService
       public void playEvent( DomainEvent domainEvent, Object object )
             throws EventReplayException
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          Class entityType = object.getClass();
 
          // Get method

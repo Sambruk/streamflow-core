@@ -20,6 +20,11 @@ package se.streamsource.streamflow.infrastructure.attachment;
 import org.junit.Assert;
 import org.junit.Test;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
@@ -27,12 +32,9 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  * JAVADOC
@@ -59,26 +61,34 @@ public class AttachmentStoreTest
 
       File data = File.createTempFile( "test", "bin" );
       data.deleteOnExit();
-      FileOutputStream out = new FileOutputStream(data);
-      out.write( string.getBytes() );
-      out.close();
 
-      FileInputStream fin = new FileInputStream(data);
-      String id = store.storeAttachment( fin );
+      Inputs.iterable(Iterables.iterable(string)).transferTo(Outputs.text(data));
 
-      InputStream in = new BufferedInputStream(store.getAttachment( id ));
+      String id = store.storeAttachment( Inputs.byteBuffer(data, 1024) );
 
-      byte[] buf = new byte[string.getBytes().length];
-      in.read( buf );
-      String string2 = new String(buf);
+      File data2 = File.createTempFile( "test2", "bin" );
+      data.deleteOnExit();
 
-      Assert.assertEquals( string, string2 );
+      Input<ByteBuffer, IOException> attachment = store.attachment(id);
+
+      attachment.transferTo(Outputs.<Object>byteBuffer(data2));
+
+      final StringBuffer buf = new StringBuffer();
+      Inputs.text(data2).transferTo(Outputs.withReceiver(new Receiver<String, RuntimeException>()
+      {
+         public void receive(String item) throws RuntimeException
+         {
+            buf.append(item);
+         }
+      }));
+
+      Assert.assertEquals( string, buf.toString() );
 
       store.deleteAttachment( id );
 
       try
       {
-         store.getAttachment( id );
+         store.attachment( id );
       } catch (IOException e)
       {
          // Ok!

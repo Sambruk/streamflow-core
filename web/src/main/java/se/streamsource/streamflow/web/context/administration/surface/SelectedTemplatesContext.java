@@ -24,7 +24,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
+import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -35,7 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplat
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 
 /**
@@ -46,9 +46,9 @@ public class SelectedTemplatesContext
    @Structure
    Module module;
 
-   public SelectedTemplatesValue selectedtemplates()
+   public SelectedTemplatesDTO selectedtemplates()
    {
-      ValueBuilder<SelectedTemplatesValue> builder = module.valueBuilderFactory().newValueBuilder( SelectedTemplatesValue.class );
+      ValueBuilder<SelectedTemplatesDTO> builder = module.valueBuilderFactory().newValueBuilder( SelectedTemplatesDTO.class );
 
       DefaultPdfTemplate.Data defaultTemplate = role( DefaultPdfTemplate.Data.class );
       if (defaultTemplate.defaultPdfTemplate().get() != null)

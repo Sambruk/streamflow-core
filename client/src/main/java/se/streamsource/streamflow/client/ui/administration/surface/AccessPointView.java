@@ -28,12 +28,10 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
@@ -44,22 +42,12 @@ import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -68,54 +56,39 @@ public class AccessPointView
       extends JPanel
       implements Observer, TransactionListener
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Service
    DialogService dialogs;
 
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> projectDialog;
+   @Structure
+   Module module;
 
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> caseTypeDialog;
+   private CaseLabelsView labels;
+   private JLabel selectedCaseType = new JLabel();
+   private JButton caseTypeButton;
+   private JButton labelButton;
+   private JButton projectButton;
+   private JLabel selectedProject = new JLabel();
+   private JButton formButton;
+   private JLabel selectedForm = new JLabel();
 
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> formDialog;
-
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> templateDialog;
-
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
-
-   public CaseLabelsView labels;
-   public JLabel selectedCaseType = new JLabel();
-   public JButton caseTypeButton;
-   public JButton labelButton;
-   public JButton projectButton;
-   public JLabel selectedProject = new JLabel();
-   public JButton formButton;
-   public JLabel selectedForm = new JLabel();
-
-   JButton templateButton;
-   RemovableLabel selectedTemplate = new RemovableLabel();
+   private JButton templateButton;
+   private RemovableLabel selectedTemplate = new RemovableLabel();
 
    private AccessPointModel model;
 
    private StateBinder accessPointBinder;
 
    public AccessPointView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
-                           @Structure ObjectBuilderFactory obf )
+                           @Uses AccessPointModel model,
+                           @Structure Module module )
    {
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
-      this.model = obf.newObjectBuilder( AccessPointModel.class ).use( client, labels.getModel() ).newInstance();
+      this.model = model;
+      this.labels = module.objectBuilderFactory().newObjectBuilder(CaseLabelsView.class).use( model.getLabelsModel() ).newInstance();
       model.addObserver( this );
 
       setLayout( new BorderLayout() );
 
-      accessPointBinder = obf.newObject( StateBinder.class );
+      accessPointBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       accessPointBinder.addObserver( this );
       accessPointBinder.addConverter( new StateBinder.Converter()
       {
@@ -134,8 +107,8 @@ public class AccessPointView
          }
       } );
       accessPointBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
-      AccessPointValue template = accessPointBinder
-            .bindingTemplate( AccessPointValue.class );
+      AccessPointDTO template = accessPointBinder
+            .bindingTemplate( AccessPointDTO.class );
 
       FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
@@ -159,8 +132,8 @@ public class AccessPointView
       selectedForm.setFont( selectedForm.getFont().deriveFont(
             Font.BOLD ) );
 
-      selectedTemplate.setFont( selectedTemplate.getFont().deriveFont(
-            Font.BOLD ) );
+      selectedTemplate.getLabel().setFont(selectedTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
 
       ActionMap am = getActionMap();
 
@@ -248,7 +221,7 @@ public class AccessPointView
    @Action
    public Task project()
    {
-      final SelectLinkDialog dialog = projectDialog.use( model.getPossibleProjects() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossibleProjects() ).newInstance();
       dialogs.showOkCancelHelpDialog( projectButton, dialog, i18n.text( WorkspaceResources.choose_project ) );
 
       return new CommandTask()
@@ -259,7 +232,7 @@ public class AccessPointView
          {
             if (dialog.getSelectedLink() != null)
             {
-               model.setProject( dialog.getSelectedLink() );
+               model.changeProject(dialog.getSelectedLink());
             }
          }
       };
@@ -268,7 +241,7 @@ public class AccessPointView
    @Action
    public Task casetype()
    {
-      final SelectLinkDialog dialog = caseTypeDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             i18n.text( WorkspaceResources.choose_casetype ),
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
@@ -281,7 +254,7 @@ public class AccessPointView
          {
             if (dialog.getSelectedLink() != null)
             {
-               model.setCaseType( dialog.getSelectedLink() );
+               model.changeCaseType(dialog.getSelectedLink());
             }
          }
       };
@@ -291,7 +264,7 @@ public class AccessPointView
    @Action
    public Task form()
    {
-      final SelectLinkDialog dialog = formDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleForms() ).newInstance();
       dialogs.showOkCancelHelpDialog( formButton, dialog,
             i18n.text( WorkspaceResources.choose_form ) );
@@ -304,7 +277,7 @@ public class AccessPointView
          {
             if (dialog.getSelectedLink() != null)
             {
-               model.setForm( dialog.getSelectedLink() );
+               model.changeForm(dialog.getSelectedLink());
             }
          }
       };
@@ -314,7 +287,7 @@ public class AccessPointView
    @Action
    public Task template()
    {
-      final SelectLinkDialog dialog = templateDialog.use(
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleTemplates() ).newInstance();
 
       dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.choose_template ));
@@ -376,7 +349,6 @@ public class AccessPointView
          labelButton.setEnabled( true );
          formButton.setEnabled( true );
       }
-
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

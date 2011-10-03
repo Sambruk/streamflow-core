@@ -92,7 +92,13 @@ public class MainWeb
          logger.info("Could not start Streamflow", e);
 
          if (component != null)
-            component.stop();
+            try
+            {
+               component.stop();
+            } catch (Exception e1)
+            {
+               // Ignore
+            }
          throw e;
       } finally
       {

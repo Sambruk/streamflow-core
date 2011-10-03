@@ -22,14 +22,14 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 
 /**
  * JAVADOC
  */
 public class WorkspaceProjectsContext
-      implements IndexContext<LinksValue>
+        implements IndexContext<LinksValue>
 {
    @Structure
    Module module;
@@ -38,6 +38,6 @@ public class WorkspaceProjectsContext
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
       ProjectQueries projectQueries = RoleMap.role( ProjectQueries.class );
-      return linksBuilder.addDescribables( projectQueries.allProjects() ).newLinks();
+      return linksBuilder.rel("project").addDescribables( projectQueries.allProjects() ).newLinks();
    }
 }

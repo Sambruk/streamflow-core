@@ -25,7 +25,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
@@ -52,7 +52,7 @@ public interface StreamflowContactLookupPlugin
       Configuration<StreamflowContactLookupPluginConfiguration> config;
 
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Structure
       private Qi4jSPI spi;
@@ -76,12 +76,12 @@ public interface StreamflowContactLookupPlugin
 
             // Parse response
             String json = result.getText();
-            return vbf.newValueFromJSON( ContactList.class, json );
+            return module.valueBuilderFactory().newValueFromJSON(ContactList.class, json);
          } catch (Exception e)
          {
 
             // Return empty list
-            return vbf.newValue( ContactList.class );
+            return module.valueBuilderFactory().newValue(ContactList.class);
          }
       }
 

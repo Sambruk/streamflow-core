@@ -21,6 +21,9 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.restlet.client.requestwriter.FormRequestWriter;
+import se.streamsource.dci.restlet.client.requestwriter.ValueCompositeRequestWriter;
+import se.streamsource.dci.restlet.client.responsereader.DefaultResponseReader;
 import se.streamsource.dci.restlet.client.responsereader.JSONResponseReader;
 import se.streamsource.dci.restlet.client.responsereader.TableResponseReader;
 
@@ -33,6 +36,14 @@ public class ClientAssembler
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       module.objects( CommandQueryClientFactory.class, CommandQueryClient.class ).visibleIn( Visibility.application );
-      module.objects( ResponseReaderDelegator.class, JSONResponseReader.class, TableResponseReader.class ).visibleIn( Visibility.application );
+
+      module.objects( ResponseReaderDelegator.class,
+            DefaultResponseReader.class,
+            JSONResponseReader.class,
+            TableResponseReader.class ).visibleIn( Visibility.application );
+
+      module.objects(RequestWriterDelegator.class,
+            FormRequestWriter.class,
+            ValueCompositeRequestWriter.class).visibleIn(Visibility.application);
    }
 }

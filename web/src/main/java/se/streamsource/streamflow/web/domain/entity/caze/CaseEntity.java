@@ -26,11 +26,11 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
@@ -50,6 +50,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
@@ -61,32 +62,39 @@ import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 /**
  * This represents a single Case in the system
  */
-@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class})
-@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
+@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
+@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
 
       // Interactions
+      Assignable.Events,
       Assignable.Data,
       Describable.Data,
       DueOn.Data,
       Notable.Data,
       Ownable.Data,
       CaseId.Data,
+      Status.Events,
       Status.Data,
       Conversations.Data,
       CaseAccess.Data,
@@ -101,6 +109,8 @@ public interface CaseEntity
       Resolvable.Data,
       FormDrafts.Data,
       SubmittedForms.Data,
+      SearchableForms.Data,
+      SearchableForms.Events,
       TypedCase.Data,
       SubCases.Data,
       SubCase.Data,
@@ -119,11 +129,11 @@ public interface CaseEntity
       CaseEntity aCase;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public boolean hasPermission( String userId, String permission )
       {
-         User actor = uowf.currentUnitOfWork().get( User.class, userId );
+         User actor = module.unitOfWorkFactory().currentUnitOfWork().get( User.class, userId );
 
          switch (aCase.status().get())
          {
@@ -183,6 +193,31 @@ public interface CaseEntity
             for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data) newCaseType).accessPermissionDefaults().get().entrySet())
             {
                caseAccess.changeAccess( entry.getKey(), entry.getValue() );
+            }
+         }
+      }
+   }
+
+   class TypedCaseDefaultDueOnConcern
+         extends ConcernOf<TypedCase>
+         implements TypedCase
+   {
+      @This
+      DueOn dueOn;
+
+      public void changeCaseType( @Optional CaseType newCaseType )
+      {
+         next.changeCaseType( newCaseType );
+
+         if (newCaseType != null)
+         {
+            // If no due on is set, then set it to "now" plus the given number of days
+            DefaultDaysToComplete.Data defaultDaysToComplete = (DefaultDaysToComplete.Data) newCaseType;
+            if (defaultDaysToComplete.defaultDaysToComplete().get() > 0)
+            {
+               Calendar now = Calendar.getInstance();
+               now.add(Calendar.DAY_OF_MONTH,defaultDaysToComplete.defaultDaysToComplete().get() );
+               dueOn.defaultDueOn(now.getTime());
             }
          }
       }
@@ -275,7 +310,7 @@ public interface CaseEntity
 
       public void assignTo( Assignee assignee )
       {
-         history.addHistoryComment( "{assigned," + ((Describable) assignee).getDescription() +"}", RoleMap.role( ConversationParticipant.class ) );
+         history.addHistoryComment( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void unassign()
@@ -310,18 +345,18 @@ public interface CaseEntity
 
       public void resolve( Resolution resolution )
       {
-         history.addHistoryComment( "{resolved," + resolution.getDescription()+"}", RoleMap.role( ConversationParticipant.class ) );
+         history.addHistoryComment( "{resolved,resolution=" + resolution.getDescription()+"}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
-         history.addHistoryComment( newCaseType != null ? "{changedCaseType," + newCaseType.getDescription() +"}"
+         history.addHistoryComment( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
                : "{removedCaseType}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void changeOwner( Owner owner )
       {
-         history.addHistoryComment( "{changedOwner," + ((Project)owner).getDescription() +"}"
+         history.addHistoryComment( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}"
                , RoleMap.role( ConversationParticipant.class ) );
       }
 
@@ -329,6 +364,19 @@ public interface CaseEntity
       {
          history.addHistoryComment( "{createdSubCase}", RoleMap.role( ConversationParticipant.class ) );
       }
+   }
 
+   abstract class UpdateSearchableFormsSideEffect
+      extends SideEffectOf<SubmittedForms>
+      implements SubmittedForms
+   {
+      @This SearchableForms searchableForms;
+
+      public void submitForm(FormDraft formSubmission, Submitter submitter)
+      {
+         result.submitForm(formSubmission, submitter);
+
+         searchableForms.updateSearchableFormValues();
+      }
    }
 }

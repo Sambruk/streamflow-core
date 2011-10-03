@@ -21,9 +21,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,17 +40,17 @@ public interface IndividualRepositoryService
       final Logger logger = LoggerFactory.getLogger( IndividualRepository.class.getName() );
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public Individual individual()
       {
-         UnitOfWork unitOfWork = uowf.currentUnitOfWork();
+         UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
          return unitOfWork.get( Individual.class, "1" );
       }
 
       public void activate() throws Exception
       {
-         UnitOfWork uow = uowf.newUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
 
          try
          {

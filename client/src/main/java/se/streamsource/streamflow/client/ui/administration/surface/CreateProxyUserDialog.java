@@ -26,19 +26,16 @@ import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Select a name for something.
@@ -53,8 +50,9 @@ public class CreateProxyUserDialog
    DialogService dialogs;
 
    @Structure
-   ValueBuilderFactory vbf;
-   private NewProxyUserCommand command;
+   Module module;
+
+   private NewProxyUserDTO DTO;
 
    public CreateProxyUserDialog( @Service ApplicationContext context )
    {
@@ -84,20 +82,20 @@ public class CreateProxyUserDialog
       add(form, BorderLayout.CENTER);
    }
 
-   public NewProxyUserCommand userCommand()
+   public NewProxyUserDTO userCommand()
    {
-      return command;
+      return DTO;
    }
 
    @Action
    public void execute()
    {
-      ValueBuilder<NewProxyUserCommand> builder = vbf.newValueBuilder( NewProxyUserCommand.class );
+      ValueBuilder<NewProxyUserDTO> builder = module.valueBuilderFactory().newValueBuilder(NewProxyUserDTO.class);
       try
       {
          builder.prototype().description().set( descriptionField.getText() );
          builder.prototype().password().set( String.valueOf( passwordField.getPassword() ) );
-         command = builder.newInstance();
+         DTO = builder.newInstance();
       } catch(ConstraintViolationException e)
       {
          dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( ErrorResources.username_password_violation ) ) );

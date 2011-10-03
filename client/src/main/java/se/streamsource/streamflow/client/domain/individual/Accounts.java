@@ -23,8 +23,7 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 
 /**
  * List of accounts
@@ -51,13 +50,11 @@ public interface Accounts
       Data state;
 
       @Structure
-      UnitOfWorkFactory uowf;
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public Account newAccount( AccountSettingsValue accountSettings )
       {
-         EntityBuilder<Account> builder = uowf.currentUnitOfWork().newEntityBuilder( Account.class );
+         EntityBuilder<Account> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Account.class );
          builder.instance().updateSettings( accountSettings );
          Account account = builder.newInstance();
          state.accounts().add( state.accounts().count(), account );

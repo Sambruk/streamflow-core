@@ -23,24 +23,25 @@ import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -58,51 +59,48 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
    PDDocument generatepdf( SubmittedFormValue value, CaseId.Data id, @Optional String templateFileName, Locale locale ) throws IOException, URISyntaxException;
 
    abstract class Mixin
-           implements SubmittedFormPdfGenerator
+         implements SubmittedFormPdfGenerator
    {
 
       @Structure
-      UnitOfWorkFactory uowFactory;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Service
       AttachmentStore store;
 
-      public PDDocument generatepdf(SubmittedFormValue value, CaseId.Data id, String templateUri, Locale locale) throws IOException, URISyntaxException
+      public PDDocument generatepdf( SubmittedFormValue value, CaseId.Data id, String templateUri, Locale locale ) throws IOException, URISyntaxException
       {
 
          ResourceBundle bundle = ResourceBundle.getBundle(
-                 SubmittedFormPdfGenerator.class.getName(), locale);
-
+               SubmittedFormPdfGenerator.class.getName(), locale );
+         
          PdfDocument document = new PdfDocument();
          document.init();
 
-         PdfFont h1Font = new PdfFont(PDType1Font.HELVETICA_BOLD, 16);
-         PdfFont h2Font = new PdfFont(PDType1Font.HELVETICA_BOLD, 14);
-         PdfFont valueFont = new PdfFont(PDType1Font.HELVETICA, 12);
-         PdfFont descFont = new PdfFont(PDType1Font.HELVETICA_OBLIQUE, 10);
-         PdfFont pageFont = new PdfFont(PDType1Font.HELVETICA_BOLD_OBLIQUE, 14 );
+         PdfFont h1Font = new PdfFont( PDType1Font.HELVETICA_BOLD, 16 );
+         PdfFont h2Font = new PdfFont( PDType1Font.HELVETICA_BOLD, 14 );
+         PdfFont valueFont = new PdfFont( PDType1Font.HELVETICA, 12 );
+         PdfFont descFont = new PdfFont( PDType1Font.HELVETICA_OBLIQUE, 10 );
+         PdfFont pageFont = new PdfFont( PDType1Font.HELVETICA_BOLD_OBLIQUE, 14 );
 
-         Form form = uowFactory.currentUnitOfWork().get(Form.class, value.form().get().identity());
+         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
-         document.println(bundle.getString("caseid") + ": " + id.caseId().get(), h1Font);
-         document.print(form.getDescription(), h2Font);
-         document.println(bundle.getString("submission_date") + ": " + DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(value.submissionDate().get()), descFont);
+         document.println( bundle.getString( "caseid") + ": " + id.caseId().get(), h1Font);
+         document.print( form.getDescription(), h2Font );
+         document.println( bundle.getString( "submission_date") + ": " + DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( value.submissionDate().get() ), descFont );
 
          document.line();
 
 
          for (SubmittedPageValue submittedPageValue : value.pages().get())
          {
-            Page page = uowFactory.currentUnitOfWork().get( Page.class, submittedPageValue.page().get().identity() );
+            Page page = module.unitOfWorkFactory().currentUnitOfWork().get( Page.class, submittedPageValue.page().get().identity() );
             document.println( page.getDescription(), pageFont );
 
             // TODO Page breaks
             for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
             {
-               FieldEntity field = uowFactory.currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
+               FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
 
                document.print(field.getDescription() + ":", h2Font);
                if (field.fieldValue().get() instanceof DateFieldValue)
@@ -121,7 +119,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
                {
                   try
                   {
-                     AttachmentFieldSubmission attachment = vbf.newValueFromJSON(AttachmentFieldSubmission.class, submittedFieldValue.value().get());
+                     AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, submittedFieldValue.value().get());
                      document.println(attachment.name().get(), valueFont);
                   } catch (ConstructionException e)
                   {
@@ -130,7 +128,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
 
                } else
                {
-                  document.println(submittedFieldValue.value().get(), valueFont);
+                  document.println( submittedFieldValue.value().get(), valueFont );
                }
                document.println("", valueFont);
             }
@@ -138,19 +136,22 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          }
 
          PDDocument submittedFormPdf = document.closeAndReturn();
-         submittedFormPdf.getDocumentInformation().setCreator("Streamflow");
+         submittedFormPdf.getDocumentInformation().setCreator( "Streamflow" );
          Calendar calendar = Calendar.getInstance();
-         calendar.setTime(value.submissionDate().get());
-         submittedFormPdf.getDocumentInformation().setCreationDate(calendar);
-         submittedFormPdf.getDocumentInformation().setTitle(form.getDescription());
+         calendar.setTime( value.submissionDate().get() );
+         submittedFormPdf.getDocumentInformation().setCreationDate( calendar );
+         submittedFormPdf.getDocumentInformation().setTitle( form.getDescription() );
 
          if (templateUri != null)
          {
 
-            String attachmentId = new URI(templateUri).getSchemeSpecificPart();
-            InputStream templateStream = store.getAttachment(attachmentId);
+            String attachmentId = new URI( templateUri ).getSchemeSpecificPart();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            store.attachment(attachmentId).transferTo(Outputs.byteBuffer(baos));
+
             Underlay underlay = new Underlay();
-            submittedFormPdf = underlay.underlay(submittedFormPdf, templateStream);
+            submittedFormPdf = underlay.underlay( submittedFormPdf, new ByteArrayInputStream(baos.toByteArray()) );
          }
          return submittedFormPdf;
       }

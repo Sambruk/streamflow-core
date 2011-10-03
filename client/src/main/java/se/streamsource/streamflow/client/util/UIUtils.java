@@ -19,9 +19,8 @@ package se.streamsource.streamflow.client.util;
 
 import org.jdesktop.swingx.util.WindowUtils;
 
-import javax.swing.JFrame;
-import java.awt.Component;
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 
 public class UIUtils
 {

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import java.awt.Component;
+import java.awt.*;
 import java.net.URL;
 
 

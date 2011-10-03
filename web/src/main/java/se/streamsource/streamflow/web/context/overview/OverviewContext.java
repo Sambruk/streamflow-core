@@ -19,49 +19,72 @@ package se.streamsource.streamflow.web.context.overview;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksValue;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Function;
+import se.streamsource.dci.value.table.TableBuilderFactory;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Locale;
 
 /**
  * JAVADOC
  */
 public class OverviewContext
-      implements IndexContext<LinksValue>
 {
-   public LinksValue index()
-   {
-      OverviewQueries queries = RoleMap.role( OverviewQueries.class );
+   @Structure
+   Module module;
 
-      return queries.getProjectsSummary();
+   @Uses
+   Locale locale;
+
+   @Uses OverviewQueries queries;
+
+   public TableValue index(TableQuery tq)
+   {
+      return new TableBuilderFactory(module.valueBuilderFactory()).
+            column("description", "Description", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.description().get();
+               }
+            }).
+            column("href", "Location", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.identity().get()+"/";
+               }
+            }).
+            column("inbox", "Inbox count", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.inboxCount().get();
+               }
+            }).
+            column("assignments", "Assignment count", TableValue.STRING, new Function<ProjectSummaryDTO, Object>()
+            {
+               public Object map(ProjectSummaryDTO projectSummaryDTO)
+               {
+                  return projectSummaryDTO.assignedCount().get();
+               }
+            }).
+            newInstance(tq).rows(queries.getProjectsSummary()).orderBy().paging().newTable();
    }
 
-   public OutputRepresentation generateexcelprojectsummary() throws IOException
+   public Workbook generateexcelprojectsummary() throws IOException
    {
-      Locale locale = RoleMap.role( Locale.class );
-
       final Workbook workbook = new HSSFWorkbook();
 
-      OverviewQueries queries = RoleMap.role( OverviewQueries.class );
+      queries.generateExcelProjectSummary(locale, workbook);
 
-      queries.generateExcelProjectSummary( locale, workbook );
-
-      OutputRepresentation representation = new OutputRepresentation( MediaType.APPLICATION_EXCEL )
-      {
-         @Override
-         public void write( OutputStream outputStream ) throws IOException
-         {
-            workbook.write( outputStream );
-         }
-      };
-
-      return representation;
+      return workbook;
    }
 }

@@ -17,20 +17,35 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.*;
-import org.qi4j.api.injection.scope.*;
-import org.qi4j.api.object.*;
-import org.qi4j.api.value.*;
-import se.streamsource.dci.restlet.client.*;
-import se.streamsource.dci.value.link.*;
-import se.streamsource.dci.value.table.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.*;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.domain.interaction.gtd.*;
-import se.streamsource.streamflow.resource.user.profile.*;
-import se.streamsource.streamflow.util.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import ca.odell.glazedlists.UniqueList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.table.CellValue;
+import se.streamsource.dci.value.table.ColumnValue;
+import se.streamsource.dci.value.table.RowValue;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.util.LinkComparator;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.util.Strings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Observable;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
@@ -41,7 +56,7 @@ public class CasesTableModel extends Observable
       implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
+   protected Module module;
 
    @Uses
    protected CommandQueryClient client;
@@ -67,10 +82,11 @@ public class CasesTableModel extends Observable
    private PerspectivePeriodModel createdOnModel;
    private PerspectivePeriodModel dueOnModel;
    
-   public CasesTableModel(@Structure ObjectBuilderFactory obf  )
+   public CasesTableModel(@Structure Module module  )
    {
-      createdOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
-      dueOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
+      this.module = module;
+      createdOnModel = module.objectBuilderFactory().newObjectBuilder(PerspectivePeriodModel.class).use( Period.none ).newInstance();
+      dueOnModel = module.objectBuilderFactory().newObjectBuilder(PerspectivePeriodModel.class).use( Period.none ).newInstance();
    }
 
    protected EventList<CaseTableValue> eventList = new TransactionList<CaseTableValue>(new BasicEventList<CaseTableValue>());
@@ -87,7 +103,7 @@ public class CasesTableModel extends Observable
 
    public void refresh()
    {
-      ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
+      ValueBuilder<TableQuery> builder = module.valueBuilderFactory().newValueBuilder(TableQuery.class);
       String queryString = "select *";
       String whereClause = addWhereClauseFromFilter();
       String sorting = addSortingFromFilter();
@@ -96,17 +112,14 @@ public class CasesTableModel extends Observable
          queryString += " where " + whereClause;
 
       if( !Strings.empty( sorting ))
-         queryString += " " + sorting;
+         queryString += sorting;
 
       builder.prototype().tq().set( queryString );
       TableQuery query = builder.newInstance();
 
 
-      TableValue table = client.query( "cases", query, TableValue.class );
+      TableValue table = client.query( "cases", TableValue.class, query);
       List<CaseTableValue> caseTableValues = caseTableValues( table );
-
-      //EventListSynch.synchronize( Collections.<CaseTableValue>emptyList(), eventList );
-      //EventListSynch.synchronize( caseTableValues, eventList );
 
       eventList.getReadWriteLock().writeLock().lock();
       try
@@ -133,7 +146,7 @@ public class CasesTableModel extends Observable
       List<CaseTableValue> caseTableValues = new ArrayList<CaseTableValue>(  );
       for(RowValue row : table.rows().get())
       {
-         ValueBuilder<CaseTableValue> caseBuilder = vbf.newValueBuilder( CaseTableValue.class );
+         ValueBuilder<CaseTableValue> caseBuilder = module.valueBuilderFactory().newValueBuilder(CaseTableValue.class);
          CaseTableValue prototype = caseBuilder.prototype();
          List<CellValue> cells = row.c().get();
          for (int i = 0; i < table.cols().get().size(); i++)
@@ -165,21 +178,21 @@ public class CasesTableModel extends Observable
             else if (columnValue.id().get().equals("labels"))
             {
                String json = cell.v().get().toString();
-               prototype.labels().set(vbf.newValueFromJSON( LinksValue.class, json ));
+               prototype.labels().set(module.valueBuilderFactory().newValueFromJSON(LinksValue.class, json));
             }
             else if (columnValue.id().get().equals("owner"))
                prototype.owner().set(cell.f().get());
             else if (columnValue.id().get().equals("parent") && cell.v().get() != null)
-               prototype.parentCase().set(vbf.newValueFromJSON( LinkValue.class, cell.v().get().toString() ));
+               prototype.parentCase().set(module.valueBuilderFactory().newValueFromJSON(LinkValue.class, cell.v().get().toString()));
             else if (columnValue.id().get().equals("resolution"))
                prototype.resolution().set(cell.f().get());
             else if (columnValue.id().get().equals("status"))
                prototype.status().set( CaseStates.valueOf( cell.v().get().toString() ));
             else if (columnValue.id().get().equals("subcases"))
             {
-               prototype.subcases().set( vbf.newValueFromJSON( LinksValue.class, cell.v().get().toString() ) );
+               prototype.subcases().set( module.valueBuilderFactory().newValueFromJSON(LinksValue.class, cell.v().get().toString()) );
             } else if (columnValue.id().get().equals( "href" ))
-               prototype.href().set( cell.f().get() );
+               prototype.href().set( cell.v().get().toString() );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }
@@ -326,9 +339,9 @@ public class CasesTableModel extends Observable
       return dueOnModel;
    }
 
-   public PerspectiveValue getPerspective( String name, String query )
+   public PerspectiveDTO getPerspective(String name, String query)
    {
-      ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
+      ValueBuilder<PerspectiveDTO> builder = module.valueBuilderFactory().newValueBuilder(PerspectiveDTO.class);
       builder.prototype().query().set( query );
       builder.prototype().name().set( name );
       builder.prototype().labels().set( selectedLabelIds );
@@ -374,26 +387,26 @@ public class CasesTableModel extends Observable
 
    public List<LinkValue> possibleFilterLinks()
    {
-      return client.queryResource().queries().get();
+      return client.query().queries().get();
    }
 
-   public void setFilter( PerspectiveValue perspectiveValue )
+   public void setFilter(PerspectiveDTO perspectiveDTO)
    {
-      perspectiveValue = vbf.newValueBuilder( PerspectiveValue.class ).withPrototype( perspectiveValue ).prototype();
-      selectedStatuses = perspectiveValue.statuses().get();
-      selectedCaseTypeIds = perspectiveValue.caseTypes().get();
-      selectedLabelIds = perspectiveValue.labels().get();
-      selectedAssigneeIds = perspectiveValue.assignees().get();
-      selectedProjectIds = perspectiveValue.projects().get();
-      selectedCreatedByIds = perspectiveValue.createdBy().get();
-      sortBy = SortBy.valueOf( perspectiveValue.sortBy().get() );
-      sortOrder = SortOrder.valueOf( perspectiveValue.sortOrder().get() );
-      groupBy = GroupBy.valueOf( perspectiveValue.groupBy().get() );
-      createdOnModel.setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
-      createdOnModel.setDate( perspectiveValue.createdOn().get() );
-      dueOnModel.setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
-      dueOnModel.setDate( perspectiveValue.dueOn().get() );
-      invisibleColumns = perspectiveValue.invisibleColumns().get();
+      perspectiveDTO = module.valueBuilderFactory().newValueBuilder(PerspectiveDTO.class).withPrototype(perspectiveDTO).prototype();
+      selectedStatuses = perspectiveDTO.statuses().get();
+      selectedCaseTypeIds = perspectiveDTO.caseTypes().get();
+      selectedLabelIds = perspectiveDTO.labels().get();
+      selectedAssigneeIds = perspectiveDTO.assignees().get();
+      selectedProjectIds = perspectiveDTO.projects().get();
+      selectedCreatedByIds = perspectiveDTO.createdBy().get();
+      sortBy = SortBy.valueOf( perspectiveDTO.sortBy().get() );
+      sortOrder = SortOrder.valueOf( perspectiveDTO.sortOrder().get() );
+      groupBy = GroupBy.valueOf( perspectiveDTO.groupBy().get() );
+      createdOnModel.setPeriod( Period.valueOf( perspectiveDTO.createdOnPeriod().get() ) );
+      createdOnModel.setDate( perspectiveDTO.createdOn().get() );
+      dueOnModel.setPeriod( Period.valueOf( perspectiveDTO.dueOnPeriod().get() ) );
+      dueOnModel.setDate( perspectiveDTO.dueOn().get() );
+      invisibleColumns = perspectiveDTO.invisibleColumns().get();
    }
 
    protected String addSortingFromFilter()

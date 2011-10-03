@@ -18,20 +18,20 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
-import se.streamsource.streamflow.domain.attachment.AttachmentValue;
+import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 
 import java.text.DateFormat;
 import java.util.Comparator;
 import java.util.Date;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
  */
 public class AttachmentsTableFormatter
-      implements AdvancedTableFormat<AttachmentValue>
+      implements AdvancedTableFormat<AttachmentDTO>
 {
    protected String[] columnNames = new String[]{
          text( attachment_name ),
@@ -69,19 +69,19 @@ public class AttachmentsTableFormatter
       return null;
    }
 
-   public Object getColumnValue( AttachmentValue attachmentValue, int i )
+   public Object getColumnValue( AttachmentDTO attachmentDTO, int i )
    {
       switch (i)
       {
          case 0:
          {
-            return attachmentValue.text().get();
+            return attachmentDTO.text().get();
          }
 
          case 1:
             try
             {
-               long size = attachmentValue.size().get();
+               long size = attachmentDTO.size().get();
 
                if (size > 1000*1024)
                {
@@ -97,7 +97,7 @@ public class AttachmentsTableFormatter
             }
 
          case 2:
-            return attachmentValue.modificationDate().get() == null ? "" : DateFormat.getDateInstance( DateFormat.MEDIUM ).format( attachmentValue.modificationDate().get());
+            return attachmentDTO.modificationDate().get() == null ? "" : DateFormat.getDateInstance( DateFormat.MEDIUM ).format( attachmentDTO.modificationDate().get());
       }
 
       return null;

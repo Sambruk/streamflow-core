@@ -21,8 +21,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 
-import java.awt.Color;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +124,19 @@ public class PdfDocument
          y -= font.height;
          contentStream.drawString( line );
       }
+      return this;
+   }
+
+   public PdfDocument insertImage(BufferedImage image) throws IOException
+   {
+//      contentStream.endText();
+      PDJpeg pdfImage = new PDJpeg(pdf, image);
+      contentStream.drawXObject(pdfImage, margin, y, 100, 100);
+//      contentStream.beginText();
+
+      contentStream.moveTextPositionByAmount(0, -110);
+      y -= 100+10;
+
       return this;
    }
 

@@ -19,11 +19,11 @@ package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
@@ -38,19 +38,24 @@ public class CaseAccessDefaultsContext
    implements IndexContext<LinksValue>
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
+
+   @Uses
+   Locale locale;
+
+   @Uses
+   CaseAccessDefaults caseAccessDefaults;
 
    public LinksValue index()
    {
-      CaseAccessDefaults defaults = RoleMap.role( CaseAccessDefaults.class );
-      LinksBuilder builder = new LinksBuilder(vbf);
-      ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), RoleMap.role( Locale.class ) );
-      ResourceBundle permissionTypeBundle = ResourceBundle.getBundle( PermissionType.class.getName(), RoleMap.role( Locale.class ) );
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+      ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), locale );
+      ResourceBundle permissionTypeBundle = ResourceBundle.getBundle( PermissionType.class.getName(), locale );
       for (PermissionType permissionType : PermissionType.values())
       {
          if (permissionType == PermissionType.read || permissionType == PermissionType.write)
          {
-            builder.addLink(permissionTypeBundle.getString( permissionType.name() ) +" : "+bundle.getString( defaults.getAccessType( permissionType ).name() ), permissionType.name(), "possibledefaultaccess", "possibledefaultaccess?permission="+permissionType.name(), "" );
+            builder.addLink(permissionTypeBundle.getString( permissionType.name() ) +" : "+bundle.getString( caseAccessDefaults.getAccessType( permissionType ).name() ), permissionType.name(), "possibledefaultaccess", "possibledefaultaccess?permission="+permissionType.name(), "" );
          }
       }
 
@@ -59,12 +64,11 @@ public class CaseAccessDefaultsContext
 
    public LinksValue possibledefaultaccess(@Name("permission") PermissionType permissionType)
    {
-      CaseAccessDefaults defaults = RoleMap.role( CaseAccessDefaults.class );
-      LinksBuilder builder = new LinksBuilder(vbf);
-      ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), RoleMap.role( Locale.class ) );
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+      ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), locale );
       for (CaseAccessType possibleType : CaseAccessType.values())
       {
-         if (!possibleType.equals( defaults.getAccessType( permissionType ) ))
+         if (!possibleType.equals( caseAccessDefaults.getAccessType( permissionType ) ))
             builder.addLink( bundle.getString( possibleType.name() ), possibleType.name(), "changedefaultaccess", "changedefaultaccess?permission="+permissionType.name()+"&accesstype="+possibleType.name(), "" );
       }
 
@@ -73,6 +77,6 @@ public class CaseAccessDefaultsContext
 
    public void changedefaultaccess(@Name("permission") PermissionType permissionType, @Name("accesstype") CaseAccessType accessType)
    {
-      RoleMap.role( CaseAccessDefaults.class ).changeAccessDefault( permissionType, accessType );
+      caseAccessDefaults.changeAccessDefault( permissionType, accessType );
    }
 }

@@ -21,8 +21,8 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import javax.swing.JLabel;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Form builder that allows easy binding at the same time.

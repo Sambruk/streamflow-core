@@ -57,7 +57,7 @@ public class StreamflowWebAssembler
       assembly.setMetaInfo(new RoleInjectionProviderFactory());
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion( "1.3.0.1" );
+      assembly.setVersion("1.4.0.0");
 
       LayerAssembly configurationLayer = assembly.layer("Configuration");
       LayerAssembly domainInfrastructureLayer = assembly.layer("Domain infrastructure");
@@ -67,8 +67,8 @@ public class StreamflowWebAssembler
       LayerAssembly webLayer = assembly.layer("Web");
       LayerAssembly managementLayer = assembly.layer("Management");
 
-      managementLayer.uses(appLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
-      webLayer.uses(appLayer, contextLayer, domainLayer, domainInfrastructureLayer);
+      managementLayer.uses(webLayer, appLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
+      webLayer.uses(appLayer, contextLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
       appLayer.uses(domainLayer, domainInfrastructureLayer, configurationLayer);
       contextLayer.uses(domainLayer, appLayer, domainInfrastructureLayer);
       domainLayer.uses(domainInfrastructureLayer);

@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -30,8 +31,8 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 @Mixins(AccessPointSettings.Mixin.class)
 public interface AccessPointSettings
 {
-   void setProject( Project project );
-   void setCaseType( CaseType caseType );
+   void changedProject(Project project);
+   void changedCaseType(CaseType caseType);
    void removeCaseType();
 
    interface Data
@@ -41,46 +42,52 @@ public interface AccessPointSettings
 
       @Optional
       Association<CaseType> caseType();
+   }
 
+   interface Events
+   {
       void changedProject( @Optional DomainEvent event, Project project );
       void changedCaseType( @Optional DomainEvent event, CaseType caseType );
       void removedCaseType( @Optional DomainEvent event, CaseType caseType );
    }
 
    abstract class Mixin
-      implements AccessPointSettings, Data
+      implements AccessPointSettings, Events
    {
-      public void setProject( Project project )
+      @This
+      Data data;
+
+      public void changedProject(Project project)
       {
          changedProject( null, project );
       }
 
       public void changedProject( @Optional DomainEvent event, Project project )
       {
-         project().set( project );
+         data.project().set( project );
       }
 
-      public void setCaseType( CaseType caseType )
+      public void changedCaseType(CaseType caseType)
       {
          changedCaseType( null, caseType );
       }
 
       public void changedCaseType( @Optional DomainEvent event, CaseType caseType )
       {
-         caseType().set( caseType );
+         data.caseType().set( caseType );
       }
 
       public void removeCaseType()
       {
-         if( caseType().get() != null )
+         if( data.caseType().get() != null )
          {
-            removedCaseType( null, caseType().get() );
+            removedCaseType( null, data.caseType().get() );
          }
       }
 
       public void removedCaseType( @Optional DomainEvent event, CaseType caseType )
       {
-         caseType().set( null );
+         data.caseType().set( null );
       }
    }
 }

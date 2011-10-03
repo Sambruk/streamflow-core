@@ -20,15 +20,12 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
@@ -39,7 +36,7 @@ public class OptionButtonsPanel
 
    private ButtonGroup group;
 
-   public OptionButtonsPanel( @Uses FieldSubmissionValue field, @Uses OptionButtonsFieldValue fieldValue )
+   public OptionButtonsPanel( @Uses FieldSubmissionDTO field, @Uses OptionButtonsFieldValue fieldValue )
    {
       super( field );
       JPanel panel = new JPanel( new BorderLayout( ));

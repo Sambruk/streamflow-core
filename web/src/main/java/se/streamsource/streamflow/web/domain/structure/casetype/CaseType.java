@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
@@ -33,7 +33,9 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
  */
 public interface CaseType
    extends
+      ArchivalSettings,
       CaseAccessDefaults,
+      DefaultDaysToComplete,
       Describable,
       Forms,
       Labels,
@@ -44,6 +46,6 @@ public interface CaseType
       SelectedForms,
       SelectedLabels,
       SelectedResolutions,
-      Removable
+        Removable
 {
 }

@@ -25,10 +25,10 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -38,33 +38,22 @@ import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.io.IOException;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class ConversationsView
       extends JSplitPane
       implements TransactionListener
 {
-   @Uses
-   Iterable<NameDialog> topicDialogs;
+   @Structure
+   Module module;
 
    @Service
    DialogService dialogs;
@@ -73,9 +62,9 @@ public class ConversationsView
 
    private JList list;
 
-   public ConversationsView( @Service final ApplicationContext context, @Structure final ObjectBuilderFactory obf, @Uses final CommandQueryClient client )
+   public ConversationsView( @Service final ApplicationContext context, @Uses final ConversationsModel model )
    {
-      model = obf.newObjectBuilder(ConversationsModel.class ).use( client ).newInstance();
+      this.model = model;
 
       setActionMap(context.getActionMap( this ));
       MacOsUIWrapper.convertAccelerators( getActionMap() );
@@ -106,7 +95,7 @@ public class ConversationsView
          {
             if (list.getSelectedIndex() != -1 && !e.getValueIsAdjusting())
             {
-               final ConversationView conversationView = obf.newObjectBuilder( ConversationView.class ).use( client.getClient( (LinkValue) list.getSelectedValue() )).newInstance();
+               final ConversationView conversationView = module.objectBuilderFactory().newObjectBuilder( ConversationView.class ).use(model.newConversationModel((LinkValue) list.getSelectedValue())).newInstance();
                setRightComponent( conversationView );
             } else
             {
@@ -138,7 +127,7 @@ public class ConversationsView
    @Action
    public Task addConversation() throws ResourceException, IOException
    {
-      final NameDialog dialog = topicDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( CaseResources.new_conversation_topic ) );
 
       if ( !Strings.empty( dialog.name() ) )

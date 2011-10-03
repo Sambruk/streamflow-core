@@ -22,16 +22,17 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
@@ -49,7 +50,11 @@ public interface CaseTypeEntity
 
       // Structure
       CaseType,
+      ArchivalSettings.Data,
+      ArchivalSettings.Events,
       CaseAccessDefaults.Data,
+      DefaultDaysToComplete.Data,
+      DefaultDaysToComplete.Events,
       Describable.Data,
       Notable.Data,
       Labels.Data,
@@ -65,10 +70,7 @@ public interface CaseTypeEntity
       implements Removable
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       CaseType caseType;
@@ -82,9 +84,9 @@ public interface CaseTypeEntity
          {
             {
                SelectedCaseTypes.Data selectedCaseTypes = QueryExpressions.templateFor( SelectedCaseTypes.Data.class );
-               Query<SelectedCaseTypes> caseTypeUsages = qbf.newQueryBuilder( SelectedCaseTypes.class ).
-                     where( QueryExpressions.contains(selectedCaseTypes.selectedCaseTypes(), caseType )).
-                     newQuery( uowf.currentUnitOfWork() );
+               Query<SelectedCaseTypes> caseTypeUsages = module.queryBuilderFactory().newQueryBuilder(SelectedCaseTypes.class).
+                     where(QueryExpressions.contains(selectedCaseTypes.selectedCaseTypes(), caseType)).
+                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
                for (SelectedCaseTypes caseTypeUsage : caseTypeUsages)
                {

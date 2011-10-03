@@ -72,7 +72,7 @@ public enum Icons
    // Logos
    name_logo,
    logo,
-   
+
    // Check
    check,
 

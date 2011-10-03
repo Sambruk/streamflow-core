@@ -19,25 +19,25 @@ package se.streamsource.streamflow.web.application.organization;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
+import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.context.administration.GroupsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -60,13 +60,14 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * Generates test data
@@ -82,19 +83,18 @@ public interface TestDataService
       Application app;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public void activate() throws Exception
       {
+         ObjectBuilderFactory obf = module.objectBuilderFactory();
+
 /*
          Subject subject = new Subject();
          subject.getPrincipals().add( new UserPrincipal("administrator") );
 */
 
-         UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Test data" ) );
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Test data"));
          RoleMap.newCurrentRoleMap();
 
          UserEntity user = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
@@ -108,11 +108,11 @@ public interface TestDataService
          User someUser2 = users.createUser( "someuser2", "someuser2" );
 
          // contact info on someuser
-         ValueBuilder<ContactValue> contact = vbf.newValueBuilder( ContactValue.class );
-         ValueBuilder<ContactEmailValue> email = vbf.newValueBuilder( ContactEmailValue.class );
+         ValueBuilder<ContactDTO> contact = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
+         ValueBuilder<ContactEmailDTO> email = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
          email.prototype().emailAddress().set( "streamsourceflow@gmail.com" );
-         email.prototype().contactType().set( ContactEmailValue.ContactType.WORK );
-         List<ContactEmailValue> list = new ArrayList<ContactEmailValue>();
+         email.prototype().contactType().set( ContactEmailDTO.ContactType.WORK );
+         List<ContactEmailDTO> list = new ArrayList<ContactEmailDTO>();
          list.add( email.newInstance() );
          contact.prototype().emailAddresses().set( list );
 
@@ -159,8 +159,8 @@ public interface TestDataService
          OrganizationalUnit admin = organization.createOrganizationalUnit( "Administration" );
 
          // Create groups
-         Group developers = jayway.createGroup( "Developers" );
-         Group admins = admin.createGroup( "Administrators" );
+         Group developers = obf.newObjectBuilder(GroupsContext.class).use(jayway).newInstance().create("Developers");
+         Group admins = obf.newObjectBuilder(GroupsContext.class).use(admin).newInstance().create( "Administrators" );
 
          developers.addParticipant( user );
          developers.addParticipant( someUser );
@@ -202,11 +202,11 @@ public interface TestDataService
          Form bugreport = bug.createForm();
          bugreport.changeDescription( "Bug Report" );
          bugreport.changeNote( "A form to capture a bug report" );
-         ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder( TextFieldValue.class );
+         ValueBuilder<TextFieldValue> builder = module.valueBuilderFactory().newValueBuilder(TextFieldValue.class);
          builder.prototype().width().set( 30 );
-         ValueBuilder<DateFieldValue> dateBuilder = vbf.newValueBuilder( DateFieldValue.class );
-         ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
-         ValueBuilder<OptionButtonsFieldValue> selectionBuilder = vbf.newValueBuilder( OptionButtonsFieldValue.class );
+         ValueBuilder<DateFieldValue> dateBuilder = module.valueBuilderFactory().newValueBuilder(DateFieldValue.class);
+         ValueBuilder<NumberFieldValue> numberBuilder = module.valueBuilderFactory().newValueBuilder(NumberFieldValue.class);
+         ValueBuilder<OptionButtonsFieldValue> selectionBuilder = module.valueBuilderFactory().newValueBuilder(OptionButtonsFieldValue.class);
          List<String> values = new ArrayList<String>();
          values.add( "Critical" );
          values.add( "High" );
@@ -321,15 +321,15 @@ public interface TestDataService
 
       private void submitStatus( Case aCase, FormDraft formSubmission, String status, Submitter submitter )
       {
-         FormDraftValue submissionValue = (FormDraftValue) formSubmission.getFormDraftValue().buildWith().prototype();
-         for (PageSubmissionValue pageValue : submissionValue.pages().get())
+         FormDraftDTO submissionDTO = (FormDraftDTO) formSubmission.getFormDraftValue().buildWith().prototype();
+         for (PageSubmissionDTO pageDTO : submissionDTO.pages().get())
          {
-            for (FieldSubmissionValue value : pageValue.fields().get())
+            for (FieldSubmissionDTO DTO : pageDTO.fields().get())
             {
-               value.value().set( status );
+               DTO.value().set( status );
             }
          }
-         formSubmission.changeFormDraftValue( submissionValue );
+         formSubmission.changeFormDraftValue(submissionDTO);
          aCase.submitForm( formSubmission, submitter );
       }
 

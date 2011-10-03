@@ -20,8 +20,8 @@ package se.streamsource.streamflow.web.domain.entity.organization;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.This;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
@@ -53,6 +53,7 @@ public interface AccessPointEntity
       Describable.Data,
       IdGenerator.Data,
       AccessPointSettings.Data,
+      AccessPointSettings.Events,
       Labelable.Data,
       SelectedForms.Data,
       FormPdfTemplate.Data,
@@ -66,9 +67,9 @@ public interface AccessPointEntity
       @This
       SelectedForms.Data forms;
 
-      public void setProject( Project project )
+      public void changedProject(Project project)
       {
-         next.setProject( project );
+         next.changedProject(project);
          removeCaseType();
          for (Form form : forms.selectedForms().toList())
          {
@@ -87,9 +88,9 @@ public interface AccessPointEntity
       @This
       SelectedForms.Data forms;
 
-      public void setCaseType( CaseType caseType )
+      public void changedCaseType(CaseType caseType)
       {
-         next.setCaseType( caseType );
+         next.changedCaseType(caseType);
          List<Label> labelList = labels.labels().toList();
          for (Label label : labelList)
          {

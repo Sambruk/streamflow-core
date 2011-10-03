@@ -21,7 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -49,7 +49,7 @@ public interface SelectedCaseTypes
          implements SelectedCaseTypes, Data
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public void addSelectedCaseType( CaseType caseType )
       {

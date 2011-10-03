@@ -21,29 +21,30 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
 
 import java.util.Observable;
 
 public class SelectedTemplatesModel extends Observable implements Refreshable
 {
    @Structure
-   private ValueBuilderFactory vbf;
+   private Module module;
 
    private CommandQueryClient client;
 
-   private SelectedTemplatesValue value;
+   private SelectedTemplatesDTO DTO;
 
 
    public SelectedTemplatesModel( @Uses CommandQueryClient client )
@@ -54,11 +55,16 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
    public void refresh()
    {
 
-      SelectedTemplatesValue updatedValue = client.query( "selectedtemplates", SelectedTemplatesValue.class );
-      value = (SelectedTemplatesValue) updatedValue.buildWith().prototype();
+      SelectedTemplatesDTO updatedDTO = client.query( "selectedtemplates", SelectedTemplatesDTO.class );
+      DTO = (SelectedTemplatesDTO) updatedDTO.buildWith().prototype();
       
       setChanged();
       notifyObservers();
+   }
+
+   public AttachmentsModel newAttachmentsModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(AttachmentsModel.class).use(client.getClient("../attachments/")).newInstance();
    }
 
    public EventList<LinkValue> getPossibleTemplates( String query)
@@ -67,11 +73,11 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
          builder.prototype().string().set( "pdf" );
          
          LinksValue listValue = client.query( query,
-               builder.newInstance(), LinksValue.class );
+               LinksValue.class, builder.newInstance());
          list.addAll( listValue.links().get() );
 
          return list;
@@ -89,12 +95,12 @@ public class SelectedTemplatesModel extends Observable implements Refreshable
 
    public void removeTemplate( String command )
    {
-      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
+      ValueBuilder<EntityValue> builder = module.valueBuilderFactory().newValueBuilder( EntityValue.class );
       client.postCommand( command, builder.newInstance() );
    }
 
-   public SelectedTemplatesValue getSelectedTemplatesValue()
+   public SelectedTemplatesDTO getSelectedTemplatesValue()
    {
-      return value;
+      return DTO;
    }
 }

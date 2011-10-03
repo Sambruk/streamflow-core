@@ -149,12 +149,10 @@ public class RoleMap
 
    private <T> void getAll0( Class<T> roleClass, List<T> list )
    {
-      try
+      for (Object obj : roles.values())
       {
-         list.add( get(roleClass) );
-      } catch (IllegalArgumentException e)
-      {
-         // Ignore
+         if (roleClass.isInstance(obj) && !list.contains(obj))
+            list.add((T) obj);
       }
 
       // Check parent roleMap

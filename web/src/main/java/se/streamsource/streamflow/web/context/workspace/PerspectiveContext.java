@@ -17,32 +17,31 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
 
 import java.util.Collections;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 public class PerspectiveContext
-      implements DeleteContext, IndexContext<PerspectiveValue>
+        implements DeleteContext, IndexContext<PerspectiveDTO>
 {
-   public void delete() throws ResourceException
+   public void delete()
    {
-      role( Perspectives.class ).removePerspective( RoleMap.role( Perspective.class ) );
+      role(Perspectives.class).removePerspective(RoleMap.role(Perspective.class));
    }
 
-   public Iterable<Case> cases( TableQuery tableQuery)
+   public Iterable<Case> cases(TableQuery tableQuery)
    {
       //TODO Should delegate to corresponding context
       // Might be necessary to build up where clause including perspective filter before delegation
@@ -62,8 +61,8 @@ public class PerspectiveContext
       return Collections.<Case>emptyList();
    }
 
-   public PerspectiveValue index()
+   public PerspectiveDTO index()
    {
-      return role( Perspective.Data.class).perspective().get();
+      return role(Perspective.Data.class).perspective().get();
    }
 }

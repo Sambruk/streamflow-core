@@ -21,32 +21,21 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
-import se.streamsource.dci.value.link.LinksValue;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class DomainContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<ObjectName>>
 {
    @Structure
    Module module;
 
-   public LinksValue index()
+   public Iterable<ObjectName> index()
    {
-      Set<ObjectName> mbeans = RoleMap.role( MBeanServer.class ).queryNames( RoleMap.role( ObjectName.class ), null );
-
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-      for (ObjectName mbean : mbeans)
-      {
-         builder.addLink( mbean.getCanonicalKeyPropertyListString(), mbean.getCanonicalKeyPropertyListString() );
-      }
-
-      return builder.newLinks();
+      return RoleMap.role( MBeanServer.class ).queryNames( RoleMap.role( ObjectName.class ), null );
    }
 }

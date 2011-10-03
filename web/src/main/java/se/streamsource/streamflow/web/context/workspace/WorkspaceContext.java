@@ -25,15 +25,15 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
@@ -42,80 +42,80 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * JAVADOC
  */
 public class WorkspaceContext
-implements IndexContext<LinksValue>
+        implements IndexContext<LinksValue>
 {
-@Structure
-Module module;
+   @Structure
+   Module module;
 
-@Service
-CachingService caching;
+   @Service
+   CachingService caching;
 
-public LinksValue index()
-{
-   LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-   ProjectQueries projectQueries = RoleMap.role( ProjectQueries.class );
-   Perspectives.Data perspectives = RoleMap.role( Perspectives.Data.class );
-   
-   linksBuilder.addLink( "Drafts", "drafts", "drafts", "drafts/", "drafts");
-   linksBuilder.addLink( "Search", "search", "search", "search/", "search");
-
-   for (Perspective perspective : perspectives.perspectives())
+   public LinksValue index()
    {
-      linksBuilder.addLink( perspective.getDescription(), perspective.toString(),
-            "perspective", "perspectives/" + perspective.toString() + "/", "perspective");
-   }
-   
-   for (Project project : projectQueries.allProjects())
-   {
-      linksBuilder.addLink( project.getDescription(), project.toString(), "inbox", "projects/"+project.toString()+"/inbox/", "inbox");
-      linksBuilder.addLink( project.getDescription(), project.toString(), "assignments", "projects/"+project.toString()+"/assignments/", "assignments");
-   }
+      LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
+      ProjectQueries projectQueries = RoleMap.role(ProjectQueries.class);
+      Perspectives.Data perspectives = RoleMap.role(Perspectives.Data.class);
 
-   return linksBuilder.newLinks();
-}
+      linksBuilder.addLink("Drafts", "drafts", "drafts", "drafts/", "drafts");
+      linksBuilder.addLink("Search", "search", "search", "search/", "search");
 
-/**
- * Calculate casecounts for this user. Uses caching if available.
- *
- * @return
- */
-public LinksValue casecounts()
-{
-   Caching caching = new Caching( this.caching, Caches.CASECOUNTS );
-
-   LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-
-   UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
-   Element caseCount;
-   DraftsQueries drafts = RoleMap.role( DraftsQueries.class );
-   if ((caseCount = caching.get( drafts.toString() )) == null)
-   {
-      caseCount = new Element( drafts.toString(), Long.toString( drafts.drafts( null ).newQuery( uow ).count() ) );
-      caching.put( caseCount );
-   }
-   builder.addLink( (String) caseCount.getObjectValue(), "/drafts" );
-
-   for (Project project : RoleMap.role( ProjectQueries.class ).allProjects())
-   {
-      if ((caseCount = caching.get( project.toString() )) == null)
+      for (Perspective perspective : perspectives.perspectives())
       {
-         caseCount = new Element( project.toString(), Long.toString( ((InboxQueries) project).inbox( null).newQuery( uow ).count() ) );
-         caching.put( caseCount );
+         linksBuilder.addLink(perspective.getDescription(), perspective.toString(),
+                 "perspective", "perspectives/" + perspective.toString() + "/", "perspective");
       }
 
-      builder.addLink( (String) caseCount.getObjectValue(), project + "/inbox" );
-
-      if ((caseCount = caching.get( project.toString() + ":" + RoleMap.role( Assignee.class ).toString() )) == null)
+      for (Project project : projectQueries.allProjects())
       {
-         caseCount = new Element( project.toString() + ":" + RoleMap.role( Assignee.class ).toString(),
-               Long.toString( ((AssignmentsQueries) project).assignments( RoleMap.role( Assignee.class ), null ).newQuery( uow ).count() ) );
-         caching.put( caseCount );
+         linksBuilder.addLink(project.getDescription(), project.toString(), "inbox", "projects/" + project.toString() + "/inbox/", "inbox");
+         linksBuilder.addLink(project.getDescription(), project.toString(), "assignments", "projects/" + project.toString() + "/assignments/", "assignments");
       }
 
-      builder.addLink( (String) caseCount.getObjectValue(), project + "/assignments" );
+      return linksBuilder.newLinks();
    }
 
-   return builder.newLinks();
-}
+   /**
+    * Calculate casecounts for this user. Uses caching if available.
+    *
+    * @return
+    */
+   public LinksValue casecounts()
+   {
+      Caching caching = new Caching(this.caching, Caches.CASECOUNTS);
+
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+
+      Element caseCount;
+      DraftsQueries drafts = RoleMap.role(DraftsQueries.class);
+      if ((caseCount = caching.get(drafts.toString())) == null)
+      {
+         caseCount = new Element(drafts.toString(), Long.toString(drafts.drafts(null).newQuery(uow).count()));
+         caching.put(caseCount);
+      }
+      builder.addLink((String) caseCount.getObjectValue(), "/drafts");
+
+      for (Project project : RoleMap.role(ProjectQueries.class).allProjects())
+      {
+         if ((caseCount = caching.get(project.toString())) == null)
+         {
+            caseCount = new Element(project.toString(), Long.toString(((InboxQueries) project).inbox(null).newQuery(uow).count()));
+            caching.put(caseCount);
+         }
+
+         builder.addLink((String) caseCount.getObjectValue(), project + "/inbox");
+
+         if ((caseCount = caching.get(project.toString() + ":" + RoleMap.role(Assignee.class).toString())) == null)
+         {
+            caseCount = new Element(project.toString() + ":" + RoleMap.role(Assignee.class).toString(),
+                    Long.toString(((AssignmentsQueries) project).assignments(RoleMap.role(Assignee.class), null).newQuery(uow).count()));
+            caching.put(caseCount);
+         }
+
+         builder.addLink((String) caseCount.getObjectValue(), project + "/assignments");
+      }
+
+      return builder.newLinks();
+   }
 }

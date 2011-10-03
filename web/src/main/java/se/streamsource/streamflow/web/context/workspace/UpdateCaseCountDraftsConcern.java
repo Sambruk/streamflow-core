@@ -20,8 +20,6 @@ package se.streamsource.streamflow.web.context.workspace;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
@@ -32,22 +30,19 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * JAVADOC
  */
 public abstract class UpdateCaseCountDraftsConcern
-   extends ConcernOf<DraftsContext>
-   implements DraftsContext
+        extends ConcernOf<DraftsContext>
+        implements DraftsContext
 {
    @Optional
    @Service
    CachingService caching;
 
-   @Structure
-   UnitOfWorkFactory uowf;
-
    public void createcase()
    {
-      Drafts drafts = RoleMap.role( Drafts.class );
+      Drafts drafts = RoleMap.role(Drafts.class);
 
       // Update drafts for user
-      new Caching(caching, Caches.CASECOUNTS).addToCache( drafts.toString(), 1 );
+      new Caching(caching, Caches.CASECOUNTS).addToCache(drafts.toString(), 1);
 
       next.createcase();
    }

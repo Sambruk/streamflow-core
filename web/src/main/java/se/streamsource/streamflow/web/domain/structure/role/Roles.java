@@ -22,10 +22,8 @@ import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
@@ -63,9 +61,6 @@ public interface Roles
    {
       @Service
       IdentityGenerator idGen;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       @This
       Data data;

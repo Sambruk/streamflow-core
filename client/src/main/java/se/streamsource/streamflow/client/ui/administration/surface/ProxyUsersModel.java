@@ -21,26 +21,27 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
+import se.streamsource.streamflow.api.administration.ProxyUserDTO;
+import se.streamsource.streamflow.api.administration.ProxyUserListDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
-import se.streamsource.streamflow.resource.user.ProxyUserDTO;
-import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
 
 public class ProxyUsersModel
       implements Refreshable, TransactionListener
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    private EventList<ProxyUserDTO> eventList = new BasicEventList<ProxyUserDTO>();
 
@@ -58,29 +59,30 @@ public class ProxyUsersModel
       EventListSynch.synchronize( proxyUsers.users().get(), eventList );
    }
 
-   public void createProxyUser( NewProxyUserCommand proxyUserCommand )
+   public void createProxyUser( NewProxyUserDTO proxyUserDTO)
    {
       try
       {
-         client.postCommand( "createproxyuser", proxyUserCommand );
+         client.postCommand( "createproxyuser", proxyUserDTO);
       } catch (ResourceException e)
       {
-         ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
+         ErrorResources resources = ErrorResources.valueOf(e.getMessage());
          throw new OperationException( resources, e );
       }
    }
 
-   public void changeEnabled( ProxyUserDTO proxyUser )
+   public void changeEnabled( ProxyUserDTO proxyUser, boolean enabled )
    {
-      client.getSubClient( proxyUser.username().get() ).postCommand( "changeenabled" );
+      Form form = new Form();
+      form.set("enabled", Boolean.toString(enabled));
+      client.getSubClient( proxyUser.username().get() ).postCommand( "changeenabled", form.getWebRepresentation() );
    }
 
    public void resetPassword( ProxyUserDTO proxyUser, String password )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( password );
-
-      client.getSubClient( proxyUser.username().get() ).postCommand( "resetpassword", builder.newInstance() );
+      Form form = new Form();
+      form.set("password", password);
+      client.getSubClient( proxyUser.username().get() ).postCommand( "resetpassword", form );
    }
 
    public void remove( ProxyUserDTO proxyUser )

@@ -23,5 +23,4 @@ package se.streamsource.dci.restlet.server;
 public interface CommandResult
 {
    Object getResult();
-
 }

@@ -19,39 +19,205 @@ package se.streamsource.streamflow.client.ui.administration.surface;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * TODO
  */
 public class EmailAccessPointView
-        extends JPanel
-        implements TransactionListener
+        extends JScrollPane
+        implements TransactionListener, Refreshable
 {
-   public EmailAccessPointView(@Uses CommandQueryClient client)
+   @Service
+   DialogService dialogs;
+
+   @Structure
+   Module module;
+
+   private EmailAccessPointModel model;
+   private JTextField subject;
+
+   private JList emailTemplateList = new JList();
+   private JTextArea emailTemplateText = new JTextArea();
+   private JLabel project;
+   private JLabel casetype;
+   private JButton casetypeButton;
+   private JButton projectButton;
+   private JButton labelsButton;
+   private CaseLabelsView labels;
+
+   public void init(@Service ApplicationContext context, @Uses final EmailAccessPointModel model)
    {
+      setActionMap(context.getActionMap(this));
+      JPanel panel = new JPanel();
+      this.setViewportView( panel );
+      
+      this.model = model;
+      this.labels = module.objectBuilderFactory().newObjectBuilder(CaseLabelsView.class).use( model.createLabelsModel() ).newInstance();
+
+
       FormLayout layout = new FormLayout(
-              "75dlu, 5dlu, 120dlu", "pref, pref, pref");
-      DefaultFormBuilder formBuilder = new DefaultFormBuilder(layout, this);
+              "75dlu, 5dlu, fill:p:grow", "pref, pref, pref, pref, pref, fill:p:grow, pref");
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder(layout, panel);
 
-      EmailAccessPointValue emailAccessPoint = client.query("index", EmailAccessPointValue.class);
-
-      formBuilder.append(i18n.text(AdministrationResources.email), new JLabel(emailAccessPoint.email().get()));
+      formBuilder.append(projectButton = new JButton(getActionMap().get("project")));
+      formBuilder.append(project = new JLabel());
       formBuilder.nextLine();
-      formBuilder.append(i18n.text(AdministrationResources.accesspoint));
+      formBuilder.append(casetypeButton = new JButton(getActionMap().get("casetype")));
+      formBuilder.append(casetype = new JLabel());
+      formBuilder.nextLine();
+      formBuilder.append(labelsButton = new JButton(labels.getActionMap().get("addLabel")));
+      formBuilder.append(labels);
+      formBuilder.nextLine();
+      formBuilder.addSeparator(i18n.text(AdministrationResources.emailTemplates));
+      formBuilder.nextLine();
+      formBuilder.append(i18n.text(AdministrationResources.subject), subject = new JTextField());
+      formBuilder.nextLine();
+      formBuilder.append(new JScrollPane(emailTemplateList));
+      formBuilder.append(new JScrollPane(emailTemplateText));
+      formBuilder.nextLine();
+
+      emailTemplateList.addListSelectionListener(new ListSelectionListener()
+      {
+         public void valueChanged(ListSelectionEvent e)
+         {
+            if (!e.getValueIsAdjusting())
+            {
+               if (emailTemplateList.getSelectedIndex() != -1)
+               {
+                  emailTemplateText.setText(model.getValue().messages().get().get(emailTemplateList.getSelectedValue()));
+               }
+            }
+         }
+      });
+
+      ActionBinder actionBinder = new ActionBinder(getActionMap());
+      actionBinder.bind("save", emailTemplateText);
+      actionBinder.bind("changeSubject", subject);
+
+      new RefreshWhenShowing(this, this);
+   }
+
+   @org.jdesktop.application.Action
+   public Task project()
+   {
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossibleProjects() ).newInstance();
+      dialogs.showOkCancelHelpDialog( projectButton, dialog, i18n.text( WorkspaceResources.choose_project ) );
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            if (dialog.getSelectedLink() != null)
+            {
+               model.changeProject(dialog.getSelectedLink());
+            }
+         }
+      };
+   }
+
+   @org.jdesktop.application.Action
+   public Task casetype()
+   {
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
+            i18n.text( WorkspaceResources.choose_casetype ),
+            model.getPossibleCaseTypes() ).newInstance();
+      dialogs.showOkCancelHelpDialog( casetypeButton, dialog );
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            if (dialog.getSelectedLink() != null)
+            {
+               model.changeCaseType(dialog.getSelectedLink());
+            }
+         }
+      };
+
+   }
+
+   public void refresh()
+   {
+      model.refresh();
+
+      ValueBinder binder = module.objectBuilderFactory().newObject(ValueBinder.class);
+
+      binder.bind("project", project);
+      binder.bind("caseType", casetype);
+      binder.bind("subject", subject);
+      EmailAccessPointDTO value = model.getValue();
+      binder.update(value);
+      
+      int selectedIndex = emailTemplateList.getSelectedIndex();
+      DefaultListModel emailTemplateListModel = new DefaultListModel();
+      for (String key : value.messages().get().keySet())
+      {
+         emailTemplateListModel.addElement(key);
+      }
+      emailTemplateList.setModel(emailTemplateListModel);
+      emailTemplateList.setSelectedIndex( selectedIndex );
+   }
+
+   @org.jdesktop.application.Action
+   public Task changeSubject()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeSubject(subject.getText());
+         }
+      };
+   }
+
+   @org.jdesktop.application.Action
+   public Task save()
+   {
+      final String template = emailTemplateText.getText();
+      final String key = (String) emailTemplateList.getSelectedValue();
+
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.updateTemplate(key, template);
+            model.getValue().messages().get().put(key, template);
+         }
+      };
    }
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      //To change body of implemented methods use File | Settings | File Templates.
+      refresh();
    }
 }

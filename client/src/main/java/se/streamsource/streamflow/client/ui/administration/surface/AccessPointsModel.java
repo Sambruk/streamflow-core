@@ -19,9 +19,9 @@ package se.streamsource.streamflow.client.ui.administration.surface;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -38,36 +38,23 @@ public class AccessPointsModel
       implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    @Uses
    CommandQueryClient client;
 
-/*
-   WeakModelMap<String, AccessPointModel> accessPointModels = new WeakModelMap<String, AccessPointModel>()
+   public AccessPointsModel()
    {
-      protected AccessPointModel newModel( String key )
-      {
-         CaseLabelsModel labelsModel = obf.newObjectBuilder( CaseLabelsModel.class )
-               .use( client.getSubClient( key ).getSubClient( "labels" ) ).newInstance();
-         return obf.newObjectBuilder( AccessPointModel.class ).use(
-               client.getSubClient( key ),
-               labelsModel ).newInstance();
-      }
-   };
-
-*/
+      relationModelMapping("accesspoint", AccessPointModel.class);
+   }
 
    public void createAccessPoint( String accessPointName )
    {
       try
       {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( accessPointName );
-         client.postCommand( "createaccesspoint", builder.newInstance() );
+         Form form = new Form();
+         form.set( "name", accessPointName );
+         client.postCommand( "createaccesspoint", form.getWebRepresentation() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -80,7 +67,7 @@ public class AccessPointsModel
 
    public void changeDescription( LinkValue link, String newName )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( newName );
 
       try

@@ -33,13 +33,27 @@ import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
+import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
@@ -47,40 +61,17 @@ import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
@@ -93,8 +84,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.first;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
 
 /**
  * JAVADOC
@@ -107,11 +99,10 @@ public class FormSubmissionWizardPageView
    private java.util.Map<StateBinder, EntityReference> fieldBinders;
    private ValidationResultModel validationResultModel;
    private FormSubmissionWizardPageModel model;
-   private ObjectBuilderFactory obf;
    private static final Map<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>> fields = new HashMap<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>>();
 
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
    static
    {
@@ -129,13 +120,13 @@ public class FormSubmissionWizardPageView
    }
 
 
-   public FormSubmissionWizardPageView( @Structure ObjectBuilderFactory obf,
-                                        @Uses PageSubmissionValue page,
-                                        @Uses CommandQueryClient client )
+   public FormSubmissionWizardPageView( @Structure Module module,
+                                        @Uses PageSubmissionDTO page,
+                                        @Uses FormDraftModel model)
    {
       super( page.title().get() );
-      this.model = obf.newObjectBuilder( FormSubmissionWizardPageModel.class ).use( client ).newInstance();
-      this.obf = obf;
+      this.module = module;
+      this.model = module.objectBuilderFactory().newObjectBuilder(FormSubmissionWizardPageModel.class).use( model ).newInstance();
       componentFieldMap = new HashMap<String, AbstractFieldPanel>();
       validationResultModel = new DefaultValidationResultModel();
       setLayout( new BorderLayout() );
@@ -147,22 +138,22 @@ public class FormSubmissionWizardPageView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 
-      for (FieldSubmissionValue value : page.fields().get())
+      for (FieldSubmissionDTO DTO : page.fields().get())
       {
          AbstractFieldPanel component;
-         FieldValue fieldValue = value.field().get().fieldValue().get();
+         FieldValue fieldValue = DTO.field().get().fieldValue().get();
          if (!(fieldValue instanceof CommentFieldValue))
          {
-            component = getComponent( value );
-            componentFieldMap.put( value.field().get().field().get().identity(), component );
-            StateBinder stateBinder = component.bindComponent( bb, value );
+            component = getComponent(DTO);
+            componentFieldMap.put( DTO.field().get().field().get().identity(), component );
+            StateBinder stateBinder = component.bindComponent( bb, DTO);
             stateBinder.addObserver( this );
-            fieldBinders.put( stateBinder, value.field().get().field().get() );
+            fieldBinders.put( stateBinder, DTO.field().get().field().get() );
 
          } else
          {
             // comment field does not have any input component
-            String comment = value.field().get().note().get();
+            String comment = DTO.field().get().note().get();
             comment = comment.replaceAll( "\n", "<br/>" );
 
             JEditorPane commentPane = new JEditorPane( "text/html", "<html>" + comment + "</html>" );
@@ -369,11 +360,11 @@ public class FormSubmissionWizardPageView
       }
    }
 
-   private AbstractFieldPanel getComponent( FieldSubmissionValue field )
+   private AbstractFieldPanel getComponent( FieldSubmissionDTO field )
    {
       FieldValue fieldValue = field.field().get().fieldValue().get();
       Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) fieldValue.getClass().getInterfaces()[0];
-      return obf.newObjectBuilder( fields.get( fieldValueType ) ).use( field, fieldValue ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(fields.get(fieldValueType)).use( field, fieldValue ).newInstance();
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -381,9 +372,9 @@ public class FormSubmissionWizardPageView
       if (Events.matches( Events.withNames( "changedFieldAttachmentValue" ), transactions ))
       {
          String value = EventParameters.getParameter( first( filter( Events.withNames( "changedFieldAttachmentValue" ), events( transactions ) ) ), "param1" );
-         AttachmentFieldDTO dto = vbf.newValueFromJSON( AttachmentFieldDTO.class, value );
+         AttachmentFieldDTO dto = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldDTO.class, value);
 
-         ValueBuilder<AttachmentFieldSubmission> builder = vbf.newValueBuilder( AttachmentFieldSubmission.class );
+         ValueBuilder<AttachmentFieldSubmission> builder = module.valueBuilderFactory().newValueBuilder(AttachmentFieldSubmission.class);
          builder.prototype().attachment().set( dto.attachment().get() );
          builder.prototype().name().set( dto.name().get() );
 

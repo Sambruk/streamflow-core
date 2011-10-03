@@ -17,8 +17,7 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 

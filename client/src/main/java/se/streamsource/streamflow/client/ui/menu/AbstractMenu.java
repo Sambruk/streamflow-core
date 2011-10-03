@@ -23,12 +23,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+import javax.swing.*;
 
 /**
  * Base class for menus

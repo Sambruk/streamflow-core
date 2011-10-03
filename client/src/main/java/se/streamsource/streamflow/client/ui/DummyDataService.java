@@ -23,10 +23,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Uniform;
 import org.restlet.resource.ClientResource;
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * JAVADOC
@@ -53,10 +52,7 @@ public interface DummyDataService
       final Logger logger = LoggerFactory.getLogger( getClass().getName() );
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Service
       IndividualRepository individualRepository;
@@ -69,16 +65,13 @@ public interface DummyDataService
 
       public void activate() throws Exception
       {
-         if (!app.mode().equals( Application.Mode.development ))
-            return;
-
          try
          {
-            UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Create account" ) );
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Create account"));
 
             Individual individual = individualRepository.individual();
 
-            ValueBuilder<AccountSettingsValue> builder = vbf.newValueBuilder( AccountSettingsValue.class );
+            ValueBuilder<AccountSettingsValue> builder = module.valueBuilderFactory().newValueBuilder(AccountSettingsValue.class);
             builder.prototype().name().set( "Test server administrator" );
             builder.prototype().server().set( "http://localhost:8040/streamflow" );
             builder.prototype().userName().set( "administrator" );

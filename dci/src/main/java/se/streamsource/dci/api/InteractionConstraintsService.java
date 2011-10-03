@@ -23,7 +23,7 @@ import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.NoSuchObjectException;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class InteractionConstraintsService
       implements InteractionConstraints
 {
    @Structure
-   ObjectBuilderFactory obf;
+   Module module;
 
    Logger logger = LoggerFactory.getLogger( InteractionConstraintsService.class );
 
@@ -133,7 +133,7 @@ public class InteractionConstraintsService
             {
                try
                {
-                  constraint = obf.newObject( constraintClass );
+                  constraint = module.objectBuilderFactory().newObject(constraintClass);
                } catch (NoSuchObjectException e)
                {
                   constraint = constraintClass.newInstance();
@@ -189,7 +189,7 @@ public class InteractionConstraintsService
             {
                try
                {
-                  constraint = obf.newObject( constraintClass );
+                  constraint = module.objectBuilderFactory().newObject(constraintClass);
                } catch (NoSuchObjectException e)
                {
                   constraint = constraintClass.newInstance();

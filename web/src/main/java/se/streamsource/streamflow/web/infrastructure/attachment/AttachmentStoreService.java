@@ -17,20 +17,22 @@
 
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.apache.commons.io.IOUtils;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.util.Visitor;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.Random;
 
@@ -49,10 +51,81 @@ public interface AttachmentStoreService
       @Service
       FileConfiguration fileConfig;
 
-      public String storeAttachment( InputStream in )
+      public String storeAttachment( Input<ByteBuffer, IOException> input )
             throws IOException
       {
          // Create new id for file
+         File file = createFile();
+
+         // Write data to disk
+         input.transferTo(Outputs.<Object>byteBuffer(file));
+         return getId(file);
+      }
+
+      public Input<ByteBuffer, IOException> attachment(String id) throws FileNotFoundException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         return Inputs.byteBuffer(file, 4096);
+      }
+
+      public void attachment(String id, Visitor<InputStream, IOException> visitor) throws IOException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), 4096);
+         try
+         {
+            visitor.visit(inputStream);
+         } finally
+         {
+            inputStream.close();
+         }
+      }
+
+      public Input<String, IOException> text(String id) throws FileNotFoundException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         return Inputs.text(file);
+      }
+
+      public void deleteAttachment( String id ) throws IOException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         file.delete();
+      }
+
+      public long getAttachmentSize(String id) throws FileNotFoundException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         return file.length();
+      }
+
+      private String getId(File file)
+      {
+         return file.getName().substring(0, file.getName().length()-4);
+      }
+
+      private File createFile()
+      {
          DecimalFormat format = new DecimalFormat("000000000");
          File file;
          String id;
@@ -62,47 +135,14 @@ public interface AttachmentStoreService
             file = getFile(id);
          } while (file.exists()); // Ensure we're not reusing an id
 
-         // Write data to disk
-         BufferedOutputStream out = null;
-         try
-         {
-            out = new BufferedOutputStream(new FileOutputStream(file));
-            IOUtils.copyLarge( new BufferedInputStream(in, 1024),  out);
-
-            in.close();
-            out.close();
-
-            return id;
-         } catch (IOException ex)
-         {
-            in.close();
-            if (out != null)
-               out.close();
-
-            // Remove file if it was partially written
-            file.delete();
-
-            throw ex;
-         }
-      }
-
-      public InputStream getAttachment( String id ) throws IOException
-      {
-         File file = getFile(id);
-
-         if (!file.exists())
-            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
-
-         return new BufferedInputStream(new FileInputStream(file));
-      }
-
-      public void deleteAttachment( String id ) throws IOException
-      {
-         getFile(id).delete();
+         return file;
       }
 
       private File getFile( String id )
       {
+         if (id.startsWith("store:"))
+            id = id.substring("store:".length());
+
          // Ensure that directory for data exists
          File files = new File(fileConfig.dataDirectory(), "files");
 

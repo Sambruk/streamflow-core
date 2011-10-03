@@ -29,8 +29,8 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
@@ -43,7 +43,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import static org.qi4j.api.query.QueryExpressions.*;
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -51,9 +51,9 @@ import static se.streamsource.dci.api.RoleMap.*;
 @Concerns(UpdateCaseCountDraftsConcern.class)
 @Mixins(DraftsContext.Mixin.class)
 public interface DraftsContext
-      extends Context
+        extends Context
 {
-   Query<Case> cases( TableQuery tableQuery );
+   Query<Case> cases(TableQuery tableQuery);
 
    void createcase();
 
@@ -64,18 +64,18 @@ public interface DraftsContext
    LinksValue possibleProjects();
 
    abstract class Mixin
-         implements DraftsContext
+           implements DraftsContext
    {
       @Structure
       Module module;
 
-      public Query<Case> cases( TableQuery tableQuery )
+      public Query<Case> cases(TableQuery tableQuery)
       {
-         DraftsQueries inbox = role( DraftsQueries.class );
+         DraftsQueries inbox = role(DraftsQueries.class);
 
-         QueryBuilder<Case> builder = inbox.drafts( tableQuery.where() );
+         QueryBuilder<Case> builder = inbox.drafts(tableQuery.where());
 
-         Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+         Query<Case> query = builder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
          // Paging
          if (tableQuery.offset() != null)
@@ -83,23 +83,23 @@ public interface DraftsContext
          if (tableQuery.limit() != null)
             query.maxResults(Integer.parseInt(tableQuery.limit()));
 
-        if (tableQuery.orderBy() != null)
+         if (tableQuery.orderBy() != null)
          {
-            String[] orderByValue = tableQuery.orderBy().split( " " );
-            OrderBy.Order order = orderByValue[1].equals( "asc" ) ? OrderBy.Order.ASCENDING : OrderBy.Order.DESCENDING;
+            String[] orderByValue = tableQuery.orderBy().split(" ");
+            OrderBy.Order order = orderByValue[1].equals("asc") ? OrderBy.Order.ASCENDING : OrderBy.Order.DESCENDING;
 
-            if (tableQuery.orderBy().equals( "status" ))
+            if (tableQuery.orderBy().equals("status"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Status.Data.class ).status(), order ) );
-            } else if (orderByValue[0].equals( "description" ))
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Status.Data.class).status(), order));
+            } else if (orderByValue[0].equals("description"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description(), order ) );
-            } else if (orderByValue[0].equals( "dueOn" ))
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Describable.Data.class).description(), order));
+            } else if (orderByValue[0].equals("dueOn"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( DueOn.Data.class ).dueOn(), order ) );
-            } else if (orderByValue[0].equals( "createdOn" ))
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
+            } else if (orderByValue[0].equals("createdOn"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( CreatedOn.class ).createdOn(), order ) );
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
             }
          }
          return query;
@@ -107,40 +107,40 @@ public interface DraftsContext
 
       public void createcase()
       {
-         Drafts drafts = role( Drafts.class );
+         Drafts drafts = role(Drafts.class);
          drafts.createDraft();
       }
 
       public Query<LabelEntity> possibleLabels()
       {
-         QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( LabelEntity.class );
+         QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class);
          queryBuilder = queryBuilder.where(
-               eq( templateFor( Removable.Data.class ).removed(), false ) );
-         return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-               orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class ).description() ) );
+                 eq(templateFor(Removable.Data.class).removed(), false));
+         return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+                 orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
       }
 
       public Query<CaseTypeEntity> possibleCaseTypes()
       {
-         QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( CaseTypeEntity.class );
+         QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class);
          queryBuilder = queryBuilder.where(
-               eq( templateFor( Removable.Data.class ).removed(), false ) );
-         return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-               orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class ).description() ) );
+                 eq(templateFor(Removable.Data.class).removed(), false));
+         return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+                 orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
       }
 
       public LinksValue possibleProjects()
       {
-         QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
+         QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
          queryBuilder = queryBuilder.where(
-               eq( templateFor( Removable.Data.class ).removed(), false ) );
-         Query<ProjectEntity> query = queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-               orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class ).description() ) );
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+                 eq(templateFor(Removable.Data.class).removed(), false));
+         Query<ProjectEntity> query = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+                 orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
 
          for (ProjectEntity project : query)
          {
-            linksBuilder.addLink( project.getDescription(), project.identity().get(), "", "", "", ((Describable) ((Ownable.Data) project).owner().get()).getDescription() );
+            linksBuilder.addLink(project.getDescription(), project.identity().get(), "", "", "", ((Describable) ((Ownable.Data) project).owner().get()).getDescription());
          }
          return linksBuilder.newLinks();
       }

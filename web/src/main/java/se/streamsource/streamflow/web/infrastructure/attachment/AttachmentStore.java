@@ -17,8 +17,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
+import org.qi4j.api.io.Input;
+import se.streamsource.streamflow.util.Visitor;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  * Store for the binary part of an attachment
@@ -29,12 +34,18 @@ public interface AttachmentStore
     * Read the binary data and save, and return a URL
     * pointing to the file.
     *
-    * @param in stream of binary data for the file
+    * @param input of binary data for the file
     * @return id for the file
     */
-   String storeAttachment( InputStream in) throws IOException;
+   String storeAttachment( Input<ByteBuffer, IOException> input) throws IOException;
 
-   InputStream getAttachment(String id) throws IOException;
+   Input<ByteBuffer, IOException> attachment(String id) throws FileNotFoundException;
+
+   void attachment(String id, Visitor<InputStream, IOException> visitor) throws IOException;
+
+   Input<String, IOException> text(String id) throws FileNotFoundException;
 
    void deleteAttachment(String id) throws IOException;
+
+   long getAttachmentSize(String id) throws IOException;
 }

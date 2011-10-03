@@ -26,7 +26,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -36,6 +36,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 public interface Messages
 {
    Message createMessage(String body, ConversationParticipant participant);
+
+   Message getLastMessage();
 
    interface Data
    {
@@ -51,7 +53,7 @@ public interface Messages
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       ConversationParticipants participants;
@@ -75,7 +77,7 @@ public interface Messages
 
       public Message createdMessage( DomainEvent event, String id, String body, ConversationParticipant participant )
       {
-         EntityBuilder<Message> builder = uowf.currentUnitOfWork().newEntityBuilder( Message.class, id );
+         EntityBuilder<Message> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Message.class, id );
          builder.instanceFor( Message.Data.class ).body().set( body );
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
@@ -85,6 +87,14 @@ public interface Messages
          messages().add( message );
 
          return message;
+      }
+
+      public Message getLastMessage()
+      {
+         if (messages().count() > 0)
+            return messages().get(messages().count()-1);
+         else
+            return null;
       }
    }
 }

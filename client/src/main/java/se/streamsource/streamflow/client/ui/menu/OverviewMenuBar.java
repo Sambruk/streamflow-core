@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client.ui.menu;
 
 import org.qi4j.api.injection.scope.Uses;
 
-import javax.swing.JMenuBar;
+import javax.swing.*;
 
 /**
  * Menu bar for the Workspace window

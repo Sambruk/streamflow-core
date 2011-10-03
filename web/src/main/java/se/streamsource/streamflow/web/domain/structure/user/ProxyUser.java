@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 
 /**

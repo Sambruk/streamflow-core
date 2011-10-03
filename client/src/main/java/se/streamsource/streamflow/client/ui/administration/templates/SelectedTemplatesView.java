@@ -28,11 +28,10 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
@@ -45,18 +44,9 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -67,8 +57,8 @@ public class SelectedTemplatesView extends JPanel
    @Service
    DialogService dialogs;
 
-   @Uses
-   protected ObjectBuilder<SelectLinkDialog> templateDialog;
+   @Structure
+   Module module;
 
    private StateBinder selectedTemplatesBinder;
 
@@ -76,20 +66,20 @@ public class SelectedTemplatesView extends JPanel
    JButton formTemplateButton;
    JButton caseTemplateButton;
 
-   RemovableLabel defaultTemplate = new RemovableLabel( RemovableLabel.LEFT );
-   RemovableLabel formTemplate = new RemovableLabel( RemovableLabel.LEFT );
-   RemovableLabel caseTemplate = new RemovableLabel( RemovableLabel.LEFT );
+   RemovableLabel defaultTemplate = new RemovableLabel();
+   RemovableLabel formTemplate = new RemovableLabel();
+   RemovableLabel caseTemplate = new RemovableLabel();
 
    private SelectedTemplatesModel model;
 
    public SelectedTemplatesView( @Service ApplicationContext appContext,
-                                @Uses CommandQueryClient client,
-                                @Structure ObjectBuilderFactory obf )
+                                @Uses SelectedTemplatesModel model,
+                                @Structure Module module)
    {
-      this.model = obf.newObjectBuilder( SelectedTemplatesModel.class ).use( client ).newInstance();
+      this.model = model;
       model.addObserver( this );
 
-      selectedTemplatesBinder = obf.newObject( StateBinder.class );
+      selectedTemplatesBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       selectedTemplatesBinder.addObserver( this );
       selectedTemplatesBinder.addConverter( new StateBinder.Converter()
       {
@@ -108,22 +98,22 @@ public class SelectedTemplatesView extends JPanel
          }
       } );
       selectedTemplatesBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
-      SelectedTemplatesValue template = selectedTemplatesBinder
-            .bindingTemplate( SelectedTemplatesValue.class );
+      SelectedTemplatesDTO template = selectedTemplatesBinder
+            .bindingTemplate( SelectedTemplatesDTO.class );
 
-      defaultTemplate.setFont( defaultTemplate.getFont().deriveFont(
-            Font.BOLD ) );
+      defaultTemplate.getLabel().setFont(defaultTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
       defaultTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      formTemplate.setFont( formTemplate.getFont().deriveFont(
-            Font.BOLD ) );
+      formTemplate.getLabel().setFont(formTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
       formTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      caseTemplate.setFont( caseTemplate.getFont().deriveFont(
-            Font.BOLD ) );
+      caseTemplate.getLabel().setFont(caseTemplate.getLabel().getFont().deriveFont(
+            Font.BOLD));
       caseTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref:grow" );
+      FormLayout layout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -201,7 +191,7 @@ public class SelectedTemplatesView extends JPanel
          public void command()
                throws Exception
          {
-            SelectLinkDialog dialog = templateDialog.use(
+            SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
                   i18n.text( WorkspaceResources.choose_template ),
                   model.getPossibleTemplates( "possibledefaulttemplates") ).newInstance();
 
@@ -225,7 +215,7 @@ public class SelectedTemplatesView extends JPanel
          public void command()
                throws Exception
          {
-            SelectLinkDialog dialog = templateDialog.use(
+            SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
                   i18n.text( WorkspaceResources.choose_template ),
                   model.getPossibleTemplates( "possibleformtemplates") ).newInstance();
 
@@ -249,7 +239,7 @@ public class SelectedTemplatesView extends JPanel
          public void command()
                throws Exception
          {
-            SelectLinkDialog dialog = templateDialog.use(
+            SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
                   i18n.text( WorkspaceResources.choose_template ),
                   model.getPossibleTemplates( "possiblecasetemplates") ).newInstance();
 
@@ -307,7 +297,9 @@ public class SelectedTemplatesView extends JPanel
          }
       } else
       {
-         selectedTemplatesBinder.updateWith( model.getSelectedTemplatesValue() );
+         SelectedTemplatesDTO selectedTemplatesValue = model.getSelectedTemplatesValue();
+         defaultTemplate.setRemoveLink(selectedTemplatesValue.defaultPdfTemplate().get());
+         selectedTemplatesBinder.updateWith(selectedTemplatesValue);
       }
    }
 

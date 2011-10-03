@@ -31,7 +31,7 @@ public class LabelsModel
 {
    public LabelsModel( )
    {
-      super( "createlabel" );
+      super( "create" );
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)
@@ -44,5 +44,10 @@ public class LabelsModel
    public void moveForm( LinkValue selected, LinkValue selectedLink )
    {
       client.getClient( selected ).postLink( selectedLink );
+   }
+
+   public LinkValue getKnowledgeBaseLink(LinkValue selected)
+   {
+      return client.getClient(selected).query("knowledgebase", LinkValue.class);
    }
 }

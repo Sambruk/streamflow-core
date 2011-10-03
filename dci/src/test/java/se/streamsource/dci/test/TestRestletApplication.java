@@ -21,9 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
@@ -34,7 +32,7 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
 import org.restlet.security.Verifier;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
 import se.streamsource.dci.restlet.server.sitemesh.RestletFilterBuilder;
 
@@ -50,10 +48,7 @@ public class TestRestletApplication
    public static final MediaType APPLICATION_SPARQL_JSON = new MediaType( "application/sparql-results+json", "SPARQL JSON" );
 
    @Structure
-   ObjectBuilderFactory factory;
-
-   @Structure
-   UnitOfWorkFactory unitOfWorkFactory;
+   Module module;
 
    @Optional
    @Service
@@ -91,7 +86,7 @@ public class TestRestletApplication
    {
       getContext().setDefaultVerifier( verifier );
 
-      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet2.class ).use( getContext() ).newInstance();
+      Restlet cqr = module.objectBuilderFactory().newObjectBuilder(CommandQueryRestlet.class).use( getContext() ).newInstance();
 
 //      ViewFilter viewFilter = factory.newObjectBuilder( ViewFilter.class ).use( getContext(), cqr ).newInstance();
 

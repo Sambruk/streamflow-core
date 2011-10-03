@@ -27,7 +27,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -70,7 +70,7 @@ public interface Projects
       IdentityGenerator idgen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This Data data;
 
@@ -87,7 +87,7 @@ public interface Projects
 
       public Project createdProject( DomainEvent event, String id )
       {
-         EntityBuilder<Project> builder = uowf.currentUnitOfWork().newEntityBuilder( Project.class, id );
+         EntityBuilder<Project> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Project.class, id );
          builder.instanceFor( OwningOrganizationalUnit.Data.class).organizationalUnit().set( ou );
          return builder.newInstance();
       }

@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.web.domain.entity.organization;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
@@ -44,7 +44,7 @@ public interface OrganizationalUnitEntity
 
       // Interactions
       Authorization,
-      Describable,
+        Describable,
       Describable.Data,
 
       // Structure
@@ -54,6 +54,7 @@ public interface OrganizationalUnitEntity
       OrganizationalUnits.Data,
       Forms.Data,
       Groups.Data,
+      Groups.Events,
       Projects.Data,
       Removable.Data,
       RolePolicy.Data,

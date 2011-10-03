@@ -20,12 +20,13 @@ package se.streamsource.streamflow.web.application.contact;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
@@ -44,13 +45,7 @@ public interface StreamflowContactLookupService
          implements ContactLookup
    {
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public ContactList lookup( ContactValue contactTemplate )
       {
@@ -93,20 +88,20 @@ public interface StreamflowContactLookupService
             queryString.append( ") " );
          }
 
-         ValueBuilder<ContactList> listBuilder = vbf.newValueBuilder( ContactList.class );
+         ValueBuilder<ContactList> listBuilder = module.valueBuilderFactory().newValueBuilder(ContactList.class);
 
          if (argumentFound)
          {
             queryString.append( "type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity " );
             queryString.append( "!status:DRAFT" );
-            Query<Contacts.Data> cases = qbf
-                  .newNamedQuery( Contacts.Data.class, uowf.currentUnitOfWork(), "solrquery" ).setVariable( "query", queryString.toString() );
+            Query<Contacts.Data> cases = module.queryBuilderFactory()
+                  .newNamedQuery(Contacts.Data.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery").setVariable( "query", queryString.toString() );
 
 
-            se.streamsource.streamflow.domain.contact.ContactValue contactSearchCriteria = vbf.newValueFromJSON( se.streamsource.streamflow.domain.contact.ContactValue.class, contactTemplate.toJSON() );
+            ContactDTO contactSearchCriteria = module.valueBuilderFactory().newValueFromJSON(ContactDTO.class, contactTemplate.toJSON());
             for (Contacts.Data contact : cases)
             {
-               for (se.streamsource.streamflow.domain.contact.ContactValue contactValue : contact.contacts().get())
+               for (ContactDTO contactValue : contact.contacts().get())
                {
                   if (!contactValue.equals( contactSearchCriteria ))
                   {
@@ -117,7 +112,7 @@ public interface StreamflowContactLookupService
                      }
                      if (matched)
                      {
-                        listBuilder.prototype().contacts().get().add( vbf.newValueFromJSON( ContactValue.class, contactValue.toJSON() ) );
+                        listBuilder.prototype().contacts().get().add( module.valueBuilderFactory().newValueFromJSON(ContactValue.class, contactValue.toJSON()) );
                      }
                   }
                }
@@ -126,7 +121,7 @@ public interface StreamflowContactLookupService
          return listBuilder.newInstance();
       }
 
-      private boolean matchSearchResultWithQuery( se.streamsource.streamflow.domain.contact.ContactValue criteria, se.streamsource.streamflow.domain.contact.ContactValue result )
+      private boolean matchSearchResultWithQuery( ContactDTO criteria, ContactDTO result )
       {
          if (!criteria.name().get().isEmpty() && result.name().get().toLowerCase().contains( criteria.name().get().toLowerCase() ))
          {
@@ -135,7 +130,7 @@ public interface StreamflowContactLookupService
 
          if (!criteria.phoneNumbers().get().isEmpty())
          {
-            for (se.streamsource.streamflow.domain.contact.ContactPhoneValue phone : result.phoneNumbers().get())
+            for (ContactPhoneDTO phone : result.phoneNumbers().get())
             {
                if (!criteria.phoneNumbers().get().get( 0 ).phoneNumber().get().isEmpty() && phone.phoneNumber().get().contains( criteria.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
                   return true;
@@ -144,7 +139,7 @@ public interface StreamflowContactLookupService
 
          if (!criteria.addresses().get().isEmpty())
          {
-            for (ContactAddressValue address : result.addresses().get())
+            for (ContactAddressDTO address : result.addresses().get())
             {
                if (!criteria.addresses().get().get( 0 ).address().get().isEmpty() && address.address().get().toLowerCase().contains( criteria.addresses().get().get( 0 ).address().get().toLowerCase() ))
                   return true;
@@ -153,7 +148,7 @@ public interface StreamflowContactLookupService
 
          if (!criteria.emailAddresses().get().isEmpty())
          {
-            for (se.streamsource.streamflow.domain.contact.ContactEmailValue email : result.emailAddresses().get())
+            for (ContactEmailDTO email : result.emailAddresses().get())
             {
                if (!criteria.emailAddresses().get().get( 0 ).emailAddress().get().isEmpty() && email.emailAddress().get().toLowerCase().contains( criteria.emailAddresses().get().get( 0 ).emailAddress().get().toLowerCase() ))
                   return true;

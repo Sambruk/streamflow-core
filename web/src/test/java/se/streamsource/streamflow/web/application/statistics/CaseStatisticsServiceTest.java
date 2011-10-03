@@ -18,7 +18,9 @@
 package se.streamsource.streamflow.web.application.statistics;
 
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -33,13 +35,14 @@ import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.context.administration.GroupsContext;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -70,8 +73,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * JAVADOC
@@ -105,16 +108,17 @@ public class CaseStatisticsServiceTest
               RoleEntity.class,
               UserEntity.class,
               ResolutionEntity.class,
-              ConversationEntity.class,
-              MessageEntity.class,
               CaseEntity.class,
-              CaseTypeEntity.class);
-      module.values(ContactValue.class, ParticipantRolesValue.class);
+              CaseTypeEntity.class,
+              ConversationEntity.class,
+              MessageEntity.class);
+      module.values(ContactDTO.class, ParticipantRolesValue.class);
 
       module.objects(TimeService.class, CaseStatisticsServiceTest.class);
+      module.transients(GroupsContext.class);
 
       module.values(DomainEvent.class, TransactionDomainEvents.class);
-      module.values(CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class);
+      module.values(CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class, OrganizationalStructureValue.class, OrganizationalUnitValue.class);
    }
 
    @Test
@@ -153,7 +157,7 @@ public class CaseStatisticsServiceTest
       Organizations orgs = uow.newEntity(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       Organization org = orgs.createOrganization("Organization1");
       OrganizationalUnit ou1 = org.createOrganizationalUnit("OU1");
-      Group group1 = ou1.createGroup("Group1");
+      Group group1 = moduleInstance.transientBuilderFactory().newTransientBuilder(GroupsContext.class).use(ou1).newInstance().create("Group1");
       group1.addParticipant(user1);
       Project project1 = ou1.createProject("Project1");
       project1.addMember(group1);
@@ -193,6 +197,7 @@ public class CaseStatisticsServiceTest
       // Verify log records
       int idx = 0;
       assertThat(appender.getEvents().get(idx).getMessage().toString(), new ContainsMatcher("description:Organization1, type:organization"));
+      assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("New organizational structure:"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:OU1, type:organizationalUnit"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:Group1, type:group"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:Project1"));
@@ -220,7 +225,8 @@ public class CaseStatisticsServiceTest
       @Override
       protected void append(LoggingEvent event)
       {
-         events.add(event);
+         if (event.getLevel().isGreaterOrEqual(Level.INFO))
+            events.add(event);
       }
 
       public boolean requiresLayout()

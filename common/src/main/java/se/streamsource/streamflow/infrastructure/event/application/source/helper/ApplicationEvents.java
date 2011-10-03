@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.qi4j.api.util.Classes.*;
+import static org.qi4j.api.util.Classes.methodsOf;
 
 /**
  * Helper methods for working with Iterables of DomainEvents and TransactionDomainEvents.
@@ -49,7 +49,7 @@ public class ApplicationEvents
       }
 
       Iterable<ApplicationEvent>[] iterables = (Iterable<ApplicationEvent>[]) new Iterable[events.size()];
-      return Iterables.flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
+      return Iterables.<ApplicationEvent>flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
    }
 
    public static Iterable<ApplicationEvent> events(TransactionApplicationEvents... transactionDomains)
@@ -61,7 +61,7 @@ public class ApplicationEvents
       }
 
       Iterable<ApplicationEvent>[] iterables = (Iterable<ApplicationEvent>[]) new Iterable[events.size()];
-      return Iterables.flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
+      return Iterables.<ApplicationEvent>flatten(events.<Iterable<ApplicationEvent>>toArray(iterables));
    }
 
    public static boolean matches(Specification<ApplicationEvent> specification, Iterable<TransactionApplicationEvents> transactions)

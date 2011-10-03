@@ -27,6 +27,8 @@ public class GroupsModel
 {
    public GroupsModel( )
    {
-      super( "creategroup" );
+      super( "create" );
+
+      relationModelMapping("resource", GroupModel.class);
    }
 }

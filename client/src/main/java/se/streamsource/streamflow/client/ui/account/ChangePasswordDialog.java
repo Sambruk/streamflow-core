@@ -24,19 +24,16 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
+import javax.swing.*;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.PASSWORD;
 
 /**
  * Dialog for changing password
@@ -51,33 +48,33 @@ public class ChangePasswordDialog
    @Service
    DialogService dialogs;
 
-   private ChangePasswordCommand command;
+   private ChangePasswordDTO DTO;
 
-   public ChangePasswordDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf )
+   public ChangePasswordDialog( @Service ApplicationContext context, @Structure Module module )
    {
       setActionMap( context.getActionMap( this ) );
 
-      StateBinder binder = obf.newObject( StateBinder.class );
-      binder.bindingTemplate( ChangePasswordCommand.class );
+      StateBinder binder = module.objectBuilderFactory().newObject(StateBinder.class);
+      binder.bindingTemplate( ChangePasswordDTO.class );
 
       FormLayout layout = new FormLayout(
             "75dlu, 5dlu, 120dlu", "pref, pref, pref" );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
 //      builder.setDefaultDialogBorder();
 
-      StateBinder passwordBinder = obf.newObject( StateBinder.class );
+      StateBinder passwordBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       passwordBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
-      command = vbf.newValue( ChangePasswordCommand.class ).<ChangePasswordCommand>buildWith().prototype();
+      DTO = module.valueBuilderFactory().newValue(ChangePasswordDTO.class).<ChangePasswordDTO>buildWith().prototype();
       
       JLabel confirmPasswordLabel;
       builder.add(new JLabel( i18n.text( AdministrationResources.old_password ) ));
       builder.nextColumn(2);
-      builder.add( passwordBinder.bind(PASSWORD.newField(), command.oldPassword()));
+      builder.add( passwordBinder.bind(PASSWORD.newField(), DTO.oldPassword()));
       builder.nextLine();
       builder.add(new JLabel( i18n.text( AdministrationResources.new_password ) ));
       builder.nextColumn(2);
-      builder.add( passwordBinder.bind(newPassword = (JPasswordField) PASSWORD.newField(), command.newPassword()));
+      builder.add( passwordBinder.bind(newPassword = (JPasswordField) PASSWORD.newField(), DTO.newPassword()));
       builder.nextLine();
       builder.add(confirmPasswordLabel = new JLabel( i18n.text( AdministrationResources.confirm_password ) ));
       builder.nextColumn(2);
@@ -110,12 +107,12 @@ public class ChangePasswordDialog
    @Action
    public void close()
    {
-      command = null;
+      DTO = null;
       WindowUtils.findWindow( this ).dispose();
    }
 
-   public ChangePasswordCommand command()
+   public ChangePasswordDTO command()
    {
-      return command;
+      return DTO;
    }
 }

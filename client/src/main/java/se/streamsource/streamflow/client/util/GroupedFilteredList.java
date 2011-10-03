@@ -27,14 +27,10 @@ import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -42,7 +38,7 @@ import java.beans.PropertyChangeListener;
  * JAVADOC
  */
 public class GroupedFilteredList
-      extends JPanel implements PropertyChangeListener
+        extends JPanel implements PropertyChangeListener
 {
    private JTextField filterField;
    private JList list;
@@ -50,29 +46,29 @@ public class GroupedFilteredList
 
    public GroupedFilteredList()
    {
-      setLayout( new BorderLayout() );
+      setLayout(new BorderLayout());
 
-      filterField = new JTextField( 20 );
+      filterField = new JTextField(20);
 
       FilterLinkListCellRenderer filterCellRenderer = new FilterLinkListCellRenderer();
-      filterCellRenderer.addPropertyChangeListener( this );
-      filterField.getDocument().addDocumentListener( filterCellRenderer );
+      filterCellRenderer.addPropertyChangeListener(this);
+      filterField.getDocument().addDocumentListener(filterCellRenderer);
 
       list = new JList();
 
-      list.setCellRenderer( new SeparatorListCellRenderer( filterCellRenderer ) );
-      list.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+      list.setCellRenderer(new SeparatorListCellRenderer(filterCellRenderer));
+      list.getSelectionModel().addListSelectionListener(new ListSelectionListener()
       {
-         public void valueChanged( ListSelectionEvent e )
+         public void valueChanged(ListSelectionEvent e)
          {
             if (list.getSelectedValue() instanceof SeparatorList.Separator)
                list.clearSelection();
          }
-      } );
-      pane.setViewportView( list );
+      });
+      pane.setViewportView(list);
 
-      add( filterField, BorderLayout.NORTH );
-      add( pane, BorderLayout.CENTER );
+      add(filterField, BorderLayout.NORTH);
+      add(pane, BorderLayout.CENTER);
    }
 
    public JTextField getFilterField()
@@ -90,50 +86,50 @@ public class GroupedFilteredList
       return pane;
    }
 
-   public void setEventList( EventList<TitledLinkValue> eventList )
+   public void setEventList(EventList<TitledLinkValue> eventList)
    {
-      setEventList( eventList, "" );
+      setEventList(eventList, "");
    }
-   
-   public void setEventList( EventList<TitledLinkValue> eventList, String topValue )
+
+   public void setEventList(EventList<TitledLinkValue> eventList, String topValue)
    {
-      SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>( eventList, new LinkComparator() );
-      TextComponentMatcherEditor editor = new TextComponentMatcherEditor( filterField, new LinkFilterator() );
-      editor.addMatcherEditorListener( new MatcherEditor.Listener()
+      SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>(eventList, new LinkComparator());
+      TextComponentMatcherEditor editor = new TextComponentMatcherEditor(filterField, new LinkFilterator());
+      editor.addMatcherEditorListener(new MatcherEditor.Listener()
       {
-         public void changedMatcher( MatcherEditor.Event event )
+         public void changedMatcher(MatcherEditor.Event event)
          {
             for (int i = 0; i < list.getModel().getSize(); i++)
             {
-               if (list.getModel().getElementAt( i ) != null && list.getModel().getElementAt( i ) instanceof LinkValue)
+               if (list.getModel().getElementAt(i) != null && list.getModel().getElementAt(i) instanceof LinkValue)
                {
                   final int idx = i;
 
-                  SwingUtilities.invokeLater( new Runnable()
+                  SwingUtilities.invokeLater(new Runnable()
                   {
                      public void run()
                      {
-                        list.setSelectedIndex( idx );
+                        list.setSelectedIndex(idx);
                      }
-                  } );
+                  });
 
                   break;
                }
             }
          }
       });
-      final FilterList<TitledLinkValue> textFilteredIssues = new FilterList<TitledLinkValue>( sortedIssues, editor );
+      final FilterList<TitledLinkValue> textFilteredIssues = new FilterList<TitledLinkValue>(sortedIssues, editor);
 
-      EventListModel listModel = new EventListModel<TitledLinkValue>( new SeparatorList<TitledLinkValue>( textFilteredIssues, new TitledLinkGroupingComparator( topValue ), 1, 10000 ) );
+      EventListModel listModel = new EventListModel<TitledLinkValue>(new SeparatorList<TitledLinkValue>(textFilteredIssues, new TitledLinkGroupingComparator(topValue), 1, 10000));
 
-      list.setModel( listModel );
+      list.setModel(listModel);
 
-      filterField.setText( "" );
+      filterField.setText("");
    }
 
-   public void propertyChange( PropertyChangeEvent evt )
+   public void propertyChange(PropertyChangeEvent evt)
    {
-      if (evt.getPropertyName().equals( "text" ))
+      if (evt.getPropertyName().equals("text"))
       {
          list.repaint();
       }

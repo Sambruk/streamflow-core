@@ -28,11 +28,11 @@ import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.index.reindexer.ReindexerConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
-import se.streamsource.streamflow.web.application.conversation.ConversationResponseConfiguration;
-import se.streamsource.streamflow.web.application.conversation.NotificationConfiguration;
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
+import se.streamsource.streamflow.web.rest.service.conversation.ConversationResponseConfiguration;
+import se.streamsource.streamflow.web.rest.service.conversation.NotificationConfiguration;
 
 import java.util.prefs.Preferences;
 

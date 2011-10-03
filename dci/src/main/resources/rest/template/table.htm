@@ -31,9 +31,15 @@
         #foreach($cell in $row.c)
         <td>
             #if($cell.f)
-                $cell.f
+               #if($cell.v.startsWith("/"))
+                  <a href="$cell.v">$cell.v</a>
+               #else
+                  $cell.f
+               #end
+            #elseif($cell.v)
+                <a href="$cell.v">$cell.v</a>
             #else
-                $!{cell.v}
+            &nbsp;
             #end
         </td>
         #end

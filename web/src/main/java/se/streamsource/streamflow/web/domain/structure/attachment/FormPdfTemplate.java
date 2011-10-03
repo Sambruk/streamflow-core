@@ -19,10 +19,8 @@ package se.streamsource.streamflow.web.domain.structure.attachment;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -44,9 +42,6 @@ public interface FormPdfTemplate
    abstract class Mixin
          implements FormPdfTemplate, Data
    {
-      @Structure
-      ValueBuilderFactory vbf;
-
       @This
       Data data;
 

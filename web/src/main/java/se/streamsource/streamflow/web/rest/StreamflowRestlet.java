@@ -23,11 +23,11 @@ import org.restlet.Uniform;
 import org.restlet.data.Language;
 import org.restlet.data.Preference;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.streamflow.web.application.security.ProxyUserPrincipal;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.streamflow.web.resource.RootResource;
+import se.streamsource.streamflow.web.rest.resource.RootResource;
 
 import java.security.Principal;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Locale;
  * JAVADOC
  */
 public class StreamflowRestlet
-      extends CommandQueryRestlet2
+      extends CommandQueryRestlet
 {
    @Override
    protected Uniform createRoot( Request request, Response response )

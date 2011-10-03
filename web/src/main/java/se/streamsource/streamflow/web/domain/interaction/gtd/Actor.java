@@ -21,7 +21,7 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 /**
  * An Actor is an entity that can participate in work.
- * Can be either a User, ExternalUser or ServiceUser (TODO)
+ * Can be either a User, ProxyUser or EmailUser
  */
 public interface Actor
    extends

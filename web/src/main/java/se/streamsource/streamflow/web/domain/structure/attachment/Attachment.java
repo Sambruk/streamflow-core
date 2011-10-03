@@ -17,15 +17,15 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 
 /**
  * JAVADOC
  */
 public interface Attachment
       extends
-      Describable,
+        Describable,
       AttachedFile,
       Removable
 {

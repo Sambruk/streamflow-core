@@ -26,10 +26,8 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.State;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.lang.reflect.InvocationHandler;
@@ -57,9 +55,6 @@ public class CommandEntityCreateMixin
 
    @State
    EntityStateHolder state;
-
-   @Structure
-   UnitOfWorkFactory uowf;
 
    @This
    EntityComposite composite;

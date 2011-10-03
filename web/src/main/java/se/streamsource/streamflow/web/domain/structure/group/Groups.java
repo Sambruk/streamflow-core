@@ -25,7 +25,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
@@ -49,7 +49,10 @@ public interface Groups
    {
       @Aggregated
       ManyAssociation<Group> groups();
+   }
 
+   interface Events
+   {
       Group createdGroup( @Optional DomainEvent event, String id );
 
       void addedGroup( @Optional DomainEvent event, Group group );
@@ -57,8 +60,8 @@ public interface Groups
       void removedGroup( @Optional DomainEvent event, Group group );
    }
 
-   abstract class Mixin
-         implements Groups, Data
+   class Mixin
+         implements Groups, Events
    {
       @This Data data;
 
@@ -66,11 +69,11 @@ public interface Groups
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       public Group createGroup( String name )
       {
-         Group group = data.createdGroup(null, idGen.generate( GroupEntity.class ));
+         Group group = createdGroup(null, idGen.generate(GroupEntity.class));
          group.changeDescription( name );
          addGroup(group);
          return group;
@@ -78,10 +81,9 @@ public interface Groups
 
       public void mergeGroups( Groups groups )
       {
-         while (data.groups().count() > 0)
+         for (Group group : data.groups().toList())
          {
-            Group group = data.groups().get( 0 );
-            data.removedGroup( null, group );
+            removedGroup(null, group);
             groups.addGroup( group );
          }
       }
@@ -90,7 +92,7 @@ public interface Groups
       {
          if (!data.groups().contains( group ))
          {
-            data.addedGroup( null, group );
+            addedGroup(null, group);
          }
       }
 
@@ -99,9 +101,24 @@ public interface Groups
          if (!data.groups().contains( group ))
             return false;
 
-         data.removedGroup( null, group );
+         removedGroup(null, group);
          group.removeEntity();
          return true;
+      }
+
+      public Group createdGroup(@Optional DomainEvent event, String id)
+      {
+         return module.unitOfWorkFactory().currentUnitOfWork().newEntity(GroupEntity.class, id);
+      }
+
+      public void addedGroup(@Optional DomainEvent event, Group group)
+      {
+         data.groups().add(group);
+      }
+
+      public void removedGroup(@Optional DomainEvent event, Group group)
+      {
+         data.groups().remove(group);
       }
    }
 }

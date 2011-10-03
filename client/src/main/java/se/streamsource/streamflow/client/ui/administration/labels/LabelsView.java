@@ -26,9 +26,8 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.OptionsAction;
@@ -36,6 +35,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.ResourceActionEnabler;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -46,16 +46,13 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * Admin of labels.
@@ -66,26 +63,19 @@ public class LabelsView
 {
    LabelsModel model;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
+   @Structure
+   Module module;
 
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
-
-   @Uses
-   ObjectBuilder<SelectLinkDialog> possibleMoveToDialogs;
-
    public JList list;
 
    public LabelsView( @Service ApplicationContext context,
-                              @Uses final CommandQueryClient client,
-                              @Structure ObjectBuilderFactory obf)
+                              @Uses final LabelsModel model)
    {
       super( new BorderLayout() );
-      this.model = obf.newObjectBuilder( LabelsModel.class ).use( client ).newInstance();
+      this.model = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
@@ -95,6 +85,7 @@ public class LabelsView
       options.add( am.get( "rename" ) );
       options.add( am.get( "move" ) );
       options.add( am.get( "showUsages" ) );
+      options.add( am.get( "knowledgeBase" ) );
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
@@ -109,15 +100,25 @@ public class LabelsView
       toolbar.add( new JButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "move" ), am.get( "showUsages" ) ) );
+      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "move" ), am.get("knowledgeBase"), am.get( "showUsages" ) ) );
 
       new RefreshWhenShowing( this, model );
+
+      new RefreshWhenShowing(options, new ResourceActionEnabler(am.get("knowledgeBase"))
+      {
+         @Override
+         protected ResourceValue getResource()
+         {
+            model.refresh();
+            return model.getResourceValue();
+         }
+      });
    }
 
    @Action
    public Task add()
    {
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_label_title ) );
 
@@ -141,7 +142,7 @@ public class LabelsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
@@ -163,7 +164,7 @@ public class LabelsView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
@@ -199,11 +200,21 @@ public class LabelsView
    }
 
    @Action
+   public void knowledgeBase() throws URISyntaxException, IOException
+   {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+
+      LinkValue url = model.getKnowledgeBaseLink(selected);
+
+      Desktop.getDesktop().browse(new URI(url.href().get()));
+   }
+
+   @Action
    public Task rename()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
 
-      final NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_label_title ) );
 
       if (!Strings.empty( dialog.name() ) )

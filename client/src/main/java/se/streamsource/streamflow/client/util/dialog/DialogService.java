@@ -22,22 +22,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -46,9 +33,6 @@ import java.awt.event.ActionListener;
  */
 public class DialogService
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
    @Service
    ApplicationContext context;
 
@@ -59,7 +43,7 @@ public class DialogService
    }
 
    public void showOkCancelHelpDialog(Component owner, JComponent main,
-         String title)
+                                      String title)
    {
       JXDialog dialog = createDialog(owner, main);
       dialog.setTitle(title);
@@ -87,20 +71,20 @@ public class DialogService
       } else
       {
          dialog.setLocationRelativeTo(SwingUtilities.getAncestorOfClass(
-               Frame.class, owner));
+                 Frame.class, owner));
       }
       return dialog;
    }
 
    public void showOkDialog(Component owner, JComponent main)
    {
-      JXDialog dialog = createOkDialog( owner, main );
-      dialog.setVisible( true );
+      JXDialog dialog = createOkDialog(owner, main);
+      dialog.setVisible(true);
    }
 
-   private JXDialog createOkDialog( Component owner, JComponent main )
+   private JXDialog createOkDialog(Component owner, JComponent main)
    {
-     Window window = WindowUtils.findWindow(owner);
+      Window window = WindowUtils.findWindow(owner);
       JXDialog dialog;
       if (window instanceof Frame)
          dialog = new JXDialog((Frame) window, main);
@@ -114,7 +98,7 @@ public class DialogService
 
       dialog.getContentPane().setLayout(new BorderLayout());
       JButton okButton = new JButton(ok);
-      dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton) );
+      dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton));
       dialog.getContentPane().add(BorderLayout.CENTER, main);
       dialog.setMinimumSize(new Dimension(300, 100));
       dialog.pack();
@@ -126,16 +110,16 @@ public class DialogService
          public void actionPerformed(ActionEvent e)
          {
             finalDialog.setVisible(false);
-            WindowUtils.findWindow( finalDialog ).dispose();
+            WindowUtils.findWindow(finalDialog).dispose();
          }
       });
 
       return dialog;
    }
 
-   private JXDialog createButtonLessDialog( Component owner, JComponent main )
+   private JXDialog createButtonLessDialog(Component owner, JComponent main)
    {
-     Window window = WindowUtils.findWindow(owner);
+      Window window = WindowUtils.findWindow(owner);
       JXDialog dialog;
       if (window instanceof Frame)
          dialog = new JXDialog((Frame) window, main);
@@ -153,13 +137,13 @@ public class DialogService
    }
 
    private JPanel createHelpOKCancelApplyBar(JButton help, JButton ok,
-         JButton cancel, JButton apply)
+                                             JButton cancel, JButton apply)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(help);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[] { ok, cancel, apply });
+      builder.addButton(new JButton[]{ok, cancel, apply});
       return builder.getPanel();
    }
 
@@ -168,17 +152,17 @@ public class DialogService
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[] { ok });
+      builder.addButton(new JButton[]{ok});
       return builder.getPanel();
    }
 
-   private JPanel createButtonBar( JButton ok, JButton[] extras )
+   private JPanel createButtonBar(JButton ok, JButton[] extras)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(extras);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[] { ok });
+      builder.addButton(new JButton[]{ok});
       return builder.getPanel();
    }
 
@@ -188,7 +172,7 @@ public class DialogService
       builder.addButton(help);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[] { ok, cancel });
+      builder.addButton(new JButton[]{ok, cancel});
       return builder.getPanel();
    }
 
@@ -199,29 +183,29 @@ public class DialogService
       dialog.setVisible(true);
    }
 
-   public void showButtonLessDialog( Component component, JComponent main, String title )
+   public void showButtonLessDialog(Component component, JComponent main, String title)
    {
-      JXDialog dialog = createButtonLessDialog( component, main );
-      dialog.setTitle( title );
-      dialog.setVisible( true );
+      JXDialog dialog = createButtonLessDialog(component, main);
+      dialog.setTitle(title);
+      dialog.setVisible(true);
    }
 
 
    public void showMessageDialog(Component component, String message, String title)
    {
-      MessageLabel messageLabel = new MessageLabel( message );
-      messageLabel.setActionMap( context.getActionMap(messageLabel ));
-      JXDialog dialog = createOkDialog(component, messageLabel );
-      dialog.setTitle( title );
-      dialog.setVisible( true );
+      MessageLabel messageLabel = new MessageLabel(message);
+      messageLabel.setActionMap(context.getActionMap(messageLabel));
+      JXDialog dialog = createOkDialog(component, messageLabel);
+      dialog.setTitle(title);
+      dialog.setVisible(true);
    }
 
    public static class MessageLabel
-      extends JLabel
+           extends JLabel
    {
-      private MessageLabel( String text )
+      private MessageLabel(String text)
       {
-         super( text );
+         super(text);
       }
 
       @org.jdesktop.application.Action

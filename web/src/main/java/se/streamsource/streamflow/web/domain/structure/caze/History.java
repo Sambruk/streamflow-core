@@ -25,13 +25,18 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 
 /**
  * JAVADOC
@@ -42,6 +47,21 @@ public interface History
    void addHistoryComment(String comment, ConversationParticipant participant);
 
    Conversation getHistory();
+
+   /**
+    * Get last message that corresponds to the given standard type.
+    *
+    * Example: The case has been closed, and so a message has been recorded for this:
+    * {closed}
+    *
+    * Calling getHistoryMessage("closed") will return this message.
+    *
+    * @param type of message
+    * @return the last message matching this type or null if none match
+    */
+   Message.Data getHistoryMessage(String type);
+
+   EmailAccessPoint getOriginalEmailAccessPoint();
 
    interface Data
    {
@@ -60,7 +80,7 @@ public interface History
       IdentityGenerator idgen;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Case caze;
@@ -75,6 +95,18 @@ public interface History
          return history;
       }
 
+      public Message.Data getHistoryMessage(String type)
+      {
+         Conversation conversation = getHistory();
+         Message.Data foundMessage = null;
+         for (Message message : ((Messages.Data) conversation).messages())
+         {
+            if (((Message.Data)message).body().get().startsWith("{"+type))
+               foundMessage = (Message.Data) message;
+         }
+         return foundMessage; // No messages match this
+      }
+
       public void addHistoryComment(String comment, ConversationParticipant participant)
       {
          Conversation history = getHistory();
@@ -86,16 +118,39 @@ public interface History
 
       public Conversation createdHistory( @Optional DomainEvent event, String id )
       {
-         EntityBuilder<ConversationEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( ConversationEntity.class, id );
+         EntityBuilder<ConversationEntity> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( ConversationEntity.class, id );
          builder.instance().conversationOwner().set( caze );
          builder.instance().createdBy().set( caze.createdBy().get() );
          builder.instance().createdOn().set( caze.createdOn().get() );
          ConversationEntity history = builder.newInstance();
          history.changeDescription( "History" );
-         history.createMessage( "{created," + ((Describable)caze.createdBy().get()).getDescription() +"}", RoleMap.role( ConversationParticipant.class ));
+         history.createMessage( "{created,creator=" + ((Describable)caze.createdBy().get()).getDescription() +"}", RoleMap.role( ConversationParticipant.class ));
          history().set(history);
 
          return history;
+      }
+
+      public EmailAccessPoint getOriginalEmailAccessPoint()
+      {
+         Messages.Data messages = ((Messages.Data) data.history().get());
+         if (messages != null)
+         {
+            for (Message message : messages.messages())
+            {
+               String body = ((Message.Data) message).body().get();
+               if (body.startsWith("{accesspoint"))
+               {
+                  // This is the history message that the case has been received through a particular AccessPoint
+                  String accessPointName = body.substring(body.indexOf("=")+1, body.length()-1);
+
+                  // Now find it
+                  EmailAccessPointEntity ap = module.queryBuilderFactory().newQueryBuilder(EmailAccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(module.unitOfWorkFactory().currentUnitOfWork()).find();
+                  return ap;
+               }
+            }
+         }
+
+         return null; // No AccessPoint was used to receive this case
       }
    }
 }

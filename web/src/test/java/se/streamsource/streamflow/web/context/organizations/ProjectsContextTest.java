@@ -37,7 +37,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 
 import java.io.IOException;
 
-import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.count;
 
 /**
  * JAVADOC
@@ -55,7 +55,7 @@ public class ProjectsContextTest
       playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
       playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
 
-      context( ProjectsContext.class).createproject( stringValue(name) );
+      context( ProjectsContext.class).create(name);
 
       uow.complete();
    }

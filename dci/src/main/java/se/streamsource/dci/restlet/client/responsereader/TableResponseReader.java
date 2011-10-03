@@ -21,8 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -31,6 +31,9 @@ import se.streamsource.dci.restlet.client.ResponseReader;
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableValue;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 /**
  * JAVADOC
  */
@@ -38,9 +41,9 @@ public class TableResponseReader
    implements ResponseReader
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
-   public <T> T readResponse( Response response, Class<T> resultType ) throws ResourceException
+   public Object readResponse( Response response, Class<?> resultType ) throws ResourceException
    {
       if (response.getEntity().getMediaType().equals( MediaType.APPLICATION_JSON) && TableValue.class.isAssignableFrom( resultType ))
       {
@@ -50,7 +53,7 @@ public class TableResponseReader
             JSONObject jsonObject = new JSONObject(jsonValue);
 
             JSONObject table = jsonObject.getJSONObject( "table" );
-            TableBuilder builder = new TableBuilder(vbf);
+            TableBuilder builder = new TableBuilder(module.valueBuilderFactory());
 
             JSONArray cols = table.getJSONArray( "cols" );
             for (int i = 0; i < cols.length(); i++)
@@ -71,15 +74,31 @@ public class TableResponseReader
                   Object value = cell.opt( "v" );
                   String formatted = cell.optString("f");
 
-                  if (cols.getJSONObject( j ).getString( "type" ).equals("date") && value != null)
+                  if (cols.getJSONObject( j ).getString( "type" ).equals("datetime") && value != null)
                      value = DateFunctions.fromString( value.toString() );
+                  else if (cols.getJSONObject( j ).getString( "type" ).equals("date") && value != null)
+                     try
+                     {
+                        value = new SimpleDateFormat( "yyyy-MM-dd").parse( value.toString() );
+                     } catch (ParseException e)
+                     {
+                        throw new ResourceException(e);
+                     }
+                  else if (cols.getJSONObject( j ).getString( "type" ).equals("timeofday") && value != null)
+                     try
+                     {
+                        value = new SimpleDateFormat( "HH:mm:ss").parse( value.toString() );
+                     } catch (ParseException e)
+                     {
+                        throw new ResourceException(e);
+                     }
 
                   builder.cell( value, formatted );
                }
                builder.endRow();
             }
 
-            return (T) builder.newTable();
+            return builder.newTable();
          } catch (JSONException e)
          {
             throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);

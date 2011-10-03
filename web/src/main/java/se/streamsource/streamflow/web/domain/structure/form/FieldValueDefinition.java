@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.domain.structure.form;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**

@@ -19,8 +19,6 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 
 /**
  * An organizational unit represents a part of an organization.

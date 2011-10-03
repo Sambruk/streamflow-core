@@ -24,10 +24,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.State;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.net.URI;
@@ -65,14 +62,8 @@ public interface Attachments
    abstract class Mixin
          implements Attachments, Data
    {
-      @State
-      ManyAssociation<Attachment> attachments;
-
       @Service
       IdentityGenerator idGen;
-
-      @Structure
-      UnitOfWorkFactory uowf;
 
       public Attachment createAttachment( String uri ) throws URISyntaxException
       {
@@ -106,7 +97,7 @@ public interface Attachments
          // Delete the attachment entity
          removedAttachment( null, attachment );
 
-         attachment.removeEntity();
+         attachment.deleteEntity();
       }
 
       public Attachment getAttachment( String id )
@@ -123,7 +114,7 @@ public interface Attachments
 
       public boolean hasAttachments()
       {
-         return !attachments().toList().isEmpty();
+         return attachments().count() != 0;
       }
    }
 }

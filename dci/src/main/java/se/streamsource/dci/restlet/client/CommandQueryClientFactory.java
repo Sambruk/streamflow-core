@@ -18,15 +18,9 @@
 package se.streamsource.dci.restlet.client;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.property.PropertyTypeDescriptor;
-import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
@@ -45,9 +39,6 @@ import java.util.Locale;
 public class CommandQueryClientFactory
 {
    @Structure
-   private Qi4jSPI spi;
-
-   @Structure
    private Module module;
 
    @Uses @Optional
@@ -59,6 +50,9 @@ public class CommandQueryClientFactory
 
    @Uses
    private ResponseReaderDelegator readerDelegator;
+
+   @Uses
+   private RequestWriterDelegator requestWriterDelegator;
 
    @Uses
    private Uniform client;
@@ -106,36 +100,12 @@ public class CommandQueryClientFactory
 
    <T> T readResponse( Response response, Class<T> queryResult)
    {
-      return readerDelegator.readResponse( response, queryResult );
+      return (T) readerDelegator.readResponse( response, queryResult );
    }
 
    public void writeRequest( Request request, Object queryRequest )
    {
-      if (queryRequest != null)
-         setQueryParameters( request.getResourceRef(), (ValueComposite) queryRequest );
+      if (!requestWriterDelegator.writeRequest(queryRequest, request))
+         throw new IllegalArgumentException("Illegal query request type:"+queryRequest.getClass().getName());
    }
-
-   private void setQueryParameters( final Reference ref, ValueComposite queryValue )
-   {
-      // Value as parameter
-      StateHolder holder = spi.getState( queryValue );
-      final ValueDescriptor descriptor = spi.getValueDescriptor( queryValue );
-
-      ref.setQuery( null );
-
-      holder.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
-      {
-         public void visitProperty( QualifiedName
-               name, Object value )
-         {
-            if (value != null)
-            {
-               PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName( name );
-               String queryParam = propertyDesc.propertyType().type().toQueryParameter( value );
-               ref.addQueryParameter( name.name(), queryParam );
-            }
-         }
-      } );
-   }
-
 }

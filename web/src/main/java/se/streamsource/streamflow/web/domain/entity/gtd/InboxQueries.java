@@ -23,10 +23,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -39,49 +37,42 @@ import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(InboxQueries.Mixin.class)
 public interface InboxQueries
-   extends AbstractCaseQueriesFilter
+        extends AbstractCaseQueriesFilter
 {
-   QueryBuilder<Case> inbox( @Optional String filter );
+   QueryBuilder<Case> inbox(@Optional String filter);
 
    boolean inboxHasActiveCases();
 
    abstract class Mixin
-         implements InboxQueries
+           implements InboxQueries
    {
-
       @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       Owner owner;
 
-      public QueryBuilder<Case> inbox( String filter )
+      public QueryBuilder<Case> inbox(String filter)
       {
          // Find all Open cases with specific owner which have not yet been assigned
-         QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder( Case.class );
-         Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
-         Association<Assignee> assignee = templateFor( Assignable.Data.class ).assignedTo();
-         queryBuilder = queryBuilder.where( and(
-               eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
-               eq( ownableId, owner ),
-               isNull( assignee )
-                ) );
+         QueryBuilder<Case> queryBuilder = module.queryBuilderFactory().newQueryBuilder(Case.class);
+         Association<Owner> ownableId = templateFor(Ownable.Data.class).owner();
+         Association<Assignee> assignee = templateFor(Assignable.Data.class).assignedTo();
+         queryBuilder = queryBuilder.where(and(
+                 eq(templateFor(Status.Data.class).status(), CaseStates.OPEN),
+                 eq(ownableId, owner),
+                 isNull(assignee)
+         ));
 
-         if( !Strings.empty( filter ) )
-            queryBuilder = applyFilter( queryBuilder, filter );
+         if (!Strings.empty(filter))
+            queryBuilder = applyFilter(queryBuilder, filter);
 
          return queryBuilder;
       }
 
       public boolean inboxHasActiveCases()
       {
-         return inbox("").newQuery( uowf.currentUnitOfWork() ).count() > 0;
+         return inbox("").newQuery(module.unitOfWorkFactory().currentUnitOfWork()).count() > 0;
       }
 
    }

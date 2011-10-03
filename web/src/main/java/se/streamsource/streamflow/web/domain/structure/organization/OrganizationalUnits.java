@@ -28,7 +28,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
@@ -68,7 +68,7 @@ public interface OrganizationalUnits
       IdentityGenerator idGenerator;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @This
       RolePolicy policy;
@@ -112,7 +112,7 @@ public interface OrganizationalUnits
 
       public OrganizationalUnit createdOrganizationalUnit( @Optional DomainEvent event, @Name("id") String id )
       {
-         EntityBuilder<OrganizationalUnit> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder( OrganizationalUnit.class, id );
+         EntityBuilder<OrganizationalUnit> ouBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( OrganizationalUnit.class, id );
          ouBuilder.instanceFor(OwningOrganization.class).organization().set( orgOwner.organization().get() );
          OrganizationalUnit ou = ouBuilder.newInstance();
          return ou;

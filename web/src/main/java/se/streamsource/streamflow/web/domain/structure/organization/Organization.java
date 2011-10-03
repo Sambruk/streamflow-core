@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
@@ -47,9 +47,9 @@ public interface Organization
       Roles,
       SelectedLabels,
       CaseTypes,
-      Removable,
+        Removable,
       AccessPoints,
-      EmailAccessPoints,
+        EmailAccessPoints,
       ProxyUsers,
       Attachments,
       DefaultPdfTemplate,

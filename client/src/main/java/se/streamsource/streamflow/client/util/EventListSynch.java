@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 public class EventListSynch
 {
-   public static <T, P extends T> void synchronize( Collection<T> list, EventList<P> eventList )
+   public static <T, P extends T> EventList<P> synchronize( Collection<T> list, EventList<P> eventList )
    {
       eventList.getReadWriteLock().writeLock().lock();
       try
@@ -92,5 +92,7 @@ public class EventListSynch
       {
          eventList.getReadWriteLock().writeLock().unlock();
       }
+
+      return eventList;
    }
 }

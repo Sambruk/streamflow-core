@@ -21,12 +21,10 @@ import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.EventTableModel;
 import org.jdesktop.swingx.JXTable;
 
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.TableColumn;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Enumeration;
 
 /**

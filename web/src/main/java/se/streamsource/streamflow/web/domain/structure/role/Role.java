@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.role;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 
 /**
@@ -26,7 +26,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
  */
 public interface Role
    extends
-      Describable,
+        Describable,
       Ownable,
       Permissions,
       Removable

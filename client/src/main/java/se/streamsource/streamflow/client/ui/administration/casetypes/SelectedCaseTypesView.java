@@ -25,10 +25,8 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -40,15 +38,10 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -60,19 +53,18 @@ public class SelectedCaseTypesView
    @Service
    DialogService dialogs;
 
-   @Uses
-   ObjectBuilder<SelectLinkDialog> caseTypesDialogs;
+   @Structure
+   Module module;
 
    public JList caseTypeList;
 
    private SelectedCaseTypesModel model;
 
    public SelectedCaseTypesView( @Service ApplicationContext context,
-                                 @Uses final CommandQueryClient client,
-                                 @Structure ObjectBuilderFactory obf )
+                                 @Uses final SelectedCaseTypesModel model)
    {
       super( new BorderLayout() );
-      this.model = obf.newObjectBuilder( SelectedCaseTypesModel.class ).use( client ).newInstance();
+      this.model = model;
       setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       ActionMap am = context.getActionMap( this );
@@ -96,7 +88,7 @@ public class SelectedCaseTypesView
    @Action
    public Task add()
    {
-      final SelectLinkDialog dialog = caseTypesDialogs.use( model.getPossible() ).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossible() ).newInstance();
       dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_casetypes_title ) );

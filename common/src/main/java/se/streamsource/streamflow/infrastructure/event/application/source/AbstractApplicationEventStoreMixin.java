@@ -27,7 +27,6 @@ import org.qi4j.api.io.Output;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
@@ -46,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.util.Collections.*;
+import static java.util.Collections.synchronizedList;
 
 /**
  * Base implementation for ApplicationEventStores.
@@ -68,9 +67,6 @@ public abstract class AbstractApplicationEventStoreMixin
 
    @Structure
    protected ModuleSPI module;
-
-   @Structure
-   private ValueBuilderFactory vbf;
 
    private ExecutorService transactionNotifier;
 
@@ -96,12 +92,10 @@ public abstract class AbstractApplicationEventStoreMixin
 
    // TransactionVisitor implementation
    // This is how transactions are put into the store
-
-
    public TransactionApplicationEvents storeEvents( Iterable<ApplicationEvent> events ) throws IOException
    {
       // Create new TransactionApplicationEvents
-      ValueBuilder<TransactionApplicationEvents> builder = vbf.newValueBuilder( TransactionApplicationEvents.class );
+      ValueBuilder<TransactionApplicationEvents> builder = module.valueBuilderFactory().newValueBuilder(TransactionApplicationEvents.class);
       Iterables.addAll( builder.prototype().events().get(), events );
       builder.prototype().timestamp().set( getCurrentTimestamp() );
 

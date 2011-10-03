@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
@@ -25,8 +25,6 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 
@@ -34,11 +32,10 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
  * JAVADOC
  */
 @Mixins(OrganizationalUnitsContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface OrganizationalUnitsContext
       extends IndexContext<Iterable<OrganizationalUnit>>, Context
 {
-   public void createorganizationalunit( @MaxLength(50) StringValue value );
+   public void create( @MaxLength(50) @Name("name") String value );
 
    abstract class Mixin
          implements OrganizationalUnitsContext
@@ -48,15 +45,14 @@ public interface OrganizationalUnitsContext
 
       public Iterable<OrganizationalUnit> index()
       {
-         OrganizationalUnits.Data ous = RoleMap.role( OrganizationalUnits.Data.class );
-         return ous.organizationalUnits();
+         return module.queryBuilderFactory().newQueryBuilder(OrganizationalUnit.class).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
       }
 
-      public void createorganizationalunit( StringValue value )
+      public void create( String name )
       {
          OrganizationalUnits ous = RoleMap.role( OrganizationalUnits.class );
 
-         ous.createOrganizationalUnit( value.string().get() );
+         ous.createOrganizationalUnit( name );
       }
    }
 }

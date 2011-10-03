@@ -25,13 +25,8 @@ import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import se.streamsource.dci.value.link.LinkValue;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -82,7 +77,7 @@ public class FilteredList extends JPanel
    public void setEventList(EventList<LinkValue> eventList, boolean addFirstIndexSelector)
    {
       final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>(eventList,
-            new TextComponentMatcherEditor(filterField, new LinkFilterator()));
+              new TextComponentMatcherEditor(filterField, new LinkFilterator()));
       EventListModel listModel = new EventListModel<LinkValue>(textFilteredIssues);
 
       if (addFirstIndexSelector)

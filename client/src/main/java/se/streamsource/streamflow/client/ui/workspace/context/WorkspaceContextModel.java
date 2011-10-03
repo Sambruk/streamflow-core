@@ -35,13 +35,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
  */
 public class WorkspaceContextModel
-      implements Refreshable
+        implements Refreshable
 {
    EventList<ContextItem> items = new BasicEventList<ContextItem>();
 
@@ -58,16 +58,16 @@ public class WorkspaceContextModel
    public void refresh()
    {
       // Refresh case counts in the background
-      new Task<LinksValue, Object>( Application.getInstance() )
+      new Task<LinksValue, Object>(Application.getInstance())
       {
          @Override
          protected LinksValue doInBackground() throws Exception
          {
-            return client.query( "casecounts", LinksValue.class );
+            return client.query("casecounts", LinksValue.class);
          }
 
          @Override
-         protected void succeeded( LinksValue linksValue )
+         protected void succeeded(LinksValue linksValue)
          {
             caseCounts = linksValue;
             applyCounts();
@@ -76,24 +76,24 @@ public class WorkspaceContextModel
 
       List<ContextItem> list = new ArrayList<ContextItem>();
 
-      LinksValue projects = client.query( "index", LinksValue.class );
+      LinksValue projects = client.query("index", LinksValue.class);
       for (LinkValue contextLink : projects.links().get())
       {
          if (contextLink.rel().get().equals("drafts"))
          {
-            list.add( new ContextItem( "", text( drafts_node ), "draft", -1, client.getClient( contextLink ) ) );
+            list.add(new ContextItem("", text(drafts_node), "draft", -1, client.getClient(contextLink)));
          } else if (contextLink.rel().get().equals("search"))
          {
-            list.add( new ContextItem( "", text( search_node ), "search", -1, client.getClient( contextLink ) ) );
+            list.add(new ContextItem("", text(search_node), "search", -1, client.getClient(contextLink)));
          } else if (contextLink.rel().get().equals("perspective"))
          {
-            list.add( new ContextItem( "", contextLink.text().get(), contextLink.rel().get(), -1, client.getClient( contextLink ) ) );
+            list.add(new ContextItem("", contextLink.text().get(), contextLink.rel().get(), -1, client.getClient(contextLink)));
          } else if (contextLink.rel().get().equals("inbox"))
          {
-            list.add( new ContextItem( contextLink.text().get(), text( inboxes_node ), "inbox", -1, client.getClient( contextLink ) ) );
+            list.add(new ContextItem(contextLink.text().get(), text(inboxes_node), "inbox", -1, client.getClient(contextLink)));
          } else if (contextLink.rel().get().equals("assignments"))
          {
-            list.add( new ContextItem( contextLink.text().get(), text( assignments_node ), "assign", -1, client.getClient( contextLink ) ) );
+            list.add(new ContextItem(contextLink.text().get(), text(assignments_node), "assign", -1, client.getClient(contextLink)));
          }
       }
 
@@ -114,17 +114,17 @@ public class WorkspaceContextModel
             {
                for (int i = 0; i < items.size(); i++)
                {
-                  ContextItem item = items.get( i );
+                  ContextItem item = items.get(i);
                   Reference reference = item.getClient().getReference();
                   String ref = reference.getPath();
-                  if (ref.endsWith( "user/drafts/" )) // This is a hack. Not sure why user and project references are different...
+                  if (ref.endsWith("user/drafts/")) // This is a hack. Not sure why user and project references are different...
                      ref = "user/drafts";
                   else
-                     ref = ref.substring( 0, ref.length() - 1 );
-                  if (ref.endsWith( linkValue.id().get() ))
+                     ref = ref.substring(0, ref.length() - 1);
+                  if (ref.endsWith(linkValue.id().get()))
                   {
-                     item.setCount( Long.valueOf( linkValue.text().get() ) );
-                     items.set( i, item );
+                     item.setCount(Long.valueOf(linkValue.text().get()));
+                     items.set(i, item);
                      break;
                   }
                }

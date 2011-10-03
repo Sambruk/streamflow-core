@@ -21,7 +21,9 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +39,10 @@ public interface EmailValue
    Property<String> subject();
    Property<String> content();
    Property<String> contentType();
-   Property<String> messageId();
+   @Optional Property<String> messageId();
+
+   @UseDefaults
+   Property<List<AttachedFileValue>> attachments();
 
    @UseDefaults
    Property<Map<String,String>> headers();

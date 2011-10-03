@@ -43,6 +43,7 @@ public class ValueAssembler
       module.values( ResourceValue.class,
             EntityValue.class,
             StringValue.class,
+            FormValue.class,
 
             LinksValue.class,
             LinkValue.class,

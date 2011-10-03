@@ -29,10 +29,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.time.Time;
@@ -51,10 +50,7 @@ public interface DomainEventFactoryService
          implements DomainEventFactory
    {
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @Service
       IdentityGenerator idGenerator;
@@ -71,7 +67,7 @@ public interface DomainEventFactoryService
 
       public DomainEvent createEvent( EntityComposite entity, String name, Object[] args )
       {
-         ValueBuilder<DomainEvent> builder = vbf.newValueBuilder( DomainEvent.class );
+         ValueBuilder<DomainEvent> builder = module.valueBuilderFactory().newValueBuilder(DomainEvent.class);
 
          DomainEvent prototype = builder.prototype();
          prototype.name().set( name );
@@ -79,7 +75,7 @@ public interface DomainEventFactoryService
          prototype.on().set( time.dateNow() );
          prototype.entity().set( entity.identity().get() );
 
-         // Take user either from Subject or UoW
+         // Take user from RoleMap
          try
          {
             Principal principal = RoleMap.role( Principal.class );
@@ -91,7 +87,7 @@ public interface DomainEventFactoryService
 
          prototype.identity().set( idGenerator.generate( DomainEvent.class ) );
 
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          prototype.usecase().set( uow.usecase().name() );
          prototype.version().set( version );
 

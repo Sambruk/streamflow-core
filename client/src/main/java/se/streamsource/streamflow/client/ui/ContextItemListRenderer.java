@@ -24,55 +24,52 @@ import org.jdesktop.swingx.renderer.WrappingProvider;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
  */
 public class ContextItemListRenderer
-   extends DefaultListRenderer
+        extends DefaultListRenderer
 {
    public ContextItemListRenderer()
    {
       super(new WrappingProvider(
-            new IconValue()
-            {
-               public Icon getIcon( Object o )
-               {
-                  ContextItem item = (ContextItem) o;
-                  return i18n.icon( Icons.valueOf( item.getRelation() ), 16);
-               }
-            },
-            new StringValue()
-            {
-               public String getString( Object o )
-               {
-                  ContextItem item = (ContextItem) o;
-                  String str = item.getName();
-                  if (item.getCount() > 0)
-                     str+= " ("+item.getCount()+")";
-                  return str;
-               }
-            },
-            false
+              new IconValue()
+              {
+                 public Icon getIcon(Object o)
+                 {
+                    ContextItem item = (ContextItem) o;
+                    return i18n.icon(Icons.valueOf(item.getRelation()), 16);
+                 }
+              },
+              new StringValue()
+              {
+                 public String getString(Object o)
+                 {
+                    ContextItem item = (ContextItem) o;
+                    String str = item.getName();
+                    if (item.getCount() > 0)
+                       str += " (" + item.getCount() + ")";
+                    return str;
+                 }
+              },
+              false
       ));
    }
 
    @Override
-   public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
+   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
    {
-      JComponent component = (JComponent) super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+      JComponent component = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
       ContextItem contextItem = (ContextItem) value;
       if (contextItem.getRelation().equals("perspective"))
       {
-         component.setBorder( BorderFactory.createEmptyBorder(0, 20, 0, 0 ));
+         component.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
       } else
       {
-         component.setBorder( BorderFactory.createEmptyBorder(0, 10, 0, 0 ));
+         component.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
       }
       return component;
    }

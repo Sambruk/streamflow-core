@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.rest;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.application.security.DefaultEnroler;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
-import se.streamsource.streamflow.web.resource.APIRouter;
+import se.streamsource.streamflow.web.rest.resource.APIRouter;
 
 /**
  * JAVADOC
@@ -44,7 +44,7 @@ public class StreamflowRestApplication
    final Logger logger = LoggerFactory.getLogger("streamflow");
 
    @Structure
-   ObjectBuilderFactory factory;
+   Module module;
 
    Enroler enroler = new DefaultEnroler();
 
@@ -60,6 +60,7 @@ public class StreamflowRestApplication
    {
       super(parentContext);
       getMetadataService().addExtension("srj", APPLICATION_SPARQL_JSON);
+      getMetadataService().addExtension("case", MediaType.register("application/x-streamflow-case+json", "Streamflow Case"));
 
    }
 
@@ -73,7 +74,7 @@ public class StreamflowRestApplication
 
       Router versions = new Router(getContext());
 
-      Router api = factory.newObjectBuilder(APIRouter.class).use(getContext()).newInstance();
+      Router api = module.objectBuilderFactory().newObjectBuilder(APIRouter.class).use(getContext()).newInstance();
       versions.attachDefault(api);
 
       return versions;
@@ -93,7 +94,7 @@ public class StreamflowRestApplication
             String name = "StreamflowServer";
             Object host = getContext().getAttributes().get("streamflow.host");
             if (host != null)
-               name+="-"+host;
+               name += "-" + host;
 
             streamflowWebAssembler.setName(name);
             app = is.newApplication(streamflowWebAssembler);

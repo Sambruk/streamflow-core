@@ -24,18 +24,14 @@ import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
+import javax.swing.*;
 
-import static javax.swing.ListSelectionModel.*;
+import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 
 public class ListBoxPanel
       extends AbstractFieldPanel
@@ -45,7 +41,7 @@ public class ListBoxPanel
    private JList selectedElements;
    private JList possibleElements;
 
-   public ListBoxPanel( @Uses FieldSubmissionValue field, @Uses ListBoxFieldValue fieldValue, @Service ApplicationContext context )
+   public ListBoxPanel( @Uses FieldSubmissionDTO field, @Uses ListBoxFieldValue fieldValue, @Service ApplicationContext context )
    {
       super( field );
 

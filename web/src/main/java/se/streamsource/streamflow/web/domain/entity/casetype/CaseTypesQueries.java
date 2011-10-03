@@ -24,13 +24,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.specification.Specification;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -60,13 +58,7 @@ public interface CaseTypesQueries
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Describable describable;
@@ -118,7 +110,7 @@ public interface CaseTypesQueries
 
       public QueryBuilder<Project> possibleProjects( CaseType caseType )
       {
-         QueryBuilder<Project> projects = qbf.newQueryBuilder( Project.class );
+         QueryBuilder<Project> projects = module.queryBuilderFactory().newQueryBuilder(Project.class);
 
          SelectedCaseTypes.Data template = templateFor( SelectedCaseTypes.Data.class );
 

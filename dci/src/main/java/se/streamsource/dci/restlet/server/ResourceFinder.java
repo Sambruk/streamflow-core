@@ -18,7 +18,7 @@
 package se.streamsource.dci.restlet.server;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.resource.Finder;
@@ -30,7 +30,7 @@ import org.restlet.resource.ServerResource;
 public class ResourceFinder extends Finder
 {
    @Structure
-   private ObjectBuilderFactory factory;
+   private Module module;
 
    public ResourceFinder()
    {
@@ -41,7 +41,7 @@ public class ResourceFinder extends Finder
    {
       try
       {
-         ServerResource resource = factory.newObject( targetClass );
+         ServerResource resource = module.objectBuilderFactory().newObject(targetClass);
          return resource;
       } catch (Exception e)
       {

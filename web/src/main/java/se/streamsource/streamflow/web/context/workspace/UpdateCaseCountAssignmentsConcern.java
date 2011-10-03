@@ -20,8 +20,6 @@ package se.streamsource.streamflow.web.context.workspace;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -33,23 +31,20 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * Increase case count when creating new case in assignments
  */
 public abstract class UpdateCaseCountAssignmentsConcern
-   extends ConcernOf<AssignmentsContext>
-   implements AssignmentsContext
+        extends ConcernOf<AssignmentsContext>
+        implements AssignmentsContext
 {
    @Optional
    @Service
    CachingService caching;
 
-   @Structure
-   UnitOfWorkFactory uowf;
-
    public void createcase()
    {
-      Owner owner  = RoleMap.role( Owner.class );
-      Assignee assignee  = RoleMap.role( Assignee.class );
+      Owner owner = RoleMap.role(Owner.class);
+      Assignee assignee = RoleMap.role(Assignee.class);
 
       // Update assignments for assignee
-      new Caching(caching, Caches.CASECOUNTS).addToCache( owner.toString()+":"+assignee.toString(), 1 );
+      new Caching(caching, Caches.CASECOUNTS).addToCache(owner.toString() + ":" + assignee.toString(), 1);
 
       next.createcase();
    }

@@ -27,7 +27,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.util.Function;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
@@ -56,9 +55,6 @@ public interface StartupMigrationService
         EntityStore entityStore;
 
         @Structure
-        UnitOfWorkFactory uowf;
-
-        @Structure
         ModuleSPI module;
 
         public void activate()
@@ -69,7 +65,7 @@ public interface StartupMigrationService
             if( lsv != null && !lsv.equals( application.version() ) )
             {
                 // Migrate all data eagerly
-                logger.info( "Migrating data to new version" );
+                logger.info( "Migrating data from version "+lsv+" to "+application.version() );
 
                 // Do nothing - the EntityStore will do the migration on load
                 entityStore.entityStates( module ).transferTo( Transforms.map( new Function<EntityState, EntityState>()

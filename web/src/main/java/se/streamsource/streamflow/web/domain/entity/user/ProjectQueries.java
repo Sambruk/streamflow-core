@@ -19,7 +19,7 @@ package se.streamsource.streamflow.web.domain.entity.user;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.project.Members;

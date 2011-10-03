@@ -19,17 +19,14 @@ package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
@@ -38,20 +35,25 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
+import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC
  */
 public class AdministratorsContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<Participant>>
 {
    @Structure
    Module module;
 
-   public LinksValue index()
+   public Iterable<Participant> index()
    {
       RolePolicy policy = RoleMap.role( RolePolicy.class );
 
@@ -59,13 +61,11 @@ public class AdministratorsContext
       Roles organization = org.organization().get();
       Role adminRole = organization.getAdministratorRole();
 
-      return new LinksBuilder( module.valueBuilderFactory() ).rel( "administrator" ).addDescribables( policy.participantsWithRole( adminRole ) ).newLinks();
+      return policy.participantsWithRole(adminRole);
    }
 
-   public void addadministrator( EntityValue participantId )
+   public void addadministrator( Participant participant )
    {
-      UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
-      Participant participant = unitOfWork.get( Participant.class, participantId.entity().get() );
       RolePolicy rolePolicy = RoleMap.role( RolePolicy.class );
 
       OwningOrganization org = ((OwningOrganization) rolePolicy);
@@ -75,40 +75,36 @@ public class AdministratorsContext
       rolePolicy.grantRole( participant, adminRole );
    }
 
-   public LinksValue possibleusers()
+   public Iterable<? extends User> possibleusers()
    {
-      OrganizationQueries organization = RoleMap.role( OrganizationQueries.class );
+      OrganizationQueries organization = RoleMap.role(OrganizationQueries.class);
 
-      Role adminRole = RoleMap.role( Roles.class ).getAdministratorRole();
+      final Role adminRole = RoleMap.role(Roles.class).getAdministratorRole();
 
-      Query<UserEntity> users = organization.findUsersByUsername( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-      users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
+      final Query<? extends User> users = organization.
+            findUsersByUsername( "*" ).
+            newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
+            orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addadministrator" );
+      final RolePolicy policy = RoleMap.role( RolePolicy.class );
 
-      RolePolicy policy = RoleMap.role( RolePolicy.class );
-
-      for (UserEntity user : users)
+      return Iterables.filter(new Specification<User>()
       {
-         if (!policy.participantHasRole( user, adminRole ))
+         public boolean satisfiedBy(User user)
          {
-            String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
-            linksBuilder.addDescribable( user, group );
+            return !policy.participantHasRole(user, adminRole);
          }
-      }
-
-      return linksBuilder.newLinks();
+      }, users);
    }
 
-   public LinksValue possiblegroups()
+   public Iterable<? extends Group> possiblegroups()
    {
-      final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addadministrator" );
-
       final Role adminRole = RoleMap.role( Roles.class ).getAdministratorRole();
       final RolePolicy policy = RoleMap.role( RolePolicy.class );
 
       OrganizationQueries organization = RoleMap.role( OrganizationQueries.class );
 
+      final List<Group> groups = new ArrayList<Group>();
       organization.visitOrganization( new OrganizationVisitor()
       {
          @Override
@@ -116,14 +112,13 @@ public class AdministratorsContext
          {
             if (!policy.participantHasRole( grp, adminRole ))
             {
-               String group = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
-               linksBuilder.addDescribable( grp, group );
+               groups.add(grp);
             }
 
             return true;
          }
       }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Groups.class ) );
 
-      return linksBuilder.newLinks();
+      return groups;
    }
 }

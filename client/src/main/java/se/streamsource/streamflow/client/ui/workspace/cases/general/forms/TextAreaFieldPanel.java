@@ -18,25 +18,22 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.BorderLayout;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
 
 public class TextAreaFieldPanel
       extends AbstractFieldPanel
 {
    private JTextArea text;
 
-   public TextAreaFieldPanel( @Uses FieldSubmissionValue field, @Uses TextAreaFieldValue fieldValue )
+   public TextAreaFieldPanel( @Uses FieldSubmissionDTO field, @Uses TextAreaFieldValue fieldValue )
    {
       super( field );
       setLayout( new BorderLayout( ) );

@@ -17,8 +17,6 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.ClientInfo;
 import org.restlet.security.Enroler;
 import org.restlet.security.User;
@@ -30,9 +28,6 @@ import org.restlet.security.User;
 public class DefaultEnroler
       implements Enroler
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
    public void enrole( ClientInfo clientInfo )
    {
       User user = clientInfo.getUser();

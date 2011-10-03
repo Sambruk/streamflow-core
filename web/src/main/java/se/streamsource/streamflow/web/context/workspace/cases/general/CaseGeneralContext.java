@@ -17,7 +17,9 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
@@ -25,7 +27,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
+import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
@@ -36,6 +39,9 @@ public class CaseGeneralContext
    implements IndexContext<CaseGeneralDTO>
 {
    @Structure Module module;
+
+   @Service
+   KnowledgebaseService knowledgebaseService;
 
    public CaseGeneralDTO index()
    {
@@ -51,7 +57,7 @@ public class CaseGeneralContext
 
          caseTypeBuilder.prototype().text().set( caseType.getDescription() );
          caseTypeBuilder.prototype().id().set( EntityReference.getEntityReference( caseType ).identity() );
-         caseTypeBuilder.prototype().href().set( EntityReference.getEntityReference( caseType ).identity() );
+         caseTypeBuilder.prototype().href().set(knowledgebaseService.createURL((EntityComposite) caseType));
          builder.prototype().caseType().set( caseTypeBuilder.newInstance() );
       }
 

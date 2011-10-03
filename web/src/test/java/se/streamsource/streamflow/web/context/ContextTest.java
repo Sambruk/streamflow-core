@@ -22,9 +22,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.qi4j.api.Qi4j;
+import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.service.ServiceFinder;
@@ -44,11 +46,11 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.test.StreamflowWebContextTestAssembler;
+import se.streamsource.streamflow.web.domain.Describable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -194,9 +196,23 @@ public abstract class ContextTest
    protected static <T> T context( Class<T> contextClass )
    {
       if (TransientComposite.class.isAssignableFrom( contextClass ))
-         return transientBuilderFactory.newTransient( contextClass );
+      {
+         TransientBuilder<T> builder = transientBuilderFactory.newTransientBuilder( contextClass );
+         for (Object rolePlayer : RoleMap.current().getAll(Object.class))
+         {
+            builder.use(rolePlayer);
+         }
+         return builder.newInstance();
+      }
       else
-         return objectBuilderFactory.newObject( contextClass );
+      {
+         ObjectBuilder<T> builder = objectBuilderFactory.newObjectBuilder( contextClass );
+         for (Object rolePlayer : RoleMap.current().getAll(Object.class))
+         {
+            builder.use(rolePlayer);
+         }
+         return builder.newInstance();
+      }
    }
 
    protected static <T> T playRole( T oldEntity )

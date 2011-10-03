@@ -27,11 +27,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.GreaterThan;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Describable;
 
 /**
  * JAVADOC
@@ -66,10 +65,7 @@ public interface Pages
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       @This
       Data data;
@@ -110,7 +106,7 @@ public interface Pages
       public Page createdPage( @Optional DomainEvent event, String id )
       {
 
-         EntityBuilder<Page> builder = uowf.currentUnitOfWork().newEntityBuilder( Page.class, id );
+         EntityBuilder<Page> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Page.class, id );
 
          Page page = builder.newInstance();
 

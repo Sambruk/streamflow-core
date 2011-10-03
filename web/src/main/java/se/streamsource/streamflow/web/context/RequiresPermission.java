@@ -44,15 +44,20 @@ public @interface RequiresPermission
    {
       public boolean isValid( RequiresPermission requiresPermission, RoleMap roleMap )
       {
-         Principal principal = roleMap.get( Principal.class );
+         try
+         {
+            Principal principal = roleMap.get( Principal.class );
 
-         // Administrator has all permissions
-         if (principal.getName().equals("administrator"))
-            return true;
+            // Administrator has all permissions
+            if (principal.getName().equals("administrator"))
+               return true;
 
-         Authorization policy = roleMap.get( Authorization.class );
-
-         return policy.hasPermission( principal.getName(), requiresPermission.value().name() );
+            Authorization policy = roleMap.get( Authorization.class );
+            return policy.hasPermission( principal.getName(), requiresPermission.value().name() );
+         } catch (IllegalArgumentException e)
+         {
+            return false;
+         }
       }
    }
 }

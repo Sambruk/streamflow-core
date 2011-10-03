@@ -20,11 +20,7 @@ package se.streamsource.dci.test.interactions.file;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.MediaType;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import org.restlet.service.MetadataService;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
@@ -37,12 +33,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * JAVADOC
  */
 public class FileContext
-      implements CreateContext<StringValue>, IndexContext<LinksValue>, DeleteContext
+      implements CreateContext<StringValue, File>, IndexContext<LinksValue>, DeleteContext
 {
    @Structure
    Module module;
@@ -56,11 +53,13 @@ public class FileContext
    }
 
    @RequiresDirectory
-   public void create( StringValue value )
+   public File create( StringValue value )
    {
       try
       {
-         new File( RoleMap.role( File.class ), value.string().get() ).createNewFile();
+         File file = new File(RoleMap.role(File.class), value.string().get());
+         file.createNewFile();
+         return file;
       } catch (IOException e)
       {
          throw new ResourceException( e );
@@ -76,14 +75,10 @@ public class FileContext
    }
 
    @RequiresFile
-   public Representation content() throws FileNotFoundException
+   public InputStream content() throws FileNotFoundException
    {
       File file = RoleMap.role( File.class );
-
-      MetadataService metadataService = (MetadataService) module.serviceFinder().findService( MetadataService.class ).get();
-      String ext = file.getName().split( "\\." )[1];
-      MediaType mediaType = metadataService.getMediaType( ext );
-      return new InputRepresentation( new FileInputStream( file ), mediaType );
+      return new FileInputStream( file );
    }
 
    @RequiresDirectory

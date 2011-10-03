@@ -30,27 +30,17 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.conversation.MessageDTO;
-import se.streamsource.streamflow.util.DateFormats;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
@@ -58,17 +48,12 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.KeyboardFocusManager;
+import java.awt.*;
 import java.util.Date;
 import java.util.Locale;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class MessagesView extends JPanel implements TransactionListener
 {
@@ -85,15 +70,14 @@ public class MessagesView extends JPanel implements TransactionListener
    private JXLabel authorLabelValue;
    private JXLabel createdOnLabelValue;
 
-   public MessagesView(@Service ApplicationContext context, @Uses CommandQueryClient client,
-         @Structure ObjectBuilderFactory obf)
+   public MessagesView(@Service ApplicationContext context, @Uses MessagesModel model)
    {
       setActionMap(context.getActionMap(this));
       MacOsUIWrapper.convertAccelerators(getActionMap());
 
       setLayout(new BorderLayout());
 
-      model = obf.newObjectBuilder(MessagesModel.class).use(client).newInstance();
+      this.model = model;
 
       messageTable = new JXTable(new EventJXTableModel<MessageDTO>(model.messages(), new TableFormat<MessageDTO>()
       {
@@ -182,7 +166,7 @@ public class MessagesView extends JPanel implements TransactionListener
 
       // NEWMESSAGE
       sendPanel = new JPanel(new BorderLayout());
-      sendPanel.setPreferredSize(new Dimension(100, 150));
+      sendPanel.setPreferredSize(new Dimension(100, 250));
       JScrollPane messageScroll = new JScrollPane();
 
       newMessage = new JTextPane();
@@ -207,7 +191,7 @@ public class MessagesView extends JPanel implements TransactionListener
 
       // SHOWMESSAGE
       showPanel = new JPanel(new BorderLayout());
-      showPanel.setPreferredSize(new Dimension(100, 150));
+      showPanel.setPreferredSize(new Dimension(100, 250));
       showPanel.setBorder(BorderFactory.createEmptyBorder(5,0,0,0));
       JScrollPane messageShowScroll = new JScrollPane();
 

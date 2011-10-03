@@ -55,13 +55,8 @@ public class CaseLabelsModel
 
    public EventList<LinkValue> getPossibleLabels()
    {
-      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
-
-      LinksValue listValue = client.query( "possiblelabels",
-            LinksValue.class );
-      list.addAll( listValue.links().get() );
-
-      return list;
+      return EventListSynch.synchronize(client.query( "possiblelabels",
+            LinksValue.class ).links().get(), new BasicEventList<LinkValue>());
    }
 
    public void addLabel( LinkValue addLabel )
@@ -72,6 +67,11 @@ public class CaseLabelsModel
    public void removeLabel( LinkValue removeLabel )
    {
       client.getClient( removeLabel ).delete();
+   }
+
+   public LinkValue getKnowledgeBaseLink(LinkValue selected)
+   {
+      return client.getClient(selected).query("knowledgebase", LinkValue.class);
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

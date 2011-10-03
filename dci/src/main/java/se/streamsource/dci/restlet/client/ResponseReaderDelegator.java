@@ -22,6 +22,7 @@ import org.qi4j.api.mixin.Initializable;
 import org.qi4j.api.mixin.InitializationException;
 import org.qi4j.api.structure.Module;
 import org.restlet.Response;
+import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public class ResponseReaderDelegator
    {
       Logger logger = LoggerFactory.getLogger( getClass() );
 
-      ResourceBundle defaultResponseReaders = ResourceBundle.getBundle( "responsereaders" );
+      ResourceBundle defaultResponseReaders = ResourceBundle.getBundle( "commandquery" );
 
       String responseReaderClasses = defaultResponseReaders.getString( "responsereaders" );
       logger.info( "Using responsereaders:"+responseReaderClasses );
@@ -67,11 +68,14 @@ public class ResponseReaderDelegator
       responseReaders.add( reader );
    }
 
-   public <T> T readResponse( Response response, Class<T> resultType )
+   public Object readResponse( Response response, Class<?> resultType )
    {
+      if (resultType.equals(Representation.class))
+         return response.getEntity();
+
       for (ResponseReader responseReader : responseReaders)
       {
-         T result = responseReader.readResponse( response, resultType );
+         Object result = responseReader.readResponse( response, resultType );
          if (result != null)
             return result;
       }

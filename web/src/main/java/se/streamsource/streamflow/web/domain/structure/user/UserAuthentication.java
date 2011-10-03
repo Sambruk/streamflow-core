@@ -22,7 +22,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.domain.user.Password;
+import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import sun.misc.BASE64Encoder;
 

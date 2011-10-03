@@ -22,15 +22,12 @@ import bsh.Interpreter;
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceFinder;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -51,16 +48,7 @@ public interface ConsoleService
          implements Activatable, Console
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ServiceFinder services;
+      Module module;
 
       @Structure
       Qi4j qi4j;
@@ -85,15 +73,15 @@ public interface ConsoleService
 
       private ConsoleResultValue executeBeanshell( ConsoleScriptValue script ) throws Exception
       {
-         ValueBuilder<ConsoleResultValue> builder = vbf.newValueBuilder( ConsoleResultValue.class );
+         ValueBuilder<ConsoleResultValue> builder = module.valueBuilderFactory().newValueBuilder(ConsoleResultValue.class);
 
          Interpreter interpreter = new Interpreter();
 
          // Bind default stuff
-         UnitOfWork unitOfWork = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Script" ) );
+         UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Script"));
          interpreter.set( "uow", unitOfWork );
-         interpreter.set( "query", qbf );
-         interpreter.set( "services", services );
+         interpreter.set( "query", module.queryBuilderFactory() );
+         interpreter.set( "services", module.serviceFinder() );
          interpreter.set( "qi4j", qi4j );
 
          // Import commands

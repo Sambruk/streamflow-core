@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

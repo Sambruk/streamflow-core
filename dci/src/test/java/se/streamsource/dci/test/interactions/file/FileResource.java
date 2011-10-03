@@ -17,13 +17,18 @@
 
 package se.streamsource.dci.test.interactions.file;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import org.restlet.service.MetadataService;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * JAVADOC
@@ -35,6 +40,17 @@ public class FileResource
    public FileResource( )
    {
       super( FileContext.class );
+   }
+
+   @RequiresFile
+   public Representation content() throws FileNotFoundException
+   {
+      File file = RoleMap.role( File.class );
+
+      MetadataService metadataService = (MetadataService) module.serviceFinder().findService( MetadataService.class ).get();
+      String ext = file.getName().split( "\\." )[1];
+      MediaType mediaType = metadataService.getMediaType( ext );
+      return new InputRepresentation( context(FileContext.class).content(), mediaType );
    }
 
    public void resource( String segment ) throws ResourceException

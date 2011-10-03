@@ -25,8 +25,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.Map;
 
-import static java.util.Arrays.*;
-import static se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType.*;
+import static java.util.Arrays.binarySearch;
+import static se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType.values;
 
 /**
  * Management of case access rules.

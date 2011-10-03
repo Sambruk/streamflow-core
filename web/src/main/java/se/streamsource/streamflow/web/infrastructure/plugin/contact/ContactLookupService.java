@@ -21,10 +21,9 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -52,10 +51,7 @@ public interface ContactLookupService
       Configuration<PluginConfiguration> config;
 
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      private ObjectBuilderFactory obf;
+      Module module;
 
       private CommandQueryClient cqc;
 
@@ -71,7 +67,7 @@ public interface ContactLookupService
             Client client = new Client( Protocol.HTTP );
             client.start();
 
-            cqc = obf.newObjectBuilder( CommandQueryClientFactory.class).use( client, new NullResponseHandler() ).newInstance().newClient( serverRef );
+            cqc = module.objectBuilderFactory().newObjectBuilder(CommandQueryClientFactory.class).use( client, new NullResponseHandler() ).newInstance().newClient( serverRef );
          }
       }
 
@@ -83,7 +79,7 @@ public interface ContactLookupService
       {
          try
          {
-            return cqc.query( config.configuration().url().get(), contactTemplate, ContactList.class );
+            return cqc.query( config.configuration().url().get(), ContactList.class, contactTemplate);
 //         ClientResource clientResource = new ClientResource( config.configuration().url().get() );
 //
 //         setQueryParameters( clientResource.getReference(), contactTemplate );
@@ -98,7 +94,7 @@ public interface ContactLookupService
             log.error( "Could not get contacts from plugin", e );
 
             // Return empty list
-            return vbf.newValue( ContactList.class );
+            return module.valueBuilderFactory().newValue(ContactList.class);
          }
       }
    }

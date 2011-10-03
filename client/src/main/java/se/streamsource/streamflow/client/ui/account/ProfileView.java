@@ -25,10 +25,12 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
@@ -36,22 +38,15 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.RADIOBUTTON;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
  * JAVADOC
@@ -70,12 +65,12 @@ public class ProfileView
    public JRadioButton noneButton;
    public JRadioButton emailButton;
 
-   public ProfileView(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client)
+   public ProfileView(@Service ApplicationContext context, @Uses ProfileModel model, @Structure Module module)
    {
       ApplicationActionMap am = context.getActionMap(this);
       setActionMap(am);
 
-      model = obf.newObjectBuilder( ProfileModel.class ).use( client ).newInstance();
+      this.model = model;
       model.addObserver( this );
 
       JPanel panel = new JPanel(new BorderLayout());
@@ -86,20 +81,20 @@ public class ProfileView
       FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
             "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
-      contactBinder = obf.newObject( StateBinder.class );
+      contactBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       contactBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactValue contactTemplate = contactBinder
-            .bindingTemplate(ContactValue.class);
+      ContactDTO contactTemplate = contactBinder
+            .bindingTemplate(ContactDTO.class);
 
-      phoneNumberBinder = obf.newObject( StateBinder.class );
+      phoneNumberBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactPhoneValue phoneTemplate = phoneNumberBinder
-            .bindingTemplate(ContactPhoneValue.class);
+      ContactPhoneDTO phoneTemplate = phoneNumberBinder
+            .bindingTemplate(ContactPhoneDTO.class);
 
-      emailBinder = obf.newObject( StateBinder.class );
+      emailBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       emailBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactEmailValue emailTemplate = emailBinder
-            .bindingTemplate(ContactEmailValue.class);
+      ContactEmailDTO emailTemplate = emailBinder
+            .bindingTemplate(ContactEmailDTO.class);
 
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout,
             contactForm);

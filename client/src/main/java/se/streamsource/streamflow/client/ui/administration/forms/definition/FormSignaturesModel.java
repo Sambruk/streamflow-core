@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
-import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 
 /**
  * JAVADOC
@@ -28,7 +28,7 @@ public class FormSignaturesModel
 {
    public FormSignaturesModel()
    {
-      super( "index" );
+      relationModelMapping("resource", FormSignatureModel.class);
    }
 
    public void create( RequiredSignatureValue requiredSignature )

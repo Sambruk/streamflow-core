@@ -21,14 +21,8 @@ package se.streamsource.streamflow.client.util;
  * JAVADOC
  */
 
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *  FlowLayout subclass that fully supports wrapping of components.

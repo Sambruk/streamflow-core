@@ -21,9 +21,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
-import se.streamsource.streamflow.resource.user.ProxyUserDTO;
-import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
+import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
+import se.streamsource.streamflow.api.administration.ProxyUserDTO;
+import se.streamsource.streamflow.api.administration.ProxyUserListDTO;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -42,7 +42,7 @@ public class ProxyUsersContext
    @Structure
    Module module;
 
-   public void createproxyuser( NewProxyUserCommand proxyUser )
+   public void createproxyuser( NewProxyUserDTO proxyUser )
    {
       Organization organization = role( Organization.class );
       organization.createProxyUser( proxyUser.description().get(), proxyUser.password().get() );

@@ -24,7 +24,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.slf4j.Logger;
@@ -47,8 +46,6 @@ public interface ApplicationEventPlayerService
          implements ApplicationEventPlayer
    {
       final Logger logger = LoggerFactory.getLogger( ApplicationEventPlayer.class );
-      @Structure
-      UnitOfWorkFactory uowf;
 
       @Structure
       Module module;
@@ -61,7 +58,7 @@ public interface ApplicationEventPlayerService
       public void playEvent( ApplicationEvent applicationEvent, Object object )
             throws ApplicationEventReplayException
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          Class handlerType = object.getClass();
 
          // Get method

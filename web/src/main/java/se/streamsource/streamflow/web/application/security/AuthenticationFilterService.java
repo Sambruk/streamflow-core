@@ -27,15 +27,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -54,15 +53,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
+import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
@@ -97,10 +96,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
       Caching caching;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       CircuitBreaker circuitBreaker;
 
@@ -136,7 +132,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
             String username = challengeResponse.getIdentifier();
             String password = new String(challengeResponse.getSecret());
 
-            UnitOfWork unitOfWork = uowf.newUnitOfWork(verifyUsecase);
+            UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(verifyUsecase);
 
             Authentication localUser = null;
             try
@@ -179,7 +175,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
                         throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED,
                               "Could not get userdetails for externally validated user");
                      }
-                     UserDetailsValue externalUser = vbf.newValueFromJSON(UserDetailsValue.class, json);
+                     UserDetailsValue externalUser = module.valueBuilderFactory().newValueFromJSON(UserDetailsValue.class, json);
 
                      if (localUser == null)
                      {
@@ -276,17 +272,17 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
          {
             try
             {
-               UnitOfWork unitOfWork = uowf.newUnitOfWork(updateUsecase);
+               UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(updateUsecase);
                UserEntity userEntity = unitOfWork.get(UserEntity.class, EntityReference.getEntityReference(user)
                      .identity());
                userEntity.resetPassword(password);
 
-               ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
+               ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
                contactBuilder.prototype().name().set(externalUser.name().get());
-               ValueBuilder<ContactEmailValue> emailBuilder = vbf.newValueBuilder(ContactEmailValue.class);
+               ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
                emailBuilder.prototype().emailAddress().set(externalUser.emailAddress().get());
                contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
-               ValueBuilder<ContactPhoneValue> phoneBuilder = vbf.newValueBuilder(ContactPhoneValue.class);
+               ValueBuilder<ContactPhoneDTO> phoneBuilder = module.valueBuilderFactory().newValueBuilder(ContactPhoneDTO.class);
                phoneBuilder.prototype().phoneNumber().set(externalUser.phoneNumber().get());
                contactBuilder.prototype().phoneNumbers().get().add(phoneBuilder.newInstance());
                ((Contactable) userEntity).updateContact(contactBuilder.newInstance());
@@ -306,17 +302,17 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
       {
          try
          {
-            UnitOfWork unitOfWork = uowf.newUnitOfWork(addUsecase);
+            UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(addUsecase);
             UsersEntity usersEntity = unitOfWork.get(UsersEntity.class, UsersEntity.USERS_ID);
             se.streamsource.streamflow.web.domain.structure.user.User user = usersEntity.createUser(username, password);
             user.changeEnabled(true);
 
-            ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
+            ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
             contactBuilder.prototype().name().set(externalUser.name().get());
-            ValueBuilder<ContactEmailValue> emailBuilder = vbf.newValueBuilder(ContactEmailValue.class);
+            ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
             emailBuilder.prototype().emailAddress().set(externalUser.emailAddress().get());
             contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
-            ValueBuilder<ContactPhoneValue> phoneBuilder = vbf.newValueBuilder(ContactPhoneValue.class);
+            ValueBuilder<ContactPhoneDTO> phoneBuilder = module.valueBuilderFactory().newValueBuilder(ContactPhoneDTO.class);
             phoneBuilder.prototype().phoneNumber().set(externalUser.phoneNumber().get());
             contactBuilder.prototype().phoneNumbers().get().add(phoneBuilder.newInstance());
             ((Contactable) user).updateContact(contactBuilder.newInstance());

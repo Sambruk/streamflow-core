@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.4-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-web</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Streamflow web application</name>
     <description>Streamflow web application</description>
@@ -64,18 +64,7 @@
                             <maxIdleTime>3600000</maxIdleTime>
                         </connector>
                     </connectors>
-                    <stopKey>stopit</stopKey>
-                    <stopPort>9999</stopPort>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                        <version>1.6.1</version>
-                        <type>jar</type>
-                    </dependency>
-
-                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -84,22 +73,28 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-server-plugin-spi</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-common</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-surface-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-client-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-infrastructure</artifactId>
-            <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-fileconfig</artifactId>
@@ -108,7 +103,6 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-dci</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- Qi4j -->
@@ -287,11 +281,17 @@
 
         <!-- Mail -->
         <dependency>
-            <groupId>sun-javamail</groupId>
+            <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4</version>
+            <version>1.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
+            
         <dependency>
             <groupId>org.subethamail</groupId>
             <artifactId>subethasmtp</artifactId>
@@ -302,6 +302,12 @@
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>cardme</groupId>
+            <artifactId>cardme</artifactId>
+            <version>0.2.6</version>
         </dependency>
 
         <!-- Testing -->
@@ -317,6 +323,14 @@
             <artifactId>joda-time</artifactId>
             <version>1.6.2</version>
         </dependency>
+
+        <!-- Admin -->
+        <dependency>
+            <groupId>jivesoftware</groupId>
+            <artifactId>smack</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

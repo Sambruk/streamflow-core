@@ -38,7 +38,8 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC

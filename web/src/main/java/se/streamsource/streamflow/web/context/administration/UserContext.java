@@ -17,13 +17,13 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 /**
@@ -44,11 +44,11 @@ public class UserContext
             newLinks();
    }
 
-   public void resetpassword( StringValue command )
+   public void resetpassword( @Name("password") String password )
    {
       UserAuthentication user = RoleMap.role( UserAuthentication.class );
 
-      user.resetPassword( command.string().get() );
+      user.resetPassword( password );
    }
 
    public void changedisabled()

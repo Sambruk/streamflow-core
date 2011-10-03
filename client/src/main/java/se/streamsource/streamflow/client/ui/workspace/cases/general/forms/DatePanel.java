@@ -22,13 +22,13 @@ import org.jdesktop.swingx.calendar.DatePickerFormatter;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.DateFunctions;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
@@ -37,7 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class DatePanel
       extends AbstractFieldPanel
@@ -47,7 +47,7 @@ public class DatePanel
 
    private JXDatePicker datePicker;
 
-   public DatePanel( @Uses FieldSubmissionValue field )
+   public DatePanel( @Uses FieldSubmissionDTO field )
    {
       super( field );
       setLayout( new BorderLayout() );

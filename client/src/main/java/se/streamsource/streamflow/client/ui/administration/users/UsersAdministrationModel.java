@@ -21,8 +21,9 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
@@ -30,15 +31,15 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.administration.NewUserDTO;
+import se.streamsource.streamflow.api.administration.UserEntityDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
-import se.streamsource.streamflow.resource.user.UserEntityValue;
 
 import java.io.File;
 
@@ -46,9 +47,9 @@ public class UsersAdministrationModel
       implements Refreshable, TransactionListener
 {
    @Structure
-   ValueBuilderFactory vbf;
+   Module module;
 
-   private EventList<UserEntityValue> eventList = new BasicEventList<UserEntityValue>();
+   private EventList<UserEntityDTO> eventList = new BasicEventList<UserEntityDTO>();
 
    private CommandQueryClient client;
 
@@ -57,7 +58,7 @@ public class UsersAdministrationModel
       this.client = client;
    }
 
-   public EventList<UserEntityValue> getEventList()
+   public EventList<UserEntityDTO> getEventList()
    {
       return eventList;
    }
@@ -67,11 +68,11 @@ public class UsersAdministrationModel
       EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), eventList );
    }
 
-   public void createUser( NewUserCommand userCommand )
+   public void createUser( NewUserDTO userDTO)
    {
       try
       {
-         client.postCommand( "createuser", userCommand );
+         client.postCommand( "createuser", userDTO);
       } catch (ResourceException e)
       {
          ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
@@ -79,7 +80,7 @@ public class UsersAdministrationModel
       }
    }
 
-   public void changeDisabled( UserEntityValue user )
+   public void changeDisabled( UserEntityDTO user )
    {
       client.getClient( user ).postCommand( "changedisabled" );
    }
@@ -95,12 +96,11 @@ public class UsersAdministrationModel
       client.postCommand( "importusers", representation );
    }
 
-   public void resetPassword( UserEntityValue user, String password )
+   public void resetPassword( UserEntityDTO user, String password )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( password );
-
-      client.getClient( user ).putCommand( "resetpassword", builder.newInstance() );
+      Form form = new Form();
+      form.set("password", password);
+      client.getClient( user ).putCommand( "resetpassword", form );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

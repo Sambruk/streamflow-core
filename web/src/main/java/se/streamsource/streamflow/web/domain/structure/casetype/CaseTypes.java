@@ -27,10 +27,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -78,13 +76,7 @@ public interface CaseTypes
       IdentityGenerator idGen;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Data data;
@@ -134,7 +126,7 @@ public interface CaseTypes
 
       public CaseType createdCaseType( DomainEvent event, String id )
       {
-         CaseType caseType = uowf.currentUnitOfWork().newEntity( CaseType.class, id );
+         CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().newEntity( CaseType.class, id );
 
          return caseType;
       }
@@ -152,9 +144,9 @@ public interface CaseTypes
       public Query<SelectedCaseTypes> usages( CaseType caseType )
       {
          SelectedCaseTypes.Data selectedCaseTypes = QueryExpressions.templateFor( SelectedCaseTypes.Data.class );
-         Query<SelectedCaseTypes> caseTypeUsages = qbf.newQueryBuilder( SelectedCaseTypes.class ).
-               where( QueryExpressions.contains( selectedCaseTypes.selectedCaseTypes(), caseType ) ).
-               newQuery( uowf.currentUnitOfWork() );
+         Query<SelectedCaseTypes> caseTypeUsages = module.queryBuilderFactory().newQueryBuilder(SelectedCaseTypes.class).
+               where(QueryExpressions.contains(selectedCaseTypes.selectedCaseTypes(), caseType)).
+               newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          return caseTypeUsages;
       }

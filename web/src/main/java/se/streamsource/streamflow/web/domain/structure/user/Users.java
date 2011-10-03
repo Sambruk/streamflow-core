@@ -23,15 +23,16 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.domain.user.Password;
-import se.streamsource.streamflow.domain.user.Username;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.api.Password;
+import se.streamsource.streamflow.api.Username;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
 
 /**
  * JAVADOC
@@ -51,25 +52,23 @@ public interface Users
    User createUser( @Username String username, @Password String password )
          throws IllegalArgumentException;
 
+   EmailUserEntity createEmailUser (EmailValue email);
+
    interface Data
    {
       User createdUser( @Optional DomainEvent event, String username, String password );
+
+      EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email);
    }
 
    abstract class Mixin
          implements Users, Data
    {
       @Structure
-      UnitOfWorkFactory uowf;
+      Module module;
 
       @Service
       IdentityGenerator idGen;
-
-      @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
-      ValueBuilderFactory vbf;
 
       public User createUser( String username, String password )
             throws IllegalArgumentException
@@ -77,7 +76,7 @@ public interface Users
          // Check if user already exist
          try
          {
-            uowf.currentUnitOfWork().get( User.class, username );
+            module.unitOfWorkFactory().currentUnitOfWork().get( User.class, username );
 
             throw new IllegalArgumentException( "user_already_exists" );
          } catch (NoSuchEntityException e)
@@ -91,12 +90,50 @@ public interface Users
 
       public User createdUser( DomainEvent event, String username, String password )
       {
-         EntityBuilder<User> builder = uowf.currentUnitOfWork().newEntityBuilder( User.class, username );
+         EntityBuilder<User> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( User.class, username );
          UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
          userEntity.userName().set( username );
          userEntity.hashedPassword().set( userEntity.hashPassword( password ) );
          Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
-         contacts.contact().set( vbf.newValue( ContactValue.class ) );
+         contacts.contact().set(module.valueBuilderFactory().newValue(ContactDTO.class));
+         return builder.newInstance();
+      }
+
+      public EmailUserEntity createEmailUser(EmailValue email)
+              throws IllegalArgumentException
+      {
+         // Check if user already exist
+         EmailUserEntity user;
+         try
+         {
+            user = module.unitOfWorkFactory().currentUnitOfWork().get( EmailUserEntity.class, "email:"+email.from().get() );
+         } catch (NoSuchEntityException e)
+         {
+            // Create new email user
+            user = createdEmailUser(null, email.from().get());
+         }
+
+         // Update contact info
+         ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
+         contactBuilder.prototype().name().set(email.fromName().get());
+
+         ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
+         emailBuilder.prototype().emailAddress().set(email.from().get());
+
+         contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
+
+         user.updateContact(contactBuilder.newInstance());
+
+         user.changeDescription(email.fromName().get());
+
+         return user;
+      }
+
+      public EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email)
+      {
+         EntityBuilder<EmailUserEntity> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( EmailUserEntity.class, "email:"+email );
+         builder.instance().contact().set(module.valueBuilderFactory().newValue(ContactDTO.class));
+
          return builder.newInstance();
       }
    }

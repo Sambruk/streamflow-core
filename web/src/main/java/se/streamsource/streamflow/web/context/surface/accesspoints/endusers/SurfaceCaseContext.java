@@ -20,12 +20,12 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
+import se.streamsource.streamflow.surface.api.EndUserCaseDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -46,13 +46,13 @@ public interface SurfaceCaseContext
          implements SurfaceCaseContext
    {
       @Structure
-      ValueBuilderFactory vbf;
+      Module module;
 
       public EndUserCaseDTO index()
       {
          Case aCase = RoleMap.role( Case.class );
 
-         ValueBuilder<EndUserCaseDTO> builder = vbf.newValueBuilder( EndUserCaseDTO.class );
+         ValueBuilder<EndUserCaseDTO> builder = module.valueBuilderFactory().newValueBuilder(EndUserCaseDTO.class);
          builder.prototype().description().set( aCase.getDescription() );
          CaseId.Data idData = RoleMap.role( CaseId.Data.class );
 

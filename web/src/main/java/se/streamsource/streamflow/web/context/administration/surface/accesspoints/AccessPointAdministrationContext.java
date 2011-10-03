@@ -17,24 +17,22 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
+import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -57,26 +55,25 @@ import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 @Mixins(AccessPointAdministrationContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
 public interface AccessPointAdministrationContext
-      extends IndexContext<AccessPointValue>, Context, DeleteContext
+      extends IndexContext<AccessPointDTO>, Context, DeleteContext
 {
-   void changedescription( @MaxLength(50) StringValue name )
+   void changedescription( @MaxLength(50) @Name("string") String name )
          throws IllegalArgumentException;
 
    List<Project> possibleprojects();
 
-   void setproject( EntityValue id );
+   void changeproject( @Name("entity") Project project);
 
    List<CaseType> possiblecasetypes();
 
-   void setcasetype( EntityValue id );
+   void changecasetype( @Name("entity") CaseType caseType);
 
    List<Form> possibleforms();
 
@@ -92,9 +89,9 @@ public interface AccessPointAdministrationContext
       @Structure
       Module module;
 
-      public AccessPointValue index()
+      public AccessPointDTO index()
       {
-         ValueBuilder<AccessPointValue> builder = module.valueBuilderFactory().newValueBuilder( AccessPointValue.class );
+         ValueBuilder<AccessPointDTO> builder = module.valueBuilderFactory().newValueBuilder( AccessPointDTO.class );
 
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
          AccessPointSettings.Data accessPointData = RoleMap.role( AccessPointSettings.Data.class );
@@ -135,7 +132,7 @@ public interface AccessPointAdministrationContext
          return linkBuilder.newInstance();
       }
 
-      public void delete() throws ResourceException
+      public void delete()
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
          AccessPoints accessPoints = RoleMap.role( AccessPoints.class );
@@ -143,7 +140,7 @@ public interface AccessPointAdministrationContext
          accessPoints.removeAccessPoint( accessPoint );
       }
 
-      public void changedescription( StringValue name )
+      public void changedescription( String name )
             throws IllegalArgumentException
       {
          // check if the new description is valid
@@ -151,13 +148,13 @@ public interface AccessPointAdministrationContext
          List<AccessPoint> accessPointsList = accessPoints.accessPoints().toList();
          for (AccessPoint accessPoint : accessPointsList)
          {
-            if (accessPoint.getDescription().equals( name.string().get() ))
+            if (accessPoint.getDescription().equals( name ))
             {
                throw new IllegalArgumentException( "accesspoint_already_exists" );
             }
          }
 
-         RoleMap.role( AccessPoint.class ).changeDescription( name.string().get() );
+         RoleMap.role( AccessPoint.class ).changeDescription( name );
       }
 
       public List<Project> possibleprojects()
@@ -179,13 +176,11 @@ public interface AccessPointAdministrationContext
          return possibleProjects;
       }
 
-      public void setproject( EntityValue id )
+      public void changeproject( @Name("entity") Project project)
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id.entity().get() );
-
-         accessPoint.setProject( project );
+         accessPoint.changedProject(project);
       }
 
       public List<CaseType> possiblecasetypes()
@@ -205,13 +200,11 @@ public interface AccessPointAdministrationContext
          return possibleCaseTypes;
       }
 
-      public void setcasetype( EntityValue id )
+      public void changecasetype( @Name("entity") CaseType caseType)
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id.entity().get() );
-
-         accessPoint.setCaseType( caseType );
+         accessPoint.changedCaseType(caseType);
       }
 
       public List<Form> possibleforms()

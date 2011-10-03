@@ -20,28 +20,17 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
 
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -61,7 +50,7 @@ public class SubCasesView
    private JLabel subcasesLabel;
    private JScrollPane subCaseListScroll;
 
-   public SubCasesView(@Service ApplicationContext context, @Uses final CaseModel model, @Structure ObjectBuilderFactory obf)
+   public SubCasesView(@Service ApplicationContext context, @Uses final CaseModel model)
    {
       this.model = model;
       setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
