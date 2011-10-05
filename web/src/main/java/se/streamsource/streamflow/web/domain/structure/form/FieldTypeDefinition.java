@@ -15,31 +15,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.api.administration.form;
+package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
+import se.streamsource.streamflow.web.domain.Removable;
 
 /**
  * JAVADOC
  */
-public interface FieldDefinitionValue
-      extends ValueComposite
+public interface FieldTypeDefinition
+      extends Describable, Notable, Removable
 {
-   Property<EntityReference> field();
-
-   Property<String> description();
-
-   Property<String> note();
-
-   Property<String> fieldId();
-   
-   Property<String> fieldType();
-
-   Property<FieldValue> fieldValue();
-
-   @UseDefaults
-   Property<Boolean> mandatory();
 }

@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplat
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.form.FieldTypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -47,13 +48,14 @@ public interface Organization
       Roles,
       SelectedLabels,
       CaseTypes,
-        Removable,
+      Removable,
       AccessPoints,
-        EmailAccessPoints,
+      EmailAccessPoints,
       ProxyUsers,
       Attachments,
       DefaultPdfTemplate,
       FormPdfTemplate,
-      CasePdfTemplate
+      CasePdfTemplate,
+      FieldTypeDefinitions
 {
 }

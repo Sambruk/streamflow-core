@@ -27,6 +27,7 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.OrganizationAttachmentsResource;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.ProxyUsersResource;
+import se.streamsource.streamflow.web.rest.resource.organizations.forms.FieldTypeDefinitionsResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
@@ -114,5 +115,11 @@ public class OrganizationResource
    public void templates()
    {
       subResource( SelectedTemplatesResource.class );
+   }
+   
+   @SubResource
+   public void fieldtypedefinitions()
+   {
+      subResource( FieldTypeDefinitionsResource.class );
    }
 }

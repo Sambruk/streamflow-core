@@ -22,6 +22,7 @@ import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
+import se.streamsource.streamflow.web.domain.structure.form.FieldType;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
@@ -33,6 +34,7 @@ public interface FieldEntity
       Field,
       Describable.Data,
       FieldId.Data,
+      FieldType.Data,
       Notable.Data,
       FieldValueDefinition.Data,
       Mandatory.Data,
