@@ -49,9 +49,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * JAVADOC
  */
-public class CaseArchivalSettingView
-      extends JPanel
-      implements Observer, TransactionListener
+public class CaseArchivalSettingView extends JPanel implements Observer, TransactionListener
 {
    @Service
    DialogService dialogs;
@@ -62,7 +60,7 @@ public class CaseArchivalSettingView
    private CaseArchivalSettingModel model;
    private final ApplicationContext context;
 
-   private JTextField maxAge = new JTextField(2);
+   private JTextField maxAge = new JTextField( 2 );
    private JComboBox archivalType;
 
    public CaseArchivalSettingView(@Service ApplicationContext context, @Uses CaseArchivalSettingModel model)
@@ -71,53 +69,60 @@ public class CaseArchivalSettingView
       this.model = model;
       model.addObserver( this );
 
-      maxAge.setColumns(2);
+      maxAge.setColumns( 2 );
       FormLayout layout = new FormLayout( "150dlu, 2dlu, 50, 70", "pref, pref" );
-      setLayout(layout);
-      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this);
-      builder.append(i18n.text(AdministrationResources.max_age), maxAge);
+      setLayout( layout );
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
+      builder.append( i18n.text( AdministrationResources.max_age ), maxAge );
 
-      archivalType = new JComboBox( new ArchivalSettingsDTO.ArchivalType[] {
-            ArchivalSettingsDTO.ArchivalType.delete,
-            ArchivalSettingsDTO.ArchivalType.export
-      });
-      
-      archivalType.setRenderer( new DefaultListCellRenderer() {
+      archivalType = new JComboBox( new ArchivalSettingsDTO.ArchivalType[]
+      { ArchivalSettingsDTO.ArchivalType.delete, ArchivalSettingsDTO.ArchivalType.export } );
+
+      archivalType.setRenderer( new DefaultListCellRenderer()
+      {
 
          @Override
-         public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
+         public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
          {
             ArchivalSettingsDTO.ArchivalType type = (ArchivalSettingsDTO.ArchivalType) o;
-            return super.getListCellRendererComponent( jList, i18n.text( AdministrationResources.valueOf( type.toString() ) ), i, b, b1 );
+            return super.getListCellRendererComponent( jList,
+                  i18n.text( AdministrationResources.valueOf( type.toString() ) ), i, b, b1 );
          }
-      });
-      builder.append( i18n.text( AdministrationResources.archival_type ) , archivalType, 2 );
-      
-      
-      ActionMap am = context.getActionMap(this);
-      setActionMap(am);
+      } );
+      builder.append( i18n.text( AdministrationResources.archival_type ), archivalType, 2 );
 
-      new ActionBinder(am).bind("updateArchivalSettings", maxAge);
-      new ActionBinder(am).bind("updateArchivalSettings", archivalType);
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
+
+      new ActionBinder( am ).bind( "updateArchivalSettings", maxAge );
+      new ActionBinder( am ).bind( "updateArchivalSettings", archivalType );
 
       new RefreshWhenShowing( this, model );
    }
 
-   public void update( Observable o, Object arg )
+   public void update(Observable o, Object arg)
    {
       ArchivalSettingsDTO archivalSettings = (ArchivalSettingsDTO) model.getIndex();
-      maxAge.setText(archivalSettings.maxAge().get().toString());
-      archivalType.setSelectedItem( archivalSettings.archivalType().get()); 
-      
+      if (archivalSettings == null)
+      {
+         maxAge.setText( "0" );
+         archivalType.setSelectedItem( ArchivalSettingsDTO.ArchivalType.delete );
+      } else
+      {
+         maxAge.setText( archivalSettings.maxAge().get().toString() );
+         archivalType.setSelectedItem( archivalSettings.archivalType().get() );
+      }
+
    }
 
    @org.jdesktop.application.Action
    public void updateArchivalSettings()
    {
-      model.changeArchivalSetting( Integer.parseInt(maxAge.getText()), (ArchivalSettingsDTO.ArchivalType) archivalType.getSelectedItem() );
+      model.changeArchivalSetting( Integer.parseInt( maxAge.getText() ),
+            (ArchivalSettingsDTO.ArchivalType) archivalType.getSelectedItem() );
    }
 
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
       model.refresh();
    }
