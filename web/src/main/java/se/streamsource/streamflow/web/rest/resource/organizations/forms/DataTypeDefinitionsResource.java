@@ -22,25 +22,24 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.administration.forms.definition.FieldTypeDefinitionContext;
-import se.streamsource.streamflow.web.context.administration.forms.definition.FieldTypeDefinitionsContext;
-import se.streamsource.streamflow.web.domain.structure.form.FieldTypeDefinitions;
+import se.streamsource.streamflow.web.context.administration.forms.definition.DataTypeDefinitionsContext;
+import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinitions;
 
 /**
  * JAVADOC
  */
-public class FieldTypeDefinitionsResource
+public class DataTypeDefinitionsResource
    extends CommandQueryResource
    implements SubResources
 {
-   public FieldTypeDefinitionsResource()
+   public DataTypeDefinitionsResource()
    {
-      super( FieldTypeDefinitionsContext.class );
+      super( DataTypeDefinitionsContext.class );
    }
 
    public void resource( String segment ) throws ResourceException
    {
-      findManyAssociation( RoleMap.role(FieldTypeDefinitions.Data.class ).fieldTypeDefinitions(), segment);
-      subResourceContexts( FieldTypeDefinitionContext.class);
+      findManyAssociation( RoleMap.role(DataTypeDefinitions.Data.class ).dataTypeDefinitions(), segment);
+      subResource( DataTypeDefinitionResource.class);
    }
 }

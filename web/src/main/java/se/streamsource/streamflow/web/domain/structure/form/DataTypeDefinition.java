@@ -24,7 +24,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 /**
  * JAVADOC
  */
-public interface FieldTypeDefinition
-      extends Describable, Notable, Removable
+public interface DataTypeDefinition
+      extends Describable, Notable, Removable, DataTypeUrl
 {
 }

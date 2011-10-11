@@ -25,27 +25,27 @@ import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.web.domain.structure.form.FieldTypeDefinition;
-import se.streamsource.streamflow.web.domain.structure.form.FieldTypeDefinitions;
+import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinitions;
 
 /**
  * JAVADOC
  */
-public class FieldTypeDefinitionsContext
-      implements IndexContext<Iterable<FieldTypeDefinition>>, CreateContext<String, FieldTypeDefinition>
+public class DataTypeDefinitionsContext
+      implements IndexContext<Iterable<DataTypeDefinition>>, CreateContext<String, DataTypeDefinition>
 {
    @Structure
    Module module;
 
-   public Iterable<FieldTypeDefinition> index()
+   public Iterable<DataTypeDefinition> index()
    {
-      return role( FieldTypeDefinitions.Data.class ).fieldTypeDefinitions();
+      return role( DataTypeDefinitions.Data.class ).dataTypeDefinitions();
    }
 
-   public FieldTypeDefinition create( @Name("url") String url )
+   public DataTypeDefinition create( @Name("url") String url )
    {
-      FieldTypeDefinitions fieldTypeDefinitions = role( FieldTypeDefinitions.class );
+      DataTypeDefinitions fieldTypeDefinitions = role( DataTypeDefinitions.class );
 
-      return fieldTypeDefinitions.createFieldTypeDefinition( url );
+      return fieldTypeDefinitions.createDataTypeDefinition( url );
    }
 }

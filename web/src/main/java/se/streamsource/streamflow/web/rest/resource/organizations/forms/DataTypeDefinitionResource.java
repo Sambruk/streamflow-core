@@ -20,26 +20,29 @@ package se.streamsource.streamflow.web.rest.resource.organizations.forms;
 import org.restlet.data.Form;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.streamflow.web.context.administration.forms.definition.FieldTypeDefinitionContext;
-import se.streamsource.streamflow.web.domain.structure.form.FieldTypeDefinition;
+import se.streamsource.streamflow.web.context.administration.forms.definition.DataTypeDefinitionContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.context.structure.NotableContext;
+import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinition;
 
 /**
  * JAVADOC
  */
-public class FieldTypeDefinitionResource
+public class DataTypeDefinitionResource
    extends CommandQueryResource
 {
-   public FieldTypeDefinitionResource()
+   public DataTypeDefinitionResource()
    {
-      super( FieldTypeDefinitionContext.class );
+      super( DataTypeDefinitionContext.class, DescribableContext.class, NotableContext.class );
    }
    
    public Form index(){
-      FieldTypeDefinition fieldTypeDefinition = context(FieldTypeDefinitionContext.class).index();
+      DataTypeDefinition fieldTypeDefinition = context(DataTypeDefinitionContext.class).index();
       Form form = new Form();
       form.set("description", fieldTypeDefinition.getDescription());
       form.set("note", fieldTypeDefinition.getNote());
       return form;
       
    }
+
 }

@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import java.io.IOException;
 
 import org.qi4j.api.injection.scope.Structure;
@@ -24,26 +26,26 @@ import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.web.domain.structure.form.FieldTypeDefinition;
+import se.streamsource.streamflow.web.domain.entity.form.DataTypeDefinitionEntity;
+import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinitions;
 
 /**
  * JAVADOC
  */
-public class FieldTypeDefinitionContext implements IndexContext<FieldTypeDefinition>, DeleteContext
+public class DataTypeDefinitionContext implements IndexContext<DataTypeDefinitionEntity>, DeleteContext
 {
    @Structure
    Module module;
 
    public void delete() throws IOException
    {
-      // TODO Auto-generated method stub
-      
+      role( DataTypeDefinitions.class ).removeDataTypeDefinition( role (DataTypeDefinition.class) );
    }
 
-   public FieldTypeDefinition index()
+   public DataTypeDefinitionEntity index()
    {
-      // TODO Auto-generated method stub
-      return null;
+      return role (DataTypeDefinitionEntity.class) ;
    }
 
 }

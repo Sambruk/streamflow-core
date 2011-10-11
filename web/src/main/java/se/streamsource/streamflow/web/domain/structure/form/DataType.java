@@ -18,40 +18,37 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.library.constraints.annotation.NotEmpty;
 
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.web.domain.entity.form.FieldTypeDefinitionEntity;
 
 /**
  * Technical type for a field. May not be empty
  */
-@Mixins(FieldType.Mixin.class)
-public interface FieldType
+@Mixins(DataType.Mixin.class)
+public interface DataType
 {
-   void changeFieldType( Association<FieldTypeDefinition> newType);
+   void changeDataType( Association<DataTypeDefinition> newType);
 
    interface Data
    {
       @Optional
-      Association<FieldTypeDefinition> fieldType();
+      Association<DataTypeDefinition> dataType();
 
-      void changedFieldType( @Optional DomainEvent event, Association<FieldTypeDefinition> newType );
+      void changedDataType( @Optional DomainEvent event, Association<DataTypeDefinition> newType );
    }
 
    class Mixin
-      implements FieldType
+      implements DataType
    {
       @This
       Data data;
 
-      public void changeFieldType( Association<FieldTypeDefinition> newType)
+      public void changeDataType( Association<DataTypeDefinition> newType)
       {
-         data.changedFieldType( null, newType );
+         data.changedDataType( null, newType );
       }
    }
 
