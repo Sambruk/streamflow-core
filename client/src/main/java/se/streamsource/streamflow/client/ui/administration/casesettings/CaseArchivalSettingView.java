@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration.casesettings;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -72,6 +73,7 @@ public class CaseArchivalSettingView extends JPanel implements Observer, Transac
       maxAge.setColumns( 2 );
       FormLayout layout = new FormLayout( "150dlu, 2dlu, 50, 70", "pref, pref" );
       setLayout( layout );
+      setMaximumSize( new Dimension( Short.MAX_VALUE, 50 ) );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
       builder.append( i18n.text( AdministrationResources.max_age ), maxAge );
 

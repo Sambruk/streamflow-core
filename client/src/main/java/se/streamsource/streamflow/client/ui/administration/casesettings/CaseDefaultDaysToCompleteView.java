@@ -17,24 +17,30 @@
 
 package se.streamsource.streamflow.client.ui.administration.casesettings;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.jdesktop.application.*;
+import java.awt.Dimension;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -63,6 +69,7 @@ public class CaseDefaultDaysToCompleteView
       defaultDaysToComplete.setColumns(2);
       FormLayout layout = new FormLayout( "150dlu, 2dlu, 50", "pref" );
       setLayout(layout);
+      setMaximumSize( new Dimension( Short.MAX_VALUE, 50 ) );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this);
       builder.append(i18n.text(AdministrationResources.default_days_to_complete), defaultDaysToComplete);
 
