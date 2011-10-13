@@ -17,49 +17,32 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.EventList;
+import static se.streamsource.dci.value.link.Links.withRel;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.Font;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseSettingsView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
-import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
-import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
-import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormEditView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesView;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
-import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
-import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
-import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersView;
-import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
-import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
-import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
-import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
-import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
-import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
-import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static se.streamsource.dci.value.link.Links.withRel;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import ca.odell.glazedlists.EventList;
 
 /**
  * Show settings for a REST resource, with each part as its own panel with a separator. To determine panels, do a query
@@ -92,7 +75,7 @@ public class SettingsResourceView
    public SettingsResourceView(@Uses ResourceModel model, @Structure Module module)
    {
       setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
+      
       model.refresh();
       EventList<LinkValue> resources = model.getResources();
       for (Map.Entry<String, Class<? extends JComponent>> stringClassEntry : views.entrySet())
@@ -112,15 +95,15 @@ public class SettingsResourceView
                add(jLabel);
                JComponent view = module.objectBuilderFactory().newObjectBuilder(tabClass).use(resourceModel).newInstance();
                view.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-               add(view);
                view.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+               add(view);
             } catch (Exception e)
             {
                e.printStackTrace();
             }
          }
       }
-
       add(Box.createVerticalGlue());
+      
    }
 }
