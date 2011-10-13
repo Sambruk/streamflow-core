@@ -17,10 +17,13 @@
 
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * JAVADOC
@@ -36,7 +39,8 @@ public interface FieldDefinitionValue
 
    Property<String> fieldId();
    
-   Property<String> fieldType();
+   @Optional
+   Property<LinkValue> datatype();
 
    Property<FieldValue> fieldValue();
 

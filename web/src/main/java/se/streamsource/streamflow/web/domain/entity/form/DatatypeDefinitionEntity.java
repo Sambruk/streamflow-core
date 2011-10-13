@@ -30,21 +30,21 @@ import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.structure.form.DataType;
-import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinition;
-import se.streamsource.streamflow.web.domain.structure.form.DataTypeUrl;
+import se.streamsource.streamflow.web.domain.structure.form.Datatype;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeUrl;
 
 /**
  * Label definition
  */
-@Concerns(DataTypeDefinitionEntity.RemovableConcern.class)
-public interface DataTypeDefinitionEntity
+@Concerns(DatatypeDefinitionEntity.RemovableConcern.class)
+public interface DatatypeDefinitionEntity
       extends DomainEntity,
-      DataTypeDefinition,
+      DatatypeDefinition,
       Describable.Data,
       Notable.Data,
       Removable.Data,
-      DataTypeUrl.Data
+      DatatypeUrl.Data
 {
    abstract class RemovableConcern
       extends ConcernOf<Removable>
@@ -57,7 +57,7 @@ public interface DataTypeDefinitionEntity
       Qi4j qi4j;
 
       @This
-      DataTypeDefinition dataDefinition;
+      DatatypeDefinition dataDefinition;
 
       public boolean removeEntity()
       {
@@ -67,14 +67,14 @@ public interface DataTypeDefinitionEntity
          if (removed)
          {
             {
-               DataType.Data usedDataTypes = QueryExpressions.templateFor( DataType.Data.class );
-               Query<DataType> fieldTypeUsages = module.queryBuilderFactory().newQueryBuilder(DataType.class).
-                     where(QueryExpressions.eq(usedDataTypes.dataType(), qi4j.dereference( dataDefinition))).
+               Datatype.Data usedDataTypes = QueryExpressions.templateFor( Datatype.Data.class );
+               Query<Datatype> fieldTypeUsages = module.queryBuilderFactory().newQueryBuilder(Datatype.class).
+                     where(QueryExpressions.eq(usedDataTypes.datatype(), qi4j.dereference( dataDefinition))).
                      newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
-               for (DataType fieldType : fieldTypeUsages)
+               for (Datatype fieldType : fieldTypeUsages)
                {
-                  fieldType.changeDataType( null );
+                  fieldType.changeDatatype( null );
                }
             }
          }

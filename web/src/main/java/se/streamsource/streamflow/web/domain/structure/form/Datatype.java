@@ -27,28 +27,36 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 /**
  * Technical type for a field. May not be empty
  */
-@Mixins(DataType.Mixin.class)
-public interface DataType
+@Mixins(Datatype.Mixin.class)
+public interface Datatype
 {
-   void changeDataType( Association<DataTypeDefinition> newType);
+   void changeDatatype( @Optional DatatypeDefinition newType);
 
    interface Data
    {
       @Optional
-      Association<DataTypeDefinition> dataType();
-
-      void changedDataType( @Optional DomainEvent event, Association<DataTypeDefinition> newType );
+      Association<DatatypeDefinition> datatype();
+   }
+   
+   interface Events
+   {
+      void changedDatatype( @Optional DomainEvent event, @Optional DatatypeDefinition newType );
    }
 
    class Mixin
-      implements DataType
+      implements Datatype, Events
    {
       @This
       Data data;
 
-      public void changeDataType( Association<DataTypeDefinition> newType)
+      public void changeDatatype( @Optional DatatypeDefinition newType)
       {
-         data.changedDataType( null, newType );
+         changedDatatype( null, newType );
+      }
+      
+      public void changedDatatype( DomainEvent event, @Optional DatatypeDefinition newType )
+      {
+         data.datatype().set( newType );
       }
    }
 

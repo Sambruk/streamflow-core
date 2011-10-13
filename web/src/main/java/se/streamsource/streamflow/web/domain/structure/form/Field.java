@@ -24,6 +24,6 @@ import se.streamsource.streamflow.web.domain.Notable;
  * JAVADOC
  */
 public interface Field
-      extends Describable, Notable, FieldValueDefinition, Mandatory, FieldId, DataType
+      extends Describable, Notable, FieldValueDefinition, Mandatory, FieldId, Datatype
 {
 }

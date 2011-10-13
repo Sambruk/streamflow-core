@@ -26,26 +26,26 @@ import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.web.domain.entity.form.DataTypeDefinitionEntity;
-import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinition;
-import se.streamsource.streamflow.web.domain.structure.form.DataTypeDefinitions;
+import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 
 /**
  * JAVADOC
  */
-public class DataTypeDefinitionContext implements IndexContext<DataTypeDefinitionEntity>, DeleteContext
+public class DatatypeDefinitionContext implements IndexContext<DatatypeDefinitionEntity>, DeleteContext
 {
    @Structure
    Module module;
 
    public void delete() throws IOException
    {
-      role( DataTypeDefinitions.class ).removeDataTypeDefinition( role (DataTypeDefinition.class) );
+      role( DatatypeDefinitions.class ).removeDatatypeDefinition( role (DatatypeDefinition.class) );
    }
 
-   public DataTypeDefinitionEntity index()
+   public DatatypeDefinitionEntity index()
    {
-      return role (DataTypeDefinitionEntity.class) ;
+      return role (DatatypeDefinitionEntity.class) ;
    }
 
 }

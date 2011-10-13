@@ -82,6 +82,7 @@ public enum AdministrationResources
    comment_label,
    number_field_type,
    width_label,
+   datatype_label,
    rows_label,
    integer_label,
    checkboxes,

@@ -17,26 +17,38 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import java.util.List;
+
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.Requires;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Datatype;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
@@ -52,11 +64,15 @@ public interface FormFieldContext
 {
    public FieldDefinitionValue field();
 
+   public LinksValue possibledatatypes();
+   
    public void changedescription( @MaxLength(100) @Name("description") String description );
 
    public void changemandatory( @Name("mandatory") boolean mandatory );
 
    public void changefieldid( @Name("id") String id );
+   
+   public void changedatatype( @Name("datatype") EntityValue dto);
 
    public void changehint( @Name("hint") String hint );
 
@@ -107,10 +123,33 @@ public interface FormFieldContext
          builder.prototype().note().set( fieldEntity.note().get() );
          builder.prototype().description().set( fieldEntity.description().get() );
          builder.prototype().fieldId().set( fieldEntity.fieldId().get() );
+         if (fieldEntity.datatype().get() != null)
+         {
+            ValueBuilder<LinkValue> linkValueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+            linkValueBuilder.prototype().href().set( fieldEntity.datatype().get().getUrl() );
+            linkValueBuilder.prototype().text().set( fieldEntity.datatype().get().getDescription() );
+            linkValueBuilder.prototype().id().set(EntityReference.getEntityReference( fieldEntity.datatype().get()).identity() );
+            linkValueBuilder.prototype().rel().set( "datatype" );
+            builder.prototype().datatype().set( linkValueBuilder.newInstance());
+         }
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
 
          return builder.newInstance();
+      }
+
+      public LinksValue possibledatatypes()
+      {
+         List<DatatypeDefinition> definitions = RoleMap.role( DatatypeDefinitions.Data.class ).datatypeDefinitions().toList();
+         
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         builder.rel( "datatype" );
+         for (DatatypeDefinition dataTypeDefinition : definitions)
+         {
+            builder.addLink( dataTypeDefinition.getDescription(), EntityReference.getEntityReference( dataTypeDefinition).identity() );
+         }
+
+         return builder.newLinks();
       }
 
       public void changedescription( String description )
@@ -131,6 +170,22 @@ public interface FormFieldContext
          FieldId fieldId = RoleMap.role( FieldId.class );
 
          fieldId.changeFieldId( id );
+      }
+
+      public void changedatatype( EntityValue dto )
+      {
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+         Datatype datatype = RoleMap.role( Datatype.class );
+         String entityReference = dto.entity().get();
+         if (entityReference != null)
+         {
+            DatatypeDefinitionEntity dataTypeDefinitionEntity = uow.get( DatatypeDefinitionEntity.class, entityReference );
+            datatype.changeDatatype( dataTypeDefinitionEntity );
+         } else 
+         {
+            datatype.changeDatatype( null );
+         }
+         
       }
 
       public void changehint( String hint )

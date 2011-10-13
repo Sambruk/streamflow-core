@@ -30,6 +30,8 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
@@ -150,6 +152,7 @@ public interface FormDrafts
                valueBuilder.prototype().note().set( field.getNote() );
                valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ));
                valueBuilder.prototype().fieldId().set( ((FieldId.Data)field).fieldId().get());
+               //valueBuilder.prototype().dataType().set( ((Datatype.Data)field).dataType().get());
                valueBuilder.prototype().mandatory().set( field.isMandatory() );
                valueBuilder.prototype().fieldValue().set( fieldValue );
 

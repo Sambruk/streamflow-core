@@ -165,6 +165,17 @@ public class FieldValueObserver
                model.changeOpenSelectionName( (String) property.get() );
             }
          }.execute();
+      } else if (property.qualifiedName().name().equals( "datatype" ))
+      {
+         new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeDatatype( (String) property.get() );
+            }
+         }.execute();
       }
    }
 

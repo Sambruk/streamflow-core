@@ -27,8 +27,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 /**
  * Role for maintaining descriptions of entities.
  */
-@Mixins(DataTypeUrl.Mixin.class)
-public interface DataTypeUrl
+@Mixins(DatatypeUrl.Mixin.class)
+public interface DatatypeUrl
 {
   void changeUrl( @Optional String newUrl );
 
@@ -43,7 +43,7 @@ public interface DataTypeUrl
   }
 
   public abstract class Mixin
-        implements DataTypeUrl, Data
+        implements DatatypeUrl, Data
   {
      public void changeUrl( String newUrl )
      {
