@@ -126,6 +126,10 @@ public interface BootstrapDataService
                uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Bootstrap data"));
                orgs = uow.get( organizations ).organizations().newQuery( uow );
                admin = uow.get(admin);
+            } else if (orgCount == 1)
+            {
+               // Set association to the one org
+               organizations.organization().set(orgs.find());
             } else if (orgCount > 1)
             {
                logger.warn("Multiple organizations exist. Removing extra");
