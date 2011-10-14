@@ -59,6 +59,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
@@ -136,8 +137,8 @@ public interface CreateCaseFromEmailService
                // This is not in response to something that we sent out - create new case from it
                if (references == null)
                {
-                  OrganizationsQueries organizations = uow.get(OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID);
-                  Organization organization = organizations.organizations().newQuery(uow).find();
+                  Organizations.Data organizations = uow.get(Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID);
+                  Organization organization = organizations.organization().get();
                   EmailAccessPoint ap = null;
                   try
                   {

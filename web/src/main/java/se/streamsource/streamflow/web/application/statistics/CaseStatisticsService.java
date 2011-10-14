@@ -468,49 +468,47 @@ public interface CaseStatisticsService
          OrganizationsEntity organizations = uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
 
          final List<OrganizationalUnitValue> ous = new ArrayList<OrganizationalUnitValue>();
-         for (OrganizationEntity org : organizations.organizations().newQuery(uow))
+
+         OrganizationEntity org = (OrganizationEntity) organizations.organization().get();
+         org.accept(new HierarchicalVisitor<Object, Object, RuntimeException>()
          {
-            org.accept(new HierarchicalVisitor<Object, Object, RuntimeException>()
+            int idx = 0;
+
+            Stack<ValueBuilder<OrganizationalUnitValue>> builders = new Stack<ValueBuilder<OrganizationalUnitValue>>();
+
+            @Override
+            public boolean visitEnter(Object visited) throws RuntimeException
             {
-               int idx = 0;
-
-               Stack<ValueBuilder<OrganizationalUnitValue>> builders = new Stack<ValueBuilder<OrganizationalUnitValue>>();
-
-               @Override
-               public boolean visitEnter(Object visited) throws RuntimeException
+               if (visited instanceof OrganizationalUnit || visited instanceof Organization)
                {
-                  if (visited instanceof OrganizationalUnit || visited instanceof Organization)
-                  {
-                     ValueBuilder<OrganizationalUnitValue> builder = module.valueBuilderFactory().newValueBuilder(OrganizationalUnitValue.class);
+                  ValueBuilder<OrganizationalUnitValue> builder = module.valueBuilderFactory().newValueBuilder(OrganizationalUnitValue.class);
 
-                     builder.prototype().name().set(((Describable)visited).getDescription());
-                     builder.prototype().id().set(visited.toString());
-                     builder.prototype().left().set(idx);
-                     builders.push(builder);
+                  builder.prototype().name().set(((Describable)visited).getDescription());
+                  builder.prototype().id().set(visited.toString());
+                  builder.prototype().left().set(idx);
+                  builders.push(builder);
 
-                     idx++;
-                  }
-
-                  return super.visitEnter(visited);
+                  idx++;
                }
 
-               @Override
-               public boolean visitLeave(Object visited) throws RuntimeException
+               return super.visitEnter(visited);
+            }
+
+            @Override
+            public boolean visitLeave(Object visited) throws RuntimeException
+            {
+               if (visited instanceof OrganizationalUnit || visited instanceof Organization)
                {
-                  if (visited instanceof OrganizationalUnit || visited instanceof Organization)
-                  {
-                     ValueBuilder<OrganizationalUnitValue> builder = builders.pop();
-                     builder.prototype().right().set(idx);
-                     ous.add(builder.newInstance());
+                  ValueBuilder<OrganizationalUnitValue> builder = builders.pop();
+                  builder.prototype().right().set(idx);
+                  ous.add(builder.newInstance());
 
-                     idx++;
-                  }
-
-                  return super.visitLeave(visited);
+                  idx++;
                }
-            });
 
-         }
+               return super.visitLeave(visited);
+            }
+         });
 
          ValueBuilder<OrganizationalStructureValue> builder = module.valueBuilderFactory().newValueBuilder(OrganizationalStructureValue.class);
          builder.prototype().structure().get().addAll(ous);

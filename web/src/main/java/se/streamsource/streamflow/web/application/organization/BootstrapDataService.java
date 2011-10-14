@@ -140,6 +140,9 @@ public interface BootstrapDataService
                   }
                }
 
+               // Set association to the one org
+               organizations.organization().set(realOrg);
+
                // Now remove all extra orgs
                for (OrganizationEntity org : orgs)
                {

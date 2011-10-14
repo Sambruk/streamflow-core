@@ -24,6 +24,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 /**
  * JAVADOC
@@ -36,8 +37,8 @@ public class OrganizationsContext
 
    public LinksValue index()
    {
-      OrganizationsQueries organizations = RoleMap.role(OrganizationsQueries.class);
+      Organizations.Data organizations = RoleMap.role(Organizations.Data.class);
 
-      return new LinksBuilder(module.valueBuilderFactory()).addDescribables( organizations.organizations().newQuery( module.unitOfWorkFactory().currentUnitOfWork() )).newLinks();
+      return new LinksBuilder(module.valueBuilderFactory()).addDescribable( organizations.organization().get()).newLinks();
    }
 }

@@ -21,6 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -37,6 +38,9 @@ public interface Organizations
 
    interface Data
    {
+      @Optional
+      Association<Organization> organization();
+
       Organization createdOrganization( @Optional DomainEvent event, String id );
    }
 
@@ -64,7 +68,9 @@ public interface Organizations
       {
          EntityBuilder<Organization> entityBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Organization.class, id );
          entityBuilder.instanceFor( OwningOrganization.class ).organization().set( entityBuilder.instance() );
-         return entityBuilder.newInstance();
+         Organization organization = entityBuilder.newInstance();
+         organization().set(organization);
+         return organization;
       }
    }
 }
