@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.ArrayList;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -31,7 +33,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 
-import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
@@ -44,8 +45,6 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-
-import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -152,7 +151,10 @@ public interface FormDrafts
                valueBuilder.prototype().note().set( field.getNote() );
                valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ));
                valueBuilder.prototype().fieldId().set( ((FieldId.Data)field).fieldId().get());
-               //valueBuilder.prototype().dataType().set( ((Datatype.Data)field).dataType().get());
+               if (((Datatype.Data)field).datatype().get() != null)
+               {
+                  valueBuilder.prototype().datatypeUrl().set( ((Datatype.Data)field).datatype().get().getUrl());
+               }
                valueBuilder.prototype().mandatory().set( field.isMandatory() );
                valueBuilder.prototype().fieldValue().set( fieldValue );
 

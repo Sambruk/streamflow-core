@@ -17,15 +17,23 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
+import java.awt.BorderLayout;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
@@ -34,11 +42,6 @@ import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValu
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.client.util.Refreshable;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * JAVADOC
@@ -82,8 +85,8 @@ public class FieldEditView
    {
       model.refresh();
 
-      FieldDefinitionValue fieldDefinitionValue = model.getFieldDefinition();
-      FieldValue value = fieldDefinitionValue.fieldValue().get();
+      FieldDefinitionAdminValue fieldDefinitionAdminValue = model.getFieldDefinition();
+      FieldValue value = fieldDefinitionAdminValue.fieldValue().get();
 
       Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) value.getClass().getInterfaces()[0];
       add(module.objectBuilderFactory().newObjectBuilder(editors.get(fieldValueType)).use(model).newInstance());

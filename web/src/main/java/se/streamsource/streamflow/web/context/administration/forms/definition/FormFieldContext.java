@@ -36,7 +36,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
@@ -62,7 +62,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 public interface FormFieldContext
       extends DeleteContext, Context
 {
-   public FieldDefinitionValue field();
+   public FieldDefinitionAdminValue field();
 
    public LinksValue possibledatatypes();
    
@@ -114,11 +114,11 @@ public interface FormFieldContext
       @Structure
       Module module;
 
-      public FieldDefinitionValue field()
+      public FieldDefinitionAdminValue field()
       {
          FieldEntity fieldEntity = RoleMap.role( FieldEntity.class );
 
-         ValueBuilder<FieldDefinitionValue> builder = module.valueBuilderFactory().newValueBuilder( FieldDefinitionValue.class );
+         ValueBuilder<FieldDefinitionAdminValue> builder = module.valueBuilderFactory().newValueBuilder( FieldDefinitionAdminValue.class );
          builder.prototype().field().set( EntityReference.getEntityReference( fieldEntity ) );
          builder.prototype().note().set( fieldEntity.note().get() );
          builder.prototype().description().set( fieldEntity.description().get() );

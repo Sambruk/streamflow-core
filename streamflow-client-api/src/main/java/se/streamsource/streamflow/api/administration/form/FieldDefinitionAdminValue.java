@@ -23,10 +23,12 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
+import se.streamsource.dci.value.link.LinkValue;
+
 /**
  * JAVADOC
  */
-public interface FieldDefinitionValue
+public interface FieldDefinitionAdminValue
       extends ValueComposite
 {
    Property<EntityReference> field();
@@ -38,7 +40,7 @@ public interface FieldDefinitionValue
    Property<String> fieldId();
    
    @Optional
-   Property<String> datatypeUrl();
+   Property<LinkValue> datatype();
 
    Property<FieldValue> fieldValue();
 

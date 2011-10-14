@@ -41,6 +41,7 @@ import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
@@ -159,6 +160,7 @@ public class ClientAPIAssembler
               PageDefinitionValue.class,
               FieldValue.class,
               FieldDefinitionValue.class,
+              FieldDefinitionAdminValue.class,
               RequiredSignaturesValue.class,
               RequiredSignatureValue.class,
 

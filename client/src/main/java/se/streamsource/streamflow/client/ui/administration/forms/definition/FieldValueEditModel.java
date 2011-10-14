@@ -28,6 +28,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.client.util.Refreshable;
 import ca.odell.glazedlists.BasicEventList;
@@ -42,7 +43,7 @@ public class FieldValueEditModel
 {
    public static final String DATATYPE_NONE = "none";
 
-   private FieldDefinitionValue value;
+   private FieldDefinitionAdminValue value;
    
    private EventList<LinkValue> possibleDatatypes = new TransactionList<LinkValue>( new BasicEventList<LinkValue>());
    private final LinkValue noneLink;
@@ -63,7 +64,7 @@ public class FieldValueEditModel
       noneLink = valueBuilder.newInstance();
       
    }
-   public FieldDefinitionValue getFieldDefinition()
+   public FieldDefinitionAdminValue getFieldDefinition()
    {
       return value;
    }
@@ -161,7 +162,7 @@ public class FieldValueEditModel
    
    public void refresh()
    {
-      value = (FieldDefinitionValue) client.query( "field", FieldDefinitionValue.class ).buildWith().prototype();
+      value = (FieldDefinitionAdminValue) client.query( "field", FieldDefinitionAdminValue.class ).buildWith().prototype();
       
       possibleDatatypes.clear();
       
