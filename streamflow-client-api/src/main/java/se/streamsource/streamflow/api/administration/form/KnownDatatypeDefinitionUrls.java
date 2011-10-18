@@ -14,28 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package se.streamsource.streamflow.api.administration.form;
 
-package se.streamsource.streamflow.api.workspace.cases.general;
-
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
-
-/**
- * JAVADOC
- */
-public interface FieldSubmissionDTO
-      extends ValueComposite
+public interface KnownDatatypeDefinitionUrls
 {
-   Property<FieldDefinitionValue> field();
-
-   @Optional
-   Property<String> value();
-
-   @Optional
-   Property<String> message();
-
-   Property<Boolean> enabled();
+   public String WG_POS_LAT_LONG = "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long";
 }

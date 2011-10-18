@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.api.workspace.cases.general;
+package se.streamsource.streamflow.web.infrastructure.plugin;
 
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 
 /**
- * JAVADOC
+ * Configuration for the Kartago plugin. Points out the clients default installation executable
  */
-public interface FieldSubmissionDTO
-      extends ValueComposite
+public interface KartagoPluginConfiguration
+      extends ConfigurationComposite, Enabled
 {
-   Property<FieldDefinitionValue> field();
-
-   @Optional
-   Property<String> value();
-
-   @Optional
-   Property<String> message();
-
-   Property<Boolean> enabled();
+   /**
+    * The path to the client application
+    *
+    * @return
+    */
+   @UseDefaults
+   Property<String> installpath();
 }

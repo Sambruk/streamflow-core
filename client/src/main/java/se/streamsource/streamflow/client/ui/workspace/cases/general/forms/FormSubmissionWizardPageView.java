@@ -364,7 +364,7 @@ public class FormSubmissionWizardPageView
    {
       FieldValue fieldValue = field.field().get().fieldValue().get();
       Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) fieldValue.getClass().getInterfaces()[0];
-      return module.objectBuilderFactory().newObjectBuilder(fields.get(fieldValueType)).use( field, fieldValue ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(fields.get(fieldValueType)).use( field, fieldValue, model ).newInstance();
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -388,4 +388,5 @@ public class FormSubmissionWizardPageView
          updateFieldPanel( fieldId, value );
       }
    }
+   
 }

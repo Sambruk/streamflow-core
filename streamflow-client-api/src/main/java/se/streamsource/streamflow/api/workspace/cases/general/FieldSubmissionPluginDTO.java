@@ -17,25 +17,16 @@
 
 package se.streamsource.streamflow.api.workspace.cases.general;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
 
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * JAVADOC
  */
-public interface FieldSubmissionDTO
-      extends ValueComposite
+public interface FieldSubmissionPluginDTO
+      extends FieldSubmissionDTO
 {
-   Property<FieldDefinitionValue> field();
+   Property<LinkValue> plugin();
 
-   @Optional
-   Property<String> value();
-
-   @Optional
-   Property<String> message();
-
-   Property<Boolean> enabled();
 }
