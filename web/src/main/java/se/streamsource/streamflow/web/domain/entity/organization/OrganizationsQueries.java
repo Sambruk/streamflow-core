@@ -29,11 +29,15 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import static org.qi4j.api.query.QueryExpressions.eq;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
 
+/**
+ * This should be removed entirely in the long run since there are now
+ * only one organization.
+ *
+ */
+@Deprecated
 @Mixins(OrganizationsQueries.Mixin.class)
 public interface OrganizationsQueries
 {
-   OrganizationEntity getOrganizationByName( String name );
-
    QueryBuilder<OrganizationEntity> organizations();
 
    class Mixin
@@ -44,14 +48,6 @@ public interface OrganizationsQueries
 
       @This
       Organizations.Data state;
-
-      public OrganizationEntity getOrganizationByName( String name )
-      {
-         Describable.Data template = templateFor( Describable.Data.class );
-         return module.queryBuilderFactory().newQueryBuilder(OrganizationEntity.class).
-               where( eq( template.description(), name ) ).
-               newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).find();
-      }
 
       public QueryBuilder<OrganizationEntity> organizations()
       {

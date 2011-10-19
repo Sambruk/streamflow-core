@@ -17,135 +17,109 @@
 
 package se.streamsource.streamflow.web.context.administration.filters;
 
+import java.util.HashSet;
+
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.Entity;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.api.administration.filter.AssignActionValue;
-import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
 import se.streamsource.streamflow.api.administration.filter.RuleValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
-import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * TODO
  */
-public class RulesContext
-   implements IndexContext<Iterable<RuleValue>>
+public class RulesContext implements IndexContext<Iterable<RuleValue>>
 {
    @Structure
    Module module;
 
    @Uses
-   Filters filterable;
+   Project project;
 
    @Uses
    FilterValue filter;
 
-   @Uses Integer index;
+   @Uses
+   Integer index;
 
    public Iterable<RuleValue> index()
    {
       return filter.rules().get();
    }
 
-   public Map<Label, Describable> possibleLabels()
+   public LinksValue possibleLabels()
    {
-      OrganizationQueries orgQueries = role(OrganizationQueries.class);
-      final SelectedLabels.Data selectedLabels = role(SelectedLabels.Data.class);
-      final Map<Label, Describable> labels = new LinkedHashMap<Label, Describable>();
-      orgQueries.visitOrganization(new OrganizationVisitor()
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "createlabel" );
+      HashSet<Object> labels = new HashSet<Object>();
+
+      // project's selected labels
+      labels.addAll( ((SelectedLabels.Data) project).selectedLabels().toSet() );
+
+      // OU hirarchy labels from bottom up
+      Entity entity = (Entity) ((Ownable.Data) project).owner().get();
+
+      while (entity instanceof Ownable)
       {
-         Describable owner;
+         labels.addAll( ((SelectedLabels.Data) entity).selectedLabels().toSet() );
+         entity = (Entity) ((Ownable.Data) entity).owner().get();
+      }
+      // Organization's selected labels
+      labels.addAll( ((SelectedLabels.Data) entity).selectedLabels().toSet() );
 
-         @Override
-         public boolean visitOrganization(Organization org)
+      // SelectedLabels on selectedCaseTypes
+      for (CaseType caseType : ((SelectedCaseTypes.Data) project).selectedCaseTypes())
+      {
+         labels.addAll( ((SelectedLabels.Data) caseType).selectedLabels().toSet() );
+      }
+
+      for (Object object : labels)
+      {
+         Label label = (Label) object;
+
+         boolean foundLabel = false;
+         for (RuleValue rule : filter.rules().get())
          {
-            owner = org;
-            return super.visitOrganization(org);
+            if (rule instanceof LabelRuleValue)
+            {
+               if (((LabelRuleValue) rule).label().get().identity()
+                     .equals( EntityReference.getEntityReference( label ).identity() ))
+               {
+                  foundLabel = true;
+                  break;
+               }
+            }
          }
-
-         @Override
-         public boolean visitOrganizationalUnit(OrganizationalUnit ou)
+         if (!foundLabel)
          {
-            owner = ou;
-
-            return super.visitOrganizationalUnit(ou);
+            builder.addDescribable( label );
          }
-
-         @Override
-         public boolean visitProject(Project project)
-         {
-            owner = project;
-
-            return super.visitProject(project);
-         }
-
-         @Override
-         public boolean visitCaseType(CaseType caseType)
-         {
-            owner = caseType;
-
-            return super.visitCaseType(caseType);
-         }
-
-         @Override
-         public boolean visitLabel(Label label)
-         {
-            if (!selectedLabels.selectedLabels().contains(label))
-               labels.put(label, owner);
-
-            return true;
-         }
-      }, new OrganizationQueries.ClassSpecification(Organization.class,
-            OrganizationalUnits.class,
-            OrganizationalUnit.class,
-            Projects.class,
-            Project.class,
-            CaseTypes.class,
-            CaseType.class,
-            Labels.class));
-
-      return labels;
+      }
+      return builder.newLinks();
    }
 
    public void createLabel(@Name("entity") Label label)
    {
-      ValueBuilder<LabelRuleValue> builder = module.valueBuilderFactory().newValueBuilder(LabelRuleValue.class);
-      builder.prototype().label().set(EntityReference.getEntityReference(label));
+      ValueBuilder<LabelRuleValue> builder = module.valueBuilderFactory().newValueBuilder( LabelRuleValue.class );
+      builder.prototype().label().set( EntityReference.getEntityReference( label ) );
 
       ValueBuilder<FilterValue> filterBuilder = filter.buildWith();
-      filterBuilder.prototype().rules().get().add(builder.newInstance());
+      filterBuilder.prototype().rules().get().add( builder.newInstance() );
 
-      filterable.updateFilter(index, filterBuilder.newInstance());
+      project.updateFilter( index, filterBuilder.newInstance() );
    }
 }

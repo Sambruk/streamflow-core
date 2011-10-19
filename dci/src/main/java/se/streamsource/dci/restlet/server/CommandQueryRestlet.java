@@ -79,6 +79,8 @@ public abstract class CommandQueryRestlet
          // TODO Make this number configurable
          while (tries < 10)
          {
+            tries++;
+
             // Root of the call
             Reference ref = request.getResourceRef();
             List<String> segments = ref.getScheme().equals("riap") ? ref.getRelativeRef(new Reference("riap://application/")).getSegments() : ref.getRelativeRef().getSegments();

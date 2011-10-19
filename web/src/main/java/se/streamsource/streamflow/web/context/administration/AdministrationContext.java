@@ -26,6 +26,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -62,6 +63,9 @@ public class AdministrationContext
 
       for (Organization organization : participations.organizations())
       {
+         if (((Removable.Data)organization).removed().get())
+            continue; // Skip this one
+
          ValueBuilder<LinkTree> orgLinkBuilder = module.valueBuilderFactory().newValueBuilder(LinkTree.class);
 
          linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);

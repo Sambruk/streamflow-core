@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.rest.resource.organizations.filters;
 
 import org.qi4j.api.constraint.Name;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
@@ -29,22 +30,7 @@ import se.streamsource.streamflow.api.administration.filter.RuleValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.filters.RulesContext;
 import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
-
-import java.util.Map;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * TODO
@@ -78,14 +64,7 @@ public class RulesResource
 
    public LinksValue possiblelabels()
    {
-      final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command("createlabel");
-
-      for (Map.Entry<Label, Describable> entry : context(RulesContext.class).possibleLabels().entrySet())
-      {
-         builder.addDescribable(entry.getKey(), entry.getValue());
-      }
-
-      return builder.newLinks();
+      return context(RulesContext.class).possibleLabels();
    }
 
    public void createlabel(@Name("entity") Label label)

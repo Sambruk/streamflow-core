@@ -117,13 +117,49 @@ public interface BootstrapDataService
 
             Query<OrganizationEntity> orgs = organizations.organizations().newQuery( uow );
 
-            if (orgs.count() == 0)
+            long orgCount = orgs.count();
+            if (orgCount == 0)
             {
                // Create default organization
                organizations.createOrganization( "Organization" );
                uow.complete();
                uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Bootstrap data"));
                orgs = uow.get( organizations ).organizations().newQuery( uow );
+               admin = uow.get(admin);
+            } else if (orgCount == 1)
+            {
+               // Set association to the one org
+               organizations.organization().set(orgs.find());
+            } else if (orgCount > 1)
+            {
+               logger.warn("Multiple organizations exist. Removing extra");
+               OrganizationEntity realOrg = null;
+               for (OrganizationEntity organizationEntity : orgs)
+               {
+                  if (!organizationEntity.getDescription().equals("Organization"))
+                  {
+                     if (realOrg != null)
+                        logger.warn("Multiple organizations have changed name. Cannot determine which one to remove!");
+                     realOrg = organizationEntity;
+                  }
+               }
+
+               // Set association to the one org
+               organizations.organization().set(realOrg);
+
+               // Now remove all extra orgs
+               for (OrganizationEntity org : orgs)
+               {
+                  if (!org.equals(realOrg))
+                  {
+                     logger.warn("Removing extra organization with id:"+org);
+                     org.removeEntity();
+                  }
+               }
+
+               uow.complete();
+               uow = module.unitOfWorkFactory().newUnitOfWork(newUsecase("Bootstrap data"));
+               orgs = uow.get(organizations).organizations().newQuery( uow );
                admin = uow.get(admin);
             }
 
