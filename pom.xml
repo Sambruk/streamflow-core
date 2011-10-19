@@ -412,6 +412,7 @@
                         <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
                         <link>http://www.restlet.org/documentation/snapshot/jse/api/</link>
                     </links>
+                    <encoding>UTF-8</encoding>
                 </configuration>
                 <reportSets>
                     <reportSet>
