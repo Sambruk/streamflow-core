@@ -28,6 +28,7 @@ import org.qi4j.migration.MigrationService;
 import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
+import org.qi4j.migration.assembly.MigrationOperation;
 
 import java.io.IOException;
 
@@ -446,7 +447,19 @@ public class
                  }
               }).
               end().
-              toVersion("1.4.0.0").
+              toVersion("1.4.0.0").atStartup(new MigrationOperation()
+      {
+         public void upgrade(StateStore stateStore, Migrator migrator) throws IOException
+         {
+
+
+         }
+
+         public void downgrade(StateStore stateStore, Migrator migrator) throws IOException
+         {
+            //To change body of implemented methods use File | Settings | File Templates.
+         }
+      }).
               forEntities("se.streamsource.streamflow.web.domain.entity.form.FieldEntity").
               custom(new EntityMigrationOperation()
               {
