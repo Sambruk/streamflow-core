@@ -22,6 +22,7 @@ import static se.streamsource.dci.api.RoleMap.role;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -52,7 +53,7 @@ public class DatatypeDefinitionContext implements IndexContext<DatatypeDefinitio
       role( DatatypeDefinitions.class ).removeDatatypeDefinition( role( DatatypeDefinition.class ) );
    }
 
-   public void changeregularexpression(@Name("regularexpression") String newExpression)
+   public void changeregularexpression(@Optional @Name("regularexpression") String newExpression)
    {
       DatatypeRegularExpression regularexpression = RoleMap.role( DatatypeRegularExpression.class );
       if (newExpression != null)

@@ -22,6 +22,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 
 /**
  * Role for regexp-patterns of entities.
@@ -48,7 +49,7 @@ public interface DatatypeRegularExpression
   {
      public void changeRegularExpression( String newExpression )
      {
-        if (!newExpression.equals( regularexpression().get() ))
+        if (!Strings.empty( newExpression ) && !newExpression.equals( regularexpression().get() ))
            changedRegularExpression( null, newExpression );
      }
 
