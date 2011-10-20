@@ -17,18 +17,27 @@
 
 package se.streamsource.streamflow.web.rest;
 
+import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
+import static se.streamsource.dci.value.table.TableValue.DATETIME;
+import static se.streamsource.dci.value.table.TableValue.STRING;
+
+import java.util.Collections;
+
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Function;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -42,18 +51,17 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-
-import java.util.Collections;
-
-import static se.streamsource.dci.value.table.TableValue.*;
 
 /**
  * JAVADOC
@@ -67,6 +75,8 @@ public class StreamflowResultConverter
    @Service
    ServiceReference<KnowledgebaseService> knowledgeBaseService;
 
+   static final String STANDARD_COLUMNS = ",description,created,creator,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent,";
+   
    public Object convert(Object result, Request request, Object[] arguments)
    {
       if (result instanceof String)
@@ -227,7 +237,7 @@ public class StreamflowResultConverter
 
       TableBuilderFactory tbf = new TableBuilderFactory(module.valueBuilderFactory());
 
-      return tbf.column("description", "Description", STRING, new Function<CaseEntity, Object>()
+      TableBuilderFactory tableBuilderFactory = tbf.column("description", "Description", STRING, new Function<CaseEntity, Object>()
       {
          public Object map(CaseEntity caseEntity)
          {
@@ -400,146 +410,41 @@ public class StreamflowResultConverter
                   } else
                      return null;
                }
-            }).newInstance(query).rows(cases).newTable();
-
-/*      TableBuilder table = new TableBuilder(module.valueBuilderFactory(), columns, tableQuery);
-
-      String select = "*".equals(query.select().trim()) ? "description,created,creator,due,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
-      String[] columns = select.split("[, ]");
-
-      // Columns
-      for (String column : columns)
+            });
+      
+      if (!"*".equals( query.select() ))
       {
-         // TODO Make type setting smarter
-         if ("created".equals(column))
-            table.column(column, Strings.humanReadable(column), "date");
-         else if ("due".equals(column))
-            table.column(column, Strings.humanReadable(column), "date");
-         else if ("hascontacts".equals(column))
-            table.column(column, Strings.humanReadable(column), "boolean");
-         else if ("hasconversations".equals(column))
-            table.column(column, Strings.humanReadable(column), "boolean");
-         else if ("hasattachments".equals(column))
-            table.column(column, Strings.humanReadable(column), "boolean");
-         else if ("hassubmittedforms".equals(column))
-            table.column(column, Strings.humanReadable(column), "boolean");
-         else
-            table.column(column, Strings.humanReadable(column), "string");
-      }
-
-      // Data
-      for (CaseEntity caseEntity : cases)
-      {
-         try
+         for(String name : query.select().split( "," ))
          {
-            table.row();
-// "description,created,creator,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent"
-            for (String column : columns)
+            final String fieldName = name.trim();
+            if (!STANDARD_COLUMNS.contains( "," + fieldName + "," ))
             {
-               if (column.equals("description"))
-                  table.cell(caseEntity.identity().get(), caseEntity.description().get());
-               else if (column.equals("created"))
-                  table.cell(caseEntity.createdOn().get(), DateFunctions.toUtcString(caseEntity.createdOn().get()));
-               else if (column.equals("due"))
-               {
-                  Date dueDate = ;
-                  table.cell(dueDate, dueDate == null ? null : DateFunctions.toUtcString(dueDate));
-               } else if (column.equals("creator"))
-               {
-                  Creator v = ;
-                  table.cell(v, v == null ? "" : ((Describable) v).getDescription());
-               } else if (column.equals("caseid"))
-               {
-                  table.cell(caseEntity.caseId().get(), caseEntity.caseId().get());
-               } else if (column.equals("href"))
-               {
-                  String href = request.getResourceRef().getBaseRef().getPath() + "/workspace/cases/" + caseEntity.identity().get() + "/";
-                  table.cell(href, href);
-               } else if (column.equals("owner"))
-               {
-                  Owner owner = ;
-                  table.cell(owner, owner == null ? null : ((Describable) owner).getDescription());
-               } else if (column.equals("status"))
-               {
-                  table.cell(caseEntity.status().get().name(), Strings.humanReadable(caseEntity.status().get().name()));
-               } else if (column.equals("casetype"))
-               {
-                  CaseType caseType = caseEntity.caseType().get();
-                  table.cell(caseType, caseType == null ? null : caseType.getDescription());
-               } else if (column.equals("resolution"))
-               {
-                  Resolution resolution = caseEntity.resolution().get();
-                  table.cell(resolution, resolution == null ? null : resolution.getDescription());
-               } else if (column.equals("assigned"))
-               {
-                  Assignee assignee = caseEntity.assignedTo().get();
-                  table.cell(assignee, assignee == null ? null : ((Describable) assignee).getDescription());
-               } else if (column.equals("hascontacts"))
-               {
-                  table.cell(caseEntity.hasContacts(), Boolean.toString(caseEntity.hasContacts()));
-               } else if (column.equals("hasconversations"))
-               {
-                  table.cell(caseEntity.hasConversations(), Boolean.toString(caseEntity.hasConversations()));
-               } else if (column.equals("hassubmittedforms"))
-               {
-                  table.cell(caseEntity.hasSubmittedForms(), Boolean.toString(caseEntity.hasSubmittedForms()));
-               } else if (column.equals("hasattachments"))
-               {
-                  table.cell(caseEntity.hasAttachments(), Boolean.toString(caseEntity.hasAttachments()));
-               } else if (column.equals("labels"))
-               {
-                  LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).command("delete");
-                  for (Label label : caseEntity.labels())
-                  {
-                     labelsBuilder.addDescribable(label);
-                  }
-                  LinksValue linksValue = labelsBuilder.newLinks();
-                  table.cell(linksValue, null);
-               } else if (column.equals("subcases"))
-               {
-                  LinksBuilder subcasesBuilder = new LinksBuilder(module.valueBuilderFactory());
-                  subcasesBuilder.path("..");
-                  try
-                  {
-                     for (Case subCase : caseEntity.subCases())
+               tableBuilderFactory.column( fieldName, fieldName, STRING, new Function<CaseEntity, Object>()
                      {
-                        subcasesBuilder.classes(((Status.Data) subCase).status().get().name());
-                        subcasesBuilder.addDescribable(subCase);
+                  public Object map(CaseEntity caseEntity)
+                  {
+                     for( SubmittedFormValue form : caseEntity.getLatestSubmittedForms() )
+                     {
+                        SubmittedFieldValue submittedFieldValue = Iterables.first( Iterables.filter( new Specification<SubmittedFieldValue>()
+                        {
+                           public boolean satisfiedBy(SubmittedFieldValue item) {
+                              FieldEntity fieldEntity = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, item.field().get().identity() );
+                              return fieldEntity.fieldId().get().equals( fieldName );
+                           };
+                           
+                        }, form.fields() ));
+                        
+                        if (submittedFieldValue != null)
+                        {
+                           return submittedFieldValue.value().get();
+                        }
                      }
-                  } catch (Exception e)
-                  {
-                     e.printStackTrace();
+                     return null;
                   }
-                  LinksValue linksValue = subcasesBuilder.newLinks();
-                  table.cell(linksValue, null);
-               } else if (column.equals("parent"))
-               {
-                  Case parentCase = caseEntity.parent().get();
-                  if (parentCase != null)
-                  {
-                     ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
-                     linkBuilder.prototype().id().set(parentCase.toString());
-                     linkBuilder.prototype().rel().set("parent");
-                     linkBuilder.prototype().href().set("../" + parentCase.toString() + "/");
-                     linkBuilder.prototype().text().set(((CaseId.Data) parentCase).caseId().get());
-                     table.cell(linkBuilder.newInstance(), null);
-                  } else
-                  {
-                     table.cell(null, null);
-                  }
-               } else
-               {
-                  throw new ResourceException(org.restlet.data.Status.SERVER_ERROR_INTERNAL, "Unhandled column name:" + column);
-               }
+               });
             }
-         } catch (Exception ex)
-         {
-            // Could not create row for this case, for some reason
-            LoggerFactory.getLogger(getClass()).error("Could not create row for case:" + caseEntity.identity().get(), ex);
-            table.abortRow();
          }
       }
-
-      return table.newTable();*/
+      return tableBuilderFactory.newInstance(query).rows(cases).newTable();
    }
 }

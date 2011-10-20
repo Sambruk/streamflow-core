@@ -46,4 +46,10 @@ public interface FormFieldStatisticsValue
     * @return value for field
     */
    Property<String> value();
+   
+   /**
+    * Datatype for the field
+    * @return datatype for field
+    */
+   Property<String> datatype();
 }
