@@ -35,6 +35,7 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
@@ -163,7 +164,8 @@ public class DomainAssembler
               FormEntity.class,
               FormDraftEntity.class,
               FieldEntity.class,
-              PageEntity.class
+              PageEntity.class,
+              DatatypeDefinitionEntity.class
       ).visibleIn(Visibility.application);
 
       module.values(SubmittedFormValue.class, SubmittedPageValue.class, SubmittedFieldValue.class).visibleIn(Visibility.application);

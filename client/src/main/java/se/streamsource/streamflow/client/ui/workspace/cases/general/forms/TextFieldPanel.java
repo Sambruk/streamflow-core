@@ -17,42 +17,113 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.text.ParseException;
+
+import javax.swing.ActionMap;
+import javax.swing.BoxLayout;
+import javax.swing.InputVerifier;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultEditorKit.PasteAction;
+import javax.swing.text.JTextComponent;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
+import se.streamsource.streamflow.api.administration.form.KnownDatatypeDefinitionUrls;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.RegexPatternFormatter;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.TextTransferHandler;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.text.ParseException;
-
-public class TextFieldPanel
-      extends AbstractFieldPanel
+public class TextFieldPanel extends AbstractFieldPanel
 {
    private JTextField textField;
    private TextFieldValue fieldValue;
+   private JButton openMapButton;
+   private JButton pasteMapCoordinatesButton;
 
    @Service
    DialogService dialogs;
+   
+   private FormSubmissionWizardPageModel model;
 
-   public TextFieldPanel( @Uses FieldSubmissionDTO field, @Uses TextFieldValue fieldValue )
+   public TextFieldPanel(@Service ApplicationContext appContext, @Uses FieldSubmissionDTO field, 
+         @Uses TextFieldValue fieldValue,
+         @Uses FormSubmissionWizardPageModel model)
    {
       super( field );
-      setLayout( new BorderLayout() );
+      this.model = model;
+      setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
       this.fieldValue = fieldValue;
 
       textField = new JTextField();
       textField.setColumns( fieldValue.width().get() );
-      add( textField, BorderLayout.WEST );
+      add( textField );
+
+      setActionMap( appContext.getActionMap( this ) );
+      ActionMap am = getActionMap();
+      
+      if (KnownDatatypeDefinitionUrls.WG_POS_LAT_LONG.equals( field.field().get().datatypeUrl().get() ) 
+            && field instanceof FieldSubmissionPluginDTO
+            && ((FieldSubmissionPluginDTO)field).plugin().get() != null)
+      {
+
+         TextTransferHandler th = new TextTransferHandler();
+         textField.setTransferHandler( th );
+         
+         javax.swing.Action openMapAction = am.get( "openMap" );
+         openMapButton = new JButton(openMapAction);
+         add( openMapButton );
+         
+         javax.swing.Action pasteMapCoordinatesAction = am.get( "pasteMapCoordinates" );
+         pasteMapCoordinatesButton = new JButton(pasteMapCoordinatesAction);
+         
+         add( pasteMapCoordinatesButton );
+      }
    }
 
+   @Action
+   public void pasteMapCoordinates(final ActionEvent event)
+   {
+      textField.requestFocusInWindow();
+      SwingUtilities.invokeLater( new Runnable()
+      {
+         
+         public void run()
+         {
+            PasteAction pasteAction = new DefaultEditorKit.PasteAction();
+            pasteAction.actionPerformed( event );      
+         }
+      });
+   }
+   
+   @Action
+   public void openMap()
+   {
+      Runtime rt = Runtime.getRuntime();
+      try
+      {
+         rt.exec( model.kartagoclientexe( ((FieldSubmissionPluginDTO)getField()).plugin().get() ) );
+      } catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+   }
+   
    @Override
    public String getValue()
    {
@@ -60,43 +131,43 @@ public class TextFieldPanel
    }
 
    @Override
-   public void setValue( String newValue )
+   public void setValue(String newValue)
    {
       textField.setText( newValue );
    }
 
    @Override
-   public boolean validateValue( Object newValue )
+   public boolean validateValue(Object newValue)
    {
       return true;
    }
 
    @Override
-   public void setBinding( final StateBinder.Binding binding )
+   public void setBinding(final StateBinder.Binding binding)
    {
       final TextFieldPanel panel = this;
       textField.setInputVerifier( new InputVerifier()
       {
          @Override
-         public boolean verify( JComponent input )
+         public boolean verify(JComponent input)
          {
             if (!Strings.empty( fieldValue.regularExpression().get() )
                   && !Strings.empty( ((JTextComponent) input).getText() ))
             {
                try
                {
-                  new RegexPatternFormatter( fieldValue.regularExpression().get() ).stringToValue( ((JTextComponent) input).getText() );
+                  new RegexPatternFormatter( fieldValue.regularExpression().get() )
+                        .stringToValue( ((JTextComponent) input).getText() );
                } catch (ParseException e)
                {
-                  dialogs.showMessageDialog( panel,
-                        i18n.text( CaseResources.regular_expression_does_not_validate ), "" );
+                  dialogs.showMessageDialog( panel, i18n.text( CaseResources.regular_expression_does_not_validate ), "" );
                   return false;
                }
             }
             binding.updateProperty( ((JTextComponent) input).getText() );
             return true;
          }
-      });
+      } );
    }
 
    @Override

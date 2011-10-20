@@ -20,6 +20,7 @@ package se.streamsource.streamflow.api.workspace.cases.general;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 
 /**
@@ -37,5 +38,4 @@ public interface FieldSubmissionDTO
    Property<String> message();
 
    Property<Boolean> enabled();
-
 }

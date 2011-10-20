@@ -63,6 +63,7 @@ import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 import se.streamsource.streamflow.web.infrastructure.logging.LoggingService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
+import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
@@ -102,6 +103,11 @@ public class InfrastructureAssembler
 
       moduleAssembly.services( ContactLookupService.class ).
             identifiedBy( "contactlookup" ).
+            visibleIn( Visibility.application ).
+            instantiateOnStartup();
+
+      moduleAssembly.services( KartagoMapService.class ).
+            identifiedBy( "kartagomap" ).
             visibleIn( Visibility.application ).
             instantiateOnStartup();
 

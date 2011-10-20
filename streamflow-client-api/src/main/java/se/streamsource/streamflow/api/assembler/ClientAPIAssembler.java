@@ -41,6 +41,7 @@ import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
@@ -79,6 +80,7 @@ import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
@@ -113,6 +115,7 @@ public class ClientAPIAssembler
               FormDraftDTO.class,
               PageSubmissionDTO.class,
               FieldSubmissionDTO.class,
+              FieldSubmissionPluginDTO.class,
               SubmittedFormDTO.class,
               SubmittedFormListDTO.class,
               SubmittedFormsListDTO.class,
@@ -159,6 +162,7 @@ public class ClientAPIAssembler
               PageDefinitionValue.class,
               FieldValue.class,
               FieldDefinitionValue.class,
+              FieldDefinitionAdminValue.class,
               RequiredSignaturesValue.class,
               RequiredSignatureValue.class,
 

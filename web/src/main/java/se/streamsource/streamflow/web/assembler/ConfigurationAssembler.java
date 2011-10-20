@@ -30,6 +30,7 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.KartagoPluginConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 import se.streamsource.streamflow.web.rest.service.conversation.ConversationResponseConfiguration;
 import se.streamsource.streamflow.web.rest.service.conversation.NotificationConfiguration;
@@ -63,7 +64,7 @@ public class ConfigurationAssembler
 //      module.entities( EhCacheConfiguration.class ).visibleIn( Visibility.application );
 
       // Plugin configurations
-      module.entities( PluginConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( PluginConfiguration.class, KartagoPluginConfiguration.class ).visibleIn( Visibility.application );
    }
 
    private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException

@@ -17,9 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
@@ -32,6 +37,9 @@ public class FormDraftModel
 {
    @Uses
    CommandQueryClient client;
+   
+   @Structure
+   Module module;
 
    public FormDraftDTO getFormDraftDTO()
    {
@@ -58,6 +66,12 @@ public class FormDraftModel
       client.getClient( "formattachments/" ).postCommand( "createformattachment", input);
    }
 
+   public String kartagoclientexe(LinkValue link)
+   {
+      StringValue value = client.queryLink( link, StringValue.class );
+      return value.string().get();
+   }
+   
    public void submit()
    {
       client.putCommand( "submit" );

@@ -244,4 +244,11 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="10" author="henrikreinhold">
+    	<addColumn tableName="fields">
+            <column name="datatype" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

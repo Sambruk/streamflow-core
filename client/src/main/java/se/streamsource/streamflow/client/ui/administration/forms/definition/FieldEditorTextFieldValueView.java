@@ -17,24 +17,39 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.CHECKBOX;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.awt.BorderLayout;
+
+import javax.swing.ActionMap;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
 
-import javax.swing.*;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -43,23 +58,27 @@ public class FieldEditorTextFieldValueView
       extends JScrollPane
 {
 
+   private final FieldValueEditModel model;
+   private JComboBox datatypeBox;
+
    public FieldEditorTextFieldValueView( @Service ApplicationContext context,
                                          @Uses FieldValueEditModel model,
                                          @Structure Module module)
    {
+      this.model = model;
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, pref, pref, pref, top:70dlu, pref" );
+            "pref, pref, pref, pref, pref, pref, pref, top:70dlu, pref" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
       StateBinder fieldDefinitionBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
+      FieldDefinitionAdminValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionAdminValue.class );
 
       StateBinder fieldValueBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
@@ -76,6 +95,19 @@ public class FieldEditorTextFieldValueView
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.width_label ) ) );
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.width() ) );
+      formBuilder.nextLine();
+
+      ActionMap am = context.getActionMap(this);
+      setActionMap(am);
+
+      EventComboBoxModel<LinkValue> boxModel = new EventComboBoxModel<LinkValue>( model.getPossibleDatatypes() );
+      datatypeBox = new JComboBox( boxModel );
+      datatypeBox.setRenderer( new LinkListCellRenderer() );
+      boxModel.setSelectedItem( model.getSelectedDatatype() );
+      new ActionBinder(am).bind("updateDatatype", datatypeBox);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.datatype_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( datatypeBox );
       formBuilder.nextLine();
 
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.regularexpression_label ) ) );
@@ -112,5 +144,17 @@ public class FieldEditorTextFieldValueView
       panel.add( fieldPanel, BorderLayout.CENTER );
 
       setViewportView( panel );
+   }
+   
+   @Action
+   public void updateDatatype()
+   {
+      if (model.DATATYPE_NONE.equals( ((LinkValue)datatypeBox.getSelectedItem()).id().get()))
+      {
+         model.changeDatatype( null );
+      } else 
+      {
+         model.changeDatatype( ((LinkValue)datatypeBox.getSelectedItem()).id().get()  );
+      }
    }
 }
