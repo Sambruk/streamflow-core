@@ -34,7 +34,7 @@ public class DatatypeDefinitionsResource
 {
    public DatatypeDefinitionsResource()
    {
-      super( DatatypeDefinitionsContext.class );
+      super( DatatypeDefinitionsContext.class  );
    }
 
    public void resource( String segment ) throws ResourceException

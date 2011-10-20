@@ -19,48 +19,47 @@ package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
 
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
- * Role for urls of entities.
+ * Role for regexp-patterns of entities.
  */
-@Mixins(DatatypeUrl.Mixin.class)
-public interface DatatypeUrl
+@Mixins(DatatypeRegularExpression.Mixin.class)
+public interface DatatypeRegularExpression
 {
-  void changeUrl( @Optional String newUrl );
+  void changeRegularExpression( @Optional String newExpression );
 
-  String getUrl();
+  String getRegularExpression();
 
   interface Data
   {
-     @Immutable
-     Property<String> url();
-
-     void changedUrl( @Optional DomainEvent event, String url );
+     Property<String> regularexpression();
+  }
+  
+  interface Events
+  {
+     void changedRegularExpression( @Optional DomainEvent event, String regularexpression );
   }
 
   public abstract class Mixin
-        implements DatatypeUrl, Data
+        implements DatatypeRegularExpression, Data, Events
   {
-     public void changeUrl( String newUrl )
+     public void changeRegularExpression( String newExpression )
      {
-        if (!newUrl.equals( url().get() ))
-           changedUrl( null, newUrl );
+        if (!newExpression.equals( regularexpression().get() ))
+           changedRegularExpression( null, newExpression );
      }
 
-     public String getUrl()
+     public String getRegularExpression()
      {
-        return url().get();
+        return regularexpression().get();
      }
 
-     // State
-
-     public void changedUrl( @Optional DomainEvent event, String url )
+     public void changedRegularExpression( @Optional DomainEvent event, String expression )
      {
-        url().set( url );
+        regularexpression().set( expression );
      }
   }
 }

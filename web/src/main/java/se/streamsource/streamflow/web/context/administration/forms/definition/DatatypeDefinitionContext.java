@@ -21,14 +21,17 @@ import static se.streamsource.dci.api.RoleMap.role;
 
 import java.io.IOException;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeRegularExpression;
 
 /**
  * JAVADOC
@@ -37,15 +40,21 @@ public class DatatypeDefinitionContext implements IndexContext<DatatypeDefinitio
 {
    @Structure
    Module module;
-
+   
+   public DatatypeDefinitionEntity index()
+   {
+      return role (DatatypeDefinitionEntity.class) ;
+   }
+   
    public void delete() throws IOException
    {
       role( DatatypeDefinitions.class ).removeDatatypeDefinition( role (DatatypeDefinition.class) );
    }
 
-   public DatatypeDefinitionEntity index()
+   public void changeregularexpression( @Name("regularexpression") String newExpression )
    {
-      return role (DatatypeDefinitionEntity.class) ;
+      // Todo Verify the regular expression
+      DatatypeRegularExpression regularexpression = RoleMap.role( DatatypeRegularExpression.class );
+      regularexpression.changeRegularExpression( newExpression );
    }
-
 }

@@ -32,6 +32,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Datatype;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeRegularExpression;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeUrl;
 
 /**
@@ -44,7 +45,8 @@ public interface DatatypeDefinitionEntity
       Describable.Data,
       Notable.Data,
       Removable.Data,
-      DatatypeUrl.Data
+      DatatypeUrl.Data,
+      DatatypeRegularExpression.Data
 {
    abstract class RemovableConcern
       extends ConcernOf<Removable>
