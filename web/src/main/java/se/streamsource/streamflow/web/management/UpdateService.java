@@ -20,26 +20,24 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
-import org.qi4j.migration.assembly.MigrationRule;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * TODO
  */
+@Mixins(UpdateService.Mixin.class)
 public interface UpdateService
-      extends ServiceComposite, Configuration<UpdateConfiguration>
+      extends ServiceComposite, Configuration, Activatable
 {
-   class Mixin
-         implements Activatable
+   abstract class Mixin
+         implements UpdateService, Activatable
    {
       @Structure
       Application app;
@@ -65,7 +63,7 @@ public interface UpdateService
          String lastVersion = config.configuration().lastStartupVersion().get();
 
          // Run general rules if version has changed
-         if (!app.version().equals(lastVersion))
+         if (!version.equals(lastVersion))
          {
             Iterable<UpdateRule> rules = builder.getRules().getRules(lastVersion, version);
             try

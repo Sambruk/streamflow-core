@@ -18,8 +18,12 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -27,6 +31,11 @@ import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
+import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.management.CompositeMBean;
 import se.streamsource.streamflow.web.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.web.management.ErrorLogService;
@@ -88,16 +97,49 @@ public class ManagementAssembler
 
    private void update(ModuleAssembly update)
    {
-      update.services(UpdateService.class).identifiedBy("update").setMetaInfo(
-            new UpdateBuilder("0.0")
-                  .toVersion("1.4.1").atStartup(new UpdateOperation()
-            {
-               public void update(Application app, Module module) throws StatisticsStoreException
-               {
-                  Manager mgr = (Manager) module.serviceFinder().findService(Manager.class).get();
-                  mgr.refreshStatistics();
-               }
-            }));
-      configuration().entities(UpdateConfiguration.class);
+     UpdateBuilder updateBuilder = new UpdateBuilder("1.4.0.0");
+      updateBuilder.toVersion( "1.4.1" ).atStartup( new UpdateOperation()
+      {
+         public void update(Application app, Module module) throws StatisticsStoreException
+         {
+            ManagerService mgrService = (ManagerService) module.serviceFinder().findService( ManagerService.class ).get();
+            mgrService.getManager().refreshStatistics();
+         }
+      } ).toVersion( "1.5.0.1" ).atStartup( new UpdateOperation()
+      {
+
+         public void update(Application app, Module module) throws Exception
+         {
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "AddDefaultDatatypes") );
+            OrganizationsEntity organizations = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+            Organization organization = organizations.organization().get();
+            DatatypeDefinition newDatatype = organization
+                  .createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#Email" );
+            newDatatype.changeDescription( "Epost" );
+            newDatatype.changeRegularExpression( "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$" );
+
+            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#geo" );
+            newDatatype.changeDescription( "Kartkoordinat" );
+
+            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#fn" );
+            newDatatype.changeDescription( "Namn" );
+
+            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#street-address" );
+            newDatatype.changeDescription( "Gatuadress" );
+            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#postal-code" );
+            newDatatype.changeDescription( "Postnummer" );
+            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#locality" );
+            newDatatype.changeDescription( "Postort" );
+
+            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#tel" );
+            newDatatype.changeDescription( "Telefon" );
+            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#Cell" );
+            newDatatype.changeDescription( "Mobilnummer" );
+            uow.complete();
+         }
+      } );
+      update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
+            .instantiateOnStartup();
+      configuration().entities( UpdateConfiguration.class ).visibleIn( application );
    }
 }

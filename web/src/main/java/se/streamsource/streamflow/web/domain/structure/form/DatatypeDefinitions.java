@@ -39,7 +39,7 @@ public interface DatatypeDefinitions
 {
    DatatypeDefinition createDatatypeDefinition( String name );
 
-   void addDatatypeDefinition(DatatypeDefinition label);
+   void addDatatypeDefinition(DatatypeDefinition datatypeDefinition);
 
    void removeDatatypeDefinition( DatatypeDefinition datatypeDefinition );
 

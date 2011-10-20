@@ -36,6 +36,7 @@ public interface DatatypeRegularExpression
 
   interface Data
   {
+     @Optional
      Property<String> regularexpression();
   }
   
@@ -49,8 +50,16 @@ public interface DatatypeRegularExpression
   {
      public void changeRegularExpression( String newExpression )
      {
-        if (!Strings.empty( newExpression ) && !newExpression.equals( regularexpression().get() ))
-           changedRegularExpression( null, newExpression );
+        if (Strings.empty( newExpression ))
+        {
+           if (!Strings.empty(regularexpression().get()))
+           {
+              changedRegularExpression( null, newExpression );   
+           }
+        } else if (!newExpression.equals(regularexpression().get()))
+        {
+           changedRegularExpression( null, newExpression );   
+        }
      }
 
      public String getRegularExpression()
