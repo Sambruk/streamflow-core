@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.context.administration.forms.definition;
 import static se.streamsource.dci.api.RoleMap.role;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
@@ -40,21 +41,24 @@ public class DatatypeDefinitionContext implements IndexContext<DatatypeDefinitio
 {
    @Structure
    Module module;
-   
+
    public DatatypeDefinitionEntity index()
    {
-      return role (DatatypeDefinitionEntity.class) ;
-   }
-   
-   public void delete() throws IOException
-   {
-      role( DatatypeDefinitions.class ).removeDatatypeDefinition( role (DatatypeDefinition.class) );
+      return role( DatatypeDefinitionEntity.class );
    }
 
-   public void changeregularexpression( @Name("regularexpression") String newExpression )
+   public void delete() throws IOException
    {
-      // Todo Verify the regular expression
+      role( DatatypeDefinitions.class ).removeDatatypeDefinition( role( DatatypeDefinition.class ) );
+   }
+
+   public void changeregularexpression(@Name("regularexpression") String newExpression)
+   {
       DatatypeRegularExpression regularexpression = RoleMap.role( DatatypeRegularExpression.class );
+      if (newExpression != null)
+      {
+         Pattern.compile( newExpression );
+      }
       regularexpression.changeRegularExpression( newExpression );
    }
 }
