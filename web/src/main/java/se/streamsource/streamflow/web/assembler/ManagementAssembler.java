@@ -27,6 +27,9 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -38,6 +41,7 @@ import se.streamsource.streamflow.web.management.ErrorLogService;
 import se.streamsource.streamflow.web.management.EventManagerService;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminConfiguration;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminService;
+import se.streamsource.streamflow.web.management.Manager;
 import se.streamsource.streamflow.web.management.ManagerComposite;
 import se.streamsource.streamflow.web.management.ManagerService;
 import se.streamsource.streamflow.web.management.ReindexOnStartupService;
@@ -56,6 +60,8 @@ import static org.qi4j.api.common.Visibility.*;
 public class ManagementAssembler
       extends AbstractLayerAssembler
 {
+   final Logger logger = LoggerFactory.getLogger(ManagementAssembler.class.getName());
+   
    public void assemble(LayerAssembly layer)
          throws AssemblyException
    {
@@ -97,7 +103,13 @@ public class ManagementAssembler
          public void update(Application app, Module module) throws StatisticsStoreException
          {
             ManagerService mgrService = (ManagerService) module.serviceFinder().findService( ManagerService.class ).get();
-            mgrService.getManager().refreshStatistics();
+            try
+            {
+               mgrService.getManager().refreshStatistics();
+            } catch (StatisticsStoreException e)
+            {
+               logger.info( "Could not refresh statistics", e );
+            }
          }
       } ).toVersion( "1.5.0.1" ).atStartup( new UpdateOperation()
       {
