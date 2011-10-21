@@ -105,31 +105,40 @@ public class ManagementAssembler
          public void update(Application app, Module module) throws Exception
          {
             UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "AddDefaultDatatypes") );
-            OrganizationsEntity organizations = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
-            Organization organization = organizations.organization().get();
-            DatatypeDefinition newDatatype = organization
-                  .createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#Email" );
-            newDatatype.changeDescription( "Epost" );
-            newDatatype.changeRegularExpression( "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$" );
 
-            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#geo" );
-            newDatatype.changeDescription( "Kartkoordinat" );
+            try
+            {
+               OrganizationsEntity organizations = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+               Organization organization = organizations.organization().get();
+               DatatypeDefinition newDatatype = organization
+                     .createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#Email" );
+               newDatatype.changeDescription( "Epost" );
+               newDatatype.changeRegularExpression( "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$" );
 
-            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#fn" );
-            newDatatype.changeDescription( "Namn" );
+               newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#geo" );
+               newDatatype.changeDescription( "Kartkoordinat" );
 
-            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#street-address" );
-            newDatatype.changeDescription( "Gatuadress" );
-            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#postal-code" );
-            newDatatype.changeDescription( "Postnummer" );
-            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#locality" );
-            newDatatype.changeDescription( "Postort" );
+               newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#fn" );
+               newDatatype.changeDescription( "Namn" );
 
-            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#tel" );
-            newDatatype.changeDescription( "Telefon" );
-            newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#Cell" );
-            newDatatype.changeDescription( "Mobilnummer" );
-            uow.complete();
+               newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#street-address" );
+               newDatatype.changeDescription( "Gatuadress" );
+               newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#postal-code" );
+               newDatatype.changeDescription( "Postnummer" );
+               newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#locality" );
+               newDatatype.changeDescription( "Postort" );
+
+               newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#tel" );
+               newDatatype.changeDescription( "Telefon" );
+               newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#Cell" );
+
+               newDatatype.changeDescription( "Mobilnummer" );
+
+               uow.complete();
+            } finally
+            {
+               uow.discard();
+            }
          }
       } );
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
