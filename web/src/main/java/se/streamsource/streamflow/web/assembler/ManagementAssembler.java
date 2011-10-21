@@ -18,12 +18,10 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -31,8 +29,6 @@ import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
-import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -42,7 +38,6 @@ import se.streamsource.streamflow.web.management.ErrorLogService;
 import se.streamsource.streamflow.web.management.EventManagerService;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminConfiguration;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminService;
-import se.streamsource.streamflow.web.management.Manager;
 import se.streamsource.streamflow.web.management.ManagerComposite;
 import se.streamsource.streamflow.web.management.ManagerService;
 import se.streamsource.streamflow.web.management.ReindexOnStartupService;
@@ -53,8 +48,7 @@ import se.streamsource.streamflow.web.management.UpdateService;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorService;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * Assembler for management layer
@@ -139,7 +133,7 @@ public class ManagementAssembler
          }
       } );
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
-            .instantiateOnStartup();
+            .visibleIn( layer ).instantiateOnStartup();
       configuration().entities( UpdateConfiguration.class ).visibleIn( application );
    }
 }
