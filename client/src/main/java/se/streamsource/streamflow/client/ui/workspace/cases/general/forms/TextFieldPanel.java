@@ -37,6 +37,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.KnownDatatypeDefinitionUrls;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
@@ -58,12 +59,11 @@ public class TextFieldPanel extends AbstractFieldPanel
 
    @Service
    DialogService dialogs;
-   
+
    private FormSubmissionWizardPageModel model;
 
-   public TextFieldPanel(@Service ApplicationContext appContext, @Uses FieldSubmissionDTO field, 
-         @Uses TextFieldValue fieldValue,
-         @Uses FormSubmissionWizardPageModel model)
+   public TextFieldPanel(@Service ApplicationContext appContext, @Uses FieldSubmissionDTO field,
+         @Uses TextFieldValue fieldValue, @Uses FormSubmissionWizardPageModel model)
    {
       super( field );
       this.model = model;
@@ -76,22 +76,21 @@ public class TextFieldPanel extends AbstractFieldPanel
 
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
-      
-      if (KnownDatatypeDefinitionUrls.GEO_LOCATION.equals( field.field().get().datatypeUrl().get() ) 
-            && field instanceof FieldSubmissionPluginDTO
-            && ((FieldSubmissionPluginDTO)field).plugin().get() != null)
+
+      if (KnownDatatypeDefinitionUrls.GEO_LOCATION.equals( field.field().get().datatypeUrl().get() )
+            && field instanceof FieldSubmissionPluginDTO && ((FieldSubmissionPluginDTO) field).plugin().get() != null)
       {
 
          TextTransferHandler th = new TextTransferHandler();
          textField.setTransferHandler( th );
-         
+
          javax.swing.Action openMapAction = am.get( "openMap" );
-         openMapButton = new JButton(openMapAction);
+         openMapButton = new JButton( openMapAction );
          add( openMapButton );
-         
+
          javax.swing.Action pasteMapCoordinatesAction = am.get( "pasteMapCoordinates" );
-         pasteMapCoordinatesButton = new JButton(pasteMapCoordinatesAction);
-         
+         pasteMapCoordinatesButton = new JButton( pasteMapCoordinatesAction );
+
          add( pasteMapCoordinatesButton );
       }
    }
@@ -102,28 +101,34 @@ public class TextFieldPanel extends AbstractFieldPanel
       textField.requestFocusInWindow();
       SwingUtilities.invokeLater( new Runnable()
       {
-         
+
          public void run()
          {
+            textField.setText( "" );
             PasteAction pasteAction = new DefaultEditorKit.PasteAction();
-            pasteAction.actionPerformed( event );      
+            pasteAction.actionPerformed( event );
          }
-      });
+      } );
    }
-   
+
    @Action
    public void openMap()
    {
       Runtime rt = Runtime.getRuntime();
       try
       {
-         rt.exec( model.kartagoclientexe( ((FieldSubmissionPluginDTO)getField()).plugin().get() ) );
+         String kartagoclientexe = model.kartagoclientexe( ((FieldSubmissionPluginDTO) getField()).plugin().get() );
+         if (!Strings.empty( textField.getText() ))
+         {
+            kartagoclientexe += " xy=" + textField.getText();
+         }
+         rt.exec( kartagoclientexe );
       } catch (IOException e)
       {
          e.printStackTrace();
       }
    }
-   
+
    @Override
    public String getValue()
    {
