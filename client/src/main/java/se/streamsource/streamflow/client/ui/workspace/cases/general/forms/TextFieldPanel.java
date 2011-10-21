@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultEditorKit.PasteAction;
 import javax.swing.text.JTextComponent;
@@ -107,6 +108,7 @@ public class TextFieldPanel extends AbstractFieldPanel
             textField.setText( "" );
             PasteAction pasteAction = new DefaultEditorKit.PasteAction();
             pasteAction.actionPerformed( event );
+            textField.setText( textField.getText().trim() );
          }
       } );
    }
