@@ -31,7 +31,7 @@
                 </p>
                 <ol>
                     <li>Use a search that finds all <tt>this</tt> instances. Use a MagicMapper
-                    implementation that just returns <tt>that</tt> and apply it to the search result</tt>.
+                    implementation that just returns <tt>that</tt> and apply it to the search result.
                     </li>
                     <li>Simply change <tt>this</tt> directly in the IDE.
                     </li>
