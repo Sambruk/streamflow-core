@@ -29,7 +29,6 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ServiceAvailable;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.KnownDatatypeDefinitionUrls;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
@@ -73,7 +72,7 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
          for (FieldSubmissionDTO field : pageSubmissionDTO.fields().get())
          {
             fieldIndex++;
-            if (KnownDatatypeDefinitionUrls.WG_POS_LAT_LONG.equals( field.field().get().datatypeUrl().get())
+            if (KnownDatatypeDefinitionUrls.GEO_LOCATION.equals( field.field().get().datatypeUrl().get())
                   && ((KartagoPluginConfiguration) kartagoMapService.configuration()).enabled().get())
             {
                ValueBuilder<LinkValue> linkValueBuilder = module.valueBuilderFactory()

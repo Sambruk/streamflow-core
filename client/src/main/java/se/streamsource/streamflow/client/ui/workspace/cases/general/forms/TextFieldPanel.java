@@ -77,7 +77,7 @@ public class TextFieldPanel extends AbstractFieldPanel
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
       
-      if (KnownDatatypeDefinitionUrls.WG_POS_LAT_LONG.equals( field.field().get().datatypeUrl().get() ) 
+      if (KnownDatatypeDefinitionUrls.GEO_LOCATION.equals( field.field().get().datatypeUrl().get() ) 
             && field instanceof FieldSubmissionPluginDTO
             && ((FieldSubmissionPluginDTO)field).plugin().get() != null)
       {

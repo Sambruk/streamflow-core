@@ -18,5 +18,19 @@ package se.streamsource.streamflow.api.administration.form;
 
 public interface KnownDatatypeDefinitionUrls
 {
-   public String WG_POS_LAT_LONG = "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long";
+   public String GEO_LOCATION = "http://www.w3.org/2006/vcard/ns#geo";
+   
+   public String EMAIL = "http://www.w3.org/2006/vcard/ns#Email";
+   
+   public String NAME = "http://www.w3.org/2006/vcard/ns#fn";
+   
+   public String STREET_ADDRESS = "http://www.w3.org/2006/vcard/ns#street-address";
+   
+   public String POSTAL_CODE = "http://www.w3.org/2006/vcard/ns#postal-code";
+   
+   public String CITY = "http://www.w3.org/2006/vcard/ns#locality";
+   
+   public String PHONE ="http://www.w3.org/2006/vcard/ns#tel";
+   
+   public String CELL = "http://www.w3.org/2006/vcard/ns#Cell";
 }
