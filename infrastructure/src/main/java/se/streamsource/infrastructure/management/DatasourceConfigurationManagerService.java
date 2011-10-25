@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.management;
+package se.streamsource.infrastructure.management;
 
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.entity.Entity;
@@ -35,8 +35,9 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
+
+import se.streamsource.infrastructure.database.DataSourceConfiguration;
+import se.streamsource.infrastructure.database.DataSourceService;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;

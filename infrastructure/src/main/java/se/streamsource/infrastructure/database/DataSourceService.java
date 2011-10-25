@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.database;
+package se.streamsource.infrastructure.database;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.DataSources;

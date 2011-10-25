@@ -26,10 +26,11 @@ import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.index.reindexer.ReindexerConfiguration;
+
+import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.KartagoPluginConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 import se.streamsource.streamflow.web.rest.service.conversation.ConversationResponseConfiguration;

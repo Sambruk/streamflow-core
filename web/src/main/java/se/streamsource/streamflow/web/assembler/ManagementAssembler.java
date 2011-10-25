@@ -31,12 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
+import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.management.CompositeMBean;
-import se.streamsource.streamflow.web.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.web.management.ErrorLogService;
 import se.streamsource.streamflow.web.management.EventManagerService;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminConfiguration;

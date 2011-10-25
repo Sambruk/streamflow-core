@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.web.infrastructure.database.Databases;
+import se.streamsource.infrastructure.database.Databases;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;

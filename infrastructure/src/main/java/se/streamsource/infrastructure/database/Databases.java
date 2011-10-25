@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.database;
+package se.streamsource.infrastructure.database;
 
 import se.streamsource.streamflow.util.Visitor;
 

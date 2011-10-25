@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.database;
+package se.streamsource.streamflow.server.plugin.address;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
- * Configuration for the DataSource pool
+ * List of contacts
  */
-public interface DataSourceConfiguration
-      extends ConfigurationComposite
+public interface StreetList
+      extends ValueComposite
 {
    @UseDefaults
-   Property<Boolean> enabled();
-
-   Property<String> driver();
-
-   Property<String> url();
-
-   Property<String> username();
-
-   Property<String> password();
-
-   @UseDefaults
-   Property<String> properties();
+   Property<List<StreetValue>> streets();
 }

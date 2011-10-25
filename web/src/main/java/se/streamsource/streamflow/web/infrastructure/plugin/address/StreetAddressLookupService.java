@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.plugin.contact;
+package se.streamsource.streamflow.web.infrastructure.plugin.address;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
@@ -33,20 +33,20 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
 import se.streamsource.dci.restlet.client.NullResponseHandler;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
-import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+import se.streamsource.streamflow.server.plugin.address.StreetAddressLookup;
+import se.streamsource.streamflow.server.plugin.address.StreetList;
+import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
 /**
- * Service that looks up contacts in a REST plugin
+ * Service that looks up street addresses in a REST plugin
  */
-@Mixins(ContactLookupService.Mixin.class)
-public interface ContactLookupService
-      extends ServiceComposite, ContactLookup, Configuration, Activatable
+@Mixins(StreetAddressLookupService.Mixin.class)
+public interface StreetAddressLookupService
+      extends ServiceComposite, StreetAddressLookup, Configuration, Activatable
 {
    class Mixin
-         implements ContactLookup, Activatable
+         implements StreetAddressLookup, Activatable
    {
       @This
       Configuration<PluginConfiguration> config;
@@ -56,7 +56,7 @@ public interface ContactLookupService
 
       private CommandQueryClient cqc;
 
-      Logger log = LoggerFactory.getLogger( ContactLookupService.class );
+      Logger log = LoggerFactory.getLogger( StreetAddressLookupService.class );
 
       public void activate() throws Exception
       {
@@ -76,17 +76,17 @@ public interface ContactLookupService
       {
       }
 
-      public ContactList lookup( ContactValue contactTemplate )
+      public StreetList lookup(StreetValue streetTemplate)
       {
          try
          {
-            return cqc.query( config.configuration().url().get(), ContactList.class, contactTemplate);
+            return cqc.query( config.configuration().url().get(), StreetList.class, streetTemplate);
          } catch (Exception e)
          {
             log.error( "Could not get contacts from plugin", e );
 
             // Return empty list
-            return module.valueBuilderFactory().newValue(ContactList.class);
+            return module.valueBuilderFactory().newValue(StreetList.class);
          }
       }
    }
