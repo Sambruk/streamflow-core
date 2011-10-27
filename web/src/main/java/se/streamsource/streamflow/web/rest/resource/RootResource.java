@@ -27,6 +27,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.rest.resource.account.AccountResource;
 import se.streamsource.streamflow.web.rest.resource.administration.AdministrationResource;
+import se.streamsource.streamflow.web.rest.resource.contactlookup.ContactLookupResource;
 import se.streamsource.streamflow.web.rest.resource.crystal.CrystalResource;
 import se.streamsource.streamflow.web.rest.resource.overview.OverviewResource;
 import se.streamsource.streamflow.web.rest.resource.surface.SurfaceResource;
@@ -80,5 +81,12 @@ public class RootResource
    public void crystal()
    {
       subResource( CrystalResource.class );
+   }
+
+   @Requires(ProxyUser.class)
+   @SubResource
+   public void contactlookup()
+   {
+      subResource(  ContactLookupResource.class );
    }
 }
