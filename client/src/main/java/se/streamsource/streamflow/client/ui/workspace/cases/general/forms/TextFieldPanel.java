@@ -122,7 +122,7 @@ public class TextFieldPanel extends AbstractFieldPanel
          String kartagoclientexe = model.kartagoclientexe( ((FieldSubmissionPluginDTO) getField()).plugin().get() );
          if (!Strings.empty( textField.getText() ))
          {
-            kartagoclientexe += " xy=" + textField.getText();
+            kartagoclientexe += " xy=" + textField.getText().replace( ";" , "," );
          }
          rt.exec( kartagoclientexe );
       } catch (IOException e)
