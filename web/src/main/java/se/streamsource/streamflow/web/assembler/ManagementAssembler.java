@@ -29,7 +29,6 @@ import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
@@ -41,7 +40,6 @@ import se.streamsource.streamflow.web.management.ErrorLogService;
 import se.streamsource.streamflow.web.management.EventManagerService;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminConfiguration;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminService;
-import se.streamsource.streamflow.web.management.Manager;
 import se.streamsource.streamflow.web.management.ManagerComposite;
 import se.streamsource.streamflow.web.management.ManagerService;
 import se.streamsource.streamflow.web.management.ReindexOnStartupService;
@@ -61,7 +59,7 @@ public class ManagementAssembler
       extends AbstractLayerAssembler
 {
    final Logger logger = LoggerFactory.getLogger(ManagementAssembler.class.getName());
-   
+
    public void assemble(LayerAssembly layer)
          throws AssemblyException
    {
@@ -152,6 +150,15 @@ public class ManagementAssembler
             {
                uow.discard();
             }
+         }
+      } ).toVersion( "1.5.0.2" ).atStartup( new UpdateOperation()
+      {
+         public void update( Application app, Module module ) throws Exception
+         {
+
+            ManagerService mgrService = (ManagerService) module.serviceFinder().findService( ManagerService.class ).get();
+            mgrService.getManager().reindex();
+            
          }
       } );
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
