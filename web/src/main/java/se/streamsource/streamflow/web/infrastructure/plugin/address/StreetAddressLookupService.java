@@ -17,26 +17,39 @@
 
 package se.streamsource.streamflow.web.infrastructure.plugin.address;
 
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.SolrParams;
+import org.apache.solr.common.util.NamedList;
+import org.apache.solr.core.SolrCore;
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
 import se.streamsource.dci.restlet.client.NullResponseHandler;
 import se.streamsource.streamflow.server.plugin.address.StreetAddressLookup;
 import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
+import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
+import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Service that looks up street addresses in a REST plugin
@@ -48,13 +61,19 @@ public interface StreetAddressLookupService
    class Mixin
          implements StreetAddressLookup, Activatable
    {
+      @Service
+      private EmbeddedSolrService solr;
+
       @This
-      Configuration<PluginConfiguration> config;
+      Configuration<StreetAddressLookupConfiguration> config;
 
       @Structure
       Module module;
 
       private CommandQueryClient cqc;
+
+      private SolrServer server;
+      private SolrCore core;
 
       Logger log = LoggerFactory.getLogger( StreetAddressLookupService.class );
 
@@ -69,6 +88,19 @@ public interface StreetAddressLookupService
             client.start();
 
             cqc = module.objectBuilderFactory().newObjectBuilder(CommandQueryClientFactory.class).use( client, new NullResponseHandler() ).newInstance().newClient( serverRef );
+
+
+            core = solr.getSolrCore( "sf-streetcache" );
+            server = solr.getSolrServer( "sf-streetcache" );
+
+            if( config.configuration().forceReload().get() ||
+                  config.configuration().lastLoaded().get() == 0 ||
+                  ( (config.configuration().lastLoaded().get() - System.currentTimeMillis() )
+                        > config.configuration().loadFrequence().get() ) )
+            {
+               reindex();
+               core.close();
+            }
          }
       }
 
@@ -78,15 +110,97 @@ public interface StreetAddressLookupService
 
       public StreetList lookup(StreetValue streetTemplate)
       {
+         if( (config.configuration().lastLoaded().get() - System.currentTimeMillis() )
+                        > config.configuration().loadFrequence().get() )
+         {
+            reindex();
+         }
+
+         ValueBuilder<StreetList> streetListBuilder = module.valueBuilderFactory().newValueBuilder( StreetList.class );
+
          try
          {
-            return cqc.query( config.configuration().url().get(), StreetList.class, streetTemplate);
-         } catch (Exception e)
+
+            int limit = config.configuration().limit().get();
+            if (config.configuration().minkeywordlength().get() <= streetTemplate.address().get().length())
+            {
+
+               NamedList list = new NamedList();
+
+               list.add( "q", "address:" + streetTemplate.address().get() + "*" );
+
+               QueryResponse query = server.query( SolrParams.toSolrParams( list ) );
+               SolrDocumentList results = query.getResults();
+
+               ValueBuilder<StreetValue> streetValueBuilder = module.valueBuilderFactory().newValueBuilder( StreetValue.class );
+
+               int count = 1;
+               for(SolrDocument document : results )
+               {
+                  if( limit != -1 && limit < count )
+                  {
+                     break;
+                  }
+                  streetValueBuilder.prototype().address().set( (String)document.get( "address" )  );
+                  streetValueBuilder.prototype().area().set( (String)document.get( "area" )  );
+
+                  streetListBuilder.prototype().streets().get().add( streetValueBuilder.newInstance() );
+                  count++;
+               }
+            }
+
+            return streetListBuilder.newInstance();
+         } catch( Throwable e)
          {
-            log.error( "Could not get contacts from plugin", e );
+            log.error( "Could not get address list", e );
 
             // Return empty list
             return module.valueBuilderFactory().newValue(StreetList.class);
+         }
+      }
+
+      public void reindex()
+      {
+
+         List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
+
+         try
+         {
+
+            StreetValue streetValue = module.valueBuilderFactory().newValueBuilder( StreetValue.class ).prototype();
+            streetValue.address().set( "%" );
+
+            StreetList streets = cqc.query( config.configuration().url().get(),
+                  StreetList.class, streetValue.buildWith().newInstance() );
+
+            for( StreetValue street : streets.streets().get() )
+            {
+               SolrInputDocument document = new SolrInputDocument();
+               document.addField( "address", street.address().get() );
+               document.addField( "area", street.area().get() );
+
+               added.add( document );
+
+            }
+
+
+            try
+            {
+               // empty the index
+               server.deleteByQuery( "*:*" );
+               server.add( added );
+               
+            }
+            finally
+            {
+               server.commit( false, false );
+               config.configuration().lastLoaded().set( System.currentTimeMillis() );
+               config.save();
+            }
+         } catch ( Throwable e )
+         {
+
+            log.error( "Could not create/update solr index for street address lookup.", e );
          }
       }
    }

@@ -17,10 +17,6 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import java.util.prefs.Preferences;
-
-import javax.sql.DataSource;
-
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
@@ -32,10 +28,6 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.library.jmx.JMXAssembler;
-import org.qi4j.spi.service.importer.ServiceInstanceImporter;
-
-import se.streamsource.infrastructure.database.DataSourceConfiguration;
-import se.streamsource.infrastructure.database.DataSourceService;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
@@ -46,6 +38,8 @@ import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+
+import java.util.prefs.Preferences;
 
 /**
  * Assembler for the plugin application
@@ -65,6 +59,7 @@ public class PluginApplicationAssembler
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly app = applicationFactory.newApplicationAssembly();
+      app.setName( "Streamflow-Plugins" );
 
       LayerAssembly webLayer = app.layer( "Web" );
       assembleWebLayer(webLayer);
