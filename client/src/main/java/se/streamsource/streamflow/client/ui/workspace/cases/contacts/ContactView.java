@@ -17,9 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -29,29 +47,25 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.SuggestTextField;
 import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
-import javax.swing.*;
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -76,7 +90,8 @@ public class ContactView
    private CardLayout layout = new CardLayout();
    public JPanel form;
    private JTextField defaultFocusField;
-   private JTextField addressField = (JTextField) TEXTFIELD.newField();
+   private JTextField addressField;
+   private SuggestTextField<StreetSearchDTO> suggestAddress;
    private JTextField zipField = (JTextField) TEXTFIELD.newField();
    private JTextField cityField = (JTextField) TEXTFIELD.newField();
    private JTextField regionField = (JTextField) TEXTFIELD.newField();
@@ -93,6 +108,8 @@ public class ContactView
    private ValueBinder addressViewBinder;
    private ValueBinder emailViewBinder;
 
+   private StreetAddressSuggestModel suggestModel;
+
    public ContactView(@Service ApplicationContext appContext, @Structure Module module)
    {
       setLayout(layout);
@@ -102,6 +119,10 @@ public class ContactView
 
       add(new JLabel(), "EMPTY");
 
+      suggestModel = new StreetAddressSuggestModel();
+      suggestAddress = new SuggestTextField<StreetSearchDTO>( suggestModel );
+      addressField = suggestAddress.getTextField();
+      
       // Edit panel
       {
          FormLayout formLayout = new FormLayout(
@@ -144,7 +165,8 @@ public class ContactView
 
          builder.add(createLabel(WorkspaceResources.address_label));
          builder.nextColumn(2);
-         builder.add(addressBinder.bind(addressField, addressTemplate.address()));
+         addressBinder.bind(addressField, addressTemplate.address());
+         builder.add( suggestAddress);
          builder.nextLine();
          builder.add(createLabel(WorkspaceResources.zip_label));
          builder.nextColumn(2);
@@ -274,6 +296,7 @@ public class ContactView
       this.model = model;
       if (model != null)
       {
+         suggestModel.setContactModel( model );
          contactBinder.updateWith(model.getContact());
          phoneNumberBinder.updateWith(model.getPhoneNumber());
          addressBinder.updateWith(model.getAddress());
