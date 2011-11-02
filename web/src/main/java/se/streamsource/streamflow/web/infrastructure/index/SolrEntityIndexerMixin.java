@@ -73,8 +73,8 @@ public class SolrEntityIndexerMixin
 
    public void activate() throws Exception
    {
-      server = solr.getSolrServer();
-      SolrCore solrCore = solr.getSolrCore();
+      server = solr.getSolrServer( "sf-core" );
+      SolrCore solrCore = solr.getSolrCore( "sf-core" );
       try
       {
          indexedFields = solrCore.getSchema().getFields();
