@@ -61,31 +61,10 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
             File directory = new File( fileConfig.dataDirectory() + "/solr" );
             if( directory.mkdir() )
             {
-               /*File coreConfig = new File(directory.getAbsolutePath() + "/sf-core/config");
-               coreConfig.mkdirs();
-               File streetConfig = new File(directory.getAbsolutePath() + "/sf-streetcache/config");
-               streetConfig.mkdirs();
-               */
 
-               // Move configuration files with "force" to solr config location
                // multicore solr.xml
                Inputs.text( Thread.currentThread().getContextClassLoader().getResource( "solr.xml" ) )
                      .transferTo( Outputs.text( new File( directory.getAbsolutePath() + "/solr.xml" ) ) );
-
-              /* Inputs.text( Thread.currentThread().getContextClassLoader().getResource( "solrconfig.xml" ) )
-                     .transferTo( Outputs.text( new File( coreConfig.getAbsolutePath() + "/solrconfig.xml" ) ) );
-
-               Inputs.text( Thread.currentThread().getContextClassLoader().getResource( "schema.xml" ) )
-                     .transferTo( Outputs.text( new File( coreConfig.getAbsolutePath() + "/schema.xml") ) );
-
-               Inputs.text( Thread.currentThread().getContextClassLoader().getResource( "streetcache-solrconfig.xml" ) )
-                     .transferTo( Outputs.text( new File( streetConfig.getAbsolutePath() + "/solrconfig.xml" ) ) );
-
-               Inputs.text( Thread.currentThread().getContextClassLoader().getResource( "streetcache-schema.xml" ) )
-                     .transferTo( Outputs.text( new File( streetConfig.getAbsolutePath() + "/schema.xml") ) );
-                */
-
-
 
             }
             System.setProperty( "solr.solr.home", directory.getAbsolutePath() );

@@ -17,10 +17,6 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
-
-import javax.sql.DataSource;
-
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
@@ -40,7 +36,6 @@ import org.qi4j.migration.MigrationConfiguration;
 import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
-
 import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.infrastructure.database.DataSourceService;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
@@ -74,6 +69,10 @@ import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLooku
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
+import javax.sql.DataSource;
+
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+
 /**
  * JAVADOC
  */
@@ -105,29 +104,32 @@ public class InfrastructureAssembler
    {
       new ClientAssembler().assemble( moduleAssembly );
 
-      moduleAssembly.services( ContactLookupService.class ).
-            identifiedBy( "contactlookup" ).
-            visibleIn( Visibility.application ).
-            instantiateOnStartup();
+      Application.Mode mode = moduleAssembly.layer().application().mode();
+      if (!mode.equals( Application.Mode.test ))
+      {
+         moduleAssembly.services( ContactLookupService.class ).
+               identifiedBy( "contactlookup" ).
+               visibleIn( Visibility.application ).
+               instantiateOnStartup();
 
-      moduleAssembly.services( KartagoMapService.class ).
-            identifiedBy( "kartagomap" ).
-            visibleIn( Visibility.application ).
-            instantiateOnStartup();
+         moduleAssembly.services( KartagoMapService.class ).
+               identifiedBy( "kartagomap" ).
+               visibleIn( Visibility.application ).
+               instantiateOnStartup();
 
-      moduleAssembly.services( StreetAddressLookupService.class ).
-            identifiedBy( "streetaddresslookup" ).
-            visibleIn( Visibility.application ).
-            instantiateOnStartup();
+         moduleAssembly.services( StreetAddressLookupService.class ).
+               identifiedBy( "streetaddresslookup" ).
+               visibleIn( Visibility.application ).
+               instantiateOnStartup();
 
-      moduleAssembly.values( ContactList.class,
-            ContactValue.class,
-            ContactAddressValue.class,
-            ContactEmailValue.class,
-            ContactPhoneValue.class,
-            StreetValue.class,
-            StreetList.class).visibleIn( Visibility.application );
-
+         moduleAssembly.values( ContactList.class,
+               ContactValue.class,
+               ContactAddressValue.class,
+               ContactEmailValue.class,
+               ContactPhoneValue.class,
+               StreetValue.class,
+               StreetList.class).visibleIn( Visibility.application );
+      }
 
    }
 
