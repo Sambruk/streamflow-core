@@ -50,7 +50,7 @@ public class SolrEntityQueryMixin
    {
       try
       {
-         SolrServer server = solr.getSolrServer();
+         SolrServer server = solr.getSolrServer( "sf-core" );
 
          NamedList list = new NamedList();
 
@@ -102,7 +102,7 @@ public class SolrEntityQueryMixin
 
    public SolrDocumentList search(String queryString) throws SolrServerException
    {
-      SolrServer server = solr.getSolrServer();
+      SolrServer server = solr.getSolrServer( "sf-core" );
 
       NamedList list = new NamedList();
 

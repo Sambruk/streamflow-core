@@ -47,7 +47,7 @@
     that avoids logging every request
 -->
 
-<schema name="streamflow-core" version="1.2">
+<schema name="sf-streetcache" version="1.2">
     <!-- attribute "name" is the name of this schema and is only used for display purposes.
       Applications should change this to reflect the nature of the search collection.
       version="1.2" is Solr's version number for the schema syntax and semantics.  It should
@@ -464,7 +464,10 @@ any data added to them will be ignored outright.  -->
             when adding a document.
         -->
         <!-- Streamflow lucene index fields -->
-        <field name="id" type="string" indexed="true" stored="true" required="true"/>
+        <field name="address" type="string" indexed="true" stored="true" required="true" />
+        <field name="area" type="string" indexed="true" stored="true" />
+        <field name="description_for_sort" type="string"/>
+        <!-- <field name="id" type="string" indexed="true" stored="true" required="true"/>
         <field name="lastModified" type="date" indexed="true" stored="true" required="true"/>
         <field name="type" type="string" indexed="true" stored="true" required="true"/>
 
@@ -502,6 +505,7 @@ any data added to them will be ignored outright.  -->
         <field name="createdBy" type="string" indexed="true" stored="true"/>
 
         <field name="searchableFormValues" type="json" indexed="true" stored="true" multiValued="true"/>
+        -->
 
         <!--
         <field name="sku" type="textTight" indexed="true" stored="true" omitNorms="true"/>
@@ -602,7 +606,7 @@ both match, the first appearing in the schema will be used.  -->
     <!-- Field to use to determine and enforce document uniqueness.
        Unless this field is marked with required="false", it will be a required field
     -->
-    <uniqueKey>id</uniqueKey>
+    <uniqueKey>address</uniqueKey>
 
     <!-- field for the QueryParser to use when an explicit fieldname is absent -->
     <defaultSearchField>text</defaultSearchField>
@@ -614,20 +618,24 @@ both match, the first appearing in the schema will be used.  -->
 is added to the index.  It's used either to index the same field differently,
 or to add multiple fields to the same field for easier/faster searching.  -->
 
-    <copyField source="description" dest="text"/>
+    <copyField source="address" dest="text" />
+    <copyField source="area" dest="text" />
+    <!-- <copyField source="description" dest="text"/>
     <copyField source="description" dest="description_for_sort"/>
     <copyField source="description" dest="ntext"/>
     <copyField source="note" dest="text"/>
     <copyField source="caseId" dest="text"/>
     <copyField source="searchableFormValues" dest="text"/>
+    -->
 
     <!-- Copy contact info to text -->
-    <copyField source="name" dest="text"/>
+    <!-- <copyField source="name" dest="text"/>
     <copyField source="contactId" dest="text"/>
     <copyField source="company" dest="text"/>
     <copyField source="phoneNumber" dest="text"/>
     <copyField source="emailAddress" dest="text"/>
     <copyField source="address" dest="text"/>
+    -->
 
     <!--
     <copyField source="manu" dest="text"/>
