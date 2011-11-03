@@ -100,6 +100,12 @@ public interface StreetAddressLookupService
             {
                reindex();
                core.close();
+
+               if( config.configuration().forceReload().get())
+               {
+                  config.configuration().forceReload().set( false );
+                  config.save();
+               }
             }
          }
       }
