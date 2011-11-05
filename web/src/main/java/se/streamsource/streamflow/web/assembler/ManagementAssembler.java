@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -27,6 +28,7 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
@@ -50,6 +52,8 @@ import se.streamsource.streamflow.web.management.UpdateService;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorService;
 
+import java.util.prefs.Preferences;
+
 import static org.qi4j.api.common.Visibility.*;
 
 /**
@@ -59,6 +63,9 @@ public class ManagementAssembler
       extends AbstractLayerAssembler
 {
    final Logger logger = LoggerFactory.getLogger(ManagementAssembler.class.getName());
+
+   @Structure
+   ModuleSPI moduleSPI;
 
    public void assemble(LayerAssembly layer)
          throws AssemblyException
@@ -155,10 +162,15 @@ public class ManagementAssembler
       {
          public void update( Application app, Module module ) throws Exception
          {
-
+            // reindex rdf and solr indexes since this version contains two solr core's.
             ManagerService mgrService = (ManagerService) module.serviceFinder().findService( ManagerService.class ).get();
             mgrService.getManager().reindex();
-            
+
+            // DataSourceConfiguration has moved to SPI and java prefs have to reflect the structural change
+            Preferences preference = Preferences.userRoot().node( "/streamsource/streamflow/StreamflowServer/streamflowds" );
+            preference.put( "type", "se.streamsource.infrastructure.database.DataSourceConfiguration" );
+
+            preference.flush();
          }
       } );
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
