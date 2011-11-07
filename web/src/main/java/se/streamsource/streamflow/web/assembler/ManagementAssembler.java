@@ -164,13 +164,18 @@ public class ManagementAssembler
          {
             // reindex rdf and solr indexes since this version contains two solr core's.
             ManagerService mgrService = (ManagerService) module.serviceFinder().findService( ManagerService.class ).get();
-            mgrService.getManager().reindex();
+            if( mgrService != null )
+               mgrService.getManager().reindex();
 
             // DataSourceConfiguration has moved to SPI and java prefs have to reflect the structural change
-            Preferences preference = Preferences.userRoot().node( "/streamsource/streamflow/StreamflowServer/streamflowds" );
-            preference.put( "type", "se.streamsource.infrastructure.database.DataSourceConfiguration" );
 
-            preference.flush();
+            if( Preferences.userRoot().nodeExists( "/streamsource/streamflow/StreamflowServer/streamflowds" ))
+            {
+               Preferences preference = Preferences.userRoot().node( "/streamsource/streamflow/StreamflowServer/streamflowds" );
+               preference.put( "type", "se.streamsource.infrastructure.database.DataSourceConfiguration" );
+
+               preference.flush();
+            }
          }
       } );
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
