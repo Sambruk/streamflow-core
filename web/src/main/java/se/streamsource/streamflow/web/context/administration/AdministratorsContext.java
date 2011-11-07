@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.specification.Specification;
@@ -41,8 +42,7 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -64,7 +64,7 @@ public class AdministratorsContext
       return policy.participantsWithRole(adminRole);
    }
 
-   public void addadministrator( Participant participant )
+   public void addadministrator( @Name("entity") Participant participant )
    {
       RolePolicy rolePolicy = RoleMap.role( RolePolicy.class );
 
