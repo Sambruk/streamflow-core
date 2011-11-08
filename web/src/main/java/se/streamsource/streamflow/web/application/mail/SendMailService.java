@@ -126,16 +126,14 @@ public interface SendMailService
             // Setup mail server
             props = new Properties();
 
-            props.put( "mail.smtp.host", config.configuration().host() );
+            props.put( "mail.smtp.host", config.configuration().host().get() );
             props.put( "mail.transport.protocol", "smtp" );
             props.put( "mail.debug", config.configuration().debug().get() );
+            props.put( "mail.smtp.port", config.configuration().port().get() );
 
             if (config.configuration().useSSL().get())
             {
-//            Security.addProvider( new com.sun.net.ssl.internal.ssl.Provider() );
-               props.put( "mail.smtp.host", config.configuration().host().get() );
                props.put( "mail.smtp.auth", "true" );
-               props.put( "mail.smtp.port", config.configuration().port().get() );
                props.put( "mail.smtp.socketFactory.port", config.configuration().port().get() );
                props.put( "mail.smtp.socketFactory.class",
                      "javax.net.ssl.SSLSocketFactory" );
@@ -146,7 +144,6 @@ public interface SendMailService
             {
                props.put( "mail.smtp.startTLS", "true" );
                props.put( "mail.smtp.auth", "true" );
-               props.put( "mail.smtp.port", config.configuration().port().get() );
             }
 
             tracker.start();
