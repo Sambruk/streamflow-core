@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
     <artifactId>streamflow-reference-plugin</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>war</packaging>
     <name>Streamflow Reference Implementation Plugins</name>
     <description>Streamflow Reference Implementation plugins</description>
