@@ -119,8 +119,13 @@ public class ContactView
 
       add(new JLabel(), "EMPTY");
 
+      viewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+      phoneViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+      addressViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+      emailViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
+
       suggestModel = new StreetAddressSuggestModel();
-      suggestAddress = new SuggestTextField<StreetSearchDTO>( suggestModel );
+      suggestAddress = new StreetAddressSuggestTextField( suggestModel, cityField, addressViewBinder );
       addressField = suggestAddress.getTextField();
       
       // Edit panel
@@ -227,11 +232,6 @@ public class ContactView
          scrollPane.setBorder(BorderFactory.createEmptyBorder());
          DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
 
-         viewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
-         phoneViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
-         addressViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
-         emailViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
-
          builder.add(new JButton(getActionMap().get("edit")));
          builder.nextLine();
          builder.add(createLabel(WorkspaceResources.name_label));
@@ -321,6 +321,7 @@ public class ContactView
          layout.show(this, "EMPTY");
       }
    }
+
 
    public void update(Observable observable, Object arg)
    {

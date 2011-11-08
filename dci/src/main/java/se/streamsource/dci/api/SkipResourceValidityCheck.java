@@ -14,18 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.workspace.cases.contact;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+package se.streamsource.dci.api;
 
-public interface StreetSearchDTO
-      extends ValueComposite
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Annotate context method to skip thre ResourceValidity check in CommandQueryResource
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface SkipResourceValidityCheck
 {
-   @UseDefaults
-   Property<String> address();
-
-   @UseDefaults
-   Property<String> area();
 }

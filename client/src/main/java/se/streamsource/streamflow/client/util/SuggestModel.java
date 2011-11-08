@@ -26,4 +26,6 @@ public interface SuggestModel<T>
    String displayValue(T value);
    
    String displayValueAt(int index);
+
+   T valueAt(int index);
 }

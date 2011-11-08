@@ -16,11 +16,11 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
@@ -32,10 +32,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 
 public class SuggestTextField<T> extends JPanel
 {
@@ -88,16 +88,38 @@ public class SuggestTextField<T> extends JPanel
 
       textField.registerKeyboardAction( new ShowPopupAction(), KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, 0 ),
             JComponent.WHEN_FOCUSED );
-      textField.getDocument().addDocumentListener( documentListener );
-
       textField.registerKeyboardAction( new UpAction(), KeyStroke.getKeyStroke( KeyEvent.VK_UP, 0 ),
             JComponent.WHEN_FOCUSED );
       textField.registerKeyboardAction( new HidePopupAction(), KeyStroke.getKeyStroke( KeyEvent.VK_ESCAPE, 0 ),
             JComponent.WHEN_FOCUSED );
 
+      textField.addKeyListener( new KeyListener()
+      {
+         public void keyTyped(KeyEvent e){}
+         public void keyPressed(KeyEvent e) {}
+         
+         public void keyReleased(KeyEvent e)
+         {
+            if (e.getKeyCode() != KeyEvent.VK_DOWN && e.getKeyCode() != KeyEvent.VK_UP
+                  && e.getKeyCode() != KeyEvent.VK_ESCAPE && e.getKeyCode() != KeyEvent.VK_ENTER)
+            {
+               if (textField.getText().length() >= MIN_LENGTH_FOR_SEARCH)
+                  showPopup();
+               else
+                  popup.setVisible( false );
+            }
+         }
+      });
+      
       textField.addFocusListener( new FocusListener()
       {
-         public void focusLost(FocusEvent e){}
+         public void focusLost(FocusEvent e)
+         {
+            if (!e.isTemporary())
+            {
+               popup.setVisible( false );
+            }
+         }
          
          public void focusGained(FocusEvent e)
          {
@@ -140,7 +162,7 @@ public class SuggestTextField<T> extends JPanel
    {
       public void actionPerformed(ActionEvent e)
       {
-         textField.setText( model.displayValueAt( list.getSelectedIndex() ) );
+         handleAcceptAction( model.valueAt( list.getSelectedIndex() ) );
          popup.setVisible( false );
       }
    }
@@ -182,11 +204,10 @@ public class SuggestTextField<T> extends JPanel
          int size = list.getModel().getSize();
          list.setVisibleRowCount( size < MAX_LIST_LENGTH ? size : MAX_LIST_LENGTH );
 
-         Point location = textField.getLocationOnScreen();
          popup.pack();
          if (!popup.isVisible())
          {
-            popup.show( textField, (int) location.getX(), textField.getHeight() );
+            popup.show( textField, 2, textField.getHeight() );
          }
          
       } else
@@ -194,6 +215,11 @@ public class SuggestTextField<T> extends JPanel
          popup.setVisible( false );
       }
       textField.requestFocusInWindow();
+   }
+
+   public void handleAcceptAction(T selectedItem)
+   {
+      textField.setText( model.displayValue( selectedItem ));
    }
 
    private void selectNextValue()
@@ -218,26 +244,4 @@ public class SuggestTextField<T> extends JPanel
       }
    }
 
-   DocumentListener documentListener = new DocumentListener()
-   {
-      public void insertUpdate(DocumentEvent e)
-      {
-         if (textField.getText().length() >= MIN_LENGTH_FOR_SEARCH)
-            showPopup();
-         else
-            popup.setVisible( false );
-      }
-
-      public void removeUpdate(DocumentEvent e)
-      {
-         if (textField.getText().length() >= MIN_LENGTH_FOR_SEARCH)
-            showPopup();
-         else
-            popup.setVisible( false );
-      }
-
-      public void changedUpdate(DocumentEvent e)
-      {
-      }
-   };
 }

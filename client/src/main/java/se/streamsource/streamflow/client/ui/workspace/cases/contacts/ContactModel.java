@@ -49,6 +49,7 @@ public class ContactModel
    @Structure
    Module module;
 
+   
    public ContactDTO getContact()
    {
       return contact;
@@ -146,17 +147,27 @@ public class ContactModel
       client.putCommand( "update", form.getWebRepresentation() );
    }
 
+   public void changeAddressAndCity( String newAddress, String newCity)
+   {
+      Form form = new Form();
+      form.set("address", newAddress);
+      form.set("city", newCity);
+      client.putCommand( "update", form.getWebRepresentation() );
+   }
+   
    public boolean isContactLookupEnabled()
    {
       ResourceValue resource = client.query();
       return Iterables.matchesAny( Links.withRel("searchcontacts"), resource.queries().get() );
    }
 
+   public void initMissingValues() {
+      
+   }
    public ContactsDTO searchContacts( ContactDTO query ) throws ResourceException
    {
       return client.query( "searchcontacts", ContactsDTO.class, query);
    }
-
 
    public boolean isStreetLookupEnabled()
    {

@@ -31,9 +31,12 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.ServiceAvailable;
+import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
@@ -123,6 +126,7 @@ public class ContactContext
    }
 
    @ServiceAvailable(ContactLookupService.class)
+   @SkipResourceValidityCheck
    public ContactsDTO searchcontacts()
    {
       // This method has to convert between the internal ContactDTO and the plugin API ContactDTO,
@@ -157,20 +161,26 @@ public class ContactContext
    
 
    @ServiceAvailable(StreetAddressLookupService.class)
-   public StreetList searchstreet()
+   @SkipResourceValidityCheck
+   public StreetsDTO searchstreets(StreetSearchDTO search)
    {
 
-      ContactDTO contact = RoleMap.role( ContactDTO.class );
       ValueBuilder<StreetValue> builder = module.valueBuilderFactory().newValueBuilder(StreetValue.class);
-      builder.prototype().address().set( contact.addresses().get().get( 0 ).address().get() );
-      ValueBuilder<StreetList> resultBuilder = module.valueBuilderFactory().newValueBuilder( StreetList.class );
+      builder.prototype().address().set( search.address().get() );
+      ValueBuilder<StreetsDTO> resultBuilder = module.valueBuilderFactory().newValueBuilder( StreetsDTO.class );
       try
       {
          if (streetLookup != null)
          {
             StreetAddressLookupService lookup = streetLookup.get();
-            StreetList streetList = lookup.lookup( builder.prototype() );
-            return streetList;
+            StreetList streetList = lookup.lookup( builder.newInstance() );
+            List<StreetSearchDTO> streets = resultBuilder.prototype().streets().get();
+            
+            for (StreetValue street : streetList.streets().get())
+            {
+               streets.add( module.valueBuilderFactory().newValueFromJSON( StreetSearchDTO.class, street.toJSON() ) );
+            }
+            return resultBuilder.newInstance();
          } else
          {
             return resultBuilder.newInstance();
