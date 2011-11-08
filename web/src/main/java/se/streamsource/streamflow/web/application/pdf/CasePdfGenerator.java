@@ -220,11 +220,6 @@ public class CasePdfGenerator implements CaseOutput
       }
 
       // traverse structure
-      if (config.history().get())
-      {
-         generateHistory(cazeDescriptor.history());
-      }
-
       if (config.contacts().get())
       {
          generateContacts( cazeDescriptor.contacts() );
@@ -243,6 +238,11 @@ public class CasePdfGenerator implements CaseOutput
       if (config.attachments().get())
       {
          generateAttachments( cazeDescriptor.attachments() );
+      }
+
+      if (config.history().get())
+      {
+         generateHistory(cazeDescriptor.history());
       }
    }
 
