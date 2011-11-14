@@ -27,8 +27,14 @@ public interface StreetAddressLookup
     * Give a template for street information that is partially filled in, and let the plugin
     * do a lookup for street addresses that match. May return 0, 1 or more possible alternatives.
     *
-    * @param contactTemplate partially filled in template with contact information.
+    * @param streetTemplate partially filled in template with contact information.
     * @return possible matches
     */
    StreetList lookup(StreetValue streetTemplate);
+
+   /**
+    * Reloads the solr index from data provided by the underlying plugin.
+    */
+   void reindex();
+
 }

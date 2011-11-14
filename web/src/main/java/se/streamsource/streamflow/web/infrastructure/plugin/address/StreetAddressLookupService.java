@@ -100,6 +100,12 @@ public interface StreetAddressLookupService
             {
                reindex();
                core.close();
+
+               if( config.configuration().forceReload().get())
+               {
+                  config.configuration().forceReload().set( false );
+                  config.save();
+               }
             }
          }
       }
@@ -162,45 +168,48 @@ public interface StreetAddressLookupService
       public void reindex()
       {
 
-         List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
-
-         try
+         // make sure plugin is enabled before running reindex!
+         if (config.configuration().enabled().get())
          {
-
-            StreetValue streetValue = module.valueBuilderFactory().newValueBuilder( StreetValue.class ).prototype();
-            streetValue.address().set( "%" );
-
-            StreetList streets = cqc.query( config.configuration().url().get(),
-                  StreetList.class, streetValue.buildWith().newInstance() );
-
-            for( StreetValue street : streets.streets().get() )
-            {
-               SolrInputDocument document = new SolrInputDocument();
-               document.addField( "address", street.address().get() );
-               document.addField( "area", street.area().get() );
-
-               added.add( document );
-
-            }
-
+            List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
 
             try
             {
-               // empty the index
-               server.deleteByQuery( "*:*" );
-               server.add( added );
-               
-            }
-            finally
-            {
-               server.commit( false, false );
-               config.configuration().lastLoaded().set( System.currentTimeMillis() );
-               config.save();
-            }
-         } catch ( Throwable e )
-         {
 
-            log.error( "Could not create/update solr index for street address lookup.", e );
+               StreetValue streetValue = module.valueBuilderFactory().newValueBuilder( StreetValue.class ).prototype();
+               streetValue.address().set( "%" );
+
+               StreetList streets = cqc.query( config.configuration().url().get(),
+                     StreetList.class, streetValue.buildWith().newInstance() );
+
+               for (StreetValue street : streets.streets().get())
+               {
+                  SolrInputDocument document = new SolrInputDocument();
+                  document.addField( "address", street.address().get() );
+                  document.addField( "area", street.area().get() );
+
+                  added.add( document );
+
+               }
+
+
+               try
+               {
+                  // empty the index
+                  server.deleteByQuery( "*:*" );
+                  server.add( added );
+
+               } finally
+               {
+                  server.commit( false, false );
+                  config.configuration().lastLoaded().set( System.currentTimeMillis() );
+                  config.save();
+               }
+            } catch (Throwable e)
+            {
+
+               log.error( "Could not create/update solr index for street address lookup.", e );
+            }
          }
       }
    }
