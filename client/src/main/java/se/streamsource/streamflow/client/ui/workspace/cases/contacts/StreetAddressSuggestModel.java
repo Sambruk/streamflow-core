@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
@@ -30,8 +31,14 @@ public class StreetAddressSuggestModel implements SuggestModel<StreetSearchDTO>
 
    public List<StreetSearchDTO> options(String searchString)
    {
-      streets = contactModel.searchStreets( searchString );
-      return streets.streets().get();
+      if (contactModel.isStreetLookupEnabled()) 
+      {
+         streets = contactModel.searchStreets( searchString );
+         return streets.streets().get();
+      } else
+      {
+         return new ArrayList<StreetSearchDTO>();
+      }
    }
 
    public String displayValue(StreetSearchDTO value)
