@@ -25,6 +25,7 @@ import java.awt.event.KeyListener;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -35,9 +36,9 @@ import javax.swing.KeyStroke;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
+import se.streamsource.streamflow.client.util.StateBinder.Binding;
 
-public class SuggestTextField<T> extends JPanel
+public abstract class SuggestTextField<T> extends JPanel
 {
    private static final long serialVersionUID = -2427927984739983590L;
 
@@ -48,7 +49,7 @@ public class SuggestTextField<T> extends JPanel
    private JPopupMenu popup = new JPopupMenu();
    private DefaultListModel listModel;
    private JTextField textField;
-
+   
    private SuggestModel<T> model;
 
    public SuggestTextField(SuggestModel<T> model)
@@ -118,6 +119,7 @@ public class SuggestTextField<T> extends JPanel
             if (!e.isTemporary())
             {
                popup.setVisible( false );
+               handleSaveAction(textField.getText());
             }
          }
          
@@ -142,6 +144,25 @@ public class SuggestTextField<T> extends JPanel
       list.setRequestFocusEnabled( false );
    }
 
+   public void setBinding( final Binding binding )
+   {
+      textField.setInputVerifier( new InputVerifier()
+      {
+         
+         @Override
+         public boolean verify(JComponent input)
+         {
+            if (!popup.isVisible())
+            {
+               binding.updateProperty( textField.getText() );
+               return true;
+            }
+            
+            return false;
+         }
+      });
+   }
+   
    @SuppressWarnings("serial")
    private class ShowPopupAction extends AbstractAction
    {
@@ -221,6 +242,8 @@ public class SuggestTextField<T> extends JPanel
    {
       textField.setText( model.displayValue( selectedItem ));
    }
+
+   public abstract void handleSaveAction(String text);
 
    private void selectNextValue()
    {

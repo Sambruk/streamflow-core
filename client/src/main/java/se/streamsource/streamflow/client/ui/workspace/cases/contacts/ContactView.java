@@ -91,7 +91,7 @@ public class ContactView
    public JPanel form;
    private JTextField defaultFocusField;
    private JTextField addressField;
-   private SuggestTextField<StreetSearchDTO> suggestAddress;
+   private StreetAddressSuggestTextField suggestAddress;
    private JTextField zipField = (JTextField) TEXTFIELD.newField();
    private JTextField cityField = (JTextField) TEXTFIELD.newField();
    private JTextField regionField = (JTextField) TEXTFIELD.newField();
@@ -170,7 +170,6 @@ public class ContactView
 
          builder.add(createLabel(WorkspaceResources.address_label));
          builder.nextColumn(2);
-         addressBinder.bind(addressField, addressTemplate.address());
          builder.add( suggestAddress);
          builder.nextLine();
          builder.add(createLabel(WorkspaceResources.zip_label));
@@ -300,6 +299,7 @@ public class ContactView
          contactBinder.updateWith(model.getContact());
          phoneNumberBinder.updateWith(model.getPhoneNumber());
          addressBinder.updateWith(model.getAddress());
+         suggestAddress.getTextField().setText( model.getAddress().address() != null ? model.getAddress().address().get() : "" );
          emailBinder.updateWith(model.getEmailAddress());
 
          viewBinder.update(model.getContact());
