@@ -130,7 +130,7 @@ public interface StreetAddressLookupService
 
                NamedList list = new NamedList();
 
-               list.add( "q", "address:" + streetTemplate.address().get().trim().replace( " ", "*" ) + "*" );
+               list.add( "q", "address:" + streetTemplate.address().get().toLowerCase().trim().replace( " ", "*" ) + "*" );
 
                QueryResponse query = solr.getSolrServer( "sf-streetcache" ).query( SolrParams.toSolrParams( list ) );
                SolrDocumentList results = query.getResults();
