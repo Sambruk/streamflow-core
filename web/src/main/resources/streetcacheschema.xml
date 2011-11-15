@@ -464,7 +464,7 @@ any data added to them will be ignored outright.  -->
             when adding a document.
         -->
         <!-- Streamflow lucene index fields -->
-        <field name="address" type="string" indexed="true" stored="true" required="true" />
+        <field name="address" type="alphaOnlySort" indexed="true" stored="true" required="true" />
         <field name="area" type="string" indexed="true" stored="true" />
         <field name="description_for_sort" type="string"/>
         <!-- <field name="id" type="string" indexed="true" stored="true" required="true"/>

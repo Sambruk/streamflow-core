@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.infrastructure.plugin.address;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -72,7 +71,6 @@ public interface StreetAddressLookupService
 
       private CommandQueryClient cqc;
 
-      private SolrServer server;
       private SolrCore core;
 
       Logger log = LoggerFactory.getLogger( StreetAddressLookupService.class );
@@ -91,7 +89,6 @@ public interface StreetAddressLookupService
 
 
             core = solr.getSolrCore( "sf-streetcache" );
-            server = solr.getSolrServer( "sf-streetcache" );
 
             if( config.configuration().forceReload().get() ||
                   config.configuration().lastLoaded().get() == 0 ||
@@ -133,9 +130,9 @@ public interface StreetAddressLookupService
 
                NamedList list = new NamedList();
 
-               list.add( "q", "address:" + streetTemplate.address().get() + "*" );
+               list.add( "q", "address:" + streetTemplate.address().get().trim().replace( " ", "*" ) + "*" );
 
-               QueryResponse query = server.query( SolrParams.toSolrParams( list ) );
+               QueryResponse query = solr.getSolrServer( "sf-streetcache" ).query( SolrParams.toSolrParams( list ) );
                SolrDocumentList results = query.getResults();
 
                ValueBuilder<StreetValue> streetValueBuilder = module.valueBuilderFactory().newValueBuilder( StreetValue.class );
@@ -196,12 +193,12 @@ public interface StreetAddressLookupService
                try
                {
                   // empty the index
-                  server.deleteByQuery( "*:*" );
-                  server.add( added );
+                  solr.getSolrServer( "sf-streetcache" ).deleteByQuery( "*:*" );
+                  solr.getSolrServer( "sf-streetcache" ).add( added );
 
                } finally
                {
-                  server.commit( false, false );
+                  solr.getSolrServer( "sf-streetcache" ).commit( false, false );
                   config.configuration().lastLoaded().set( System.currentTimeMillis() );
                   config.save();
                }
