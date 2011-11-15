@@ -60,6 +60,8 @@ import se.streamsource.streamflow.web.application.statistics.StatisticsStoreExce
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
+import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -204,6 +206,13 @@ public interface ManagerComposite
 
          // Reindex state
          reindexer.reindex();
+
+         // reindex street cache if plugin is enabled
+         StreetAddressLookupService streetLookup = (StreetAddressLookupService) module.serviceFinder().findService( StreetAddressLookupService.class ).get();
+         if( streetLookup != null && ((StreetAddressLookupConfiguration)streetLookup.configuration()).enabled().get() )
+         {
+            streetLookup.reindex();
+         }
       }
 
       public String exportDatabase(boolean compress) throws IOException

@@ -26,12 +26,13 @@ import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.index.reindexer.ReindexerConfiguration;
+import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.KartagoPluginConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
 import se.streamsource.streamflow.web.rest.service.conversation.ConversationResponseConfiguration;
 import se.streamsource.streamflow.web.rest.service.conversation.NotificationConfiguration;
 
@@ -64,7 +65,9 @@ public class ConfigurationAssembler
 //      module.entities( EhCacheConfiguration.class ).visibleIn( Visibility.application );
 
       // Plugin configurations
-      module.entities( PluginConfiguration.class, KartagoPluginConfiguration.class ).visibleIn( Visibility.application );
+      module.entities(
+            PluginConfiguration.class,
+            KartagoPluginConfiguration.class ).visibleIn( Visibility.application );
    }
 
    private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException
@@ -74,12 +77,14 @@ public class ConfigurationAssembler
       module.entities( NotificationConfiguration.class ).visibleIn( Visibility.application );
       module.entities( ConversationResponseConfiguration.class ).visibleIn( Visibility.application );
       module.entities( RemoveAttachmentsConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( StreetAddressLookupConfiguration.class ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
       module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");
       module.forMixin( NotificationConfiguration.class ).declareDefaults().enabled().set( true );
       module.forMixin( ConversationResponseConfiguration.class ).declareDefaults().enabled().set( true );
       module.forMixin( RemoveAttachmentsConfiguration.class ).declareDefaults().enabled().set( true );
+      module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().loadFrequence().set( 604800000L );
    }
 
    private void entityStoreConfiguration( ModuleAssembly module ) throws AssemblyException

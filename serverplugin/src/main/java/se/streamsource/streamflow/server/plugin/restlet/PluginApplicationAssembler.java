@@ -28,6 +28,9 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.library.jmx.JMXAssembler;
+import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
+import se.streamsource.streamflow.server.plugin.address.StreetList;
+import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
@@ -56,6 +59,7 @@ public class PluginApplicationAssembler
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly app = applicationFactory.newApplicationAssembly();
+      app.setName( "Streamflow-Plugins" );
 
       LayerAssembly webLayer = app.layer( "Web" );
       assembleWebLayer(webLayer);
@@ -65,7 +69,7 @@ public class PluginApplicationAssembler
 
       LayerAssembly managementLayer = app.layer("Management");
       assembleManagementLayer(managementLayer);
-
+      
       LayerAssembly configurationLayer = app.layer( "Configuration" );
       assembleConfigurationLayer(configurationLayer);
 
@@ -99,6 +103,8 @@ public class PluginApplicationAssembler
    {
       ModuleAssembly adminAssembly = managementLayer.module("JMX");
       new JMXAssembler().assemble( adminAssembly );
+
+      adminAssembly.services(DatasourceConfigurationManagerService.class).instantiateOnStartup();;
    }
 
    private void assemblePluginLayer( LayerAssembly pluginLayer ) throws AssemblyException
@@ -112,7 +118,9 @@ public class PluginApplicationAssembler
             ContactEmailValue.class,
             ContactPhoneValue.class,
             UserIdentityValue.class,
-            UserDetailsValue.class ).visibleIn( Visibility.application );
+            UserDetailsValue.class,
+            StreetList.class,
+            StreetValue.class).visibleIn( Visibility.application );
 
       pluginAssembler.assemble( moduleAssembly );
    }
@@ -124,7 +132,7 @@ public class PluginApplicationAssembler
 
       // Plugin wrappers
       rest.objects( ContactLookupRestlet.class,
-            AuthenticationRestlet.class );
+            AuthenticationRestlet.class, StreetAddressLookupRestlet.class );
 
    }
 }

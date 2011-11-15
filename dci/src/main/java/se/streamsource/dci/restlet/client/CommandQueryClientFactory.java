@@ -17,10 +17,14 @@
 
 package se.streamsource.dci.restlet.client;
 
+import java.util.Collections;
+import java.util.Locale;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
@@ -29,9 +33,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
-
-import java.util.Collections;
-import java.util.Locale;
+import org.restlet.routing.Filter;
 
 /**
  * Builder for CommandQueryClient
@@ -54,8 +56,27 @@ public class CommandQueryClientFactory
    @Uses
    private RequestWriterDelegator requestWriterDelegator;
 
-   @Uses
    private Uniform client;
+
+   public CommandQueryClientFactory(@Uses final Uniform client)
+   {
+      this.client = new Uniform()
+      {
+         public void handle(Request request, Response response)
+         {
+            Response oldResponse = Response.getCurrent();
+            try
+            {
+               client.handle( request, response );
+            } finally
+            {
+               Response.setCurrent( oldResponse );
+            }
+         }
+         
+      };
+      
+   }
 
    public CommandQueryClient newClient( Reference reference )
    {

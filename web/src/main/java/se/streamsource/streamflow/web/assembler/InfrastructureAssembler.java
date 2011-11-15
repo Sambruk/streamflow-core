@@ -37,6 +37,7 @@ import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import se.streamsource.dci.restlet.client.ClientAssembler;
+import se.streamsource.infrastructure.database.DataSourceService;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
@@ -44,6 +45,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
+import se.streamsource.streamflow.server.plugin.address.StreetList;
+import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
@@ -51,7 +54,6 @@ import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
 import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
@@ -62,13 +64,14 @@ import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreServi
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 import se.streamsource.streamflow.web.infrastructure.logging.LoggingService;
+import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -101,22 +104,32 @@ public class InfrastructureAssembler
    {
       new ClientAssembler().assemble( moduleAssembly );
 
-      moduleAssembly.services( ContactLookupService.class ).
-            identifiedBy( "contactlookup" ).
-            visibleIn( Visibility.application ).
-            instantiateOnStartup();
+      Application.Mode mode = moduleAssembly.layer().application().mode();
+      if (!mode.equals( Application.Mode.test ))
+      {
+         moduleAssembly.services( ContactLookupService.class ).
+               identifiedBy( "contactlookup" ).
+               visibleIn( Visibility.application ).
+               instantiateOnStartup();
 
-      moduleAssembly.services( KartagoMapService.class ).
-            identifiedBy( "kartagomap" ).
-            visibleIn( Visibility.application ).
-            instantiateOnStartup();
+         moduleAssembly.services( KartagoMapService.class ).
+               identifiedBy( "kartagomap" ).
+               visibleIn( Visibility.application ).
+               instantiateOnStartup();
 
-      moduleAssembly.values( ContactList.class,
-            ContactValue.class,
-            ContactAddressValue.class,
-            ContactEmailValue.class,
-            ContactPhoneValue.class ).visibleIn( Visibility.application );
+         moduleAssembly.services( StreetAddressLookupService.class ).
+               identifiedBy( "streetaddresslookup" ).
+               visibleIn( Visibility.application ).
+               instantiateOnStartup();
 
+         moduleAssembly.values( ContactList.class,
+               ContactValue.class,
+               ContactAddressValue.class,
+               ContactEmailValue.class,
+               ContactPhoneValue.class,
+               StreetValue.class,
+               StreetList.class).visibleIn( Visibility.application );
+      }
 
    }
 

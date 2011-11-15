@@ -26,7 +26,6 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
-import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
@@ -35,8 +34,8 @@ import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 
 import java.util.Properties;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -68,8 +67,6 @@ public class StreamflowWebContextTestAssembler
       ModuleAssembly module = layer1.module( "Module 1" );
       module.values( EntityValue.class );
       applicationAssembly.layer( "Domain infrastructure" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
-      applicationAssembly.layer( "Context" ).module( "Contact Lookup" ).importedServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
-
 
       ModuleAssembly knowledgebase = appLayer.module("Knowledgebase");
       Properties props = new Properties();

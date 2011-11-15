@@ -23,6 +23,8 @@ import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrConfig;
 import org.apache.solr.core.SolrCore;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -34,9 +36,9 @@ import java.lang.reflect.Field;
 @Mixins(EmbeddedSolrService.EmbeddedSolrServiceMixin.class)
 public interface EmbeddedSolrService extends Activatable, ServiceComposite
 {
-   public SolrServer getSolrServer();
+   public SolrServer getSolrServer( String name );
 
-   public SolrCore getSolrCore();
+   public SolrCore getSolrCore( String name );
 
    abstract class EmbeddedSolrServiceMixin
          implements Activatable,EmbeddedSolrService
@@ -44,7 +46,8 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
       @Service
       FileConfiguration fileConfig;
       public CoreContainer coreContainer;
-      public EmbeddedSolrServer server;
+      public EmbeddedSolrServer coreServer;
+      public EmbeddedSolrServer streetServer;
 
       private SolrCore core;
 
@@ -56,15 +59,22 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          try
          {
             File directory = new File( fileConfig.dataDirectory() + "/solr" );
-            directory.mkdir();
+            if( directory.mkdir() )
+            {
 
+               // multicore solr.xml
+               Inputs.text( Thread.currentThread().getContextClassLoader().getResource( "solr.xml" ) )
+                     .transferTo( Outputs.text( new File( directory.getAbsolutePath() + "/solr.xml" ) ) );
 
+            }
             System.setProperty( "solr.solr.home", directory.getAbsolutePath() );
 
             CoreContainer.Initializer initializer = new CoreContainer.Initializer();
             coreContainer = initializer.initialize();
-            server = new EmbeddedSolrServer( coreContainer, "" );
-            core = coreContainer.getCore( "" );
+            coreServer = new EmbeddedSolrServer( coreContainer, "sf-core" );
+            streetServer = new EmbeddedSolrServer( coreContainer, "sf-streetcache" );
+
+            core = coreContainer.getCore( "sf-core" );
          } finally
          {
             Thread.currentThread().setContextClassLoader( oldCl );
@@ -73,7 +83,10 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
 
       public void passivate() throws Exception
       {
-         core.closeSearcher();
+         for( SolrCore core : coreContainer.getCores())
+         {
+            core.closeSearcher();
+         }
          coreContainer.shutdown();
 
          // Clear instance fields for GC purposes
@@ -84,14 +97,14 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          SolrConfig.config = null;
       }
 
-      public SolrServer getSolrServer()
+      public SolrServer getSolrServer( String name)
       {
-         return server;
+         return "sf-core".equals( name ) ? coreServer : streetServer;
       }
 
-      public SolrCore getSolrCore()
+      public SolrCore getSolrCore( String name )
       {
-         return core;
+         return coreContainer.getCore(  name  );
       }
    }
 }

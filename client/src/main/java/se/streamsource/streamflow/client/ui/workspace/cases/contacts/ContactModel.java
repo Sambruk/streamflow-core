@@ -17,8 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -29,6 +32,8 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 
 /**
  * Model for a contact of a case
@@ -40,7 +45,11 @@ public class ContactModel
 
    @Uses
    CommandQueryClient client;
+   
+   @Structure
+   Module module;
 
+   
    public ContactDTO getContact()
    {
       return contact;
@@ -138,14 +147,38 @@ public class ContactModel
       client.putCommand( "update", form.getWebRepresentation() );
    }
 
+   public void changeAddressAndCity( String newAddress, String newCity)
+   {
+      Form form = new Form();
+      form.set("address", newAddress);
+      form.set("city", newCity);
+      client.putCommand( "update", form.getWebRepresentation() );
+   }
+   
    public boolean isContactLookupEnabled()
    {
       ResourceValue resource = client.query();
       return Iterables.matchesAny( Links.withRel("searchcontacts"), resource.queries().get() );
    }
 
+   public void initMissingValues() {
+      
+   }
    public ContactsDTO searchContacts( ContactDTO query ) throws ResourceException
    {
       return client.query( "searchcontacts", ContactsDTO.class, query);
+   }
+
+   public boolean isStreetLookupEnabled()
+   {
+      ResourceValue resource = client.query();
+      return Iterables.matchesAny( Links.withRel("searchstreets"), resource.queries().get() );
+   }
+
+   public StreetsDTO searchStreets( String query ) throws ResourceException
+   {
+      ValueBuilder<StreetSearchDTO> builder = module.valueBuilderFactory().newValueBuilder( StreetSearchDTO.class );
+      builder.prototype().address().set( query );
+      return client.query( "searchstreets", StreetsDTO.class, builder.newInstance());
    }
 }

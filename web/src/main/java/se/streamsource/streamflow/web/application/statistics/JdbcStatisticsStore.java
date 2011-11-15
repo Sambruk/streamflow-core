@@ -24,7 +24,8 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.web.infrastructure.database.Databases;
+
+import se.streamsource.infrastructure.database.Databases;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
