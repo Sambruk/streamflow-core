@@ -207,7 +207,7 @@ public interface ManagerComposite
          reindexer.reindex();
 
          // reindex street cache if plugin is enabled
-         StreetAddressLookupService streetLookup = (StreetAddressLookupService) module.serviceFinder().findService( StreetAddressLookupService.class );
+         StreetAddressLookupService streetLookup = (StreetAddressLookupService) module.serviceFinder().findService( StreetAddressLookupService.class ).get();
          if( streetLookup != null )
          {
             streetLookup.reindex();

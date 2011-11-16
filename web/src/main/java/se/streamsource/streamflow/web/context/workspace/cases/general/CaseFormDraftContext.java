@@ -20,27 +20,36 @@ package se.streamsource.streamflow.web.context.workspace.cases.general;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.service.ServiceImporterException;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ServiceAvailable;
+import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.KnownDatatypeDefinitionUrls;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.server.plugin.address.StreetList;
+import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.infrastructure.plugin.KartagoPluginConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 
 import java.io.IOException;
+import java.util.List;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
@@ -54,6 +63,10 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
    @Service
    KartagoMapService kartagoMapService;
 
+   @Optional
+   @Service
+   ServiceReference<StreetAddressLookupService> streetLookup;
+   
    @Structure
    Module module;
 
@@ -130,5 +143,37 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
    public String kartagoclientexe()
    {
       return ((KartagoPluginConfiguration) kartagoMapService.configuration()).installpath().get() ;
+   }
+
+   @ServiceAvailable(StreetAddressLookupService.class)
+   @SkipResourceValidityCheck
+   public StreetsDTO searchstreets(StreetSearchDTO search)
+   {
+
+      ValueBuilder<StreetValue> builder = module.valueBuilderFactory().newValueBuilder(StreetValue.class);
+      builder.prototype().address().set( search.address().get() );
+      ValueBuilder<StreetsDTO> resultBuilder = module.valueBuilderFactory().newValueBuilder( StreetsDTO.class );
+      try
+      {
+         if (streetLookup != null)
+         {
+            StreetAddressLookupService lookup = streetLookup.get();
+            StreetList streetList = lookup.lookup( builder.newInstance() );
+            List<StreetSearchDTO> streets = resultBuilder.prototype().streets().get();
+            
+            for (StreetValue street : streetList.streets().get())
+            {
+               streets.add( module.valueBuilderFactory().newValueFromJSON( StreetSearchDTO.class, street.toJSON() ) );
+            }
+            return resultBuilder.newInstance();
+         } else
+         {
+            return resultBuilder.newInstance();
+         }
+      } catch (ServiceImporterException e)
+      {
+         // Not available at this time
+         return resultBuilder.newInstance();
+      }
    }
 }

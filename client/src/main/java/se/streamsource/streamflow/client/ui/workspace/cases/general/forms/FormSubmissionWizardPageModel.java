@@ -127,4 +127,9 @@ public class FormSubmissionWizardPageModel
    {
       return model.kartagoclientexe( link );
    }
+   
+   public FormDraftModel getFormDraftModel()
+   {
+      return model;
+   }
 }
