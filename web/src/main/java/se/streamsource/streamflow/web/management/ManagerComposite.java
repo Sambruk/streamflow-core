@@ -60,6 +60,7 @@ import se.streamsource.streamflow.web.application.statistics.StatisticsStoreExce
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
+import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 
 import java.io.File;
@@ -208,7 +209,7 @@ public interface ManagerComposite
 
          // reindex street cache if plugin is enabled
          StreetAddressLookupService streetLookup = (StreetAddressLookupService) module.serviceFinder().findService( StreetAddressLookupService.class ).get();
-         if( streetLookup != null )
+         if( streetLookup != null && ((StreetAddressLookupConfiguration)streetLookup.configuration()).enabled().get() )
          {
             streetLookup.reindex();
          }

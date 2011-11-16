@@ -23,6 +23,7 @@ import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.client.util.SuggestModel;
 
+
 public class FormStreetAddressSuggestModel implements SuggestModel<StreetSearchDTO>
 {
    private FormDraftModel formDraftModel;
