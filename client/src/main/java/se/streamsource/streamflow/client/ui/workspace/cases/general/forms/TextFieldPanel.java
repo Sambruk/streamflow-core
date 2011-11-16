@@ -70,11 +70,22 @@ public class TextFieldPanel extends AbstractFieldPanel
       this.model = model;
       setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
       this.fieldValue = fieldValue;
-
-      textField = new JTextField();
+      
+      
+      if (KnownDatatypeDefinitionUrls.STREET_ADDRESS.equals( field.field().get().datatypeUrl().get() )
+            && model.getFormDraftModel().isStreetLookupEnabled())
+      {
+         FormStreetAddressSuggestModel suggestModel = new FormStreetAddressSuggestModel();
+         suggestModel.setFormDraftModel( model.getFormDraftModel() );
+         FormStreetAddressSuggestTextField suggestTextField = new FormStreetAddressSuggestTextField( suggestModel );
+         textField = suggestTextField.getTextField();
+         add( suggestTextField );
+      } else {
+         textField = new JTextField();
+         add( textField );
+      }
       textField.setColumns( fieldValue.width().get() );
-      add( textField );
-
+      
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
 

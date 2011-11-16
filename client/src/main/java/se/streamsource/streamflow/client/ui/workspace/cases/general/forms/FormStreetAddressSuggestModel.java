@@ -16,37 +16,54 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
-import se.streamsource.streamflow.client.util.SuggestModel;
-
+import java.util.ArrayList;
 import java.util.List;
+
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
+import se.streamsource.streamflow.client.util.SuggestModel;
 
 
 public class FormStreetAddressSuggestModel implements SuggestModel<StreetSearchDTO>
 {
+   private FormDraftModel formDraftModel;
+   private StreetsDTO streets;
 
    public List<StreetSearchDTO> options(String searchString)
    {
-      // TODO Auto-generated method stub
-      return null;
+      if (formDraftModel.isStreetLookupEnabled())
+      {
+         streets = formDraftModel.searchStreets( searchString );
+         return streets.streets().get();
+      } else
+      {
+         return new ArrayList<StreetSearchDTO>();
+      }
    }
 
    public String displayValue(StreetSearchDTO value)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return value.address().get() + ", " + value.area().get();
    }
 
    public String displayValueAt(int index)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return displayValue( streets.streets().get().get( index ) );
    }
 
    public StreetSearchDTO valueAt(int index)
    {
-      // TODO Auto-generated method stub
-      return null;
+      return streets.streets().get().get( index );
+   }
+
+   public FormDraftModel getFormDraftModel()
+   {
+      return formDraftModel;
+   }
+
+   public void setFormDraftModel(FormDraftModel formDraftModel)
+   {
+      this.formDraftModel = formDraftModel;
    }
 
 }
