@@ -22,6 +22,7 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
@@ -49,12 +50,16 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CaseStructure;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -63,7 +68,8 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import java.util.List;
 import java.util.Locale;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.dci.api.RoleMap.*;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
@@ -104,6 +110,7 @@ public interface CaseCommandsContext
     */
    @RequiresStatus( OPEN )
    @HasResolutions(false)
+   @HasFormOnClose(false)
    @SubCasesAreClosed
    public void close();
 
@@ -112,8 +119,18 @@ public interface CaseCommandsContext
     */
    @RequiresStatus( OPEN )
    @HasResolutions(true)
+   @HasFormOnClose(false)
    @SubCasesAreClosed
    public void resolve( EntityValue resolution );
+
+   /**
+    * Mark the case for submission of a certain form on close
+    * and close the case when submitted.
+    */
+   @RequiresStatus( OPEN )
+   @HasFormOnClose(true)
+   @SubCasesAreClosed
+   public void formonclose();
 
    /**
     * Mark the case as on-hold
@@ -225,6 +242,32 @@ public interface CaseCommandsContext
          resolvable.resolve( resolution );
 
          status.close();
+      }
+
+      public void formonclose()
+      {
+         CaseType caseType = RoleMap.role( TypedCase.Data.class ).caseType().get();
+         final Form formOnClose = (( FormOnClose.Data )caseType).formOnClose().get();
+         List<SubmittedFormValue> submittedForms = RoleMap.role( SubmittedForms.Data.class ).submittedForms().get();
+
+         boolean formOnCloseExists = matchesAny( new Specification<SubmittedFormValue>()
+         {
+            public boolean satisfiedBy( SubmittedFormValue item )
+            {
+               if (item.form().get().identity().equals( formOnClose.toString() ))
+                  return true;
+               return false;
+            }
+         }, submittedForms );
+
+         if ( formOnCloseExists )
+         {
+            close();
+         } else
+         {
+            throw new RuntimeException( "No form on close submission." );
+         }
+
       }
 
       public void onhold()

@@ -148,6 +148,11 @@ public class CaseModel
       client.postLink( linkValue );
    }
 
+   public void formOnClose()
+   {
+      client.command( "formonclose" );
+   }
+
    public File export(CaseOutputConfigDTO config) throws IOException
    {
       Representation representation = client.query("exportpdf", Representation.class, config);
