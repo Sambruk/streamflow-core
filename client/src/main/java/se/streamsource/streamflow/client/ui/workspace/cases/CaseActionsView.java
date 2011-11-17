@@ -439,15 +439,7 @@ public class CaseActionsView extends JPanel
             {
                focusOwner.transferFocus();
 
-               new CommandTask()
-               {
-                  @Override
-                  protected void command() throws Exception
-                  {
-                     formDraftModel.submit();
-                  }
-               }.execute();
-
+               formDraftModel.submit();
                map.put( "success", true );
             }
             return map;
@@ -455,23 +447,15 @@ public class CaseActionsView extends JPanel
 
          public boolean cancel( Map map )
          {
-            new CommandTask()
-            {
-               @Override
-               public void command()
-                  throws Exception
-               {
-                  formDraftModel.delete();
-               }
-            }.execute();
-            map.put( "success", false );
-            return true;
+            formDraftModel.delete();
+          return true;
          }
       } );
       Point onScreen = main.getMainFrame().getLocationOnScreen();
       Map result = (Map)WizardDisplayer.showWizard( wizard, new Rectangle( onScreen, new Dimension( 800, 600 ) ), null, initialProperties );
 
-      return result.get( "success" ) == null ? false : (Boolean)result.get( "success" );
+      return (result == null ||result.get( "success" ) == null)
+            ? false : (Boolean)result.get( "success" );
    }
 
    private class PrintCaseTask extends Task<File, Void>
