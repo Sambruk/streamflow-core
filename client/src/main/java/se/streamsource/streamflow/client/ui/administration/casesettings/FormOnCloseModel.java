@@ -21,10 +21,8 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 
 /**
@@ -39,14 +37,6 @@ public class FormOnCloseModel
    public EventList<LinkValue> getPossibleForms()
    {
       BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
-      //create an empty link for update with null
-      ValueBuilder<TitledLinkValue> builder = module.valueBuilderFactory().newValueBuilder( TitledLinkValue.class );
-      builder.prototype().title().set( " " );
-      builder.prototype().href().set( "update?entity=null" );
-      builder.prototype().text().set( " " );
-      builder.prototype().id().set( "NA" );
-      possibleLinks.add( builder.newInstance() );
-      // add real links to forms
       possibleLinks.addAll( client.query( "possibleforms", LinksValue.class ).links().get() );
       return possibleLinks;
    }

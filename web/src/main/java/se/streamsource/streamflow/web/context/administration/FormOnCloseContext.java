@@ -17,7 +17,6 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.FormId;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -40,18 +39,20 @@ public class FormOnCloseContext
    FormOnClose formOnClose;
 
    @Uses
-   FormOnClose.Data submitFormOnCloseData;
+   FormOnClose.Data formOnCloseData;
 
    public LinkValue index()
    {
+      if( formOnCloseData.formOnClose().get() != null )
+      {
       ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-      builder.prototype().href().set("formonclose");
-      builder.prototype().id().set(  submitFormOnCloseData.formOnClose().get() != null ?
-            ((FormId.Data)submitFormOnCloseData.formOnClose().get()).formId().get() : "" );
-      builder.prototype().text().set(submitFormOnCloseData.formOnClose().get() != null ?
-            submitFormOnCloseData.formOnClose().get().getDescription() : "" );
-      builder.prototype().rel().set( "formonclose" );
+      builder.prototype().href().set("update?entity=null");
+      builder.prototype().id().set(  formOnCloseData.formOnClose().get().toString());
+      builder.prototype().text().set(formOnCloseData.formOnClose().get().getDescription());
       return builder.newInstance();
+      } else
+         return null;
+
    }
 
    public void update( @Name( "entity" ) String value )
@@ -107,7 +108,7 @@ public class FormOnCloseContext
          public boolean visitForm( Form form )
          {
 
-            if( !form.equals( submitFormOnCloseData.formOnClose().get() ))
+            if( !form.equals( formOnCloseData.formOnClose().get() ))
                builder.addDescribable( form, owner );
 
             return true;
