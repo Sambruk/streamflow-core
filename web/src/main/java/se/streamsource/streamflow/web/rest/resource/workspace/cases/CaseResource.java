@@ -140,4 +140,10 @@ public class CaseResource
       RoleMap.current().set( RoleMap.role( History.class ).getHistory() );
       subResource( ConversationResource.class );
    }
+
+   @SubResource
+   public void submitformonclose()
+   {
+      subResource( CaseFormOnCloseResource.class );
+   }
 }

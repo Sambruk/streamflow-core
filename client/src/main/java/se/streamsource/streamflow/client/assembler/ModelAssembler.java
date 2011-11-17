@@ -17,15 +17,11 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import static org.qi4j.api.common.Visibility.layer;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addModels;
-
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.specification.Specifications;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-
 import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountsModel;
 import se.streamsource.streamflow.client.ui.account.ProfileModel;
@@ -37,6 +33,7 @@ import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
@@ -100,6 +97,9 @@ import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableMo
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodModel;
 import se.streamsource.streamflow.client.util.LinksListModel;
+
+import static org.qi4j.api.common.Visibility.*;
+import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * TODO
@@ -184,6 +184,7 @@ public class ModelAssembler
             CaseAccessDefaultsModel.class,
             CaseDefaultDaysToCompleteModel.class,
             CaseArchivalSettingModel.class,
+            FormOnCloseModel.class,
             CaseTypesModel.class,
             CaseTypeModel.class,
             AdministratorsModel.class,

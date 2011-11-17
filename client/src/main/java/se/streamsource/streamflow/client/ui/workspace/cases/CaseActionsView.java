@@ -22,18 +22,28 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.netbeans.api.wizard.WizardDisplayer;
+import org.netbeans.spi.wizard.Wizard;
+import org.netbeans.spi.wizard.WizardException;
+import org.netbeans.spi.wizard.WizardPage;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormDraftModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageView;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -42,17 +52,29 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -66,6 +88,9 @@ public class CaseActionsView extends JPanel
 
    @Structure
    Module module;
+
+   @Service
+   StreamflowApplication main;
 
    private CaseModel model;
 
@@ -82,6 +107,7 @@ public class CaseActionsView extends JPanel
       createsubcase,
       close,
       resolve,
+      formonclose,
       reopen,
       delete,
       exportpdf;
@@ -199,6 +225,31 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
+   public Task formonclose()
+   {
+      // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+      Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+      if (focusOwner != null)
+         focusOwner.transferFocus();
+      //TODO find, create and submit form wizard for form on close form before calling formonclose
+      
+      if( formOnCloseWizard() )
+      {
+         return new CommandTask()
+         {
+            @Override
+            protected void command()
+                  throws Exception
+            {
+               model.formOnClose();
+            }
+         };
+      } else
+         return null;
+   }
+
+
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task delete()
    {
       ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
@@ -313,7 +364,7 @@ public class CaseActionsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign", "resolved" ), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose"), transactions ))
       {
          model.refresh();
       }
@@ -349,6 +400,62 @@ public class CaseActionsView extends JPanel
 
       revalidate();
       repaint();
+   }
+
+   private boolean formOnCloseWizard()
+   {
+      CommandQueryClient formOnCloseClient = model.getClient().getClient( "submitformonclose/" );
+
+      formOnCloseClient.postCommand( "create" );
+      LinkValue formDraftLink = formOnCloseClient.query( "formdraft", LinkValue.class );
+
+      // get the form submission value;
+      final CommandQueryClient formDraftClient = model.getClient().getClient( formDraftLink );
+
+      final FormDraftModel formDraftModel = module.objectBuilderFactory().newObjectBuilder(FormDraftModel.class).use(formDraftClient).newInstance();
+
+      FormDraftDTO formDraftDTO = (FormDraftDTO) ((FormDraftModel) formDraftModel).getFormDraftDTO().buildWith().prototype();
+
+      final WizardPage[] wizardPages = new WizardPage[ formDraftDTO.pages().get().size() ];
+      for (int i = 0; i < formDraftDTO.pages().get().size(); i++)
+      {
+         PageSubmissionDTO page = formDraftDTO.pages().get().get( i );
+         if ( page.fields().get() != null && page.fields().get().size() >0 )
+         {
+            wizardPages[i] = module.objectBuilderFactory().newObjectBuilder(FormSubmissionWizardPageView.class).
+                  use( formDraftModel, page ).newInstance();
+         }
+      }
+
+     Map initialProperties = new HashMap( );
+
+     Wizard wizard = WizardPage.createWizard( formDraftDTO.description().get(), wizardPages, new WizardPage.WizardResultProducer()
+      {
+         public Object finish( Map map ) throws WizardException
+         {
+            // Force focus move before submit
+            Component focusOwner = WindowUtils.findWindow( wizardPages[ wizardPages.length - 1 ]  ).getFocusOwner();
+            if (focusOwner != null)
+            {
+               focusOwner.transferFocus();
+
+               formDraftModel.submit();
+               map.put( "success", true );
+            }
+            return map;
+         }
+
+         public boolean cancel( Map map )
+         {
+            formDraftModel.delete();
+          return true;
+         }
+      } );
+      Point onScreen = main.getMainFrame().getLocationOnScreen();
+      Map result = (Map)WizardDisplayer.showWizard( wizard, new Rectangle( onScreen, new Dimension( 800, 600 ) ), null, initialProperties );
+
+      return (result == null ||result.get( "success" ) == null)
+            ? false : (Boolean)result.get( "success" );
    }
 
    private class PrintCaseTask extends Task<File, Void>
