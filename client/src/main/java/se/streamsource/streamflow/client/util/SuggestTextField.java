@@ -38,7 +38,7 @@ import javax.swing.event.PopupMenuListener;
 
 import se.streamsource.streamflow.client.util.StateBinder.Binding;
 
-public abstract class SuggestTextField<T> extends JPanel
+public class SuggestTextField<T> extends JPanel
 {
    private static final long serialVersionUID = -2427927984739983590L;
 
@@ -243,7 +243,9 @@ public abstract class SuggestTextField<T> extends JPanel
       textField.setText( model.displayValue( selectedItem ));
    }
 
-   public abstract void handleSaveAction(String text);
+   public void handleSaveAction(String text){
+      
+   };
 
    private void selectNextValue()
    {

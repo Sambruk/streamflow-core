@@ -28,7 +28,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultEditorKit.PasteAction;
 import javax.swing.text.JTextComponent;
@@ -38,14 +37,15 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 
-import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.KnownDatatypeDefinitionUrls;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.RegexPatternFormatter;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.SuggestTextField;
 import se.streamsource.streamflow.client.util.TextTransferHandler;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -77,7 +77,7 @@ public class TextFieldPanel extends AbstractFieldPanel
       {
          FormStreetAddressSuggestModel suggestModel = new FormStreetAddressSuggestModel();
          suggestModel.setFormDraftModel( model.getFormDraftModel() );
-         FormStreetAddressSuggestTextField suggestTextField = new FormStreetAddressSuggestTextField( suggestModel );
+         SuggestTextField<StreetSearchDTO> suggestTextField = new SuggestTextField<StreetSearchDTO>( suggestModel );
          textField = suggestTextField.getTextField();
          add( suggestTextField );
       } else {
