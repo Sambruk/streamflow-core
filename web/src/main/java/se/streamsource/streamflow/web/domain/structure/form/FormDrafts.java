@@ -17,8 +17,6 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import java.util.ArrayList;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -32,7 +30,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
@@ -46,7 +43,10 @@ import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+
+import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -112,8 +112,9 @@ public interface FormDrafts
          if (caseType != null)
          {
             SelectedForms.Data forms = (SelectedForms.Data) caseType;
+            FormOnClose.Data formOnClose = (FormOnClose.Data) caseType;
 
-            if (forms.selectedForms().contains( form ))
+            if (forms.selectedForms().contains( form ) || form.equals( formOnClose.formOnClose().get() ))
             {
                SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
 

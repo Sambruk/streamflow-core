@@ -111,6 +111,25 @@ public abstract class UpdateCaseCountCacheConcern
       next.resolve(resolution);
    }
 
+   public void formonclose()
+   {
+      RoleMap roleMap = RoleMap.current();
+      CaseEntity caze = roleMap.get( CaseEntity.class );
+
+      if (caze.isAssigned())
+      {
+         // Update assignments for user
+         Assignee assignee = roleMap.get( Assignee.class );
+         caching.addToCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
+      } else
+      {
+         // Update inbox cache
+         caching.addToCache( caze.owner().get().toString(), -1 );
+      }
+
+      next.formonclose();
+   }
+
    public void sendto( EntityValue entity )
    {
       RoleMap roleMap = RoleMap.current();

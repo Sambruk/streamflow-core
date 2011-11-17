@@ -17,20 +17,12 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addDialogs;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addMV;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addTasks;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addViews;
-
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
-
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -49,6 +41,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsView;
@@ -173,6 +166,9 @@ import se.streamsource.streamflow.client.util.dialog.InputDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
+
+import static org.qi4j.api.common.Visibility.*;
+import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * JAVADOC
@@ -359,6 +355,7 @@ public class UIAssembler
             CaseAccessDefaultsView.class,
             CaseDefaultDaysToCompleteView.class,
             CaseArchivalSettingView.class,
+            FormOnCloseView.class,
             UsersAdministrationView.class,
             ProxyUsersView.class,
             AccessPointsView.class,

@@ -21,6 +21,7 @@ import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
@@ -45,5 +46,6 @@ public class CaseTypeModel
       relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
       relationModelMapping("defaultdaystocomplete", CaseDefaultDaysToCompleteModel.class);
       relationModelMapping("archival", CaseArchivalSettingModel.class);
+      relationModelMapping( "formonclose", FormOnCloseModel.class );
    }
 }
