@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.assembler;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
@@ -49,8 +48,8 @@ import se.streamsource.streamflow.web.rest.service.conversation.NotificationServ
 import se.streamsource.streamflow.web.rest.service.filter.FilterConfiguration;
 import se.streamsource.streamflow.web.rest.service.filter.FilterService;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -123,8 +122,6 @@ public class WebAssembler
             .identifiedBy("conversationresponse")
             .instantiateOnStartup()
             .visibleIn(application);
-
-      module.forMixin(Enabled.class).declareDefaults().enabled().set(true);
 
    }
 }

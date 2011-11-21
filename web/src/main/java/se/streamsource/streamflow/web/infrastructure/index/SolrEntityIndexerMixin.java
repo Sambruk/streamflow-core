@@ -75,6 +75,8 @@ public class SolrEntityIndexerMixin
    {
       server = solr.getSolrServer( "sf-core" );
       SolrCore solrCore = solr.getSolrCore( "sf-core" );
+      if( solrCore == null)
+         return;
       try
       {
          indexedFields = solrCore.getSchema().getFields();

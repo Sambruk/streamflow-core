@@ -96,7 +96,8 @@ public interface StreetAddressLookupService
                         > config.configuration().loadFrequence().get() ) )
             {
                reindex();
-               core.close();
+               if( core != null )
+                  core.close();
 
                if( config.configuration().forceReload().get())
                {
