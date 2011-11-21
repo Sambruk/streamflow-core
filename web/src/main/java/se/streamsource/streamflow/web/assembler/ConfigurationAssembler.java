@@ -85,6 +85,11 @@ public class ConfigurationAssembler
       module.forMixin( ConversationResponseConfiguration.class ).declareDefaults().enabled().set( true );
       module.forMixin( RemoveAttachmentsConfiguration.class ).declareDefaults().enabled().set( true );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().loadFrequence().set( 604800000L );
+      module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().enabled().set( false );
+      module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().minkeywordlength().set( 3 );
+      module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().limit().set( 10 );
+      module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().url().set( "http://localhost:8086/streets/street" );
+
    }
 
    private void entityStoreConfiguration( ModuleAssembly module ) throws AssemblyException
