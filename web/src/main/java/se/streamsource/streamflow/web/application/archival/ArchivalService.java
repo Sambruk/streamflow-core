@@ -43,20 +43,13 @@ import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
+import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
-import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,7 +57,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +79,9 @@ public interface ArchivalService
    {
       @Service
       FileConfiguration fileConfiguration;
+
+      @Service
+      PdfGeneratorService pfdGenerator;
 
       @This
       Configuration<ArchivalConfiguration> config;
@@ -196,23 +191,6 @@ public interface ArchivalService
 
       private File exportPdf(CaseEntity caseEntity) throws Throwable
       {
-         Ownable.Data project = (Ownable.Data) caseEntity.owner().get();
-         Owner ou = project.owner().get();
-
-         Organization org = ((OwningOrganization) ou).organization().get();
-
-         AttachedFile.Data template = (AttachedFile.Data) ((CasePdfTemplate.Data) org).casePdfTemplate().get();
-
-         if (template == null)
-         {
-            template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) org).defaultPdfTemplate().get();
-         }
-
-         String uri = null;
-         if (template != null)
-         {
-            uri = template.uri().get();
-         }
 
          ValueBuilder<CaseOutputConfigDTO> builder = module.valueBuilderFactory().newValueBuilder(CaseOutputConfigDTO.class);
          builder.prototype().history().set(true);
@@ -222,11 +200,7 @@ public interface ArchivalService
          builder.prototype().submittedForms().set(true);
          CaseOutputConfigDTO configOutput = builder.newInstance();
 
-         CasePdfGenerator exporter = module.objectBuilderFactory().newObjectBuilder( CasePdfGenerator.class ).use( configOutput, uri, Locale.ENGLISH ).newInstance();
-
-         caseEntity.outputCase(exporter);
-
-         final PDDocument pdf = exporter.getPdf();
+         final PDDocument pdf = pfdGenerator.generateCasePdf( caseEntity, configOutput, null );
 
          File file = new File(archiveDir, caseEntity.caseId().get()+".pdf");
          OutputStream out = null;

@@ -55,7 +55,7 @@ import se.streamsource.streamflow.web.application.migration.StartupMigrationConf
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
-import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
+import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
@@ -71,9 +71,8 @@ import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUp
 
 import java.util.Properties;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -136,7 +135,8 @@ public class AppAssembler
    private void pdf( ModuleAssembly module ) throws AssemblyException
    {
       module.objects( CasePdfGenerator.class ).visibleIn( application );
-      module.services(SubmittedFormPdfGenerator.class).visibleIn(application);
+      module.services( PdfGeneratorService.class ).identifiedBy( "generatepdf" )
+            .visibleIn( application ).instantiateOnStartup();
    }
 
    private void contactLookup( ModuleAssembly module ) throws AssemblyException

@@ -14,36 +14,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.application.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,28 +63,82 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 
-@Mixins(SubmittedFormPdfGenerator.Mixin.class)
-public interface SubmittedFormPdfGenerator extends ServiceComposite
+/**
+ * Service for Pdf generation from both Case and SubmittedForms
+ */
+@Mixins(PdfGeneratorService.Mixin.class)
+public interface PdfGeneratorService
+   extends Configuration, ServiceComposite, Activatable
 {
-   PDDocument generatepdf( SubmittedFormValue value, CaseId.Data id, @Optional String templateFileName, Locale locale ) throws IOException, URISyntaxException;
+
+
+   PDDocument generateCasePdf( CaseEntity caseEntity, CaseOutputConfigDTO configOutput, @Optional Locale locale )
+         throws Throwable;
+
+   PDDocument generateSubmittedFormPdf( SubmittedFormValue value, CaseId.Data id, String templateUri, Locale locale )
+         throws Throwable;
 
    abstract class Mixin
-         implements SubmittedFormPdfGenerator
+      implements PdfGeneratorService
    {
-
       @Structure
       Module module;
 
       @Service
       AttachmentStore store;
 
-      public PDDocument generatepdf( SubmittedFormValue value, CaseId.Data id, String templateUri, Locale locale ) throws IOException, URISyntaxException
+      @This
+      Configuration<PdfGeneratorConfiguration> config;
+
+      public PDDocument generateCasePdf( CaseEntity caseEntity, CaseOutputConfigDTO configOutput, Locale locale )
+            throws Throwable
+      {
+         Ownable.Data project = (Ownable.Data) caseEntity.owner().get();
+         Owner ou = project.owner().get();
+
+         Organization org = ((OwningOrganization) ou).organization().get();
+
+         AttachedFile.Data template = (AttachedFile.Data) ((CasePdfTemplate.Data) org).casePdfTemplate().get();
+
+         if (template == null)
+         {
+            template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) org).defaultPdfTemplate().get();
+         }
+
+         String uri = null;
+         if (template != null)
+         {
+            uri = template.uri().get();
+         }
+
+         PdfGeneratorConfiguration pdfConfig = config.configuration();
+
+         PdfDocument document = new PdfDocument( PDPage.PAGE_SIZE_A4,
+               pdfConfig.headerMargin().get(), pdfConfig.footerMargin().get(),
+               pdfConfig.leftMargin().get(), pdfConfig.rightMargin().get() );
+
+         CasePdfGenerator exporter = module.objectBuilderFactory()
+                .newObjectBuilder( CasePdfGenerator.class )
+                .use( configOutput, uri, locale != null ? locale : new Locale( config.configuration().language().get() ), document )
+                .newInstance();
+
+         caseEntity.outputCase(exporter);
+
+         return exporter.getPdf();
+      }
+
+      public PDDocument generateSubmittedFormPdf( SubmittedFormValue value, CaseId.Data id, String templateUri, Locale locale ) throws Throwable
       {
 
          ResourceBundle bundle = ResourceBundle.getBundle(
-               SubmittedFormPdfGenerator.class.getName(), locale );
-         
-         PdfDocument document = new PdfDocument();
+               CasePdfGenerator.class.getName(), locale );
+
+         PdfGeneratorConfiguration pdfConfig = config.configuration();
+
+         PdfDocument document = new PdfDocument( PDPage.PAGE_SIZE_A4,
+               pdfConfig.headerMargin().get(), pdfConfig.footerMargin().get(),
+               pdfConfig.leftMargin().get(), pdfConfig.rightMargin().get() );
+
          document.init();
 
          PdfFont h1Font = new PdfFont( PDType1Font.HELVETICA_BOLD, 16 );
@@ -148,7 +212,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
             String attachmentId = new URI( templateUri ).getSchemeSpecificPart();
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            store.attachment(attachmentId).transferTo(Outputs.byteBuffer(baos));
+            store.attachment(attachmentId).transferTo( Outputs.byteBuffer( baos ));
 
             Underlay underlay = new Underlay();
             submittedFormPdf = underlay.underlay( submittedFormPdf, new ByteArrayInputStream(baos.toByteArray()) );
@@ -156,6 +220,14 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          return submittedFormPdf;
       }
 
+      public void activate() throws Exception
+      {
+         config.configuration();
+      }
 
+      public void passivate() throws Exception
+      {
+         
+      }
    }
 }

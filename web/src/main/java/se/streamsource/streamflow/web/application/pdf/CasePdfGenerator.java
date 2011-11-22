@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.web.application.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
@@ -69,7 +68,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -89,7 +88,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import static se.streamsource.streamflow.util.Strings.empty;
+import static se.streamsource.streamflow.util.Strings.*;
 
 /**
  * A specialisation of CaseOutput that is responsible for exporting a case in
@@ -119,13 +118,15 @@ public class CasePdfGenerator implements CaseOutput
    private String caseId = "";
    private String printedOn = "";
 
-   public CasePdfGenerator(@Uses CaseOutputConfigDTO config, @Optional @Uses String templateUri, @Uses Locale locale)
+   private Color headingColor = new Color(0x4b,0x89,0xd0);
+
+   public CasePdfGenerator(@Uses CaseOutputConfigDTO config, @Optional @Uses String templateUri, @Uses Locale locale, @Uses PdfDocument document)
    {
       this.config = config;
       this.locale = locale;
       this.templateUri = templateUri;
       bundle = ResourceBundle.getBundle( CasePdfGenerator.class.getName(), locale );
-      document = new PdfDocument( PDPage.PAGE_SIZE_A4, 50 );
+      this.document = document;
       document.init();
    }
 
@@ -136,7 +137,7 @@ public class CasePdfGenerator implements CaseOutput
       caseId = ((CaseId.Data) caze).caseId().get();
       printedOn = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( new Date() );
 
-      document.print( "", valueFont ).changeColor( Color.BLUE )
+      document.print( "", valueFont ).changeColor( headingColor )
             .println( bundle.getString( "caseSummary" ) + " - " + caseId, h1Font ).line().changeColor( Color.BLACK )
             .print( "", valueFont ).print( "", valueFont );
 
@@ -212,7 +213,7 @@ public class CasePdfGenerator implements CaseOutput
       String note = caze.getNote();
       if (!empty(note))
       {
-         document.changeColor( Color.BLUE );
+         document.changeColor( headingColor );
          document.println( bundle.getString( "note" ), valueFontBold );
          document.changeColor( Color.BLACK );
          document.print( note, valueFont );
@@ -260,7 +261,7 @@ public class CasePdfGenerator implements CaseOutput
       {
          public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends Message, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
-            document.changeColor( Color.BLUE ).println( bundle.getString( "history" ), valueFontBold )
+            document.changeColor( headingColor ).println( bundle.getString( "history" ), valueFontBold )
                   .changeColor(Color.BLACK);
 
             sender.sendTo(new Receiver<Message, IOException>()
@@ -335,7 +336,7 @@ public class CasePdfGenerator implements CaseOutput
 
                   if (!nameValuePairs.entrySet().isEmpty())
                   {
-                     document.changeColor( Color.BLUE );
+                     document.changeColor( headingColor );
                      document.println(
                            bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()),
                            valueFontBold );
@@ -367,7 +368,7 @@ public class CasePdfGenerator implements CaseOutput
                {
                   if (counter.getCount() == 1)
                   {
-                     document.changeColor( Color.BLUE ).println( bundle.getString( "conversations" ), valueFontBold )
+                     document.changeColor( headingColor ).println( bundle.getString( "conversations" ), valueFontBold )
                            .changeColor( Color.BLACK );
                   }
 
@@ -415,7 +416,7 @@ public class CasePdfGenerator implements CaseOutput
          // Form PDF section header
          if (!printedHeader)
          {
-            document.changeColor( Color.BLUE );
+            document.changeColor( headingColor );
             document.println( bundle.getString( "submittedForms" ) + ":", valueFontBold );
             document.changeColor( Color.BLACK );
             printedHeader = true;
@@ -505,7 +506,7 @@ public class CasePdfGenerator implements CaseOutput
                {
                   if (counter.getCount() == 1)
                   {
-                     document.changeColor( Color.BLUE ).print( bundle.getString( "attachments" ) + ":", valueFontBold )
+                     document.changeColor( headingColor ).print( bundle.getString( "attachments" ) + ":", valueFontBold )
                            .changeColor( Color.BLACK );
                   }
 

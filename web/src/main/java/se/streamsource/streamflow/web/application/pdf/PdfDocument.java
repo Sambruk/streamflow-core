@@ -37,20 +37,37 @@ public class PdfDocument
    private float y = -1;
    private float maxStringLength;
    private PDRectangle pageSize;
-   private float margin;
 
-   static float DEFAULT_MARGIN = 40;
+   static float DEFAULT_HEADER_MARGIN = 70;
+   static float DEFAULT_FOOTER_MARGIN = 50;
+   static float DEFAULT_LEFT_MARGIN = 50;
+   static float DEFAULT_RIGHT_MARGIN = 50;
+
+   private float headerMargin = DEFAULT_HEADER_MARGIN;
+   private float footerMargin = DEFAULT_FOOTER_MARGIN;
+   private float leftMargin = DEFAULT_LEFT_MARGIN;
+   private float rightMargin = DEFAULT_RIGHT_MARGIN;
 
    public PdfDocument()
    {
-      this( PDPage.PAGE_SIZE_A4, DEFAULT_MARGIN );
+      this( PDPage.PAGE_SIZE_A4, DEFAULT_HEADER_MARGIN, DEFAULT_FOOTER_MARGIN, DEFAULT_LEFT_MARGIN, DEFAULT_RIGHT_MARGIN );
    }
 
-   public PdfDocument( PDRectangle pageSize, float margin )
+   public PdfDocument( PDRectangle pageSize, float headerMargin, float footerMargin )
    {
       this.pageSize = pageSize;
-      this.margin = margin;
+      this.headerMargin = headerMargin;
+      this.footerMargin = footerMargin;
 
+   }
+
+   public PdfDocument( PDRectangle pageSize, float headerMargin, float footerMargin, float leftMargin, float rightMargin )
+   {
+      this.pageSize = pageSize;
+      this.headerMargin = headerMargin;
+      this.footerMargin = footerMargin;
+      this.leftMargin = leftMargin;
+      this.rightMargin = rightMargin;
    }
 
    public void init()
@@ -63,14 +80,14 @@ public class PdfDocument
 
          pdf.addPage( page );
          page.setMediaBox( pageSize );
-         maxStringLength = page.getMediaBox().getWidth() - 2 * margin;
+         maxStringLength = page.getMediaBox().getWidth() - ( leftMargin + rightMargin );
 
 
          contentStream = new PDPageContentStream( pdf, page );
          contentStream.beginText();
 
-         y = page.getMediaBox().getHeight() - margin;
-         contentStream.moveTextPositionByAmount( margin, y );
+         y = page.getMediaBox().getHeight() - headerMargin;
+         contentStream.moveTextPositionByAmount( leftMargin, y );
 
       } catch (IOException e)
       {
@@ -131,7 +148,7 @@ public class PdfDocument
    {
 //      contentStream.endText();
       PDJpeg pdfImage = new PDJpeg(pdf, image);
-      contentStream.drawXObject(pdfImage, margin, y, 100, 100);
+      contentStream.drawXObject(pdfImage, leftMargin, y, 100, 100);
 //      contentStream.beginText();
 
       contentStream.moveTextPositionByAmount(0, -110);
@@ -143,7 +160,7 @@ public class PdfDocument
    private void pageBreakIfNeeded( PdfFont font )
          throws IOException
    {
-      if (y - font.height < margin)
+      if (y - font.height < footerMargin )
       {
          PDPage newPage = new PDPage();
          newPage.setMediaBox( pageSize );
@@ -154,9 +171,9 @@ public class PdfDocument
             contentStream.close();
          }
          contentStream = new PDPageContentStream( pdf, newPage );
-         y = newPage.getMediaBox().getHeight() - margin - font.height;
+         y = newPage.getMediaBox().getHeight() - headerMargin - font.height;
          contentStream.beginText();
-         contentStream.moveTextPositionByAmount( margin, y );
+         contentStream.moveTextPositionByAmount( leftMargin, y );
       }
    }
 
@@ -165,7 +182,7 @@ public class PdfDocument
    {
       pageBreakIfNeeded( labelFont );
 
-      if( y == pageSize.getHeight() - margin )
+      if( y == pageSize.getHeight() - footerMargin )
          y -= labelFont.height;
       
       contentStream.moveTextPositionByAmount( 0, 0 );
@@ -240,7 +257,7 @@ public class PdfDocument
 
             PDPage page = (PDPage) o;
             PDRectangle pageSize = page.findMediaBox();
-            float positionY = pageSize.getHeight() - margin + font.height;
+            float positionY = pageSize.getHeight() - headerMargin + font.height;
             PDPageContentStream stream = new PDPageContentStream( pdf, page, true, true );
             stream.beginText();
 
@@ -250,7 +267,7 @@ public class PdfDocument
             for( String header : headers )
             {
                stringWidth = font.font.getStringWidth( header );
-               positionX = (pageSize.getWidth() - margin - (stringWidth*font.size)/1000f);
+               positionX = (pageSize.getWidth() - rightMargin - (stringWidth*font.size)/1000f);
 
                stream.moveTextPositionByAmount( positionX, 0 );
                stream.drawString( header );
@@ -259,7 +276,7 @@ public class PdfDocument
             }
 
             stringWidth = font.font.getStringWidth( numbering );
-            positionX = (pageSize.getWidth() - margin - (stringWidth*font.size)/1000f);
+            positionX = (pageSize.getWidth() - rightMargin - (stringWidth*font.size)/1000f);
             stream.moveTo( pageSize.getLowerLeftX(), pageSize.getLowerLeftY() );
             stream.moveTextPositionByAmount( positionX, 30 - positionY );
             stream.drawString( numbering );
@@ -279,7 +296,7 @@ public class PdfDocument
    {
       contentStream.moveTextPositionByAmount( 0, -4 );
       y -= 4;
-      contentStream.drawLine( margin, y, endX + margin, y );
+      contentStream.drawLine( leftMargin, y, endX + leftMargin, y );
       contentStream.moveTextPositionByAmount( 0, -4 );
       y -= 4;
       return this;
