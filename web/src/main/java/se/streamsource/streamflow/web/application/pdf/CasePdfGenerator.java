@@ -139,22 +139,22 @@ public class CasePdfGenerator implements CaseOutput
 
       document.print( "", valueFont ).changeColor( headingColor )
             .println( bundle.getString( "caseSummary" ) + " - " + caseId, h1Font ).line().changeColor( Color.BLACK )
-            .print( "", valueFont ).print( "", valueFont );
+            .print( "", valueFont );
 
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),
             bundle.getString( "createdOn" ), bundle.getString( "createdBy" ), bundle.getString( "owner" ),
             bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
             bundle.getString( "resolution" ), bundle.getString( "dueOn" ) );
 
-      document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont,
+      document.printLabelAndTextWithTabStop( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont,
             tabStop );
-      document.printLabelAndText( bundle.getString( "createdOn" ) + ": ", valueFontBold,
+      document.printLabelAndTextWithTabStop( bundle.getString( "createdOn" ) + ": ", valueFontBold,
             DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ),
             valueFont, tabStop );
 
       if (((DueOn.Data) caze).dueOn().get() != null)
       {
-         document.printLabelAndText( bundle.getString( "dueOn" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "dueOn" ) + ": ", valueFontBold,
                new SimpleDateFormat( bundle.getString( "date_format" ) ).format( ((DueOn.Data) caze).dueOn().get() ),
                valueFont, tabStop );
       }
@@ -162,21 +162,21 @@ public class CasePdfGenerator implements CaseOutput
       Creator creator = caze.createdBy().get();
       if (creator != null)
       {
-         document.printLabelAndText( bundle.getString( "createdBy" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "createdBy" ) + ": ", valueFontBold,
                ((Describable) creator).getDescription(), valueFont, tabStop );
       }
 
       Owner owner = ((Ownable.Data) caze).owner().get();
       if (owner != null)
       {
-         document.printLabelAndText( bundle.getString( "owner" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "owner" ) + ": ", valueFontBold,
                ((Describable) owner).getDescription(), valueFont, tabStop );
       }
 
       Assignee assignee = ((Assignable.Data) caze).assignedTo().get();
       if (assignee != null)
       {
-         document.printLabelAndText( bundle.getString( "assignedTo" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "assignedTo" ) + ": ", valueFontBold,
                ((Describable) assignee).getDescription(), valueFont, tabStop );
       }
 
@@ -184,7 +184,7 @@ public class CasePdfGenerator implements CaseOutput
 
       if (caseType != null)
       {
-         document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "caseType" ) + ": ", valueFontBold,
                ((Describable) caseType).getDescription(), valueFont, tabStop );
       }
 
@@ -192,7 +192,7 @@ public class CasePdfGenerator implements CaseOutput
 
       if (resolution != null)
       {
-         document.printLabelAndText( bundle.getString( "resolution" ) + ":", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "resolution" ) + ":", valueFontBold,
                ((Describable) resolution).getDescription(), valueFont, tabStop );
       }
 
@@ -207,17 +207,13 @@ public class CasePdfGenerator implements CaseOutput
             allLabels += label.getDescription() + (count == labels.size() ? "" : ", ");
          }
 
-         document.printLabelAndText( bundle.getString( "labels" ) + ": ", valueFontBold, allLabels, valueFont, tabStop );
+         document.printLabelAndTextWithTabStop( bundle.getString( "labels" ) + ": ", valueFontBold, allLabels, valueFont, tabStop );
       }
 
       String note = caze.getNote();
       if (!empty(note))
       {
-         document.changeColor( headingColor );
-         document.println( bundle.getString( "note" ), valueFontBold );
-         document.changeColor( Color.BLACK );
-         document.print( note, valueFont );
-         document.print( "", valueFont );
+         document.moveUpOneRow( valueFontBold ).print( bundle.getString( "note" ) + ":", valueFontBold ).print( note, valueFont ).print( "", valueFont );
       }
 
       // traverse structure
@@ -337,16 +333,15 @@ public class CasePdfGenerator implements CaseOutput
                   if (!nameValuePairs.entrySet().isEmpty())
                   {
                      document.changeColor( headingColor );
-                     document.println(
+                     document.print(
                            bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()),
                            valueFontBold );
-                     document.print( "", valueFont );
-                     document.changeColor( Color.BLACK );
+                     document.changeColor( Color.BLACK ).print( "", valueFont );
                   }
 
                   for (Map.Entry<String, String> stringEntry : nameValuePairs.entrySet())
                   {
-                     document.printLabelAndText( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(),
+                     document.printLabelAndTextWithTabStop( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(),
                            valueFont, tabStop );
                   }
                }
@@ -368,15 +363,14 @@ public class CasePdfGenerator implements CaseOutput
                {
                   if (counter.getCount() == 1)
                   {
-                     document.changeColor( headingColor ).println( bundle.getString( "conversations" ), valueFontBold )
+                     document.changeColor( headingColor ).print( bundle.getString( "conversations" ), valueFontBold )
                            .changeColor( Color.BLACK );
                   }
 
                   List<Message> messages = ((Messages.Data) conversation).messages().toList();
                   if (!messages.isEmpty())
                   {
-                     document.println( conversation.getDescription(), valueFontBold ).underLine(
-                           conversation.getDescription(), valueFontBold );
+                     document.print( conversation.getDescription(), valueFontBold );
 
                      for (Message message : messages)
                      {
@@ -413,49 +407,39 @@ public class CasePdfGenerator implements CaseOutput
          if (printedForms.contains( formValue.form().get() ))
             continue; // Skip this form - already printed
 
+         Describable form = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.form().get().identity() );
+
          // Form PDF section header
          if (!printedHeader)
          {
             document.changeColor( headingColor );
-            document.println( bundle.getString( "submittedForms" ) + ":", valueFontBold );
+            document.print( bundle.getString( "submittedForms" ) + ":", valueFontBold );
             document.changeColor( Color.BLACK );
             printedHeader = true;
          }
 
-         Describable form = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.form().get().identity() );
+         document.print( form.getDescription() + ":", valueFontBold ).print( "", valueFontBold ).print( "", valueFontBold );
 
-         document.println( form.getDescription() + ":", valueFontBold );
-         document.underLine( form.getDescription(), valueFontBold );
-         document.println( "", valueFont );
+
+         float tabStop = document.calculateTabStop( valueFontBold,
+                                 new String[]{bundle.getString( "lastSubmitted" ), bundle.getString( "lastSubmittedBy" )} );
 
          // Submitted by whom and when
-         float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "lastSubmitted" ), bundle.getString( "lastSubmittedBy" ) );
-         document.printLabelAndText( bundle.getString( "lastSubmitted" ) + ":", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "lastSubmitted" ) + ":", valueFontBold,
                DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( formValue.submissionDate().get() ),
                valueFont, tabStop );
-         document.printLabelAndText( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold,
-               module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont, tabStop );
+         document.printLabelAndTextWithTabStop( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold,
+               module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont,
+               tabStop )  ;
 
-         float fieldNameTabStop = 0;
+
          for (SubmittedPageValue submittedPageValue : formValue.pages().get())
          {
             if (!submittedPageValue.fields().get().isEmpty())
             {
                Describable page = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, submittedPageValue.page().get().identity() );
-               document.println( page.getDescription() + ":", valueFontBoldItalic );
-               document.println( "", valueFont );
-
-               // Calculate fields tabstop
-               for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
-               {
-                  Describable fieldName = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() );
-
-                  float tempTabStop = document.calculateTabStop( valueFontBold, fieldName.getDescription() );
-                  if (tempTabStop > fieldNameTabStop)
-                  {
-                     fieldNameTabStop = tempTabStop;
-                  }
-               }
+               document.print( page.getDescription() + ":", valueFontBoldItalic );
+               document.print( "", valueFont );
 
                // Fetch and occasionally format field name and value
                for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
@@ -484,9 +468,10 @@ public class CasePdfGenerator implements CaseOutput
                      {
                         value = submittedFieldValue.value().get();
                      }
-                     document.printLabelAndText( label + ":", valueFontBold, value, valueFont, fieldNameTabStop );
+                     document.printLabelAndIndentedText( label + ":", valueFontBold, value, valueFont, 20.0f );
                   }
                }
+               document.print( "", valueFont );
             }
          }
          printedForms.add( formValue.form().get() );

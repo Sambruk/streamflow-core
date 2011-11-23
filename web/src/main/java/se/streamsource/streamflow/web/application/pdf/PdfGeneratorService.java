@@ -149,9 +149,9 @@ public interface PdfGeneratorService
 
          Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
-         document.println( bundle.getString( "caseid") + ": " + id.caseId().get(), h1Font);
+         document.print( bundle.getString( "caseid") + ": " + id.caseId().get(), h1Font);
          document.print( form.getDescription(), h2Font );
-         document.println( bundle.getString( "submission_date") + ": " + DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( value.submissionDate().get() ), descFont );
+         document.print( bundle.getString( "submission_date") + ": " + DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( value.submissionDate().get() ), descFont );
 
          document.line();
 
@@ -159,7 +159,7 @@ public interface PdfGeneratorService
          for (SubmittedPageValue submittedPageValue : value.pages().get())
          {
             Page page = module.unitOfWorkFactory().currentUnitOfWork().get( Page.class, submittedPageValue.page().get().identity() );
-            document.println( page.getDescription(), pageFont );
+            document.print( page.getDescription(), pageFont );
 
             // TODO Page breaks
             for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
@@ -173,10 +173,10 @@ public interface PdfGeneratorService
                   {
 
                      Date date = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).parse(submittedFieldValue.value().get());
-                     document.println(DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date), valueFont);
+                     document.print(DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date), valueFont);
                   } catch (ParseException e)
                   {
-                     document.println("N/A", valueFont);
+                     document.print("N/A", valueFont);
                   }
 
                } else if (field.fieldValue().get() instanceof AttachmentFieldValue)
@@ -184,7 +184,7 @@ public interface PdfGeneratorService
                   try
                   {
                      AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, submittedFieldValue.value().get());
-                     document.println(attachment.name().get(), valueFont);
+                     document.print(attachment.name().get(), valueFont);
                   } catch (ConstructionException e)
                   {
                      //ignore
@@ -192,9 +192,9 @@ public interface PdfGeneratorService
 
                } else
                {
-                  document.println( submittedFieldValue.value().get(), valueFont );
+                  document.print( submittedFieldValue.value().get(), valueFont );
                }
-               document.println("", valueFont);
+               document.print("", valueFont);
             }
 
          }

@@ -124,7 +124,7 @@ public class PdfDocument
       return this;
    }
 
-   public PdfDocument print( String text, PdfFont font ) throws IOException
+   public PdfDocument print( String text, PdfFont font) throws IOException
    {
       List<String> lines = createLinesFromText( text, font );
       for (String line : lines)
@@ -143,6 +143,12 @@ public class PdfDocument
       }
       return this;
    }
+
+   public PdfDocument moveUpOneRow(PdfFont font) throws IOException{
+      contentStream.moveTextPositionByAmount( 0, font.height );
+      return this;
+   }
+
 
    public PdfDocument insertImage(BufferedImage image) throws IOException
    {
@@ -177,14 +183,30 @@ public class PdfDocument
       }
    }
 
-   public PdfDocument printLabelAndText( String label, PdfFont labelFont, String text, PdfFont font, float tabStop )
+   public PdfDocument printLabelAndIndentedText( String label, PdfFont labelFont, String text, PdfFont font , float indentation)
          throws IOException
    {
       pageBreakIfNeeded( labelFont );
 
-      if( y == pageSize.getHeight() - footerMargin )
-         y -= labelFont.height;
-      
+      contentStream.moveTextPositionByAmount( 0, 0 );
+      contentStream.setFont( labelFont.font, labelFont.size );
+      float oldMaxStringLenght = maxStringLength;
+      maxStringLength = maxStringLength - 20;
+      print( label, labelFont );
+      contentStream.moveTextPositionByAmount( indentation, 0 );
+      print( text, font );
+      contentStream.moveTextPositionByAmount( -indentation, -font.height );
+      maxStringLength = oldMaxStringLenght;
+      y -=font.height;
+
+      return this;
+   }
+
+   public PdfDocument printLabelAndTextWithTabStop( String label, PdfFont labelFont, String text, PdfFont font, float tabStop )
+         throws IOException
+   {
+      pageBreakIfNeeded( labelFont );
+
       contentStream.moveTextPositionByAmount( 0, 0 );
       contentStream.setFont( labelFont.font, labelFont.size );
       contentStream.drawString( label );
@@ -198,7 +220,7 @@ public class PdfDocument
       return this;
    }
 
-   private List<String> createLinesFromText( String text, PdfFont font ) throws IOException
+   private List<String> createLinesFromText( String text, PdfFont font) throws IOException
    {
       ArrayList<String> resultLines = new ArrayList<String>();
       String[] lines = text.trim().split( "\n" );
@@ -224,7 +246,7 @@ public class PdfDocument
                }
             }
             while (wordIndex < words.length &&
-                  lengthIfUsingNextWord < maxStringLength);
+                  lengthIfUsingNextWord <  maxStringLength );
             resultLines.add( nextLineToDraw.toString() );
          }
          lineIndex++;
@@ -351,6 +373,4 @@ public class PdfDocument
          }
       }
    }
-
-
 }
