@@ -119,7 +119,8 @@ public class TextFieldPanel extends AbstractFieldPanel
             textField.setText( "" );
             PasteAction pasteAction = new DefaultEditorKit.PasteAction();
             pasteAction.actionPerformed( event );
-            textField.setText( textField.getText().trim() );
+            String formattedValue = textField.getText().trim().replace( "," , "." ).replace( ";" , "," );
+            textField.setText( formattedValue );
          }
       } );
    }
@@ -133,7 +134,7 @@ public class TextFieldPanel extends AbstractFieldPanel
          String kartagoclientexe = model.kartagoclientexe( ((FieldSubmissionPluginDTO) getField()).plugin().get() );
          if (!Strings.empty( textField.getText() ))
          {
-            kartagoclientexe += " xy=" + textField.getText().replace( ";" , "," );
+            kartagoclientexe += " xy=" + textField.getText();
          }
          rt.exec( kartagoclientexe );
       } catch (IOException e)
