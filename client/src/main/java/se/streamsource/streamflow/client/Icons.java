@@ -44,6 +44,8 @@ public enum Icons
    perspective,
 
    calendar,
+   
+   message_add,
 
    // Tabs
    general,

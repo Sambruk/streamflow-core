@@ -29,6 +29,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
@@ -59,7 +60,7 @@ public interface Case
       Conversations,
       ConversationOwner,
       Labelable,
-        Removable,
+      Removable,
       Resolvable,
       SubmittedForms,
       SearchableForms,
@@ -69,6 +70,7 @@ public interface Case
       SubCases,
       SubCase,
       CaseAccess,
-      History
+      History,
+      CaseLoggable
 {
 }

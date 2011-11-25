@@ -17,8 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.value.link.Links.withRel;
+
+import java.util.Date;
+import java.util.Observable;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
@@ -26,6 +30,7 @@ import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.ResourceValue;
@@ -34,16 +39,14 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
-
-import java.util.Date;
-import java.util.Observable;
-
-import static org.qi4j.api.util.Iterables.matchesAny;
-import static se.streamsource.dci.value.link.Links.withRel;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 
 /**
  * Model for the general info about a case.
@@ -60,6 +63,8 @@ public class CaseGeneralModel
    private CaseGeneralDTO general;
 
    private ResourceValue resourceValue;
+
+   TransactionList<CaseLogEntryDTO> caselogs = new TransactionList<CaseLogEntryDTO>(new BasicEventList<CaseLogEntryDTO>( ));
 
    public CaseGeneralModel( @Uses CommandQueryClient client )
    {
@@ -164,5 +169,10 @@ public class CaseGeneralModel
    public PossibleFormsModel newPossibleFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(PossibleFormsModel.class).use( client.getClient( "../possibleforms/" ) ).newInstance();
+   }
+   
+   public EventList<CaseLogEntryDTO> caselogs()
+   {
+      return caselogs;
    }
 }

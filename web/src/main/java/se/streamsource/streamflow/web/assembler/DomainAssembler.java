@@ -29,6 +29,7 @@ import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import se.streamsource.streamflow.api.assembler.ClientAPIAssembler;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -57,6 +58,7 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
@@ -83,6 +85,7 @@ public class DomainAssembler
       organizations( layer.module("Organizations") );
       projects( layer.module("Projects") );
       roles( layer.module("Roles") );
+      caselog( layer.module("Caselog") );
       cases( layer.module("Cases") );
       caseTypes( layer.module("Casetypes") );
       users( layer.module("Users") );
@@ -120,6 +123,14 @@ public class DomainAssembler
    private void caseTypes(ModuleAssembly module) throws AssemblyException
    {
       module.entities(CaseTypeEntity.class, ResolutionEntity.class).visibleIn( Visibility.application );
+   }
+
+   private void caselog(ModuleAssembly module) throws AssemblyException
+   {
+      module.entities(
+              CaseLogEntity.class).visibleIn( application );
+
+      module.values(CaseLogEntryValue.class).visibleIn( application );
    }
 
    private void cases(ModuleAssembly module) throws AssemblyException

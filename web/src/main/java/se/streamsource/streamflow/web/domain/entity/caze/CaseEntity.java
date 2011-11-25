@@ -17,6 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
+import java.util.Calendar;
+import java.util.Map;
+
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
@@ -27,6 +30,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
@@ -49,6 +53,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
@@ -72,10 +77,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * This represents a single Case in the system
@@ -115,6 +116,7 @@ public interface CaseEntity
       SubCases.Data,
       SubCase.Data,
       History.Data,
+      CaseLoggable.Data,
 
       // Queries
       SubmittedFormsQueries,
