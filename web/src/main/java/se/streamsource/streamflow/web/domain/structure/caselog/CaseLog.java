@@ -31,17 +31,17 @@ import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue.AuthorizationType;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 
 @Mixins(CaseLog.Mixin.class)
-public interface CaseLog
+public interface CaseLog extends Removable
 {
 
    void addCustomEntry( String message, CaseLogEntryValue.AuthorizationType authorizationType );
 
-   
    interface Data
    {
       @UseDefaults

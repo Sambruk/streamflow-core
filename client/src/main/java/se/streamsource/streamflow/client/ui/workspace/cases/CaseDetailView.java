@@ -17,12 +17,26 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
+import static se.streamsource.streamflow.client.util.i18n.icon;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
@@ -32,15 +46,6 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-
-import static se.streamsource.streamflow.client.util.i18n.icon;
-import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -65,8 +70,11 @@ public class CaseDetailView
       add( caseInfo = module.objectBuilderFactory().newObjectBuilder(CaseInfoView.class).use( model ).newInstance(), BorderLayout.NORTH );
       add( caseActions = module.objectBuilderFactory().newObjectBuilder(CaseActionsView.class).use( model ).newInstance(), BorderLayout.EAST );
 
+      // CaseLogView
+      CaseLogView caseLogView = module.objectBuilderFactory().newObjectBuilder( CaseLogView.class ).use( model.newCaseLogModel() ).newInstance();
+      
       // TODO This could be changed to use model.getResourceValue().resources()
-      tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), module.objectBuilderFactory().newObjectBuilder(CaseGeneralView.class).use( model.newGeneralModel()).newInstance(), text( WorkspaceResources.general_tab ) );
+      tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), module.objectBuilderFactory().newObjectBuilder(CaseGeneralView.class).use( model.newGeneralModel(), caseLogView).newInstance(), text( WorkspaceResources.general_tab ) );
       tabs.addTab( text( WorkspaceResources.contacts_tab ), icon( Icons.projects ), module.objectBuilderFactory().newObjectBuilder(ContactsAdminView.class).use( model.newContactsModel()).newInstance(), text( WorkspaceResources.contacts_tab ) );
       tabs.addTab( text( WorkspaceResources.forms_tab ), icon( Icons.forms ), module.objectBuilderFactory().newObjectBuilder(SubmittedFormsAdminView.class).use( model.newSubmittedFormsModel()).newInstance(), text( WorkspaceResources.forms_tab ) );
       tabs.addTab( text( WorkspaceResources.conversations_tab ), icon( Icons.conversations ), module.objectBuilderFactory().newObjectBuilder(ConversationsView.class).use( model.newConversationsModel()).newInstance(), text( WorkspaceResources.conversations_tab ) );

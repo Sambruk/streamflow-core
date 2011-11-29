@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.domain.entity.caselog;
 
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 
@@ -25,7 +26,7 @@ import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
  *
  */
 public interface CaseLogEntity
-   extends CaseLog, DomainEntity
+   extends CaseLog,CaseLog.Data,Removable.Data, DomainEntity
 {
    
 }

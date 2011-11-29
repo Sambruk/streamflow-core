@@ -17,21 +17,20 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.util.MessageTemplate;
-import se.streamsource.streamflow.util.Strings;
+
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * JAVADOC
@@ -64,39 +63,18 @@ public interface Message
 
       public String translateBody(Map<String, String> translations)
       {
-         String body = data.body().get();
-
-         if( body.startsWith("{") && body.endsWith("}") )
+         Map<String,String> variables = new HashMap<String,String>();
+         
+         // Bind standard variables
+         ConversationOwner owner = data.conversation().get().conversationOwner().get();
+         if (owner instanceof Case)
          {
-            String[] tokens = body.substring(1,body.length()-1).split( "," );
-            String key = tokens[0];
-            String translation = translations.get(key);
-            if (Strings.empty(translation))
-               return "";
-            String[] args = new String[tokens.length-1];
-            System.arraycopy(tokens, 1, args, 0, args.length);
+            variables.put("caseid", ((CaseId.Data)owner).caseId().get());
+         }
+         variables.put("subject", ((Describable.Data)data.conversation().get()).description().get());
 
-            Map<String,String> variables = new HashMap<String,String>();
-
-            // Bind standard variables
-            ConversationOwner owner = data.conversation().get().conversationOwner().get();
-            if (owner instanceof Case)
-            {
-               variables.put("caseid", ((CaseId.Data)owner).caseId().get());
-            }
-            variables.put("subject", ((Describable.Data)data.conversation().get()).description().get());
-
-            for (String arg : args)
-            {
-               String[] variable = arg.split("=", 2);
-               if (variable.length == 2)
-                  variables.put(variable[0],variable[1]);
-            }
-
-            body = MessageTemplate.text(translation, variables);
-            return body;
-         } else
-            return body;
+         return Translator.translate( data.body().get(), translations, variables );
+         
       }
    }
 }

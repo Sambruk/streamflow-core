@@ -17,17 +17,26 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
@@ -42,21 +51,37 @@ public class CaseLogContext
    @Structure
    Module module;
    
+   @SkipResourceValidityCheck
    public LinksValue index()
    {
       LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
       ValueBuilder<CaseLogEntryDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryDTO.class );
       
       CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
-
+      
+      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
+      Map<String, String> translations = new HashMap<String, String>();
+      for (String key : bundle.keySet())
+      {
+         translations.put(key, bundle.getString(key));
+      }
+      
       for (CaseLogEntryValue entry : ((CaseLog.Data)caseLog.caselog().get()).entries().get())
       {
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+         Describable user = uow.get( Describable.class, entry.createdBy().get().identity() );
          builder.prototype().creationDate().set( entry.createdOn().get() );
-//         builder.prototype().creator().set( ((Describable) entry.createdBy().get()).getDescription() );
-         builder.prototype().message().set( entry.message().get());
-         builder.prototype().href().set( EntityReference.getEntityReference( entry.entity().get() ).identity() );
-         builder.prototype().text().set( entry.message().get() );
-         builder.prototype().id().set( EntityReference.getEntityReference( entry.entity().get() ).identity() );
+         builder.prototype().creator().set( user.getDescription() );
+         builder.prototype().message().set( Translator.translate( entry.message().get(), translations));
+         String id = "";
+         if (entry.entity().get() != null)
+         {
+            id = EntityReference.getEntityReference( entry.entity().get() ).identity();
+         } 
+         builder.prototype().href().set( id );
+         builder.prototype().id().set( id );
+            
+         builder.prototype().text().set( Translator.translate( entry.message().get(), translations));
 
          links.addLink( builder.newInstance() );
       }

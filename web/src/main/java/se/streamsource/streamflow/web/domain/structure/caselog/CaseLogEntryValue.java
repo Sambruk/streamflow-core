@@ -43,6 +43,7 @@ public interface CaseLogEntryValue extends ValueComposite
    
    Property<String> message();
    
+   @Optional
    Property<EntityReference> entity();
    
    Property<EntryType> entryType();

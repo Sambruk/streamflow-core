@@ -79,6 +79,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CasesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
@@ -154,6 +155,7 @@ public class ModelAssembler
             ContactsModel.class,
             ContactModel.class,
             CaseGeneralModel.class,
+            CaseLogModel.class,
             CaseLabelsModel.class,
             CaseSubmittedFormsModel.class,
             CaseSubmittedFormModel.class,

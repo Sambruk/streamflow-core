@@ -39,14 +39,12 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
-import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
 
 /**
  * Model for the general info about a case.
@@ -63,8 +61,6 @@ public class CaseGeneralModel
    private CaseGeneralDTO general;
 
    private ResourceValue resourceValue;
-
-   TransactionList<CaseLogEntryDTO> caselogs = new TransactionList<CaseLogEntryDTO>(new BasicEventList<CaseLogEntryDTO>( ));
 
    public CaseGeneralModel( @Uses CommandQueryClient client )
    {
@@ -169,10 +165,5 @@ public class CaseGeneralModel
    public PossibleFormsModel newPossibleFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(PossibleFormsModel.class).use( client.getClient( "../possibleforms/" ) ).newInstance();
-   }
-   
-   public EventList<CaseLogEntryDTO> caselogs()
-   {
-      return caselogs;
    }
 }

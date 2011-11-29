@@ -118,6 +118,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactLookupResultDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
@@ -261,6 +262,7 @@ public class UIAssembler
             ContactsView.class,
             ContactView.class,
             CaseGeneralView.class,
+            CaseLogView.class,
             CaseLabelsView.class,
             CaseSubmittedFormsView.class,
             CaseSubmittedFormView.class,
