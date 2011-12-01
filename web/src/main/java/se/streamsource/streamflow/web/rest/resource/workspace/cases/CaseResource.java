@@ -146,4 +146,10 @@ public class CaseResource
    {
       subResource( CaseFormOnCloseResource.class );
    }
+
+   @SubResource
+   public void note()
+   {
+      subResource( NoteResource.class );
+   }
 }

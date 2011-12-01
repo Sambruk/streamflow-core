@@ -59,7 +59,7 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          try
          {
             File directory = new File( fileConfig.dataDirectory() + "/solr" );
-            if( directory.mkdir() )
+            if( directory.mkdir() || !new File( directory + "/solr.xml").exists() )
             {
 
                // multicore solr.xml

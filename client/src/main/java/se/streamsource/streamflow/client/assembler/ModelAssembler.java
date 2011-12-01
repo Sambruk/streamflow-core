@@ -89,6 +89,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedF
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormDraftModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
@@ -164,7 +165,8 @@ public class ModelAssembler
             ConversationModel.class,
             ConversationsModel.class,
             ConversationParticipantsModel.class,
-            AttachmentsModel.class
+            AttachmentsModel.class,
+            CaseNoteModel.class
       );
 
       module.values(CaseTableValue.class).visibleIn(Visibility.application);

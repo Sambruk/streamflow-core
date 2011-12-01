@@ -14,21 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package se.streamsource.streamflow.web.domain.entity.note;
 
-package se.streamsource.streamflow.web.context.structure;
-
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.Notable;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
 
 /**
- * JAVADOC
+ * Entity holding notes.
  */
-public class NotableContext
+public interface NotesTimeLineEntity
+   extends DomainEntity,
+      NotesTimeLine,
+      NotesTimeLine.Data,
+      Removable.Data
 {
-   public void addnote( StringValue noteValue )
-   {
-      Notable notable = RoleMap.role( Notable.class );
-      notable.changeNote( noteValue.string().get() );
-   }
 }

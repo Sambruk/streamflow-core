@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
@@ -54,13 +55,25 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.SwingConstants;
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -69,12 +82,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -96,7 +107,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private CaseGeneralModel model;
 
    private JTextField descriptionField;
-   private JScrollPane notePane;
    private JXDatePicker dueOnField;
    private JPanel rightForm;
    private JPanel leftForm;
@@ -106,6 +116,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private JButton caseTypeButton;
    private JButton labelButton;
    private final ApplicationContext appContext;
+   private CaseNoteView caseNotes;
 
    public CaseGeneralView( @Service ApplicationContext appContext,
                            @Uses CaseGeneralModel generalModel,
@@ -117,6 +128,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       model.addObserver( refreshComponents );
       ObjectBuilderFactory obf = module.objectBuilderFactory();
       this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( generalModel.newLabelsModel() ).newInstance();
+      this.caseNotes = obf.newObjectBuilder( CaseNoteView.class ).use( generalModel.newCaseNoteModel() ).newInstance();
 
       RefreshComponents refreshLabelComponents = new RefreshComponents();
       labels.getModel().addObserver( refreshLabelComponents );
@@ -261,21 +273,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       } ) );
 
 
-      // Layout and form for the bottom panel
       leftForm = new JPanel();
-      leftForm.setLayout( new BoxLayout( leftForm, BoxLayout.PAGE_AXIS ) );
-
-      notePane = (JScrollPane) TEXTAREA.newField();
-      notePane.setMinimumSize( new Dimension( 10, 50 ) );
-      refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
-
-      JLabel noteLabel = new JLabel(i18n.text( WorkspaceResources.note_label ));
-      noteLabel.setAlignmentX( Component.LEFT_ALIGNMENT );
-      notePane.setAlignmentX( Component.LEFT_ALIGNMENT );
-      leftForm.add( noteLabel );
-      leftForm.add(notePane);
-      actionBinder.bind( "changeNote", notePane );
-      valueBinder.bind( "note", notePane );
+      leftForm.setLayout( new BorderLayout() );
+      leftForm.add( caseNotes, BorderLayout.CENTER );
       
       JPanel formsContainer = new JPanel();
       formsContainer.setLayout( new GridLayout(1, 2) );
@@ -288,26 +288,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       setFocusTraversalPolicy( new LayoutFocusTraversalPolicy() );
       setFocusCycleRoot( true );
       setFocusable( true );
-
-      addFocusListener( new FocusListener()
-      {
-         public void focusGained( FocusEvent e )
-         {
-            Component defaultComp = getFocusTraversalPolicy()
-                  .getDefaultComponent( notePane );
-            if (defaultComp != null)
-            {
-               defaultComp.requestFocusInWindow();
-            }
-         }
-
-         public void focusLost( FocusEvent e )
-         {
-         }
-      } );
-
-      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
-      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
       new RefreshWhenShowing( this, this );
    }
@@ -348,20 +328,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                throws Exception
          {
             model.changeDescription( descriptionField.getText() );
-         }
-      };
-   }
-
-   @Action(block = Task.BlockingScope.COMPONENT)
-   public Task changeNote( final ActionEvent event )
-   {
-      return new CommandTask()
-      {
-         @Override
-         public void command()
-               throws Exception
-         {
-            model.changeNote( ((JTextArea) event.getSource()).getText() );
          }
       };
    }

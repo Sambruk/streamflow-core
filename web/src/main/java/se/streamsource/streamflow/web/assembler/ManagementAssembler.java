@@ -18,11 +18,17 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -34,8 +40,13 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
+import se.streamsource.streamflow.web.domain.Notable;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
+import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.management.CompositeMBean;
 import se.streamsource.streamflow.web.management.ErrorLogService;
@@ -176,6 +187,41 @@ public class ManagementAssembler
 
                preference.flush();
             }
+         }
+      } ).toVersion( "1.5.0.3" )
+      .atStartup( new UpdateOperation()
+      {
+         public void update( Application app, Module module ) throws Exception
+         {
+            logger.info( "UpdateMigration to 1.5.0.3 in progress." );
+            // For each case create a new Notes association, create a NoteDTO, put it into the notes list and delete the note from Notable.
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase("Upgrade_1.5.0.3") );
+            try
+            {
+               Query<CaseEntity> caseQuery = module.queryBuilderFactory().newQueryBuilder( CaseEntity.class ).newQuery( uow );
+               for(CaseEntity caze : caseQuery )
+               {
+                  ServiceReference<IdentityGenerator> identityGenerator = module.serviceFinder().findService( IdentityGenerator.class );
+                  NotesTimeLine notesEntity = module.unitOfWorkFactory().currentUnitOfWork().newEntity( NotesTimeLine.class, identityGenerator.get().generate( Identity.class ) );
+                  caze.notes().set( notesEntity );
+                  ValueBuilder<NoteValue> noteValueBuilder = module.valueBuilderFactory().newValueBuilder( NoteValue.class );
+                  noteValueBuilder.prototype().note().set( ((Notable.Data)caze).note().get() );
+                  noteValueBuilder.prototype().createdBy().set( EntityReference.getEntityReference( ((CreatedOn)caze ).createdBy().get() ) );
+                  noteValueBuilder.prototype().createdOn().set( ((CreatedOn)caze).createdOn().get() );
+
+                  ((NotesTimeLine.Data)caze.notes().get()).notes().get().add( noteValueBuilder.newInstance() );
+
+                  caze.note().set( "" );
+
+               }
+               uow.complete();
+               logger.info( "UpdateMigration migrated old case note to Notes Mixin in " + caseQuery.count() + " cases." );
+            } catch(Throwable e)
+            {
+               uow.discard();
+               throw new RuntimeException( "Upgrade failed!", e );
+            }
+
          }
       } );
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )

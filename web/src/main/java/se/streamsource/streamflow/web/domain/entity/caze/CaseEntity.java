@@ -58,6 +58,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
+import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
@@ -74,7 +75,6 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -92,6 +92,7 @@ public interface CaseEntity
       Describable.Data,
       DueOn.Data,
       Notable.Data,
+      Notes.Data,
       Ownable.Data,
       CaseId.Data,
       Status.Events,
@@ -266,6 +267,9 @@ public interface CaseEntity
       SubCases.Data subCases;
 
       @This
+      Notes.Data notes;
+
+      @This
       Case caze;
 
       @Structure
@@ -290,6 +294,11 @@ public interface CaseEntity
          {
             caze.removeSubCase( childCase );
             childCase.deleteEntity();
+         }
+
+         if( notes.notes().get() != null )
+         {
+            notes.notes().get().deleteEntity();
          }
 
          next.deleteEntity();

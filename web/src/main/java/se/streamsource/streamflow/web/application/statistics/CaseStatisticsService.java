@@ -79,6 +79,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -522,7 +523,8 @@ public interface CaseStatisticsService
 
          prototype.identity().set(aCase.identity().get());
          prototype.description().set(aCase.getDescription());
-         prototype.note().set(aCase.note().get());
+         NotesTimeLine latestNote = (NotesTimeLine)aCase.notes().get();
+         prototype.note().set(latestNote.getLastNote() == null ? "" : latestNote.getLastNote().note().get() );
          Assignee assignee = aCase.assignedTo().get();
          prototype.assigneeId().set(((Identity) assignee).identity().get());
          prototype.caseId().set(aCase.caseId().get());
