@@ -134,7 +134,7 @@ public class ManagementAssembler
 
                newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#geo" );
                newDatatype.changeDescription( "Kartkoordinat" );
-               newDatatype.changeRegularExpression( "\\d{5},\\d{3};\\d{5},\\d{3}" );
+               newDatatype.changeRegularExpression( "\\d{5}\\.\\d{3},\\d{5}\\.\\d{3}" );
 
                newDatatype = organization.createDatatypeDefinition( "http://www.w3.org/2006/vcard/ns#fn" );
                newDatatype.changeDescription( "Namn" );
