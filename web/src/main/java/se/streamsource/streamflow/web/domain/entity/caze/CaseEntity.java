@@ -53,6 +53,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
@@ -81,7 +82,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 /**
  * This represents a single Case in the system
  */
-@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
+@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.CaseLogSideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
 @Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
@@ -298,73 +299,67 @@ public interface CaseEntity
       }
    }
 
-   abstract class HistorySideEffect
+   abstract class CaseLogSideEffect
          extends SideEffectOf<CaseEntity>
          implements CaseEntity
    {
       @This
-      History history;
-
-      public void changeDescription( @Optional String newDescription )
-      {
-         history.getHistory().changeDescription( newDescription );
-      }
+      CaseLoggable.Data caseLoggable;
 
       public void assignTo( Assignee assignee )
       {
-         history.addHistoryComment( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}");
       }
 
       public void unassign()
       {
-         history.addHistoryComment( "{unassigned}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{unassigned}" );
       }
 
       public void open()
       {
-         history.addHistoryComment( "{opened}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{opened}" );
       }
 
       public void close()
       {
-         history.addHistoryComment( "{closed}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{closed}");
       }
 
       public void onHold()
       {
-         history.addHistoryComment( "{paused}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{paused}");
       }
 
       public void reopen()
       {
-         history.addHistoryComment( "{reopened}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{reopened}");
       }
 
       public void resume()
       {
-         history.addHistoryComment( "{resumed}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{resumed}");
       }
 
       public void resolve( Resolution resolution )
       {
-         history.addHistoryComment( "{resolved,resolution=" + resolution.getDescription()+"}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{resolved,resolution=" + resolution.getDescription()+"}" );
       }
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
-         history.addHistoryComment( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
-               : "{removedCaseType}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
+               : "{removedCaseType}");
       }
 
       public void changeOwner( Owner owner )
       {
-         history.addHistoryComment( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}"
-               , RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}" );
       }
 
       public void createSubCase()
       {
-         history.addHistoryComment( "{createdSubCase}", RoleMap.role( ConversationParticipant.class ) );
+         caseLoggable.caselog().get().addSystemEntry( "{createdSubCase}" );
       }
    }
 

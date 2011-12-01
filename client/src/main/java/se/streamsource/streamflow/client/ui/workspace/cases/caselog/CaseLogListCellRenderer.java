@@ -43,11 +43,6 @@ public class CaseLogListCellRenderer implements ListCellRenderer
    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
          boolean cellHasFocus)
    {
-      if (list instanceof JXList)
-      {
-         ((JXList) list).addHighlighter( HighlighterFactory.createAlternateStriping() );
-      }
-
       CaseLogEntryDTO entry = (CaseLogEntryDTO) value;
 
       JPanel renderer = new JPanel( new BorderLayout() );

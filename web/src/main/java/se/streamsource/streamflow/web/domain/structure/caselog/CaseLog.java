@@ -33,48 +33,67 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue.AuthorizationType;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
-
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 
 @Mixins(CaseLog.Mixin.class)
 public interface CaseLog extends Removable
 {
 
-   void addCustomEntry( String message, CaseLogEntryValue.AuthorizationType authorizationType );
+   void addCustomEntry(String message, CaseLogEntryValue.AuthorizationType authorizationType);
+
+   void addSystemEntry(String message);
 
    interface Data
    {
       @UseDefaults
       Property<List<CaseLogEntryValue>> entries();
-      
-      void addedEntry( @Optional DomainEvent event, CaseLogEntryValue entry);
+
+      void addedEntry(@Optional DomainEvent event, CaseLogEntryValue entry);
    }
-   
+
    abstract class Mixin implements CaseLog, Data
    {
 
       @Structure
       Module module;
-      
+
       @This
       Data data;
 
       public void addedEntry(DomainEvent event, CaseLogEntryValue entry)
       {
-         data.entries().get().add( entry );
+         List<CaseLogEntryValue> list = data.entries().get();
+         list.add( entry );
+         data.entries().set( list );
       }
 
       public void addCustomEntry(String message, AuthorizationType authorizationType)
       {
-         ValueBuilder<CaseLogEntryValue> builder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryValue.class );
-         builder.prototype().createdBy().set( EntityReference.getEntityReference( RoleMap.role( Creator.class ) ));
-         builder.prototype().createdOn().set( new Date());
+         ValueBuilder<CaseLogEntryValue> builder = module.valueBuilderFactory().newValueBuilder(
+               CaseLogEntryValue.class );
+         builder.prototype().createdBy()
+               .set( EntityReference.getEntityReference( RoleMap.role( ConversationParticipant.class ) ) );
+         builder.prototype().createdOn().set( new Date() );
          builder.prototype().entryType().set( CaseLogEntryValue.EntryType.custom );
          builder.prototype().message().set( message );
          builder.prototype().authorizationType().set( authorizationType );
-         
+
          addedEntry( null, builder.newInstance() );
       }
-      
+
+      public void addSystemEntry(String message)
+      {
+         ValueBuilder<CaseLogEntryValue> builder = module.valueBuilderFactory().newValueBuilder(
+               CaseLogEntryValue.class );
+         builder.prototype().createdBy()
+               .set( EntityReference.getEntityReference( RoleMap.role( ConversationParticipant.class ) ) );
+         builder.prototype().createdOn().set( new Date() );
+         builder.prototype().entryType().set( CaseLogEntryValue.EntryType.system );
+         builder.prototype().message().set( message );
+         builder.prototype().authorizationType().set( CaseLogEntryValue.AuthorizationType.user );
+
+         addedEntry( null, builder.newInstance() );
+      }
+
    }
 }
