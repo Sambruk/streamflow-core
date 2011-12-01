@@ -1,22 +1,19 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
-import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
 
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 
 import org.jdesktop.application.Action;
@@ -31,11 +28,14 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 import ca.odell.glazedlists.swing.EventListModel;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -52,6 +52,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
 
    private JList list = new JXList();
    private JScrollPane newMessagePane;
+   private JTextArea newMessageArea;
 
    public CaseLogView(@Service ApplicationContext context, @Uses CaseLogModel model, @Structure Module module)
    {
@@ -59,7 +60,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       this.module = module;
 
       ActionMap am;
-      setActionMap(am = context.getActionMap(this));
+      setActionMap( am = context.getActionMap( this ) );
 
       // Layout and form for the left panel
       FormLayout rightLayout = new FormLayout( "30dlu, 300:grow, 50dlu", "pref, fill:pref:grow, 60dlu" );
@@ -90,21 +91,26 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       rightBuilder.add( scroll, new CellConstraints( 1, 2, 3, 1, CellConstraints.FILL, CellConstraints.FILL,
             new Insets( 0, 0, 0, 0 ) ) );
 
-      newMessagePane = (JScrollPane) TEXTAREA.newField();
+      // Add caselog message
+      ImageIcon icon = i18n.icon( Icons.message_add, 24 );
+      rightBuilder.add( new JLabel( icon ), new CellConstraints( 1, 3, 1, 1, CellConstraints.LEFT, CellConstraints.TOP,
+            new Insets( 10, 10, 0, 0 ) ) );
+      newMessageArea = new JTextArea( 10, 30 );
+      newMessageArea.setLineWrap( true );
+      newMessageArea.setWrapStyleWord( true );
+      newMessagePane = new JScrollPane( newMessageArea );
       newMessagePane.setMinimumSize( new Dimension( 10, 10 ) );
       newMessagePane.setPreferredSize( new Dimension( 10, 70 ) );
-      rightBuilder.add( newMessagePane, new CellConstraints( 1, 3, 2, 1, CellConstraints.FILL, CellConstraints.TOP,
+      rightBuilder.add( newMessagePane, new CellConstraints( 2, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 10, 0, 0, 0 ) ) );
 
       javax.swing.Action addMessageAction = am.get( "addMessage" );
-      JButton writeMessage = new JButton( addMessageAction );
-      rightBuilder.add( writeMessage, new CellConstraints( 3, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
+      JButton addMessageButton = new JButton( addMessageAction );
+      rightBuilder.add( addMessageButton, new CellConstraints( 3, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 8, 5, 0, 0 ) ) );
-      
-      // refreshComponents.enabledOn( "changeNewMessage",
-      // newMessagePane.getViewport().getView() );
-      // actionBinder.bind( "changeNote", newMessagePane );
-      // valueBinder.bind( "note", newMessagePane );
+
+      RefreshComponents refreshComponents = new RefreshComponents();
+      refreshComponents.enabledOn( "addMessage", newMessagePane.getViewport().getView() );
 
       new RefreshWhenShowing( this, this );
    }
@@ -118,7 +124,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (matches( withNames( "changedOwner", "changedCaseType", "changedStatus" ), transactions ))
+      if (matches( withNames( "addedEntry" ), transactions ))
       {
          refresh();
       }
@@ -127,6 +133,19 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    @Action
    public void addMessage()
    {
-      System.out.println( "Added the message..." );
+      if (!Strings.empty( newMessageArea.getText() ))
+      {
+         new CommandTask()
+         {
+            
+            @Override
+            protected void command() throws Exception
+            {
+               model.addMessage( newMessageArea.getText() );
+               newMessageArea.setText("");
+               newMessageArea.requestFocusInWindow();
+            }
+         }.execute();
+      }
    }
 }

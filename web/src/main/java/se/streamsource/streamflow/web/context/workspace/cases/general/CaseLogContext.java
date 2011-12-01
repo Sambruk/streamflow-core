@@ -36,11 +36,14 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable.Data;
 
 /**
  * JAVADOC
@@ -88,9 +91,10 @@ public class CaseLogContext
       return links.newLinks();
    }
 
-   public void createmessage( StringValue message )
+   @RequiresPermission(PermissionType.write)
+   public void addmessage( StringValue message )
    {
-//      Messages messages = RoleMap.role( Messages.class );
-//      messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
+      CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
+      caseLog.caselog().get().addCustomEntry( message.string().get(), CaseLogEntryValue.AuthorizationType.user );
    }
 }
