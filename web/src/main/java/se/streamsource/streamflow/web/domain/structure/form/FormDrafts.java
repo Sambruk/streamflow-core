@@ -32,15 +32,18 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 import java.util.ArrayList;
@@ -51,11 +54,11 @@ import java.util.ArrayList;
 @Mixins(FormDrafts.Mixin.class)
 public interface FormDrafts
 {
-   FormDraft getFormDraft( Form form );
+   FormDraft getFormDraft(Form form);
 
-   FormDraft createFormDraft( Form form );
+   FormDraft createFormDraft(Form form);
 
-   void discardFormDraft( FormDraft form );
+   void discardFormDraft(FormDraft form);
 
    interface Data
    {
@@ -63,13 +66,12 @@ public interface FormDrafts
       @Queryable(false)
       ManyAssociation<FormDraft> formDrafts();
 
-      FormDraft createdFormDraft( @Optional DomainEvent event, Form form, String id );
+      FormDraft createdFormDraft(@Optional DomainEvent event, FormDraftDTO formDraftDTO, String id);
 
-      void discardedFormDraft( @Optional DomainEvent event, FormDraft formDraft );
+      void discardedFormDraft(@Optional DomainEvent event, FormDraft formDraft);
    }
 
-   abstract class Mixin
-         implements FormDrafts, Data
+   abstract class Mixin implements FormDrafts, Data
    {
       @Structure
       Module module;
@@ -83,12 +85,13 @@ public interface FormDrafts
       @Service
       IdentityGenerator idgen;
 
-      public FormDraft getFormDraft( Form form )
+      public FormDraft getFormDraft(Form form)
       {
          for (FormDraft formDraft : formDrafts().toList())
          {
-            if ( formDraft.getFormDraftValue() == null) return null;
-            if ( formDraft.getFormDraftValue().form().get().identity().equals( form.toString() ))
+            if (formDraft.getFormDraftValue() == null)
+               return null;
+            if (formDraft.getFormDraftValue().form().get().identity().equals( form.toString() ))
             {
                return formDraft;
             }
@@ -97,75 +100,99 @@ public interface FormDrafts
          return null;
       }
 
-      public FormDraft createFormDraft( Form form )
+      public FormDraft createFormDraft(Form form)
       {
-         if ( getFormDraft( form ) != null )
+         if (getFormDraft( form ) != null)
          {
             // already exists, don't create
             return null;
          }
 
          CaseType caseType = typedCase.caseType().get();
-         if ( caseType != null )
+         if (caseType != null)
          {
             SelectedForms.Data forms = (SelectedForms.Data) caseType;
+            FormOnClose.Data formOnClose = (FormOnClose.Data) caseType;
 
-            if ( forms.selectedForms().contains( form ) )
+            if (forms.selectedForms().contains( form ) || form.equals( formOnClose.formOnClose().get() ))
             {
-               return createdFormDraft( null, form, idgen.generate( FormDraftEntity.class ) );
+               SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
+
+               ValueBuilder<FormDraftDTO> builder = module.valueBuilderFactory().newValueBuilder( FormDraftDTO.class );
+
+               builder.prototype().description().set( form.getDescription() );
+               builder.prototype().form().set( EntityReference.getEntityReference( form ) );
+
+               ValueBuilder<PageSubmissionDTO> pageBuilder = module.valueBuilderFactory().newValueBuilder(
+                     PageSubmissionDTO.class );
+               ValueBuilder<FieldSubmissionDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(
+                     FieldSubmissionDTO.class );
+               ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
+                     FieldDefinitionValue.class );
+               builder.prototype().pages().set( new ArrayList<PageSubmissionDTO>() );
+
+               Pages.Data pageEntities = (Pages.Data) form;
+               for (Page page : pageEntities.pages())
+               {
+                  pageBuilder.prototype().title().set( page.getDescription() );
+                  pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ) );
+                  pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionDTO>() );
+
+                  Fields.Data fieldEntities = (Fields.Data) page;
+                  for (Field field : fieldEntities.fields())
+                  {
+                     FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
+
+                     valueBuilder.prototype().description().set( field.getDescription() );
+                     valueBuilder.prototype().note().set( field.getNote() );
+                     valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
+                     valueBuilder.prototype().fieldId().set( ((FieldId.Data) field).fieldId().get() );
+                     DatatypeDefinition datatypeDefinition = ((Datatype.Data) field).datatype().get();
+                     if (datatypeDefinition != null)
+                     {
+                        valueBuilder.prototype().datatypeUrl().set( datatypeDefinition.getUrl() );
+                        if (fieldValue instanceof TextFieldValue)
+                        {
+                           TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
+                           if (Strings.empty( textFieldValue.regularExpression().get() )
+                                 && !Strings.empty( datatypeDefinition.getRegularExpression() ))
+                           {
+                              ValueBuilder<TextFieldValue> fieldValueBuilder = module.valueBuilderFactory()
+                                    .newValueBuilder( TextFieldValue.class )
+                                    .withPrototype( (TextFieldValue) fieldValue );
+                              fieldValueBuilder.prototype().regularExpression()
+                                    .set( datatypeDefinition.getRegularExpression() );
+                              fieldValue = fieldValueBuilder.newInstance();
+                           }
+                        }
+                     }
+                     valueBuilder.prototype().mandatory().set( field.isMandatory() );
+                     valueBuilder.prototype().fieldValue().set( fieldValue );
+
+                     fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
+                     fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
+                     fieldBuilder.prototype().enabled().set( true );
+                     pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
+                  }
+                  builder.prototype().pages().get().add( pageBuilder.newInstance() );
+               }
+
+               int pages = builder.prototype().pages().get().size();
+               builder.prototype().pages().get().remove( pages - 1 );
+               builder.prototype().pages().get().add( pageBuilder.newInstance() );
+
+               return createdFormDraft( null, builder.newInstance(), idgen.generate( FormDraftEntity.class ) );
             }
          }
          return null;
       }
 
-      public FormDraft createdFormDraft( @Optional DomainEvent event, Form form, String id )
+      public FormDraft createdFormDraft(@Optional DomainEvent event, FormDraftDTO formDraftDTO, String id)
       {
-         SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
+         EntityBuilder<FormDraft> submissionEntityBuilder = module.unitOfWorkFactory().currentUnitOfWork()
+               .newEntityBuilder( FormDraft.class, id );
 
-         EntityBuilder<FormDraft> submissionEntityBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( FormDraft.class, id );
-
-         ValueBuilder<FormDraftDTO> builder = module.valueBuilderFactory().newValueBuilder(FormDraftDTO.class);
-
-         builder.prototype().description().set( form.getDescription() );
-         builder.prototype().form().set( EntityReference.getEntityReference( form ));
-
-         ValueBuilder<PageSubmissionDTO> pageBuilder = module.valueBuilderFactory().newValueBuilder(PageSubmissionDTO.class);
-         ValueBuilder<FieldSubmissionDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(FieldSubmissionDTO.class);
-         ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(FieldDefinitionValue.class);
-         builder.prototype().pages().set( new ArrayList<PageSubmissionDTO>() );
-
-         Pages.Data pageEntities = (Pages.Data) form;
-         for (Page page : pageEntities.pages())
-         {
-            pageBuilder.prototype().title().set( page.getDescription() );
-            pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ));
-            pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionDTO>() );
-
-            Fields.Data fieldEntities = (Fields.Data) page;
-            for (Field field : fieldEntities.fields())
-            {
-               FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
-
-               valueBuilder.prototype().description().set( field.getDescription() );
-               valueBuilder.prototype().note().set( field.getNote() );
-               valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ));
-               valueBuilder.prototype().fieldId().set( ((FieldId.Data)field).fieldId().get());
-               valueBuilder.prototype().mandatory().set( field.isMandatory() );
-               valueBuilder.prototype().fieldValue().set( fieldValue );
-
-               fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
-               fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
-               fieldBuilder.prototype().enabled().set( true );
-               pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
-            }
-            builder.prototype().pages().get().add( pageBuilder.newInstance() );
-         }
-
-         int pages = builder.prototype().pages().get().size();
-         builder.prototype().pages().get().remove( pages-1 );
-         builder.prototype().pages().get().add( pageBuilder.newInstance() );
-
-         submissionEntityBuilder.instance().changeFormDraftValue( builder.newInstance() );
+         submissionEntityBuilder.instance().changeFormDraftValue( formDraftDTO );
 
          FormDraft formSubmission = submissionEntityBuilder.newInstance();
          formDrafts().add( formSubmission );
@@ -173,16 +200,16 @@ public interface FormDrafts
          return formSubmission;
       }
 
-      private String getSubmittedValue( Field field, SubmittedFormValue submittedFormValue )
+      private String getSubmittedValue(Field field, SubmittedFormValue submittedFormValue)
       {
-         if ( submittedFormValue == null)
+         if (submittedFormValue == null)
             return null;
 
          for (SubmittedPageValue submittedPageValue : submittedFormValue.pages().get())
          {
             for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
             {
-               if ( submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field )))
+               if (submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field ) ))
                {
                   return submittedFieldValue.value().get();
                }
@@ -191,12 +218,12 @@ public interface FormDrafts
          return null;
       }
 
-      private SubmittedFormValue findLatestSubmittedForm( Form form )
+      private SubmittedFormValue findLatestSubmittedForm(Form form)
       {
          SubmittedFormValue value = null;
          for (SubmittedFormValue submittedFormValue : submittedForms.submittedForms().get())
          {
-            if ( submittedFormValue.form().get().equals( EntityReference.getEntityReference( form )))
+            if (submittedFormValue.form().get().equals( EntityReference.getEntityReference( form ) ))
             {
                value = submittedFormValue;
             }
@@ -204,22 +231,22 @@ public interface FormDrafts
          return value;
       }
 
-      public void discardFormDraft( FormDraft formDraft )
+      public void discardFormDraft(FormDraft formDraft)
       {
          if (formDrafts().contains( formDraft ))
          {
-            for( Attachment attachment : ((FormAttachments.Data)formDraft).formAttachments().toList() )
+            for (Attachment attachment : ((FormAttachments.Data) formDraft).formAttachments().toList())
             {
-               ((FormAttachments)formDraft).removeFormAttachment( attachment );
+               ((FormAttachments) formDraft).removeFormAttachment( attachment );
             }
             discardedFormDraft( null, formDraft );
          }
       }
 
-      public void discardedFormDraft( @Optional DomainEvent event, FormDraft formDraft )
+      public void discardedFormDraft(@Optional DomainEvent event, FormDraft formDraft)
       {
          formDrafts().remove( formDraft );
-         //uowf.currentUnitOfWork().remove( formDraft );
+         // uowf.currentUnitOfWork().remove( formDraft );
       }
    }
 }

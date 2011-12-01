@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.management;
 
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.Entity;
@@ -59,8 +60,11 @@ import java.util.ResourceBundle;
 public interface ManagerService
       extends ServiceComposite, Activatable
 {
-   class Mixin
-         implements Activatable
+   
+   Manager getManager();
+   
+   abstract class Mixin
+         implements Activatable, ManagerService
    {
       @Service
       MBeanServer server;
@@ -247,6 +251,11 @@ public interface ManagerService
          {
             return info;
          }
+      }
+
+      public Manager getManager()
+      {
+         return manager;
       }
    }
 }

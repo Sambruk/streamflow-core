@@ -76,28 +76,28 @@ public class ContactsModel
 
    public ContactModel newContactModel(int idx)
    {
-      ContactDTO contactValue = eventList.get(idx);
+      ContactDTO contact = eventList.get(idx);
       
       // Set empty initial values for phoneNumber, email and address.
-      if (contactValue.phoneNumbers().get().isEmpty())
+      if (contact.phoneNumbers().get().isEmpty())
       {
          ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class).<ContactPhoneDTO>buildWith().prototype();
-         contactValue.phoneNumbers().get().add( phone );
+         contact.phoneNumbers().get().add( phone );
       }
 
-      if (contactValue.addresses().get().isEmpty())
+      if (contact.addresses().get().isEmpty())
       {
          ContactAddressDTO address = module.valueBuilderFactory().newValue(ContactAddressDTO.class).<ContactAddressDTO>buildWith().prototype();
-         contactValue.addresses().get().add( address );
+         contact.addresses().get().add( address );
 
       }
 
-      if (contactValue.emailAddresses().get().isEmpty())
+      if (contact.emailAddresses().get().isEmpty())
       {
          ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class).<ContactEmailDTO>buildWith().prototype();
-         contactValue.emailAddresses().get().add( email );
+         contact.emailAddresses().get().add( email );
       }
-
-      return module.objectBuilderFactory().newObjectBuilder(ContactModel.class).use( eventList.get(idx), client.getSubClient( ""+idx ) ).newInstance();
+      
+      return  module.objectBuilderFactory().newObjectBuilder(ContactModel.class).use( eventList.get(idx), client.getSubClient( ""+idx ) ).newInstance();
    }
 }

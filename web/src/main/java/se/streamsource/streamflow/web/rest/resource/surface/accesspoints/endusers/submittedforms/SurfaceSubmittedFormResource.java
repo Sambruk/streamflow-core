@@ -30,9 +30,8 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * TODO
@@ -45,7 +44,7 @@ public class SurfaceSubmittedFormResource
       super(SurfaceSubmittedFormContext.class);
    }
 
-   public OutputRepresentation generateformaspdf() throws IOException, URISyntaxException
+   public OutputRepresentation generateformaspdf() throws Throwable
    {
       final PDDocument pdf = context(SurfaceSubmittedFormContext.class).generateformaspdf();
 

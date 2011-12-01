@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.context.administration.ArchivalSettingsCon
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
 import se.streamsource.streamflow.web.context.administration.CaseDefaultDaysToCompleteContext;
 import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
+import se.streamsource.streamflow.web.context.administration.FormOnCloseContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.SelectedFormsResource;
@@ -103,5 +104,11 @@ public class CaseTypeResource
    public void archival()
    {
       subResourceContexts(ArchivalSettingsContext.class);
+   }
+
+   @SubResource
+   public void formonclose()
+   {
+      subResourceContexts( FormOnCloseContext.class );
    }
 }

@@ -129,4 +129,9 @@ public abstract class ResourceModel<INDEXTYPE>
    {
       relationModelMap.put(relation, modelClass);
    }
+
+   public CommandQueryClient getClient()
+   {
+      return client;
+   }
 }

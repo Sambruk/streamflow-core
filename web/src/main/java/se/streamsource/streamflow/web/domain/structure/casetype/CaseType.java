@@ -46,6 +46,7 @@ public interface CaseType
       SelectedForms,
       SelectedLabels,
       SelectedResolutions,
-        Removable
+      FormOnClose,
+      Removable
 {
 }

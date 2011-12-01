@@ -17,10 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -32,6 +44,9 @@ public class FormDraftModel
 {
    @Uses
    CommandQueryClient client;
+   
+   @Structure
+   Module module;
 
    public FormDraftDTO getFormDraftDTO()
    {
@@ -58,6 +73,25 @@ public class FormDraftModel
       client.getClient( "formattachments/" ).postCommand( "createformattachment", input);
    }
 
+   public String kartagoclientexe(LinkValue link)
+   {
+      StringValue value = client.queryLink( link, StringValue.class );
+      return value.string().get();
+   }
+
+   public boolean isStreetLookupEnabled()
+   {
+      ResourceValue resource = client.query();
+      return Iterables.matchesAny( Links.withRel("searchstreets"), resource.queries().get() );
+   }
+
+   public StreetsDTO searchStreets( String query ) throws ResourceException
+   {
+      ValueBuilder<StreetSearchDTO> builder = module.valueBuilderFactory().newValueBuilder( StreetSearchDTO.class );
+      builder.prototype().address().set( query );
+      return client.query( "searchstreets", StreetsDTO.class, builder.newInstance());
+   }
+   
    public void submit()
    {
       client.putCommand( "submit" );

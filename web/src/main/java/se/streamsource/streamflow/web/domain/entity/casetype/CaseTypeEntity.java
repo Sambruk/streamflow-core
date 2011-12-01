@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToCom
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
+import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -63,7 +64,9 @@ public interface CaseTypeEntity
       Forms.Data,
       SelectedForms.Data,
       Resolutions.Data,
-      SelectedResolutions.Data
+      SelectedResolutions.Data,
+      FormOnClose.Data,
+      FormOnClose.Events
 {
    abstract class RemovableConcern
       extends ConcernOf<Removable>

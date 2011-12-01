@@ -17,6 +17,8 @@
 
 package se.streamsource.dci.restlet.client;
 
+import java.io.IOException;
+
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.Iterables;
 import org.restlet.Request;
@@ -28,11 +30,10 @@ import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.Links;
-
-import java.io.IOException;
 
 /**
  * Base class for client-side Command/Query resources
@@ -386,7 +387,7 @@ public class CommandQueryClient
       Response response = new Response( request );
 
       cqcFactory.getClient().handle( request, response );
-
+      
       return response;
    }
 

@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -44,6 +45,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 
 import java.util.Collections;
 import java.util.List;
@@ -92,6 +94,10 @@ public interface FormDraft
       @Structure
       Module module;
 
+      @Optional
+      @Service
+      KartagoMapService kartagoMapService;
+      
       public FormDraftDTO getFormDraftValue()
       {
          return formDraftValue().get();

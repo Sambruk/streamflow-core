@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.web.application.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
@@ -69,7 +68,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -89,7 +88,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import static se.streamsource.streamflow.util.Strings.empty;
+import static se.streamsource.streamflow.util.Strings.*;
 
 /**
  * A specialisation of CaseOutput that is responsible for exporting a case in
@@ -119,13 +118,15 @@ public class CasePdfGenerator implements CaseOutput
    private String caseId = "";
    private String printedOn = "";
 
-   public CasePdfGenerator(@Uses CaseOutputConfigDTO config, @Optional @Uses String templateUri, @Uses Locale locale)
+   private Color headingColor = new Color(0x4b,0x89,0xd0);
+
+   public CasePdfGenerator(@Uses CaseOutputConfigDTO config, @Optional @Uses String templateUri, @Uses Locale locale, @Uses PdfDocument document)
    {
       this.config = config;
       this.locale = locale;
       this.templateUri = templateUri;
       bundle = ResourceBundle.getBundle( CasePdfGenerator.class.getName(), locale );
-      document = new PdfDocument( PDPage.PAGE_SIZE_A4, 50 );
+      this.document = document;
       document.init();
    }
 
@@ -136,24 +137,24 @@ public class CasePdfGenerator implements CaseOutput
       caseId = ((CaseId.Data) caze).caseId().get();
       printedOn = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( new Date() );
 
-      document.print( "", valueFont ).changeColor( Color.BLUE )
+      document.print( "", valueFont ).changeColor( headingColor )
             .println( bundle.getString( "caseSummary" ) + " - " + caseId, h1Font ).line().changeColor( Color.BLACK )
-            .print( "", valueFont ).print( "", valueFont );
+            .print( "", valueFont );
 
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),
             bundle.getString( "createdOn" ), bundle.getString( "createdBy" ), bundle.getString( "owner" ),
             bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
             bundle.getString( "resolution" ), bundle.getString( "dueOn" ) );
 
-      document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont,
+      document.printLabelAndTextWithTabStop( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont,
             tabStop );
-      document.printLabelAndText( bundle.getString( "createdOn" ) + ": ", valueFontBold,
+      document.printLabelAndTextWithTabStop( bundle.getString( "createdOn" ) + ": ", valueFontBold,
             DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ),
             valueFont, tabStop );
 
       if (((DueOn.Data) caze).dueOn().get() != null)
       {
-         document.printLabelAndText( bundle.getString( "dueOn" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "dueOn" ) + ": ", valueFontBold,
                new SimpleDateFormat( bundle.getString( "date_format" ) ).format( ((DueOn.Data) caze).dueOn().get() ),
                valueFont, tabStop );
       }
@@ -161,21 +162,21 @@ public class CasePdfGenerator implements CaseOutput
       Creator creator = caze.createdBy().get();
       if (creator != null)
       {
-         document.printLabelAndText( bundle.getString( "createdBy" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "createdBy" ) + ": ", valueFontBold,
                ((Describable) creator).getDescription(), valueFont, tabStop );
       }
 
       Owner owner = ((Ownable.Data) caze).owner().get();
       if (owner != null)
       {
-         document.printLabelAndText( bundle.getString( "owner" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "owner" ) + ": ", valueFontBold,
                ((Describable) owner).getDescription(), valueFont, tabStop );
       }
 
       Assignee assignee = ((Assignable.Data) caze).assignedTo().get();
       if (assignee != null)
       {
-         document.printLabelAndText( bundle.getString( "assignedTo" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "assignedTo" ) + ": ", valueFontBold,
                ((Describable) assignee).getDescription(), valueFont, tabStop );
       }
 
@@ -183,7 +184,7 @@ public class CasePdfGenerator implements CaseOutput
 
       if (caseType != null)
       {
-         document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "caseType" ) + ": ", valueFontBold,
                ((Describable) caseType).getDescription(), valueFont, tabStop );
       }
 
@@ -191,7 +192,7 @@ public class CasePdfGenerator implements CaseOutput
 
       if (resolution != null)
       {
-         document.printLabelAndText( bundle.getString( "resolution" ) + ":", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "resolution" ) + ":", valueFontBold,
                ((Describable) resolution).getDescription(), valueFont, tabStop );
       }
 
@@ -206,17 +207,13 @@ public class CasePdfGenerator implements CaseOutput
             allLabels += label.getDescription() + (count == labels.size() ? "" : ", ");
          }
 
-         document.printLabelAndText( bundle.getString( "labels" ) + ": ", valueFontBold, allLabels, valueFont, tabStop );
+         document.printLabelAndTextWithTabStop( bundle.getString( "labels" ) + ": ", valueFontBold, allLabels, valueFont, tabStop );
       }
 
       String note = caze.getNote();
       if (!empty(note))
       {
-         document.changeColor( Color.BLUE );
-         document.println( bundle.getString( "note" ), valueFontBold );
-         document.changeColor( Color.BLACK );
-         document.print( note, valueFont );
-         document.print( "", valueFont );
+         document.moveUpOneRow( valueFontBold ).print( bundle.getString( "note" ) + ":", valueFontBold ).print( note, valueFont ).print( "", valueFont );
       }
 
       // traverse structure
@@ -260,7 +257,7 @@ public class CasePdfGenerator implements CaseOutput
       {
          public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends Message, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
-            document.changeColor( Color.BLUE ).println( bundle.getString( "history" ), valueFontBold )
+            document.changeColor( headingColor ).println( bundle.getString( "history" ), valueFontBold )
                   .changeColor(Color.BLACK);
 
             sender.sendTo(new Receiver<Message, IOException>()
@@ -335,17 +332,16 @@ public class CasePdfGenerator implements CaseOutput
 
                   if (!nameValuePairs.entrySet().isEmpty())
                   {
-                     document.changeColor( Color.BLUE );
-                     document.println(
+                     document.changeColor( headingColor );
+                     document.print(
                            bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()),
                            valueFontBold );
-                     document.print( "", valueFont );
-                     document.changeColor( Color.BLACK );
+                     document.changeColor( Color.BLACK ).print( "", valueFont );
                   }
 
                   for (Map.Entry<String, String> stringEntry : nameValuePairs.entrySet())
                   {
-                     document.printLabelAndText( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(),
+                     document.printLabelAndTextWithTabStop( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(),
                            valueFont, tabStop );
                   }
                }
@@ -367,15 +363,14 @@ public class CasePdfGenerator implements CaseOutput
                {
                   if (counter.getCount() == 1)
                   {
-                     document.changeColor( Color.BLUE ).println( bundle.getString( "conversations" ), valueFontBold )
+                     document.changeColor( headingColor ).print( bundle.getString( "conversations" ), valueFontBold )
                            .changeColor( Color.BLACK );
                   }
 
                   List<Message> messages = ((Messages.Data) conversation).messages().toList();
                   if (!messages.isEmpty())
                   {
-                     document.println( conversation.getDescription(), valueFontBold ).underLine(
-                           conversation.getDescription(), valueFontBold );
+                     document.print( conversation.getDescription(), valueFontBold );
 
                      for (Message message : messages)
                      {
@@ -412,49 +407,39 @@ public class CasePdfGenerator implements CaseOutput
          if (printedForms.contains( formValue.form().get() ))
             continue; // Skip this form - already printed
 
+         Describable form = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.form().get().identity() );
+
          // Form PDF section header
          if (!printedHeader)
          {
-            document.changeColor( Color.BLUE );
-            document.println( bundle.getString( "submittedForms" ) + ":", valueFontBold );
+            document.changeColor( headingColor );
+            document.print( bundle.getString( "submittedForms" ) + ":", valueFontBold );
             document.changeColor( Color.BLACK );
             printedHeader = true;
          }
 
-         Describable form = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.form().get().identity() );
+         document.print( form.getDescription() + ":", valueFontBold ).print( "", valueFontBold ).print( "", valueFontBold );
 
-         document.println( form.getDescription() + ":", valueFontBold );
-         document.underLine( form.getDescription(), valueFontBold );
-         document.println( "", valueFont );
+
+         float tabStop = document.calculateTabStop( valueFontBold,
+                                 new String[]{bundle.getString( "lastSubmitted" ), bundle.getString( "lastSubmittedBy" )} );
 
          // Submitted by whom and when
-         float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "lastSubmitted" ), bundle.getString( "lastSubmittedBy" ) );
-         document.printLabelAndText( bundle.getString( "lastSubmitted" ) + ":", valueFontBold,
+         document.printLabelAndTextWithTabStop( bundle.getString( "lastSubmitted" ) + ":", valueFontBold,
                DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( formValue.submissionDate().get() ),
                valueFont, tabStop );
-         document.printLabelAndText( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold,
-               module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont, tabStop );
+         document.printLabelAndTextWithTabStop( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold,
+               module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont,
+               tabStop )  ;
 
-         float fieldNameTabStop = 0;
+
          for (SubmittedPageValue submittedPageValue : formValue.pages().get())
          {
             if (!submittedPageValue.fields().get().isEmpty())
             {
                Describable page = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, submittedPageValue.page().get().identity() );
-               document.println( page.getDescription() + ":", valueFontBoldItalic );
-               document.println( "", valueFont );
-
-               // Calculate fields tabstop
-               for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
-               {
-                  Describable fieldName = module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, submittedFieldValue.field().get().identity() );
-
-                  float tempTabStop = document.calculateTabStop( valueFontBold, fieldName.getDescription() );
-                  if (tempTabStop > fieldNameTabStop)
-                  {
-                     fieldNameTabStop = tempTabStop;
-                  }
-               }
+               document.print( page.getDescription() + ":", valueFontBoldItalic );
+               document.print( "", valueFont );
 
                // Fetch and occasionally format field name and value
                for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
@@ -483,9 +468,10 @@ public class CasePdfGenerator implements CaseOutput
                      {
                         value = submittedFieldValue.value().get();
                      }
-                     document.printLabelAndText( label + ":", valueFontBold, value, valueFont, fieldNameTabStop );
+                     document.printLabelAndIndentedText( label + ":", valueFontBold, value, valueFont, 20.0f );
                   }
                }
+               document.print( "", valueFont );
             }
          }
          printedForms.add( formValue.form().get() );
@@ -505,7 +491,7 @@ public class CasePdfGenerator implements CaseOutput
                {
                   if (counter.getCount() == 1)
                   {
-                     document.changeColor( Color.BLUE ).print( bundle.getString( "attachments" ) + ":", valueFontBold )
+                     document.changeColor( headingColor ).print( bundle.getString( "attachments" ) + ":", valueFontBold )
                            .changeColor( Color.BLACK );
                   }
 

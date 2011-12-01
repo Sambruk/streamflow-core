@@ -64,32 +64,6 @@ public class FiltersContext
       filter.rules().set(new ArrayList<RuleValue>());
       filter.name().set(name);
       filter.enabled().set(true);
-
-      // TODO This is for testing
-      ValueBuilder<LabelRuleValue> ruleBuilder = module.valueBuilderFactory().newValueBuilder(LabelRuleValue.class);
-
-      QueryBuilder<Label> queryBuilder = module.queryBuilderFactory().newQueryBuilder(Label.class).
-            where(eq(templateFor(Describable.Data.class).description(), "Via webben"));
-      Label label = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).find();
-      if (label != null)
-      {
-         ruleBuilder.prototype().label().set(EntityReference.getEntityReference(label));
-         filter.rules().get().add(ruleBuilder.newInstance());
-      }
-
-      QueryBuilder<Assignee> assigneeQuery = module.queryBuilderFactory().newQueryBuilder(Assignee.class).where(eq(templateFor(Describable.Data.class).description(), "Administrator"));
-      Assignee assignee = assigneeQuery.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).find();
-      if (assignee != null)
-      {
-         ValueBuilder<AssignActionValue> actionBuilder = module.valueBuilderFactory().newValueBuilder(AssignActionValue.class);
-         actionBuilder.prototype().assignee().set(EntityReference.getEntityReference(assignee));
-         filter.actions().get().add(actionBuilder.newInstance());
-
-         ValueBuilder<EmailActionValue> emailBuilder = module.valueBuilderFactory().newValueBuilder(EmailActionValue.class);
-         emailBuilder.prototype().participant().set(EntityReference.getEntityReference(assignee));
-         filter.actions().get().add(emailBuilder.newInstance());
-      }
-
       filter = builder.newInstance();
 
       filters.addFilter(filter);

@@ -20,6 +20,7 @@ package se.streamsource.streamflow.api.assembler;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
@@ -41,6 +42,7 @@ import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
@@ -68,6 +70,8 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
@@ -79,6 +83,7 @@ import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
@@ -107,12 +112,14 @@ public class ClientAPIAssembler
               ContactsDTO.class,
               ConversationDTO.class,
               MessageDTO.class,
-              AttachmentDTO.class, UpdateAttachmentDTO.class);
+              AttachmentDTO.class, 
+              UpdateAttachmentDTO.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,
               PageSubmissionDTO.class,
               FieldSubmissionDTO.class,
+              FieldSubmissionPluginDTO.class,
               SubmittedFormDTO.class,
               SubmittedFormListDTO.class,
               SubmittedFormsListDTO.class,
@@ -126,7 +133,9 @@ public class ClientAPIAssembler
       workspace.values(ContactAddressDTO.class,
               ContactEmailDTO.class,
               ContactPhoneDTO.class,
-              ContactDTO.class);
+              ContactDTO.class,
+              StreetsDTO.class,
+              StreetSearchDTO.class);
    }
 
    private void overview(ModuleAssembly overview)
@@ -159,6 +168,7 @@ public class ClientAPIAssembler
               PageDefinitionValue.class,
               FieldValue.class,
               FieldDefinitionValue.class,
+              FieldDefinitionAdminValue.class,
               RequiredSignaturesValue.class,
               RequiredSignatureValue.class,
 

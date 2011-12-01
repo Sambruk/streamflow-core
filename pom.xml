@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.6.0</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -412,6 +412,7 @@
                         <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
                         <link>http://www.restlet.org/documentation/snapshot/jse/api/</link>
                     </links>
+                    <encoding>UTF-8</encoding>
                 </configuration>
                 <reportSets>
                     <reportSet>

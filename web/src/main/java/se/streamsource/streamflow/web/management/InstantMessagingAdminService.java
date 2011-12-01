@@ -58,7 +58,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * TODO
+ * The InstantMessagingAdminService allows the application to be managed remotely through Jabber. It connects
+ * to a given Jabber server, and then allows other users to communicate with the application through predefined commands.
+ *
+ * It can be used to change configuration, and also listen for circuit breaker messages when something goes wrong.
+ *
+ * To set up, download and install a Jabber server, such as OpenFire. Then configure this service to connect
+ * to the given server with a user/password account. If the server is available, then this service will connect
+ * to it and mark this server instance as available, and the status will be set as the Jabber status.
+ *
+ * The Jabber status will basically be a representation of the Circuit Breaker status. If any Circuit Breakers are
+ * "off", then the server will be marked as "Away", and information about why will be shown.
+ *
+ * To change configuration and restart Circuit Breakers other users can send chat messages to this service. Type "help"
+ * as chat message to get a list of administrative commands.
  */
 @Mixins(InstantMessagingAdminService.Mixin.class)
 public interface InstantMessagingAdminService

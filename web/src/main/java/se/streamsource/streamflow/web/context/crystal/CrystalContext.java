@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.web.context.crystal;
 
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.web.infrastructure.database.Databases;
+import se.streamsource.infrastructure.database.Databases;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -38,8 +40,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -77,26 +77,34 @@ public class CrystalContext
       final Logger logger = LoggerFactory.getLogger( getClass() );
       try
       {
-         final SimpleDateFormat weekFormat = new SimpleDateFormat("yyyy'W'ww");
+         final String weekFormat = "yyyy'W'ww";
 
-         Calendar[] range = findRange();
-         logger.info( "From "+weekFormat.format( range[0].getTime()) +" to "+weekFormat.format(range[1].getTime()) );
+         DateTime[] range = findRange();
+         logger.info( "Full range from "+ range[0].toString( weekFormat ) +" to "+range[1].toString( weekFormat ) );
 
          // Find cases for each week
          Databases databases = new Databases(source.get());
-         final Calendar calCurrent = range[0];
-         while (calCurrent.before( range[1] ))
+
+         final MutableDateTime from = new MutableDateTime( range[0] ).dayOfWeek().set( 1 );
+
+
+         while (from.isBefore(  range[1] ))
          {
-            final Calendar minWeek = (Calendar) calCurrent.clone();
-            calCurrent.roll( Calendar.WEEK_OF_YEAR, 1 );
-            final Calendar maxWeek = calCurrent;
+
+            final MutableDateTime minWeek = from.copy();
+
             databases.query( sql.getString( "motionchart" ), new Databases.StatementVisitor()
             {
                public void visit( PreparedStatement preparedStatement ) throws SQLException
                {
-                  logger.info( "From "+weekFormat.format( minWeek.getTime())+" to "+weekFormat.format( maxWeek.getTime()) );
-                  preparedStatement.setTimestamp( 1, new Timestamp(minWeek.getTimeInMillis()));
-                  preparedStatement.setTimestamp( 2, new Timestamp(maxWeek.getTimeInMillis()));
+                  String fromWeek = from.toString(weekFormat);
+
+                  preparedStatement.setTimestamp( 1, new Timestamp(from.toDate().getTime()));
+                  from.addWeeks( 1 );
+                  preparedStatement.setTimestamp( 2, new Timestamp(from.toDate().getTime()));
+                  String toWeek = from.toString( weekFormat );
+
+                  logger.info( "From "+fromWeek+" to "+toWeek );
                }
             },
                   new Databases.ResultSetVisitor()
@@ -105,7 +113,7 @@ public class CrystalContext
                      {
                         tableBuilder.row().
                            cell(visited.getString( "casetype" ), null).
-                           cell(weekFormat.format( minWeek.getTime() ), "v"+minWeek.get( Calendar.WEEK_OF_YEAR )).
+                           cell( minWeek.toString( weekFormat ), "v"+minWeek.weekOfWeekyear().get() ).
                            cell(visited.getString("variationpct"), null).
                            cell((visited.getLong( "average")/(1000*60*60))+"", null).
                            cell(visited.getString("count"), null).
@@ -131,11 +139,6 @@ public class CrystalContext
       timeline.put( "date-time-format", "iso8601" );
 
       final JSONArray events = new JSONArray();
-
-//      final Logger logger = LoggerFactory.getLogger( getClass() );
-//      final SimpleDateFormat weekFormat = new SimpleDateFormat("yyyy'W'ww");
-
- //     final Calendar[] range = findRange();
 
       Databases databases = new Databases(source.get());
 
@@ -207,32 +210,25 @@ public class CrystalContext
       return builder.newTable();
    }
 
-   private Calendar[] findRange() throws SQLException
+   private DateTime[] findRange() throws SQLException
    {
       Databases databases = new Databases(source.get());
 
-      final Calendar[] range = new Calendar[2];
+      final DateTime[] period = new DateTime[2];
 
       // Find min/max dates
       databases.query( sql.getString("range"), new Databases.ResultSetVisitor()
       {
          public boolean visit( ResultSet visited ) throws SQLException
          {
-            Calendar calMin = Calendar.getInstance();
-            calMin.setTimeInMillis( visited.getTimestamp( 1 ).getTime() );
-            calMin.clear( Calendar.DAY_OF_WEEK );
 
-            Calendar calMax = Calendar.getInstance();
-            calMax.setTimeInMillis( visited.getTimestamp( 2 ).getTime() );
-            calMax.clear( Calendar.DAY_OF_WEEK );
-
-            range[0] = calMin;
-            range[1] = calMax;
+            period[0] = new DateTime( visited.getTimestamp( 1 ).getTime() );
+            period[1] = new DateTime( visited.getTimestamp( 2 ).getTime() );
 
             return false;
          }
       });
 
-      return range;
+      return period;
    }
 }

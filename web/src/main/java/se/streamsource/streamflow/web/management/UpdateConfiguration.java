@@ -14,30 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package se.streamsource.streamflow.web.infrastructure.database;
+package se.streamsource.streamflow.web.management;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
 
 /**
- * Configuration for the DataSource pool
+ * TODO
  */
-public interface DataSourceConfiguration
-      extends ConfigurationComposite
+public interface UpdateConfiguration
+   extends ConfigurationComposite
 {
    @UseDefaults
-   Property<Boolean> enabled();
-
-   Property<String> driver();
-
-   Property<String> url();
-
-   Property<String> username();
-
-   Property<String> password();
-
-   @UseDefaults
-   Property<String> properties();
+   Property<String> lastStartupVersion();
 }

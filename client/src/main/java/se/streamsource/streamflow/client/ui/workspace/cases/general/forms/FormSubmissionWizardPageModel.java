@@ -31,6 +31,8 @@ import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
@@ -119,5 +121,15 @@ public class FormSubmissionWizardPageModel
       {
          eventStream.unregisterListener( updateListener );
       }
+   }
+   
+   public String kartagoclientexe(LinkValue link)
+   {
+      return model.kartagoclientexe( link );
+   }
+   
+   public FormDraftModel getFormDraftModel()
+   {
+      return model;
    }
 }

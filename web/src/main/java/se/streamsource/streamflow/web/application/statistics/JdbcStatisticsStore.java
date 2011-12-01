@@ -24,7 +24,8 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.web.infrastructure.database.Databases;
+
+import se.streamsource.infrastructure.database.Databases;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -159,7 +160,7 @@ public interface JdbcStatisticsStore
 
             for (final FormFieldStatisticsValue field : caseStatistics.fields().get())
             {
-               databases.update("INSERT INTO fields (id,form,field,value) VALUES (?,?,?,?)", new Databases.StatementVisitor()
+               databases.update("INSERT INTO fields (id,form,field,value,datatype) VALUES (?,?,?,?,?)", new Databases.StatementVisitor()
                {
                   public void visit( PreparedStatement statement ) throws SQLException
                   {
@@ -167,6 +168,7 @@ public interface JdbcStatisticsStore
                      statement.setString( 2, field.formId().get() );
                      statement.setString( 3, field.fieldId().get() );
                      statement.setString( 4, field.value().get() );
+                     statement.setString( 5, field.datatype().get() );
                   }
                });
             }

@@ -31,6 +31,7 @@ import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.contacts.StreetAddressSuggestTextField;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
@@ -111,7 +112,8 @@ public class StateBinder
             JCheckBox.class,
             JXDatePicker.class,
             JComboBox.class,
-            RemovableLabel.class );
+            RemovableLabel.class,
+            StreetAddressSuggestTextField.class);
 
       errorMessages = ResourceBundle.getBundle( getClass().getName() );
    }
@@ -528,12 +530,17 @@ public class StateBinder
             removableLabel.getButton().addActionListener( new ActionListener()
             {
 
-               public void actionPerformed( ActionEvent e )
+               public void actionPerformed(ActionEvent e)
                {
-                  //removableLabel.setListItemValue( null );
+                  // removableLabel.setListItemValue( null );
                   binding.updateProperty( null );
-         }
+               }
             } );
+            return binding;
+         } else if (component instanceof StreetAddressSuggestTextField )
+         {
+            final StreetAddressSuggestTextField suggestTextfield = (StreetAddressSuggestTextField) component;
+            suggestTextfield.setBinding( binding);
             return binding;
          }
 
@@ -589,7 +596,12 @@ public class StateBinder
          {
             RemovableLabel removableLabel = (RemovableLabel) component;
             removableLabel.setText( (String) value );
+         } else if (component instanceof StreetAddressSuggestTextField)
+         {
+            StreetAddressSuggestTextField suggestField = (StreetAddressSuggestTextField) component;
+            suggestField.getTextField().setText( value == null ? "" : value.toString()  );
          }
+         
       }
    }
 

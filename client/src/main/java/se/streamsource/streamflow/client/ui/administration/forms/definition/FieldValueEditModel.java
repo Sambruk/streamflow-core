@@ -20,11 +20,20 @@ package se.streamsource.streamflow.client.ui.administration.forms.definition;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.client.util.Refreshable;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 
 /**
  * JAVADOC
@@ -32,17 +41,37 @@ import se.streamsource.streamflow.client.util.Refreshable;
 public class FieldValueEditModel
       implements Refreshable
 {
-   private FieldDefinitionValue value;
+   public static final String DATATYPE_NONE = "none";
 
+   private FieldDefinitionAdminValue value;
+   
+   private EventList<LinkValue> possibleDatatypes = new TransactionList<LinkValue>( new BasicEventList<LinkValue>());
+   private final LinkValue noneLink;
+   
+   
    @Uses
    private CommandQueryClient client;
 
-   @Structure
    private Module module;
 
-   public FieldDefinitionValue getFieldDefinition()
+   public FieldValueEditModel(@Structure Module module)
+   {
+      this.module = module;
+      ValueBuilder<LinkValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+      valueBuilder.prototype().id().set( DATATYPE_NONE );
+      valueBuilder.prototype().href().set( "none/");
+      valueBuilder.prototype().text().set( "<ingen>");
+      noneLink = valueBuilder.newInstance();
+      
+   }
+   public FieldDefinitionAdminValue getFieldDefinition()
    {
       return value;
+   }
+   
+   public EventList<LinkValue> getPossibleDatatypes()
+   {
+      return possibleDatatypes;
    }
 
    public void changeMandatory( boolean mandatory ) throws ResourceException
@@ -105,9 +134,40 @@ public class FieldValueEditModel
       client.postCommand( "changeopenselectionname", new Form("name="+name).getWebRepresentation() );
    }
 
+   public void changeDatatype( String id ) throws ResourceException
+   {
+      if (id != null)
+      {
+         client.postCommand( "changedatatype", new Form("entity="+id).getWebRepresentation() );
+      } else
+      {
+         client.postCommand( "changedatatype", module.valueBuilderFactory().newValue(EntityValue.class) );
+      }
+   }
+   
+   public LinkValue getSelectedDatatype()
+   {
+      if (value.datatype().get() != null)
+      {
+         for (LinkValue linkValue : possibleDatatypes)
+         {
+            if (linkValue.id().get().equals( value.datatype().get().id().get() ))
+            {
+               return linkValue;
+            }
+         }
+      } 
+      return noneLink;  
+   }
+   
    public void refresh()
    {
-      value = (FieldDefinitionValue) client.query( "field", FieldDefinitionValue.class ).buildWith().prototype();
+      value = (FieldDefinitionAdminValue) client.query( "field", FieldDefinitionAdminValue.class ).buildWith().prototype();
+      
+      possibleDatatypes.clear();
+      
+      possibleDatatypes.add( noneLink );
+      possibleDatatypes.addAll( client.query("possibledatatypes", LinksValue.class).links().get() );
    }
 
    public void remove() throws ResourceException

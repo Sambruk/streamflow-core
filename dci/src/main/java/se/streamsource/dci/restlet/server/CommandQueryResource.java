@@ -17,6 +17,23 @@
 
 package se.streamsource.dci.restlet.server;
 
+import static org.qi4j.api.util.Annotations.isType;
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.first;
+import static org.qi4j.api.util.Iterables.iterable;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
@@ -51,32 +68,15 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.dci.restlet.server.api.ResourceValidity;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.qi4j.api.util.Annotations.isType;
-import static org.qi4j.api.util.Iterables.*;
 
 /**
  * JAVADOC
@@ -763,16 +763,18 @@ public class CommandQueryResource
          }
       } else
       {
-         try
+         if (contextMethod.getAnnotation( SkipResourceValidityCheck.class ) == null)
          {
-            // Check timestamps
-            ResourceValidity validity = RoleMap.role(ResourceValidity.class);
-            validity.checkRequest(Request.getCurrent());
-         } catch (IllegalArgumentException e)
-         {
-            // Ignore
+            try
+            {
+               // Check timestamps
+               ResourceValidity validity = RoleMap.role( ResourceValidity.class );
+               validity.checkRequest( Request.getCurrent() );
+            } catch (IllegalArgumentException e)
+            {
+               // Ignore
+            }
          }
-
          // We have input data - do query
          try
          {

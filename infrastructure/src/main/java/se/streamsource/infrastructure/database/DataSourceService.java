@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.database;
+package se.streamsource.infrastructure.database;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.DataSources;
@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -63,21 +64,23 @@ public interface DataSourceService
 
       public void activate() throws Exception
       {
+         for (DataSourceConfiguration config : configs.values())
+         {
+            module.unitOfWorkFactory().getUnitOfWork(config).discard();
+         }
+         
+         for (Entry<String, ComboPooledDataSource> entry : pools.entrySet())
+         {
+            configurePool( entry.getValue(), entry.getKey() );
+         }
       }
 
       public void passivate() throws Exception
       {
          for (ComboPooledDataSource pool : pools.values())
          {
-            DataSources.destroy( pool );
+            pool.resetPoolManager();
          }
-         pools.clear();
-
-         for (DataSourceConfiguration dataSourceConfiguration : configs.values())
-         {
-            module.unitOfWorkFactory().getUnitOfWork(dataSourceConfiguration).discard();
-         }
-         configs.clear();
       }
 
       public synchronized Object importService( ImportedServiceDescriptor importedServiceDescriptor ) throws ServiceImporterException
@@ -88,46 +91,10 @@ public interface DataSourceService
             // Instantiate pool
             pool = new ComboPooledDataSource();
 
-            try
-            {
-               DataSourceConfiguration config = getConfiguration( importedServiceDescriptor.identity() );
+            configurePool( pool, importedServiceDescriptor.identity() );
 
-               if (config.enabled().get())
-               {
-                  Class.forName( config.driver().get() );
-                  pool.setDriverClass( config.driver().get() );
-                  pool.setJdbcUrl( config.url().get() );
-
-                  String props = config.properties().get();
-                  String[] properties = props.split( "," );
-                  Properties poolProperties = new Properties();
-                  for (String property : properties)
-                  {
-                     if (property.trim().length() > 0)
-                     {
-                        String[] keyvalue = property.trim().split( "=" );
-                        poolProperties.setProperty( keyvalue[0], keyvalue[1] );
-                     }
-                  }
-                  pool.setProperties( poolProperties );
-
-                  pool.setUser( config.username().get() );
-                  pool.setPassword( config.password().get() );
-                  pool.setMaxConnectionAge( 60 * 60 ); // One hour max age
-
-                  logger.info( "Starting up DataSource '" + importedServiceDescriptor.identity() + "' for:{}", pool.getUser() + "@" + pool.getJdbcUrl() );
-               } else
-               {
-                  // Not started
-                  throw new ServiceImporterException( "DataSource not enabled" );
-               }
-
-               pools.put( importedServiceDescriptor.identity(), pool );
-            } catch (Exception e)
-            {
-               throw new ServiceImporterException( e );
-            }
-
+            pools.put( importedServiceDescriptor.identity(), pool );
+            
             // Test the pool
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader( null );
@@ -147,6 +114,48 @@ public interface DataSourceService
          return pool;
       }
 
+      private void configurePool(ComboPooledDataSource pool, String identity)
+      {
+         try
+         {
+            DataSourceConfiguration config = getConfiguration( identity );
+
+            if (config.enabled().get())
+            {
+               Class.forName( config.driver().get() );
+               pool.setDriverClass( config.driver().get() );
+               pool.setJdbcUrl( config.url().get() );
+
+               String props = config.properties().get();
+               String[] properties = props.split( "," );
+               Properties poolProperties = new Properties();
+               for (String property : properties)
+               {
+                  if (property.trim().length() > 0)
+                  {
+                     String[] keyvalue = property.trim().split( "=" );
+                     poolProperties.setProperty( keyvalue[0], keyvalue[1] );
+                  }
+               }
+               pool.setProperties( poolProperties );
+
+               pool.setUser( config.username().get() );
+               pool.setPassword( config.password().get() );
+               pool.setMaxConnectionAge( 60 * 60 ); // One hour max age
+
+               logger.info( "Starting up DataSource '" + identity + "' for:{}", pool.getUser() + "@" + pool.getJdbcUrl() );
+            } else
+            {
+               // Not started
+               throw new ServiceImporterException( "DataSource not enabled" );
+            }
+            
+         } catch (Exception e)
+         {
+            throw new ServiceImporterException( e );
+         }
+      }
+      
       public synchronized DataSourceConfiguration getConfiguration( String identity ) throws InstantiationException
       {
          DataSourceConfiguration config = configs.get( identity );

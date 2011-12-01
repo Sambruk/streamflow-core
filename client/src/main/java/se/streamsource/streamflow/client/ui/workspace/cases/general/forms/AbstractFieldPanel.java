@@ -17,14 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import java.awt.Component;
+import java.awt.Container;
+
+import javax.swing.JPanel;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.StateBinder;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Abstract class that each field type must extend
@@ -64,6 +67,11 @@ public abstract class AbstractFieldPanel extends JPanel
       return stateBinder;
    }
 
+   public FieldSubmissionDTO getField()
+   {
+      return field;
+   }
+   
    public String title()
    {
       return field.field().get().description().get();
