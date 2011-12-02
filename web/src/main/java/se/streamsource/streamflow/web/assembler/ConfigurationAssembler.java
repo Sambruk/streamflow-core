@@ -21,6 +21,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.MixinDeclaration;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
@@ -29,6 +30,7 @@ import org.qi4j.index.reindexer.ReindexerConfiguration;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
+import se.streamsource.streamflow.web.application.pdf.PdfGeneratorConfiguration;
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.KartagoPluginConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
@@ -72,23 +74,36 @@ public class ConfigurationAssembler
 
    private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException
    {
-      module.entities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
-      module.entities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
-      module.entities( NotificationConfiguration.class ).visibleIn( Visibility.application );
-      module.entities( ConversationResponseConfiguration.class ).visibleIn( Visibility.application );
-      module.entities( RemoveAttachmentsConfiguration.class ).visibleIn( Visibility.application );
-      module.entities( StreetAddressLookupConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( ReindexerConfiguration.class,
+            DataSourceConfiguration.class,
+            NotificationConfiguration.class,
+            ConversationResponseConfiguration.class,
+            RemoveAttachmentsConfiguration.class,
+            StreetAddressLookupConfiguration.class,
+            PdfGeneratorConfiguration.class
+      ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
+
       module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");
+
       module.forMixin( NotificationConfiguration.class ).declareDefaults().enabled().set( true );
+
       module.forMixin( ConversationResponseConfiguration.class ).declareDefaults().enabled().set( true );
+
       module.forMixin( RemoveAttachmentsConfiguration.class ).declareDefaults().enabled().set( true );
+
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().loadFrequence().set( 604800000L );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().enabled().set( false );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().minkeywordlength().set( 3 );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().limit().set( 10 );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().url().set( "http://localhost:8086/streets/street" );
+
+      MixinDeclaration<PdfGeneratorConfiguration> pdfConfig = module.forMixin( PdfGeneratorConfiguration.class );
+      pdfConfig.declareDefaults().headerMargin().set( 100F );
+      pdfConfig.declareDefaults().footerMargin().set( 80F );
+      pdfConfig.declareDefaults().leftMargin().set( 80F );
+      pdfConfig.declareDefaults().rightMargin().set( 80F );
 
    }
 

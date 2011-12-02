@@ -14,40 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.api.workspace.cases.general;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
 import java.util.Date;
 
 /**
- * General information about a case
+ * Contains all data related to a note.
  */
-public interface CaseGeneralDTO
-      extends ValueComposite
+public interface NoteDTO
+   extends LinkValue
 {
-   @Optional
-   Property<String> caseId();
 
-   @Optional
-   Property<LinkValue> caseType();
 
-   @MaxLength(50)
-   Property<String> description();
-
-   @Optional
    Property<String> note();
 
-   Property<Date> creationDate();
+   Property<Date> createdOn();
 
-   Property<CaseStates> status();
+   Property<String> creator();
 
-   @Optional
-   Property<Date> dueOn();
 }

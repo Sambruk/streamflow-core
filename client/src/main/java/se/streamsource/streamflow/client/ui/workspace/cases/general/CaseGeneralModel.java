@@ -27,14 +27,12 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -42,6 +40,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -85,18 +84,6 @@ public class CaseGeneralModel
       form.set("description", newDescription);
       client.postCommand( "changedescription", form );
 
-   }
-
-   public void changeNote( String newNote )
-   {
-      if (newNote.equals(general.note().get()))
-         return; // No change
-
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory()
-            .newValueBuilder(StringValue.class);
-      builder.prototype().string().set( newNote );
-      client.postCommand( "changenote", builder.newInstance() );
-      general.note().set( newNote );
    }
 
    public void changeDueOn( Date newDueOn )
@@ -165,5 +152,11 @@ public class CaseGeneralModel
    public PossibleFormsModel newPossibleFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(PossibleFormsModel.class).use( client.getClient( "../possibleforms/" ) ).newInstance();
+   }
+
+   public CaseNoteModel newCaseNoteModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder( CaseNoteModel.class ).use(  client.getClient( "../note/" ) ).newInstance();
+
    }
 }

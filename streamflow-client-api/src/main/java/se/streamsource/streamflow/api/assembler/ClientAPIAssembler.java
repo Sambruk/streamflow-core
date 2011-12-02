@@ -88,6 +88,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPlu
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 
 /**
@@ -115,7 +116,8 @@ public class ClientAPIAssembler
               MessageDTO.class,
               AttachmentDTO.class, 
               UpdateAttachmentDTO.class,
-              CaseLogEntryDTO.class);
+              CaseLogEntryDTO.class,
+              NoteDTO.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,

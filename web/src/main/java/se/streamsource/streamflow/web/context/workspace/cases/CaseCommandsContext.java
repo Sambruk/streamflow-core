@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.context.workspace.cases;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
@@ -30,7 +31,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
-import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
+import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -46,22 +47,16 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
-import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.caze.CaseStructure;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
@@ -162,6 +157,9 @@ public interface CaseCommandsContext
    {
       @Structure
       Module module;
+
+      @Service
+      PdfGeneratorService pdfGenerator;
 
       // List possible actions
       public LinksValue possiblesendto()
@@ -339,34 +337,7 @@ public interface CaseCommandsContext
 
       public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable
       {
-         Locale locale = role( Locale.class );
-
-         Ownable.Data caze = RoleMap.role( Ownable.Data.class );
-         Ownable.Data project = (Ownable.Data) caze.owner().get();
-         Owner ou = project.owner().get();
-
-         Organization org = ((OwningOrganization) ou).organization().get();
-
-         AttachedFile.Data template = (AttachedFile.Data) ((CasePdfTemplate.Data) org).casePdfTemplate().get();
-
-         if (template == null)
-         {
-            template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) org).defaultPdfTemplate().get();
-         }
-
-         String uri = null;
-         if (template != null)
-         {
-            uri = template.uri().get();
-         }
-
-         CasePdfGenerator exporter = module.objectBuilderFactory().newObjectBuilder( CasePdfGenerator.class ).use( config, uri, locale ).newInstance();//new CasePdfGenerator( config, "", locale );
-
-         ((CaseStructure) caze).outputCase( exporter );
-
-         final PDDocument pdf = exporter.getPdf();
-
-         return pdf;
+         return pdfGenerator.generateCasePdf( role( CaseEntity.class ), config, role( Locale.class ) );
       }
    }
 }

@@ -31,7 +31,6 @@ import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -53,7 +52,6 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
-import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
@@ -64,9 +62,9 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
+import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
@@ -94,6 +92,7 @@ public interface CaseEntity
       Describable.Data,
       DueOn.Data,
       Notable.Data,
+      Notes.Data,
       Ownable.Data,
       CaseId.Data,
       Status.Events,
@@ -269,6 +268,9 @@ public interface CaseEntity
       SubCases.Data subCases;
 
       @This
+      Notes.Data notes;
+
+      @This
       Case caze;
 
       @Structure
@@ -293,6 +295,11 @@ public interface CaseEntity
          {
             caze.removeSubCase( childCase );
             childCase.deleteEntity();
+         }
+
+         if( notes.notes().get() != null )
+         {
+            notes.notes().get().deleteEntity();
          }
 
          next.deleteEntity();

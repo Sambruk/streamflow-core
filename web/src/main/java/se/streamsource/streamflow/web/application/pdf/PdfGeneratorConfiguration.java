@@ -14,21 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package se.streamsource.streamflow.web.application.pdf;
 
-package se.streamsource.streamflow.web.context.structure;
-
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.Notable;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Configurable margins for pdf generation.
  */
-public class NotableContext
+public interface PdfGeneratorConfiguration
+   extends ConfigurationComposite
 {
-   public void addnote( StringValue noteValue )
-   {
-      Notable notable = RoleMap.role( Notable.class );
-      notable.changeNote( noteValue.string().get() );
-   }
+   @UseDefaults
+   Property<Float> headerMargin();
+
+   @UseDefaults
+   Property<Float> footerMargin();
+
+   @UseDefaults
+   Property<Float> leftMargin();
+
+   @UseDefaults
+   Property<Float> rightMargin();
+
+   @UseDefaults
+   Property<String> language();
 }

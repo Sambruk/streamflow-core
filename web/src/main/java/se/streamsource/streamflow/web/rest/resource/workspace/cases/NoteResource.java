@@ -14,21 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package se.streamsource.streamflow.web.rest.resource.workspace.cases;
 
-package se.streamsource.streamflow.web.context.structure;
-
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.Notable;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.streamflow.web.context.workspace.cases.note.NoteContext;
 
 /**
- * JAVADOC
+ * The corresponding resource for a note.
  */
-public class NotableContext
+public class NoteResource
+   extends CommandQueryResource
 {
-   public void addnote( StringValue noteValue )
+   public NoteResource()
    {
-      Notable notable = RoleMap.role( Notable.class );
-      notable.changeNote( noteValue.string().get() );
+      super(NoteContext.class);
    }
 }

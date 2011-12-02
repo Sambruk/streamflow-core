@@ -29,7 +29,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
-import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
+import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 
 import java.util.Properties;
@@ -55,7 +55,7 @@ public class StreamflowWebContextTestAssembler
    protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
    {
       appLayer.application().setMode( Application.Mode.test );
-      appLayer.module( "Pdf" ).services( SubmittedFormPdfGenerator.class ).visibleIn( application );
+      appLayer.module( "Pdf" ).services( PdfGeneratorService.class ).visibleIn( application );
       new BootstrapAssembler().assemble( appLayer.module( "Bootstrap" ) );
 
       ApplicationAssembly applicationAssembly = appLayer.application();

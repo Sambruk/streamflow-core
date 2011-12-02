@@ -72,7 +72,6 @@ public class CaseGeneralContext
          builder.prototype().caseType().set( caseTypeBuilder.newInstance() );
       }
 
-      builder.prototype().note().set( aCase.note().get() );
       builder.prototype().creationDate().set( aCase.createdOn().get() );
       builder.prototype().caseId().set( aCase.caseId().get() );
       builder.prototype().dueOn().set( aCase.dueOn().get() );

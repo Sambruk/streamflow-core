@@ -20,23 +20,18 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.DATEPICKER;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -52,7 +47,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
@@ -79,6 +73,7 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
@@ -119,7 +114,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private CaseGeneralModel model;
 
    private JTextField descriptionField;
-   private JScrollPane notePane;
    private JXDatePicker dueOnField;
    private JPanel leftPane;
    private CaseLabelsView labels;
@@ -127,15 +121,19 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private RemovableLabel selectedCaseType = new RemovableLabel();
    private JButton caseTypeButton;
    private JButton labelButton;
+   private final ApplicationContext appContext;
+   private CaseNoteView caseNotes;
 
    public CaseGeneralView(@Service ApplicationContext appContext, @Uses CaseGeneralModel generalModel,
          @Uses CaseLogView caseLogView, @Structure Module module)
    {
+      this.appContext = appContext;
       this.model = generalModel;
       RefreshComponents refreshComponents = new RefreshComponents();
       model.addObserver( refreshComponents );
       ObjectBuilderFactory obf = module.objectBuilderFactory();
       this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( generalModel.newLabelsModel() ).newInstance();
+      this.caseNotes = obf.newObjectBuilder( CaseNoteView.class ).use( generalModel.newCaseNoteModel() ).newInstance();
 
       RefreshComponents refreshLabelComponents = new RefreshComponents();
       labels.getModel().addObserver( refreshLabelComponents );
@@ -239,21 +237,10 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             5, 0, 0, 0 ) ) );
       leftBuilder.nextLine();
 
-      // Description
-      JLabel noteLabel = leftBuilder.append( i18n.text( WorkspaceResources.note_label ) );
-      noteLabel.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
-      leftBuilder.add( new JButton( "Historik" ), new CellConstraints( 4, 5, 1, 1, CellConstraints.RIGHT,
-            CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) ) );
-      leftBuilder.nextLine();
-      notePane = (JScrollPane) TEXTAREA.newField();
-      notePane.setMinimumSize( new Dimension( 10, 10 ) );
-      notePane.setPreferredSize( new Dimension( 10, 80 ) );
-      leftBuilder.add( notePane, new CellConstraints( 1, 6, 4, 1, CellConstraints.FILL, CellConstraints.TOP,
+      
+      leftBuilder.add( caseNotes, new CellConstraints( 1, 6, 4, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 0, 2, 5, 0 ) ) );
-      refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
-      actionBinder.bind( "changeNote", notePane );
-      valueBinder.bind( "note", notePane );
-
+      
       // Forms
       JLabel formsLabel = new JLabel( i18n.text( WorkspaceResources.forms_label ) );
       refreshComponents.visibleOn( "changedescription", formsLabel );
@@ -278,7 +265,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             new DefaultFormatterFactory( new DatePickerFormatter( new DateFormat[]
             { dateFormat } )
             {
-
                @Override
                public Object stringToValue(String text) throws ParseException
                {
@@ -295,7 +281,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                   return result;
                }
             } ) );
-
       
       // Main panel that contains both left and right pane
       JPanel formsContainer = new JPanel();
@@ -309,25 +294,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       setFocusTraversalPolicy( new LayoutFocusTraversalPolicy() );
       setFocusCycleRoot( true );
       setFocusable( true );
-
-      addFocusListener( new FocusListener()
-      {
-         public void focusGained(FocusEvent e)
-         {
-            Component defaultComp = getFocusTraversalPolicy().getDefaultComponent( descriptionField );
-            if (defaultComp != null)
-            {
-               defaultComp.requestFocusInWindow();
-            }
-         }
-
-         public void focusLost(FocusEvent e)
-         {
-         }
-      } );
-
-      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
-      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
       new RefreshWhenShowing( this, this );
    }
@@ -373,21 +339,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       };
    }
 
+  
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task changeNote(final ActionEvent event)
-   {
-      return new CommandTask()
-      {
-         @Override
-         public void command() throws Exception
-         {
-            model.changeNote( ((JTextArea) event.getSource()).getText() );
-         }
-      };
-   }
-
-   @Action(block = Task.BlockingScope.COMPONENT)
-   public Task changeDueOn(final ActionEvent event)
+   public Task changeDueOn( final ActionEvent event )
    {
       return new CommandTask()
       {

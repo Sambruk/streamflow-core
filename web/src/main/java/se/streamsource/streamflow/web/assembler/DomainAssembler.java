@@ -35,12 +35,13 @@ import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
@@ -61,11 +62,12 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileVa
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
+import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
-import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
@@ -90,6 +92,7 @@ public class DomainAssembler
       caseTypes( layer.module("Casetypes") );
       users( layer.module("Users") );
       attachments( layer.module("Attachments") );
+      notes( layer.module( "Notes" ));
 
       // All values are public
       layer.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
@@ -97,6 +100,12 @@ public class DomainAssembler
       // All entities are public
       layer.entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
 
+   }
+
+   private void notes( ModuleAssembly module )
+   {
+      module.entities( NotesTimeLineEntity.class ).visibleIn( application );
+      module.values( NoteValue.class ).visibleIn( application );
    }
 
    private void attachments(ModuleAssembly module) throws AssemblyException

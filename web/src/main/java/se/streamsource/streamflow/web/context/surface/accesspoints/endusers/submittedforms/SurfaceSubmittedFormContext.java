@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.sub
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
+import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
@@ -28,11 +28,9 @@ import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplat
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Locale;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -40,11 +38,11 @@ import static se.streamsource.dci.api.RoleMap.role;
 public class SurfaceSubmittedFormContext
 {
    @Service
-   SubmittedFormPdfGenerator pdfGenerator;
+   PdfGeneratorService pdfGenerator;
 
    @Uses Locale locale;
 
-   public PDDocument generateformaspdf() throws IOException, URISyntaxException
+   public PDDocument generateformaspdf() throws Throwable
    {
       SubmittedFormValue submittedFormValue = role(SubmittedFormValue.class);
 
@@ -69,8 +67,7 @@ public class SurfaceSubmittedFormContext
 
       CaseId.Data idData = role( CaseId.Data.class);
 
-      PDDocument pdf = pdfGenerator.generatepdf(submittedFormValue, idData, uri, locale);
+      return pdfGenerator.generateSubmittedFormPdf( submittedFormValue, idData, uri, locale );
 
-      return pdf;
    }
 }

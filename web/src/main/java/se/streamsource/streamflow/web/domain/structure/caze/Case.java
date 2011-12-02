@@ -50,6 +50,7 @@ public interface Case
       Describable,
       DueOn,
       Notable,
+      Notes,
       Ownable,
       CaseId,
       Status,

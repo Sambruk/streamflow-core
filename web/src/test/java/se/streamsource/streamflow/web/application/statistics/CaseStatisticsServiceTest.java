@@ -17,10 +17,17 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -34,6 +41,7 @@ import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
@@ -51,6 +59,7 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
@@ -62,6 +71,7 @@ import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
@@ -69,14 +79,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.ParticipantR
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
-
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * JAVADOC
@@ -109,6 +111,7 @@ public class CaseStatisticsServiceTest
               UsersEntity.class,
               RoleEntity.class,
               UserEntity.class,
+              NotesTimeLineEntity.class,
               ResolutionEntity.class,
               CaseEntity.class,
               CaseTypeEntity.class,
@@ -116,7 +119,7 @@ public class CaseStatisticsServiceTest
               MessageEntity.class,
               CaseLogEntity.class);
       
-      module.values(ContactDTO.class, ParticipantRolesValue.class, CaseLogEntryDTO.class);
+      module.values(ContactDTO.class, ParticipantRolesValue.class, CaseLogEntryDTO.class, NoteValue.class );
 
       module.objects(TimeService.class, CaseStatisticsServiceTest.class);
       module.transients(GroupsContext.class);
@@ -174,6 +177,7 @@ public class CaseStatisticsServiceTest
 
       uow.complete();
 
+
       UnitOfWork caseUoW = unitOfWorkFactory.newUnitOfWork();
       UserEntity user = caseUoW.get(user1);
       caseType1 = caseUoW.get(caseType1);
@@ -181,9 +185,12 @@ public class CaseStatisticsServiceTest
       fixed = caseUoW.get(fixed);
       label1 = caseUoW.get(label1);
 
+      //RoleMap.current().set( user1, null );
+      RoleMap.current().set( user );
+
       CaseEntity case1 = user.createDraft();
       case1.changeDescription("Case description");
-      case1.changeNote("Case note");
+      case1.addNote( "Case note" );
       case1.addLabel(label1);
       case1.changeCaseType(caseType1);
       case1.changeOwner(project1);
@@ -209,7 +216,6 @@ public class CaseStatisticsServiceTest
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:Fixed"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:Label1"));
       assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("description:Case description"));
-      assertThat(appender.getEvents().get(idx).getMessage().toString(), new ContainsMatcher("note:Case note"));
 
       UnitOfWork removeUoW = unitOfWorkFactory.newUnitOfWork();
       case1 = removeUoW.get(CaseEntity.class, id[0]);
