@@ -35,6 +35,7 @@ public enum WorkspaceResources
    info_column_header,
    casetype_column_header,
    created_column_header,
+   created_by_column_header,
    case_status_header,
    assignee_column_header,
    duedate_column_header,

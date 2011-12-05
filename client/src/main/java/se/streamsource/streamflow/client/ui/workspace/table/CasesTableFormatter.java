@@ -53,6 +53,7 @@ public class CasesTableFormatter
             text( casetype_column_header ),
             text( assignee_column_header ),
             text( created_column_header ),
+            text( created_by_column_header ),
             text( duedate_column_header ),
             text( project_column_header ),
             text( case_status_header )};
@@ -62,6 +63,7 @@ public class CasesTableFormatter
             String.class,
             String.class,
             Date.class,
+            String.class,
             Date.class,
             String.class,
             CaseStates.class
@@ -144,15 +146,18 @@ public class CasesTableFormatter
                return caseValue.creationDate().get();
 
             case 5:
-               return caseValue.dueOn().get();
+               return caseValue.createdBy().get();
 
             case 6:
-               return caseValue.owner().get();
+               return caseValue.dueOn().get();
 
             case 7:
+               return caseValue.owner().get();
+
+            case 8:
                return caseValue.status().get();
             
-            case 8:
+            case 9:
                return caseValue.href().get();
          }
 
