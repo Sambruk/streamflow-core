@@ -46,6 +46,7 @@ public class CaseNoteModel extends Observable
    private CommandQueryClient client;
 
 
+   private int selectedNoteIndex = 0;
    private NoteDTO note;
    private ResourceValue resource;
 
@@ -90,5 +91,15 @@ public class CaseNoteModel extends Observable
    public boolean checkNoteEnabled()
    {
       return matchesAny( Links.withRel( "addnote" ), resource.commands().get() );
+   }
+
+   public void setSelectedNoteIndex(int index)
+   {
+      selectedNoteIndex = index;
+   }
+   
+   public int getSelectedNoteIndex()
+   {
+      return selectedNoteIndex;
    }
 }

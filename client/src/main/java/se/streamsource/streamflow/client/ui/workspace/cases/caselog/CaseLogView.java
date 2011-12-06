@@ -1,19 +1,3 @@
-/**
- *
- * Copyright 2009-2011 Streamsource AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
@@ -21,7 +5,11 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -117,13 +105,33 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       newMessagePane = new JScrollPane( newMessageArea );
       newMessagePane.setMinimumSize( new Dimension( 10, 10 ) );
       newMessagePane.setPreferredSize( new Dimension( 10, 70 ) );
-      rightBuilder.add( newMessagePane, new CellConstraints( 2, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
+      rightBuilder.add( newMessagePane, new CellConstraints( 2, 3, 2, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 10, 0, 0, 0 ) ) );
 
-      javax.swing.Action addMessageAction = am.get( "addMessage" );
-      JButton addMessageButton = new JButton( addMessageAction );
-      rightBuilder.add( addMessageButton, new CellConstraints( 3, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
-            new Insets( 8, 5, 0, 0 ) ) );
+      newMessageArea.addKeyListener( new KeyListener()
+      {
+         
+         @Override
+         public void keyTyped(KeyEvent e){}
+         
+         @Override
+         public void keyReleased(KeyEvent e){}
+         
+         @Override
+         public void keyPressed(KeyEvent e)
+         {
+            if(e.getKeyCode() == 10)
+            {
+               if(e.isControlDown()) 
+               {
+                   newMessageArea.append("\n");
+               } else
+               {
+                  addMessage();
+               }
+            }
+         }
+      });
 
       RefreshComponents refreshComponents = new RefreshComponents();
       refreshComponents.enabledOn( "addMessage", newMessagePane.getViewport().getView() );
@@ -146,7 +154,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       }
    }
 
-   @Action
    public void addMessage()
    {
       if (!Strings.empty( newMessageArea.getText() ))
@@ -164,4 +171,5 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
          }.execute();
       }
    }
+
 }

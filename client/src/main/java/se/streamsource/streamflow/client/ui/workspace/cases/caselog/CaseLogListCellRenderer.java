@@ -32,6 +32,7 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 
 import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.util.Strings;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -63,7 +64,13 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       formBuilder.add( date, new CellConstraints( 3, 1, 1, 1, CellConstraints.RIGHT, CellConstraints.TOP ) );
 
       // Message
-      JLabel message = new JLabel( entry.message().get() );
+      String entryMessage = entry.message().get();
+      if (!Strings.empty( entryMessage ))
+      {
+         entryMessage = "<html>" + entryMessage.replace( "\n", "<br>" ) + "</html>";
+      }
+      JLabel message = new JLabel( entryMessage );
+      
       message.setForeground( Color.BLACK );
       formBuilder.add( message, new CellConstraints( 2, 2, 2, 1, CellConstraints.LEFT, CellConstraints.TOP ) );
 

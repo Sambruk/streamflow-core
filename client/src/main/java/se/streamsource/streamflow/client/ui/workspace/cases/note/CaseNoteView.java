@@ -16,49 +16,11 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.note;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXPanel;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.structure.Module;
-import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
-import se.streamsource.streamflow.client.ui.DateFormats;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.ActionBinder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshComponents;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import static org.qi4j.api.specification.Specifications.or;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -75,8 +37,52 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXPanel;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
+
+import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
+import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * A view representing all general notes present on a case
@@ -89,7 +95,6 @@ public class CaseNoteView
 
    private CaseNoteModel model;
    private JTextArea note;
-   private JLabel label;
 
    private JDialog popup;
 
@@ -118,7 +123,6 @@ public class CaseNoteView
 
       formBuilder.append( i18n.text( WorkspaceResources.note_label ));
 
-      label = formBuilder.append( i18n.text( WorkspaceResources.created_by ) + ":" );
 
       allNotesBtn = new JToggleButton( am.get( "allNotes" ) );
       allNotesBtn.addItemListener( new ItemListener()
@@ -128,7 +132,6 @@ public class CaseNoteView
             int state = itemEvent.getStateChange();
             if (state == ItemEvent.SELECTED)
             {
-
                showPopup( allNotesBtn );
            } else if (state == ItemEvent.DESELECTED)
            {
@@ -136,7 +139,7 @@ public class CaseNoteView
            }
          }
        });
-
+      formBuilder.nextColumn(2);
       formBuilder.append( allNotesBtn );
 
       JScrollPane textScroll = null;
@@ -183,8 +186,6 @@ public class CaseNoteView
    {
       model.refresh();
       valueBinder.update( model.getNote() );
-      label.setText( i18n.text( WorkspaceResources.created_by ) + ": "
-            + (model.getNote() != null ? model.getNote().creator().get() : "" ) );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -205,7 +206,6 @@ public class CaseNoteView
 
       JList notes = new JList( );
       scroll.setViewportView( notes );
-
       
       notes.addListSelectionListener( new ListSelectionListener()
       {
@@ -224,9 +224,7 @@ public class CaseNoteView
                }
 
                note.setText( selectedNote.note().get() );
-               label.setText(  i18n.text( WorkspaceResources.created_by ) + ": "
-                     + model.getNote().creator().get() );
-
+               model.setSelectedNoteIndex(e.getLastIndex());
             }
 
          }
@@ -246,47 +244,41 @@ public class CaseNoteView
       } );
       
       notes.setModel( model.getNotes() );
-
+      notes.setSelectedIndex( model.getSelectedNoteIndex() );
+      
       notes.setCellRenderer( new DefaultListCellRenderer()
       {
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
          {
             NoteDTO note = (NoteDTO) value;
 
-            Box box = Box.createHorizontalBox();
-
+            JPanel itemPanel = new JPanel();
+            itemPanel.setLayout( new BoxLayout( itemPanel, BoxLayout.X_AXIS ) );
+            
             JLabel date = new JLabel(DateFormats.getProgressiveDateTimeValue( note.createdOn().get(),
                   Locale.getDefault() ) + "\t", JLabel.LEFT );
             JLabel name = new JLabel( note.creator().get(), JLabel.RIGHT);
             
-            box.add( date, Box.LEFT_ALIGNMENT);
-            box.add( Box.createHorizontalGlue() );
-            box.add( name, Box.RIGHT_ALIGNMENT );
+            itemPanel.add( date, Box.LEFT_ALIGNMENT);
+            itemPanel.add( Box.createHorizontalGlue() );
+            itemPanel.add( name, Box.RIGHT_ALIGNMENT );
 
-           Border border = null;
-//           if (cellHasFocus) {
-//               if (isSelected) {
-//                   border = DefaultLookup.getBorder( this, ui, "List.focusSelectedCellHighlightBorder" );
-//               }
-//               if (border == null) {
-//                   border = DefaultLookup.getBorder(this, ui, "List.focusCellHighlightBorder");
-//               }
-//           } else {
-//               border = DefaultLookup.getBorder(this, ui, "List.cellNoFocusBorder");
-//           }
-	         box.setBorder(border);
+            itemPanel.setBorder(BorderFactory.createEmptyBorder(1,3,1,3));
 
             if(isSelected)
             {
-               box.setForeground( list.getSelectionForeground() );
-               box.setBackground( list.getSelectionBackground() );
+
+               itemPanel.setBackground( list.getSelectionBackground() );
+               date.setForeground( list.getSelectionForeground() );
+               name.setForeground( list.getSelectionForeground() );
             } else
             {
-               box.setForeground( list.getForeground() );
-               box.setBackground( list.getBackground() );
+               itemPanel.setBackground( list.getBackground() );
+               date.setForeground( list.getForeground() );
+               name.setForeground( list.getForeground() );
             }
-
-            return box;
+            
+            return itemPanel;
          }
       } );
 

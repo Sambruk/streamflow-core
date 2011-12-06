@@ -171,7 +171,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             i18n.text( WorkspaceResources.description_label ) );
       leftBuilder.add( descriptionLabel );
       descriptionLabel.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
-      leftBuilder.nextColumn();
+      leftBuilder.nextColumn(3);
       JLabel dueOnLabel = leftBuilder.append( i18n.text( WorkspaceResources.due_on_label ) );
       dueOnLabel.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
 
@@ -250,7 +250,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       JPanel formsPanel = new JPanel( new BorderLayout() );
       formsPanel.add( forms, BorderLayout.WEST );
-      leftBuilder.add( formsPanel, new CellConstraints( 1, 8, 1, 1, CellConstraints.FILL, CellConstraints.FILL,
+      leftBuilder.add( formsPanel, new CellConstraints( 1, 8, 3, 1, CellConstraints.FILL, CellConstraints.FILL,
             new Insets( 5, 0, 0, 0 ) ) );
 
       // Limit pickable dates to future
