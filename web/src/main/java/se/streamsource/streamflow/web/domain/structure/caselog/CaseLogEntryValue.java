@@ -24,16 +24,10 @@ import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
+
 public interface CaseLogEntryValue extends ValueComposite
 {
-   public enum EntryType {
-      system,
-      custom,
-      contact,
-      form,
-      conversation,
-      attachment
-   }
    
    public enum AuthorizationType {
       open,
@@ -46,7 +40,7 @@ public interface CaseLogEntryValue extends ValueComposite
    @Optional
    Property<EntityReference> entity();
    
-   Property<EntryType> entryType();
+   Property<CaseLogEntryTypes> entryType();
    
    Property<AuthorizationType> authorizationType();
 

@@ -30,6 +30,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue.AuthorizationType;
@@ -74,7 +75,7 @@ public interface CaseLog extends Removable
          builder.prototype().createdBy()
                .set( EntityReference.getEntityReference( RoleMap.role( ConversationParticipant.class ) ) );
          builder.prototype().createdOn().set( new Date() );
-         builder.prototype().entryType().set( CaseLogEntryValue.EntryType.custom );
+         builder.prototype().entryType().set( CaseLogEntryTypes.custom );
          builder.prototype().message().set( message );
          builder.prototype().authorizationType().set( authorizationType );
 
@@ -88,7 +89,7 @@ public interface CaseLog extends Removable
          builder.prototype().createdBy()
                .set( EntityReference.getEntityReference( RoleMap.role( ConversationParticipant.class ) ) );
          builder.prototype().createdOn().set( new Date() );
-         builder.prototype().entryType().set( CaseLogEntryValue.EntryType.system );
+         builder.prototype().entryType().set( CaseLogEntryTypes.system );
          builder.prototype().message().set( message );
          builder.prototype().authorizationType().set( CaseLogEntryValue.AuthorizationType.user );
 

@@ -65,6 +65,8 @@ import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogFilterValue;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
@@ -82,7 +84,6 @@ import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
-import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
@@ -117,6 +118,7 @@ public class ClientAPIAssembler
               AttachmentDTO.class, 
               UpdateAttachmentDTO.class,
               CaseLogEntryDTO.class,
+              CaseLogFilterValue.class,
               NoteDTO.class);
 
       workspace.values(FieldDTO.class,

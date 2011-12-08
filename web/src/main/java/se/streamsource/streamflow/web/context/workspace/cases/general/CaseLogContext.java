@@ -28,12 +28,12 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogFilterValue;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
@@ -43,56 +43,77 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
-import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable.Data;
 
 /**
  * JAVADOC
  */
 public class CaseLogContext
-      implements IndexContext<LinksValue>
 {
    @Structure
    Module module;
-   
+
    @SkipResourceValidityCheck
-   public LinksValue index()
+   public LinksValue list(CaseLogFilterValue filter)
    {
       LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
       ValueBuilder<CaseLogEntryDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryDTO.class );
-      
+
       CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
-      
+
       ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
       Map<String, String> translations = new HashMap<String, String>();
       for (String key : bundle.keySet())
       {
-         translations.put(key, bundle.getString(key));
+         translations.put( key, bundle.getString( key ) );
       }
-      
-      for (CaseLogEntryValue entry : ((CaseLog.Data)caseLog.caselog().get()).entries().get())
-      {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         Describable user = uow.get( Describable.class, entry.createdBy().get().identity() );
-         builder.prototype().creationDate().set( entry.createdOn().get() );
-         builder.prototype().creator().set( user.getDescription() );
-         builder.prototype().message().set( Translator.translate( entry.message().get(), translations));
-         String id = "";
-         if (entry.entity().get() != null)
-         {
-            id = EntityReference.getEntityReference( entry.entity().get() ).identity();
-         } 
-         builder.prototype().href().set( id );
-         builder.prototype().id().set( id );
-            
-         builder.prototype().text().set( Translator.translate( entry.message().get(), translations));
 
-         links.addLink( builder.newInstance() );
+      for (CaseLogEntryValue entry : ((CaseLog.Data) caseLog.caselog().get()).entries().get())
+      {
+         if (includeEntry( filter, entry ))
+         {
+            UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+            Describable user = uow.get( Describable.class, entry.createdBy().get().identity() );
+            builder.prototype().creationDate().set( entry.createdOn().get() );
+            builder.prototype().creator().set( user.getDescription() );
+            builder.prototype().message().set( Translator.translate( entry.message().get(), translations ) );
+            String id = "";
+            if (entry.entity().get() != null)
+            {
+               id = EntityReference.getEntityReference( entry.entity().get() ).identity();
+            }
+            builder.prototype().href().set( id );
+            builder.prototype().id().set( id );
+
+            builder.prototype().text().set( Translator.translate( entry.message().get(), translations ) );
+
+            links.addLink( builder.newInstance() );
+         }
       }
       return links.newLinks();
    }
 
+   private boolean includeEntry(CaseLogFilterValue filter, CaseLogEntryValue entry)
+   {
+      switch (entry.entryType().get())
+      {
+      case attachment:
+         return filter.attachment().get();
+      case contact:
+         return filter.attachment().get();
+      case conversation:
+         return filter.conversation().get();
+      case custom:
+         return filter.custom().get();
+      case form:
+         return filter.form().get();
+      case system:
+         return filter.system().get();
+      }
+      return false;
+   }
+
    @RequiresPermission(PermissionType.write)
-   public void addmessage( StringValue message )
+   public void addmessage(StringValue message)
    {
       CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
       caseLog.caselog().get().addCustomEntry( message.string().get(), CaseLogEntryValue.AuthorizationType.user );

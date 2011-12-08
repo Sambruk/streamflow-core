@@ -16,25 +16,34 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.attachment;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.contact;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.conversation;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.custom;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.form;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Observable;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.Form;
-
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogFilterValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 
 public class CaseLogModel extends Observable
    implements Refreshable
@@ -44,6 +53,10 @@ public class CaseLogModel extends Observable
    private Module module;
    
    private final CommandQueryClient client;
+   
+   private List<String> selectedFilters = new ArrayList<String>( Arrays.asList( system.name(), custom.name(), contact.name(), form.name(), conversation.name(),
+         attachment.name() ));
+   
 
    TransactionList<CaseLogEntryDTO> caselogs = new TransactionList<CaseLogEntryDTO>(new BasicEventList<CaseLogEntryDTO>( ));
 
@@ -54,10 +67,21 @@ public class CaseLogModel extends Observable
    
    public void refresh()
    {
-      LinksValue newCaseLogs = client.query( "index", LinksValue.class );
+      LinksValue newCaseLogs = client.query( "list", LinksValue.class, createFilter() );
       EventListSynch.synchronize( newCaseLogs.links().get(), caselogs );
    }
    
+   private CaseLogFilterValue createFilter()
+   {
+      ValueBuilder<CaseLogFilterValue> builder = module.valueBuilderFactory().newValueBuilder( CaseLogFilterValue.class );
+      builder.prototype().attachment().set( selectedFilters.contains( attachment.name() ) );
+      builder.prototype().contact().set( selectedFilters.contains( contact.name() ) );
+      builder.prototype().conversation().set( selectedFilters.contains( conversation.name() ) );
+      builder.prototype().custom().set( selectedFilters.contains( custom.name() ) );
+      builder.prototype().form().set( selectedFilters.contains( form.name() ) );
+      builder.prototype().system().set( selectedFilters.contains( system.name() ) );
+      return builder.newInstance();
+   }
    public EventList<CaseLogEntryDTO> caselogs()
    {
       return caselogs;
@@ -71,5 +95,10 @@ public class CaseLogModel extends Observable
       ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
       builder.prototype().string().set( newMessage );
       client.postCommand( "addmessage", builder.newInstance() );
+   }
+
+   public List<String> getSelectedFilters()
+   {
+      return selectedFilters;
    }
 }

@@ -232,7 +232,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       leftBuilder.add( labelButton, new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 5, 0, 0, 0 ) ) );
 
-      labels.setPreferredSize( new Dimension( 500, 80 ) );
+      labels.setPreferredSize( new Dimension( 500, 60 ) );
       leftBuilder.add( labels, new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(
             5, 0, 0, 0 ) ) );
       leftBuilder.nextLine();

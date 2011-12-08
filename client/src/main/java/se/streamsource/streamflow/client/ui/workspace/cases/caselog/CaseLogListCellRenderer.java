@@ -30,7 +30,7 @@ import javax.swing.border.EmptyBorder;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
-import se.streamsource.streamflow.api.workspace.cases.general.CaseLogEntryDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.util.Strings;
 

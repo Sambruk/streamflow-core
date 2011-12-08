@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
@@ -226,10 +227,10 @@ public class ManagementAssembler extends AbstractLayerAssembler
 
                         if (messageData.body().get() != null && messageData.body().get().startsWith( "{" ))
                         {
-                           builder.prototype().entryType().set( CaseLogEntryValue.EntryType.system );
+                           builder.prototype().entryType().set( CaseLogEntryTypes.system );
                         } else
                         {
-                           builder.prototype().entryType().set( CaseLogEntryValue.EntryType.custom );
+                           builder.prototype().entryType().set( CaseLogEntryTypes.custom );
                         }
                         builder.prototype().message().set( messageData.body().get() );
                         ((CaseLog.Data) caze.caselog().get()).addedEntry( null, builder.newInstance() );
