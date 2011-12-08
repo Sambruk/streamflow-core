@@ -543,11 +543,12 @@ public interface ManagerComposite
          logger.info("Finished refreshing statistics");
       }
 
-      public void performArchivalCheck()
+      public String performArchivalCheck()
       {
          logger.info("Start archival check");
-         archival.performArchivalCheck();
+         String result = archival.performArchivalCheck();
          logger.info("Finished archival check");
+         return result;
       }
 
       public void performArchival()

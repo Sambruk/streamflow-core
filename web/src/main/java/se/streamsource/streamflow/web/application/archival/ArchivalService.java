@@ -70,7 +70,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 public interface ArchivalService
       extends ServiceComposite, Configuration<ArchivalConfiguration>, Activatable
 {
-   void performArchivalCheck();
+   String performArchivalCheck();
 
    public void performArchival() throws UnitOfWorkCompletionException;
 
@@ -130,21 +130,25 @@ public interface ArchivalService
          }
       }
 
-      public void performArchivalCheck()
+      public String performArchivalCheck()
       {
          UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(archivalCheck);
 
+         int count = 0;
          try
          {
+
             for (CaseEntity caseEntity : archivableCases(archivalSettings()))
             {
                CaseType caseType = caseEntity.caseType().get();
                logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", "+caseType.getDescription())+"), created on " + caseEntity.createdOn().get() + ", can be archived");
+               count++;
             }
          } finally
          {
             uow.discard();
          }
+         return count + " cases can be archived according to archival settings.";
       }
 
       public void performArchival() throws UnitOfWorkCompletionException

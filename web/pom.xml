@@ -331,6 +331,13 @@
             <version>3.1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId> org.igniterealtime.smack</groupId>
+            <artifactId>smackx</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        
+
     </dependencies>
 
 </project>
