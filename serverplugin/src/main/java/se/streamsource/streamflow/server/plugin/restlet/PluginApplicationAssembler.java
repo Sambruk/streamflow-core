@@ -18,6 +18,9 @@
 package se.streamsource.streamflow.server.plugin.restlet;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Module;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
@@ -28,6 +31,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.library.jmx.JMXAssembler;
+import se.streamsource.infrastructure.database.DataSourceService;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
@@ -49,6 +53,9 @@ public class PluginApplicationAssembler
 {
    Assembler pluginAssembler;
    private final String preferenceNode;
+
+    @Structure
+    Module module;
 
    public PluginApplicationAssembler( Assembler pluginAssembler, String preferenceNode )
    {
@@ -104,7 +111,10 @@ public class PluginApplicationAssembler
       ModuleAssembly adminAssembly = managementLayer.module("JMX");
       new JMXAssembler().assemble( adminAssembly );
 
-      adminAssembly.services(DatasourceConfigurationManagerService.class).instantiateOnStartup();;
+      //Check if there is a datasource and enable data source configuration if necessary.
+      ServiceReference<DataSourceService> dataSourceService = module.serviceFinder().<ServiceReference<DataSourceService>>findService( DataSourceService.class ).get();
+      if( dataSourceService != null )
+         adminAssembly.services(DatasourceConfigurationManagerService.class).instantiateOnStartup();;
    }
 
    private void assemblePluginLayer( LayerAssembly pluginLayer ) throws AssemblyException
