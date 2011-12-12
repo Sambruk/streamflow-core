@@ -16,6 +16,7 @@
  */
 package se.streamsource.infrastructure.management;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.entity.Entity;
 import org.qi4j.api.entity.EntityComposite;
@@ -34,7 +35,6 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
-
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.infrastructure.database.DataSourceService;
 
@@ -85,6 +85,8 @@ public interface DatasourceConfigurationManagerService
 
       @Service
       Iterable<ServiceReference<DataSource>> dataSources;
+
+      @Optional
       @Service
       ServiceReference<DataSourceService> dataSourceService;
 
