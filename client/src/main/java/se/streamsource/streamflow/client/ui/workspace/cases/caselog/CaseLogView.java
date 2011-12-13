@@ -145,6 +145,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
                public void refresh()
                {
                   model.refresh();
+                  list.ensureIndexIsVisible( list.getModel().getSize() - 1 );
                }
             } );
       rightBuilder.add( filterPopupHandler.getButton(), new CellConstraints( 3, 1, 1, 1, CellConstraints.RIGHT,

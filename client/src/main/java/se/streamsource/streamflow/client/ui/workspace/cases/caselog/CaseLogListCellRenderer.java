@@ -24,11 +24,9 @@ import java.util.Locale;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
-
-import org.jdesktop.swingx.JXList;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
 
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.ui.DateFormats;
@@ -47,7 +45,7 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       CaseLogEntryDTO entry = (CaseLogEntryDTO) value;
 
       JPanel renderer = new JPanel( new BorderLayout() );
-      FormLayout rowLayout = new FormLayout( "30dlu, pref:grow, pref", "pref, pref:grow" );
+      FormLayout rowLayout = new FormLayout( "30dlu, pref:grow, pref", "pref, fill:pref:grow" );
       renderer.setLayout( rowLayout );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( rowLayout, renderer );
       renderer.setBorder( new EmptyBorder( 3, 3, 6, 3 ) );
@@ -67,13 +65,17 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       String entryMessage = entry.message().get();
       if (!Strings.empty( entryMessage ))
       {
-         entryMessage = "<html>" + entryMessage.replace( "\n", "<br>" ) + "</html>";
+         entryMessage = entryMessage.trim();
       }
-      JLabel message = new JLabel( entryMessage );
-      
+      JTextArea message = new JTextArea( entryMessage );
+      message.setLineWrap( true );
+      message.setWrapStyleWord( true );
+      message.setOpaque( false );
+      message.setSize( 500, 1 );
+      message.setSize( message.getPreferredSize() );
       message.setForeground( Color.BLACK );
-      formBuilder.add( message, new CellConstraints( 2, 2, 2, 1, CellConstraints.LEFT, CellConstraints.TOP ) );
-
+      formBuilder.add( message, new CellConstraints( 2, 2, 2, 1, CellConstraints.FILL, CellConstraints.TOP ) );
+      
       // Participants
       // JLabel participants = new
       // JLabel(String.valueOf(conversations.participants().get()), i18n.icon(

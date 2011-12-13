@@ -42,8 +42,8 @@ public interface CaseLog extends Removable
 
    void addCustomEntry(String message, CaseLogEntryValue.AuthorizationType authorizationType);
 
-   void addSystemEntry(String message);
-
+   void addTypedEntry(String message, CaseLogEntryTypes type);
+   
    interface Data
    {
       @UseDefaults
@@ -82,14 +82,14 @@ public interface CaseLog extends Removable
          addedEntry( null, builder.newInstance() );
       }
 
-      public void addSystemEntry(String message)
+      public void addTypedEntry(String message, CaseLogEntryTypes type)
       {
          ValueBuilder<CaseLogEntryValue> builder = module.valueBuilderFactory().newValueBuilder(
                CaseLogEntryValue.class );
          builder.prototype().createdBy()
                .set( EntityReference.getEntityReference( RoleMap.role( ConversationParticipant.class ) ) );
          builder.prototype().createdOn().set( new Date() );
-         builder.prototype().entryType().set( CaseLogEntryTypes.system );
+         builder.prototype().entryType().set( type );
          builder.prototype().message().set( message );
          builder.prototype().authorizationType().set( CaseLogEntryValue.AuthorizationType.user );
 

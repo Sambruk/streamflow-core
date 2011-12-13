@@ -52,7 +52,7 @@ public interface Notes
       @Optional
       Association<NotesTimeLine> notes();
 
-      void createdNotes( @Optional DomainEvent event );
+      void createdNotes( @Optional DomainEvent event, String id );
 
    }
 
@@ -81,12 +81,12 @@ public interface Notes
 
       public void createNotes()
       {
-         createdNotes( null );
+         createdNotes( null, identityGenerator.generate( Identity.class ) );
       }
 
-      public void createdNotes( DomainEvent event )
+      public void createdNotes( DomainEvent event, String id )
       {
-         NotesTimeLine notesEntity = module.unitOfWorkFactory().currentUnitOfWork().newEntity( NotesTimeLine.class, identityGenerator.generate( Identity.class ) );
+         NotesTimeLine notesEntity = module.unitOfWorkFactory().currentUnitOfWork().newEntity( NotesTimeLine.class, id );
          state.notes().set( notesEntity );
       }
 

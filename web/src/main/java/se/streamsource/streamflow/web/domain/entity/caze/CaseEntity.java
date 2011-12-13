@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -49,6 +52,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -65,7 +69,9 @@ import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
@@ -80,8 +86,12 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 /**
  * This represents a single Case in the system
  */
-@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.CaseLogSideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
-@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
+@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, 
+   CaseEntity.CaseLogCaseEntitySideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
+@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, 
+   CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
+   CaseEntity.CaseLogContactConcern.class,CaseEntity.CaseLogConversationConcern.class,
+   CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -306,7 +316,7 @@ public interface CaseEntity
       }
    }
 
-   abstract class CaseLogSideEffect
+   abstract class CaseLogCaseEntitySideEffect
          extends SideEffectOf<CaseEntity>
          implements CaseEntity
    {
@@ -315,58 +325,58 @@ public interface CaseEntity
 
       public void assignTo( Assignee assignee )
       {
-         caseLoggable.caselog().get().addSystemEntry( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}");
+         caseLoggable.caselog().get().addTypedEntry( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}", CaseLogEntryTypes.system);
       }
 
       public void unassign()
       {
-         caseLoggable.caselog().get().addSystemEntry( "{unassigned}" );
+         caseLoggable.caselog().get().addTypedEntry( "{unassigned}", CaseLogEntryTypes.system);
       }
 
       public void open()
       {
-         caseLoggable.caselog().get().addSystemEntry( "{opened}" );
+         caseLoggable.caselog().get().addTypedEntry( "{opened}", CaseLogEntryTypes.system);
       }
 
       public void close()
       {
-         caseLoggable.caselog().get().addSystemEntry( "{closed}");
+         caseLoggable.caselog().get().addTypedEntry( "{closed}", CaseLogEntryTypes.system);
       }
 
       public void onHold()
       {
-         caseLoggable.caselog().get().addSystemEntry( "{paused}");
+         caseLoggable.caselog().get().addTypedEntry( "{paused}", CaseLogEntryTypes.system);
       }
 
       public void reopen()
       {
-         caseLoggable.caselog().get().addSystemEntry( "{reopened}");
+         caseLoggable.caselog().get().addTypedEntry( "{reopened}", CaseLogEntryTypes.system);
       }
 
       public void resume()
       {
-         caseLoggable.caselog().get().addSystemEntry( "{resumed}");
+         caseLoggable.caselog().get().addTypedEntry( "{resumed}", CaseLogEntryTypes.system);
       }
 
       public void resolve( Resolution resolution )
       {
-         caseLoggable.caselog().get().addSystemEntry( "{resolved,resolution=" + resolution.getDescription()+"}" );
+         caseLoggable.caselog().get().addTypedEntry( "{resolved,resolution=" + resolution.getDescription()+"}" , CaseLogEntryTypes.system);
       }
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
-         caseLoggable.caselog().get().addSystemEntry( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
-               : "{removedCaseType}");
+         caseLoggable.caselog().get().addTypedEntry( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
+               : "{removedCaseType}", CaseLogEntryTypes.system);
       }
 
       public void changeOwner( Owner owner )
       {
-         caseLoggable.caselog().get().addSystemEntry( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}" );
+         caseLoggable.caselog().get().addTypedEntry( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}", CaseLogEntryTypes.system );
       }
 
       public void createSubCase()
       {
-         caseLoggable.caselog().get().addSystemEntry( "{createdSubCase}" );
+         caseLoggable.caselog().get().addTypedEntry( "{createdSubCase}", CaseLogEntryTypes.system );
       }
    }
 
@@ -381,6 +391,90 @@ public interface CaseEntity
          result.submitForm(formSubmission, submitter);
 
          searchableForms.updateSearchableFormValues();
+      }
+   }
+   
+   abstract class CaseLogContactConcern
+   extends ConcernOf<Contacts>
+   implements Contacts
+   {
+      @This
+      CaseLoggable.Data caseLoggable;
+
+      @This
+      Contacts.Data contacts;
+      
+      public void addContact( ContactDTO newContact )
+      {
+         if (caseLoggable.caselog().get() != null)
+         {
+            caseLoggable.caselog().get().addTypedEntry( "{addContact}", CaseLogEntryTypes.contact);
+         }
+         next.addContact( newContact );
+      }
+      
+      public void updateContact( int index, ContactDTO contact ){
+         caseLoggable.caselog().get().addTypedEntry( "{updateContact,name=" + contact.name().get()+"}" , CaseLogEntryTypes.contact);
+         next.updateContact( index, contact );
+      }
+
+      public void deleteContact( int index ){
+         caseLoggable.caselog().get().addTypedEntry( "{deleteContact,name=" + contacts.contacts().get().get( index ).name().get()+"}" , CaseLogEntryTypes.contact);
+         next.deleteContact( index );
+      }
+   }
+   
+   abstract class CaseLogConversationConcern
+   extends ConcernOf<Conversations>
+   implements Conversations
+   {
+      @This
+      CaseLoggable.Data caseLoggable;
+
+      public Conversation createConversation(String topic, Creator creator)
+      {
+         caseLoggable.caselog().get().addTypedEntry( "{createConversation,topic=" + topic + "}" , CaseLogEntryTypes.conversation);
+         return next.createConversation( topic, creator );
+      }
+   }
+   
+   abstract class CaseLogAttachmentConcern
+   extends ConcernOf<Attachments>
+   implements Attachments
+   {
+      @This
+      CaseLoggable.Data caseLoggable;
+
+      public Attachment createAttachment(String uri) throws URISyntaxException
+      {
+         caseLoggable.caselog().get().addTypedEntry( "{createAttachment}" , CaseLogEntryTypes.attachment);
+         return next.createAttachment( uri );
+      }
+
+      public void addAttachment(Attachment attachment)
+      {
+         caseLoggable.caselog().get().addTypedEntry( "{addAttachment,description=" + ((AttachedFile.Data)attachment).name().get() + "}" , CaseLogEntryTypes.attachment);
+         next.addAttachment( attachment );
+      }
+
+      public void removeAttachment(Attachment attachment)
+      {
+         caseLoggable.caselog().get().addTypedEntry( "{removeAttachment,description=" + ((AttachedFile.Data)attachment).name().get() + "}" , CaseLogEntryTypes.attachment);
+         next.removeAttachment( attachment );
+      }
+   }
+
+   abstract class CaseLogSubmittedFormsConcern
+   extends ConcernOf<SubmittedForms>
+   implements SubmittedForms
+   {
+      @This
+      CaseLoggable.Data caseLoggable;
+
+      public void submitForm(FormDraft formSubmission, Submitter submitter)
+      {
+         caseLoggable.caselog().get().addTypedEntry( "{submitForm,description=" + formSubmission.getFormDraftValue().description().get() + "}" , CaseLogEntryTypes.form);
+         next.submitForm( formSubmission, submitter );
       }
    }
 }

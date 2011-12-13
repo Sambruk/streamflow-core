@@ -68,6 +68,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -119,7 +120,7 @@ public class CaseStatisticsServiceTest
               MessageEntity.class,
               CaseLogEntity.class);
       
-      module.values(ContactDTO.class, ParticipantRolesValue.class, CaseLogEntryDTO.class, NoteValue.class );
+      module.values(ContactDTO.class, ParticipantRolesValue.class, CaseLogEntryDTO.class, NoteValue.class, CaseLogEntryValue.class );
 
       module.objects(TimeService.class, CaseStatisticsServiceTest.class);
       module.transients(GroupsContext.class);

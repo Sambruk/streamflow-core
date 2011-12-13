@@ -61,8 +61,8 @@ public interface Drafts
       public CaseEntity createDraft()
       {
          CaseEntity aCase = data.createdCase( null, idGenerator.generate( Identity.class ) );
-         aCase.addContact( module.valueBuilderFactory().newValue(ContactDTO.class) );
          aCase.createLog();
+         aCase.addContact( module.valueBuilderFactory().newValue(ContactDTO.class) );
          aCase.createNotes();
          return aCase;
       }

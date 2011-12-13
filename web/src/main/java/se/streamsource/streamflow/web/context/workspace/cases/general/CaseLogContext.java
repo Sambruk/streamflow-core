@@ -99,7 +99,7 @@ public class CaseLogContext
       case attachment:
          return filter.attachment().get();
       case contact:
-         return filter.attachment().get();
+         return filter.contact().get();
       case conversation:
          return filter.conversation().get();
       case custom:
