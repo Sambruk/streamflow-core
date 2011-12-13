@@ -34,6 +34,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -151,6 +152,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       rightBuilder.add( filterPopupHandler.getButton(), new CellConstraints( 3, 1, 1, 1, CellConstraints.RIGHT,
             CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
 
+      filterPopupHandler.getButton().setMargin(new Insets(0,0,0,0));
       // Caselog
       rightBuilder.nextLine();
       ((JXList) list).addHighlighter( HighlighterFactory.createAlternateStriping() );

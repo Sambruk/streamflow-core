@@ -24,9 +24,10 @@ import java.util.Locale;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
+
+import org.jdesktop.swingx.JXLabel;
 
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.ui.DateFormats;
@@ -65,17 +66,12 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       String entryMessage = entry.message().get();
       if (!Strings.empty( entryMessage ))
       {
-         entryMessage = entryMessage.trim();
+         entryMessage = String.format("<html><div WIDTH=%d>%s</div><html>", 500, entryMessage.trim().replace( "\n", "<br>" ) );
       }
-      JTextArea message = new JTextArea( entryMessage );
-      message.setLineWrap( true );
-      message.setWrapStyleWord( true );
-      message.setOpaque( false );
-      message.setSize( 500, 1 );
-      message.setSize( message.getPreferredSize() );
+      JLabel message = new JLabel( entryMessage );
       message.setForeground( Color.BLACK );
-      formBuilder.add( message, new CellConstraints( 2, 2, 2, 1, CellConstraints.FILL, CellConstraints.TOP ) );
-      
+      formBuilder.add( message, new CellConstraints( 2, 2, 2, 1, CellConstraints.LEFT, CellConstraints.TOP ) );
+
       // Participants
       // JLabel participants = new
       // JLabel(String.valueOf(conversations.participants().get()), i18n.icon(
@@ -84,7 +80,7 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       // headerBuilder.nextColumn(2);
 
       renderer.setBackground( Color.WHITE );
-
+      
       return renderer;
    }
 

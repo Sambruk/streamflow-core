@@ -197,6 +197,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       // Select case type
       javax.swing.Action caseTypeAction = am.get( "changeCaseType" );
       caseTypeButton = new JButton( caseTypeAction );
+      caseTypeButton.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
       caseTypeButton.registerKeyboardAction( caseTypeAction,
             (KeyStroke) caseTypeAction.getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
