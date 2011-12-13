@@ -18,8 +18,6 @@
 package se.streamsource.streamflow.server.plugin.restlet;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
@@ -51,20 +49,19 @@ public class PluginApplicationAssembler
 {
    Assembler pluginAssembler;
    private final String preferenceNode;
+   private final String jmxSuffix;
 
-    @Structure
-    Module module;
-
-   public PluginApplicationAssembler( Assembler pluginAssembler, String preferenceNode )
+   public PluginApplicationAssembler( Assembler pluginAssembler, String preferenceNode, String jmxSuffix )
    {
       this.pluginAssembler = pluginAssembler;
       this.preferenceNode = preferenceNode;
+      this.jmxSuffix = jmxSuffix;
    }
 
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly app = applicationFactory.newApplicationAssembly();
-      app.setName( "Streamflow-Plugins" );
+      app.setName( "Streamflow-Plugin-" + (jmxSuffix != null ? jmxSuffix : "Application") );
 
       LayerAssembly webLayer = app.layer( "Web" );
       assembleWebLayer(webLayer);

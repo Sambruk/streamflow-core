@@ -49,12 +49,13 @@ public class StreamflowPluginServlet
       {
          String preferenceNode = getInitParameter("preference-node");
          String assemblerClassName = getInitParameter( "assembler" );
+         String jmxSuffix = getInitParameter( "name" );
 
          Class assemblerClass = Thread.currentThread().getContextClassLoader().loadClass( assemblerClassName );
 
          Assembler pluginAssembler = (Assembler) assemblerClass.newInstance();
 
-         application = new StreamflowPluginRestApplication(new Context(), pluginAssembler, preferenceNode);
+         application = new StreamflowPluginRestApplication(new Context(), pluginAssembler, preferenceNode, jmxSuffix);
 
          application.start();
 

@@ -43,12 +43,14 @@ public class StreamflowPluginRestApplication
 
    private Assembler assembler;
    private String preferenceNode;
+   private String jmxSuffix;
 
-   public StreamflowPluginRestApplication( Context parentContext, Assembler assembler, String preferenceNode ) throws Exception
+   public StreamflowPluginRestApplication( Context parentContext, Assembler assembler, String preferenceNode, String jmxSuffix ) throws Exception
    {
       super( parentContext );
       this.assembler = assembler;
       this.preferenceNode = preferenceNode;
+      this.jmxSuffix = jmxSuffix;
 
       getMetadataService().addExtension( "srj", APPLICATION_SPARQL_JSON );
    }
@@ -77,7 +79,7 @@ public class StreamflowPluginRestApplication
          {
             // Start Qi4j
             Energy4Java is = new Energy4Java();
-            app = is.newApplication( new PluginApplicationAssembler( assembler, preferenceNode ) );
+            app = is.newApplication( new PluginApplicationAssembler( assembler, preferenceNode, jmxSuffix ) );
 
             app.activate();
 

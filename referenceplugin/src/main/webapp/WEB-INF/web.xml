@@ -34,6 +34,10 @@
         	<param-name>preference-node</param-name>
         	<param-value>streamsource/streamflow/plugin-reference</param-value>
         </init-param>
+        <init-param>
+            <param-name>name</param-name>
+            <param-value>ContactLookup</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
 
     </servlet>
