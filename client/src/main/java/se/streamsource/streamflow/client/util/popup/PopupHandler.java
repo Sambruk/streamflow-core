@@ -34,4 +34,6 @@ public interface PopupHandler
    public JToggleButton getButton();
    
    public void setPanelContent(JPanel filterPanel);
+   
+   public void kill();
 }

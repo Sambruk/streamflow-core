@@ -54,7 +54,7 @@ public class StandardPopupHandler implements PopupHandler
       this( parent, action, Position.left, true, refreshHandler );
    }
    
-   public StandardPopupHandler(JPanel parent, Action action, Position position, boolean refreshOnClose, RefreshHandler refreshHandler)
+   public StandardPopupHandler(final JPanel parent, Action action, Position position, boolean refreshOnClose, RefreshHandler refreshHandler)
    {
       this.parentPanel = parent;
       this.position = position;
@@ -69,23 +69,14 @@ public class StandardPopupHandler implements PopupHandler
             int state = itemEvent.getStateChange();
             if (state == ItemEvent.SELECTED)
             {
-
-               for (Component component : Iterables.flatten( Iterables.iterable( parentPanel.getComponents() ),
-                     Iterables.iterable( parentPanel.getComponents() ) ))
-               {
-                  if (!(component instanceof JToggleButton))
-                     continue;
-                  if (component != itemEvent.getSource())
-                  {
-                     ((JToggleButton) component).setSelected( false );
-                  }
-               }
+               
+               cleanToggleButtonSelection();
                optionsPanel = new JPanel();
                JToggleButton button = (JToggleButton) itemEvent.getSource();
                showPopup( button );
             } else if (state == ItemEvent.DESELECTED)
             {
-               killPopup();
+               kill();
             }
          }
       } );
@@ -122,7 +113,8 @@ public class StandardPopupHandler implements PopupHandler
             {
                public void actionPerformed(ActionEvent e)
                {
-                  killPopup();
+                  System.out.println("Enter");
+                  kill();
                   cleanToggleButtonSelection();
                }
             }, KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), JComponent.WHEN_IN_FOCUSED_WINDOW );
@@ -148,7 +140,9 @@ public class StandardPopupHandler implements PopupHandler
                {
                   if (popup != null)
                   {
-                     killPopup();
+                     System.out.println("Moved");
+                     kill();
+                     ((JToggleButton) button).setSelected( false );
                      frame.removeComponentListener( this );
                   }
                }
@@ -157,7 +151,7 @@ public class StandardPopupHandler implements PopupHandler
       } );
    }
 
-   private void killPopup()
+   public void kill()
    {
       if (popup != null)
       {
@@ -177,11 +171,11 @@ public class StandardPopupHandler implements PopupHandler
       {
          if (!(component instanceof JToggleButton))
             continue;
-         if (((JToggleButton) component).isSelected())
+         if (((JToggleButton) component).isSelected() && component != button)
          {
             ((JToggleButton) component).setSelected( false );
          }
       }
    }
-   
+
 }

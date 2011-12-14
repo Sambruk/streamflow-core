@@ -30,23 +30,28 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.qi4j.api.injection.scope.Service;
@@ -139,8 +144,8 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
          }
       } );
 
-      filterPopupHandler = new StandardPopupHandler( this, getActionMap().get( "filter" ), Position.right, false,
-            new RefreshHandler()
+      filterPopupHandler = new StandardPopupHandler( CaseLogView.this, getActionMap().get( "filter" ), Position.right,
+            false, new RefreshHandler()
             {
                @Override
                public void refresh()
@@ -152,7 +157,18 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       rightBuilder.add( filterPopupHandler.getButton(), new CellConstraints( 3, 1, 1, 1, CellConstraints.RIGHT,
             CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
 
-      filterPopupHandler.getButton().setMargin(new Insets(0,0,0,0));
+      filterPopupHandler.getButton().setMargin( new Insets( 1, 1, 1, 1 ) );
+
+      filtersList.addFocusListener( new FocusAdapter()
+      {
+         @Override
+         public void focusLost(FocusEvent e)
+         {
+            if (e.getOppositeComponent() != null && (e.getOppositeComponent().equals( filterPopupHandler.getButton() )))
+               filterPopupHandler.kill();
+         }
+      } );
+
       // Caselog
       rightBuilder.nextLine();
       ((JXList) list).addHighlighter( HighlighterFactory.createAlternateStriping() );
@@ -192,6 +208,13 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
          @Override
          public void keyReleased(KeyEvent e)
          {
+            if (e.getKeyCode() == 10)
+            {
+               if (!e.isControlDown())
+               {
+                  newMessageArea.setText( "" );
+               }
+            }
          }
 
          @Override
@@ -246,17 +269,11 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    {
       if (!Strings.empty( newMessageArea.getText() ))
       {
-         new CommandTask()
-         {
-
-            @Override
-            protected void command() throws Exception
-            {
-               model.addMessage( newMessageArea.getText() );
-               newMessageArea.setText( "" );
-               newMessageArea.requestFocusInWindow();
-            }
-         }.execute();
+         model.addMessage( newMessageArea.getText() );
+         newMessageArea.setText( "" );
+         newMessageArea.setCaretPosition( 0 );
+         newMessageArea.requestFocusInWindow();
+         refresh();
       }
    }
 }
