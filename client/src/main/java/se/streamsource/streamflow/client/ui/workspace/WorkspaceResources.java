@@ -71,6 +71,7 @@ public enum WorkspaceResources
    country_label,
    forms_label,
    choose_casetype,
+   case_log,
 
    // Form submission
    mandatory_field_missing,

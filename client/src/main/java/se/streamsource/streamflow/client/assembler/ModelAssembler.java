@@ -79,6 +79,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CasesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
@@ -89,6 +90,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedF
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormDraftModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
@@ -154,6 +156,7 @@ public class ModelAssembler
             ContactsModel.class,
             ContactModel.class,
             CaseGeneralModel.class,
+            CaseLogModel.class,
             CaseLabelsModel.class,
             CaseSubmittedFormsModel.class,
             CaseSubmittedFormModel.class,
@@ -164,7 +167,8 @@ public class ModelAssembler
             ConversationModel.class,
             ConversationsModel.class,
             ConversationParticipantsModel.class,
-            AttachmentsModel.class
+            AttachmentsModel.class,
+            CaseNoteModel.class
       );
 
       module.values(CaseTableValue.class).visibleIn(Visibility.application);

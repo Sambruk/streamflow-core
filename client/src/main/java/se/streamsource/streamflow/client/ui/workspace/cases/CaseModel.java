@@ -33,6 +33,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
@@ -176,6 +177,11 @@ public class CaseModel
       return module.objectBuilderFactory().newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();
    }
 
+   public CaseLogModel newCaseLogModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(CaseLogModel.class).use(client.getSubClient("caselog" )).newInstance();
+   }
+   
    public CaseSubmittedFormsModel newSubmittedFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormsModel.class).use(client.getSubClient("submittedforms" )).newInstance();

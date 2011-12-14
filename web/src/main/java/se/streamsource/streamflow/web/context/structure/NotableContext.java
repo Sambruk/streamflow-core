@@ -26,7 +26,7 @@ import se.streamsource.streamflow.web.domain.Notable;
  */
 public class NotableContext
 {
-   public void changenote( StringValue noteValue )
+   public void addnote( StringValue noteValue )
    {
       Notable notable = RoleMap.role( Notable.class );
       notable.changeNote( noteValue.string().get() );

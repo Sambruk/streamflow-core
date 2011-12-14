@@ -118,6 +118,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactLookupResultDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
@@ -131,6 +132,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedF
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
@@ -261,6 +263,7 @@ public class UIAssembler
             ContactsView.class,
             ContactView.class,
             CaseGeneralView.class,
+            CaseLogView.class,
             CaseLabelsView.class,
             CaseSubmittedFormsView.class,
             CaseSubmittedFormView.class,
@@ -285,7 +288,8 @@ public class UIAssembler
             AttachmentsView.class,
             HistoryView.class,
             MessagesHistoryView.class,
-            PerspectiveView.class
+            PerspectiveView.class,
+            CaseNoteView.class
       );
 
 

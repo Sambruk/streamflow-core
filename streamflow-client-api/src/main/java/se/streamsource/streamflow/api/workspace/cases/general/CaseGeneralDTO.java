@@ -41,6 +41,7 @@ public interface CaseGeneralDTO
    @MaxLength(50)
    Property<String> description();
 
+   @Optional
    Property<String> note();
 
    Property<Date> creationDate();

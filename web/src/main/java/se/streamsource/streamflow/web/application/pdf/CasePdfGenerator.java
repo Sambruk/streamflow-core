@@ -58,6 +58,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
@@ -210,7 +211,7 @@ public class CasePdfGenerator implements CaseOutput
          document.printLabelAndTextWithTabStop( bundle.getString( "labels" ) + ": ", valueFontBold, allLabels, valueFont, tabStop );
       }
 
-      String note = caze.getNote();
+      String note = ((Notes)caze).getLastNote().note().get();
       if (!empty(note))
       {
          document.moveUpOneRow( valueFontBold ).print( bundle.getString( "note" ) + ":", valueFontBold ).print( note, valueFont ).print( "", valueFont );
