@@ -223,7 +223,6 @@ public class ManagementAssembler extends AbstractLayerAssembler
                         builder.prototype().createdBy()
                               .set( EntityReference.getEntityReference( messageData.sender().get() ) );
                         builder.prototype().createdOn().set( messageData.createdOn().get() );
-                        builder.prototype().authorizationType().set( CaseLogEntryValue.AuthorizationType.user );
 
                         if (messageData.body().get() != null && messageData.body().get().startsWith( "{" ))
                         {

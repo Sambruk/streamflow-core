@@ -116,6 +116,6 @@ public class CaseLogContext
    public void addmessage(StringValue message)
    {
       CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
-      caseLog.caselog().get().addCustomEntry( message.string().get(), CaseLogEntryValue.AuthorizationType.user );
+      caseLog.caselog().get().addCustomEntry( message.string().get(), Boolean.FALSE );
    }
 }

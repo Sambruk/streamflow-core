@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.caselog;
 import java.util.Date;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
@@ -29,12 +30,6 @@ import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 public interface CaseLogEntryValue extends ValueComposite
 {
    
-   public enum AuthorizationType {
-      open,
-      user,
-      secure
-   }
-   
    Property<String> message();
    
    @Optional
@@ -42,7 +37,8 @@ public interface CaseLogEntryValue extends ValueComposite
    
    Property<CaseLogEntryTypes> entryType();
    
-   Property<AuthorizationType> authorizationType();
+   @UseDefaults()
+   Property<Boolean> availableOnMypages();
 
    @Immutable
    Property<Date> createdOn();

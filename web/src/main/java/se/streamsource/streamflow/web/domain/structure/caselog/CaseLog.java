@@ -33,14 +33,13 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue.AuthorizationType;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 
 @Mixins(CaseLog.Mixin.class)
 public interface CaseLog extends Removable
 {
 
-   void addCustomEntry(String message, CaseLogEntryValue.AuthorizationType authorizationType);
+   void addCustomEntry(String message, Boolean availableOnMypages);
 
    void addTypedEntry(String message, CaseLogEntryTypes type);
    
@@ -68,7 +67,7 @@ public interface CaseLog extends Removable
          data.entries().set( list );
       }
 
-      public void addCustomEntry(String message, AuthorizationType authorizationType)
+      public void addCustomEntry(String message, Boolean availableOnMypages)
       {
          ValueBuilder<CaseLogEntryValue> builder = module.valueBuilderFactory().newValueBuilder(
                CaseLogEntryValue.class );
@@ -77,7 +76,7 @@ public interface CaseLog extends Removable
          builder.prototype().createdOn().set( new Date() );
          builder.prototype().entryType().set( CaseLogEntryTypes.custom );
          builder.prototype().message().set( message );
-         builder.prototype().authorizationType().set( authorizationType );
+         builder.prototype().availableOnMypages().set( availableOnMypages );
 
          addedEntry( null, builder.newInstance() );
       }
@@ -91,7 +90,6 @@ public interface CaseLog extends Removable
          builder.prototype().createdOn().set( new Date() );
          builder.prototype().entryType().set( type );
          builder.prototype().message().set( message );
-         builder.prototype().authorizationType().set( CaseLogEntryValue.AuthorizationType.user );
 
          addedEntry( null, builder.newInstance() );
       }
