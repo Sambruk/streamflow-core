@@ -134,13 +134,6 @@ public class CaseResource
    {
       subResource( AttachmentsResource.class );
    }
-   
-   @SubResource
-   public void history()
-   {
-      RoleMap.current().set( RoleMap.role( History.class ).getHistory() );
-      subResource( ConversationResource.class );
-   }
 
    @SubResource
    public void caselog()

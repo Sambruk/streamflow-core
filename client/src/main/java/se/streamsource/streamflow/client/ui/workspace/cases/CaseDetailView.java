@@ -41,7 +41,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdm
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
-import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -79,14 +78,12 @@ public class CaseDetailView
       tabs.addTab( text( WorkspaceResources.forms_tab ), icon( Icons.forms ), module.objectBuilderFactory().newObjectBuilder(SubmittedFormsAdminView.class).use( model.newSubmittedFormsModel()).newInstance(), text( WorkspaceResources.forms_tab ) );
       tabs.addTab( text( WorkspaceResources.conversations_tab ), icon( Icons.conversations ), module.objectBuilderFactory().newObjectBuilder(ConversationsView.class).use( model.newConversationsModel()).newInstance(), text( WorkspaceResources.conversations_tab ) );
       tabs.addTab( text( WorkspaceResources.attachments_tab ), icon( Icons.attachments ), module.objectBuilderFactory().newObjectBuilder(AttachmentsView.class).use(model.newAttachmentsModel()).newInstance(), text( WorkspaceResources.attachments_tab ) );
-      tabs.addTab( text( WorkspaceResources.history_tab ), icon( Icons.history ), module.objectBuilderFactory().newObjectBuilder(HistoryView.class).use(model.newHistoryModel()).newInstance(), text( WorkspaceResources.history_tab ) );
       
       tabs.setMnemonicAt( 0, KeyEvent.VK_1 );
       tabs.setMnemonicAt( 1, KeyEvent.VK_2 );
       tabs.setMnemonicAt( 2, KeyEvent.VK_3 );
       tabs.setMnemonicAt( 3, KeyEvent.VK_4 );
       tabs.setMnemonicAt( 4, KeyEvent.VK_5 );
-      tabs.setMnemonicAt( 5, KeyEvent.VK_6 );
 
       tabs.setFocusable( true );
       tabs.setFocusCycleRoot( true );

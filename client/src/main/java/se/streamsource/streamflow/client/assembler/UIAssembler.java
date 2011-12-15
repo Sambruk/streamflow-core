@@ -17,12 +17,20 @@
 
 package se.streamsource.streamflow.client.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addDialogs;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addMV;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addTasks;
+import static se.streamsource.streamflow.client.util.UIAssemblers.addViews;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
+
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -132,7 +140,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedF
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
-import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
@@ -146,8 +153,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Possib
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
-import se.streamsource.streamflow.client.ui.workspace.cases.history.MessagesHistoryView;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
@@ -168,9 +174,6 @@ import se.streamsource.streamflow.client.util.dialog.InputDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
-
-import static org.qi4j.api.common.Visibility.*;
-import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * JAVADOC
@@ -286,8 +289,6 @@ public class UIAssembler
             ConversationView.class,
             ConversationParticipantsView.class,
             AttachmentsView.class,
-            HistoryView.class,
-            MessagesHistoryView.class,
             PerspectiveView.class,
             CaseNoteView.class
       );

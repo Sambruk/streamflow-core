@@ -50,12 +50,10 @@ public enum WorkspaceResources
    general_tab,
    forms_tab,
    conversations_tab,
-   history_tab,
    contacts_tab,
    attachments_tab,
 
    // General view
-   history,
    description_label,
    note_label,
    name_label,
