@@ -17,12 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * JAVADOC

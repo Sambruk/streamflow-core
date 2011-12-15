@@ -17,31 +17,29 @@
 
 package se.streamsource.streamflow.client.util;
 
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.util.Iterables;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Level;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * All Swing actions that want to trigger commands in the domain model

@@ -17,12 +17,31 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntityTypes;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
+
+import java.awt.CardLayout;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
@@ -33,14 +52,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableModel;
-import java.awt.*;
-
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 
 /**

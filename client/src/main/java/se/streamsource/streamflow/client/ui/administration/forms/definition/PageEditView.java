@@ -17,27 +17,32 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.awt.BorderLayout;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC

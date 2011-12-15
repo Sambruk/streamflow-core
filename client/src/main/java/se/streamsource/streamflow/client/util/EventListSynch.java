@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
+import java.util.Collection;
+
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
-
-import java.util.Collection;
 
 /**
  * Synchronize an EventList with a collection. This is used for getting updates

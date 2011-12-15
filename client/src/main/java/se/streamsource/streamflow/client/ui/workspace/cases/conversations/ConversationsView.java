@@ -17,8 +17,24 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.io.IOException;
+
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -27,26 +43,23 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.io.IOException;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
+import com.jgoodies.forms.factories.Borders;
 
 public class ConversationsView
       extends JSplitPane
@@ -111,7 +124,7 @@ public class ConversationsView
 
       JPanel addPanel = new JPanel();
       javax.swing.Action addConversationAction = getActionMap().get( "addConversation" );
-      JButton addConversation = new JButton( addConversationAction );
+      StreamflowButton addConversation = new StreamflowButton( addConversationAction );
       addConversation.registerKeyboardAction( addConversationAction, (KeyStroke) addConversationAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );

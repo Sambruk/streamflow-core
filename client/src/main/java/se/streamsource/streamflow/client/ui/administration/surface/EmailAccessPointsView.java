@@ -17,7 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.swing.EventListModel;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.Component;
+
+import javax.swing.ActionMap;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -25,23 +30,20 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.InputDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
+import ca.odell.glazedlists.swing.EventListModel;
 
 
 public class EmailAccessPointsView

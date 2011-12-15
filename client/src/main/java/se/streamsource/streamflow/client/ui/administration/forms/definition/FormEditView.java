@@ -17,9 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -27,6 +33,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -37,12 +44,9 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StateBinder;
 
-import javax.swing.*;
-import java.util.Observable;
-import java.util.Observer;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
 
 
 /**

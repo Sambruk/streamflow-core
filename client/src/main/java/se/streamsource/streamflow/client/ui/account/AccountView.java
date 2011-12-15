@@ -17,8 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.PASSWORD;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.awt.BorderLayout;
+import java.awt.Insets;
+
+import javax.swing.ActionMap;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
+import javax.swing.border.EmptyBorder;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -32,20 +44,17 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.PASSWORD;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -141,11 +150,11 @@ public class AccountView extends JScrollPane
       contactBuilder.add(new JToggleButton(am.get("edit")));
       contactBuilder.nextLine();
       contactBuilder.nextColumn(2);
-      contactBuilder.add(new JButton(am.get("test")));
+      contactBuilder.add(new StreamflowButton(am.get("test")));
       contactBuilder.nextLine(2);
 
       contactBuilder.nextColumn(2);
-      contactBuilder.add(new JButton(am.get("changePassword")));
+      contactBuilder.add(new StreamflowButton(am.get("changePassword")));
 
       setViewportView(panel);
    }

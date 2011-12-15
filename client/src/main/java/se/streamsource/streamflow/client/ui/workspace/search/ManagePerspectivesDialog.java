@@ -17,8 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import static org.qi4j.api.specification.Specifications.and;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntityTypes;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.awt.BorderLayout;
+
+import javax.swing.ActionMap;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -27,6 +40,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -35,19 +49,15 @@ import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import com.jgoodies.forms.builder.ButtonBarBuilder2;
 
 /**
  * JAVADOC
@@ -65,7 +75,7 @@ public class ManagePerspectivesDialog
    private PerspectivesModel model;
 
    private JList perspective;
-   private JButton optionButton;
+   private StreamflowButton optionButton;
 
    public ManagePerspectivesDialog(@Service ApplicationContext context, @Uses PerspectivesModel model)
    {
@@ -92,7 +102,7 @@ public class ManagePerspectivesDialog
       options.add(renameAction);
 
       perspective.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(removeAction, renameAction));
-      optionButton = new JButton(new OptionsAction(options));
+      optionButton = new StreamflowButton(new OptionsAction(options));
 
       ButtonBarBuilder2 buttonBuilder = new ButtonBarBuilder2();
       buttonBuilder.addButton(optionButton);

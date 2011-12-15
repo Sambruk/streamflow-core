@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
 
 /**
  * JAVADOC

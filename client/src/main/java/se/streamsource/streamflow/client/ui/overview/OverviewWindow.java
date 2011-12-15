@@ -17,6 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
+import java.awt.Dimension;
+
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
@@ -24,15 +29,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountSelector;
 import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
 import se.streamsource.streamflow.client.util.JavaHelp;
 import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 
 /**
  * Overview window

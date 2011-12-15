@@ -17,9 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.administration.labels;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.swing.ActionMap;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -27,6 +40,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -37,22 +51,18 @@ import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.ResourceActionEnabler;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * Admin of labels.
@@ -96,8 +106,8 @@ public class LabelsView
       add( scrollPane, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( new OptionsAction(options) ) );
+      toolbar.add( new StreamflowButton( am.get( "add" ) ) );
+      toolbar.add( new StreamflowButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
       list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "move" ), am.get("knowledgeBase"), am.get( "showUsages" ) ) );

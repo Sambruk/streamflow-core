@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.qi4j.api.specification.Specification;
-
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qi4j.api.specification.Specification;
 
 /**
  * JAVADOC

@@ -17,8 +17,13 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -26,13 +31,13 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-
-import javax.swing.*;
-import java.awt.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
 
 public class SelectLinksDialog
       extends JPanel

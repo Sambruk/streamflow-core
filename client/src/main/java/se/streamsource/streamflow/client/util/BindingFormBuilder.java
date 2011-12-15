@@ -17,18 +17,31 @@
 
 package se.streamsource.streamflow.client.util;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import java.awt.Component;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import javax.swing.Action;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.property.Property;
 
-import javax.swing.*;
-import java.awt.*;
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 
 /**
  * Deprected: Use BindingFormBuilder2 instead.
@@ -195,7 +208,7 @@ public class BindingFormBuilder
 
    public BindingFormBuilder appendButtonLine( Action buttonAction )
    {
-      JButton button = new JButton( buttonAction );
+      StreamflowButton button = new StreamflowButton( buttonAction );
       formBuilder.append( button );
       formBuilder.nextLine();
       return this;

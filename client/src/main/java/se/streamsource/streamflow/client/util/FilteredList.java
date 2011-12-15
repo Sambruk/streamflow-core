@@ -17,16 +17,22 @@
 
 package se.streamsource.streamflow.client.util;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+
+import se.streamsource.dci.value.link.LinkValue;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
-import se.streamsource.dci.value.link.LinkValue;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * JAVADOC

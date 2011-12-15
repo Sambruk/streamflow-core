@@ -17,18 +17,12 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import static se.streamsource.dci.value.link.Links.withRel;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.Font;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,12 +30,20 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Font;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
-import static se.streamsource.dci.value.link.Links.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import ca.odell.glazedlists.EventList;
 
 /**
  * Show settings for a REST resource, with each part as its own panel with a separator. To determine panels, do a query

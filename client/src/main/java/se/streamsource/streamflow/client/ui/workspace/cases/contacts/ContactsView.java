@@ -17,8 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
+import static org.jdesktop.application.Task.BlockingScope.COMPONENT;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.io.IOException;
+
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
@@ -26,6 +39,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -34,19 +48,17 @@ import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-
-import static org.jdesktop.application.Task.BlockingScope.COMPONENT;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -108,8 +120,8 @@ public class ContactsView
       add( contactsScrollPane, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "add" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
       model.addObserver( new RefreshComponents().visibleOn( "add", toolbar ) );

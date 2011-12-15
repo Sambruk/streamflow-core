@@ -17,24 +17,27 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import ca.odell.glazedlists.EventList;
+import java.awt.GridLayout;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
 import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
+import ca.odell.glazedlists.EventList;
 
 /**
  * JAVADOC

@@ -17,23 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.PASSWORD;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
-import javax.swing.*;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.PASSWORD;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Dialog for changing password

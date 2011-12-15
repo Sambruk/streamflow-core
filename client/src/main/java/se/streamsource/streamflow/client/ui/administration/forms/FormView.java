@@ -17,20 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -61,7 +69,7 @@ public class FormView
       textArea.setWrapStyleWord( true );
       textArea.setEditable( false );
       add( new JScrollPane(textArea), BorderLayout.CENTER );
-      add( new JButton( am.get( "edit" ) ), BorderLayout.SOUTH );
+      add( new StreamflowButton( am.get( "edit" ) ), BorderLayout.SOUTH );
 
       new RefreshWhenShowing(this, model);
    }

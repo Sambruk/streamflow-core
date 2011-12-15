@@ -17,14 +17,18 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.JXHyperlink;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Font;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.jdesktop.swingx.JXHyperlink;
+
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.util.Strings;
 
 /**
  * Show a LinkValue. If the href property is set, then

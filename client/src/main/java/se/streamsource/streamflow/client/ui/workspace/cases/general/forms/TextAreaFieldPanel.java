@@ -17,16 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
+
+import java.awt.BorderLayout;
+
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.text.JTextComponent;
+
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.StateBinder;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
 
 public class TextAreaFieldPanel
       extends AbstractFieldPanel

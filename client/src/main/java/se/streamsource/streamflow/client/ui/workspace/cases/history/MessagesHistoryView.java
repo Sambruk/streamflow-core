@@ -22,6 +22,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 

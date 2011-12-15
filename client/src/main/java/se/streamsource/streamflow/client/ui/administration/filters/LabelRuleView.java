@@ -17,13 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.administration.filters;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.*;
 
 /**
  * Match label filter rule

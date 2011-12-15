@@ -17,8 +17,18 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.first;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.awt.Component;
+import java.awt.Dimension;
+
+import javax.swing.ActionMap;
+import javax.swing.JList;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -26,6 +36,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -33,25 +44,18 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
-import java.awt.*;
-
-import static org.qi4j.api.util.Iterables.filter;
-import static org.qi4j.api.util.Iterables.first;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
 
 /**
  * JAVADOC
