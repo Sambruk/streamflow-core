@@ -17,16 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.SwingConstants;
+
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-public class PossibleFormView extends JButton
+public class PossibleFormView extends StreamflowButton
       implements KeyListener
 {
    LinkValue itemValue;

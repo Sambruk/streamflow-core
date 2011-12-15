@@ -17,8 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
@@ -26,15 +31,15 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * The panel responsible for viewing gui components for attaching a file from a form.
@@ -42,7 +47,7 @@ import java.awt.event.ActionListener;
 public class AttachmentFieldPanel
       extends AbstractFieldPanel
 {
-   private JButton attach;
+   private StreamflowButton attach;
    private JLabel attachment = new JLabel();
 
    @Structure
@@ -60,7 +65,7 @@ public class AttachmentFieldPanel
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
 
       ApplicationActionMap am = context.getActionMap( this );
-      attach = new JButton( am.get( "attach" ) );
+      attach = new StreamflowButton( am.get( "attach" ) );
 
       formBuilder.add( attach, "1,1,1,1" );
       formBuilder.add( attachment, "3,1,1,1" );

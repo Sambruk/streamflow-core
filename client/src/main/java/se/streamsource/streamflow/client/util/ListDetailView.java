@@ -17,18 +17,30 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -65,7 +77,7 @@ public abstract class ListDetailView
       JPanel toolbar = new JPanel();
 
       if (createAction != null)
-         toolbar.add( new JButton( createAction ) );
+         toolbar.add( new StreamflowButton( createAction ) );
 
       if (selectionActions.length != 0)
       {
@@ -75,7 +87,7 @@ public abstract class ListDetailView
             options.add( selectionAction );
          }
          list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( selectionActions ) );
-         toolbar.add( new JButton( new OptionsAction( options ) ) );
+         toolbar.add( new StreamflowButton( new OptionsAction( options ) ) );
       }
 
       master.add( toolbar, BorderLayout.SOUTH);

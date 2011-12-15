@@ -17,20 +17,24 @@
 
 package se.streamsource.streamflow.client.ui;
 
+import java.awt.Dimension;
+
+import javax.swing.ActionMap;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.table.DefaultTableModel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 
 /**
  * JAVADOC

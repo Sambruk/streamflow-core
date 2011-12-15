@@ -17,9 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TreeList;
-import ca.odell.glazedlists.swing.EventTreeModel;
+import static org.qi4j.api.specification.Specifications.and;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntityTypes;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -33,6 +51,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
@@ -42,24 +61,17 @@ import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import java.awt.*;
-import java.util.ArrayList;
-
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TreeList;
+import ca.odell.glazedlists.swing.EventTreeModel;
 
 /**
  * JAVADOC
@@ -136,11 +148,11 @@ public class AdministrationTreeView
       adminPopup.add( am.get( "merge" ) );
 
       JPanel actions = new JPanel();
-      final JButton createOUButton = new JButton( am.get( "create" ) );
+      final StreamflowButton createOUButton = new StreamflowButton( am.get( "create" ) );
       createOUButton.setEnabled( false );
       actions.add( createOUButton );
 
-      final JButton optionsButton = new JButton( new OptionsAction( adminPopup ) );
+      final StreamflowButton optionsButton = new StreamflowButton( new OptionsAction( adminPopup ) );
 //      optionsButton.setEnabled( false );
       actions.add(optionsButton);
 

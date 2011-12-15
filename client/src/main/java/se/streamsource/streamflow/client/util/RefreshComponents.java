@@ -17,20 +17,21 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.specification.Specifications;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.Links;
+import static org.qi4j.api.util.Iterables.flatten;
+import static org.qi4j.api.util.Iterables.matchesAny;
 
-import java.awt.*;
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import static org.qi4j.api.util.Iterables.flatten;
-import static org.qi4j.api.util.Iterables.matchesAny;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.specification.Specifications;
+
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
 /**
  * Register components here that should be visible/invisible, enabled/disabled depending on available commands.

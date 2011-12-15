@@ -17,16 +17,30 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Point;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+
+import com.jgoodies.forms.builder.ButtonBarBuilder2;
 
 /**
  * JAVADOC
@@ -63,7 +77,7 @@ public class DialogService
 
       dialog.pack();
 
-      if (owner instanceof JButton)
+      if (owner instanceof StreamflowButton)
       {
          Point location = new Point(owner.getLocationOnScreen());
          location.translate(0, owner.getHeight());
@@ -97,7 +111,7 @@ public class DialogService
          ok = context.getActionMap().get("cancel");
 
       dialog.getContentPane().setLayout(new BorderLayout());
-      JButton okButton = new JButton(ok);
+      StreamflowButton okButton = new StreamflowButton(ok);
       dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton));
       dialog.getContentPane().add(BorderLayout.CENTER, main);
       dialog.setMinimumSize(new Dimension(300, 100));
@@ -136,43 +150,43 @@ public class DialogService
       return dialog;
    }
 
-   private JPanel createHelpOKCancelApplyBar(JButton help, JButton ok,
-                                             JButton cancel, JButton apply)
+   private JPanel createHelpOKCancelApplyBar(StreamflowButton help, StreamflowButton ok,
+         StreamflowButton cancel, StreamflowButton apply)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(help);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok, cancel, apply});
+      builder.addButton(new StreamflowButton[]{ok, cancel, apply});
       return builder.getPanel();
    }
 
-   private JPanel createOKBar(JButton ok)
+   private JPanel createOKBar(StreamflowButton ok)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok});
+      builder.addButton(new StreamflowButton[]{ok});
       return builder.getPanel();
    }
 
-   private JPanel createButtonBar(JButton ok, JButton[] extras)
+   private JPanel createButtonBar(StreamflowButton ok, StreamflowButton[] extras)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(extras);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok});
+      builder.addButton(new StreamflowButton[]{ok});
       return builder.getPanel();
    }
 
-   private JPanel createHelpOKCancelBar(JButton help, JButton ok, JButton cancel)
+   private JPanel createHelpOKCancelBar(StreamflowButton help, StreamflowButton ok, StreamflowButton cancel)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(help);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok, cancel});
+      builder.addButton(new StreamflowButton[]{ok, cancel});
       return builder.getPanel();
    }
 

@@ -17,8 +17,16 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
@@ -26,16 +34,14 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
 import se.streamsource.streamflow.client.util.LinkComparator;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 
 /**
  * Select one or more links from a list of links. The links may use grouping with the TitledLinkValue subtype.

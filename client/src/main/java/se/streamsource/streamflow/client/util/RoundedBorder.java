@@ -17,8 +17,11 @@
 
 package se.streamsource.streamflow.client.util;
 
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
+
 import javax.swing.border.Border;
-import java.awt.*;
 
 /**
  * Rounded border. Draws a rounded border to the left and right of the component.

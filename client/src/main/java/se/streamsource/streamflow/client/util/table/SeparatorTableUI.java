@@ -17,12 +17,17 @@
 
 package se.streamsource.streamflow.client.util.table;
 
-import ca.odell.glazedlists.swing.EventTableModel;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+
+import ca.odell.glazedlists.swing.EventTableModel;
 
 /**
  * JAVADOC

@@ -38,10 +38,12 @@ import javax.swing.SwingUtilities;
 
 import org.qi4j.api.util.Iterables;
 
+import se.streamsource.streamflow.client.util.StreamflowToggleButton;
+
 public class StandardPopupHandler implements PopupHandler
 {
 
-   private JToggleButton button;
+   private StreamflowToggleButton button;
    private JPanel optionsPanel;
    private JDialog popup;
    private final JPanel parentPanel;
@@ -60,7 +62,7 @@ public class StandardPopupHandler implements PopupHandler
       this.position = position;
       this.refreshOnClose = refreshOnClose;
       this.refreshHandler = refreshHandler;
-      button = new JToggleButton( action );
+      button = new StreamflowToggleButton( action );
       button.addItemListener( new ItemListener()
       {
 
@@ -83,7 +85,7 @@ public class StandardPopupHandler implements PopupHandler
    }
 
    @Override
-   public JToggleButton getButton()
+   public StreamflowToggleButton getButton()
    {
       return button;
    }

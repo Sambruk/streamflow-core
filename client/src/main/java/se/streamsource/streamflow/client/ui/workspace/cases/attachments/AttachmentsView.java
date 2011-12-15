@@ -17,8 +17,26 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ActionMap;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
@@ -32,6 +50,7 @@ import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
+
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -39,24 +58,15 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 
 /**
  * JAVADOC
@@ -109,11 +119,11 @@ public class AttachmentsView
       attachments.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
       JPanel toolbar = new JPanel();
-      JButton addButton = new JButton(am.get("add"));
+      StreamflowButton addButton = new StreamflowButton(am.get("add"));
       toolbar.add(addButton);
-      JButton removeButton = new JButton(am.get("remove"));
+      StreamflowButton removeButton = new StreamflowButton(am.get("remove"));
       toolbar.add(removeButton);
-      toolbar.add(new JButton(am.get("open")));
+      toolbar.add(new StreamflowButton(am.get("open")));
       attachments.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove"), am.get("open")));
       attachmentsModel.addObserver(new RefreshComponents().visibleOn("createattachment", addButton, removeButton));
 

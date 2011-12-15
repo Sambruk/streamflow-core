@@ -50,7 +50,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -74,6 +73,7 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StreamflowToggleButton;
 import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -97,7 +97,7 @@ public class CaseNoteView
 
    private JDialog popup;
 
-   JToggleButton allNotesBtn;
+   StreamflowToggleButton allNotesBtn;
 
    public CaseNoteView( @Service ApplicationContext appContext,
                         @Uses CaseNoteModel model,
@@ -123,7 +123,7 @@ public class CaseNoteView
       formBuilder.append( i18n.text( WorkspaceResources.note_label ));
 
 
-      allNotesBtn = new JToggleButton( am.get( "allNotes" ) );
+      allNotesBtn = new StreamflowToggleButton( am.get( "allNotes" ) );
       allNotesBtn.addItemListener( new ItemListener()
       {
          public void itemStateChanged(ItemEvent itemEvent)
@@ -234,9 +234,9 @@ public class CaseNoteView
          @Override
          public void focusLost( FocusEvent e )
          {
-            if( !(e.getOppositeComponent() instanceof JToggleButton) )
+            if( !(e.getOppositeComponent() instanceof StreamflowToggleButton) )
                allNotesBtn.doClick();
-            else if( (e.getOppositeComponent() instanceof JToggleButton)  )
+            else if( (e.getOppositeComponent() instanceof StreamflowToggleButton)  )
                killPopup();
 
          }

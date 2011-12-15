@@ -34,7 +34,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import javax.swing.ImageIcon;
@@ -43,15 +42,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.qi4j.api.injection.scope.Service;
@@ -60,7 +56,6 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -156,8 +151,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
             } );
       rightBuilder.add( filterPopupHandler.getButton(), new CellConstraints( 3, 1, 1, 1, CellConstraints.RIGHT,
             CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
-
-      filterPopupHandler.getButton().setMargin( new Insets( 1, 1, 1, 1 ) );
 
       filtersList.addFocusListener( new FocusAdapter()
       {

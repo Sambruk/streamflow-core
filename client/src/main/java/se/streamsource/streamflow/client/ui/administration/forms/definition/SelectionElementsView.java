@@ -17,8 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
@@ -26,23 +37,23 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -53,8 +64,8 @@ public class SelectionElementsView
 {
    private JXList elementList;
 
-   private JButton upButton;
-   private JButton downButton;
+   private StreamflowButton upButton;
+   private StreamflowButton downButton;
    private SelectionElementsModel model;
 
    @Service
@@ -74,15 +85,15 @@ public class SelectionElementsView
       ActionMap am = context.getActionMap( this );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
-      upButton = new JButton( am.get( "up" ) );
+      toolbar.add( new StreamflowButton( am.get( "add" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "remove" ) ) );
+      upButton = new StreamflowButton( am.get( "up" ) );
       toolbar.add( upButton );
-      downButton = new JButton( am.get( "down" ) );
+      downButton = new StreamflowButton( am.get( "down" ) );
       toolbar.add( downButton );
       upButton.setEnabled( false );
       downButton.setEnabled( false );
-      toolbar.add( new JButton( am.get( "rename" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "rename" ) ) );
 
       model.refresh();
       elementList = new JXList( new EventListModel<String>(model.getEventList()) );

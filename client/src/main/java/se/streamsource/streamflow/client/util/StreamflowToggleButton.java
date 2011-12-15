@@ -14,27 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.util.popup;
+package se.streamsource.streamflow.client.util;
 
-import javax.swing.JPanel;
+import java.awt.Insets;
 
-import se.streamsource.streamflow.client.util.StreamflowToggleButton;
+import javax.swing.Action;
+import javax.swing.JButton;
 
 /**
+ * Common ToggleButton class that handles styling
  * 
  * @author henrikreinhold
  *
  */
-public interface PopupHandler
+public class StreamflowToggleButton extends JButton
 {
-   public enum Position {
-      left,
-      right
+   private static final long serialVersionUID = -6757445621191820671L;
+
+   private static final Insets INSETS = new Insets( 3, 1, 1, 3 );
+
+   public StreamflowToggleButton(Action action)
+   {
+      super(action);
+      setMargin( INSETS );
    }
-  
-   public StreamflowToggleButton getButton();
-   
-   public void setPanelContent(JPanel filterPanel);
-   
-   public void kill();
+
 }

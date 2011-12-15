@@ -17,13 +17,16 @@
 
 package se.streamsource.streamflow.client.util;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.jdesktop.swingx.JXList;
+
+import se.streamsource.streamflow.client.ui.administration.forms.FormElementItem;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
-import org.jdesktop.swingx.JXList;
-import se.streamsource.streamflow.client.ui.administration.forms.FormElementItem;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * JAVADOC

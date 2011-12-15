@@ -17,14 +17,15 @@
 
 package se.streamsource.streamflow.client.util;
 
+import javax.swing.Action;
+
 import org.jdesktop.application.ApplicationAction;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
-
-import javax.swing.*;
 
 /**
  * Enable actions based on commands and queries in a REST resource.

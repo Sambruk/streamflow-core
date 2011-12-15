@@ -17,8 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.date_time_format;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
@@ -33,6 +52,7 @@ import org.qi4j.api.io.Outputs;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.restlet.representation.Representation;
+
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
@@ -44,24 +64,16 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
-
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.date_time_format;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -83,7 +95,7 @@ public class CaseSubmittedFormView
 
    private CaseSubmittedFormModel model;
 
-   private Map<JButton, AttachmentFieldSubmission> buttons = new HashMap<JButton, AttachmentFieldSubmission>();
+   private Map<StreamflowButton, AttachmentFieldSubmission> buttons = new HashMap<StreamflowButton, AttachmentFieldSubmission>();
 
    private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_format));
 
@@ -173,7 +185,7 @@ public class CaseSubmittedFormView
          JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
          panel.setBackground(Color.WHITE);
          panel.add(new JLabel(attachment.name().get()));
-         JButton button = new JButton(context.getActionMap(this).get("open"));
+         StreamflowButton button = new StreamflowButton(context.getActionMap(this).get("open"));
          buttons.put(button, attachment);
          panel.add(button);
          component = panel;

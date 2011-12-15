@@ -17,12 +17,14 @@
 
 package se.streamsource.streamflow.client.ui;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
+
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * Generic trigger for opening up an options menu as a popup.

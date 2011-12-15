@@ -17,7 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.administration.roles;
 
-import ca.odell.glazedlists.swing.EventListModel;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -25,24 +32,21 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
+import ca.odell.glazedlists.swing.EventListModel;
 
 /**
  * JAVADOC
@@ -74,8 +78,8 @@ public class RolesView
       add( roleList, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( getActionMap().get( "add" ) ) );
-      toolbar.add( new JButton( getActionMap().get( "remove" ) ) );
+      toolbar.add( new StreamflowButton( getActionMap().get( "add" ) ) );
+      toolbar.add( new StreamflowButton( getActionMap().get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
       new RefreshWhenShowing( this, model );

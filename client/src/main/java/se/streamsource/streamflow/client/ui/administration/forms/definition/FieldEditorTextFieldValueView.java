@@ -38,7 +38,6 @@ import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.ActionBinder;

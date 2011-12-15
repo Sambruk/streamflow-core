@@ -17,17 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.history;
 
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsView;
 
-import javax.swing.*;
-import java.awt.*;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC

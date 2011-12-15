@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.client;
 
-import org.apache.log4j.Logger;
-
-import javax.swing.*;
 import java.util.Locale;
+
+import javax.swing.UnsupportedLookAndFeelException;
+
+import org.apache.log4j.Logger;
 
 /**
  * Main class for client.

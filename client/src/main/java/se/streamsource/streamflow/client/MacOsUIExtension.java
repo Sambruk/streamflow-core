@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.client;
 
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.KeyStroke;
+
+import se.streamsource.streamflow.client.util.i18n;
+
 import com.apple.eawt.AboutHandler;
 import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
 import com.apple.eawt.OpenFilesHandler;
 import com.apple.eawt.QuitHandler;
 import com.apple.eawt.QuitResponse;
-import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.*;
 
 public class MacOsUIExtension
 {

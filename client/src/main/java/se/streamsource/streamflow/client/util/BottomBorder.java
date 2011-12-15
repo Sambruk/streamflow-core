@@ -17,8 +17,12 @@
 
 package se.streamsource.streamflow.client.util;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
+
 import javax.swing.border.AbstractBorder;
-import java.awt.*;
 
 public class BottomBorder extends AbstractBorder
 {

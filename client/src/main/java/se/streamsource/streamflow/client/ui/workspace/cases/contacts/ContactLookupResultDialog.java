@@ -17,17 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.List;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.List;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 
 public class ContactLookupResultDialog extends JPanel
 {

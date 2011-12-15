@@ -17,23 +17,29 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import static se.streamsource.streamflow.client.util.i18n.icon;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.JXTextField;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import static se.streamsource.streamflow.client.util.i18n.icon;
-import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * This view shows a date picker combined with a period list.

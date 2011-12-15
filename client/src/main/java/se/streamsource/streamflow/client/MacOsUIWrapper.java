@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
 
 public class MacOsUIWrapper
 {

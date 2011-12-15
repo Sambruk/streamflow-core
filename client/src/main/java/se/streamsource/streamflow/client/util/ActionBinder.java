@@ -17,16 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -35,6 +29,28 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputVerifier;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Uses;
+
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 /**
  * Bind components to actions, which are invoked when the components state is updated

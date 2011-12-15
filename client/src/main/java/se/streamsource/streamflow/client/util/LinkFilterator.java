@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.TextFilterator;
+import java.util.List;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
-
-import java.util.List;
+import ca.odell.glazedlists.TextFilterator;
 
 /**
  * Filter for LinkValue. Will filter on texts, and titles if available

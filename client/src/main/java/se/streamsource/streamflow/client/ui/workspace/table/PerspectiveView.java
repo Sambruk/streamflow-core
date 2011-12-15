@@ -17,26 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.SortedList;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationAction;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.Links;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.BottomBorder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.CLOSED;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.ON_HOLD;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.OPEN;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.valueOf;
+import static se.streamsource.streamflow.client.util.i18n.ICON_16;
+import static se.streamsource.streamflow.client.util.i18n.icon;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -53,8 +47,37 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.StreamflowToggleButton;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import ca.odell.glazedlists.SortedList;
 
 public class PerspectiveView extends JPanel implements Observer
 {
@@ -109,7 +132,7 @@ public class PerspectiveView extends JPanel implements Observer
 
       filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
       javax.swing.Action filterClearAction = getActionMap().get( FilterActions.filterClear.name() );
-      JButton filterClearButton = new JButton( filterClearAction );
+      StreamflowButton filterClearButton = new StreamflowButton( filterClearAction );
       filterPanel.add(filterClearButton);
 
       addPopupButton( filterPanel, FilterActions.filterCreatedOn.name() );
@@ -154,10 +177,10 @@ public class PerspectiveView extends JPanel implements Observer
                {
                   for (Component component : Iterables.flatten( Iterables.iterable( filterPanel.getComponents() ), Iterables.iterable( viewPanel.getComponents() ) ))
                   {
-                     if( !(component instanceof JToggleButton) )
+                     if( !(component instanceof StreamflowToggleButton) )
                         continue;
                      
-                     ((JToggleButton) component).setSelected( false );
+                     ((StreamflowToggleButton) component).setSelected( false );
                   }
                } 
             }
@@ -168,7 +191,7 @@ public class PerspectiveView extends JPanel implements Observer
    private void addPopupButton(JPanel panel, String action)
    {
       javax.swing.Action filterAction = getActionMap().get(action);
-      JToggleButton button = new JToggleButton(filterAction);
+      StreamflowToggleButton button = new StreamflowToggleButton(filterAction);
       button.addItemListener( new ItemListener()
       {
          public void itemStateChanged(ItemEvent itemEvent)
@@ -179,15 +202,15 @@ public class PerspectiveView extends JPanel implements Observer
 
                for (Component component : Iterables.flatten(Iterables.iterable(filterPanel.getComponents()), Iterables.iterable(viewPanel.getComponents())))
                {
-                  if( !(component instanceof JToggleButton) )
+                  if( !(component instanceof StreamflowToggleButton) )
                      continue;
                   if (component != itemEvent.getSource() )
                   {
-                     ((JToggleButton)component).setSelected(false);
+                     ((StreamflowToggleButton)component).setSelected(false);
                   }
                }
                optionsPanel = new JPanel();
-               JToggleButton button = (JToggleButton) itemEvent.getSource();
+               StreamflowToggleButton button = (StreamflowToggleButton) itemEvent.getSource();
                showPopup(button);
            } else if (state == ItemEvent.DESELECTED)
            {
@@ -369,11 +392,11 @@ public class PerspectiveView extends JPanel implements Observer
    {
       for (Component component : Iterables.flatten( Iterables.iterable( filterPanel.getComponents() ), Iterables.iterable( viewPanel.getComponents() ) ))
       {
-         if (!(component instanceof JToggleButton))
+         if (!(component instanceof StreamflowToggleButton))
             continue;
-         if (((JToggleButton) component).isSelected())
+         if (((StreamflowToggleButton) component).isSelected())
          {
-            ((JToggleButton) component).setSelected( false );
+            ((StreamflowToggleButton) component).setSelected( false );
          }
       }
    }
@@ -382,9 +405,9 @@ public class PerspectiveView extends JPanel implements Observer
    {
       for( Component comp : Iterables.flatten( Iterables.iterable(filterPanel.getComponents()), Iterables.iterable(viewPanel.getComponents()) ) )
       {
-         if( comp instanceof JToggleButton )
+         if( comp instanceof StreamflowToggleButton )
          {
-            JToggleButton button = (JToggleButton)comp;
+            StreamflowToggleButton button = (StreamflowToggleButton)comp;
             boolean selectedIsEmpty = true;
             switch( FilterActions.valueOf( ((ApplicationAction)button.getAction()).getName()))
             {

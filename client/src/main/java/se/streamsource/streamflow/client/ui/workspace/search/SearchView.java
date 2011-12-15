@@ -18,6 +18,17 @@
 package se.streamsource.streamflow.client.ui.workspace.search;
 
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
+
+import javax.swing.ActionMap;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
@@ -27,15 +38,14 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.*;
-import java.awt.*;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 /**
  * JAVADOC
@@ -65,7 +75,7 @@ public class SearchView
       setActionMap(am = context.getActionMap(this));
 
       javax.swing.Action searchAction = am.get("search");
-      JButton searchButton = new JButton(searchAction);
+      StreamflowButton searchButton = new StreamflowButton(searchAction);
       searchButton.registerKeyboardAction(searchAction, (KeyStroke) searchAction
               .getValue(javax.swing.Action.ACCELERATOR_KEY),
               JComponent.WHEN_IN_FOCUSED_WINDOW);

@@ -17,8 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.administration.labels;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+
+import javax.swing.ActionMap;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -27,6 +36,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -37,11 +47,9 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.*;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -77,8 +85,8 @@ public class SelectedLabelsView
       add( new JScrollPane( labelList ), BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "add" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
       labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 

@@ -42,7 +42,6 @@ import java.util.TimeZone;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -79,6 +78,7 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.i18n;
@@ -119,8 +119,8 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private CaseLabelsView labels;
    private PossibleFormsView forms;
    private RemovableLabel selectedCaseType = new RemovableLabel();
-   private JButton caseTypeButton;
-   private JButton labelButton;
+   private StreamflowButton caseTypeButton;
+   private StreamflowButton labelButton;
    private final ApplicationContext appContext;
    private CaseNoteView caseNotes;
 
@@ -153,7 +153,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       actionBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
 
       // Layout and form for the right panel
-      FormLayout leftLayout = new FormLayout( "50dlu, 2dlu, 200:grow, 70dlu",
+      FormLayout leftLayout = new FormLayout( "70dlu, 2dlu, 200:grow, 70dlu",
             "pref, pref, pref, pref, 20dlu, pref, pref, pref, pref" );
 
       leftPane = new JPanel( leftLayout );
@@ -196,8 +196,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       // Select case type
       javax.swing.Action caseTypeAction = am.get( "changeCaseType" );
-      caseTypeButton = new JButton( caseTypeAction );
-      caseTypeButton.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+      caseTypeButton = new StreamflowButton( caseTypeAction );
       caseTypeButton.registerKeyboardAction( caseTypeAction,
             (KeyStroke) caseTypeAction.getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
@@ -213,7 +212,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       // Select labels
       javax.swing.Action labelAction = labels.getActionMap().get( "addLabel" );
-      labelButton = new JButton( labelAction );
+      labelButton = new StreamflowButton( labelAction );
       // NotificationGlassPane.registerButton(labelButton);
       labelButton.registerKeyboardAction( labelAction,
             (KeyStroke) labelAction.getValue( javax.swing.Action.ACCELERATOR_KEY ), JComponent.WHEN_IN_FOCUSED_WINDOW );

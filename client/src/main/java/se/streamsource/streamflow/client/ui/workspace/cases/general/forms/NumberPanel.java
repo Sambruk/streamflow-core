@@ -17,18 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import java.awt.BorderLayout;
+
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.util.Strings;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class NumberPanel
       extends AbstractFieldPanel

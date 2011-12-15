@@ -24,7 +24,6 @@ import java.text.ParseException;
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.InputVerifier;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -45,6 +44,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPlu
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.RegexPatternFormatter;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.SuggestTextField;
 import se.streamsource.streamflow.client.util.TextTransferHandler;
 import se.streamsource.streamflow.client.util.i18n;
@@ -55,8 +55,8 @@ public class TextFieldPanel extends AbstractFieldPanel
 {
    private JTextField textField;
    private TextFieldValue fieldValue;
-   private JButton openMapButton;
-   private JButton pasteMapCoordinatesButton;
+   private StreamflowButton openMapButton;
+   private StreamflowButton pasteMapCoordinatesButton;
 
    @Service
    DialogService dialogs;
@@ -97,11 +97,11 @@ public class TextFieldPanel extends AbstractFieldPanel
          textField.setTransferHandler( th );
 
          javax.swing.Action openMapAction = am.get( "openMap" );
-         openMapButton = new JButton( openMapAction );
+         openMapButton = new StreamflowButton( openMapAction );
          add( openMapButton );
 
          javax.swing.Action pasteMapCoordinatesAction = am.get( "pasteMapCoordinates" );
-         pasteMapCoordinatesButton = new JButton( pasteMapCoordinatesAction );
+         pasteMapCoordinatesButton = new StreamflowButton( pasteMapCoordinatesAction );
 
          add( pasteMapCoordinatesButton );
       }
