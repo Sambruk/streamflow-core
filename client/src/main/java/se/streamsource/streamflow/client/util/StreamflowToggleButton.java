@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client.util;
 import java.awt.Insets;
 
 import javax.swing.Action;
-import javax.swing.JButton;
+import javax.swing.JToggleButton;
 
 /**
  * Common ToggleButton class that handles styling
@@ -27,7 +27,7 @@ import javax.swing.JButton;
  * @author henrikreinhold
  *
  */
-public class StreamflowToggleButton extends JButton
+public class StreamflowToggleButton extends JToggleButton
 {
    private static final long serialVersionUID = -6757445621191820671L;
 

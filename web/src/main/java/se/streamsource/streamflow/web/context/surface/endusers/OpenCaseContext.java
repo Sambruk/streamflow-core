@@ -17,20 +17,33 @@
 
 package se.streamsource.streamflow.web.context.surface.endusers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.surface.api.OpenCaseDTO;
+import se.streamsource.streamflow.util.Translator;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.structure.caze.History;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
-import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 
 /**
  * Context for open case
@@ -57,9 +70,43 @@ public class OpenCaseContext
       return builder.newInstance();
    }
 
-   public Iterable<Message> history(TableQuery tq)
+   public Iterable<CaseLogEntryDTO> caselog()
    {
-      Messages.Data messages = (Messages.Data) RoleMap.role(History.class).getHistory();
-      return messages.messages();
+      List<CaseLogEntryDTO> list = new ArrayList<CaseLogEntryDTO>();
+      ValueBuilder<CaseLogEntryDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryDTO.class );
+
+      CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
+
+      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
+      Map<String, String> translations = new HashMap<String, String>();
+      for (String key : bundle.keySet())
+      {
+         translations.put( key, bundle.getString( key ) );
+      }
+
+      for (CaseLogEntryValue entry : ((CaseLog.Data) caseLog.caselog().get()).entries().get())
+      {
+//         if (entry.availableOnMypages().get())
+         {
+            UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+            Describable user = uow.get( Describable.class, entry.createdBy().get().identity() );
+            builder.prototype().creationDate().set( entry.createdOn().get() );
+            builder.prototype().creator().set( user.getDescription() );
+            String translatedMessage = Translator.translate( entry.message().get(), translations ).replace( "\n", "<br/>" );
+            builder.prototype().message().set( translatedMessage );
+            String id = "";
+            if (entry.entity().get() != null)
+            {
+               id = EntityReference.getEntityReference( entry.entity().get() ).identity();
+            }
+            builder.prototype().href().set( id );
+            builder.prototype().id().set( id );
+
+            builder.prototype().text().set( translatedMessage );
+
+            list.add( builder.newInstance() );
+         }
+      }
+      return list;
    }
 }

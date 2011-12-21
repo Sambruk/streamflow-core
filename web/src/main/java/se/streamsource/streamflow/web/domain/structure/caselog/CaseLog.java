@@ -39,6 +39,8 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 public interface CaseLog extends Removable
 {
 
+   CaseLogEntryValue getLastMessage();
+   
    void addCustomEntry(String message, Boolean availableOnMypages);
 
    void addTypedEntry(String message, CaseLogEntryTypes type);
@@ -93,6 +95,13 @@ public interface CaseLog extends Removable
 
          addedEntry( null, builder.newInstance() );
       }
-
+      
+      public CaseLogEntryValue getLastMessage()
+      {
+         if (entries().get().size() > 0)
+            return entries().get().get(entries().get().size()-1);
+         else
+            return null;
+      }
    }
 }
