@@ -1,3 +1,4 @@
+
 #
 #
 # Copyright 2009-2011 Streamsource AB
@@ -21,5 +22,5 @@
 # system and then remove it.
 
 source "connect.tcl"
-puts [jmx_invoke -m Streamflow:name=Manager backup]
+puts [jmx_invoke -m Qi4j:application=StreamflowServer,layer=Management,module=JMX,class=Service,service=imadmin restart]
 exit
