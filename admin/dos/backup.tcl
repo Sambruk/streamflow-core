@@ -21,5 +21,7 @@
 # system and then remove it.
 
 source "connect.tcl"
+
 puts [jmx_invoke -m Qi4j:application=StreamflowServer,name=Manager backup]
+
 exit
