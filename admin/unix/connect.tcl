@@ -15,11 +15,7 @@
 # limitations under the License.
 #
 
-# Create backup
-# An export of the current application database will be exported
-# to /backup. After running this, copy that file to your backup
-# system and then remove it.
-
-source "connect.tcl"
-puts [jmx_invoke -m Streamflow:name=Manager backup]
-exit
+# Connect to a remote Streamflow instance using JMX-RMI
+# Change the host, port and login info to match your environment
+package require java
+jmx_connect -h localhost -p 1099 -U administrator -P administrator
