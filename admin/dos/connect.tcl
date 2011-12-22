@@ -19,5 +19,4 @@
 # Change the host, port and login info to match your environment
 
 package require java
-
-jmx_connect -h localhost -p 1099 -U administrator -P <administrator password>
+jmx_connect -h localhost -p 1099 -U administrator -P administrator

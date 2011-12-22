@@ -14,14 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 # Create backup
 # An export of the current application database will be exported
 # to /backup. After running this, copy that file to your backup
 # system and then remove it.
 
 source "connect.tcl"
-
 puts [jmx_invoke -m Qi4j:application=StreamflowServer,name=Manager backup]
-
 exit
