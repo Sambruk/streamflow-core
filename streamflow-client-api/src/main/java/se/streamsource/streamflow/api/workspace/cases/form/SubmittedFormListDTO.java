@@ -17,16 +17,17 @@
 
 package se.streamsource.streamflow.api.workspace.cases.form;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
 import java.util.Date;
+
+import org.qi4j.api.property.Property;
+
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * JAVADOC
  */
 public interface SubmittedFormListDTO
-      extends ValueComposite
+      extends LinkValue
 {
    Property<Date> submissionDate();
 

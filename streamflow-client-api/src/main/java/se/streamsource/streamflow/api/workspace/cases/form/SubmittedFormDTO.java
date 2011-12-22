@@ -17,26 +17,19 @@
 
 package se.streamsource.streamflow.api.workspace.cases.form;
 
+import java.util.List;
+
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 
-import java.util.Date;
-import java.util.List;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 
 /**
  * JAVADOC
  */
 public interface SubmittedFormDTO
-      extends ValueComposite
+      extends SubmittedFormListDTO
 {
-   Property<Date> submissionDate();
-
-   Property<String> submitter();
-
-   Property<String> form();
-
    @UseDefaults
    Property<List<SubmittedPageDTO>> pages();
 

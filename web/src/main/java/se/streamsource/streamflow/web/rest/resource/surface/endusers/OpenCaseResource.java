@@ -20,12 +20,14 @@ package se.streamsource.streamflow.web.rest.resource.surface.endusers;
 import org.qi4j.api.util.Function;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.web.context.surface.endusers.OpenCaseContext;
+import se.streamsource.streamflow.web.rest.resource.surface.endusers.submittedforms.MyPagesSubmittedFormsResource;
 
 /**
  * Resource for an open case
@@ -71,5 +73,11 @@ public class OpenCaseResource
         
         TableValue table = tableBuilder.rows(caselog).orderBy().paging().newTable();
         return table;
+   }
+   
+   @SubResource
+   public void submittedforms( )
+   {
+      subResource( MyPagesSubmittedFormsResource.class );
    }
 }

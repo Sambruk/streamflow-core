@@ -24,6 +24,7 @@ import org.qi4j.api.util.Function;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableBuilderFactory;
@@ -34,6 +35,7 @@ import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.rest.resource.workspace.cases.form.CaseSubmittedFormsResource;
 
 /**
  * TODO
@@ -116,4 +118,5 @@ public class OpenCasesResource
       setResourceValidity(setRole(CaseEntity.class, segment));
       subResource(OpenCaseResource.class);
    }
+   
 }
