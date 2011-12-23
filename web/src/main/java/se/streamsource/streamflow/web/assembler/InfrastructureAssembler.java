@@ -242,7 +242,7 @@ public class InfrastructureAssembler
       if (mode.equals( Application.Mode.production ))
       {
          // Liquibase migration
-         module.services( LiquibaseService.class ).instantiateOnStartup();
+         module.services( LiquibaseService.class ).instantiateOnStartup().visibleIn( Visibility.application );
          ModuleAssembly config = module.layer().application().layer( "Configuration" ).module( "DefaultConfiguration" );
          config.entities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
          config.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);

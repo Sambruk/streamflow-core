@@ -45,6 +45,7 @@ import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.FetchProfile;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Header;
 import javax.mail.Message;
@@ -200,7 +201,9 @@ public interface ReceiveMailService
          if (!circuitBreaker.isOn())
             return; // Don't try - circuit breaker is off
 
+         boolean expunge = config.configuration().deleteMailOnInboxClose().get();
          logger.info("Checking email");
+         logger.info( "Delete mail on close - " + expunge );
 
          Session session = javax.mail.Session.getInstance(props, authenticator);
          session.setDebug(config.configuration().debug().get());
@@ -216,7 +219,7 @@ public interface ReceiveMailService
             store.connect();
 
             inbox = store.getFolder("INBOX");
-            inbox.open(Folder.READ_ONLY);
+            inbox.open(Folder.READ_WRITE);
 
             javax.mail.Message[] messages = inbox.getMessages();
             FetchProfile fp = new FetchProfile();
@@ -324,13 +327,18 @@ public interface ReceiveMailService
                   mailReceiver.receivedEmail(null, builder.newInstance());
 
                   uow.complete();
+
+                  // remove mail on success if expunge is true
+                  if( expunge )
+                     message.setFlag( Flags.Flag.DELETED, true );
+
                } catch (Throwable e)
                {
                   uow.discard();
                   logger.error("Could not parse emails", e);
                }
             }
-            inbox.close(false);
+            inbox.close( config.configuration().deleteMailOnInboxClose().get() );
             store.close();
 
             logger.info("Checked email");

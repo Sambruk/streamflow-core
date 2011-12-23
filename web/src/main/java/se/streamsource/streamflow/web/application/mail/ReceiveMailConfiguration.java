@@ -91,4 +91,10 @@ public interface ReceiveMailConfiguration
    @UseDefaults
    Property<Integer> port();
 
+   /**
+    *  A boolean telling whether mails should be purged on the server or not.
+    */
+   @UseDefaults
+   Property<Boolean> deleteMailOnInboxClose();
+
 }
