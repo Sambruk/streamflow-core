@@ -95,6 +95,8 @@ public class ManagementAssembler
 
       module.services(JmxConnectorService.class).identifiedBy("jmxconnector").instantiateOnStartup();
       configuration().entities(JmxConnectorConfiguration.class).visibleIn(Visibility.application);
+      configuration().forMixin( JmxConnectorConfiguration.class ).declareDefaults().enabled().set( true );
+      configuration().forMixin( JmxConnectorConfiguration.class ).declareDefaults().port().set( 1099 );
 
       module.services(InstantMessagingAdminService.class).identifiedBy("imadmin").instantiateOnStartup();
       configuration().entities(InstantMessagingAdminConfiguration.class).visibleIn(Visibility.application);
