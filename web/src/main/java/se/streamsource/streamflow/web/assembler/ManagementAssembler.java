@@ -17,11 +17,6 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-
-import java.util.prefs.Preferences;
-
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -42,7 +37,6 @@ import org.qi4j.library.jmx.JMXAssembler;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
@@ -77,6 +71,10 @@ import se.streamsource.streamflow.web.management.UpdateService;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorService;
 
+import java.util.prefs.Preferences;
+
+import static org.qi4j.api.common.Visibility.*;
+
 /**
  * Assembler for management layer
  */
@@ -108,8 +106,10 @@ public class ManagementAssembler extends AbstractLayerAssembler
 
       module.services( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( layer );
 
-      module.services( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
-      configuration().entities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
+      module.services(JmxConnectorService.class).identifiedBy("jmxconnector").instantiateOnStartup();
+      configuration().entities(JmxConnectorConfiguration.class).visibleIn(Visibility.application);
+      configuration().forMixin( JmxConnectorConfiguration.class ).declareDefaults().enabled().set( true );
+      configuration().forMixin( JmxConnectorConfiguration.class ).declareDefaults().port().set( 1099 );
 
       module.services( InstantMessagingAdminService.class ).identifiedBy( "imadmin" ).instantiateOnStartup();
       configuration().entities( InstantMessagingAdminConfiguration.class ).visibleIn( Visibility.application );
