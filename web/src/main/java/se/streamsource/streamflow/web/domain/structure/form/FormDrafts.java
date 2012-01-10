@@ -127,8 +127,7 @@ public interface FormDrafts
                      PageSubmissionDTO.class );
                ValueBuilder<FieldSubmissionDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(
                      FieldSubmissionDTO.class );
-               ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
-                     FieldDefinitionValue.class );
+               
                builder.prototype().pages().set( new ArrayList<PageSubmissionDTO>() );
 
                Pages.Data pageEntities = (Pages.Data) form;
@@ -137,12 +136,16 @@ public interface FormDrafts
                   pageBuilder.prototype().title().set( page.getDescription() );
                   pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ) );
                   pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionDTO>() );
-
+                  
+                  
                   Fields.Data fieldEntities = (Fields.Data) page;
                   for (Field field : fieldEntities.fields())
                   {
                      FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
 
+                     ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
+                           FieldDefinitionValue.class );
+                     
                      valueBuilder.prototype().description().set( field.getDescription() );
                      valueBuilder.prototype().note().set( field.getNote() );
                      valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
