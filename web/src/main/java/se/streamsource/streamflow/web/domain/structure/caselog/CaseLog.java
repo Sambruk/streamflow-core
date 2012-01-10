@@ -16,9 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.structure.caselog;
 
-import java.util.Date;
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
@@ -28,12 +25,14 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+
+import java.util.Date;
+import java.util.List;
 
 @Mixins(CaseLog.Mixin.class)
 public interface CaseLog extends Removable
@@ -42,6 +41,8 @@ public interface CaseLog extends Removable
    void addCustomEntry(String message, Boolean availableOnMypages);
 
    void addTypedEntry(String message, CaseLogEntryTypes type);
+
+   void setMyPagesVisibility( int index, boolean publish );
    
    interface Data
    {
@@ -49,6 +50,8 @@ public interface CaseLog extends Removable
       Property<List<CaseLogEntryValue>> entries();
 
       void addedEntry(@Optional DomainEvent event, CaseLogEntryValue entry);
+
+      void satMyPagesVisibility( @Optional DomainEvent event, int index, boolean publish );
    }
 
    abstract class Mixin implements CaseLog, Data
@@ -92,6 +95,23 @@ public interface CaseLog extends Removable
          builder.prototype().message().set( message );
 
          addedEntry( null, builder.newInstance() );
+      }
+
+      public void setMyPagesVisibility( int index, boolean publish )
+      {
+         satMyPagesVisibility( null, index, publish );
+      }
+
+
+      public void satMyPagesVisibility( DomainEvent event, int index, boolean publish )
+      {
+         List<CaseLogEntryValue> list = data.entries().get();
+
+         ValueBuilder<CaseLogEntryValue> valueBuilder = list.get( index ).buildWith();
+         valueBuilder.prototype().availableOnMypages().set( publish );
+         list.set( index, valueBuilder.newInstance() );
+         
+         data.entries().set( list );
       }
 
    }

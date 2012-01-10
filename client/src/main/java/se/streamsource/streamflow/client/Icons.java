@@ -53,6 +53,7 @@ public enum Icons
    forms,
    attachments,
    history,
+   system,
 
    subcase,
 
@@ -79,5 +80,11 @@ public enum Icons
    check,
 
    down_no_selection,
-   down_with_selection
+   down_with_selection,
+
+   custom,
+
+   published,
+   not_published
+
 }

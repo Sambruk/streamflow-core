@@ -14,23 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.workspace.cases.caselog;
+package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
-import org.qi4j.api.property.Property;
-import se.streamsource.dci.value.link.LinkValue;
-
-import java.util.Date;
-
-public interface CaseLogEntryDTO extends LinkValue
+/**
+ * Created by IntelliJ IDEA.
+ * User: arvidhuss
+ * Date: 12/14/11
+ * Time: 4:22 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public enum CaseLogResources
 {
-   Property<String> creator();
-
-   Property<Date> creationDate();
-
-   Property<String> message();
-
-   Property<Boolean> myPagesVisibility();
-
-   Property<CaseLogEntryTypes> caseLogType();
-   
+   case_log_mypages_visibility,
+   case_log_type,
+   case_log_text,
+   case_log_date
 }
