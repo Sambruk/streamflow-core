@@ -17,17 +17,11 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.dci.value.StringValue;
@@ -43,6 +37,11 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * JAVADOC
@@ -67,6 +66,7 @@ public class CaseLogContext
          translations.put( key, bundle.getString( key ) );
       }
 
+      int count = 0;
       for (CaseLogEntryValue entry : ((CaseLog.Data) caseLog.caselog().get()).entries().get())
       {
          if (includeEntry( filter, entry ))
@@ -76,12 +76,15 @@ public class CaseLogContext
             builder.prototype().creationDate().set( entry.createdOn().get() );
             builder.prototype().creator().set( user.getDescription() );
             builder.prototype().message().set( Translator.translate( entry.message().get(), translations ) );
+            builder.prototype().myPagesVisibility().set( entry.availableOnMypages().get() );
+            builder.prototype().caseLogType().set( entry.entryType().get() );
+            
             String id = "";
             if (entry.entity().get() != null)
             {
                id = EntityReference.getEntityReference( entry.entity().get() ).identity();
             }
-            builder.prototype().href().set( id );
+            builder.prototype().href().set( count++ + "/setpublish?publish=" + !entry.availableOnMypages().get() );
             builder.prototype().id().set( id );
 
             builder.prototype().text().set( Translator.translate( entry.message().get(), translations ) );
@@ -118,4 +121,5 @@ public class CaseLogContext
       CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
       caseLog.caselog().get().addCustomEntry( message.string().get(), Boolean.FALSE );
    }
+
 }

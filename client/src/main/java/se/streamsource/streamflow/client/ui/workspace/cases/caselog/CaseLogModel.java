@@ -16,34 +16,29 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.attachment;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.contact;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.conversation;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.custom;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.form;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Observable;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogFilterValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Observable;
+
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.*;
 
 public class CaseLogModel extends Observable
    implements Refreshable
@@ -101,4 +96,10 @@ public class CaseLogModel extends Observable
    {
       return selectedFilters;
    }
+
+   public void togglepublish( LinkValue link )
+   {
+      client.postLink( link );
+   }
+
 }

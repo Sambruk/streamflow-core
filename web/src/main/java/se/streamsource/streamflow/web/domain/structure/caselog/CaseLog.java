@@ -44,6 +44,8 @@ public interface CaseLog extends Removable
    void addCustomEntry(String message, Boolean availableOnMypages);
 
    void addTypedEntry(String message, CaseLogEntryTypes type);
+
+   void setMyPagesVisibility( int index, boolean publish );
    
    interface Data
    {
@@ -51,6 +53,8 @@ public interface CaseLog extends Removable
       Property<List<CaseLogEntryValue>> entries();
 
       void addedEntry(@Optional DomainEvent event, CaseLogEntryValue entry);
+
+      void satMyPagesVisibility( @Optional DomainEvent event, int index, boolean publish );
    }
 
    abstract class Mixin implements CaseLog, Data
@@ -95,7 +99,24 @@ public interface CaseLog extends Removable
 
          addedEntry( null, builder.newInstance() );
       }
-      
+
+      public void setMyPagesVisibility( int index, boolean publish )
+      {
+         satMyPagesVisibility( null, index, publish );
+      }
+
+
+      public void satMyPagesVisibility( DomainEvent event, int index, boolean publish )
+      {
+         List<CaseLogEntryValue> list = data.entries().get();
+
+         ValueBuilder<CaseLogEntryValue> valueBuilder = list.get( index ).buildWith();
+         valueBuilder.prototype().availableOnMypages().set( publish );
+         list.set( index, valueBuilder.newInstance() );
+         
+         data.entries().set( list );
+      }
+
       public CaseLogEntryValue getLastMessage()
       {
          if (entries().get().size() > 0)

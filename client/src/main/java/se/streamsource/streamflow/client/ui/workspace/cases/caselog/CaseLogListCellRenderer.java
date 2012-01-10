@@ -16,26 +16,26 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.util.Strings;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Locale;
-
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
-import javax.swing.border.EmptyBorder;
-
-import org.jdesktop.swingx.JXLabel;
-
-import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
-import se.streamsource.streamflow.client.ui.DateFormats;
-import se.streamsource.streamflow.util.Strings;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 public class CaseLogListCellRenderer implements ListCellRenderer
 {
@@ -51,6 +51,20 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( rowLayout, renderer );
       renderer.setBorder( new EmptyBorder( 3, 3, 6, 3 ) );
 
+      // MyPages toggle button
+      JToggleButton myPagesBtn = new JToggleButton();
+      myPagesBtn.setBorder( BorderFactory.createEmptyBorder() );
+      if( entry.myPagesVisibility().get() )
+      {
+         myPagesBtn.setIcon( i18n.icon( Icons.down_with_selection, i18n.ICON_16 ) );
+         myPagesBtn.setSelected( true );
+      } else
+      {
+         myPagesBtn.setIcon(  i18n.icon( Icons.down_no_selection, i18n.ICON_16 ) );
+         myPagesBtn.setSelected( false );
+      }
+
+      formBuilder.add( myPagesBtn, new CellConstraints( 1,1,1,1,CellConstraints.CENTER, CellConstraints.TOP ) );
       // User
       JLabel user = new JLabel( entry.creator().get() );
       user.setForeground( Color.GRAY );
