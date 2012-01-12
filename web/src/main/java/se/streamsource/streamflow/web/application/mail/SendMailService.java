@@ -139,6 +139,7 @@ public interface SendMailService
                      "javax.net.ssl.SSLSocketFactory" );
                props.put( "mail.smtp.socketFactory.fallback", "false" );
                props.setProperty( "mail.smtp.quitwait", "false" );
+               props.setProperty( "mail.transport.protocol", "smtps" );
 
             } else if (config.configuration().useTLS().get())
             {
