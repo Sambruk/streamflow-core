@@ -15,7 +15,7 @@
 
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp
-    spec="1.0+"
+    spec="1.5+"
     codebase="$$codebase"
     href="$outputFile">
   <information>
@@ -33,7 +33,7 @@
       kind="splash"
       href="images/Streamflow_cmyk_500px.png"/>
     <offline-allowed/>
-    <shortcut online="false">
+    <shortcut online="true">
       <desktop/>
       <menu submenu="Streamsource"/>
     </shortcut>
