@@ -97,4 +97,10 @@ public interface ReceiveMailConfiguration
    @UseDefaults
    Property<Boolean> deleteMailOnInboxClose();
 
+   /**
+    * The name of the archive folder on the mail server
+    * @return A string property
+    */
+   @UseDefaults
+   Property<String> archiveFolder();
 }

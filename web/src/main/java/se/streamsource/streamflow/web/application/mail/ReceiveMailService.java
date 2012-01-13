@@ -39,6 +39,7 @@ import se.streamsource.infrastructure.NamedThreadFactory;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.AbstractEnabledCircuitBreakerAvailability;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
@@ -63,7 +64,9 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -212,6 +215,9 @@ public interface ReceiveMailService
          UnitOfWork uow = null;
          Store store = null;
          Folder inbox = null;
+         Folder archive = null;
+         boolean archiveExists = false;
+         List<Message> copyToArchive = new ArrayList<Message>();
 
          try
          {
@@ -225,6 +231,25 @@ public interface ReceiveMailService
             FetchProfile fp = new FetchProfile();
 //            fp.add( "In-Reply-To" );
             inbox.fetch(messages, fp);
+
+            // check if the archive folder is configured and exists
+            if( !Strings.empty( config.configuration().archiveFolder().get() )
+                  && config.configuration().protocol().get().startsWith( "imap" ) )
+            {
+               archive = store.getFolder( config.configuration().archiveFolder().get() );
+
+               // if not exists - create
+               if( !archive.exists() )
+               {
+                  archive.create( Folder.HOLDS_MESSAGES );
+                  archiveExists = true;
+               } else
+               {
+                  archiveExists = true;
+               }
+
+               archive.open( Folder.READ_WRITE );
+            }
 
             for (javax.mail.Message message : messages)
             {
@@ -328,6 +353,7 @@ public interface ReceiveMailService
 
                   uow.complete();
 
+                  copyToArchive.add( message );
                   // remove mail on success if expunge is true
                   if( expunge )
                      message.setFlag( Flags.Flag.DELETED, true );
@@ -338,7 +364,16 @@ public interface ReceiveMailService
                   logger.error("Could not parse emails", e);
                }
             }
+
+            // copy message to archive if archive exists
+            if( archiveExists )
+            {
+               inbox.copyMessages( copyToArchive.toArray( new Message[0] ), archive );
+               archive.close( false );
+            }
+
             inbox.close( config.configuration().deleteMailOnInboxClose().get() );
+
             store.close();
 
             logger.info("Checked email");
