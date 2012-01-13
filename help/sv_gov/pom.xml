@@ -4,11 +4,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow-help</artifactId>
-        <version>1.5.2-SNAPSHOT</version>
+        <version>1.5.2</version>
     </parent>
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-help-sv_gov</artifactId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.5.2</version>
     <packaging>jar</packaging>
     <name>Streamflow help sv_gov</name>
     <description>Streamflow help sv_gov</description>
