@@ -87,6 +87,8 @@ public interface SubmittedFormsQueries
 
             Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
             formDTO.form().set( formName.description().get() );
+            formDTO.href().set(form.form().get().identity());
+            formDTO.id().set(form.form().get().identity());
             list.forms().get().add( formBuilder.newInstance() );
          }
 
@@ -102,6 +104,8 @@ public interface SubmittedFormsQueries
          SubmittedFormValue form = submittedForms.submittedForms().get().get( idx );
 
          formDTO.submissionDate().set( form.submissionDate().get() );
+         formDTO.href().set(form.form().get().identity());
+         formDTO.id().set(form.form().get().identity());
 
          Describable.Data submitter = uow.get( Describable.Data.class, form.submitter().get().identity() );
          formDTO.submitter().set( submitter.description().get() );
