@@ -16,30 +16,55 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.DateFormats;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.ListCellRenderer;
-import javax.swing.border.EmptyBorder;
+import static se.streamsource.streamflow.client.util.i18n.ICON_16;
+import static se.streamsource.streamflow.client.util.i18n.icon;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Insets;
 import java.util.Locale;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.EmptyBorder;
+
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.util.Strings;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class CaseLogListCellRenderer implements ListCellRenderer
 {
 
+   private JLabel conversationIcon;
+   private JLabel myPagesPublishedIcon;
+   private JLabel systemIcon;
+   private JLabel customIcon;
+   private JLabel contactIcon;
+   private JLabel formIcon;
+   private JLabel attachmentIcon;
+
+   public CaseLogListCellRenderer()
+   {
+      myPagesPublishedIcon = new JLabel( icon( Icons.published, ICON_16 ) );
+      myPagesPublishedIcon.setText( " " );
+      
+      systemIcon = new JLabel(icon( Icons.history, ICON_16));
+      customIcon = new JLabel(icon( Icons.message_add, ICON_16));
+      contactIcon = new JLabel(icon( Icons.projects, ICON_16));
+      formIcon = new JLabel(icon( Icons.forms, ICON_16));
+      conversationIcon = new JLabel(icon( Icons.conversations, ICON_16));
+      attachmentIcon = new JLabel(icon( Icons.attachments, ICON_16));
+   }
+   
    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
          boolean cellHasFocus)
    {
@@ -51,20 +76,37 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( rowLayout, renderer );
       renderer.setBorder( new EmptyBorder( 3, 3, 6, 3 ) );
 
-      // MyPages toggle button
-      JToggleButton myPagesBtn = new JToggleButton();
-      myPagesBtn.setBorder( BorderFactory.createEmptyBorder() );
-      if( entry.myPagesVisibility().get() )
-      {
-         myPagesBtn.setIcon( i18n.icon( Icons.down_with_selection, i18n.ICON_16 ) );
-         myPagesBtn.setSelected( true );
-      } else
-      {
-         myPagesBtn.setIcon(  i18n.icon( Icons.down_no_selection, i18n.ICON_16 ) );
-         myPagesBtn.setSelected( false );
+      // Icons
+      JPanel icons = new JPanel(new BorderLayout());
+      icons.setOpaque( false );
+      if (entry.myPagesVisibility().get()){
+         icons.add( myPagesPublishedIcon, BorderLayout.WEST);
       }
-
-      formBuilder.add( myPagesBtn, new CellConstraints( 1,1,1,1,CellConstraints.CENTER, CellConstraints.TOP ) );
+      switch (entry.caseLogType().get())
+      {
+      case system:
+         icons.add( systemIcon, BorderLayout.EAST );
+         break;
+      case custom:
+         icons.add( customIcon, BorderLayout.EAST );
+         break;
+      case contact:
+         icons.add( contactIcon, BorderLayout.EAST );
+         break;
+      case form:
+         icons.add( formIcon, BorderLayout.EAST );
+         break;
+      case conversation:
+         icons.add( conversationIcon, BorderLayout.EAST );
+         break;
+      case attachment:
+         icons.add( attachmentIcon, BorderLayout.EAST );
+         break;
+      default:
+         break;
+      }
+      
+      formBuilder.add( icons, new CellConstraints( 1,1,1,2,CellConstraints.RIGHT, CellConstraints.TOP, new Insets( 0, 0, 0, 10 ) ) );
       // User
       JLabel user = new JLabel( entry.creator().get() );
       user.setForeground( Color.GRAY );
@@ -86,15 +128,6 @@ public class CaseLogListCellRenderer implements ListCellRenderer
       message.setForeground( Color.BLACK );
       formBuilder.add( message, new CellConstraints( 2, 2, 2, 1, CellConstraints.LEFT, CellConstraints.TOP ) );
 
-      // Participants
-      // JLabel participants = new
-      // JLabel(String.valueOf(conversations.participants().get()), i18n.icon(
-      // Icons.participants, 16), JLabel.LEADING);
-      // headerBuilder.add(participants);
-      // headerBuilder.nextColumn(2);
-
-      renderer.setBackground( Color.WHITE );
-      
       return renderer;
    }
 

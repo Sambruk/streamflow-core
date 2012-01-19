@@ -58,6 +58,6 @@ public class CaseLogEntryContext
       CaseLog caseLog = RoleMap.role( CaseLoggable.Data.class ).caselog().get();
       Integer index = RoleMap.role( Integer.class );
 
-      caseLog.setMyPagesVisibility( index, publish );
+      caseLog.modifyMyPagesVisibility( index, publish );
    }
 }
