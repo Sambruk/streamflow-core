@@ -17,20 +17,12 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addDialogs;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addMV;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addTasks;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addViews;
-
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
-
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -134,6 +126,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsVie
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.CreateExternalMailUserDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
@@ -174,6 +167,9 @@ import se.streamsource.streamflow.client.util.dialog.InputDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
+
+import static org.qi4j.api.common.Visibility.*;
+import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * JAVADOC
@@ -299,6 +295,7 @@ public class UIAssembler
       module.objects(WorkspaceWindow.class).visibleIn(layer);
 
       addDialogs(module, SelectLinkDialog.class,
+            CreateExternalMailUserDialog.class,
             ManagePerspectivesDialog.class);
 
       module.values(CaseTableValue.class).visibleIn(Visibility.application);

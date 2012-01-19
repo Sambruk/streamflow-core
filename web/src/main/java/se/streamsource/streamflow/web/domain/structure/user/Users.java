@@ -54,6 +54,8 @@ public interface Users
 
    EmailUserEntity createEmailUser (EmailValue email);
 
+   EmailUserEntity createEmailUser( String emailAddress );
+
    interface Data
    {
       User createdUser( @Optional DomainEvent event, String username, String password );
@@ -128,6 +130,37 @@ public interface Users
 
          return user;
       }
+
+      public EmailUserEntity createEmailUser( String emailAddress )
+              throws IllegalArgumentException
+      {
+         // Check if user already exist
+         EmailUserEntity user;
+         try
+         {
+            user = module.unitOfWorkFactory().currentUnitOfWork().get( EmailUserEntity.class, "email:"+ emailAddress );
+         } catch (NoSuchEntityException e)
+         {
+            // Create new email user
+            user = createdEmailUser(null, emailAddress);
+         }
+
+         // Update contact info
+         ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
+         contactBuilder.prototype().name().set( emailAddress );
+
+         ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
+         emailBuilder.prototype().emailAddress().set( emailAddress );
+
+         contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
+
+         user.updateContact(contactBuilder.newInstance());
+
+         user.changeDescription( emailAddress );
+
+         return user;
+      }
+
 
       public EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email)
       {
