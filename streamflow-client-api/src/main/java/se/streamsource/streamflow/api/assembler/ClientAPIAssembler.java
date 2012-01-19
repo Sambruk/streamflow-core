@@ -75,6 +75,7 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ExternalEmailValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
@@ -119,7 +120,8 @@ public class ClientAPIAssembler
               UpdateAttachmentDTO.class,
               CaseLogEntryDTO.class,
               CaseLogFilterValue.class,
-              NoteDTO.class);
+              NoteDTO.class,
+              ExternalEmailValue.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,

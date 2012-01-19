@@ -90,10 +90,10 @@ import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedF
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormDraftModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;

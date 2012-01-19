@@ -32,6 +32,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
@@ -43,10 +44,9 @@ import se.streamsource.streamflow.infrastructure.event.application.source.helper
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailReceiver;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -145,25 +145,6 @@ public interface ConversationResponseService
                         Conversation conversation = uow.get( Conversation.class, conversationId );
 
                         CaseEntity caze = (CaseEntity) conversation.conversationOwner().get();
-                        if (caze.getHistory().equals(conversation))
-                        {
-                           // Response to history notification
-                           // Find conversation for this user
-                           Conversations.Data conversationsData = (Conversations.Data) caze;
-                           for (Conversation conversation1 : conversationsData.conversations())
-                           {
-                              if (conversation1.isParticipant(from))
-                                 conversation = conversation1;
-                           }
-
-                           if (conversation.equals(caze.getHistory()))
-                           {
-                              // Could not find a good conversation to put this message in - so create one
-                              Conversations conversations = (Conversations) caze;
-                              conversation = conversations.createConversation(email.subject().get(), (Creator) from);
-                           }
-                        }
-
                         String content = email.content().get();
 
                         // If we have an assignee, ensure it is a member of the conversation first
@@ -172,6 +153,12 @@ public interface ConversationResponseService
                            if (!conversation.isParticipant((ConversationParticipant) caze.assignedTo().get()))
                               conversation.addParticipant((ConversationParticipant) caze.assignedTo().get());
                         }
+
+                        // Create a new role map and fill it with relevant objects
+                        if( RoleMap.current() == null )
+                           RoleMap.newCurrentRoleMap();
+                        RoleMap.current().set( from, ConversationParticipant.class );
+                        RoleMap.current().set( caze, CaseLoggable.Data.class );
 
                         conversation.createMessage( content, from );
                      }

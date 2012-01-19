@@ -20,11 +20,15 @@ package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ExternalEmailValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.EventListSynch;
@@ -35,6 +39,9 @@ public class ConversationParticipantsModel
 {
    @Uses
    CommandQueryClient client;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    EventList<LinkValue> participants = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
 
@@ -63,6 +70,14 @@ public class ConversationParticipantsModel
    public void addParticipant( LinkValue participant )
    {
       client.postLink( participant );
+   }
+
+   public void addExternalParticipant( String emailAddress )
+   {
+      ValueBuilder<ExternalEmailValue> builder = vbf.newValueBuilder( ExternalEmailValue.class );
+      builder.prototype().emailAddress().set( emailAddress );
+
+      client.postCommand( "addexternalparticipant", builder.newInstance() );
    }
 
    public void removeParticipant( LinkValue link )
