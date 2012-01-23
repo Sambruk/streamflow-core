@@ -70,7 +70,7 @@ public class ClosedCasesResource
               {
                  public Object map(CaseEntity closedCase)
                  {
-                    return closedCase.getHistoryMessage("closed").createdOn().get();
+                    return closedCase.closedOn().get();
                  }
               }, null).
               column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()

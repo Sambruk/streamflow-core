@@ -22,6 +22,9 @@ import org.qi4j.api.io.Inputs;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
@@ -70,8 +73,8 @@ public class CaseDescriptor
       return Inputs.iterable(((Attachments.Data)caze).attachments());
    }
 
-   public Input<Message, RuntimeException> history()
+   public Input<CaseLogEntryValue, RuntimeException> caselog()
    {
-      return Inputs.iterable(((Messages.Data)((History)caze).getHistory()).messages());
+      return Inputs.iterable(((CaseLog.Data)((CaseLoggable.Data)caze).caselog().get()).entries().get());
    }
 }

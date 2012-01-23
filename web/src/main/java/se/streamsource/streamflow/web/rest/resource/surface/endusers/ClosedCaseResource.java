@@ -17,13 +17,16 @@
 
 package se.streamsource.streamflow.web.rest.resource.surface.endusers;
 
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.Function;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.context.surface.endusers.ClosedCaseContext;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 
 /**
  * Resource for a closed case
@@ -38,30 +41,32 @@ public class ClosedCaseResource
 
    public TableValue history(TableQuery tq) throws Throwable
    {
-      Iterable<Message> history = context(ClosedCaseContext.class).history(tq);
+      Iterable<CaseLogEntryValue> caselog = context(ClosedCaseContext.class).caselog(tq);
 
+      final UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+      
       return new TableBuilderFactory(module.valueBuilderFactory()).
-              column("created", "Created", TableValue.DATETIME, new Function<Message.Data, Object>()
+              column("created", "Created", TableValue.DATETIME, new Function<CaseLogEntryValue, Object>()
               {
-                 public Object map(Message.Data data)
+                 public Object map(CaseLogEntryValue data)
                  {
                     return data.createdOn().get();
                  }
               }).
-              column("message", "Message", TableValue.STRING, new Function<Message.Data, Object>()
+              column("message", "Message", TableValue.STRING, new Function<CaseLogEntryValue, Object>()
               {
-                 public Object map(Message.Data data)
+                 public Object map(CaseLogEntryValue data)
                  {
-                    return data.body().get();
+                    return data.message().get();
                  }
               }).
-              column("sender", "Sender", TableValue.STRING, new Function<Message.Data, Object>()
+              column("sender", "Sender", TableValue.STRING, new Function<CaseLogEntryValue, Object>()
               {
-                 public Object map(Message.Data data)
+                 public Object map(CaseLogEntryValue data)
                  {
-                    return data.sender().get().getDescription();
+                    return uow.get( Describable.class, data.createdBy().get().identity()).getDescription();
                  }
               }).
-              newInstance(tq).rows(history).orderBy().paging().newTable();
+              newInstance(tq).rows(caselog).orderBy().paging().newTable();
    }
 }

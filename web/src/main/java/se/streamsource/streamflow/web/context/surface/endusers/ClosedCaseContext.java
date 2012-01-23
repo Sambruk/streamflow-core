@@ -17,10 +17,13 @@
 
 package se.streamsource.streamflow.web.context.surface.endusers;
 
+import java.util.Date;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
@@ -28,11 +31,9 @@ import se.streamsource.streamflow.surface.api.ClosedCaseDTO;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.structure.caze.History;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
-import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
-
-import java.util.Date;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 
 /**
  * Context for closed case
@@ -50,8 +51,7 @@ public class ClosedCaseContext
       CaseEntity aCase = RoleMap.role(CaseEntity.class);
       builder.prototype().description().set(aCase.description().get());
       builder.prototype().creationDate().set(aCase.createdOn().get());
-      Date closedDate = aCase.getHistoryMessage("closed").createdOn().get();
-      builder.prototype().closeDate().set(closedDate);
+      builder.prototype().closeDate().set(aCase.closedOn().get());
 
       if (aCase.resolution().get() != null)
          builder.prototype().resolution().set(aCase.resolution().get().getDescription());
@@ -63,10 +63,10 @@ public class ClosedCaseContext
 
       return builder.newInstance();
    }
+   
 
-   public Iterable<Message> history(TableQuery tq)
+   public Iterable<CaseLogEntryValue> caselog(TableQuery tq)
    {
-      Messages.Data messages = (Messages.Data) RoleMap.role(History.class).getHistory();
-      return messages.messages();
+      return ((CaseLog.Data) RoleMap.role(CaseLoggable.Data.class).caselog().get()).entries().get();
    }
 }

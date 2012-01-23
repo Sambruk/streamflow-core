@@ -17,6 +17,15 @@
 
 package se.streamsource.streamflow.web.context.services;
 
+import static se.streamsource.streamflow.util.ForEach.forEach;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -32,6 +41,7 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.Role;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
@@ -62,15 +72,6 @@ import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import static se.streamsource.streamflow.util.ForEach.forEach;
 
 /**
  * TODO
@@ -286,7 +287,7 @@ public class ApplyFilterContext
                   config.prototype().contacts().set(true);
                   config.prototype().conversations().set(true);
                   config.prototype().submittedForms().set(true);
-                  config.prototype().history().set(true);
+                  config.prototype().caselog().set(true);
                   RoleMap.current().set(new Locale( "SV", "se" ));
                   RoleMap.current().set(self);
                   final PDDocument pdf = module.transientBuilderFactory().newTransient(CaseCommandsContext.class).exportpdf(config.newInstance());

@@ -84,13 +84,14 @@ public class CaseLogContext
             {
                id = EntityReference.getEntityReference( entry.entity().get() ).identity();
             }
-            builder.prototype().href().set( count++ + "/setpublish?publish=" + !entry.availableOnMypages().get() );
+            builder.prototype().href().set( count + "/setpublish?publish=" + !entry.availableOnMypages().get() );
             builder.prototype().id().set( id );
 
             builder.prototype().text().set( Translator.translate( entry.message().get(), translations ) );
 
             links.addLink( builder.newInstance() );
          }
+         count++;
       }
       return links.newLinks();
    }

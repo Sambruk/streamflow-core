@@ -20,6 +20,19 @@ package se.streamsource.streamflow.web.application.mail;
 import info.ineighborhood.cardme.engine.VCardEngine;
 import info.ineighborhood.cardme.vcard.VCard;
 import info.ineighborhood.cardme.vcard.features.AddressFeature;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeUtility;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -34,6 +47,7 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
@@ -47,8 +61,6 @@ import se.streamsource.streamflow.infrastructure.event.application.source.helper
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -63,17 +75,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
 /**
  * Receive emails and create cases through Access Points
@@ -160,8 +161,6 @@ public interface CreateCaseFromEmailService
 
                   CaseEntity caze = ap.createCase(user);
 
-                  caze.getHistory().createMessage("{accesspoint,description="+ap.getDescription()+"}", participant);
-
                   caze.changeDescription(email.subject().get());
                   caze.changeNote(email.content().get());
 
@@ -192,15 +191,6 @@ public interface CreateCaseFromEmailService
 
                   // Open the case
                   ap.sendTo(caze);
-
-                  // Add user as listener to history
-                  caze.getHistory().addParticipant(participant);
-
-                  // Switch to administrator user and send initial history message
-                  UserEntity administrator = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
-                  RoleMap.current().set(administrator);
-
-                  caze.getHistory().createMessage("{received,caseid="+caze.caseId().get()+"}", administrator);
                }
 
                uow.complete();
