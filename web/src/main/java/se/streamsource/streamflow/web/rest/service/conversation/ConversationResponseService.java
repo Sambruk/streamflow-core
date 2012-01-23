@@ -40,6 +40,7 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailReceiver;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -103,6 +104,7 @@ public interface ConversationResponseService
       public class ReceiveEmails
             implements MailReceiver
       {
+
          public void receivedEmail( ApplicationEvent event, EmailValue email )
          {
             UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Receive email in conversation"));
@@ -116,14 +118,33 @@ public interface ConversationResponseService
                   // This is a response - handle it!
 
                   List<String> refs = (List<String>) Iterables.addAll((Collection<String>) new ArrayList<String>(), Iterables.iterable(references.split("[ \r\n\t]")));
-                  Collections.reverse(refs);
-                  String lastRef = Iterables.first(Iterables.filter(new Specification<String>()
+                  
+                  // Hotmail handles refs a bit differently...
+                  String hotmailRefs = Iterables.first( Iterables.filter(new Specification<String>()
                   {
                      public boolean satisfiedBy(String item)
                      {
-                        return item.endsWith("@Streamflow>");
+                        return item.contains( "," ) && item.endsWith("@Streamflow>");
                      }
                   }, refs));
+                  
+                  String lastRef = null;
+                  if (!Strings.empty( hotmailRefs ))
+                  {
+                     lastRef = hotmailRefs.split( "," )[1];
+                  } else
+                  {
+                     Collections.reverse( refs );
+                     Iterable<String> filter = Iterables.filter( new Specification<String>()
+                     {
+                        public boolean satisfiedBy(String item)
+                        {
+                           return item.endsWith( "@Streamflow>" );
+                        }
+                     }, refs );
+                     lastRef = Iterables.first( filter );
+                  }
+                 
                   
                   if (lastRef == null)
                   {
