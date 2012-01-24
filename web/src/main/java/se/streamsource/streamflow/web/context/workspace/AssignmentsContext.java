@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.context.workspace;
 
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
@@ -27,6 +28,7 @@ import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
@@ -59,6 +61,9 @@ public interface AssignmentsContext
       @Structure
       Module module;
 
+      @Service
+      DefaultSystemConfigurationService systemConfig;
+
       public Query<Case> cases(TableQuery tableQuery)
       {
 
@@ -67,7 +72,12 @@ public interface AssignmentsContext
 
          QueryBuilder<Case> builder = assignments.assignments(RoleMap.role(Assignee.class), tableQuery.where());
 
-         Query<Case> query = builder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
+         Query<Case> query = builder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).orderBy(orderBy(templateFor(CreatedOn.class).createdOn(), OrderBy.Order.DESCENDING));
+
+         if( systemConfig.config().configuration().ascending().get())
+         {
+            query.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
+         }
 
          // Paging
          if (tableQuery.offset() != null)

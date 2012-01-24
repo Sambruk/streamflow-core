@@ -42,6 +42,8 @@ import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
+import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfiguration;
+import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
@@ -84,6 +86,8 @@ public class AppAssembler
          throws AssemblyException
    {
       super.assemble( layer );
+      
+      system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
 
@@ -113,6 +117,15 @@ public class AppAssembler
 
       // All configurations must be visible in the Application scope
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
+   }
+
+   private void system( ModuleAssembly system )
+   {
+      system.services( DefaultSystemConfigurationService.class )
+            .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
+      configuration().entities( DefaultSystemConfiguration.class );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().enabled().set( true );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().ascending().set( false );
    }
 
    private void archival(ModuleAssembly archival)
