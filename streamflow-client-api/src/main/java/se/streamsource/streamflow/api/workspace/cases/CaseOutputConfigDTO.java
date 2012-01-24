@@ -40,5 +40,5 @@ public interface CaseOutputConfigDTO
    Property<Boolean> attachments();
 
    @UseDefaults
-   Property<Boolean> history();
+   Property<Boolean> caselog();
 }
