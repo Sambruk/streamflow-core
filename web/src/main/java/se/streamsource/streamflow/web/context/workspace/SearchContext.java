@@ -17,16 +17,19 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -41,8 +44,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -52,12 +54,21 @@ public class SearchContext
    @Structure
    Module module;
 
+   @Service
+   DefaultSystemConfigurationService systemConfig;
+
    public Iterable<Case> cases(TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
       Query<Case> caseQuery = caseQueries.search(tableQuery.where());
 
-      caseQuery = module.queryBuilderFactory().newQueryBuilder(Case.class).newQuery(caseQuery);
+      caseQuery = module.queryBuilderFactory().newQueryBuilder(Case.class).newQuery(caseQuery)
+            .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );
+
+      if( systemConfig.config().configuration().ascending().get())
+      {
+         caseQuery.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
+      }
 
       // Paging
       if (tableQuery.offset() != null)
