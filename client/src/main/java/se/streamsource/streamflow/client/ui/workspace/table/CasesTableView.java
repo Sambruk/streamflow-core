@@ -37,6 +37,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
@@ -49,8 +50,10 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.table.SeparatorTable;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
@@ -66,6 +69,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -468,6 +472,8 @@ public class CasesTableView
 
       if (Events.matches( withNames( "createdCase" ), transactions ))
       {
+         final DomainEvent event = Iterables.first( Iterables.filter( withNames( "createdCase" ),Events.events( transactions ) ) );;
+
          context.getTaskService().execute( new CommandTask()
          {
             @Override
@@ -481,22 +487,19 @@ public class CasesTableView
             {
                super.succeeded( transactionEventsIterable );
 
-               /*TableModel model = caseTable.getModel();
+               TableModel model = caseTable.getModel();
                boolean rowFound = false;
-               
-               Events
-               for( int i=0, n=model.getRowCount(); i < n; i++ )
+
+              for( int i=0, n=model.getRowCount(); i < n; i++ )
                {
-                  if( .endsWith( model.getValueAt( i, 8 ).toString() ) )
+                  if( model.getValueAt( i, 9 ).toString().endsWith( EventParameters.getParameter( event, "param1" ) + "/") )
                   {
-                     cases.getSelectionModel().setSelectionInterval( cases.convertRowIndexToView( i ), cases.convertRowIndexToView( i )  );
-                     cases.scrollRectToVisible( cases.getCellRect( i, 0, true ) );
+                     caseTable.getSelectionModel().setSelectionInterval( caseTable.convertRowIndexToView( i ), caseTable.convertRowIndexToView( i )  );
+                     caseTable.scrollRectToVisible( caseTable.getCellRect( i, 0, true ) );
                      rowFound = true;
                      break;
-                  }*/
-               
-               //caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount() - 1, caseTable.getRowCount() - 1 );
-               //caseTable.scrollRowToVisible( caseTable.getRowCount() - 1 );
+                  }
+               }
             }
          } );
       } else if (Events.matches( withNames( "addedLabel", "removedLabel",
