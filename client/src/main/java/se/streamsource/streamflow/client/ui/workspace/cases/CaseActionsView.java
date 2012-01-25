@@ -56,7 +56,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
@@ -98,6 +97,7 @@ public class CaseActionsView extends JPanel
    private CaseModel model;
 
    private JPanel actionsPanel = new JPanel();
+   private ApplicationContext context;
 
    private enum CaseActionButtonTemplate
    {
@@ -121,6 +121,7 @@ public class CaseActionsView extends JPanel
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
    {
       this.model = model;
+      this.context = context;
 
       model.addObserver( this );
 
@@ -234,7 +235,6 @@ public class CaseActionsView extends JPanel
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
       if (focusOwner != null)
          focusOwner.transferFocus();
-      //TODO find, create and submit form wizard for form on close form before calling formonclose
       
       if( formOnCloseWizard() )
       {
@@ -352,17 +352,15 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task exportpdf()
+   public void exportpdf()
    {
-      //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigDTO
-      final ValueBuilder<CaseOutputConfigDTO> config = module.valueBuilderFactory().newValueBuilder( CaseOutputConfigDTO.class );
-      config.prototype().caselog().set( true );
-      config.prototype().contacts().set( true );
-      config.prototype().conversations().set( true );
-      config.prototype().submittedForms().set( true );
-      config.prototype().attachments().set( true );
 
-      return new PrintCaseTask( config.newInstance() );
+      PdfPrintingDialog dialog = module.objectBuilderFactory().newObjectBuilder( PdfPrintingDialog.class ).use( context ).newInstance();
+      dialogs.showOkCancelHelpDialog( (StreamflowButton)getActionMap().get( "exportpdf" ).getValue( "sourceButton" ),
+            dialog, i18n.text( WorkspaceResources.printing_configuration ), DialogService.Orientation.right );
+
+      if( dialog.getCaseOutputConfig() != null )
+         new PrintCaseTask( dialog.getCaseOutputConfig() ).execute();
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -395,6 +393,7 @@ public class CaseActionsView extends JPanel
                         JComponent.WHEN_IN_FOCUSED_WINDOW );
                   button.setHorizontalAlignment( SwingConstants.LEFT );
                   actionsPanel.add( button );
+                  action1.putValue( "sourceButton", button );
 //				NotificationGlassPane.registerButton(button);
                }
             }

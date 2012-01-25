@@ -116,6 +116,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseActionsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.PdfPrintingDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
@@ -296,7 +297,8 @@ public class UIAssembler
 
       addDialogs(module, SelectLinkDialog.class,
             CreateExternalMailUserDialog.class,
-            ManagePerspectivesDialog.class);
+            ManagePerspectivesDialog.class,
+            PdfPrintingDialog.class);
 
       module.values(CaseTableValue.class).visibleIn(Visibility.application);
    }
