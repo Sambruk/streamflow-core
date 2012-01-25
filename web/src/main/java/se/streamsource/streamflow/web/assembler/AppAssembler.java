@@ -17,6 +17,12 @@
 
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+
+import java.util.Properties;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
@@ -31,6 +37,7 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
@@ -70,11 +77,6 @@ import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsVa
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
-
-import java.util.Properties;
-
-import static org.qi4j.api.common.Visibility.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -125,7 +127,14 @@ public class AppAssembler
             .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
       configuration().entities( DefaultSystemConfiguration.class );
       configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().enabled().set( true );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().ascending().set( false );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogAttachmentVisible().set( false );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogContactVisible().set( false );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogConversationVisible().set( false );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogCustomVisible().set( true );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogFormVisible().set( true );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogSystemVisible().set( false );
+      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogSystemTraceVisible().set( false );
    }
 
    private void archival(ModuleAssembly archival)

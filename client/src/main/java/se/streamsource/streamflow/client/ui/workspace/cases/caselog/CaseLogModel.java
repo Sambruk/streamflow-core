@@ -16,13 +16,23 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.attachment;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.contact;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.conversation;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.custom;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.form;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system_trace;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -32,13 +42,9 @@ import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogFilterValue
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Observable;
-
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 
 public class CaseLogModel extends Observable
    implements Refreshable
@@ -49,8 +55,7 @@ public class CaseLogModel extends Observable
    
    private final CommandQueryClient client;
    
-   private List<String> selectedFilters = new ArrayList<String>( Arrays.asList( system.name(), custom.name(), contact.name(), form.name(), conversation.name(),
-         attachment.name() ));
+   private List<String> selectedFilters = new ArrayList<String>();
    
 
    TransactionList<CaseLogEntryDTO> caselogs = new TransactionList<CaseLogEntryDTO>(new BasicEventList<CaseLogEntryDTO>( ));
@@ -58,6 +63,14 @@ public class CaseLogModel extends Observable
    public CaseLogModel(@Uses CommandQueryClient client)
    {
       this.client = client;
+      CaseLogFilterValue defaultFilters = client.query( "defaultfilters", CaseLogFilterValue.class );
+      if (defaultFilters.attachment().get()) selectedFilters.add(attachment.name());
+      if (defaultFilters.contact().get()) selectedFilters.add(contact.name());
+      if (defaultFilters.conversation().get()) selectedFilters.add(conversation.name());
+      if (defaultFilters.custom().get()) selectedFilters.add(custom.name());
+      if (defaultFilters.form().get()) selectedFilters.add(form.name());
+      if (defaultFilters.system().get()) selectedFilters.add(system.name());
+      if (defaultFilters.systemTrace().get()) selectedFilters.add(system_trace.name());
    }
    
    public void refresh()
@@ -75,6 +88,7 @@ public class CaseLogModel extends Observable
       builder.prototype().custom().set( selectedFilters.contains( custom.name() ) );
       builder.prototype().form().set( selectedFilters.contains( form.name() ) );
       builder.prototype().system().set( selectedFilters.contains( system.name() ) );
+      builder.prototype().systemTrace().set( selectedFilters.contains( system_trace.name() ) );
       return builder.newInstance();
    }
    public EventList<CaseLogEntryDTO> caselogs()

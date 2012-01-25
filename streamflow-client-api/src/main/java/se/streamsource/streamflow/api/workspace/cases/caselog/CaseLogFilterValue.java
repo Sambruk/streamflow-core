@@ -27,6 +27,7 @@ import org.qi4j.api.value.ValueComposite;
 public interface CaseLogFilterValue extends ValueComposite
 {
    Property<Boolean> system();
+   Property<Boolean> systemTrace();
    Property<Boolean> custom();
    Property<Boolean> contact();
    Property<Boolean> form();

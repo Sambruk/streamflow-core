@@ -19,6 +19,7 @@ package se.streamsource.streamflow.api.workspace.cases.caselog;
 public enum CaseLogEntryTypes
 {
       system,
+      system_trace,
       custom,
       contact,
       form,

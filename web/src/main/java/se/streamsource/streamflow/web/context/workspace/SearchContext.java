@@ -65,7 +65,7 @@ public class SearchContext
       caseQuery = module.queryBuilderFactory().newQueryBuilder(Case.class).newQuery(caseQuery)
             .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );
 
-      if( systemConfig.config().configuration().ascending().get())
+      if( systemConfig.config().configuration().sortOrderAscending().get())
       {
          caseQuery.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
       }

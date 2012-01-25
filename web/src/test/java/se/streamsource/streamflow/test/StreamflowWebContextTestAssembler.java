@@ -17,6 +17,11 @@
 
 package se.streamsource.streamflow.test;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+
+import java.util.Properties;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
@@ -24,18 +29,16 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
+import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfiguration;
+import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
-
-import java.util.Properties;
-
-import static org.qi4j.api.common.Visibility.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -85,8 +88,12 @@ public class StreamflowWebContextTestAssembler
       }
 
       knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
-      module.layer().application().layer("Configuration").module("Configuration").entities(KnowledgebaseConfiguration.class).visibleIn(Visibility.application);
-
+      ModuleAssembly system = appLayer.module( "System" );
+      system.services( DefaultSystemConfigurationService.class ).identifiedBy( "system" ).visibleIn( Visibility.application);
+      ModuleAssembly configurationModule = module.layer().application().layer("Configuration").module("Configuration");
+      configurationModule.entities(KnowledgebaseConfiguration.class, DefaultSystemConfiguration.class).visibleIn(Visibility.application);
+      configurationModule.forMixin( DefaultSystemConfiguration.class ).declareDefaults().enabled().set( true );
+      configurationModule.forMixin( DefaultSystemConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
    }
 
    @Override

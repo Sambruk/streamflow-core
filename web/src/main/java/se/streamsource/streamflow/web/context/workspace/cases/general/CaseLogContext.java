@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -29,6 +30,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogFilterValue;
 import se.streamsource.streamflow.util.Translator;
+import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
@@ -51,6 +53,9 @@ public class CaseLogContext
    @Structure
    Module module;
 
+   @Service
+   DefaultSystemConfigurationService systemConfig;
+   
    @SkipResourceValidityCheck
    public LinksValue list(CaseLogFilterValue filter)
    {
@@ -96,6 +101,19 @@ public class CaseLogContext
       return links.newLinks();
    }
 
+   public CaseLogFilterValue defaultFilters(){
+      ValueBuilder<CaseLogFilterValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( CaseLogFilterValue.class );
+      valueBuilder.prototype().attachment().set( systemConfig.config().configuration().caseLogAttachmentVisible().get() );
+      valueBuilder.prototype().contact().set( systemConfig.config().configuration().caseLogContactVisible().get() );
+      valueBuilder.prototype().conversation().set( systemConfig.config().configuration().caseLogConversationVisible().get() );
+      valueBuilder.prototype().custom().set( systemConfig.config().configuration().caseLogCustomVisible().get() );
+      valueBuilder.prototype().form().set( systemConfig.config().configuration().caseLogFormVisible().get() );
+      valueBuilder.prototype().system().set( systemConfig.config().configuration().caseLogSystemVisible().get() );
+      valueBuilder.prototype().systemTrace().set( systemConfig.config().configuration().caseLogSystemTraceVisible().get() );
+      
+      return valueBuilder.newInstance();
+   }
+   
    private boolean includeEntry(CaseLogFilterValue filter, CaseLogEntryValue entry)
    {
       switch (entry.entryType().get())
@@ -112,6 +130,8 @@ public class CaseLogContext
          return filter.form().get();
       case system:
          return filter.system().get();
+      case system_trace:
+         return filter.systemTrace().get();
       }
       return false;
    }

@@ -74,7 +74,7 @@ public interface AssignmentsContext
 
          Query<Case> query = builder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).orderBy(orderBy(templateFor(CreatedOn.class).createdOn(), OrderBy.Order.DESCENDING));
 
-         if( systemConfig.config().configuration().ascending().get())
+         if( systemConfig.config().configuration().sortOrderAscending().get())
          {
             query.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
          }
