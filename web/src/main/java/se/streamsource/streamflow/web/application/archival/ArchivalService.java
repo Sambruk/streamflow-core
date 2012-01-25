@@ -197,7 +197,7 @@ public interface ArchivalService
       {
 
          ValueBuilder<CaseOutputConfigDTO> builder = module.valueBuilderFactory().newValueBuilder(CaseOutputConfigDTO.class);
-         builder.prototype().history().set(true);
+         builder.prototype().caselog().set(true);
          builder.prototype().attachments().set(true);
          builder.prototype().contacts().set(true);
          builder.prototype().conversations().set(true);

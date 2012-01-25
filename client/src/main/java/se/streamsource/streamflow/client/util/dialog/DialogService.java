@@ -17,6 +17,18 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
+import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -27,20 +39,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-
-import se.streamsource.streamflow.client.util.StreamflowButton;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import static se.streamsource.streamflow.client.util.dialog.DialogService.Orientation.*;
 
 /**
  * JAVADOC
@@ -49,22 +48,36 @@ public class DialogService
 {
    @Service
    ApplicationContext context;
+   
+   public enum Orientation
+   {
+      right,
+      left
+   }
 
    public void showOkCancelHelpDialog(Component owner, JComponent main)
    {
-      JXDialog dialog = createDialog(owner, main);
+      JXDialog dialog = createDialog(owner, main, left);
       dialog.setVisible(true);
    }
 
    public void showOkCancelHelpDialog(Component owner, JComponent main,
                                       String title)
    {
-      JXDialog dialog = createDialog(owner, main);
+      JXDialog dialog = createDialog(owner, main, left );
       dialog.setTitle(title);
       dialog.setVisible(true);
    }
 
-   private JXDialog createDialog(Component owner, JComponent main)
+   public void showOkCancelHelpDialog(Component owner, JComponent main,
+                                      String title, Orientation orientation)
+   {
+      JXDialog dialog = createDialog(owner, main, orientation);
+      dialog.setTitle(title);
+      dialog.setVisible(true);
+   }
+
+   private JXDialog createDialog(Component owner, JComponent main, Orientation orientation )
    {
       Window window = WindowUtils.findWindow(owner);
       JXDialog dialog;
@@ -80,7 +93,17 @@ public class DialogService
       if (owner instanceof StreamflowButton)
       {
          Point location = new Point(owner.getLocationOnScreen());
-         location.translate(0, owner.getHeight());
+
+         switch( valueOf( orientation.name() ) )
+         {
+            case left:
+               location.translate( 0, owner.getHeight() );
+               break;
+            case right:
+               location.translate( owner.getWidth() - dialog.getWidth(), owner.getHeight() );
+               break;
+         }
+         //location.translate(0, owner.getHeight());
          dialog.setLocation(location);
       } else
       {

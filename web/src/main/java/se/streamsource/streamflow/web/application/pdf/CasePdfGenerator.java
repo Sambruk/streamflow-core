@@ -238,7 +238,7 @@ public class CasePdfGenerator implements CaseOutput
          generateAttachments( cazeDescriptor.attachments() );
       }
 
-      if (config.history().get())
+      if (config.caselog().get())
       {
          generateHistory(cazeDescriptor.history());
       }
