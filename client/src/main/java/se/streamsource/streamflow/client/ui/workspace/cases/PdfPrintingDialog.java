@@ -58,7 +58,9 @@ public class PdfPrintingDialog
    }
    
    private JList options;
-   private List<String> selected = new ArrayList<String>();
+   private List<String> selected = new ArrayList<String>(
+         Arrays.asList( contacts.name(), conversations.name(), submittedForms.name(), attachments.name(), caselog.name() )
+   );
    private CaseOutputConfigDTO config;
    private JScrollPane pane = new JScrollPane( );
    
