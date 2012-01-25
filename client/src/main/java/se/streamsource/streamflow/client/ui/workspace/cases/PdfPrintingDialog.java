@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -29,9 +30,11 @@ import se.streamsource.streamflow.client.util.popup.ValueToLabelConverter;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +60,7 @@ public class PdfPrintingDialog
    private JList options;
    private List<String> selected = new ArrayList<String>();
    private CaseOutputConfigDTO config;
+   private JScrollPane pane = new JScrollPane( );
    
    @Structure
    ValueBuilderFactory vbf;
@@ -65,6 +69,7 @@ public class PdfPrintingDialog
    {
       setLayout( new BorderLayout( ) );
       setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
       
       options = new SelectionList( Arrays.asList( contacts.name(), conversations.name(), submittedForms.name(), attachments.name(), caselog.name() ), 
          selected,
@@ -92,8 +97,10 @@ public class PdfPrintingDialog
                }
          }
       });
+      pane.setViewportView( options );
       
-      add(options, BorderLayout.CENTER);
+      add( pane, BorderLayout.CENTER );
+      setPreferredSize( new Dimension( 100,110 ) );
    }
 
    @Action

@@ -42,12 +42,10 @@ public class MainClient
 
       Locale locale = Locale.getDefault();
 
-      if (locale.getLanguage().equals("sv"))
-         Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
+      if (locale.getLanguage().equals("en"))
+         Locale.setDefault( Locale.ENGLISH );
       else
-         Locale.setDefault(Locale.ENGLISH);
-
-      //Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
+         Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
 
       org.jdesktop.application.Application.launch( StreamflowApplication.class, args );
 
