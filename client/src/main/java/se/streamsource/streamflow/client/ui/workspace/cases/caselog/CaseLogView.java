@@ -22,6 +22,7 @@ import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntr
 import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.custom;
 import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.form;
 import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system;
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system_trace;
 import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.valueOf;
 import static se.streamsource.streamflow.client.util.i18n.ICON_16;
 import static se.streamsource.streamflow.client.util.i18n.icon;
@@ -128,7 +129,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
             new Insets( 0, 0, 0, 0 ) ) );
       rightBuilder.nextColumn();
 
-      filtersList = new SelectionList( Arrays.asList( system.name(), custom.name(), contact.name(), form.name(),
+      filtersList = new SelectionList( Arrays.asList( system.name(), system_trace.name(), custom.name(), contact.name(), form.name(),
             conversation.name(), attachment.name() ), model.getSelectedFilters(), new ValueToLabelConverter()
       {
          @Override
