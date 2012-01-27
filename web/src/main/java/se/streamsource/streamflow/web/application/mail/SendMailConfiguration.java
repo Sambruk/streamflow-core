@@ -85,4 +85,13 @@ public interface SendMailConfiguration
     */
    @UseDefaults
    Property<String> from();
+
+   /**
+    * Use of authentication.
+    * @return true or false
+    */
+   @UseDefaults
+   Property<Boolean> authentication();
+
+
 }
