@@ -32,6 +32,8 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
@@ -43,7 +45,9 @@ import se.streamsource.streamflow.infrastructure.event.application.source.helper
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailReceiver;
+import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
@@ -195,6 +199,23 @@ public interface ConversationResponseService
                         }
 
                         conversation.createMessage( content, from );
+
+                        try
+                        {
+                           if( caze.isStatus( CaseStates.CLOSED ))
+                           {
+                              RoleMap.newCurrentRoleMap();
+                              RoleMap.current().set( caze );
+                              RoleMap.current().set( uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME ) );
+                              CaseCommandsContext caseCommands = module.transientBuilderFactory().newTransient( CaseCommandsContext.class );
+                              caseCommands.reopen();
+                              caseCommands.unassign();
+                              RoleMap.clearCurrentRoleMap();
+                           }
+                        } catch(Throwable e )
+                        {
+                           throw new IllegalStateException("Could not open case through new message.", e);
+                        }
                      }
                   }
                }
