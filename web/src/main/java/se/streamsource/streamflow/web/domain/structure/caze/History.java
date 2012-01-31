@@ -25,18 +25,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 
 /**
  * JAVADOC
@@ -60,8 +58,6 @@ public interface History
     * @return the last message matching this type or null if none match
     */
    Message.Data getHistoryMessage(String type);
-
-   EmailAccessPoint getOriginalEmailAccessPoint();
 
    interface Data
    {
@@ -130,27 +126,5 @@ public interface History
          return history;
       }
 
-      public EmailAccessPoint getOriginalEmailAccessPoint()
-      {
-         Messages.Data messages = ((Messages.Data) data.history().get());
-         if (messages != null)
-         {
-            for (Message message : messages.messages())
-            {
-               String body = ((Message.Data) message).body().get();
-               if (body.startsWith("{accesspoint"))
-               {
-                  // This is the history message that the case has been received through a particular AccessPoint
-                  String accessPointName = body.substring(body.indexOf("=")+1, body.length()-1);
-
-                  // Now find it
-                  EmailAccessPointEntity ap = module.queryBuilderFactory().newQueryBuilder(EmailAccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(module.unitOfWorkFactory().currentUnitOfWork()).find();
-                  return ap;
-               }
-            }
-         }
-
-         return null; // No AccessPoint was used to receive this case
-      }
    }
 }

@@ -31,7 +31,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -39,6 +41,7 @@ import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -67,9 +70,11 @@ import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.domain.structure.caze.Notes;
+import se.streamsource.streamflow.web.domain.structure.caze.Origin;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
@@ -86,12 +91,14 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 /**
  * This represents a single Case in the system
  */
-@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, 
-   CaseEntity.CaseLogCaseEntitySideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
-@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, 
-   CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
-   CaseEntity.CaseLogContactConcern.class,CaseEntity.CaseLogConversationConcern.class,
-   CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class})
+@SideEffects(
+{ AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.CaseLogCaseEntitySideEffect.class,
+      CaseEntity.UpdateSearchableFormsSideEffect.class, CaseEntity.EmailAccesspointSideEffect.class })
+@Concerns(
+{ CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class,
+      CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
+      CaseEntity.CaseLogContactConcern.class, CaseEntity.CaseLogConversationConcern.class,
+      CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class })
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -127,6 +134,7 @@ public interface CaseEntity
       SubCase.Data,
       History.Data,
       CaseLoggable.Data,
+      Origin,
 
       // Queries
       SubmittedFormsQueries,
@@ -477,4 +485,60 @@ public interface CaseEntity
          next.submitForm( formSubmission, submitter );
       }
    }
+
+   abstract class EmailAccesspointSideEffect
+         extends SideEffectOf<CaseEntity>
+         implements CaseEntity
+   {
+
+      @Structure
+      Module module;
+
+      @This
+      Case caze;
+      
+      @This
+      Origin origin;
+      
+      public void open()
+      {
+         if (origin.accesspoint().get() != null)
+         {
+            // Switch to administrator user and send confirmation message
+            UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+            UserEntity administrator = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
+            RoleMap.current().set( administrator );
+
+            Conversations.Data conversationsData = (Conversations.Data) caze;
+            for (Conversation conversation : conversationsData.conversations())
+            {
+               if (conversation.isParticipant( (ConversationParticipant) caze.createdBy().get() ))
+                  conversation.createMessage( "{received,caseid=" + ((CaseId.Data) caze).caseId().get() + "}",
+                        administrator );
+            }
+         }
+      }
+
+      public void close()
+      {
+         if (origin.accesspoint().get() != null)
+         {
+            // Switch to administrator user and send close message
+            UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+            UserEntity administrator = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
+            RoleMap.current().set( administrator );
+
+            Conversations.Data conversationsData = (Conversations.Data) caze;
+            for (Conversation conversation : conversationsData.conversations())
+            {
+               if (conversation.isParticipant( (ConversationParticipant) caze.createdBy().get() ))
+                  conversation.createMessage( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + "}",
+                        administrator );
+            }
+         }
+      }
+
+      
+   }
+
 }

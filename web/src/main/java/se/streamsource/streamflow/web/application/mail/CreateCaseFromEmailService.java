@@ -49,6 +49,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
@@ -158,8 +159,11 @@ public interface CreateCaseFromEmailService
                   RoleMap.current().set(organization);
                   RoleMap.current().set(ap);
                   RoleMap.current().set(user);
-
+            
                   CaseEntity caze = ap.createCase(user);
+                  RoleMap.current().set( caze );
+                  
+                  caze.caselog().get().addTypedEntry( "{accesspoint,description="+ap.getDescription()+"}", CaseLogEntryTypes.system);
 
                   caze.changeDescription(email.subject().get());
                   caze.changeNote(email.content().get());

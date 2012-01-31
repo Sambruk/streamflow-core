@@ -49,6 +49,7 @@ public interface EmailCases
          CaseEntity caseEntity = endUser.createDraft();
          caseEntity.changeDescription( accesspoint.caseType().get().getDescription() );
          caseEntity.changeCaseType( accesspoint.caseType().get() );
+         caseEntity.accesspoint().set( (EmailAccessPoint) accesspoint );
 
          for (Label label : labelable.labels())
          {
