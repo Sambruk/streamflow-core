@@ -98,7 +98,8 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 { CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class,
       CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
       CaseEntity.CaseLogContactConcern.class, CaseEntity.CaseLogConversationConcern.class,
-      CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class })
+      CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class,
+      CaseEntity.AssignableConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -396,7 +397,7 @@ public interface CaseEntity
 
       public void submitForm(FormDraft formSubmission, Submitter submitter)
       {
-         result.submitForm(formSubmission, submitter);
+         result.submitForm( formSubmission, submitter );
 
          searchableForms.updateSearchableFormValues();
       }
@@ -541,4 +542,26 @@ public interface CaseEntity
       
    }
 
+
+   abstract class AssignableConcern
+      extends ConcernOf<Assignable>
+      implements Assignable
+   {
+      @This
+      Conversations conversations;
+      
+      @This
+      Conversations.Data conversationsData;
+      
+      public void assignTo( Assignee assignee )
+      {
+         next.assignTo( assignee );
+         
+         if( conversations.hasConversations() )
+         {
+            Conversation conversation = conversationsData.conversations().get( 0 );
+            conversation.addParticipant( (ConversationParticipant)assignee );
+         }
+      }
+   }
 }

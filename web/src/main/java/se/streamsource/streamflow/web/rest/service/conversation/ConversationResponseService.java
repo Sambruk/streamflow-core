@@ -33,6 +33,8 @@ import org.qi4j.api.util.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.RoleMap;
+
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
@@ -41,10 +43,13 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailReceiver;
+import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 
@@ -103,6 +108,7 @@ public interface ConversationResponseService
       public class ReceiveEmails
             implements MailReceiver
       {
+
          public void receivedEmail( ApplicationEvent event, EmailValue email )
          {
             UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Receive email in conversation"));
@@ -116,14 +122,33 @@ public interface ConversationResponseService
                   // This is a response - handle it!
 
                   List<String> refs = (List<String>) Iterables.addAll((Collection<String>) new ArrayList<String>(), Iterables.iterable(references.split("[ \r\n\t]")));
-                  Collections.reverse(refs);
-                  String lastRef = Iterables.first(Iterables.filter(new Specification<String>()
+                  
+                  // Hotmail handles refs a bit differently...
+                  String hotmailRefs = Iterables.first( Iterables.filter(new Specification<String>()
                   {
                      public boolean satisfiedBy(String item)
                      {
-                        return item.endsWith("@Streamflow>");
+                        return item.contains( "," ) && item.endsWith("@Streamflow>");
                      }
                   }, refs));
+                  
+                  String lastRef = null;
+                  if (!Strings.empty( hotmailRefs ))
+                  {
+                     lastRef = hotmailRefs.split( "," )[1];
+                  } else
+                  {
+                     Collections.reverse( refs );
+                     Iterable<String> filter = Iterables.filter( new Specification<String>()
+                     {
+                        public boolean satisfiedBy(String item)
+                        {
+                           return item.endsWith( "@Streamflow>" );
+                        }
+                     }, refs );
+                     lastRef = Iterables.first( filter );
+                  }
+                 
                   
                   if (lastRef == null)
                   {
@@ -161,6 +186,29 @@ public interface ConversationResponseService
                         RoleMap.current().set( caze, CaseLoggable.Data.class );
 
                         conversation.createMessage( content, from );
+
+                        try
+                        {
+                           if( caze.isStatus( CaseStates.CLOSED ))
+                           {
+                              RoleMap.newCurrentRoleMap();
+                              RoleMap.current().set( caze );
+                              if( caze.assignedTo().get() != null )
+                              {
+                                RoleMap.current().set( caze.assignedTo().get() );
+                              } else
+                              {
+                                 RoleMap.current().set( uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME ) );
+                              }
+                              CaseCommandsContext caseCommands = module.transientBuilderFactory().newTransient( CaseCommandsContext.class );
+                              caseCommands.reopen();
+                              caseCommands.unassign();
+                              RoleMap.clearCurrentRoleMap();
+                           }
+                        } catch(Throwable e )
+                        {
+                           throw new IllegalStateException("Could not open case through new message.", e);
+                        }
                      }
                   }
                }

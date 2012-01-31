@@ -112,6 +112,7 @@ public class WebAssembler
    {
       module.services(FilterService.class).identifiedBy("filter").visibleIn(application).instantiateOnStartup();
       configuration().entities(FilterConfiguration.class);
+      configuration().forMixin( FilterConfiguration.class ).declareDefaults().enabled().set( true );
 
       module.services( NotificationService.class )
             .identifiedBy( "notification" )

@@ -236,7 +236,7 @@ public class ApplyFilterContext
                   module.transientBuilderFactory().newTransient(CaseCommandsContext.class).sendto(to);
                } catch (Throwable e)
                {
-                  throw new IllegalStateException("Could not assign", e);
+                  throw new IllegalStateException("Could not change owner", e);
                }
 
                logger.info("Changed owner of " + self.caseId().get() + " to " + ((Describable) owner).getDescription());
@@ -249,7 +249,7 @@ public class ApplyFilterContext
                   module.transientBuilderFactory().newTransient(CaseCommandsContext.class).close();
                } catch (Throwable e)
                {
-                  throw new IllegalStateException("Could not assign", e);
+                  throw new IllegalStateException("Could not close", e);
                }
 
                logger.info("Closed" + self.caseId().get());
@@ -272,7 +272,13 @@ public class ApplyFilterContext
             {
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
 
-               builder.prototype().from().set(administrator.contact().get().defaultEmail().emailAddress().get());
+               try
+               {
+                  builder.prototype().from().set(administrator.contact().get().defaultEmail().emailAddress().get());
+               } catch ( NullPointerException npe )
+               {
+                  throw new IllegalStateException( "Mail notification failed! Administrator mail address is not set." );
+               }
                builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
                builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
                builder.prototype().content().set(bundle.getString( "message" ));

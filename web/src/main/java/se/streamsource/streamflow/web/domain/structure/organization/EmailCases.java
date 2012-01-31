@@ -17,17 +17,26 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.infrastructure.caching.Caches;
+import se.streamsource.streamflow.web.infrastructure.caching.Caching;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 /**
  * TODO
  */
+@Concerns(EmailCases.EmailCaseCountCacheConcern.class)
 @Mixins(EmailCases.Mixin.class)
 public interface EmailCases
 {
@@ -66,6 +75,29 @@ public interface EmailCases
             caseEntity.unassign();
          caseEntity.changeOwner( accesspoint.project().get() );
          caseEntity.open();
+      }
+   }
+
+   abstract class EmailCaseCountCacheConcern
+      extends ConcernOf<EmailCases>
+      implements EmailCases
+   {
+      @This
+      AccessPointSettings.Data accesspoint;
+      
+      Caching caching;
+
+      public void init(@Optional @Service CachingService cache)
+      {
+         caching = new Caching(cache, Caches.CASECOUNTS);
+      }
+
+      public void sendTo( Case caze )
+      {
+         next.sendTo( caze );
+
+         // Update inbox cache on receiving end
+         caching.addToCache(  ((ProjectEntity)accesspoint.project().get()).identity().get(), 1 );
       }
    }
 }
