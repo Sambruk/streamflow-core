@@ -206,7 +206,13 @@ public interface ConversationResponseService
                            {
                               RoleMap.newCurrentRoleMap();
                               RoleMap.current().set( caze );
-                              RoleMap.current().set( uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME ) );
+                              if( caze.assignedTo().get() != null )
+                              {
+                                RoleMap.current().set( caze.assignedTo().get() );
+                              } else
+                              {
+                                 RoleMap.current().set( uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME ) );
+                              }
                               CaseCommandsContext caseCommands = module.transientBuilderFactory().newTransient( CaseCommandsContext.class );
                               caseCommands.reopen();
                               caseCommands.unassign();
