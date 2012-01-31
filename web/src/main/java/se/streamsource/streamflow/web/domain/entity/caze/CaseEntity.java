@@ -60,6 +60,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
@@ -74,14 +75,15 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 
 /**
  * This represents a single Case in the system
  */
 @SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class, CaseEntity.UpdateSearchableFormsSideEffect.class})
-@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
+@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, 
+      CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
+      CaseEntity.AssignableConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -350,13 +352,13 @@ public interface CaseEntity
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
-         history.addHistoryComment( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
+         history.addHistoryComment( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() + "}"
                : "{removedCaseType}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void changeOwner( Owner owner )
       {
-         history.addHistoryComment( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}"
+         history.addHistoryComment( "{changedOwner,owner=" + ((Project) owner).getDescription() + "}"
                , RoleMap.role( ConversationParticipant.class ) );
       }
 
@@ -374,9 +376,31 @@ public interface CaseEntity
 
       public void submitForm(FormDraft formSubmission, Submitter submitter)
       {
-         result.submitForm(formSubmission, submitter);
+         result.submitForm( formSubmission, submitter );
 
          searchableForms.updateSearchableFormValues();
+      }
+   }
+
+   abstract class AssignableConcern
+      extends ConcernOf<Assignable>
+      implements Assignable
+   {
+      @This
+      Conversations conversations;
+      
+      @This
+      Conversations.Data conversationsData;
+      
+      public void assignTo( Assignee assignee )
+      {
+         next.assignTo( assignee );
+         
+         if( conversations.hasConversations() )
+         {
+            Conversation conversation = conversationsData.conversations().get( 0 );
+            conversation.addParticipant( (ConversationParticipant)assignee );
+         }
       }
    }
 }

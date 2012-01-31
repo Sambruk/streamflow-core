@@ -23,6 +23,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -35,14 +37,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.qi4j.api.util.Classes.methodsOf;
-import static org.qi4j.api.util.Iterables.map;
+import static org.qi4j.api.util.Classes.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Helper methods for working with Iterables of DomainEvents and TransactionDomainEvents.
  */
 public class Events
 {
+   private static Logger logger = LoggerFactory.getLogger( Events.class.getName() );
+
    public static Iterable<DomainEvent> events( Iterable<TransactionDomainEvents> transactions )
    {
       List<Iterable<DomainEvent>> events = new ArrayList<Iterable<DomainEvent>>();
@@ -261,7 +265,8 @@ public class Events
             } catch (Exception e)
             {
                uow.discard();
-               
+               logger.error( "Play Event failed.", e );
+
                return false;
             }
          }

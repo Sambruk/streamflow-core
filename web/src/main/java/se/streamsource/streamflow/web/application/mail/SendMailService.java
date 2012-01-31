@@ -130,6 +130,7 @@ public interface SendMailService
             props.put( "mail.transport.protocol", "smtp" );
             props.put( "mail.debug", config.configuration().debug().get() );
             props.put( "mail.smtp.port", config.configuration().port().get() );
+            props.put( "mail.smtp.auth", config.configuration().authentication().get() );
 
             if (config.configuration().useSSL().get())
             {
