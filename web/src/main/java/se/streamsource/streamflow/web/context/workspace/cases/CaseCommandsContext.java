@@ -31,10 +31,12 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
@@ -149,6 +151,10 @@ public interface CaseCommandsContext
 
    @RequiresStatus({OPEN, DRAFT})
    public void delete();
+
+   @RequiresRemoved()
+   @RequiresPermission(PermissionType.administrator)
+   public void reinstate();
 
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
@@ -312,7 +318,17 @@ public interface CaseCommandsContext
       public void delete()
       {
          Removable caze = RoleMap.role( Removable.class );
-         caze.deleteEntity();
+         if( (CaseStates.DRAFT.equals( ((Status.Data) caze ).status().get() )) )
+            caze.deleteEntity();
+         else
+            // just mark the case as removed
+            caze.removeEntity();
+      }
+
+      public void reinstate()
+      {
+         Removable caze = RoleMap.role( Removable.class );
+         caze.reinstate();
       }
 
       public void createSubCase()

@@ -209,4 +209,29 @@ public abstract class UpdateCaseCountCacheConcern
       }
       next.delete();
    }
+   
+   public void reinstate()
+   {
+      RoleMap roleMap = RoleMap.current();
+      CaseEntity caze = roleMap.get( CaseEntity.class );
+
+      if (caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
+      {
+         if (caze.isAssigned())
+         {
+            // Update assignments for user
+            Assignee assignee = roleMap.get( Assignee.class );
+            caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
+         } else
+         {
+            // Update inbox cache
+            caching.addToCache( caze.owner().get().toString(), 1 );
+         }
+      } else
+      {
+         // Update drafts for user
+         caching.addToCache( caze.createdBy().get().toString(), 1 );
+      }
+      next.reinstate();
+   }
 }

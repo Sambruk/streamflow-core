@@ -26,7 +26,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
@@ -44,6 +43,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
@@ -172,8 +172,12 @@ public interface ArchivalService
                   {
                      try
                      {
-                        File pdf = exportPdf(caseEntity);
-                        logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
+                        if( !((Removable.Data)caseEntity).removed().get() )
+                        {
+                           // if case is not marked as removed( soft delete ) -  create and export pdf
+                           File pdf = exportPdf(caseEntity);
+                           logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
+                        }
                         caseEntity.deleteEntity();
                      } catch (Throwable throwable)
                      {
@@ -247,10 +251,11 @@ public interface ArchivalService
                Date maxAgeDate = calendar.getTime();
 
                Query<CaseEntity> cases = module.queryBuilderFactory().
-                     newQueryBuilder(CaseEntity.class).
-                     where(and(QueryExpressions.eq(templateFor(TypedCase.Data.class).caseType(), (CaseType) setting),
-                               eq(templateFor(Status.Data.class).status(), CaseStates.CLOSED),
-                               lt(QueryExpressions.templateFor(CreatedOn.class).createdOn(), maxAgeDate))).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+                     newQueryBuilder( CaseEntity.class ).
+                     where( and( eq( templateFor( TypedCase.Data.class ).caseType(), (CaseType) setting ),
+                                 or( eq( templateFor( Status.Data.class ).status(), CaseStates.CLOSED ),
+                                     eq( templateFor( Removable.Data.class ).removed(), Boolean.TRUE ) ),
+                                 lt( templateFor( CreatedOn.class ).createdOn(), maxAgeDate ) ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
                return cases;
             }

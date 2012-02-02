@@ -26,6 +26,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
@@ -60,6 +61,7 @@ public interface InboxQueries
          Association<Assignee> assignee = templateFor(Assignable.Data.class).assignedTo();
          queryBuilder = queryBuilder.where(and(
                  eq(templateFor(Status.Data.class).status(), CaseStates.OPEN),
+                 eq( templateFor(Removable.Data.class).removed(), Boolean.FALSE ),
                  eq(ownableId, owner),
                  isNull(assignee)
          ));

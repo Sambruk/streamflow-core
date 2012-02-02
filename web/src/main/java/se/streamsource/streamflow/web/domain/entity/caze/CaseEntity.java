@@ -244,7 +244,7 @@ public interface CaseEntity
       }
    }
 
-   abstract class RemovableConcern
+   class RemovableConcern
          extends ConcernOf<Removable>
          implements Removable
    {
@@ -272,6 +272,44 @@ public interface CaseEntity
 
       @Structure
       Qi4j api;
+
+      public boolean removeEntity()
+      {
+         for (Attachment attachment : attachmentsData.attachments().toList())
+         {
+            attachment.removeEntity();
+         }
+
+         for (Attachment attachment : formAttachmentsData.formAttachments().toList())
+         {
+            attachment.removeEntity();
+         }
+
+         for (Case childCase : subCases.subCases().toList())
+         {
+            childCase.removeEntity();
+         }
+         return next.removeEntity();
+      }
+
+      public boolean reinstate()
+      {
+         for (Attachment attachment : attachmentsData.attachments().toList())
+         {
+            attachment.reinstate();
+         }
+
+         for (Attachment attachment : formAttachmentsData.formAttachments().toList())
+         {
+            attachment.reinstate();
+         }
+
+         for (Case childCase : subCases.subCases().toList())
+         {
+            childCase.reinstate();
+         }
+         return next.reinstate();
+      }
 
       public void deleteEntity()
       {
@@ -312,7 +350,7 @@ public interface CaseEntity
 
       public void assignTo( Assignee assignee )
       {
-         history.addHistoryComment( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}", RoleMap.role( ConversationParticipant.class ) );
+         history.addHistoryComment( "{assigned,assignee=" + ((Describable) assignee).getDescription() + "}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void unassign()
@@ -347,7 +385,7 @@ public interface CaseEntity
 
       public void resolve( Resolution resolution )
       {
-         history.addHistoryComment( "{resolved,resolution=" + resolution.getDescription()+"}", RoleMap.role( ConversationParticipant.class ) );
+         history.addHistoryComment( "{resolved,resolution=" + resolution.getDescription() + "}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void changeCaseType( @Optional CaseType newCaseType )

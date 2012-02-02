@@ -110,7 +110,8 @@ public class CaseActionsView extends JPanel
       formonclose,
       reopen,
       delete,
-      exportpdf;
+      exportpdf,
+      reinstate;
 
 
    }
@@ -362,9 +363,31 @@ public class CaseActionsView extends JPanel
       return new PrintCaseTask( config.newInstance() );
    }
 
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task reinstate()
+   {
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setCustomMessage( i18n.text( WorkspaceResources.caze_reinstate ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               model.reinstate();
+            }
+         };
+      } else
+         return null;
+   }
+
+
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate"), transactions ))
       {
          model.refresh();
       }
