@@ -150,6 +150,7 @@ public interface CaseCommandsContext
    public void unassign();
 
    @RequiresStatus({OPEN, DRAFT})
+   @RequiresRemoved(false)
    public void delete();
 
    @RequiresRemoved()

@@ -53,7 +53,7 @@ public interface Manager
 
    public void refreshStatistics() throws StatisticsStoreException;
 
-   public void performArchivalCheck();
+   public String performArchivalCheck();
 
    public void performArchival();
 

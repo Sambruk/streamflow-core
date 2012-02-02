@@ -65,6 +65,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -161,7 +162,26 @@ public class CasesTableView
 
       // Table
       // Trigger creation of filters and table model
-      caseTable = new SeparatorTable( null );
+      caseTable = new SeparatorTable( null )
+      {
+         public Component prepareRenderer(
+               TableCellRenderer renderer, int row, int column)
+         {
+            Component c = super.prepareRenderer(renderer, row, column);
+
+            //  add custom rendering here
+            EventTableModel model = (EventTableModel) getModel();
+            if( model.getElementAt( row ) instanceof CaseTableValue &&  ((CaseTableValue) model.getElementAt( row )).removed().get() )
+            {
+
+               Map attributes = c.getFont().getAttributes();
+               attributes.put( TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+               c.setFont( new Font(attributes) );
+            }
+            
+            return c;
+         }
+      };
       caseTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       caseTable.getActionMap().getParent().setParent( am );
       caseTable.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
@@ -344,22 +364,6 @@ public class CasesTableView
             return component;
          }
       } );
-      
-      caseTable.setDefaultRenderer( String.class, new DefaultTableCellRenderer(){
-         @Override
-         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
-         {
-            JLabel label = (JLabel)super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
-            EventTableModel model = (EventTableModel) table.getModel();
-            if( column == 0 && ((CaseTableValue) model.getElementAt( row )).removed().get() )
-            {
-               Map attributes = label.getFont().getAttributes();
-               attributes.put( TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-               label.setFont( new Font(attributes) );
-            }
-            return label;
-         }
-      });
 
      AbstractHighlighter separatorHighlighter = (AbstractHighlighter) HighlighterFactory.createSimpleStriping(HighlighterFactory.QUICKSILVER);
      separatorHighlighter.setHighlightPredicate(new HighlightPredicate.TypeHighlightPredicate(SeparatorList.Separator.class));
