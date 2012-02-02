@@ -415,21 +415,21 @@ public interface CaseEntity
       
       public void addContact( ContactDTO newContact )
       {
+         next.addContact( newContact );
          if (caseLoggable.caselog().get() != null)
          {
             caseLoggable.caselog().get().addTypedEntry( "{addContact}", CaseLogEntryTypes.contact);
          }
-         next.addContact( newContact );
       }
       
       public void updateContact( int index, ContactDTO contact ){
-         caseLoggable.caselog().get().addTypedEntry( "{updateContact,name=" + contact.name().get()+"}" , CaseLogEntryTypes.contact);
          next.updateContact( index, contact );
+         caseLoggable.caselog().get().addTypedEntry( "{updateContact,name=" + contact.name().get()+"}" , CaseLogEntryTypes.contact);
       }
 
       public void deleteContact( int index ){
-         caseLoggable.caselog().get().addTypedEntry( "{deleteContact,name=" + contacts.contacts().get().get( index ).name().get()+"}" , CaseLogEntryTypes.contact);
          next.deleteContact( index );
+         caseLoggable.caselog().get().addTypedEntry( "{deleteContact,name=" + contacts.contacts().get().get( index ).name().get()+"}" , CaseLogEntryTypes.contact);
       }
    }
    
@@ -442,8 +442,9 @@ public interface CaseEntity
 
       public Conversation createConversation(String topic, Creator creator)
       {
+         Conversation conversation = next.createConversation( topic, creator );
          caseLoggable.caselog().get().addTypedEntry( "{createConversation,topic=" + topic + "}" , CaseLogEntryTypes.conversation);
-         return next.createConversation( topic, creator );
+         return conversation;
       }
    }
    
@@ -456,20 +457,21 @@ public interface CaseEntity
 
       public Attachment createAttachment(String uri) throws URISyntaxException
       {
+         Attachment attachment = next.createAttachment( uri );
          caseLoggable.caselog().get().addTypedEntry( "{createAttachment}" , CaseLogEntryTypes.attachment);
-         return next.createAttachment( uri );
+         return attachment;
       }
 
       public void addAttachment(Attachment attachment)
       {
-         caseLoggable.caselog().get().addTypedEntry( "{addAttachment,description=" + ((AttachedFile.Data)attachment).name().get() + "}" , CaseLogEntryTypes.attachment);
          next.addAttachment( attachment );
+         caseLoggable.caselog().get().addTypedEntry( "{addAttachment,description=" + ((AttachedFile.Data)attachment).name().get() + "}" , CaseLogEntryTypes.attachment);
       }
 
       public void removeAttachment(Attachment attachment)
       {
-         caseLoggable.caselog().get().addTypedEntry( "{removeAttachment,description=" + ((AttachedFile.Data)attachment).name().get() + "}" , CaseLogEntryTypes.attachment);
          next.removeAttachment( attachment );
+         caseLoggable.caselog().get().addTypedEntry( "{removeAttachment,description=" + ((AttachedFile.Data)attachment).name().get() + "}" , CaseLogEntryTypes.attachment);
       }
    }
 
@@ -482,8 +484,8 @@ public interface CaseEntity
 
       public void submitForm(FormDraft formSubmission, Submitter submitter)
       {
-         caseLoggable.caselog().get().addTypedEntry( "{submitForm,description=" + formSubmission.getFormDraftValue().description().get() + "}" , CaseLogEntryTypes.form);
          next.submitForm( formSubmission, submitter );
+         caseLoggable.caselog().get().addTypedEntry( "{submitForm,description=" + formSubmission.getFormDraftValue().description().get() + "}" , CaseLogEntryTypes.form);
       }
    }
 

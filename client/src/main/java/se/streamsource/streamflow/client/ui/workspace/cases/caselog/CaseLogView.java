@@ -299,9 +299,9 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    public void filter()
    {
       JPanel filterPanel = new JPanel( new BorderLayout() );
-      filterPanel.setPreferredSize( new Dimension( 130, 120 ) );
-      filterPanel.setMaximumSize( new Dimension( 130, 120 ) );
-      filterPanel.setMaximumSize( new Dimension( 130, 120 ) );
+      filterPanel.setPreferredSize( new Dimension( 130, 138 ) );
+      filterPanel.setMaximumSize( new Dimension( 130, 138 ) );
+      filterPanel.setMaximumSize( new Dimension( 130, 138 ) );
       filterPanel.add( filtersList, BorderLayout.CENTER );
       filterPopupHandler.setPanelContent( filterPanel );
    }
