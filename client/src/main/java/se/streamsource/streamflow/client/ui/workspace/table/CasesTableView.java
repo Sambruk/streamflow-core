@@ -316,8 +316,12 @@ public class CasesTableView
          {
             EventTableModel model = (EventTableModel) table.getModel();
             boolean hasResolution = !Strings.empty( ((CaseTableValue) model.getElementAt( row )).resolution().get() );
+            boolean removed = ((CaseTableValue)model.getElementAt( row )).removed().get();
+
             String iconName = hasResolution ? "case_status_withresolution_" + value.toString().toLowerCase() + "_icon"
                   : "case_status_" + value.toString().toLowerCase() + "_icon";
+
+            iconName = removed ? "case_status_draft_icon" : iconName;
 
             JLabel renderedComponent = (JLabel) super.getTableCellRendererComponent( table, value, isSelected, hasFocus,
                   row, column );
@@ -507,7 +511,7 @@ public class CasesTableView
          } );
       } else if (Events.matches( withNames( "addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner", "assignedTo", "unassigned", "deletedEntity",
+            "changedOwner", "assignedTo", "unassigned", "changedRemoved",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "changedDueOn", "submittedForm", "createdAttachment",
             "removedAttachment" ), transactions ))
@@ -521,7 +525,7 @@ public class CasesTableView
                model.refresh();
 
                if (Events.matches( withNames( "changedStatus",
-                     "changedOwner", "assignedTo", "unassigned", "deletedEntity" ), transactions ))
+                     "changedOwner", "assignedTo", "unassigned", "deletedEntity"  ), transactions ))
                {
                   caseTable.getSelectionModel().clearSelection();
                }
