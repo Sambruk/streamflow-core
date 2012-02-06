@@ -80,4 +80,7 @@ public interface CaseTableValue
    Property<LinkValue> parentCase();
 
    Property<String> href();
+
+   @UseDefaults
+   Property<Boolean> removed();
 }

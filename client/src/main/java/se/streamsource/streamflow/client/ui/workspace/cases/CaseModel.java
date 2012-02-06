@@ -166,6 +166,11 @@ public class CaseModel
       return file;
    }
 
+   public void reinstate()
+   {
+      client.command( "reinstate" );
+   }
+
    public CaseModel newParentCase()
    {
       return casesModel.newCaseModel(getIndex().parentCase().get().href().get());

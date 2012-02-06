@@ -41,8 +41,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -57,7 +56,7 @@ public class SearchContext
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
       Query<Case> caseQuery = caseQueries.search(tableQuery.where());
 
-      caseQuery = module.queryBuilderFactory().newQueryBuilder(Case.class).newQuery(caseQuery);
+      caseQuery = module.queryBuilderFactory().newQueryBuilder(Case.class).newQuery(caseQuery).orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
       // Paging
       if (tableQuery.offset() != null)

@@ -165,6 +165,7 @@ public interface FormDrafts
                                     .withPrototype( (TextFieldValue) fieldValue );
                               fieldValueBuilder.prototype().regularExpression()
                                     .set( datatypeDefinition.getRegularExpression() );
+                              fieldValueBuilder.prototype().mandatory().set( field.isMandatory() );
                               fieldValue = fieldValueBuilder.newInstance();
                            }
                         }

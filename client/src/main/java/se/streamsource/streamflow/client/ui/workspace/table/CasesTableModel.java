@@ -189,10 +189,11 @@ public class CasesTableModel extends Observable
             else if (columnValue.id().get().equals("status"))
                prototype.status().set( CaseStates.valueOf( cell.v().get().toString() ));
             else if (columnValue.id().get().equals("subcases"))
-            {
                prototype.subcases().set( module.valueBuilderFactory().newValueFromJSON(LinksValue.class, cell.v().get().toString()) );
-            } else if (columnValue.id().get().equals( "href" ))
+            else if (columnValue.id().get().equals( "href" ))
                prototype.href().set( cell.v().get().toString() );
+            else if( columnValue.id().get().equals( "removed" ))
+               prototype.removed().set( (Boolean)cell.v().get() );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }

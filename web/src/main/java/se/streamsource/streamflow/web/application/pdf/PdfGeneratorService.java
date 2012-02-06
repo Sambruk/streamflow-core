@@ -75,7 +75,7 @@ public interface PdfGeneratorService
    PDDocument generateCasePdf( CaseEntity caseEntity, CaseOutputConfigDTO configOutput, @Optional Locale locale )
          throws Throwable;
 
-   PDDocument generateSubmittedFormPdf( SubmittedFormValue value, CaseId.Data id, String templateUri, Locale locale )
+   PDDocument generateSubmittedFormPdf( SubmittedFormValue value, CaseId.Data id, @Optional String templateUri, @Optional Locale locale )
          throws Throwable;
 
    abstract class Mixin

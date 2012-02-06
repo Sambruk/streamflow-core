@@ -17,12 +17,6 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
-import static se.streamsource.dci.value.table.TableValue.DATETIME;
-import static se.streamsource.dci.value.table.TableValue.STRING;
-
-import java.util.Collections;
-
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
@@ -37,7 +31,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -50,6 +43,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -62,6 +56,10 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+
+import java.util.Collections;
+
+import static se.streamsource.dci.value.table.TableValue.*;
 
 /**
  * JAVADOC
@@ -410,7 +408,14 @@ public class StreamflowResultConverter
                   } else
                      return null;
                }
-            });
+            }).
+            column( "removed", "Marked for delete", BOOLEAN, new Function<CaseEntity, Object>()
+            {
+               public Object map( CaseEntity caseEntity )
+               {
+                  return ((Removable.Data)caseEntity).removed().get();
+               }
+            } );
       
       if (!"*".equals( query.select() ))
       {

@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.application.archival;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.joda.time.DateTime;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -26,7 +27,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
@@ -44,6 +44,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
@@ -55,7 +56,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -70,7 +70,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 public interface ArchivalService
       extends ServiceComposite, Configuration<ArchivalConfiguration>, Activatable
 {
-   void performArchivalCheck();
+   String performArchivalCheck();
 
    public void performArchival() throws UnitOfWorkCompletionException;
 
@@ -130,21 +130,32 @@ public interface ArchivalService
          }
       }
 
-      public void performArchivalCheck()
+      public String performArchivalCheck()
       {
          UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(archivalCheck);
-
+         int toArchive = 0;
+         int markedForDelete = 0;
          try
          {
             for (CaseEntity caseEntity : archivableCases(archivalSettings()))
             {
                CaseType caseType = caseEntity.caseType().get();
-               logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", "+caseType.getDescription())+"), created on " + caseEntity.createdOn().get() + ", can be archived");
+               if( ((Removable.Data)caseEntity).removed().get() )
+               {
+                  logger.info( "Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", "+caseType.getDescription())+"), created on " + caseEntity.createdOn().get() + ",is marked for remove and can be deleted" );
+                  markedForDelete++;
+               } else
+               {
+                  logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", "+caseType.getDescription())+"), created on " + caseEntity.createdOn().get() + ", can be archived");
+                  toArchive++;
+               }
             }
          } finally
          {
             uow.discard();
          }
+
+         return "" + toArchive + " cases can be archived.\r\n" + markedForDelete + " cases are marked for delete.";
       }
 
       public void performArchival() throws UnitOfWorkCompletionException
@@ -172,8 +183,12 @@ public interface ArchivalService
                   {
                      try
                      {
-                        File pdf = exportPdf(caseEntity);
-                        logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
+                        if( !((Removable.Data)caseEntity).removed().get() )
+                        {
+                           // if case is not marked as removed( soft delete ) -  create and export pdf
+                           File pdf = exportPdf(caseEntity);
+                           logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
+                        }
                         caseEntity.deleteEntity();
                      } catch (Throwable throwable)
                      {
@@ -242,15 +257,14 @@ public interface ArchivalService
          {
             public Iterable<CaseEntity> map(ArchivalSettings.Data setting)
             {
-               Calendar calendar = Calendar.getInstance();
-               calendar.add(Calendar.DAY_OF_MONTH, -setting.archivalSettings().get().maxAge().get());
-               Date maxAgeDate = calendar.getTime();
+               Date maxAgeDate = new DateTime().minusDays( setting.archivalSettings().get().maxAge().get() ).toDate();
 
                Query<CaseEntity> cases = module.queryBuilderFactory().
-                     newQueryBuilder(CaseEntity.class).
-                     where(and(QueryExpressions.eq(templateFor(TypedCase.Data.class).caseType(), (CaseType) setting),
-                               eq(templateFor(Status.Data.class).status(), CaseStates.CLOSED),
-                               lt(QueryExpressions.templateFor(CreatedOn.class).createdOn(), maxAgeDate))).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+                     newQueryBuilder( CaseEntity.class ).
+                     where( and( eq( templateFor( TypedCase.Data.class ).caseType(), (CaseType) setting ),
+                                 or( eq( templateFor( Status.Data.class ).status(), CaseStates.CLOSED ),
+                                     eq( templateFor( Removable.Data.class ).removed(), Boolean.TRUE ) ),
+                                 lt( templateFor( CreatedOn.class ).createdOn(), maxAgeDate ) ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
                return cases;
             }

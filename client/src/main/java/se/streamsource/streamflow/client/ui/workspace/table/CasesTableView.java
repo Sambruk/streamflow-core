@@ -17,48 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.TimeZone;
-
-import javax.swing.ActionMap;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import ca.odell.glazedlists.swing.EventTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.AbstractHighlighter;
@@ -73,7 +37,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
@@ -90,12 +53,50 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
-import ca.odell.glazedlists.swing.EventTableModel;
+
+import javax.swing.ActionMap;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.font.TextAttribute;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.TimeZone;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Base class for all views of case lists.
@@ -161,7 +162,26 @@ public class CasesTableView
 
       // Table
       // Trigger creation of filters and table model
-      caseTable = new SeparatorTable( null );
+      caseTable = new SeparatorTable( null )
+      {
+         public Component prepareRenderer(
+               TableCellRenderer renderer, int row, int column)
+         {
+            Component c = super.prepareRenderer(renderer, row, column);
+
+            //  add custom rendering here
+            EventTableModel model = (EventTableModel) getModel();
+            if( model.getElementAt( row ) instanceof CaseTableValue &&  ((CaseTableValue) model.getElementAt( row )).removed().get() )
+            {
+
+               Map attributes = c.getFont().getAttributes();
+               attributes.put( TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+               c.setFont( new Font(attributes) );
+            }
+            
+            return c;
+         }
+      };
       caseTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       caseTable.getActionMap().getParent().setParent( am );
       caseTable.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
@@ -296,8 +316,12 @@ public class CasesTableView
          {
             EventTableModel model = (EventTableModel) table.getModel();
             boolean hasResolution = !Strings.empty( ((CaseTableValue) model.getElementAt( row )).resolution().get() );
+            boolean removed = ((CaseTableValue)model.getElementAt( row )).removed().get();
+
             String iconName = hasResolution ? "case_status_withresolution_" + value.toString().toLowerCase() + "_icon"
                   : "case_status_" + value.toString().toLowerCase() + "_icon";
+
+            iconName = removed ? "case_status_draft_icon" : iconName;
 
             JLabel renderedComponent = (JLabel) super.getTableCellRendererComponent( table, value, isSelected, hasFocus,
                   row, column );
@@ -487,7 +511,7 @@ public class CasesTableView
          } );
       } else if (Events.matches( withNames( "addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner", "assignedTo", "unassigned", "deletedEntity",
+            "changedOwner", "assignedTo", "unassigned", "changedRemoved",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "changedDueOn", "submittedForm", "createdAttachment",
             "removedAttachment" ), transactions ))
@@ -501,7 +525,7 @@ public class CasesTableView
                model.refresh();
 
                if (Events.matches( withNames( "changedStatus",
-                     "changedOwner", "assignedTo", "unassigned", "deletedEntity" ), transactions ))
+                     "changedOwner", "assignedTo", "unassigned", "deletedEntity"  ), transactions ))
                {
                   caseTable.getSelectionModel().clearSelection();
                }
