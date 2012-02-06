@@ -62,7 +62,7 @@ public class SearchContext
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
       Query<Case> caseQuery = caseQueries.search(tableQuery.where());
 
-      caseQuery = module.queryBuilderFactory().newQueryBuilder(Case.class).newQuery(caseQuery)
+      caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( caseQuery )
             .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );
 
       if( systemConfig.config().configuration().sortOrderAscending().get())

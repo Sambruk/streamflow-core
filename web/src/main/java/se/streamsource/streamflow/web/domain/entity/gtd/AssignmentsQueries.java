@@ -27,6 +27,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -64,6 +65,7 @@ public interface AssignmentsQueries
          openQueryBuilder = openQueryBuilder.where(and(or(
                  eq(templateFor(Status.Data.class).status(), CaseStates.OPEN),
                  eq(templateFor(Status.Data.class).status(), CaseStates.ON_HOLD)),
+                 eq( templateFor(Removable.Data.class).removed(), Boolean.FALSE ),
                  assignee == null ? isNotNull(assignedId) : eq(assignedId, assignee),
                  eq(ownedId, owner))
          );

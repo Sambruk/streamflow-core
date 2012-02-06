@@ -27,6 +27,7 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.util.Iterables;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
@@ -338,7 +339,10 @@ public interface
                {
                   public boolean satisfiedBy( Case item )
                   {
-                     return item.hasPermission( user.userName().get(), PermissionType.read.name() );
+                     if( user.isAdministrator() )
+                        return true;
+                     else
+                        return !((Removable.Data)item).removed().get() && item.hasPermission( user.userName().get(), PermissionType.read.name() );
                   }
                }, cases) );
             }

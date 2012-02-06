@@ -152,5 +152,7 @@ public enum WorkspaceResources
    no_casetype,
    no_assignee,
    no_project,
-   search_period, printing_configuration;
+   search_period,
+   printing_configuration,
+   caze_reinstate;
 }

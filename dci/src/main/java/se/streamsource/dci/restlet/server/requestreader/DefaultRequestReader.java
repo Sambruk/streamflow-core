@@ -243,16 +243,16 @@ public class DefaultRequestReader
                if (param != null)
                {
                   String value = param.getValue();
-                  if (value != null)
+                  if (value == null) {
+                     value = "";
+                  }
+                  try
                   {
-                     try
-                     {
-                        Object valueObject = propertyType.type().fromQueryParameter(value, module);
-                        visitor.visitProperty(propertyType.qualifiedName(), valueObject);
-                     } catch (JSONException e)
-                     {
-                        throw new IllegalArgumentException("Query parameter has invalid JSON format", e);
-                     }
+                     Object valueObject = propertyType.type().fromQueryParameter(value, module);
+                     visitor.visitProperty(propertyType.qualifiedName(), valueObject);
+                  } catch (JSONException e)
+                  {
+                     throw new IllegalArgumentException("Query parameter has invalid JSON format", e);
                   }
                }
             }

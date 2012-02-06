@@ -239,7 +239,7 @@ public class CasesDetailView
       {
          if (matches( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ), transactions ))
          {
-            if (matches( withNames( "deletedEntity", "createdCase" ), transactions ))
+            if (matches( withNames( "changedRemoved", "createdCase" ), transactions ))
             {
                if (currentMainCase.equals(currentCase))
                   clear();

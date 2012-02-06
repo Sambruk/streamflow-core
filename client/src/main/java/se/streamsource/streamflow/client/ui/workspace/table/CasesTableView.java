@@ -68,6 +68,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
@@ -81,6 +82,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
+import java.awt.font.TextAttribute;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -91,6 +93,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -163,7 +166,26 @@ public class CasesTableView
 
       // Table
       // Trigger creation of filters and table model
-      caseTable = new SeparatorTable( null );
+      caseTable = new SeparatorTable( null )
+      {
+         public Component prepareRenderer(
+               TableCellRenderer renderer, int row, int column)
+         {
+            Component c = super.prepareRenderer(renderer, row, column);
+
+            //  add custom rendering here
+            EventTableModel model = (EventTableModel) getModel();
+            if( model.getElementAt( row ) instanceof CaseTableValue &&  ((CaseTableValue) model.getElementAt( row )).removed().get() )
+            {
+
+               Map attributes = c.getFont().getAttributes();
+               attributes.put( TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+               c.setFont( new Font(attributes) );
+            }
+            
+            return c;
+         }
+      };
       caseTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       caseTable.getActionMap().getParent().setParent( am );
       caseTable.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
@@ -300,8 +322,12 @@ public class CasesTableView
          {
             EventTableModel model = (EventTableModel) table.getModel();
             boolean hasResolution = !Strings.empty( ((CaseTableValue) model.getElementAt( row )).resolution().get() );
+            boolean removed = ((CaseTableValue)model.getElementAt( row )).removed().get();
+
             String iconName = hasResolution ? "case_status_withresolution_" + value.toString().toLowerCase() + "_icon"
                   : "case_status_" + value.toString().toLowerCase() + "_icon";
+
+            iconName = removed ? "case_status_draft_icon" : iconName;
 
             JLabel renderedComponent = (JLabel) super.getTableCellRendererComponent( table, value, isSelected, hasFocus,
                   row, column );
@@ -472,7 +498,7 @@ public class CasesTableView
 
       if (Events.matches( withNames( "createdCase" ), transactions ))
       {
-         final DomainEvent event = Iterables.first( Iterables.filter( withNames( "createdCase" ),Events.events( transactions ) ) );;
+         final DomainEvent event = Iterables.first( Iterables.filter( withNames( "createdCase" ), Events.events( transactions ) ) );;
 
          context.getTaskService().execute( new CommandTask()
          {
@@ -504,7 +530,7 @@ public class CasesTableView
          } );
       } else if (Events.matches( withNames( "addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner", "assignedTo", "unassigned", "deletedEntity",
+            "changedOwner", "assignedTo", "unassigned", "changedRemoved",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "changedDueOn", "submittedForm", "createdAttachment",
             "removedAttachment" ), transactions ))
@@ -518,7 +544,7 @@ public class CasesTableView
                model.refresh();
 
                if (Events.matches( withNames( "changedStatus",
-                     "changedOwner", "assignedTo", "unassigned", "deletedEntity" ), transactions ))
+                     "changedOwner", "assignedTo", "unassigned", "deletedEntity"  ), transactions ))
                {
                   caseTable.getSelectionModel().clearSelection();
                }

@@ -17,10 +17,6 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
-import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.Map;
-
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
@@ -32,7 +28,6 @@ import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
@@ -87,6 +82,10 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+
+import java.net.URISyntaxException;
+import java.util.Calendar;
+import java.util.Map;
 
 /**
  * This represents a single Case in the system
@@ -263,7 +262,7 @@ public interface CaseEntity
       }
    }
 
-   abstract class RemovableConcern
+   class RemovableConcern
          extends ConcernOf<Removable>
          implements Removable
    {
@@ -294,6 +293,54 @@ public interface CaseEntity
 
       @Structure
       Qi4j api;
+
+      public boolean removeEntity()
+      {
+         for (Attachment attachment : attachmentsData.attachments().toList())
+         {
+            attachment.removeEntity();
+         }
+
+         for (Attachment attachment : formAttachmentsData.formAttachments().toList())
+         {
+            attachment.removeEntity();
+         }
+
+         for (Case childCase : subCases.subCases().toList())
+         {
+            childCase.removeEntity();
+         }
+
+         if( notes.notes().get() != null )
+         {
+            notes.notes().get().removeEntity();
+         }
+         return next.removeEntity();
+      }
+
+      public boolean reinstate()
+      {
+         for (Attachment attachment : attachmentsData.attachments().toList())
+         {
+            attachment.reinstate();
+         }
+
+         for (Attachment attachment : formAttachmentsData.formAttachments().toList())
+         {
+            attachment.reinstate();
+         }
+
+         for (Case childCase : subCases.subCases().toList())
+         {
+            childCase.reinstate();
+         }
+
+         if( notes.notes().get() != null )
+         {
+            notes.notes().get().reinstate();
+         }
+         return next.reinstate();
+      }
 
       public void deleteEntity()
       {
@@ -334,53 +381,53 @@ public interface CaseEntity
 
       public void assignTo( Assignee assignee )
       {
-         caseLoggable.caselog().get().addTypedEntry( "{assigned,assignee=" + ((Describable) assignee).getDescription() +"}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{assigned,assignee=" + ((Describable) assignee).getDescription() + "}", CaseLogEntryTypes.system );
       }
 
       public void unassign()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{unassigned}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{unassigned}", CaseLogEntryTypes.system );
       }
 
       public void open()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{opened}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{opened}", CaseLogEntryTypes.system );
       }
 
       public void close()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{closed}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{closed}", CaseLogEntryTypes.system );
       }
 
       public void onHold()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{paused}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{paused}", CaseLogEntryTypes.system );
       }
 
       public void reopen()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{reopened}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{reopened}", CaseLogEntryTypes.system );
       }
 
       public void resume()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{resumed}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{resumed}", CaseLogEntryTypes.system );
       }
 
       public void resolve( Resolution resolution )
       {
-         caseLoggable.caselog().get().addTypedEntry( "{resolved,resolution=" + resolution.getDescription()+"}" , CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( "{resolved,resolution=" + resolution.getDescription() + "}", CaseLogEntryTypes.system );
       }
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
-         caseLoggable.caselog().get().addTypedEntry( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() +"}"
-               : "{removedCaseType}", CaseLogEntryTypes.system);
+         caseLoggable.caselog().get().addTypedEntry( newCaseType != null ? "{changedCaseType,casetype=" + newCaseType.getDescription() + "}"
+               : "{removedCaseType}", CaseLogEntryTypes.system );
       }
 
       public void changeOwner( Owner owner )
       {
-         caseLoggable.caselog().get().addTypedEntry( "{changedOwner,owner=" + ((Project)owner).getDescription() +"}", CaseLogEntryTypes.system );
+         caseLoggable.caselog().get().addTypedEntry( "{changedOwner,owner=" + ((Project) owner).getDescription() + "}", CaseLogEntryTypes.system );
       }
 
       public void createSubCase()
