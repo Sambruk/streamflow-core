@@ -30,10 +30,10 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.RoleMap;
-
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
@@ -44,12 +44,13 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailReceiver;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 
@@ -76,6 +77,9 @@ public interface ConversationResponseService
 
       @Service
       ApplicationEventStream stream;
+      
+      @Service
+      SystemDefaultsService systemDefaults;
 
       @Structure
       Module module;
@@ -152,6 +156,11 @@ public interface ConversationResponseService
                   
                   if (lastRef == null)
                   {
+                     ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
+                     String subj = "Msg Ref missing: " + builder.prototype().subject().get();
+                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+
+                     systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      logger.error("Could not find message reference in email header:"+lastRef);
                      uow.discard();
                      return;
@@ -207,6 +216,11 @@ public interface ConversationResponseService
                            }
                         } catch(Throwable e )
                         {
+                           ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
+                           String subj = "Create Case failed: " + builder.prototype().subject().get();
+                           builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+
+                           systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                            throw new IllegalStateException("Could not open case through new message.", e);
                         }
                      }
@@ -216,6 +230,11 @@ public interface ConversationResponseService
                uow.complete();
             } catch (Exception ex)
             {
+               ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
+               String subj = "General Error: " + builder.prototype().subject().get();
+               builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+
+               systemDefaults.createCaseOnEmailFailure( email );
                uow.discard();
                throw new ApplicationEventReplayException(event, ex);
             }

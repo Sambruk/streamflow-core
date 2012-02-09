@@ -17,12 +17,6 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
-
-import java.util.Properties;
-
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
@@ -37,7 +31,6 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
@@ -49,8 +42,8 @@ import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfiguration;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
@@ -77,6 +70,12 @@ import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsVa
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
+
+import java.util.Properties;
+import java.util.ResourceBundle;
+
+import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -123,18 +122,23 @@ public class AppAssembler
 
    private void system( ModuleAssembly system )
    {
-      system.services( DefaultSystemConfigurationService.class )
+      system.services( SystemDefaultsService.class )
             .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
-      configuration().entities( DefaultSystemConfiguration.class );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().enabled().set( true );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogAttachmentVisible().set( false );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogContactVisible().set( false );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogConversationVisible().set( false );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogCustomVisible().set( true );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogFormVisible().set( true );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogSystemVisible().set( false );
-      configuration().forMixin( DefaultSystemConfiguration.class ).declareDefaults().caseLogSystemTraceVisible().set( false );
+      configuration().entities( SystemDefaultsConfiguration.class );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( true );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogAttachmentVisible().set( false );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogContactVisible().set( false );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogConversationVisible().set( false );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogCustomVisible().set( true );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogFormVisible().set( true );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogSystemVisible().set( false );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogSystemTraceVisible().set( false );
+
+      ResourceBundle bundle = ResourceBundle.getBundle( AppAssembler.class.getName() );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportOrganizationName().set( bundle.getString( "supportOuName" ) );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportProjectForEmailName().set( bundle.getString( "supportProjectEmailName" ) );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForFailedEmailName().set( bundle.getString( "supportCaseTypeIncomingName" ) );
    }
 
    private void archival(ModuleAssembly archival)
@@ -211,7 +215,7 @@ public class AppAssembler
       module.importedServices(NamedEntityFinder.class).
               importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
               setMetaInfo(namedQueries).
-              setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService"));
+              setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService")).visibleIn( layer );
 
       module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
       configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);

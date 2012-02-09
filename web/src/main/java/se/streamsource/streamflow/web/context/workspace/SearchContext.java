@@ -29,7 +29,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -55,7 +55,7 @@ public class SearchContext
    Module module;
 
    @Service
-   DefaultSystemConfigurationService systemConfig;
+   SystemDefaultsService systemConfig;
 
    public Iterable<Case> cases(TableQuery tableQuery)
    {

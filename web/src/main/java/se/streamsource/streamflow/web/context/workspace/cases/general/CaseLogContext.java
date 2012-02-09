@@ -30,7 +30,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogFilterValue;
 import se.streamsource.streamflow.util.Translator;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
@@ -54,7 +54,7 @@ public class CaseLogContext
    Module module;
 
    @Service
-   DefaultSystemConfigurationService systemConfig;
+   SystemDefaultsService systemConfig;
    
    @SkipResourceValidityCheck
    public LinksValue list(CaseLogFilterValue filter)

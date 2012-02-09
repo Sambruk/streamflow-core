@@ -27,7 +27,7 @@ import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.workspace.AbstractFilterContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
@@ -55,7 +55,7 @@ public interface OverviewProjectAssignmentsContext
       Module module;
       
       @Service
-      DefaultSystemConfigurationService systemConfig;
+      SystemDefaultsService systemConfig;
 
       public Query<Case> cases( TableQuery tableQuery )
       {
