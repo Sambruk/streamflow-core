@@ -106,8 +106,8 @@ public interface SystemDefaultsService
             Organizations.Data organizations = uow.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
             Organization organization = organizations.organization().get();
             OrganizationalUnit ou = ((OrganizationalUnitsQueries) organization).getOrganizationalUnitByName( config.configuration().supportOrganizationName().get() );
-            Project project = ou.getProjectByName( config.configuration().supportProjectForEmailName().get() );
-            CaseType caseType = project.getCaseTypeByName( config.configuration().supportCaseTypeForFailedEmailName().get() );
+            Project project = ou.getProjectByName( config.configuration().supportProjectName().get() );
+            CaseType caseType = project.getCaseTypeByName( config.configuration().supportCaseTypeForIncomingEmailName().get() );
 
             Drafts user = getUser( email );
             ConversationParticipant participant = (ConversationParticipant) user;
@@ -126,7 +126,7 @@ public interface SystemDefaultsService
             caze.caselog().get().addTypedEntry( "{receivererror,description=Could not parse email.}", CaseLogEntryTypes.system );
 
             caze.changeDescription( email.subject().get() );
-            caze.changeNote( email.content().get() );
+            caze.addNote( email.content().get() );
 
             // Create conversation
             Conversation conversation = caze.createConversation( email.subject().get(), (Creator) user );

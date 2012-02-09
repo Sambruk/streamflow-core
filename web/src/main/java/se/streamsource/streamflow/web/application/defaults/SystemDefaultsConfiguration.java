@@ -65,12 +65,12 @@ public interface SystemDefaultsConfiguration
     * @return
     */
    @UseDefaults
-   Property<String> supportProjectForEmailName();
+   Property<String> supportProjectName();
 
    /**
     * The name of the support case type marking mail receiver cases.
     * @return
     */
    @UseDefaults
-   Property<String> supportCaseTypeForFailedEmailName();
+   Property<String> supportCaseTypeForIncomingEmailName();
 }

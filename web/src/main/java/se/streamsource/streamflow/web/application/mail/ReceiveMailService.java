@@ -162,18 +162,18 @@ public interface ReceiveMailService
 
                try
                {
-                  project = ou.getProjectByName( systemDefaults.config().configuration().supportProjectForEmailName().get() );
+                  project = ou.getProjectByName( systemDefaults.config().configuration().supportProjectName().get() );
                } catch (IllegalArgumentException iae)
                {
-                  project = ou.createProject( systemDefaults.config().configuration().supportProjectForEmailName().get() );
+                  project = ou.createProject( systemDefaults.config().configuration().supportProjectName().get() );
                }
 
                try
                {
-                  caseType = project.getCaseTypeByName( systemDefaults.config().configuration().supportCaseTypeForFailedEmailName().get() );
+                  caseType = project.getCaseTypeByName( systemDefaults.config().configuration().supportCaseTypeForIncomingEmailName().get() );
                } catch (IllegalArgumentException iae)
                {
-                  caseType = ou.createCaseType( systemDefaults.config().configuration().supportCaseTypeForFailedEmailName().get() );
+                  caseType = ou.createCaseType( systemDefaults.config().configuration().supportCaseTypeForIncomingEmailName().get() );
                   project.addSelectedCaseType( caseType );
                   project.addMember( RoleMap.current().get( Member.class ) );
                }

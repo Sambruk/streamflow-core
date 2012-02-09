@@ -169,7 +169,7 @@ public interface CreateCaseFromEmailService
                   caze.caselog().get().addTypedEntry( "{accesspoint,description=" + ap.getDescription() + "}", CaseLogEntryTypes.system );
 
                   caze.changeDescription( email.subject().get() );
-                  caze.changeNote(email.content().get());
+                  caze.addNote(email.content().get());
 
                   // Create conversation
                   Conversation conversation = caze.createConversation(email.subject().get(), (Creator) user);

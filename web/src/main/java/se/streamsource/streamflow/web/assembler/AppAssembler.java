@@ -137,8 +137,8 @@ public class AppAssembler
 
       ResourceBundle bundle = ResourceBundle.getBundle( AppAssembler.class.getName() );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportOrganizationName().set( bundle.getString( "supportOuName" ) );
-      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportProjectForEmailName().set( bundle.getString( "supportProjectEmailName" ) );
-      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForFailedEmailName().set( bundle.getString( "supportCaseTypeIncomingName" ) );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportProjectName().set( bundle.getString( "supportProjectName" ) );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForIncomingEmailName().set( bundle.getString( "supportCaseTypeForIncomingEmailName" ) );
    }
 
    private void archival(ModuleAssembly archival)
