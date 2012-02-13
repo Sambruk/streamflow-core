@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
  */
 @Mixins(Projects.Mixin.class)
 public interface Projects
+   extends ProjectsQueries
 {
    Project createProject( String name );
 

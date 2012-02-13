@@ -30,7 +30,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -72,7 +72,7 @@ public interface DraftsContext
       Module module;
 
       @Service
-      DefaultSystemConfigurationService systemConfig;
+      SystemDefaultsService systemConfig;
 
       public Query<Case> cases(TableQuery tableQuery)
       {

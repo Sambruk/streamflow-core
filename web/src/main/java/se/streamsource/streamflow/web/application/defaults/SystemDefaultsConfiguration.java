@@ -22,9 +22,13 @@ import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
 
 
-public interface DefaultSystemConfiguration
+public interface SystemDefaultsConfiguration
       extends ConfigurationComposite, Enabled
 {
+   /**
+    *  The default sort order configuration for case table content.
+    * @return A boolean
+    */
    @UseDefaults
    Property<Boolean> sortOrderAscending();
 
@@ -48,4 +52,25 @@ public interface DefaultSystemConfiguration
 
    @UseDefaults
    Property<Boolean> caseLogAttachmentVisible();
+
+   /**
+    * The name of the organizational unit responsible for mail receiver support.
+    * @return A string property
+    */
+   @UseDefaults
+   Property<String> supportOrganizationName();
+
+   /**
+    *  The name of the support project responsible bor mail receiver support.
+    * @return
+    */
+   @UseDefaults
+   Property<String> supportProjectName();
+
+   /**
+    * The name of the support case type marking mail receiver cases.
+    * @return
+    */
+   @UseDefaults
+   Property<String> supportCaseTypeForIncomingEmailName();
 }

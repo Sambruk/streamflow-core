@@ -29,6 +29,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
  */
 @Mixins(SelectedCaseTypes.Mixin.class)
 public interface SelectedCaseTypes
+   extends SelectedCaseTypesQueries
 {
    void addSelectedCaseType( CaseType caseType );
 

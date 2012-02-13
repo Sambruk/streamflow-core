@@ -32,8 +32,8 @@ import org.qi4j.bootstrap.ModuleAssembly;
 
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfiguration;
-import se.streamsource.streamflow.web.application.defaults.DefaultSystemConfigurationService;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
@@ -89,11 +89,11 @@ public class StreamflowWebContextTestAssembler
 
       knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
       ModuleAssembly system = appLayer.module( "System" );
-      system.services( DefaultSystemConfigurationService.class ).identifiedBy( "system" ).visibleIn( Visibility.application);
+      system.services( SystemDefaultsService.class ).identifiedBy( "system" ).visibleIn( Visibility.application);
       ModuleAssembly configurationModule = module.layer().application().layer("Configuration").module("Configuration");
-      configurationModule.entities(KnowledgebaseConfiguration.class, DefaultSystemConfiguration.class).visibleIn(Visibility.application);
-      configurationModule.forMixin( DefaultSystemConfiguration.class ).declareDefaults().enabled().set( true );
-      configurationModule.forMixin( DefaultSystemConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
+      configurationModule.entities(KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class).visibleIn(Visibility.application);
+      configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( true );
+      configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
    }
 
    @Override
