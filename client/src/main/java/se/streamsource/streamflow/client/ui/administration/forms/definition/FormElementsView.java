@@ -16,34 +16,19 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import static org.qi4j.api.util.Iterables.filter;
-import static org.qi4j.api.util.Iterables.first;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.ListModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -52,19 +37,33 @@ import se.streamsource.streamflow.client.util.FormElementItemListCellRenderer;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -83,6 +82,8 @@ public class FormElementsView
    private JList list;
 
    private FormPagesModel model;
+   
+   private ActionMap am;
 
 
    public FormElementsView( @Service ApplicationContext context,
@@ -90,7 +91,7 @@ public class FormElementsView
    {
       this.model = model;
 
-      final ActionMap am = context.getActionMap( this );
+      am = context.getActionMap( this );
 
       setBorder( Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
@@ -327,6 +328,23 @@ public class FormElementsView
             if (link.href().get().endsWith( id+"/" ))
             {
                list.setSelectedValue( link, true );
+               if( event.name().get().equals( "createdField" ))
+               {
+                  Component c = Iterables.first( Iterables.filter( new Specification<Component>()
+                  {
+                     public boolean satisfiedBy( Component c )
+                     {
+                        if ( c instanceof StreamflowButton  &&
+                              ((ApplicationAction) ((StreamflowButton) c).getAction()).getName().equals( "addField" ))
+                           return true;
+                        return false;
+                     }
+                  }, WindowUtils.getAllComponents( this ) ) );
+
+                  if( c != null )
+                     c.requestFocusInWindow();
+               }
+
                break;
             }
          }
