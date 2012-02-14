@@ -312,6 +312,7 @@
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
                     </mapping>
+                    <strictCheck>true</strictCheck>
                 </configuration>
                 <executions>
                     <execution>
