@@ -529,7 +529,7 @@ public class CasesTableView
          } );
       } else if (Events.matches( withNames( "addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner", "assignedTo", "unassigned", "changedRemoved",
+            "changedOwner", "assignedTo", "unassigned", "changedRemoved","deletedEntity",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "changedDueOn", "submittedForm", "createdAttachment",
             "removedAttachment" ), transactions ))
