@@ -261,5 +261,6 @@ public class ManagementAssembler extends AbstractLayerAssembler
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
             .visibleIn( layer ).instantiateOnStartup();
       configuration().entities( UpdateConfiguration.class ).visibleIn( application );
+      configuration().forMixin( UpdateConfiguration.class ).declareDefaults().lastStartupVersion().set( "1.4.0.0" );
    }
 }
