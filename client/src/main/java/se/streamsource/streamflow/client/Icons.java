@@ -72,7 +72,6 @@ public enum Icons
    empty,
 
    // Logos
-   name_logo,
    logo,
 
    // Check

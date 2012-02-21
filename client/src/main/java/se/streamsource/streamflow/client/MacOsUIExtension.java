@@ -41,7 +41,7 @@ public class MacOsUIExtension
    public void attachMacUIExtension()
    {
       Application macApp = Application.getApplication();
-      macApp.setDockIconImage(i18n.icon(Icons.logo, 64).getImage());
+      macApp.setDockIconImage(i18n.icon(Icons.logo, 128).getImage());
       macApp.setAboutHandler(new AboutHandler()
       {
          public void handleAbout(AppEvent.AboutEvent aboutEvent)
