@@ -85,7 +85,7 @@ public class OpenCaseContext
 
       for (CaseLogEntryValue entry : ((CaseLog.Data) caseLog.caselog().get()).entries().get())
       {
-//         if (entry.availableOnMypages().get())
+         if (entry.availableOnMypages().get())
          {
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
             Describable user = uow.get( Describable.class, entry.createdBy().get().identity() );
@@ -100,6 +100,8 @@ public class OpenCaseContext
             }
             builder.prototype().href().set( id );
             builder.prototype().id().set( id );
+            builder.prototype().myPagesVisibility().set( entry.availableOnMypages().get() );
+            builder.prototype().caseLogType().set( entry.entryType().get());
 
             builder.prototype().text().set( translatedMessage );
 
