@@ -102,7 +102,7 @@ public class CasesView
    protected JPanel createBlankPanel()
    {
       JPanel blankPanel = new JPanel( new BorderLayout() );
-      URL logoURL = getClass().getResource( i18n.text( Icons.logo ) );
+      URL logoURL = getClass().getResource( i18n.text( Icons.sf_logo ) );
       JEditorPane blankPane = new HtmlPanel(text( WorkspaceResources.welcome, logoURL.toExternalForm() ) );
       blankPanel.add( blankPane, BorderLayout.CENTER );
       return blankPanel;

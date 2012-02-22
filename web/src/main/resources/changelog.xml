@@ -250,4 +250,11 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="11" author="henrikreinhold">
+    	<addColumn tableName="organization">
+            <column name="parent" type="varchar(60)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
