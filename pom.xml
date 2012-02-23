@@ -316,6 +316,8 @@
                         <exclude>**/*.py</exclude>
                         <exclude>**/manual/template/**</exclude>
                         <exclude>**/**.wiki</exclude>
+                        <exclude>**/webapp/resources/**</exclude>
+
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
