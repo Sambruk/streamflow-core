@@ -60,7 +60,7 @@
             <a class="brand" href="#">Streamflow Statistik</a>
             <ul class="nav">
                 <li><a href="index">Antal</a></li>
-                <li class="active"><a href="varation">Variation</a></li>
+                <li class="active"><a href="variation">Variation</a></li>
             </ul>
         </div>
     </div>
@@ -76,17 +76,14 @@
                 <input class="date focused" name="fromDate" type="date" value="<c:out value="${fromDate}"/>">
                 <label class="control-label" for="toDate">Till:</label>
                 <input class="date focused" name="toDate" type="date" value="<c:out value="${toDate}"/>">
-                <label class="control-label" for="perodicity">Ärendetyp:</label>
+                <label class="control-label" for="caseTypeId">Ärendetyp:</label>
                 <select name="caseTypeId" class="span2">
-                    <option value="03d79ae7-e801-4338-8441-abb5b9d27522-1c1">Asfaltering</option>
+                <c:forEach var="casetype" items="${casetypes}">
+                    <option <c:if test="${caseTypeId == casetype.id}">selected="selected"</c:if>value="<c:out value="${casetype.id}"/>"><c:out value="${casetype.name}"/></option>
+                </c:forEach>
                 </select>
                 <a href="#" onclick="{ document.forms[0].action = '';document.forms[0].submit();return false;}" class="btn btn-success">Uppdatera</a>
             </form>
-        </div>
-        <div class="span1">
-            <div class="pull-right">
-                <a href="#download" onclick="{ document.forms[0].action = 'download';document.forms[0].submit();return false;}" class="btn"><i class="icon-download"></i>Excel</a>
-            </div>
         </div>
     </div>
 </section>

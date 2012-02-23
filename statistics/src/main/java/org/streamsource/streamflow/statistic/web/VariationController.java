@@ -33,6 +33,7 @@ public class VariationController
       modelAndView.addObject( "fromDate", criteria.getFormattedFromDate() );
       modelAndView.addObject( "toDate", criteria.getFormattedToDate() );
       modelAndView.addObject( "caseTypeId", caseTypeId );
+      modelAndView.addObject( "casetypes", statistics.getCaseTypes() );
       modelAndView.addObject( "result",statistics.getVariationForCaseType( caseTypeId ) );
       return modelAndView;
    }

@@ -52,7 +52,7 @@ public class StatisticController
    {
    }
    
-   @RequestMapping(value = "/")
+   @RequestMapping(value = "index")
    public ModelAndView index( @RequestParam(required = false) String fromDate,
                         @RequestParam(required = false ) String toDate,
                         @RequestParam(required = false ) String periodicity )

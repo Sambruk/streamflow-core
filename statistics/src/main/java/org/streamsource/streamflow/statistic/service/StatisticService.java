@@ -22,6 +22,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.streamsource.streamflow.statistic.dto.CaseCount;
 import org.streamsource.streamflow.statistic.dto.CaseCountTotal;
+import org.streamsource.streamflow.statistic.dto.CaseTypeValue;
 import org.streamsource.streamflow.statistic.dto.ScatterChartValue;
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 import org.streamsource.streamflow.statistic.dto.StatisticsResult;
@@ -331,6 +332,24 @@ public class StatisticService
                result.add( new ScatterChartValue( rs.getString( 1 ), rs.getString( 2 ) ) );
             }
             return result; 
+         }
+      } );
+   }
+
+   public List<CaseTypeValue> getCaseTypes()
+   {
+      String sql = "select id, description from descriptions where type = 'caseType'";
+      return jdbcTemplate.query( sql, new ResultSetExtractor<List<CaseTypeValue>>()
+      {
+         public List<CaseTypeValue> extractData( ResultSet rs ) throws SQLException, DataAccessException
+         {
+            List<CaseTypeValue> result = new ArrayList<CaseTypeValue>();
+            while( rs.next() )
+            {
+               result.add( new CaseTypeValue( rs.getString( 1 ), rs.getString( 2 ) ) );
+            }
+            Collections.sort( result );
+            return result;
          }
       } );
    }
