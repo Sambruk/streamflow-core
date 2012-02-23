@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.application.statistics;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -486,6 +487,9 @@ public interface CaseStatisticsService
                   builder.prototype().name().set(((Describable)visited).getDescription());
                   builder.prototype().id().set(visited.toString());
                   builder.prototype().left().set(idx);
+                  if (visited instanceof OrganizationalUnit) {
+                     builder.prototype().parent().set( EntityReference.getEntityReference( ((Ownable.Data)visited).owner().get()).identity() );
+                  }
                   builders.push(builder);
 
                   idx++;

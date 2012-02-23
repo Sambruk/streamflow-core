@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.application.statistics;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
@@ -30,4 +31,6 @@ public interface OrganizationalUnitValue
    Property<String> id();
    Property<Integer> left();
    Property<Integer> right();
+   @Optional
+   Property<String> parent();
 }

@@ -72,8 +72,8 @@ public enum Icons
    empty,
 
    // Logos
-   name_logo,
-   logo,
+   sf_logo,
+   sf_icon,
 
    // Check
    check,
