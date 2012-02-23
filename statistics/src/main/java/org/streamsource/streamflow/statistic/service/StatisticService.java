@@ -22,6 +22,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.streamsource.streamflow.statistic.dto.CaseCount;
 import org.streamsource.streamflow.statistic.dto.CaseCountTotal;
+import org.streamsource.streamflow.statistic.dto.ScatterChartValue;
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 import org.streamsource.streamflow.statistic.dto.StatisticsResult;
 import org.streamsource.streamflow.statistic.dto.TopOu;
@@ -308,6 +309,20 @@ public class StatisticService
       result.setCaseCountByOuOwner( caseCountByCaseTypeOwner );
       result.setCaseCountByCasetype( caseCountByCaseType );
 
+      return result;
+   }
+   
+   public List<ScatterChartValue> getVariationForCaseType( String caseTypeId )
+   {
+      List<ScatterChartValue> result = new ArrayList<ScatterChartValue>(  );
+      
+      String sql = "select date_format() as day, duration from casesdescriptions where casetype = '" + caseTypeId + "' " +
+            "and closed_on >= ? " +
+            "and closed_on <= ? " +
+            "group by day " +
+            "order by day";
+      
+      
       return result;
    }
 }
