@@ -33,6 +33,11 @@
                             <artifactId>streamflow-war</artifactId>
                             <contextRoot>/client</contextRoot>
                         </webModule>
+                        <webModule>
+                            <groupId>se.streamsource.streamflow</groupId>
+                            <artifactId>streamflow-statistic</artifactId>
+                            <contextRoot>/statistic</contextRoot>
+                        </webModule>
                     </modules>
                 </configuration>
             </plugin>
