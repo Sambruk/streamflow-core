@@ -16,13 +16,6 @@
     limitations under the License.
 
 --%>
-<%--
-  Created by IntelliJ IDEA.
-  User: arvidhuss
-  Date: 2/17/12
-  Time: 1:58 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -34,36 +27,35 @@
     <meta name="description" content="Streamflow Statistik">
     <meta name="author" content="Henrik Reinhold & Arvid Huss, Jayway AB">
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!-- HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <!-- Le styles -->
+    <!-- Styles -->
     <link href="resources/css/external/bootstrap.css" rel="stylesheet">
     <link href="resources/css/external/bootstrap-responsive.css" rel="stylesheet">
     <link href="resources/css/style.css" rel="stylesheet">
 
-    <!-- Le fav and touch icons
-     <link rel="shortcut icon" href="assets/ico/favicon.ico">
-     <link rel="apple-touch-icon" href="assets/ico/apple-touch-icon.png">
-     <link rel="apple-touch-icon" sizes="72x72" href="assets/ico/apple-touch-icon-72x72.png">
-     <link rel="apple-touch-icon" sizes="114x114" href="assets/ico/apple-touch-icon-114x114.png">
-     -->
+    <!-- favorite and touch icons -->
+	<link rel="shortcut icon" href="resources/images/favicon.png">
+	<link rel="apple-touch-icon" href="resources/images/app_icons512x512.png">
+	<link rel="apple-touch-icon" sizes="57x57" href="resources/images/app_icons57x57.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="resources/images/app_icons72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="resources/images/app_icons114x114.png">
+	
     <script type="text/javascript" src="resources/js/external/jquery-1.7.1.js"></script>
-    <script src="resources/js/external/bootstrap-scrollspy.js"></script>
 </head>
 
-<body>
+<body data-spy="scroll" data-target=".subnav" data-offset="85">
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="#">Streamflow Statistik</a>
             <ul class="nav">
-                <li class="active"><a href="index.html">Antal</a></li>
+                <li class="active"><a href="index.jsp">Antal</a></li>
                 <li><a href="#">Variation</a></li>
-                <li><a href="#">????</a></li>
             </ul>
         </div>
     </div>
@@ -99,13 +91,13 @@
         </div>
         <div class="span1">
             <div class="pull-right">
-                <a href="#download" class="btn"><i class="icon-download"></i>Excel</a>
+                <a href="#download" onclick="{ document.forms[0].action = 'download';document.forms[0].submit();return false;}" class="btn"><i class="icon-download"></i>Excel</a>
             </div>
         </div>
     </div>
 </section>
 
-<section id="summery">
+<section id="summary">
     <div class="page-header">
         <h2>Summering</h2>
     </div>
@@ -249,5 +241,7 @@
 </footer>
 
 </div><!-- /container -->
+
+    <script src="resources/js/external/bootstrap-scrollspy.js"></script>
 </body>
 </html>
