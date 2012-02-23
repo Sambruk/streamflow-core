@@ -41,6 +41,7 @@
         <module>referenceplugin</module>
         <module>help</module>
         <module>dist</module>
+        <module>statistics</module>
     </modules>
 
     <scm>

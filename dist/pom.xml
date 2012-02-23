@@ -30,5 +30,11 @@
             <version>${version}</version>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-statistic</artifactId>
+            <version>${version}</version>
+            <type>war</type>
+        </dependency>
     </dependencies>
 </project>
