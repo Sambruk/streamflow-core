@@ -22,7 +22,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Surface Statistik</title>
+    <title>Streamflow Statistik</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Streamflow Statistik">
     <meta name="author" content="Henrik Reinhold & Arvid Huss, Jayway AB">
@@ -54,8 +54,8 @@
         <div class="container">
             <a class="brand" href="#">Streamflow Statistik</a>
             <ul class="nav">
-                <li class="active"><a href="index.jsp">Antal</a></li>
-                <li><a href="#">Variation</a></li>
+                <li class="active"><a href="index">Antal</a></li>
+                <li><a href="variation">Variation</a></li>
             </ul>
         </div>
     </div>
