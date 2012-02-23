@@ -314,15 +314,24 @@ public class StatisticService
    
    public List<ScatterChartValue> getVariationForCaseType( String caseTypeId )
    {
-      List<ScatterChartValue> result = new ArrayList<ScatterChartValue>(  );
-      
-      String sql = "select date_format() as day, duration from casesdescriptions where casetype = '" + caseTypeId + "' " +
-            "and closed_on >= ? " +
+      String sql = "select unix_timestamp(closed_on)*1000, truncate(duration/60000,0) " +
+            "from casesdescriptions " +
+            "where closed_on >= ? " +
             "and closed_on <= ? " +
-            "group by day " +
-            "order by day";
-      
-      
-      return result;
+            "and casetype = (select description from descriptions where id = ? )";
+            
+      return jdbcTemplate.query( sql, new Object[]{ criteria.getFormattedFromDate(), criteria.getFormattedToDateTime(), caseTypeId },
+            new ResultSetExtractor<List<ScatterChartValue>>()
+      {
+         public List<ScatterChartValue> extractData( ResultSet rs ) throws SQLException, DataAccessException
+         {
+            List<ScatterChartValue> result = new ArrayList<ScatterChartValue>(  );
+            while(rs.next())
+            {
+               result.add( new ScatterChartValue( rs.getString( 1 ), rs.getString( 2 ) ) );
+            }
+            return result; 
+         }
+      } );
    }
 }
