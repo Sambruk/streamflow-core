@@ -86,7 +86,7 @@
                     <option <c:if test="${periodicity == 'weekly'}">selected="selected"</c:if>value="weekly">Veckovis</option>
                     <option <c:if test="${periodicity == 'yearly'}">selected="selected"</c:if>value="yearly">Årsvis</option>
                 </select>
-                <a href="#" onclick="document.forms[0].submit();return false;" class="btn btn-success">Uppdatera</a>
+                <a href="#" onclick="{ document.forms[0].action = '';document.forms[0].submit();return false;}" class="btn btn-success">Uppdatera</a>
             </form>
         </div>
         <div class="span1">
