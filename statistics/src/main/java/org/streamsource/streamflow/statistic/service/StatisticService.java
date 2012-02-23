@@ -316,10 +316,11 @@ public class StatisticService
    public List<ScatterChartValue> getVariationForCaseType( String caseTypeId )
    {
       String sql = "select unix_timestamp(closed_on)*1000, truncate(duration/60000,0) " +
-            "from casesdescriptions " +
+            "from cases " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +
-            "and casetype = (select description from descriptions where id = ? )";
+            "and casetype = ? " +
+            "order by closed_on";
             
       return jdbcTemplate.query( sql, new Object[]{ criteria.getFormattedFromDate(), criteria.getFormattedToDateTime(), caseTypeId },
             new ResultSetExtractor<List<ScatterChartValue>>()

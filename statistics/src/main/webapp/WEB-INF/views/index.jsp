@@ -47,7 +47,7 @@
     <script type="text/javascript" src="resources/js/external/jquery-1.7.1.js"></script>
 </head>
 
-<body data-spy="scroll" data-target=".subnav" data-offset="85">
+<body data-spy="scroll" data-target=".subnav" data-offset="60">
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">

@@ -50,6 +50,7 @@
 	
     <script type="text/javascript" src="resources/js/external/jquery-1.7.1.js"></script>
     <script type="text/javascript" src="resources/js/external/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="resources/js/external/jquery.flot.resize.min.js"></script>
 </head>
 
 <body>
@@ -95,7 +96,9 @@
 
     <div class="row">
         <div class="span12">
+        	<h4 class="diagram-legend">Timmar</h4>
             <div id="graph-container" style="width:100%; height:400px;"></div>
+            <div class="pull-right"><h4>Datum</h4></div>
         </div>
     </div>
 </section>
@@ -119,7 +122,7 @@ $(function () {
     $.plot($("#graph-container"), [ series ],{
     xaxis: { mode: "time" },
     series: {
-            lines: { show: false },
+            lines: { show: true },
             points: { show: true }
     }});
 });
