@@ -52,7 +52,7 @@ public class StatisticController
    {
    }
    
-   @RequestMapping(value = "index")
+   @RequestMapping(value = "count")
    public ModelAndView index( @RequestParam(required = false) String fromDate,
                         @RequestParam(required = false ) String toDate,
                         @RequestParam(required = false ) String periodicity )
@@ -62,7 +62,7 @@ public class StatisticController
 
       StatisticService statistics = StatisticServiceFactory.getInstance( criteria );
       
-      ModelAndView modelAndView = new ModelAndView( "index" );
+      ModelAndView modelAndView = new ModelAndView( "count" );
       modelAndView.addObject( "fromDate", criteria.getFormattedFromDate() );
       modelAndView.addObject( "toDate", criteria.getFormattedToDate() );
       modelAndView.addObject( "periodicity", criteria.getPeriodicity().toString() );

@@ -148,6 +148,9 @@ h2 {
   margin-right: 13px;
 }
 
+select.span2.caseTypeId {
+	margin-left: 22px;
+}
 .table-stats td, .table-stats th {
 	text-align: right;
 }

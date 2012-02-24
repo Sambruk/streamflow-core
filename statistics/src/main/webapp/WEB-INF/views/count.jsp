@@ -52,9 +52,9 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="#">Streamflow Statistik</a>
+            <a class="brand" href="count"><img src="resources/images/favicon.png"/> Statistik</a>
             <ul class="nav">
-                <li class="active"><a href="index">Antal</a></li>
+                <li class="active"><a href="count">Antal</a></li>
                 <li><a href="variation">Variation</a></li>
             </ul>
         </div>

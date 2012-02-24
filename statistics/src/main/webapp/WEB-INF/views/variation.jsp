@@ -58,9 +58,9 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="#">Streamflow Statistik</a>
+        	<a class="brand" href="count"><img src="resources/images/favicon.png"/> Statistik</a>
             <ul class="nav">
-                <li><a href="index">Antal</a></li>
+                <li><a href="count">Antal</a></li>
                 <li class="active"><a href="variation">Variation</a></li>
             </ul>
         </div>
@@ -78,7 +78,7 @@
                 <label class="control-label" for="toDate">Till:</label>
                 <input class="date focused" name="toDate" type="date" value="<c:out value="${toDate}"/>">
                 <label class="control-label" for="caseTypeId">Ärendetyp:</label>
-                <select name="caseTypeId" class="span2">
+                <select name="caseTypeId" class="span2 caseTypeId">
                 <c:forEach var="casetype" items="${casetypes}">
                     <option <c:if test="${caseTypeId == casetype.id}">selected="selected"</c:if>value="<c:out value="${casetype.id}"/>"><c:out value="${casetype.name}"/></option>
                 </c:forEach>

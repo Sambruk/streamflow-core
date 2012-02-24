@@ -339,7 +339,7 @@ public class StatisticService
 
    public List<CaseTypeValue> getCaseTypes()
    {
-      String sql = "select id, description from descriptions where type = 'caseType'";
+      String sql = "select id, description from descriptions where type = 'caseType' order by description";
       return jdbcTemplate.query( sql, new ResultSetExtractor<List<CaseTypeValue>>()
       {
          public List<CaseTypeValue> extractData( ResultSet rs ) throws SQLException, DataAccessException
@@ -349,7 +349,6 @@ public class StatisticService
             {
                result.add( new CaseTypeValue( rs.getString( 1 ), rs.getString( 2 ) ) );
             }
-            Collections.sort( result );
             return result;
          }
       } );
