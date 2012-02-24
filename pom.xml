@@ -316,7 +316,8 @@
                         <exclude>**/*.py</exclude>
                         <exclude>**/manual/template/**</exclude>
                         <exclude>**/**.wiki</exclude>
-                        <exclude>**/webapp/resources/**</exclude>
+                        <exclude>**/webapp/resources/css/external/**</exclude>
+                        <exclude>**/webapp/resources/js/external/**</exclude>
 
                     </excludes>
                     <mapping>
