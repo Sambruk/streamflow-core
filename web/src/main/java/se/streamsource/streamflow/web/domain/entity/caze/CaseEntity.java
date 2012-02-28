@@ -516,8 +516,9 @@ public interface CaseEntity
 
       public void removeAttachment(Attachment attachment)
       {
+         String fileName = ((AttachedFile.Data)attachment).name().get();
          next.removeAttachment( attachment );
-         caseLoggable.caselog().get().addTypedEntry( "{removeAttachment,description=" + ((AttachedFile.Data)attachment).name().get() + "}" , CaseLogEntryTypes.attachment);
+         caseLoggable.caselog().get().addTypedEntry( "{removeAttachment,description=" + fileName + "}" , CaseLogEntryTypes.attachment);
       }
    }
 
