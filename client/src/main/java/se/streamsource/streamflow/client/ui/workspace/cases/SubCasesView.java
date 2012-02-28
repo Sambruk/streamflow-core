@@ -16,33 +16,32 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
+import ca.odell.glazedlists.swing.EventListModel;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import ca.odell.glazedlists.swing.EventListModel;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 
 /**
@@ -158,7 +157,11 @@ public class SubCasesView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( Events.withNames( "createdSubCase", "removedSubCase", "changedStatus", "changedDescription" ), transactions ))
+      // with usecase delete - no refresh needed
+      if( matches( withUsecases( "delete"), transactions ) )
+         return;
+
+      if (matches( withNames( "createdSubCase", "removedSubCase", "changedStatus", "changedDescription" ), transactions ))
          model.refresh();
    }
 
