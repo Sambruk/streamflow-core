@@ -16,29 +16,27 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.Frame;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
 import org.qi4j.api.util.Iterables;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * All Swing actions that want to trigger commands in the domain model
@@ -117,7 +115,8 @@ public abstract class CommandTask
       if (throwable instanceof ResourceException)
       {
          ResourceException re = (ResourceException) throwable;
-         if (re.getStatus().equals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY))
+         if (re.getStatus().equals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY) ||
+               re.getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
          {
             // Show error dialog
             final Frame frame = source instanceof Component ? (Frame) SwingUtilities.getAncestorOfClass(Frame.class,
