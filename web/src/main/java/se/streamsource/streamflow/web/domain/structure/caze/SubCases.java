@@ -66,6 +66,8 @@ public interface SubCases
       {
          CaseEntity aCase = createdSubCase( null, idGenerator.generate( Identity.class ) );
          aCase.changeParent( myself );
+         aCase.createLog();
+         aCase.createNotes();
       }
 
       public CaseEntity createdSubCase( DomainEvent event, String id )

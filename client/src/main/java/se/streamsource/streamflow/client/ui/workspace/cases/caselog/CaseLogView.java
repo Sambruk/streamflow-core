@@ -27,8 +27,7 @@ import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntr
 import static se.streamsource.streamflow.client.util.i18n.ICON_16;
 import static se.streamsource.streamflow.client.util.i18n.icon;
 import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -338,10 +337,15 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (matches( withNames( "addedEntry","modifiedMyPagesVisibility" ), transactions ))
+      // on usecase delete no update necessary
+      if( matches( withUsecases( "delete" ),transactions ))
+         return;
+
+      if (matches( withNames( "addedEntry", "modifiedMyPagesVisibility" ), transactions ))
       {
          refresh();
       }
+
    }
 
    public void addMessage()
