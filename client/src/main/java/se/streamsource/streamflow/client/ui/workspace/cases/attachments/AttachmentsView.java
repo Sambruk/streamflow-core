@@ -220,8 +220,14 @@ public class AttachmentsView
    {
       // on usecase delete no update necessary
       if( matches( withUsecases( "delete" ),transactions ))
-         return;
-      if ( matches( withNames( "changedStatus", "addedAttachment", "removedAttachment" ), transactions ))
+      {
+         if( matches(  withNames( "removedAttachment" ), transactions ))
+            attachmentsModel.refresh();
+         else
+            return;
+      }
+
+      else if ( matches( withNames( "changedStatus", "addedAttachment" ), transactions ))
          attachmentsModel.refresh();
    }
 

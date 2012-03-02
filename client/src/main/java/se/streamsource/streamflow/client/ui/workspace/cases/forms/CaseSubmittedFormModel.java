@@ -60,8 +60,7 @@ public class CaseSubmittedFormModel
 
       Form form = new Form();
       form.set("id", attachmentId);
-      Representation result = client.query( "download", Representation.class, form );
-      return result;
+      return client.query( "download", Representation.class, form );
    }
    
 }

@@ -16,9 +16,28 @@
  */
 package se.streamsource.streamflow.client;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
 import info.aduna.io.IOUtil;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.restlet.engine.io.BioUtils;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
+import javax.swing.border.BevelBorder;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -34,28 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
-import javax.swing.border.BevelBorder;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.restlet.engine.io.BioUtils;
-
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -93,7 +91,7 @@ public class AboutDialog
                " Revision: " + p.getProperty( "application.revision" ) + "<br><br>" +
                "---" + "<br><br>" +
                "Streamflow&#0153;<br>" +
-               "Copyright 2009-2011 Streamsource AB<br><br>" +
+               "Copyright 2009-2012 Streamsource AB<br><br>" +
                "Streamflow&#0153; is licensed under the Apache License, Version 2.0 (the \"License\").<br>" +
                "You may not use Streamflow&#0153; except in compliance with the License.<br>" +
                "A copy of the License is available below and may also be obtained<br>" +

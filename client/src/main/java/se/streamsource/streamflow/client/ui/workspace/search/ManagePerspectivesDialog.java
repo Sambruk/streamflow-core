@@ -16,21 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntityTypes;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.BorderLayout;
-
-import javax.swing.ActionMap;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
-
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.builder.ButtonBarBuilder2;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -39,7 +26,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -54,9 +40,18 @@ import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import javax.swing.ActionMap;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -162,7 +157,7 @@ public class ManagePerspectivesDialog
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
       if (matches(and(onEntityTypes("se.streamsource.streamflow.web.domain.entity.user.UserEntity",
-              "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity"),
+              "se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity"),
               withNames("createdPerspective", "changedDescription", "removedPerspective")), transactions))
       {
          refresh();
