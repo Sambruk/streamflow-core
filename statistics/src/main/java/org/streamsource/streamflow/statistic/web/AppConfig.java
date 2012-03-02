@@ -22,11 +22,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/17/12
- * Time: 1:28 PM
- * To change this template use File | Settings | File Templates.
+ * Application configuration.
  */
 @Configuration
 public class AppConfig {

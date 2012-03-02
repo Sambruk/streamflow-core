@@ -25,11 +25,7 @@ import org.streamsource.streamflow.statistic.service.StatisticService;
 import org.streamsource.streamflow.statistic.service.StatisticServiceFactory;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/23/12
- * Time: 2:19 PM
- * To change this template use File | Settings | File Templates.
+ * The casetyp variation controller.
  */
 @Controller
 public class VariationController

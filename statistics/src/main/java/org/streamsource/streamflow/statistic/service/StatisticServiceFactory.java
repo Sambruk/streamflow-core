@@ -19,19 +19,11 @@ package org.streamsource.streamflow.statistic.service;
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/22/12
- * Time: 10:53 AM
- * To change this template use File | Settings | File Templates.
+ * Factory for StatisticService by periodicity.
  */
 public class StatisticServiceFactory
 {
-   
-   private static WeeklyStatisticService weeklyStatisticService;
-   private static MonthlyStatisticService monthlyStatisticService;
-   private static YearlyStatisticService yearlyStatisticService;
-   
+      
    public static StatisticService getInstance( SearchCriteria criteria )
    {
       StatisticService result = null;
@@ -39,20 +31,16 @@ public class StatisticServiceFactory
       switch(SearchCriteria.SearchPeriodicity.valueOf( criteria.getPeriodicity().name() ))
       {
          case weekly:
-            if (weeklyStatisticService == null) {
-               weeklyStatisticService = new WeeklyStatisticService( criteria );
-            }
-            return weeklyStatisticService;
+            result = new WeeklyStatisticService( criteria );
+            break;
+         
          case monthly:
-            if (monthlyStatisticService == null) {
-               monthlyStatisticService = new MonthlyStatisticService( criteria );
-            }
-            return monthlyStatisticService;
+            result = new MonthlyStatisticService( criteria );
+            break;
+         
          case yearly:
-            if (yearlyStatisticService == null) {
-               yearlyStatisticService = new YearlyStatisticService( criteria );
-            }
-            return yearlyStatisticService;
+            result = new YearlyStatisticService( criteria );
+            break;
       }
       return result;
    }

@@ -19,11 +19,7 @@ package org.streamsource.streamflow.statistic.service;
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/22/12
- * Time: 10:53 AM
- * To change this template use File | Settings | File Templates.
+ * Statistic service for week period.
  */
 public class WeeklyStatisticService
    extends StatisticService

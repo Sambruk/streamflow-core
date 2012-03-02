@@ -25,11 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/20/12
- * Time: 3:42 PM
- * To change this template use File | Settings | File Templates.
+ * Search criteria
  */
 public class SearchCriteria
 {
@@ -154,6 +150,7 @@ public class SearchCriteria
             break;
          case yearly:
             result = fromDate.plusYears( count );
+            break;
       }
       return result;
    }

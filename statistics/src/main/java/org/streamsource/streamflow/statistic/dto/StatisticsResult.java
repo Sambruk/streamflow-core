@@ -19,17 +19,13 @@ package org.streamsource.streamflow.statistic.dto;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/20/12
- * Time: 12:36 PM
- * To change this template use File | Settings | File Templates.
+ * Statistic results.
  */
 public class StatisticsResult
 {
    private List<CaseCount> casecountSummary;
-
-
+   private List<CaseCount> caseCountByOuOwner;
+   private List<CaseCount> caseCountByCasetype;
    private List<CaseCount> caseCountByTopOuOwner;
 
    public List<CaseCount> getCasecountSummary()
@@ -71,7 +67,4 @@ public class StatisticsResult
    {
       this.caseCountByCasetype = caseCountByCasetype;
    }
-
-   private List<CaseCount> caseCountByOuOwner;
-   private List<CaseCount> caseCountByCasetype;
 }

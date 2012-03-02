@@ -38,11 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/17/12
- * Time: 1:41 PM
- * To change this template use File | Settings | File Templates.
+ * The statistic controller class.
  */
 @Controller
 public class StatisticController
