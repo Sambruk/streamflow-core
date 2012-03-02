@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
@@ -27,14 +26,12 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
 import org.qi4j.api.structure.Module;
-import org.restlet.representation.Representation;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
@@ -52,7 +49,6 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -214,7 +210,7 @@ public class AttachmentsView
       {
          AttachmentDTO attachment = attachmentsModel.getEventList().get(attachments.convertRowIndexToModel(i));
 
-         return new OpenAttachmentTask(attachment);
+         return new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), this, attachmentsModel );
       }
 
       return null;
@@ -225,7 +221,7 @@ public class AttachmentsView
       // on usecase delete no update necessary
       if( matches( withUsecases( "delete" ),transactions ))
          return;
-      if ( matches (withNames( "changedStatus", "addedAttachment", "removedAttachment" ), transactions))
+      if ( matches( withNames( "changedStatus", "addedAttachment", "removedAttachment" ), transactions ))
          attachmentsModel.refresh();
    }
 
@@ -249,55 +245,6 @@ public class AttachmentsView
          {
             FileInputStream fin = new FileInputStream(file);
             attachmentsModel.createAttachment(file, fin);
-         }
-      }
-   }
-
-   private class OpenAttachmentTask extends Task<File, Void>
-   {
-      private final AttachmentDTO attachment;
-
-      public OpenAttachmentTask(AttachmentDTO attachment)
-      {
-         super(Application.getInstance());
-         this.attachment = attachment;
-
-         setUserCanCancel(false);
-      }
-
-      @Override
-      protected File doInBackground() throws Exception
-      {
-         setMessage(getResourceMap().getString("description"));
-
-         String fileName = attachment.text().get();
-         String[] fileNameParts = fileName.split("\\.");
-         Representation representation = attachmentsModel.download(attachment);
-
-         File file = File.createTempFile(fileNameParts[0] + "_", "." + fileNameParts[1]);
-
-         Inputs.byteBuffer(representation.getStream(), 8192).transferTo(Outputs.byteBuffer(file));
-
-         return file;
-      }
-
-      @Override
-      protected void succeeded(File file)
-      {
-         // Open file
-         Desktop desktop = Desktop.getDesktop();
-         try
-         {
-            desktop.edit(file);
-         } catch (IOException e)
-         {
-            try
-            {
-               desktop.open(file);
-            } catch (IOException e1)
-            {
-               dialogs.showMessageDialog(AttachmentsView.this, i18n.text(WorkspaceResources.could_not_open_attachment), "");
-            }
          }
       }
    }

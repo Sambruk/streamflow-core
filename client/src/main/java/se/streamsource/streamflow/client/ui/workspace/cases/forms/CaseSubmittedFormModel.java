@@ -25,12 +25,13 @@ import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
+import se.streamsource.streamflow.client.util.Downloadable;
 import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.io.IOException;
 
 public class CaseSubmittedFormModel
-   implements Refreshable, FormAttachmentDownload
+   implements Refreshable, Downloadable
 {
    @Uses CommandQueryClient client;
 
@@ -59,7 +60,8 @@ public class CaseSubmittedFormModel
 
       Form form = new Form();
       form.set("id", attachmentId);
-      return client.query( "download", Representation.class, form.getWebRepresentation() );
+      Representation result = client.query( "download", Representation.class, form );
+      return result;
    }
    
 }

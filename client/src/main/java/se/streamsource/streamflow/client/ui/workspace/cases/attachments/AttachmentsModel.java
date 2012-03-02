@@ -36,6 +36,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.util.Downloadable;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -60,7 +61,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  */
 public class AttachmentsModel
    extends Observable
-   implements Refreshable
+   implements Refreshable, Downloadable
 {
    @Service
    EventStream eventStream;
@@ -135,8 +136,8 @@ public class AttachmentsModel
       client.getClient( attachment ).delete();
    }
 
-   public Representation download( AttachmentDTO attachment ) throws IOException
+   public Representation download( String relativePath ) throws IOException
    {
-      return client.getClient( attachment ).query("download", Representation.class);
+      return client.getClient( relativePath ).query("download", Representation.class);
    }
 }

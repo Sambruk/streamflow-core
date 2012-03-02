@@ -527,7 +527,7 @@ public interface CaseStatisticsService
          prototype.identity().set(aCase.identity().get());
          prototype.description().set(aCase.getDescription());
          NotesTimeLine latestNote = (NotesTimeLine)aCase.notes().get();
-         prototype.note().set(latestNote.getLastNote() == null ? "" : latestNote.getLastNote().note().get() );
+         prototype.note().set( (latestNote == null || latestNote.getLastNote() == null) ? "" : latestNote.getLastNote().note().get() );
          Assignee assignee = aCase.assignedTo().get();
          prototype.assigneeId().set(((Identity) assignee).identity().get());
          prototype.caseId().set(aCase.caseId().get());

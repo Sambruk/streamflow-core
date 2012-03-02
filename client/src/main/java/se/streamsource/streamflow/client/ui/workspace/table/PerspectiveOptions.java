@@ -16,15 +16,18 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import static se.streamsource.streamflow.client.util.i18n.icon;
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.List;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SeparatorList;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.FilteredList;
+import se.streamsource.streamflow.client.util.GroupedFilteredList;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -34,20 +37,14 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.List;
 
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.value.ValueBuilder;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.BottomBorder;
-import se.streamsource.streamflow.client.util.FilteredList;
-import se.streamsource.streamflow.client.util.GroupedFilteredList;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SeparatorList;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class PerspectiveOptions extends JPanel
 {
@@ -88,7 +85,7 @@ public class PerspectiveOptions extends JPanel
             }
             count++;
          }
-         ((GroupedFilteredList)list).setEventList( titledLinks, text( WorkspaceResources.selected_projects ) );
+         ((GroupedFilteredList)list).setEventList( titledLinks, text( WorkspaceResources.selected_projects ), false );
 
          this.itemList = ((GroupedFilteredList)list).getList();
          this.filterField = ((GroupedFilteredList)list).getFilterField();

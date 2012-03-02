@@ -46,7 +46,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -86,8 +86,9 @@ public class FormAttachmentsResource
       return links.newLinks();
    }
 
-   public void createformattachment( Request request ) throws IOException, URISyntaxException
+   public void createformattachment() throws IOException, URISyntaxException
    {
+      Request request = Request.getCurrent();
       Representation representation = request.getEntity();
 
       if (MediaType.MULTIPART_FORM_DATA.equals( representation.getMediaType(), true ))

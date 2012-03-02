@@ -339,7 +339,12 @@ public class StatisticService
 
    public List<CaseTypeValue> getCaseTypes()
    {
-      String sql = "select id, description from descriptions where type = 'caseType'";
+      String sql = "select distinct a.id, a.description from descriptions a, cases b " +
+            "where a.type = 'caseType' " +
+            "and a.id = b.caseType " +
+            "and b.closed_on >= '" + criteria.getFormattedFromDate() + "' " +
+            "and b.closed_on <= '" + criteria.getFormattedToDateTime() + "'";
+
       return jdbcTemplate.query( sql, new ResultSetExtractor<List<CaseTypeValue>>()
       {
          public List<CaseTypeValue> extractData( ResultSet rs ) throws SQLException, DataAccessException

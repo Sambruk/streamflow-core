@@ -16,9 +16,15 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swing.EventListModel;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -27,16 +33,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swing.EventListModel;
-import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * JAVADOC
@@ -95,7 +94,12 @@ public class GroupedFilteredList
       setEventList(eventList, "");
    }
 
-   public void setEventList(EventList<TitledLinkValue> eventList, String topValue)
+   public void setEventList(EventList<TitledLinkValue> eventList, String topValue )
+   {
+      setEventList( eventList, topValue, true );
+   }
+   
+   public void setEventList(EventList<TitledLinkValue> eventList, String topValue, final boolean selectMatchAlways )
    {
       SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>(eventList, new LinkComparator());
       TextComponentMatcherEditor editor = new TextComponentMatcherEditor(filterField, new LinkFilterator());
@@ -109,13 +113,16 @@ public class GroupedFilteredList
                {
                   final int idx = i;
 
-                  SwingUtilities.invokeLater(new Runnable()
+                  if( selectMatchAlways )
                   {
-                     public void run()
+                     SwingUtilities.invokeLater(new Runnable()
                      {
-                        list.setSelectedIndex(idx);
-                     }
-                  });
+                        public void run()
+                        {
+                           list.setSelectedIndex(idx);
+                        }
+                     });
+                  }
 
                   break;
                }

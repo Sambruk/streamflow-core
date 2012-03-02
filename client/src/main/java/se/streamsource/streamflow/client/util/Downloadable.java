@@ -14,17 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.workspace.cases.forms;
+package se.streamsource.streamflow.client.util;
 
 import org.restlet.representation.Representation;
-import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.io.IOException;
 
 /**
+ * Marker interface for models that can download attachments.
  */
-public interface FormAttachmentDownload
-   extends Refreshable
+public interface Downloadable
 {
-   public Representation download( String attachmentId ) throws IOException;
+   public Representation download( String relativePath ) throws IOException;
 }
