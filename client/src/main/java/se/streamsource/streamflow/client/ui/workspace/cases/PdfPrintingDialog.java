@@ -51,15 +51,15 @@ public class PdfPrintingDialog
    public enum CasePrintingOptions
    {
       contacts,
-      conversations,
       submittedForms,
+      conversations,
       attachments,
       caselog;   
    }
    
    private JList options;
    private List<String> selected = new ArrayList<String>(
-         Arrays.asList( contacts.name(), conversations.name(), submittedForms.name(), attachments.name(), caselog.name() )
+         Arrays.asList( contacts.name(), submittedForms.name(), conversations.name(), attachments.name(), caselog.name() )
    );
    private CaseOutputConfigDTO config;
    private JScrollPane pane = new JScrollPane( );
@@ -73,7 +73,7 @@ public class PdfPrintingDialog
       setActionMap( context.getActionMap( this ) );
       getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
       
-      options = new SelectionList( Arrays.asList( contacts.name(), conversations.name(), submittedForms.name(), attachments.name(), caselog.name() ), 
+      options = new SelectionList( Arrays.asList( contacts.name(), submittedForms.name(), conversations.name(), attachments.name(), caselog.name() ),
          selected,
          new ValueToLabelConverter()
          {
