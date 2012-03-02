@@ -38,11 +38,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/22/12
- * Time: 10:52 AM
- * To change this template use File | Settings | File Templates.
+ * A service that fetches case statistics data from the statistics database.
  */
 public class StatisticService
 {
@@ -343,7 +339,8 @@ public class StatisticService
             "where a.type = 'caseType' " +
             "and a.id = b.caseType " +
             "and b.closed_on >= '" + criteria.getFormattedFromDate() + "' " +
-            "and b.closed_on <= '" + criteria.getFormattedToDateTime() + "'";
+            "and b.closed_on <= '" + criteria.getFormattedToDateTime() + "' " +
+            "order by description";
 
       return jdbcTemplate.query( sql, new ResultSetExtractor<List<CaseTypeValue>>()
       {
@@ -354,7 +351,6 @@ public class StatisticService
             {
                result.add( new CaseTypeValue( rs.getString( 1 ), rs.getString( 2 ) ) );
             }
-            Collections.sort( result );
             return result;
          }
       } );

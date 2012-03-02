@@ -27,6 +27,11 @@ import org.streamsource.streamflow.statistic.dto.SearchCriteria;
  */
 public class StatisticServiceFactory
 {
+   
+   private static WeeklyStatisticService weeklyStatisticService;
+   private static MonthlyStatisticService monthlyStatisticService;
+   private static YearlyStatisticService yearlyStatisticService;
+   
    public static StatisticService getInstance( SearchCriteria criteria )
    {
       StatisticService result = null;
@@ -34,14 +39,20 @@ public class StatisticServiceFactory
       switch(SearchCriteria.SearchPeriodicity.valueOf( criteria.getPeriodicity().name() ))
       {
          case weekly:
-            result = new WeeklyStatisticService( criteria );
-            break;
+            if (weeklyStatisticService == null) {
+               weeklyStatisticService = new WeeklyStatisticService( criteria );
+            }
+            return weeklyStatisticService;
          case monthly:
-            result = new MonthlyStatisticService( criteria );
-            break;
+            if (monthlyStatisticService == null) {
+               monthlyStatisticService = new MonthlyStatisticService( criteria );
+            }
+            return monthlyStatisticService;
          case yearly:
-            result = new YearlyStatisticService( criteria );
-            break;
+            if (yearlyStatisticService == null) {
+               yearlyStatisticService = new YearlyStatisticService( criteria );
+            }
+            return yearlyStatisticService;
       }
       return result;
    }

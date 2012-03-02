@@ -40,4 +40,5 @@
 
     <context:annotation-config/>
 
+	<mvc:view-controller path="/" view-name="redirect:/count"/>
 </beans>

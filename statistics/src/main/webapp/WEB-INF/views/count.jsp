@@ -44,7 +44,7 @@
 	<link rel="apple-touch-icon" sizes="72x72" href="resources/images/app_icons72x72.png">
 	<link rel="apple-touch-icon" sizes="114x114" href="resources/images/app_icons114x114.png">
 	
-    <script type="text/javascript" src="resources/js/external/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="resources/js/external/jquery-1.7.1.min.js"></script>
 </head>
 
 <body data-spy="scroll" data-target=".subnav" data-offset="60">
@@ -52,9 +52,9 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand" href="#">Streamflow Statistik</a>
+            <a class="brand" href="count"><img src="resources/images/favicon.png"/> Statistik</a>
             <ul class="nav">
-                <li class="active"><a href="index">Antal</a></li>
+                <li class="active"><a href="count">Antal</a></li>
                 <li><a href="variation">Variation</a></li>
             </ul>
         </div>
