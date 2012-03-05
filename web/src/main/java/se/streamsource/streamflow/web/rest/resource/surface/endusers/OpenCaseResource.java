@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.rest.resource.surface.endusers;
 
 import org.qi4j.api.util.Function;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.web.context.surface.endusers.OpenCaseContext;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.rest.resource.surface.endusers.submittedforms.MyPagesSubmittedFormsResource;
 
 /**
  * Resource for an open case
@@ -36,32 +39,44 @@ public class OpenCaseResource
       super(OpenCaseContext.class);
    }
 
-   public TableValue history(TableQuery tq) throws Throwable
+   public TableValue caselog(TableQuery tq) throws Throwable
    {
-      Iterable<Message> history = context(OpenCaseContext.class).history(tq);
+      Iterable<CaseLogEntryDTO> caselog = context(OpenCaseContext.class).caselog();
 
-      return new TableBuilderFactory(module.valueBuilderFactory()).
-              column("created", "Created", TableValue.DATETIME, new Function<Message.Data, Object>()
+      TableBuilderFactory tableBuilderFactory = new TableBuilderFactory(module.valueBuilderFactory());
+      
+      tableBuilderFactory.
+              column("created", "Created", TableValue.DATETIME, new Function<CaseLogEntryDTO, Object>()
               {
-                 public Object map(Message.Data data)
+                 public Object map(CaseLogEntryDTO entry)
                  {
-                    return data.createdOn().get();
+                    return entry.creationDate().get();
                  }
               }).
-              column("message", "Message", TableValue.STRING, new Function<Message.Data, Object>()
+              column("message", "Message", TableValue.STRING, new Function<CaseLogEntryDTO, Object>()
               {
-                 public Object map(Message.Data data)
+                 public Object map(CaseLogEntryDTO entry)
                  {
-                    return data.body().get();
+                    return entry.text().get();
                  }
               }).
-              column("sender", "Sender", TableValue.STRING, new Function<Message.Data, Object>()
+              column("sender", "Sender", TableValue.STRING, new Function<CaseLogEntryDTO, Object>()
               {
-                 public Object map(Message.Data data)
+                 public Object map(CaseLogEntryDTO entry)
                  {
-                    return data.sender().get().getDescription();
+                    return entry.creator().get();
                  }
-              }).
-              newInstance(tq).rows(history).orderBy().paging().newTable();
+              });
+      
+        TableBuilder tableBuilder = tableBuilderFactory.newInstance(tq);
+        
+        TableValue table = tableBuilder.rows(caselog).orderBy().paging().newTable();
+        return table;
+   }
+   
+   @SubResource
+   public void submittedforms( )
+   {
+      subResource( MyPagesSubmittedFormsResource.class );
    }
 }

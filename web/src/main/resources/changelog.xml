@@ -2,7 +2,7 @@
 <!--
 
 
-    Copyright 2009-2011 Streamsource AB
+    Copyright 2009-2012 Streamsource AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
     limitations under the License.
 
 -->
-
 <databaseChangeLog
      xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -247,6 +246,13 @@
     <changeSet id="10" author="henrikreinhold">
     	<addColumn tableName="fields">
             <column name="datatype" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="11" author="henrikreinhold">
+    	<addColumn tableName="organization">
+            <column name="parent" type="varchar(60)">
                 <constraints nullable="true"/>
             </column>
         </addColumn>

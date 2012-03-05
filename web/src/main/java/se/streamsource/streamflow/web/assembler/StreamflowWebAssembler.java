@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.bootstrap.ApplicationAssembler;
@@ -57,7 +56,7 @@ public class StreamflowWebAssembler
       assembly.setMetaInfo(new RoleInjectionProviderFactory());
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion("1.5.0.2");
+      assembly.setVersion("1.6.0.0");
 
       LayerAssembly configurationLayer = assembly.layer("Configuration");
       LayerAssembly domainInfrastructureLayer = assembly.layer("Domain infrastructure");

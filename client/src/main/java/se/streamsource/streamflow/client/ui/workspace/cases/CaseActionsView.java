@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,51 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.netbeans.api.wizard.WizardDisplayer;
-import org.netbeans.spi.wizard.Wizard;
-import org.netbeans.spi.wizard.WizardException;
-import org.netbeans.spi.wizard.WizardPage;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
-import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
-import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormDraftModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageView;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -74,7 +34,48 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.netbeans.api.wizard.WizardDisplayer;
+import org.netbeans.spi.wizard.Wizard;
+import org.netbeans.spi.wizard.WizardException;
+import org.netbeans.spi.wizard.WizardPage;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormDraftModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageView;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 /**
  * JAVADOC
@@ -95,6 +96,7 @@ public class CaseActionsView extends JPanel
    private CaseModel model;
 
    private JPanel actionsPanel = new JPanel();
+   private ApplicationContext context;
 
    private enum CaseActionButtonTemplate
    {
@@ -119,6 +121,7 @@ public class CaseActionsView extends JPanel
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
    {
       this.model = model;
+      this.context = context;
 
       model.addObserver( this );
 
@@ -232,7 +235,6 @@ public class CaseActionsView extends JPanel
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
       if (focusOwner != null)
          focusOwner.transferFocus();
-      //TODO find, create and submit form wizard for form on close form before calling formonclose
       
       if( formOnCloseWizard() )
       {
@@ -350,17 +352,15 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task exportpdf()
+   public void exportpdf()
    {
-      //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigDTO
-      final ValueBuilder<CaseOutputConfigDTO> config = module.valueBuilderFactory().newValueBuilder( CaseOutputConfigDTO.class );
-      config.prototype().history().set( true );
-      config.prototype().contacts().set( true );
-      config.prototype().conversations().set( true );
-      config.prototype().submittedForms().set( true );
-      config.prototype().attachments().set( true );
 
-      return new PrintCaseTask( config.newInstance() );
+      PdfPrintingDialog dialog = module.objectBuilderFactory().newObjectBuilder( PdfPrintingDialog.class ).use( context ).newInstance();
+      dialogs.showOkCancelHelpDialog( (StreamflowButton)getActionMap().get( "exportpdf" ).getValue( "sourceButton" ),
+            dialog, i18n.text( WorkspaceResources.printing_configuration ), DialogService.Orientation.right );
+
+      if( dialog.getCaseOutputConfig() != null )
+         new PrintCaseTask( dialog.getCaseOutputConfig() ).execute();
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
@@ -387,7 +387,7 @@ public class CaseActionsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate"), transactions ))
       {
          model.refresh();
       }
@@ -409,12 +409,13 @@ public class CaseActionsView extends JPanel
                javax.swing.Action action1 = am.get( commandLink.rel().get() );
                if (action1 != null)
                {
-                  JButton button = new JButton( action1 );
+                  StreamflowButton button = new StreamflowButton( action1 );
                   button.registerKeyboardAction( action1, (KeyStroke) action1
                         .getValue( javax.swing.Action.ACCELERATOR_KEY ),
                         JComponent.WHEN_IN_FOCUSED_WINDOW );
                   button.setHorizontalAlignment( SwingConstants.LEFT );
                   actionsPanel.add( button );
+                  action1.putValue( "sourceButton", button );
 //				NotificationGlassPane.registerButton(button);
                }
             }

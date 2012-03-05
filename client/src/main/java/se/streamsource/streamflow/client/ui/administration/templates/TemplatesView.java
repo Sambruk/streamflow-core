@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration.templates;
+
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.EAST;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
-
-import javax.swing.*;
-import java.awt.*;
-
-import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.EAST;
 
 public class TemplatesView extends JPanel
 {

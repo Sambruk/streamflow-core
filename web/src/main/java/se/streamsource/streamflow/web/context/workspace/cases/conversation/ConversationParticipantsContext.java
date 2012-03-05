@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
 import org.qi4j.api.injection.scope.Structure;
@@ -24,12 +23,15 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ExternalEmailValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.util.List;
 
@@ -45,6 +47,15 @@ public class ConversationParticipantsContext
    public LinksValue index()
    {
       return new LinksBuilder( module.valueBuilderFactory() ).rel( "participant" ).addDescribables( RoleMap.role( ConversationParticipants.Data.class ).participants() ).newLinks();
+   }
+
+   public void addexternalparticipant( ExternalEmailValue mailUser )
+   {
+
+      ConversationParticipant participant = module.unitOfWorkFactory().currentUnitOfWork()
+            .get( Users.class, UsersEntity.USERS_ID ).createEmailUser(  mailUser.emailAddress().get() );
+
+      RoleMap.role( ConversationParticipants.class ).addParticipant( participant );
    }
 
    public void addparticipant( EntityValue participantId )

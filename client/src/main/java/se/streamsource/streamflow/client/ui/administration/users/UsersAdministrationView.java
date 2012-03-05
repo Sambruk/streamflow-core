@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration.users;
 
-import ca.odell.glazedlists.gui.AdvancedTableFormat;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.gui.WritableTableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+import java.util.Comparator;
+
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -32,6 +37,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.administration.UserEntityDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -42,12 +48,10 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Comparator;
-
-import static se.streamsource.streamflow.client.util.i18n.text;
+import ca.odell.glazedlists.gui.AdvancedTableFormat;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.gui.WritableTableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 
 public class UsersAdministrationView
       extends JPanel
@@ -88,9 +92,9 @@ public class UsersAdministrationView
       super.add( scroll, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "createUser" ) ) );
-      toolbar.add( new JButton( am.get( "resetPassword" ) ) );
-      toolbar.add( new JButton( am.get( "importUserList" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "createUser" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "resetPassword" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "importUserList" ) ) );
       super.add( toolbar, BorderLayout.SOUTH );
 
       new RefreshWhenShowing(this, model);

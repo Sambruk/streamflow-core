@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import ca.odell.glazedlists.swing.EventListModel;
@@ -24,15 +23,25 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
+
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 
 /**
@@ -44,8 +53,8 @@ public class SubCasesView
 {
    private JList subCaseList;
    private CaseModel model;
-   private JButton caseButton = new JButton();
-   private JButton parentCaseButton = new JButton();
+   private StreamflowButton caseButton = new StreamflowButton();
+   private StreamflowButton parentCaseButton = new StreamflowButton();
    private JLabel parentLabel;
    private JLabel subcasesLabel;
    private JScrollPane subCaseListScroll;
@@ -148,7 +157,11 @@ public class SubCasesView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( Events.withNames( "createdSubCase", "removedSubCase", "changedStatus", "changedDescription" ), transactions ))
+      // with usecase delete - no refresh needed
+      if( matches( withUsecases( "delete"), transactions ) )
+         return;
+
+      if (matches( withNames( "createdSubCase", "removedSubCase", "changedStatus", "changedDescription" ), transactions ))
          model.refresh();
    }
 
@@ -157,12 +170,12 @@ public class SubCasesView
       return subCaseList;
    }
 
-   public JButton getCaseButton()
+   public StreamflowButton getCaseButton()
    {
       return caseButton;
    }
 
-   public JButton getParentCaseButton()
+   public StreamflowButton getParentCaseButton()
    {
       return parentCaseButton;
    }

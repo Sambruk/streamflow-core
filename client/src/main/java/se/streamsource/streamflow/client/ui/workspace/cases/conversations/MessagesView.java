@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.message_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.sender_column_header;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.KeyboardFocusManager;
+import java.util.Date;
+import java.util.Locale;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -31,29 +55,21 @@ import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
-import java.awt.*;
-import java.util.Date;
-import java.util.Locale;
-
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class MessagesView extends JPanel implements TransactionListener
 {
@@ -158,7 +174,7 @@ public class MessagesView extends JPanel implements TransactionListener
       // INITIAL
       JPanel createPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       javax.swing.Action writeMessageAction = getActionMap().get("writeMessage");
-      JButton writeMessage = new JButton(writeMessageAction);
+      StreamflowButton writeMessage = new StreamflowButton(writeMessageAction);
       writeMessage.registerKeyboardAction(writeMessageAction,
             (KeyStroke) writeMessageAction.getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -176,12 +192,12 @@ public class MessagesView extends JPanel implements TransactionListener
 
       JPanel sendMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       javax.swing.Action sendMessageAction = getActionMap().get("sendMessage");
-      JButton sendMessage = new JButton(sendMessageAction);
+      StreamflowButton sendMessage = new StreamflowButton(sendMessageAction);
       sendMessage.registerKeyboardAction(sendMessageAction,
             (KeyStroke) sendMessageAction.getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
       javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
-      JButton cancel = new JButton(cancelAction);
+      StreamflowButton cancel = new StreamflowButton(cancelAction);
 
       sendMessagePanel.add(sendMessage);
       sendMessagePanel.add(cancel);
@@ -198,7 +214,7 @@ public class MessagesView extends JPanel implements TransactionListener
       JPanel messageDetailButtonPanel = new JPanel(new BorderLayout());
       messageDetailButtonPanel.setBorder(BorderFactory.createEmptyBorder(0,0,3,0));
       javax.swing.Action closeAction = getActionMap().get("closeMessageDetails");
-      JButton closeButton = new JButton(closeAction);
+      StreamflowButton closeButton = new StreamflowButton(closeAction);
       JPanel closeButtonPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
       closeButtonPanel.setBorder( BorderFactory.createEmptyBorder( 7, 0, 0, 0 ) );
       closeButtonPanel.add( closeButton );

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
 import org.qi4j.api.constraint.Name;
@@ -26,12 +25,10 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
@@ -41,8 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 import java.util.Date;
 
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * Commands for the General view of a Case. They all require the "write" permission
@@ -62,9 +58,6 @@ public interface CaseGeneralCommandsContext
    @RequiresStatus({DRAFT, OPEN})
    void changedescription( @MaxLength(50) @Name("description") String stringValue );
 
-   @RequiresStatus({DRAFT, OPEN})
-   void changenote( StringValue noteValue );
-
    LinksValue possiblecasetypes();
 
    abstract class Mixin
@@ -77,12 +70,6 @@ public interface CaseGeneralCommandsContext
       {
          Describable describable = RoleMap.role( Describable.class );
          describable.changeDescription( stringValue );
-      }
-
-      public void changenote( StringValue noteValue )
-      {
-         Notable notable = RoleMap.role( Notable.class );
-         notable.changeNote( noteValue.string().get() );
       }
 
       public void changedueon( Date newDueOn )

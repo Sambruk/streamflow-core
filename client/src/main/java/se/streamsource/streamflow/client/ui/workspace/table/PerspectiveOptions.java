@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -30,14 +29,22 @@ import se.streamsource.streamflow.client.util.BottomBorder;
 import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.util.i18n.icon;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class PerspectiveOptions extends JPanel
 {
@@ -78,7 +85,7 @@ public class PerspectiveOptions extends JPanel
             }
             count++;
          }
-         ((GroupedFilteredList)list).setEventList( titledLinks, text( WorkspaceResources.selected_projects ) );
+         ((GroupedFilteredList)list).setEventList( titledLinks, text( WorkspaceResources.selected_projects ), false );
 
          this.itemList = ((GroupedFilteredList)list).getList();
          this.filterField = ((GroupedFilteredList)list).getFilterField();

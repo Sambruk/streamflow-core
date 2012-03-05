@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.value.link.Links.withRel;
+
+import java.util.Date;
+import java.util.Observable;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -37,13 +39,10 @@ import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.util.Refreshable;
-
-import java.util.Date;
-import java.util.Observable;
-
-import static org.qi4j.api.util.Iterables.matchesAny;
-import static se.streamsource.dci.value.link.Links.withRel;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 
 /**
  * Model for the general info about a case.
@@ -84,18 +83,6 @@ public class CaseGeneralModel
       form.set("description", newDescription);
       client.postCommand( "changedescription", form );
 
-   }
-
-   public void changeNote( String newNote )
-   {
-      if (newNote.equals(general.note().get()))
-         return; // No change
-
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory()
-            .newValueBuilder(StringValue.class);
-      builder.prototype().string().set( newNote );
-      client.postCommand( "changenote", builder.newInstance() );
-      general.note().set( newNote );
    }
 
    public void changeDueOn( Date newDueOn )
@@ -164,5 +151,11 @@ public class CaseGeneralModel
    public PossibleFormsModel newPossibleFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(PossibleFormsModel.class).use( client.getClient( "../possibleforms/" ) ).newInstance();
+   }
+
+   public CaseNoteModel newCaseNoteModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder( CaseNoteModel.class ).use(  client.getClient( "../note/" ) ).newInstance();
+
    }
 }

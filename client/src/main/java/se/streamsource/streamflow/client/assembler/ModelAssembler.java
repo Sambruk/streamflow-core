@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.assembler;
 
 import org.qi4j.api.common.Visibility;
@@ -79,6 +78,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CasesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
@@ -92,6 +92,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsMo
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormDraftModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
@@ -154,6 +155,7 @@ public class ModelAssembler
             ContactsModel.class,
             ContactModel.class,
             CaseGeneralModel.class,
+            CaseLogModel.class,
             CaseLabelsModel.class,
             CaseSubmittedFormsModel.class,
             CaseSubmittedFormModel.class,
@@ -164,7 +166,8 @@ public class ModelAssembler
             ConversationModel.class,
             ConversationsModel.class,
             ConversationParticipantsModel.class,
-            AttachmentsModel.class
+            AttachmentsModel.class,
+            CaseNoteModel.class
       );
 
       module.values(CaseTableValue.class).visibleIn(Visibility.application);

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration.filters;
 
 import static se.streamsource.streamflow.client.util.i18n.icon;
@@ -25,13 +24,10 @@ import java.awt.Component;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -50,7 +46,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
@@ -100,8 +96,8 @@ public class ActionsView extends JPanel implements TransactionListener
       options.add( am.get( "remove" ) );
       
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( popupAction ) );
-      toolbar.add( new JButton( new OptionsAction(options) ) );
+      toolbar.add( new StreamflowButton( popupAction ) );
+      toolbar.add( new StreamflowButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
       list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );

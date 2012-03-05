@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import org.qi4j.api.injection.scope.Structure;
@@ -26,12 +25,13 @@ import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
+import se.streamsource.streamflow.client.util.Downloadable;
 import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.io.IOException;
 
 public class CaseSubmittedFormModel
-   implements Refreshable, FormAttachmentDownload
+   implements Refreshable, Downloadable
 {
    @Uses CommandQueryClient client;
 
@@ -60,7 +60,7 @@ public class CaseSubmittedFormModel
 
       Form form = new Form();
       form.set("id", attachmentId);
-      return client.query( "download", Representation.class, form.getWebRepresentation() );
+      return client.query( "download", Representation.class, form );
    }
    
 }

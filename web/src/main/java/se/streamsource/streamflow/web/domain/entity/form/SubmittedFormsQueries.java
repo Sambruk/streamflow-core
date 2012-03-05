@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.domain.entity.form;
 
 import org.qi4j.api.injection.scope.Structure;
@@ -87,6 +86,8 @@ public interface SubmittedFormsQueries
 
             Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
             formDTO.form().set( formName.description().get() );
+            formDTO.href().set(form.form().get().identity());
+            formDTO.id().set(form.form().get().identity());
             list.forms().get().add( formBuilder.newInstance() );
          }
 
@@ -102,6 +103,8 @@ public interface SubmittedFormsQueries
          SubmittedFormValue form = submittedForms.submittedForms().get().get( idx );
 
          formDTO.submissionDate().set( form.submissionDate().get() );
+         formDTO.href().set(form.form().get().identity());
+         formDTO.id().set(form.form().get().identity());
 
          Describable.Data submitter = uow.get( Describable.Data.class, form.submitter().get().identity() );
          formDTO.submitter().set( submitter.description().get() );

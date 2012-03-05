@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.application.statistics;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
@@ -30,4 +31,6 @@ public interface OrganizationalUnitValue
    Property<String> id();
    Property<Integer> left();
    Property<Integer> right();
+   @Optional
+   Property<String> parent();
 }

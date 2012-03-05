@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client;
 
 /**
@@ -44,6 +43,8 @@ public enum Icons
    perspective,
 
    calendar,
+   
+   message_add,
 
    // Tabs
    general,
@@ -51,6 +52,7 @@ public enum Icons
    forms,
    attachments,
    history,
+   system,
 
    subcase,
 
@@ -70,12 +72,18 @@ public enum Icons
    empty,
 
    // Logos
-   name_logo,
-   logo,
+   sf_logo,
+   sf_icon,
 
    // Check
    check,
 
    down_no_selection,
-   down_with_selection
+   down_with_selection,
+
+   custom,
+
+   published,
+   not_published
+
 }

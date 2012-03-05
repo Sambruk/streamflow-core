@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.util.dialog;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder2;
@@ -22,11 +21,24 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import static se.streamsource.streamflow.client.util.dialog.DialogService.Orientation.*;
 
 /**
  * JAVADOC
@@ -35,22 +47,36 @@ public class DialogService
 {
    @Service
    ApplicationContext context;
+   
+   public enum Orientation
+   {
+      right,
+      left
+   }
 
    public void showOkCancelHelpDialog(Component owner, JComponent main)
    {
-      JXDialog dialog = createDialog(owner, main);
+      JXDialog dialog = createDialog(owner, main, left);
       dialog.setVisible(true);
    }
 
    public void showOkCancelHelpDialog(Component owner, JComponent main,
                                       String title)
    {
-      JXDialog dialog = createDialog(owner, main);
+      JXDialog dialog = createDialog(owner, main, left );
       dialog.setTitle(title);
       dialog.setVisible(true);
    }
 
-   private JXDialog createDialog(Component owner, JComponent main)
+   public void showOkCancelHelpDialog(Component owner, JComponent main,
+                                      String title, Orientation orientation)
+   {
+      JXDialog dialog = createDialog(owner, main, orientation);
+      dialog.setTitle(title);
+      dialog.setVisible(true);
+   }
+
+   private JXDialog createDialog(Component owner, JComponent main, Orientation orientation )
    {
       Window window = WindowUtils.findWindow(owner);
       JXDialog dialog;
@@ -63,10 +89,20 @@ public class DialogService
 
       dialog.pack();
 
-      if (owner instanceof JButton)
+      if (owner instanceof StreamflowButton)
       {
          Point location = new Point(owner.getLocationOnScreen());
-         location.translate(0, owner.getHeight());
+
+         switch( valueOf( orientation.name() ) )
+         {
+            case left:
+               location.translate( 0, owner.getHeight() );
+               break;
+            case right:
+               location.translate( owner.getWidth() - dialog.getWidth(), owner.getHeight() );
+               break;
+         }
+         //location.translate(0, owner.getHeight());
          dialog.setLocation(location);
       } else
       {
@@ -97,7 +133,7 @@ public class DialogService
          ok = context.getActionMap().get("cancel");
 
       dialog.getContentPane().setLayout(new BorderLayout());
-      JButton okButton = new JButton(ok);
+      StreamflowButton okButton = new StreamflowButton(ok);
       dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton));
       dialog.getContentPane().add(BorderLayout.CENTER, main);
       dialog.setMinimumSize(new Dimension(300, 100));
@@ -136,43 +172,43 @@ public class DialogService
       return dialog;
    }
 
-   private JPanel createHelpOKCancelApplyBar(JButton help, JButton ok,
-                                             JButton cancel, JButton apply)
+   private JPanel createHelpOKCancelApplyBar(StreamflowButton help, StreamflowButton ok,
+         StreamflowButton cancel, StreamflowButton apply)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(help);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok, cancel, apply});
+      builder.addButton(new StreamflowButton[]{ok, cancel, apply});
       return builder.getPanel();
    }
 
-   private JPanel createOKBar(JButton ok)
+   private JPanel createOKBar(StreamflowButton ok)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok});
+      builder.addButton(new StreamflowButton[]{ok});
       return builder.getPanel();
    }
 
-   private JPanel createButtonBar(JButton ok, JButton[] extras)
+   private JPanel createButtonBar(StreamflowButton ok, StreamflowButton[] extras)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(extras);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok});
+      builder.addButton(new StreamflowButton[]{ok});
       return builder.getPanel();
    }
 
-   private JPanel createHelpOKCancelBar(JButton help, JButton ok, JButton cancel)
+   private JPanel createHelpOKCancelBar(StreamflowButton help, StreamflowButton ok, StreamflowButton cancel)
    {
       ButtonBarBuilder2 builder = new ButtonBarBuilder2();
       builder.addButton(help);
       builder.addUnrelatedGap();
       builder.addGlue();
-      builder.addButton(new JButton[]{ok, cancel});
+      builder.addButton(new StreamflowButton[]{ok, cancel});
       return builder.getPanel();
    }
 

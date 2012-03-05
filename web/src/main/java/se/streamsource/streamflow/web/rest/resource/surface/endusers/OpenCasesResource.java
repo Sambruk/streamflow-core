@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.rest.resource.surface.endusers;
+
+import static se.streamsource.dci.value.table.TableValue.DATETIME;
+import static se.streamsource.dci.value.table.TableValue.STRING;
 
 import org.qi4j.api.util.Function;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableBuilderFactory;
@@ -28,11 +32,9 @@ import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.context.surface.endusers.OpenCasesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
-
-import static se.streamsource.dci.value.table.TableValue.DATETIME;
-import static se.streamsource.dci.value.table.TableValue.STRING;
+import se.streamsource.streamflow.web.rest.resource.workspace.cases.form.CaseSubmittedFormsResource;
 
 /**
  * TODO
@@ -92,14 +94,7 @@ public class OpenCasesResource
               {
                  public Object map(CaseEntity openCase)
                  {
-                    return ((Message.Data) openCase.getHistory().getLastMessage()).createdOn().get();
-                 }
-              }, null).
-              column("lastmessage", "Last message", STRING, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity openCase)
-                 {
-                    return ((Message.Data) openCase.getHistory().getLastMessage()).body().get();
+                    return ((CaseLogEntryValue) openCase.caselog().get().getLastMessage()).createdOn().get();
                  }
               }, null).
               column("href", "Location", STRING, new Function<CaseEntity, Object>()
@@ -113,7 +108,8 @@ public class OpenCasesResource
 
       TableBuilder builder = tableBuilderFactory.newInstance(tq);
 
-      return builder.rows(openCases).orderBy().paging().newTable();
+      TableValue table = builder.rows(openCases).orderBy().paging().newTable();
+      return table;
    }
 
    public void resource(String segment) throws ResourceException
@@ -121,4 +117,5 @@ public class OpenCasesResource
       setResourceValidity(setRole(CaseEntity.class, segment));
       subResource(OpenCaseResource.class);
    }
+   
 }

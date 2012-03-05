@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.search;
 
 import ca.odell.glazedlists.swing.EventListModel;
@@ -35,18 +34,23 @@ import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
 
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -65,7 +69,7 @@ public class ManagePerspectivesDialog
    private PerspectivesModel model;
 
    private JList perspective;
-   private JButton optionButton;
+   private StreamflowButton optionButton;
 
    public ManagePerspectivesDialog(@Service ApplicationContext context, @Uses PerspectivesModel model)
    {
@@ -92,7 +96,7 @@ public class ManagePerspectivesDialog
       options.add(renameAction);
 
       perspective.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(removeAction, renameAction));
-      optionButton = new JButton(new OptionsAction(options));
+      optionButton = new StreamflowButton(new OptionsAction(options));
 
       ButtonBarBuilder2 buttonBuilder = new ButtonBarBuilder2();
       buttonBuilder.addButton(optionButton);
@@ -153,7 +157,7 @@ public class ManagePerspectivesDialog
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
       if (matches(and(onEntityTypes("se.streamsource.streamflow.web.domain.entity.user.UserEntity",
-              "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity"),
+              "se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity"),
               withNames("createdPerspective", "changedDescription", "removedPerspective")), transactions))
       {
          refresh();

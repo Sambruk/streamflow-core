@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import org.jdesktop.application.Action;
@@ -34,11 +33,17 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -209,7 +214,7 @@ public class CasesDetailView
          boolean rowFound = false;
          for( int i=0, n=model.getRowCount(); i < n; i++ )
          {
-            if( currentCase.toString().endsWith( model.getValueAt( i, 8 ).toString() ) )
+            if( currentCase.toString().endsWith( model.getValueAt( i, 9 ).toString() ) )
             {
                cases.getSelectionModel().setSelectionInterval( cases.convertRowIndexToView( i ), cases.convertRowIndexToView( i )  );
                cases.scrollRectToVisible( cases.getCellRect( i, 0, true ) );

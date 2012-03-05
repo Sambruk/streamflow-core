@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.SwingConstants;
+
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-public class PossibleFormView extends JButton
+public class PossibleFormView extends StreamflowButton
       implements KeyListener
 {
    LinkValue itemValue;

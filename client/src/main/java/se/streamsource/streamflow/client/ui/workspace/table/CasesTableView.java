@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import ca.odell.glazedlists.SeparatorList;
@@ -37,6 +36,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
@@ -49,8 +49,10 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.table.SeparatorTable;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
@@ -67,6 +69,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -231,13 +234,15 @@ public class CasesTableView
       caseTable.getColumn( 3 ).setMaxWidth( 150 );
       caseTable.getColumn( 4 ).setPreferredWidth( 90 );
       caseTable.getColumn( 4 ).setMaxWidth( 90 );
-      caseTable.getColumn( 5 ).setPreferredWidth( 90 );
-      caseTable.getColumn( 5 ).setMaxWidth( 90 );
-      caseTable.getColumn( 6 ).setPreferredWidth( 150 );
-      caseTable.getColumn( 6 ).setMaxWidth( 150 );
-      caseTable.getColumn( 6 ).setResizable( false );
-      caseTable.getColumn( 7 ).setMaxWidth( 50 );
+      caseTable.getColumn( 5 ).setPreferredWidth( 150 );
+      caseTable.getColumn( 5 ).setMaxWidth( 150 );
+      caseTable.getColumn( 6 ).setPreferredWidth( 90 );
+      caseTable.getColumn( 6 ).setMaxWidth( 90 );
+      caseTable.getColumn( 7 ).setPreferredWidth( 150 );
+      caseTable.getColumn( 7 ).setMaxWidth( 150 );
       caseTable.getColumn( 7 ).setResizable( false );
+      caseTable.getColumn( 8 ).setMaxWidth( 50 );
+      caseTable.getColumn( 8 ).setResizable( false );
 
       caseTable.setAutoCreateColumnsFromModel( false );
 
@@ -492,6 +497,8 @@ public class CasesTableView
 
       if (Events.matches( withNames( "createdCase" ), transactions ))
       {
+         final DomainEvent event = Iterables.first( Iterables.filter( withNames( "createdCase" ), Events.events( transactions ) ) );;
+
          context.getTaskService().execute( new CommandTask()
          {
             @Override
@@ -505,13 +512,24 @@ public class CasesTableView
             {
                super.succeeded( transactionEventsIterable );
 
-               caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount() - 1, caseTable.getRowCount() - 1 );
-               caseTable.scrollRowToVisible( caseTable.getRowCount() - 1 );
+               TableModel model = caseTable.getModel();
+               boolean rowFound = false;
+
+              for( int i=0, n=model.getRowCount(); i < n; i++ )
+               {
+                  if( model.getValueAt( i, 9 ).toString().endsWith( EventParameters.getParameter( event, "param1" ) + "/") )
+                  {
+                     caseTable.getSelectionModel().setSelectionInterval( caseTable.convertRowIndexToView( i ), caseTable.convertRowIndexToView( i )  );
+                     caseTable.scrollRectToVisible( caseTable.getCellRect( i, 0, true ) );
+                     rowFound = true;
+                     break;
+                  }
+               }
             }
          } );
       } else if (Events.matches( withNames( "addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner", "assignedTo", "unassigned", "changedRemoved",
+            "changedOwner", "assignedTo", "unassigned", "changedRemoved","deletedEntity",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "changedDueOn", "submittedForm", "createdAttachment",
             "removedAttachment" ), transactions ))

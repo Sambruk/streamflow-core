@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration;
 
-import ca.odell.glazedlists.TreeList;
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
+import ca.odell.glazedlists.TreeList;
 
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import java.awt.*;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -102,7 +110,7 @@ public class AdministrationView
    {
       detailView.removeAll();
       detailView.add( view, BorderLayout.CENTER );
-      detailView.add( new JButton( am.get( "done" ) ), BorderLayout.SOUTH );
+      detailView.add( new StreamflowButton( am.get( "done" ) ), BorderLayout.SOUTH );
       detailView.revalidate();
       detailView.repaint();
       viewSwitch.show( this, "detail" );

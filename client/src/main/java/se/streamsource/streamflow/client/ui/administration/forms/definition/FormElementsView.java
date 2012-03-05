@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -35,6 +37,7 @@ import se.streamsource.streamflow.client.util.FormElementItemListCellRenderer;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
@@ -49,7 +52,6 @@ import se.streamsource.streamflow.util.Strings;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -80,6 +82,8 @@ public class FormElementsView
    private JList list;
 
    private FormPagesModel model;
+   
+   private ActionMap am;
 
 
    public FormElementsView( @Service ApplicationContext context,
@@ -87,7 +91,7 @@ public class FormElementsView
    {
       this.model = model;
 
-      final ActionMap am = context.getActionMap( this );
+      am = context.getActionMap( this );
 
       setBorder( Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
@@ -324,6 +328,23 @@ public class FormElementsView
             if (link.href().get().endsWith( id+"/" ))
             {
                list.setSelectedValue( link, true );
+               if( event.name().get().equals( "createdField" ))
+               {
+                  Component c = Iterables.first( Iterables.filter( new Specification<Component>()
+                  {
+                     public boolean satisfiedBy( Component c )
+                     {
+                        if ( c instanceof StreamflowButton  &&
+                              ((ApplicationAction) ((StreamflowButton) c).getAction()).getName().equals( "addField" ))
+                           return true;
+                        return false;
+                     }
+                  }, WindowUtils.getAllComponents( this ) ) );
+
+                  if( c != null )
+                     c.requestFocusInWindow();
+               }
+
                break;
             }
          }
@@ -344,7 +365,7 @@ public class FormElementsView
       JPanel toolbar = new JPanel();
       for (Action action : actions)
       {
-         toolbar.add( new JButton( action ) );
+         toolbar.add( new StreamflowButton( action ) );
       }
 
       master.add( toolbar, BorderLayout.SOUTH);

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -33,6 +32,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
@@ -181,6 +181,11 @@ public class CaseModel
       return module.objectBuilderFactory().newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();
    }
 
+   public CaseLogModel newCaseLogModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(CaseLogModel.class).use(client.getSubClient("caselog" )).newInstance();
+   }
+   
    public CaseSubmittedFormsModel newSubmittedFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormsModel.class).use(client.getSubClient("submittedforms" )).newInstance();

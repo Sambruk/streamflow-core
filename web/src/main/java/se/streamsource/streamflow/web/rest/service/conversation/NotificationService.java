@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.rest.service.conversation;
+
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -31,6 +35,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
@@ -44,7 +49,7 @@ import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-import se.streamsource.streamflow.web.domain.structure.caze.History;
+import se.streamsource.streamflow.web.domain.structure.caze.Origin;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
@@ -54,12 +59,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessP
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
-
-import java.net.URLEncoder;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 /**
  * Send and receive notifications. This service
@@ -156,8 +155,8 @@ public interface NotificationService
                   String subject;
                   String formattedMsg;
 
-                  History history = (History) owner;
-                  EmailAccessPoint emailAccessPoint = history.getOriginalEmailAccessPoint();
+                  Origin origin = (Origin) owner;
+                  EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
 
                   if (emailAccessPoint != null)
                   {

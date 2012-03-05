@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.application.statistics;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -79,6 +79,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -486,6 +487,9 @@ public interface CaseStatisticsService
                   builder.prototype().name().set(((Describable)visited).getDescription());
                   builder.prototype().id().set(visited.toString());
                   builder.prototype().left().set(idx);
+                  if (visited instanceof OrganizationalUnit) {
+                     builder.prototype().parent().set( EntityReference.getEntityReference( ((Ownable.Data)visited).owner().get()).identity() );
+                  }
                   builders.push(builder);
 
                   idx++;
@@ -522,7 +526,8 @@ public interface CaseStatisticsService
 
          prototype.identity().set(aCase.identity().get());
          prototype.description().set(aCase.getDescription());
-         prototype.note().set(aCase.note().get());
+         NotesTimeLine latestNote = (NotesTimeLine)aCase.notes().get();
+         prototype.note().set( (latestNote == null || latestNote.getLastNote() == null) ? "" : latestNote.getLastNote().note().get() );
          Assignee assignee = aCase.assignedTo().get();
          prototype.assigneeId().set(((Identity) assignee).identity().get());
          prototype.caseId().set(aCase.caseId().get());

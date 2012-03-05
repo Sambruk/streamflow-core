@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -33,16 +41,16 @@ import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * TODO
@@ -64,9 +72,9 @@ public class EmailAccessPointView
    private JTextArea emailTemplateText = new JTextArea();
    private JLabel project;
    private JLabel casetype;
-   private JButton casetypeButton;
-   private JButton projectButton;
-   private JButton labelsButton;
+   private StreamflowButton casetypeButton;
+   private StreamflowButton projectButton;
+   private StreamflowButton labelsButton;
    private CaseLabelsView labels;
 
    public void init(@Service ApplicationContext context, @Uses final EmailAccessPointModel model)
@@ -83,13 +91,13 @@ public class EmailAccessPointView
               "75dlu, 5dlu, fill:p:grow", "pref, pref, pref, pref, pref, fill:p:grow, pref");
       DefaultFormBuilder formBuilder = new DefaultFormBuilder(layout, panel);
 
-      formBuilder.append(projectButton = new JButton(getActionMap().get("project")));
+      formBuilder.append(projectButton = new StreamflowButton(getActionMap().get("project")));
       formBuilder.append(project = new JLabel());
       formBuilder.nextLine();
-      formBuilder.append(casetypeButton = new JButton(getActionMap().get("casetype")));
+      formBuilder.append(casetypeButton = new StreamflowButton(getActionMap().get("casetype")));
       formBuilder.append(casetype = new JLabel());
       formBuilder.nextLine();
-      formBuilder.append(labelsButton = new JButton(labels.getActionMap().get("addLabel")));
+      formBuilder.append(labelsButton = new StreamflowButton(labels.getActionMap().get("addLabel")));
       formBuilder.append(labels);
       formBuilder.nextLine();
       formBuilder.addSeparator(i18n.text(AdministrationResources.emailTemplates));

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.domain.structure.user;
 
 import org.qi4j.api.common.Optional;
@@ -53,6 +52,8 @@ public interface Users
          throws IllegalArgumentException;
 
    EmailUserEntity createEmailUser (EmailValue email);
+
+   EmailUserEntity createEmailUser( String emailAddress );
 
    interface Data
    {
@@ -128,6 +129,37 @@ public interface Users
 
          return user;
       }
+
+      public EmailUserEntity createEmailUser( String emailAddress )
+              throws IllegalArgumentException
+      {
+         // Check if user already exist
+         EmailUserEntity user;
+         try
+         {
+            user = module.unitOfWorkFactory().currentUnitOfWork().get( EmailUserEntity.class, "email:"+ emailAddress );
+         } catch (NoSuchEntityException e)
+         {
+            // Create new email user
+            user = createdEmailUser(null, emailAddress);
+         }
+
+         // Update contact info
+         ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
+         contactBuilder.prototype().name().set( emailAddress );
+
+         ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
+         emailBuilder.prototype().emailAddress().set( emailAddress );
+
+         contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
+
+         user.updateContact(contactBuilder.newInstance());
+
+         user.changeDescription( emailAddress );
+
+         return user;
+      }
+
 
       public EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email)
       {

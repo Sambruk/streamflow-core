@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.rest.resource.workspace.cases;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -133,17 +132,22 @@ public class CaseResource
    {
       subResource( AttachmentsResource.class );
    }
-   
-   @SubResource
-   public void history()
-   {
-      RoleMap.current().set( RoleMap.role( History.class ).getHistory() );
-      subResource( ConversationResource.class );
-   }
 
+   @SubResource
+   public void caselog()
+   {
+      subResource( CaseLogResource.class );
+   }
+   
    @SubResource
    public void submitformonclose()
    {
       subResource( CaseFormOnCloseResource.class );
+   }
+
+   @SubResource
+   public void note()
+   {
+      subResource( NoteResource.class );
    }
 }

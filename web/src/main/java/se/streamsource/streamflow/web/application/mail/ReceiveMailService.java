@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
@@ -29,18 +29,29 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.Usecase;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.infrastructure.NamedThreadFactory;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.AbstractEnabledCircuitBreakerAvailability;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import javax.mail.Authenticator;
@@ -72,6 +83,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
+
 /**
  * Receive mail. This service
  * listens for domain events, and on "receivedMessage" it will send
@@ -97,8 +110,11 @@ public interface ReceiveMailService
       @Uses
       ServiceDescriptor descriptor;
 
-      @org.qi4j.api.injection.scope.Service
+      @Service
       AttachmentStore attachmentStore;
+
+      @Service
+      SystemDefaultsService systemDefaults;
 
       public Logger logger;
 
@@ -118,6 +134,54 @@ public interface ReceiveMailService
 
          if (config.configuration().enabled().get())
          {
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( newUsecase( "Create Streamflow support structure" ) );
+            RoleMap.newCurrentRoleMap();
+            RoleMap.current().set( uow.get( UserAuthentication.class, UserEntity.ADMINISTRATOR_USERNAME ) );
+            RoleMap.current().set( new UserPrincipal( UserEntity.ADMINISTRATOR_USERNAME ) );
+            
+            
+            Organizations.Data orgs = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+            OrganizationEntity org = (OrganizationEntity)orgs.organization().get();
+            // check for the existance of support structure for mails that cannot be parsed
+            RoleMap.current().set( org.getAdministratorRole() );
+            
+            OrganizationalUnit ou = null;
+            Project project = null;
+            CaseType caseType = null;
+
+            try
+            {
+               try
+               {
+                  ou = org.getOrganizationalUnitByName( systemDefaults.config().configuration().supportOrganizationName().get() );
+               } catch (IllegalArgumentException iae)
+               {
+                  ou = org.createOrganizationalUnit( systemDefaults.config().configuration().supportOrganizationName().get() );
+               }
+
+               try
+               {
+                  project = ou.getProjectByName( systemDefaults.config().configuration().supportProjectName().get() );
+               } catch (IllegalArgumentException iae)
+               {
+                  project = ou.createProject( systemDefaults.config().configuration().supportProjectName().get() );
+               }
+
+               try
+               {
+                  caseType = project.getCaseTypeByName( systemDefaults.config().configuration().supportCaseTypeForIncomingEmailName().get() );
+               } catch (IllegalArgumentException iae)
+               {
+                  caseType = ou.createCaseType( systemDefaults.config().configuration().supportCaseTypeForIncomingEmailName().get() );
+                  project.addSelectedCaseType( caseType );
+                  project.addMember( RoleMap.current().get( Member.class ) );
+               }
+            } finally
+            {
+               uow.complete();
+               RoleMap.clearCurrentRoleMap();
+            }
+
             // Authenticator
             authenticator = new javax.mail.Authenticator()
             {
@@ -211,7 +275,7 @@ public interface ReceiveMailService
          Session session = javax.mail.Session.getInstance(props, authenticator);
          session.setDebug(config.configuration().debug().get());
 
-         Usecase usecase = UsecaseBuilder.newUsecase("Receive Mail");
+         Usecase usecase = newUsecase( "Receive Mail" );
          UnitOfWork uow = null;
          Store store = null;
          Folder inbox = null;
@@ -255,12 +319,27 @@ public interface ReceiveMailService
             {
                uow = module.unitOfWorkFactory().newUnitOfWork(usecase);
 
+               ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+
                try
                {
                   Object content = message.getContent();
 
+                  // Get email fields
+                  builder.prototype().from().set(((InternetAddress) message.getFrom()[0]).getAddress());
+                  builder.prototype().fromName().set(((InternetAddress) message.getFrom()[0]).getPersonal());
+                  builder.prototype().to().set(((InternetAddress) message.getRecipients(Message.RecipientType.TO)[0]).getAddress());
+                  builder.prototype().subject().set(message.getSubject());
+
+                  // Get headers
+                  for (Header header : Iterables.iterable( (Enumeration<Header>) message.getAllHeaders() ))
+                  {
+                     builder.prototype().headers().get().put(header.getName(), header.getValue());
+                  }
+
+                  builder.prototype().messageId().set(message.getHeader("Message-ID")[0]);
+
                   // Get body and attachments
-                  ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
                   String body = "";
                   if (content instanceof String)
                   {
@@ -325,29 +404,27 @@ public interface ReceiveMailService
 
                      String data = new String(baos.toByteArray(), "UTF-8");
                      // Unknown content type - abort
+                     // and create failure case
+                     String subj = "Unkonwn content type: " + message.getSubject();
+                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                     copyToArchive.add( message );
+
                      uow.discard();
                      continue;
                   }else
                   {
                      // Unknown content type - abort
+                     // and create failure case
+                     String subj = "Unkonwn content type: " + message.getSubject();
+                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     systemDefaults.createCaseOnEmailFailure(  builder.newInstance() );
+                     copyToArchive.add( message );
+
                      uow.discard();
                      logger.error("Could not parse emails: unknown content type "+content.getClass().getName());
                      continue;
                   }
-
-                  // Get email fields
-                  builder.prototype().from().set(((InternetAddress) message.getFrom()[0]).getAddress());
-                  builder.prototype().fromName().set(((InternetAddress) message.getFrom()[0]).getPersonal());
-                  builder.prototype().to().set(((InternetAddress) message.getRecipients(Message.RecipientType.TO)[0]).getAddress());
-                  builder.prototype().subject().set(message.getSubject());
-
-                  // Get headers
-                  for (Header header : Iterables.iterable((Enumeration<Header>) message.getAllHeaders()))
-                  {
-                     builder.prototype().headers().get().put(header.getName(), header.getValue());
-                  }
-
-                  builder.prototype().messageId().set(message.getHeader("Message-ID")[0]);
 
                   mailReceiver.receivedEmail(null, builder.newInstance());
 
@@ -360,6 +437,11 @@ public interface ReceiveMailService
 
                } catch (Throwable e)
                {
+                  String subj = "Unknown error: " + message.getSubject();
+                  builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                  systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                  copyToArchive.add( message );
+
                   uow.discard();
                   logger.error("Could not parse emails", e);
                }

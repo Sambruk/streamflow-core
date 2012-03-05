@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration.templates;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -30,6 +37,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -38,17 +46,19 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLab
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 
 
 public class SelectedTemplatesView extends JPanel
@@ -62,9 +72,9 @@ public class SelectedTemplatesView extends JPanel
 
    private StateBinder selectedTemplatesBinder;
 
-   JButton defaultTemplateButton;
-   JButton formTemplateButton;
-   JButton caseTemplateButton;
+   StreamflowButton defaultTemplateButton;
+   StreamflowButton formTemplateButton;
+   StreamflowButton caseTemplateButton;
 
    RemovableLabel defaultTemplate = new RemovableLabel();
    RemovableLabel formTemplate = new RemovableLabel();
@@ -131,7 +141,7 @@ public class SelectedTemplatesView extends JPanel
 
       // Select default template
       javax.swing.Action defaultTemplateAction = am.get( "defaultTemplate" );
-      defaultTemplateButton = new JButton( defaultTemplateAction );
+      defaultTemplateButton = new StreamflowButton( defaultTemplateAction );
 
       defaultTemplateButton.registerKeyboardAction( defaultTemplateAction, (KeyStroke) defaultTemplateAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
@@ -146,7 +156,7 @@ public class SelectedTemplatesView extends JPanel
 
       // Select form template
       javax.swing.Action formTemplateAction = am.get( "formTemplate" );
-      formTemplateButton = new JButton( formTemplateAction );
+      formTemplateButton = new StreamflowButton( formTemplateAction );
 
       formTemplateButton.registerKeyboardAction( formTemplateAction, (KeyStroke) formTemplateAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
@@ -161,7 +171,7 @@ public class SelectedTemplatesView extends JPanel
 
       // Select case template
       javax.swing.Action caseTemplateAction = am.get( "caseTemplate" );
-      caseTemplateButton = new JButton( caseTemplateAction );
+      caseTemplateButton = new StreamflowButton( caseTemplateAction );
 
       caseTemplateButton.registerKeyboardAction( caseTemplateAction, (KeyStroke) caseTemplateAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),

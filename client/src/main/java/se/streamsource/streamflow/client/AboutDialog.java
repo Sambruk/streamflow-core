@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client;
 
 import info.aduna.io.IOUtil;
@@ -25,12 +24,25 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.engine.io.BioUtils;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
 import javax.swing.border.BevelBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
@@ -41,7 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -79,7 +91,7 @@ public class AboutDialog
                " Revision: " + p.getProperty( "application.revision" ) + "<br><br>" +
                "---" + "<br><br>" +
                "Streamflow&#0153;<br>" +
-               "Copyright 2009-2011 Streamsource AB<br><br>" +
+               "Copyright 2009-2012 Streamsource AB<br><br>" +
                "Streamflow&#0153; is licensed under the Apache License, Version 2.0 (the \"License\").<br>" +
                "You may not use Streamflow&#0153; except in compliance with the License.<br>" +
                "A copy of the License is available below and may also be obtained<br>" +
@@ -101,16 +113,16 @@ public class AboutDialog
 
       JPanel apachePanel = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
       apachePanel.setBorder( BorderFactory.createTitledBorder( text( StreamflowResources.apache_border ) ) );
-      JButton licenseBtn = new JButton( am.get( "license" ) );
-      JButton noticeBtn = new JButton( am.get( "notice" ) );
+      StreamflowButton licenseBtn = new StreamflowButton( am.get( "license" ) );
+      StreamflowButton noticeBtn = new StreamflowButton( am.get( "notice" ) );
 
       apachePanel.add( licenseBtn );
       apachePanel.add( noticeBtn );
 
       JPanel thirdPartyPanel = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
       thirdPartyPanel.setBorder( BorderFactory.createTitledBorder( text( StreamflowResources.third_party_border ) ) );
-      JButton thirdPartyProductBtn = new JButton( am.get( "thirdPartyProducts" ) );
-      JButton thirdPartyLicenseBtn = new JButton( am.get( "thirdPartyLicenses" ) );
+      StreamflowButton thirdPartyProductBtn = new StreamflowButton( am.get( "thirdPartyProducts" ) );
+      StreamflowButton thirdPartyLicenseBtn = new StreamflowButton( am.get( "thirdPartyLicenses" ) );
 
 
       thirdPartyPanel.add( thirdPartyProductBtn );
@@ -188,7 +200,7 @@ public class AboutDialog
 
 
       JPanel buttonPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
-      JButton ok = new JButton( "Ok" );
+      StreamflowButton ok = new StreamflowButton( "Ok" );
       ok.addActionListener( this );
 
       buttonPanel.add( ok );

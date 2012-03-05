@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import org.joda.time.DateMidnight;
@@ -87,27 +86,27 @@ public class PerspectivePeriodModel
             return format.print(from);
 
          case three_days:
-            to = (direction == 1) ? from.plusDays(3) : from.minusDays(3);
+            to = (direction == 1) ? from.plusDays(2) : from.minusDays(2);
             break;
 
          case one_week:
-            to = (direction == 1) ? from.plusWeeks(1) : from.minusWeeks(1);
+            to = (direction == 1) ? from.plusWeeks(1).minusDays( 1 ) : from.minusWeeks(1).plusDays( 1 );
             break;
 
          case two_weeks:
-            to = (direction == 1) ? from.plusWeeks(2) : from.minusWeeks(2);
+            to = (direction == 1) ? from.plusWeeks(2).minusDays( 1 ) : from.minusWeeks(2).plusDays( 1 );
             break;
 
          case one_month:
-            to = (direction == 1) ? from.plusMonths(1) : from.minusMonths(1);
+            to = (direction == 1) ? from.plusMonths(1).minusDays( 1 ) : from.minusMonths(1).plusDays( 1 );
             break;
 
          case six_months:
-            to = (direction == 1) ? from.plusMonths(6) : from.minusMonths(6);
+            to = (direction == 1) ? from.plusMonths(6).minusDays( 1 ) : from.minusMonths(6).plusDays( 1 );
             break;
 
          case one_year:
-            to = (direction == 1) ? from.plusYears(1) : from.minusYears(1);
+            to = (direction == 1) ? from.plusYears(1) .minusDays( 1 ): from.minusYears(1).plusDays( 1 );
             break;
 
       }

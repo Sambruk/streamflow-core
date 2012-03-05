@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.util;
 
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.specification.Specifications;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.Links;
+import static org.qi4j.api.util.Iterables.flatten;
+import static org.qi4j.api.util.Iterables.matchesAny;
 
-import java.awt.*;
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import static org.qi4j.api.util.Iterables.flatten;
-import static org.qi4j.api.util.Iterables.matchesAny;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.specification.Specifications;
+
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
 /**
  * Register components here that should be visible/invisible, enabled/disabled depending on available commands.

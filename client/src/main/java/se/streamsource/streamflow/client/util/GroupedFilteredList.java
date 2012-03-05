@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.util;
 
 import ca.odell.glazedlists.EventList;
@@ -27,10 +26,14 @@ import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 
-import javax.swing.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -91,7 +94,12 @@ public class GroupedFilteredList
       setEventList(eventList, "");
    }
 
-   public void setEventList(EventList<TitledLinkValue> eventList, String topValue)
+   public void setEventList(EventList<TitledLinkValue> eventList, String topValue )
+   {
+      setEventList( eventList, topValue, true );
+   }
+   
+   public void setEventList(EventList<TitledLinkValue> eventList, String topValue, final boolean selectMatchAlways )
    {
       SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>(eventList, new LinkComparator());
       TextComponentMatcherEditor editor = new TextComponentMatcherEditor(filterField, new LinkFilterator());
@@ -105,13 +113,16 @@ public class GroupedFilteredList
                {
                   final int idx = i;
 
-                  SwingUtilities.invokeLater(new Runnable()
+                  if( selectMatchAlways )
                   {
-                     public void run()
+                     SwingUtilities.invokeLater(new Runnable()
                      {
-                        list.setSelectedIndex(idx);
-                     }
-                  });
+                        public void run()
+                        {
+                           list.setSelectedIndex(idx);
+                        }
+                     });
+                  }
 
                   break;
                }

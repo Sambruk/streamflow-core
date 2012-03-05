@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.server.plugin.restlet;
 
 import org.qi4j.bootstrap.Assembler;
@@ -49,12 +48,13 @@ public class StreamflowPluginServlet
       {
          String preferenceNode = getInitParameter("preference-node");
          String assemblerClassName = getInitParameter( "assembler" );
+         String jmxSuffix = getInitParameter( "name" );
 
          Class assemblerClass = Thread.currentThread().getContextClassLoader().loadClass( assemblerClassName );
 
          Assembler pluginAssembler = (Assembler) assemblerClass.newInstance();
 
-         application = new StreamflowPluginRestApplication(new Context(), pluginAssembler, preferenceNode);
+         application = new StreamflowPluginRestApplication(new Context(), pluginAssembler, preferenceNode, jmxSuffix);
 
          application.start();
 

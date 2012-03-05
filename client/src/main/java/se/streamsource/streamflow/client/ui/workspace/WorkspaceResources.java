@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace;
 
 /**
@@ -35,6 +34,7 @@ public enum WorkspaceResources
    info_column_header,
    casetype_column_header,
    created_column_header,
+   created_by_column_header,
    case_status_header,
    assignee_column_header,
    duedate_column_header,
@@ -49,12 +49,10 @@ public enum WorkspaceResources
    general_tab,
    forms_tab,
    conversations_tab,
-   history_tab,
    contacts_tab,
    attachments_tab,
 
    // General view
-   history,
    description_label,
    note_label,
    name_label,
@@ -70,6 +68,7 @@ public enum WorkspaceResources
    country_label,
    forms_label,
    choose_casetype,
+   case_log,
 
    // Form submission
    mandatory_field_missing,
@@ -152,5 +151,7 @@ public enum WorkspaceResources
    no_casetype,
    no_assignee,
    no_project,
-   search_period, caze_reinstate;
+   search_period,
+   printing_configuration,
+   caze_reinstate;
 }

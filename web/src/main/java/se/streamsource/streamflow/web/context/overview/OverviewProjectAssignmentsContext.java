@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.context.overview;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
@@ -26,6 +26,7 @@ import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.workspace.AbstractFilterContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
@@ -51,6 +52,9 @@ public interface OverviewProjectAssignmentsContext
    {
       @Structure
       Module module;
+      
+      @Service
+      SystemDefaultsService systemConfig;
 
       public Query<Case> cases( TableQuery tableQuery )
       {
@@ -59,7 +63,12 @@ public interface OverviewProjectAssignmentsContext
          QueryBuilder<Case> builder = assignmentsQueries.assignments( null, tableQuery.where() );
 
          Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() )
-               .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+               .orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.DESCENDING) );
+         
+         if( systemConfig.config().configuration().sortOrderAscending().get())
+         {
+            query.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
+         }
          
          // Paging
          if (tableQuery.offset() != null)

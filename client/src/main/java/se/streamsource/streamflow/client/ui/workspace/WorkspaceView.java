@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace;
 
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.TableFormat;
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyEvent;
+
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
@@ -29,11 +53,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
-import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
@@ -41,22 +65,18 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.TableFormat;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.KeyEvent;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -74,8 +94,8 @@ public class WorkspaceView
 
    private WorkspaceContextView contextView;
    private JLabel selectedContext;
-   private JButton selectContextButton;
-   private JButton createCaseButton;
+   private StreamflowButton selectContextButton;
+   private StreamflowButton createCaseButton;
 
    private JDialog popup;
 
@@ -130,14 +150,14 @@ public class WorkspaceView
 
       // Create Case
       javax.swing.Action createCaseAction = am.get("createCase");
-      createCaseButton = new JButton(createCaseAction);
+      createCaseButton = new StreamflowButton(createCaseAction);
       createCaseButton.registerKeyboardAction(createCaseAction, (KeyStroke) createCaseAction
             .getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
 
       // Refresh case list
       javax.swing.Action refreshAction = am.get("refresh");
-      JButton refreshButton = new JButton(refreshAction);
+      StreamflowButton refreshButton = new StreamflowButton(refreshAction);
       refreshButton.registerKeyboardAction(refreshAction, (KeyStroke) refreshAction
             .getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -146,7 +166,7 @@ public class WorkspaceView
       MacOsUIWrapper.convertAccelerators(getActionMap());
 
       JPanel topPanel = new JPanel(new BorderLayout());
-      selectContextButton = new JButton(getActionMap().get("selectContext"));
+      selectContextButton = new StreamflowButton(getActionMap().get("selectContext"));
       selectContextButton.setName("btnSelectContext");
       JPanel contextSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
       contextSelectionPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));

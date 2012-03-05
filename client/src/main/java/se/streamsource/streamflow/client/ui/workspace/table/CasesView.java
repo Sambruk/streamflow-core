@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import static se.streamsource.streamflow.client.util.i18n.text;
@@ -103,7 +102,7 @@ public class CasesView
    protected JPanel createBlankPanel()
    {
       JPanel blankPanel = new JPanel( new BorderLayout() );
-      URL logoURL = getClass().getResource( i18n.text( Icons.name_logo ) );
+      URL logoURL = getClass().getResource( i18n.text( Icons.sf_logo ) );
       JEditorPane blankPane = new HtmlPanel(text( WorkspaceResources.welcome, logoURL.toExternalForm() ) );
       blankPanel.add( blankPane, BorderLayout.CENTER );
       return blankPanel;
@@ -180,7 +179,7 @@ public class CasesView
                      if (!caseTable.getSelectionModel().isSelectionEmpty())
                      {
                         int selectedRow = caseTable.getSelectedRow();
-                        Object selectedValue = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
+                        Object selectedValue = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 9 );
                         if (selectedRow != -1 && !(selectedValue instanceof SeparatorList.Separator) )
                         {
                            String href = (String) selectedValue;

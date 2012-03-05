@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.application.statistics;
 
 import org.qi4j.api.injection.scope.Service;
@@ -209,7 +208,7 @@ public interface JdbcStatisticsStore
             database.update("DELETE FROM organization");
             for (final OrganizationalUnitValue organizationalUnitValue : structureValue.structure().get())
             {
-               database.update("INSERT INTO organization VALUES (?,?,?,?)", new Databases.StatementVisitor()
+               database.update("INSERT INTO organization VALUES (?,?,?,?,?)", new Databases.StatementVisitor()
                {
                   public void visit(PreparedStatement preparedStatement) throws SQLException
                   {
@@ -217,6 +216,7 @@ public interface JdbcStatisticsStore
                      preparedStatement.setString(2, organizationalUnitValue.name().get());
                      preparedStatement.setInt(3, organizationalUnitValue.left().get());
                      preparedStatement.setInt(4, organizationalUnitValue.right().get());
+                     preparedStatement.setString(5, organizationalUnitValue.parent().get());
                   }
                });
             }

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.application.archival;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -208,7 +207,7 @@ public interface ArchivalService
       {
 
          ValueBuilder<CaseOutputConfigDTO> builder = module.valueBuilderFactory().newValueBuilder(CaseOutputConfigDTO.class);
-         builder.prototype().history().set(true);
+         builder.prototype().caselog().set(true);
          builder.prototype().attachments().set(true);
          builder.prototype().contacts().set(true);
          builder.prototype().conversations().set(true);
@@ -263,7 +262,7 @@ public interface ArchivalService
                      newQueryBuilder( CaseEntity.class ).
                      where( and( eq( templateFor( TypedCase.Data.class ).caseType(), (CaseType) setting ),
                                  or( eq( templateFor( Status.Data.class ).status(), CaseStates.CLOSED ),
-                                     eq( templateFor( Removable.Data.class ).removed(), Boolean.TRUE ) ),
+                                       eq( templateFor( Removable.Data.class ).removed(), Boolean.TRUE ) ),
                                  lt( templateFor( CreatedOn.class ).createdOn(), maxAgeDate ) ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
                return cases;

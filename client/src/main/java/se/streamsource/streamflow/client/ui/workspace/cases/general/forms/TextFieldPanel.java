@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import java.awt.event.ActionEvent;
@@ -24,7 +23,6 @@ import java.text.ParseException;
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.InputVerifier;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -45,6 +43,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPlu
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.RegexPatternFormatter;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.SuggestTextField;
 import se.streamsource.streamflow.client.util.TextTransferHandler;
 import se.streamsource.streamflow.client.util.i18n;
@@ -55,8 +54,8 @@ public class TextFieldPanel extends AbstractFieldPanel
 {
    private JTextField textField;
    private TextFieldValue fieldValue;
-   private JButton openMapButton;
-   private JButton pasteMapCoordinatesButton;
+   private StreamflowButton openMapButton;
+   private StreamflowButton pasteMapCoordinatesButton;
 
    @Service
    DialogService dialogs;
@@ -97,11 +96,11 @@ public class TextFieldPanel extends AbstractFieldPanel
          textField.setTransferHandler( th );
 
          javax.swing.Action openMapAction = am.get( "openMap" );
-         openMapButton = new JButton( openMapAction );
+         openMapButton = new StreamflowButton( openMapAction );
          add( openMapButton );
 
          javax.swing.Action pasteMapCoordinatesAction = am.get( "pasteMapCoordinates" );
-         pasteMapCoordinatesButton = new JButton( pasteMapCoordinatesAction );
+         pasteMapCoordinatesButton = new StreamflowButton( pasteMapCoordinatesAction );
 
          add( pasteMapCoordinatesButton );
       }

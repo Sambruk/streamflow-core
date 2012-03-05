@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.util;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import java.awt.Component;
+
+import javax.swing.JLabel;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import javax.swing.*;
-import java.awt.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 
 /**
  * Form builder that allows easy binding at the same time.

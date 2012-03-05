@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,44 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.property.GenericPropertyInfo;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.library.constraints.annotation.MaxLength;
-import org.qi4j.runtime.composite.ConstraintsCheck;
-import org.qi4j.runtime.property.PropertyInstance;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.contacts.StreetAddressSuggestTextField;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OptionButtonsPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -72,6 +41,52 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.property.GenericPropertyInfo;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import org.qi4j.runtime.composite.ConstraintsCheck;
+import org.qi4j.runtime.property.PropertyInstance;
+
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.contacts.StreetAddressSuggestTextField;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OptionButtonsPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 /**
  * Use ActionBinder+ValueBinder instead

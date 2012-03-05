@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.domain.structure.caze;
 
 import se.streamsource.streamflow.web.domain.Describable;
@@ -29,6 +28,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
@@ -49,6 +49,7 @@ public interface Case
       Describable,
       DueOn,
       Notable,
+      Notes,
       Ownable,
       CaseId,
       Status,
@@ -59,7 +60,7 @@ public interface Case
       Conversations,
       ConversationOwner,
       Labelable,
-        Removable,
+      Removable,
       Resolvable,
       SubmittedForms,
       SearchableForms,
@@ -69,6 +70,7 @@ public interface Case
       SubCases,
       SubCase,
       CaseAccess,
-      History
+      History,
+      CaseLoggable
 {
 }

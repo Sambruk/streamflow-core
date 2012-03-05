@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ActionMap;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -30,6 +39,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -39,17 +49,18 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLab
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 
 
 public class AccessPointView
@@ -64,14 +75,14 @@ public class AccessPointView
 
    private CaseLabelsView labels;
    private JLabel selectedCaseType = new JLabel();
-   private JButton caseTypeButton;
-   private JButton labelButton;
-   private JButton projectButton;
+   private StreamflowButton caseTypeButton;
+   private StreamflowButton labelButton;
+   private StreamflowButton projectButton;
    private JLabel selectedProject = new JLabel();
-   private JButton formButton;
+   private StreamflowButton formButton;
    private JLabel selectedForm = new JLabel();
 
-   private JButton templateButton;
+   private StreamflowButton templateButton;
    private RemovableLabel selectedTemplate = new RemovableLabel();
 
    private AccessPointModel model;
@@ -139,7 +150,7 @@ public class AccessPointView
 
       // Select project
       javax.swing.Action projectAction = am.get( "project" );
-      projectButton = new JButton( projectAction );
+      projectButton = new StreamflowButton( projectAction );
       projectButton.registerKeyboardAction( projectAction, (KeyStroke) projectAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
@@ -153,7 +164,7 @@ public class AccessPointView
 
       // Select case type
       javax.swing.Action caseTypeAction = am.get( "casetype" );
-      caseTypeButton = new JButton( caseTypeAction );
+      caseTypeButton = new StreamflowButton( caseTypeAction );
       caseTypeButton.registerKeyboardAction( caseTypeAction, (KeyStroke) caseTypeAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
@@ -167,7 +178,7 @@ public class AccessPointView
 
       // Select labels
       javax.swing.Action labelAction = labels.getActionMap().get( "addLabel" );
-      labelButton = new JButton( labelAction );
+      labelButton = new StreamflowButton( labelAction );
 
       labelButton.registerKeyboardAction( labelAction, (KeyStroke) labelAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
@@ -183,7 +194,7 @@ public class AccessPointView
 
       // Select form
       javax.swing.Action formAction = am.get( "form" );
-      formButton = new JButton( formAction );
+      formButton = new StreamflowButton( formAction );
 
       formButton.registerKeyboardAction( formAction, (KeyStroke) formAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
@@ -198,7 +209,7 @@ public class AccessPointView
 
       // Select template
       javax.swing.Action templateAction = am.get( "template" );
-      templateButton = new JButton( templateAction );
+      templateButton = new StreamflowButton( templateAction );
 
       templateButton.registerKeyboardAction( templateAction, (KeyStroke) templateAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),

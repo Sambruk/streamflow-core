@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.application.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -31,6 +30,7 @@ import org.qi4j.api.io.Receiver;
 import org.qi4j.api.io.Sender;
 import org.qi4j.api.io.Transforms;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
@@ -39,6 +39,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
@@ -53,11 +54,13 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
@@ -210,7 +213,7 @@ public class CasePdfGenerator implements CaseOutput
          document.printLabelAndTextWithTabStop( bundle.getString( "labels" ) + ": ", valueFontBold, allLabels, valueFont, tabStop );
       }
 
-      String note = caze.getNote();
+      String note = ((Notes)caze).getLastNote() != null ? ((Notes)caze).getLastNote().note().get() : "";
       if (!empty(note))
       {
          document.moveUpOneRow( valueFontBold ).print( bundle.getString( "note" ) + ":", valueFontBold ).print( note, valueFont ).print( "", valueFont );
@@ -237,13 +240,13 @@ public class CasePdfGenerator implements CaseOutput
          generateAttachments( cazeDescriptor.attachments() );
       }
 
-      if (config.history().get())
+      if (config.caselog().get())
       {
-         generateHistory(cazeDescriptor.history());
+         generateCaselog(cazeDescriptor.caselog());
       }
    }
 
-   private void generateHistory(Input<Message, RuntimeException> history) throws IOException
+   private void generateCaselog(Input<CaseLogEntryValue, RuntimeException> caselog) throws IOException
    {
       // TODO This needs to be cleaned up. Translations should be in a better place!
       ResourceBundle bnd = ResourceBundle.getBundle( MessagesContext.class.getName(), locale );
@@ -253,24 +256,24 @@ public class CasePdfGenerator implements CaseOutput
          translations.put(key, bnd.getString(key));
       }
 
-      history.transferTo(new Output<Message, IOException>()
+      caselog.transferTo(new Output<CaseLogEntryValue, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends Message, SenderThrowableType> sender) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends CaseLogEntryValue, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
-            document.changeColor( headingColor ).println( bundle.getString( "history" ), valueFontBold )
+            document.changeColor( headingColor ).println( bundle.getString( "caselog" ), valueFontBold )
                   .changeColor(Color.BLACK);
 
-            sender.sendTo(new Receiver<Message, IOException>()
+            sender.sendTo(new Receiver<CaseLogEntryValue, IOException>()
             {
-               public void receive(Message message) throws IOException
+               public void receive(CaseLogEntryValue entry) throws IOException
                {
-                  Message.Data data = ((Message.Data) message);
-                  String label = data.sender().get().getDescription()
+                  UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+                  String label = uow.get( Describable.class, entry.createdBy().get().identity()).getDescription()
                         + ", "
                         + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format(
-                        data.createdOn().get() ) + ": ";
+                              entry.createdOn().get() ) + ": ";
 
-                  document.print( label, valueFontBold ).print( message.translateBody(translations), valueFont )
+                  document.print( label, valueFontBold ).print( Translator.translate( entry.message().get(), translations ), valueFont )
                         .print("", valueFont);
                }
             });

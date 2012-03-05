@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.rest.resource.surface.endusers;
 
 import org.qi4j.api.util.Function;
@@ -70,7 +69,7 @@ public class ClosedCasesResource
               {
                  public Object map(CaseEntity closedCase)
                  {
-                    return closedCase.getHistoryMessage("closed").createdOn().get();
+                    return closedCase.closedOn().get();
                  }
               }, null).
               column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()

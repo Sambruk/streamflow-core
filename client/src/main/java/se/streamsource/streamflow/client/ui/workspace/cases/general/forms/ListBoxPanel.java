@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 
-import javax.swing.*;
-
-import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class ListBoxPanel
       extends AbstractFieldPanel
 {
-   private JButton left;
-   private JButton right;
+   private StreamflowButton left;
+   private StreamflowButton right;
    private JList selectedElements;
    private JList possibleElements;
 
@@ -60,8 +65,8 @@ public class ListBoxPanel
       selectedElements = new JList( new DefaultListModel() );
 
       ApplicationActionMap map = context.getActionMap( this );
-      right = new JButton( map.get("left") );
-      left = new JButton( map.get("right") );
+      right = new StreamflowButton( map.get("left") );
+      left = new StreamflowButton( map.get("right") );
 
       possibleElements.setSelectionMode( MULTIPLE_INTERVAL_SELECTION );
       possibleElements.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( map.get("left") ) );

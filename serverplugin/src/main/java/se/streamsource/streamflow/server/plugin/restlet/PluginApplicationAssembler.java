@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.server.plugin.restlet;
 
 import org.qi4j.api.common.Visibility;
@@ -49,17 +48,19 @@ public class PluginApplicationAssembler
 {
    Assembler pluginAssembler;
    private final String preferenceNode;
+   private final String jmxSuffix;
 
-   public PluginApplicationAssembler( Assembler pluginAssembler, String preferenceNode )
+   public PluginApplicationAssembler( Assembler pluginAssembler, String preferenceNode, String jmxSuffix )
    {
       this.pluginAssembler = pluginAssembler;
       this.preferenceNode = preferenceNode;
+      this.jmxSuffix = jmxSuffix;
    }
 
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly app = applicationFactory.newApplicationAssembly();
-      app.setName( "Streamflow-Plugins" );
+      app.setName( "Streamflow-Plugin-" + (jmxSuffix != null ? jmxSuffix : "Application") );
 
       LayerAssembly webLayer = app.layer( "Web" );
       assembleWebLayer(webLayer);

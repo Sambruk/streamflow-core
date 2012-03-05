@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client;
+
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.KeyStroke;
+
+import se.streamsource.streamflow.client.util.i18n;
 
 import com.apple.eawt.AboutHandler;
 import com.apple.eawt.AppEvent;
@@ -23,9 +28,6 @@ import com.apple.eawt.Application;
 import com.apple.eawt.OpenFilesHandler;
 import com.apple.eawt.QuitHandler;
 import com.apple.eawt.QuitResponse;
-import se.streamsource.streamflow.client.util.i18n;
-
-import javax.swing.*;
 
 public class MacOsUIExtension
 {
@@ -39,7 +41,7 @@ public class MacOsUIExtension
    public void attachMacUIExtension()
    {
       Application macApp = Application.getApplication();
-      macApp.setDockIconImage(i18n.icon(Icons.logo, 64).getImage());
+      macApp.setDockIconImage(i18n.icon(Icons.sf_icon, 128).getImage());
       macApp.setAboutHandler(new AboutHandler()
       {
          public void handleAbout(AppEvent.AboutEvent aboutEvent)

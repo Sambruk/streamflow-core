@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
@@ -32,7 +31,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -53,12 +52,10 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.SuggestTextField;
 import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -157,7 +154,7 @@ public class ContactView
          emailBinder.setResourceMap(context.getResourceMap(getClass()));
          ContactEmailDTO emailTemplate = emailBinder.bindingTemplate(ContactEmailDTO.class);
 
-         builder.add(new JButton(getActionMap().get("view")));
+         builder.add(new StreamflowButton(getActionMap().get("view")));
          builder.nextLine();
          builder.add(createLabel(WorkspaceResources.name_label));
          builder.nextColumn(2);
@@ -208,7 +205,7 @@ public class ContactView
          builder.nextLine(2);
          builder.nextColumn(2);
          lookupPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-         lookupPanel.add(new JButton(getActionMap().get("lookupContact")));
+         lookupPanel.add(new StreamflowButton(getActionMap().get("lookupContact")));
          builder.add(lookupPanel);
 
          contactBinder.addObserver(this);
@@ -231,7 +228,7 @@ public class ContactView
          scrollPane.setBorder(BorderFactory.createEmptyBorder());
          DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
 
-         builder.add(new JButton(getActionMap().get("edit")));
+         builder.add(new StreamflowButton(getActionMap().get("edit")));
          builder.nextLine();
          builder.add(createLabel(WorkspaceResources.name_label));
          builder.nextColumn(2);

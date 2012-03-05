@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.web.rest.resource.workspace.cases;
 
 import org.apache.commons.fileupload.FileItem;
@@ -47,7 +46,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -87,8 +86,9 @@ public class FormAttachmentsResource
       return links.newLinks();
    }
 
-   public void createformattachment( Request request ) throws IOException, URISyntaxException
+   public void createformattachment() throws IOException, URISyntaxException
    {
+      Request request = Request.getCurrent();
       Representation representation = request.getEntity();
 
       if (MediaType.MULTIPART_FORM_DATA.equals( representation.getMediaType(), true ))

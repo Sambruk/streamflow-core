@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2011 Streamsource AB
+ * Copyright 2009-2012 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package se.streamsource.streamflow.client.assembler;
 
 import org.jdesktop.application.ApplicationContext;
@@ -116,8 +115,10 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseActionsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.PdfPrintingDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactLookupResultDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
@@ -125,6 +126,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsVie
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.CreateExternalMailUserDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
@@ -144,8 +146,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Possib
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
-import se.streamsource.streamflow.client.ui.workspace.cases.history.MessagesHistoryView;
+import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
@@ -261,6 +262,7 @@ public class UIAssembler
             ContactsView.class,
             ContactView.class,
             CaseGeneralView.class,
+            CaseLogView.class,
             CaseLabelsView.class,
             CaseSubmittedFormsView.class,
             CaseSubmittedFormView.class,
@@ -283,9 +285,8 @@ public class UIAssembler
             ConversationView.class,
             ConversationParticipantsView.class,
             AttachmentsView.class,
-            HistoryView.class,
-            MessagesHistoryView.class,
-            PerspectiveView.class
+            PerspectiveView.class,
+            CaseNoteView.class
       );
 
 
@@ -294,7 +295,9 @@ public class UIAssembler
       module.objects(WorkspaceWindow.class).visibleIn(layer);
 
       addDialogs(module, SelectLinkDialog.class,
-            ManagePerspectivesDialog.class);
+            CreateExternalMailUserDialog.class,
+            ManagePerspectivesDialog.class,
+            PdfPrintingDialog.class);
 
       module.values(CaseTableValue.class).visibleIn(Visibility.application);
    }
