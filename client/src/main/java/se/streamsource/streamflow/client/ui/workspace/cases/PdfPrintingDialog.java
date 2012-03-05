@@ -95,6 +95,8 @@ public class PdfPrintingDialog
                         selected.remove( selectedValue );
                      else
                         selected.add( selectedValue );
+
+                     ((SelectionList)event.getSource()).clearSelection();
                   }
                }
          }
