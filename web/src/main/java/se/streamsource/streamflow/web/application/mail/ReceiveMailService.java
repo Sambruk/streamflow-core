@@ -339,7 +339,7 @@ public interface ReceiveMailService
                   builder.prototype().from().set(((InternetAddress) message.getFrom()[0]).getAddress());
                   builder.prototype().fromName().set(((InternetAddress) message.getFrom()[0]).getPersonal());
                   builder.prototype().to().set(((InternetAddress) message.getRecipients(Message.RecipientType.TO)[0]).getAddress());
-                  builder.prototype().subject().set(message.getSubject());
+                  builder.prototype().subject().set(message.getSubject() == null ? "" : message.getSubject());
 
                   // Get headers
                   for (Header header : Iterables.iterable((Enumeration<Header>) message.getAllHeaders()))
