@@ -87,8 +87,9 @@ public class FormAttachmentsResource
       return links.newLinks();
    }
 
-   public void createformattachment( Request request ) throws IOException, URISyntaxException
+   public void createformattachment() throws IOException, URISyntaxException
    {
+      Request request = Request.getCurrent();
       Representation representation = request.getEntity();
 
       if (MediaType.MULTIPART_FORM_DATA.equals( representation.getMediaType(), true ))
