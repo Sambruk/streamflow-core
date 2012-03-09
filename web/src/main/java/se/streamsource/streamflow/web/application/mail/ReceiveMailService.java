@@ -59,6 +59,7 @@ import javax.mail.Store;
 import javax.mail.URLName;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
@@ -277,16 +278,23 @@ public interface ReceiveMailService
                         String disposition = part.getDisposition();
 
                         if ((disposition != null) &&
-                                ((disposition.equalsIgnoreCase( Part.ATTACHMENT) ||
-                                        (disposition.equalsIgnoreCase(Part.INLINE)))))
+                                ((disposition.equalsIgnoreCase( Part.ATTACHMENT ) ||
+                                        (disposition.equalsIgnoreCase( Part.INLINE )))))
                         {
                            // Create attachment
                            ValueBuilder<AttachedFileValue> attachmentBuilder = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
 
                            AttachedFileValue prototype = attachmentBuilder.prototype();
-                           prototype.mimeType().set(part.getContentType());
+                           //check contentType and fetch just the first part if necessary
+                           String contentType = "";
+                           if(part.getContentType().indexOf( ';' ) == -1 )
+                              contentType = part.getContentType();
+                           else
+                              contentType = part.getContentType().substring( 0, part.getContentType().indexOf( ';' ) );
+
+                           prototype.mimeType().set( contentType );
                            prototype.modificationDate().set((message.getSentDate()));
-                           prototype.name().set(part.getFileName());
+                           prototype.name().set( MimeUtility.decodeText( part.getFileName() ) );
                            prototype.size().set((long) part.getSize());
 
                            InputStream inputStream = part.getInputStream();
