@@ -277,8 +277,8 @@ public interface ReceiveMailService
                         String disposition = part.getDisposition();
 
                         if ((disposition != null) &&
-                                ((disposition.equals( Part.ATTACHMENT) ||
-                                        (disposition.equals(Part.INLINE)))))
+                                ((disposition.equalsIgnoreCase( Part.ATTACHMENT) ||
+                                        (disposition.equalsIgnoreCase(Part.INLINE)))))
                         {
                            // Create attachment
                            ValueBuilder<AttachedFileValue> attachmentBuilder = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
