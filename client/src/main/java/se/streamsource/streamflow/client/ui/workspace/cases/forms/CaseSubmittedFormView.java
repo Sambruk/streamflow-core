@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -92,7 +93,7 @@ public class CaseSubmittedFormView
    public CaseSubmittedFormView(@Service ApplicationContext context, @Uses CaseSubmittedFormModel model)
    {
       panel = new JPanel();
-      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+      panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
       setViewportView(panel);
 
       setMinimumSize(new Dimension(150, 0));

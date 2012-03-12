@@ -35,7 +35,7 @@ public interface EmailValue
    @Optional Property<String> from();
    @Optional Property<String> replyTo();
    Property<String> to();
-   Property<String> subject();
+   @Optional Property<String> subject();
    Property<String> content();
    Property<String> contentType();
    @Optional Property<String> messageId();

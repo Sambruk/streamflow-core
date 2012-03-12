@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
 import ca.odell.glazedlists.gui.TableFormat;
@@ -219,7 +220,7 @@ public class AttachmentsView
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
       // on usecase delete no update necessary
-      if( matches( withUsecases( "delete" ),transactions ))
+      if( matches( withUsecases( "delete" ), transactions ))
       {
          if( matches(  withNames( "removedAttachment" ), transactions ))
             attachmentsModel.refresh();
