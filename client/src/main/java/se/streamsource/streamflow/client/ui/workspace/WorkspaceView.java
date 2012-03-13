@@ -16,19 +16,36 @@
  */
 package se.streamsource.streamflow.client.ui.workspace;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.KeyEvent;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.TableFormat;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RoundedBorder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -44,39 +61,20 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationAction;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.ui.ContextItem;
-import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
-import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RoundedBorder;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.TableFormat;
-
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
@@ -167,9 +165,10 @@ public class WorkspaceView
 
       JPanel topPanel = new JPanel(new BorderLayout());
       selectContextButton = new StreamflowButton(getActionMap().get("selectContext"));
+      selectContextButton.setMargin( new Insets( 3,4,1,3 ) );
       selectContextButton.setName("btnSelectContext");
       JPanel contextSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-      contextSelectionPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+      contextSelectionPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
       contextSelectionPanel.add(selectContextButton);
       selectedContext = new JLabel();
       selectedContext.setFont(selectedContext.getFont().deriveFont(Font.BOLD));

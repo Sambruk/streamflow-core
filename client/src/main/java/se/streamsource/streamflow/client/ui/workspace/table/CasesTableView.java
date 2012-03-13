@@ -57,7 +57,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -73,7 +72,6 @@ import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.KeyboardFocusManager;
@@ -271,10 +269,6 @@ public class CasesTableView
             }
          } );
       }
-
-      Component horizontalGlue = Box.createHorizontalGlue();
-      horizontalGlue.setPreferredSize( new Dimension( 1500, 10 ) );
-      // filters.add( horizontalGlue );
 
       JScrollPane caseScrollPane = new JScrollPane( caseTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 

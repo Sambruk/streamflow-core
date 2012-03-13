@@ -16,41 +16,12 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.DATEPICKER;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.SwingConstants;
-import javax.swing.text.DefaultFormatterFactory;
-
+import ca.odell.glazedlists.EventList;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -64,7 +35,6 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -80,18 +50,42 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import ca.odell.glazedlists.EventList;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.SwingConstants;
+import javax.swing.text.DefaultFormatterFactory;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -205,7 +199,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       leftBuilder.add( caseTypeButton, new CellConstraints( 1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 2, 0, 5, 0 ) ) );
       leftBuilder.add( selectedCaseType, new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM,
-            new Insets( 5, 0, 0, 0 ) ) );
+            new Insets( 5, 5, 0, 0 ) ) );
 
       leftBuilder.nextLine();
 
@@ -231,7 +225,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       leftBuilder.add( labelButton, new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 5, 0, 0, 0 ) ) );
 
-      labels.setPreferredSize( new Dimension( 500, 60 ) );
+      labels.setPreferredSize( new Dimension( 500, 50 ) );
       leftBuilder.add( labels, new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(
             5, 0, 0, 0 ) ) );
       leftBuilder.nextLine();

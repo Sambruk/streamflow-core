@@ -117,7 +117,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       publishedIcon = icon( Icons.published, ICON_16 );
       
       // Layout and form for the left panel
-      FormLayout rightLayout = new FormLayout( "30dlu, 300:grow, 50dlu, 15dlu", "pref, fill:pref:grow, 60dlu" );
+      FormLayout rightLayout = new FormLayout( "30dlu, 300:grow, 50dlu, 20dlu", "pref, fill:pref:grow, 60dlu" );
       setLayout( rightLayout );
       setFocusable( false );
       DefaultFormBuilder rightBuilder = new DefaultFormBuilder( rightLayout, this );
@@ -185,6 +185,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       } );
 
       editButton = new StreamflowToggleButton( getActionMap().get( "edit"));
+      editButton.setMargin( new Insets( 3, 7, 1, 5 ) );
       rightBuilder.add(editButton, new CellConstraints( 4, 1, 1, 1, CellConstraints.RIGHT,
             CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
       
