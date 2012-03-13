@@ -16,26 +16,31 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.note;
 
-import static org.qi4j.api.specification.Specifications.or;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.KeyboardFocusManager;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.util.Locale;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXPanel;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
+import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StreamflowToggleButton;
+import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -54,34 +59,24 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.util.Locale;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXPanel;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
-import se.streamsource.streamflow.client.ui.DateFormats;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.ActionBinder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshComponents;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.StreamflowToggleButton;
-import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * A view representing all general notes present on a case
@@ -111,7 +106,7 @@ public class CaseNoteView
 
       ObjectBuilderFactory obf = module.objectBuilderFactory();
 
-      FormLayout formLayout = new FormLayout( "70dlu, 3dlu, pref, 3dlu , right:70dlu:grow","pref,100:grow" );
+      FormLayout formLayout = new FormLayout( "70dlu, 3dlu, pref, 3dlu, right:70dlu:grow","pref,120:grow" );
       this.setLayout( formLayout );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
@@ -144,7 +139,7 @@ public class CaseNoteView
       JScrollPane textScroll = null;
       formBuilder.add( textScroll = new JScrollPane( valueBinder.bind( "note", actionBinder.bind( "addNote",  note = new JTextArea() ) ) ),
             new CellConstraints( 1, 2, 5, 1, CellConstraints.FILL, CellConstraints.FILL ) );
-      note.setPreferredSize( new Dimension( 210, 100 ) );
+      textScroll.setPreferredSize( new Dimension( 210, 120 ) );
       note.setLineWrap( true );
       note.setWrapStyleWord( true );
 

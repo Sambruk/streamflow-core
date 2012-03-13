@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.configuration.Configuration;
@@ -70,6 +71,7 @@ import javax.mail.Store;
 import javax.mail.URLName;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
@@ -329,7 +331,7 @@ public interface ReceiveMailService
                   builder.prototype().from().set(((InternetAddress) message.getFrom()[0]).getAddress());
                   builder.prototype().fromName().set(((InternetAddress) message.getFrom()[0]).getPersonal());
                   builder.prototype().to().set(((InternetAddress) message.getRecipients(Message.RecipientType.TO)[0]).getAddress());
-                  builder.prototype().subject().set(message.getSubject());
+                  builder.prototype().subject().set(message.getSubject() == null ? "" : message.getSubject());
 
                   // Get headers
                   for (Header header : Iterables.iterable( (Enumeration<Header>) message.getAllHeaders() ))
@@ -356,16 +358,23 @@ public interface ReceiveMailService
                         String disposition = part.getDisposition();
 
                         if ((disposition != null) &&
-                                ((disposition.equals( Part.ATTACHMENT) ||
-                                        (disposition.equals(Part.INLINE)))))
+                                ((disposition.equalsIgnoreCase( Part.ATTACHMENT ) ||
+                                        (disposition.equalsIgnoreCase( Part.INLINE )))))
                         {
                            // Create attachment
                            ValueBuilder<AttachedFileValue> attachmentBuilder = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
 
                            AttachedFileValue prototype = attachmentBuilder.prototype();
-                           prototype.mimeType().set(part.getContentType());
+                           //check contentType and fetch just the first part if necessary
+                           String contentType = "";
+                           if(part.getContentType().indexOf( ';' ) == -1 )
+                              contentType = part.getContentType();
+                           else
+                              contentType = part.getContentType().substring( 0, part.getContentType().indexOf( ';' ) );
+
+                           prototype.mimeType().set( contentType );
                            prototype.modificationDate().set((message.getSentDate()));
-                           prototype.name().set(part.getFileName());
+                           prototype.name().set( MimeUtility.decodeText( part.getFileName() ) );
                            prototype.size().set((long) part.getSize());
 
                            InputStream inputStream = part.getInputStream();

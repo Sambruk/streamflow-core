@@ -16,6 +16,14 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.util.LinkedLabel;
+import se.streamsource.streamflow.client.util.i18n;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -26,15 +34,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.LinkedLabel;
-import se.streamsource.streamflow.client.util.i18n;
 
 public class RemovableLabel extends JPanel
       implements FocusListener
@@ -73,6 +72,8 @@ public class RemovableLabel extends JPanel
 
       button = new JButton( i18n.icon( Icons.drop, 12 ) );
       button.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
+      button.setBorderPainted( false );
+      button.setContentAreaFilled( false );
       button.setFocusable( false );
       button.addActionListener( new ActionListener()
       {
