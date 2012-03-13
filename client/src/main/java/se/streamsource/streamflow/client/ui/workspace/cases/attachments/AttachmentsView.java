@@ -219,7 +219,7 @@ public class AttachmentsView
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
       // on usecase delete no update necessary
-      if( matches( withUsecases( "delete" ),transactions ))
+      if( matches( withUsecases( "delete" ), transactions ))
       {
          if( matches(  withNames( "removedAttachment" ), transactions ))
             attachmentsModel.refresh();
