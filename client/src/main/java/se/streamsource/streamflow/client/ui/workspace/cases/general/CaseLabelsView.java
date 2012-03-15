@@ -16,13 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -30,7 +25,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -40,8 +34,13 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
+
+import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class CaseLabelsView
         extends JPanel
@@ -113,7 +112,7 @@ public class CaseLabelsView
       repaint();
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task addLabel()
    {
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleLabels()).newInstance();
@@ -155,8 +154,21 @@ public class CaseLabelsView
       model.notifyTransactions(transactions);
    }
 
+   /**
+    * Set button relation and make sure the button is requesting focus on click.
+    * This should ensure that the value from a focused input field is saved before the button action.
+    * @param button The referenced button.
+    */
    public void setButtonRelation(StreamflowButton button)
    {
       this.actionButton = button;
+      actionButton.addActionListener( new ActionListener()
+      {
+
+         public void actionPerformed(ActionEvent e)
+         {
+            actionButton.requestFocusInWindow();
+         }
+      } );
    }
 }
