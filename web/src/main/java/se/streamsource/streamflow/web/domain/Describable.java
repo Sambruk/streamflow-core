@@ -45,8 +45,11 @@ public interface Describable
    {
       public void changeDescription( String newDescription )
       {
-         if (!description().get().equals( newDescription ))
+         if ( (description().get() != null && !description().get().equals( newDescription ) ) ||
+               (description().get() == null && newDescription != null ) )
+         {
             changedDescription( null, newDescription );
+         }
       }
 
       public String getDescription()
