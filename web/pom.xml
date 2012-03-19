@@ -177,6 +177,10 @@
             <artifactId>org.qi4j.library.rest</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.qi4j.extension</groupId>
+            <artifactId>org.qi4j.extension.indexing-rdf</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet</artifactId>
         </dependency>
