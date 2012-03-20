@@ -37,7 +37,7 @@ public interface Describable
       @UseDefaults @Optional
       Property<String> description();
 
-      void changedDescription( @Optional DomainEvent event, String description );
+      void changedDescription( @Optional DomainEvent event, @Optional String description );
    }
 
    public abstract class Mixin
@@ -45,8 +45,11 @@ public interface Describable
    {
       public void changeDescription( String newDescription )
       {
-         if (!newDescription.equals( description().get() ))
+         if ( (description().get() != null && !description().get().equals( newDescription ) ) ||
+               (description().get() == null && newDescription != null ) )
+         {
             changedDescription( null, newDescription );
+         }
       }
 
       public String getDescription()
@@ -56,7 +59,7 @@ public interface Describable
 
       // State
 
-      public void changedDescription( @Optional DomainEvent event, String description )
+      public void changedDescription( @Optional DomainEvent event, @Optional String description )
       {
          description().set( description );
       }
