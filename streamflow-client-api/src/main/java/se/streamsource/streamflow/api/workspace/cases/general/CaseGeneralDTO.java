@@ -37,6 +37,7 @@ public interface CaseGeneralDTO
    @Optional
    Property<LinkValue> caseType();
 
+   @Optional
    @MaxLength(50)
    Property<String> description();
 

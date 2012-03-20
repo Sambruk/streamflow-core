@@ -114,7 +114,7 @@ public interface CaseTypesQueries
          SelectedCaseTypes.Data template = templateFor( SelectedCaseTypes.Data.class );
 
          if (caseType != null)
-            projects = projects.where( contains( template.selectedCaseTypes(), caseType ) );
+            projects = projects.where( and( contains( template.selectedCaseTypes(), caseType ),eq( templateFor( Removable.Data.class ).removed(), false ) ) );
          else
          {
             projects = projects.where( and( eq( templateFor( Removable.Data.class ).removed(), false ),

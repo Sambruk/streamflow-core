@@ -73,7 +73,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -211,14 +210,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             (KeyStroke) labelAction.getValue( javax.swing.Action.ACCELERATOR_KEY ), JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      labelButton.addActionListener( new ActionListener()
-      {
-
-         public void actionPerformed(ActionEvent e)
-         {
-            labelButton.requestFocusInWindow();
-         }
-      } );
       labels.setButtonRelation( labelButton );
       refreshLabelComponents.enabledOn( "addlabel", labelButton, labels );
 
