@@ -22,8 +22,10 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
@@ -31,7 +33,9 @@ import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
+import se.streamsource.streamflow.api.administration.form.CreateFieldGroupDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldTypes;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
@@ -42,6 +46,7 @@ import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroup;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
@@ -102,6 +107,18 @@ public class FormPageContext
       fields.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
    }
 
+   public void createfieldgroup(CreateFieldGroupDTO createFieldGroupDTO ) {
+      Fields fields = RoleMap.role( Fields.class );
+
+      ValueBuilder<FieldGroupFieldValue> builder = module.valueBuilderFactory().newValueBuilder( FieldGroupFieldValue.class );
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+      FieldGroup fieldGroup = uow.get( FieldGroup.class, createFieldGroupDTO.fieldGroup().get() );
+      builder.prototype().fieldGroup().set( EntityReference.getEntityReference( fieldGroup) );
+      
+      fields.createField( createFieldGroupDTO.name().get(), builder.newInstance() );
+   }
+   
+   
    private FieldValue getFieldValue( FieldTypes fieldType )
    {
       FieldValue value = null;
