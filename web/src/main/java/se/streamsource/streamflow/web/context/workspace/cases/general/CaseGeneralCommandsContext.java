@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -56,7 +57,7 @@ public interface CaseGeneralCommandsContext
    void casetype( EntityValue dto );
 
    @RequiresStatus({DRAFT, OPEN})
-   void changedescription( @MaxLength(50) @Name("description") String stringValue );
+   void changedescription( @Optional @MaxLength(50) @Name("description") String stringValue );
 
    LinksValue possiblecasetypes();
 
