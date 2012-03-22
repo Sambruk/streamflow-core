@@ -36,5 +36,6 @@
 
     <include file="changelog-mysql.xml"/>
     <include file="changelog-mssql.xml"/>
+    <include file="changelog-oracle.xml"/>
 
 </databaseChangeLog>

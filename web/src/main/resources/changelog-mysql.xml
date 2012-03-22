@@ -18,113 +18,16 @@
 
 -->
 <databaseChangeLog
-     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-    <changeSet id="1" dbms="mysql" author="rickardoberg">
+    <changeSet id="1" dbms="mysql" author="arvidhuss">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists schemaName="streamflow" tableName="completed"/>
-            </not>
-            <not>
-                <tableExists schemaName="streamflow" tableName="labels"/>
+                <tableExists tableName="cases"/>
             </not>
         </preConditions>
-        <comment>
-            Initial tables
-        </comment>
-        <createTable tableName="completed">
-            <column name="id" type="varchar(60)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="task_id" type="varchar(15)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="note" type="clob">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_on" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="completed_on" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="duration" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="assigned" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="tasktype" type="varchar(256)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="project" type="varchar(256)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="assigned_group" type="varchar(256)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="organization" type="varchar(256)">
-                <constraints nullable="true"/>
-            </column>
-        </createTable>
-        <createTable tableName="labels">
-            <column name="id" type="varchar(60)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="label" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet id="2" dbms="mysql" author="arvidhuss">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="completed" columnName="tasktype"/>
-            </not>
-        </preConditions>
-        <comment>Add column tasktype</comment>
-        <sql>alter table completed add column tasktype VARCHAR(256) CHARACTER SET utf8 after assigned</sql>
-    </changeSet>
-    <changeSet id="3" dbms="mysql" author="rickardoberg">
-        <renameTable oldTableName="completed" newTableName="cases"/>
-        <renameColumn tableName="cases"
-                      oldColumnName="task_id" newColumnName="case_id" columnDataType="varchar(15)"/>
-        <renameColumn tableName="cases"
-                      oldColumnName="completed_on" newColumnName="closed_on" columnDataType="datetime"/>
-        <renameColumn tableName="cases"
-                      oldColumnName="tasktype" newColumnName="casetype" columnDataType="varchar(256)"/>
-    </changeSet>
-    <changeSet id="4" dbms="mysql" author="rickardoberg">
-        <addColumn tableName="cases">
-            <column name="resolution" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-    </changeSet>
-    <changeSet id="5" dbms="mysql" author="rickardoberg">
-        <addColumn tableName="cases">
-            <column name="casetype_owner" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-    </changeSet>
-
-    <!-- New statistics database -->
-    <changeSet id="6" dbms="mysql" author="rickardoberg">
-        <preConditions onFail="MARK_RAN">
-            <tableExists schemaName="streamflow" tableName="cases"/>
-            <tableExists schemaName="streamflow" tableName="labels"/>
-        </preConditions>
-        <dropTable tableName="cases"/>
-        <dropTable tableName="labels"/>
-    </changeSet>
-
-    <changeSet id="7" dbms="mysql" author="rickardoberg">
         <createTable tableName="cases">
             <column name="id" type="varchar(60)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -198,8 +101,28 @@
             <column name="field" type="varchar(60)">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="varchar(256)">
+            <column name="value" type="varchar(500)">
                 <constraints nullable="false"/>
+            </column>
+            <column name="datatype" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="organization">
+            <column name="id" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="left" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="right" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent" type="varchar(60)">
+                <constraints nullable="true"/>
             </column>
         </createTable>
         <createView viewName="casesdescriptions">
@@ -218,38 +141,5 @@
             (select descriptions.description from descriptions where descriptions.id = cases.assigned_group) as assigned_group
             from cases
         </createView>
-    </changeSet>
-    <changeSet id="8" dbms="mysql" author="arvidhuss">
-        <modifyDataType tableName="fields" columnName="value" newDataType="varchar(500)"/>
-    </changeSet>
-    <changeSet id="9" dbms="mysql" author="rickardoberg">
-        <createTable tableName="organization">
-            <column name="id" type="varchar(60)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="name" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="left" type="integer">
-                <constraints nullable="false"/>
-            </column>
-            <column name="right" type="integer">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet id="10" dbms="mysql" author="henrikreinhold">
-    	<addColumn tableName="fields">
-            <column name="datatype" type="varchar(255)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-    </changeSet>
-    <changeSet id="11" dbms="mysql" author="henrikreinhold">
-    	<addColumn tableName="organization">
-            <column name="parent" type="varchar(60)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
     </changeSet>
 </databaseChangeLog>
