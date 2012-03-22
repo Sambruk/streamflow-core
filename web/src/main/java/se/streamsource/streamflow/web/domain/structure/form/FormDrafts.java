@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.ArrayList;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -28,8 +30,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
@@ -44,8 +49,6 @@ import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachment
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-
-import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -126,6 +129,8 @@ public interface FormDrafts
                      PageSubmissionDTO.class );
                ValueBuilder<FieldSubmissionDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(
                      FieldSubmissionDTO.class );
+               ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
+                     FieldDefinitionValue.class );
                
                builder.prototype().pages().set( new ArrayList<PageSubmissionDTO>() );
 
@@ -142,40 +147,17 @@ public interface FormDrafts
                   {
                      FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
 
-                     ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
-                           FieldDefinitionValue.class );
-                     
-                     valueBuilder.prototype().description().set( field.getDescription() );
-                     valueBuilder.prototype().note().set( field.getNote() );
-                     valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
-                     valueBuilder.prototype().fieldId().set( ((FieldId.Data) field).fieldId().get() );
-                     DatatypeDefinition datatypeDefinition = ((Datatype.Data) field).datatype().get();
-                     if (datatypeDefinition != null)
-                     {
-                        valueBuilder.prototype().datatypeUrl().set( datatypeDefinition.getUrl() );
-                        if (fieldValue instanceof TextFieldValue)
-                        {
-                           TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
-                           if (Strings.empty( textFieldValue.regularExpression().get() )
-                                 && !Strings.empty( datatypeDefinition.getRegularExpression() ))
-                           {
-                              ValueBuilder<TextFieldValue> fieldValueBuilder = module.valueBuilderFactory()
-                                    .newValueBuilder( TextFieldValue.class )
-                                    .withPrototype( (TextFieldValue) fieldValue );
-                              fieldValueBuilder.prototype().regularExpression()
-                                    .set( datatypeDefinition.getRegularExpression() );
-                              fieldValueBuilder.prototype().mandatory().set( field.isMandatory() );
-                              fieldValue = fieldValueBuilder.newInstance();
-                           }
+                     if (fieldValue instanceof FieldGroupFieldValue) {
+                        UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+                        FieldGroup fieldGroup = uow.get( FieldGroup.class, ((FieldGroupFieldValue)fieldValue).fieldGroup().get().identity() );
+                        
+                        for (Field subField : ((Fields.Data)fieldGroup).fields()) {
+                           FieldValue subFieldValue = ((FieldValueDefinition.Data) subField).fieldValue().get();
+                           pageBuilder.prototype().fields().get().add( createFieldSubmission( subField, subFieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
                         }
+                     } else {
+                        pageBuilder.prototype().fields().get().add( createFieldSubmission( field, fieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
                      }
-                     valueBuilder.prototype().mandatory().set( field.isMandatory() );
-                     valueBuilder.prototype().fieldValue().set( fieldValue );
-
-                     fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
-                     fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
-                     fieldBuilder.prototype().enabled().set( true );
-                     pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
                   }
                   builder.prototype().pages().get().add( pageBuilder.newInstance() );
                }
@@ -190,6 +172,43 @@ public interface FormDrafts
          return null;
       }
 
+      private FieldSubmissionDTO createFieldSubmission(Field field, FieldValue fieldValue,
+            SubmittedFormValue submittedFormValue, ValueBuilder<FieldSubmissionDTO> fieldBuilder,
+            ValueBuilder<FieldDefinitionValue> valueBuilder)
+      {
+         valueBuilder.prototype().description().set( field.getDescription() );
+         valueBuilder.prototype().note().set( field.getNote() );
+         valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
+         valueBuilder.prototype().fieldId().set( ((FieldId.Data) field).fieldId().get() );
+         DatatypeDefinition datatypeDefinition = ((Datatype.Data) field).datatype().get();
+         if (datatypeDefinition != null)
+         {
+            valueBuilder.prototype().datatypeUrl().set( datatypeDefinition.getUrl() );
+            if (fieldValue instanceof TextFieldValue)
+            {
+               TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
+               if (Strings.empty( textFieldValue.regularExpression().get() )
+                     && !Strings.empty( datatypeDefinition.getRegularExpression() ))
+               {
+                  ValueBuilder<TextFieldValue> fieldValueBuilder = module.valueBuilderFactory()
+                        .newValueBuilder( TextFieldValue.class ).withPrototype( (TextFieldValue) fieldValue );
+                  fieldValueBuilder.prototype().regularExpression().set( datatypeDefinition.getRegularExpression() );
+                  fieldValueBuilder.prototype().mandatory().set( field.isMandatory() );
+                  fieldValue = fieldValueBuilder.newInstance();
+               }
+            }
+
+         }
+         valueBuilder.prototype().mandatory().set( field.isMandatory() );
+         valueBuilder.prototype().fieldValue().set( fieldValue );
+
+         fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
+         fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
+         fieldBuilder.prototype().enabled().set( true );
+
+         return fieldBuilder.newInstance();
+      }
+      
       public FormDraft createdFormDraft(@Optional DomainEvent event, FormDraftDTO formDraftDTO, String id)
       {
          EntityBuilder<FormDraft> submissionEntityBuilder = module.unitOfWorkFactory().currentUnitOfWork()
