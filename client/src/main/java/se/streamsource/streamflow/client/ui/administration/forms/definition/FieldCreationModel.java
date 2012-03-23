@@ -16,13 +16,16 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.dci.value.link.TitledLinksValue;
 import ca.odell.glazedlists.BasicEventList;
@@ -44,10 +47,18 @@ public class FieldCreationModel
       this.module = module;
    }
 
+   @SuppressWarnings("unchecked")
    public EventList<TitledLinkValue> getPossibleFields()
    {
       EventList<TitledLinkValue> possiblefields = new TransactionList<TitledLinkValue>( new BasicEventList<TitledLinkValue>());
-      possiblefields.addAll( (Collection<? extends TitledLinkValue>) client.query("possiblefields", TitledLinksValue.class).links().get() );
+      TitledLinksValue titledLinksValue = client.query("possiblefields", TitledLinksValue.class);
+      List<TitledLinkValue> values = new ArrayList<TitledLinkValue>();
+      // Uggly....
+      for (LinkValue linkvalue : titledLinksValue.links().get())
+      {
+         values.add((TitledLinkValue) linkvalue);
+      }
+      possiblefields.addAll( values );
       return  possiblefields;
    }
 
