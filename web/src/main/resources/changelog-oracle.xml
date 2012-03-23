@@ -36,10 +36,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(256)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="note" type="clob">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="resolution" type="varchar(256)">
                 <constraints nullable="true"/>
@@ -102,7 +102,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="varchar(500)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="datatype" type="varchar(255)">
                 <constraints nullable="true"/>

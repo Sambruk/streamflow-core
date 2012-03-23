@@ -23,15 +23,23 @@
      xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <preConditions>
-        <and>
-            <or>
+        <or>
+            <and>
                 <dbms type="mysql"/>
+                <sqlCheck expectedResult="1">select 1</sqlCheck>
+                <runningAs username="streamflow"/>
+            </and>
+            <and>
                 <dbms type="mssql"/>
+                <sqlCheck expectedResult="1">select 1</sqlCheck>
+                <runningAs username="streamflow"/>
+            </and>
+            <and>
                 <dbms type="oracle"/>
-            </or>
-        <sqlCheck expectedResult="1">select 1</sqlCheck>
-        <runningAs username="streamflow"/>
-        </and>
+                <sqlCheck expectedResult="1">select 1 from dual</sqlCheck>
+                <runningAs username="streamflow"/>
+            </and>
+        </or>
     </preConditions>
 
     <include file="changelog-mysql.xml"/>
