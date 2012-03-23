@@ -18,9 +18,10 @@ package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
-import se.streamsource.dci.value.StringValue;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
+import se.streamsource.streamflow.api.administration.form.CreateFieldGroupDTO;
 import se.streamsource.streamflow.api.administration.form.FieldTypes;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -38,13 +39,23 @@ public class FormPagesModel
       relationModelMapping("field", FieldValueEditModel.class);
    }
 
-   public void addField( LinkValue pageItem, String name, FieldTypes fieldType )
+   public void addField( LinkValue pageItem, String name, LinkValue addLink )
    {
-      ValueBuilder<CreateFieldDTO> builder = module.valueBuilderFactory().newValueBuilder( CreateFieldDTO.class );
-      builder.prototype().name().set( name );
-      builder.prototype().fieldType().set( fieldType );
+      if ("createfield".equals(addLink.rel().get())) {
+         ValueBuilder<CreateFieldDTO> builder = module.valueBuilderFactory().newValueBuilder( CreateFieldDTO.class );
+         builder.prototype().name().set( name );
+         builder.prototype().fieldType().set( FieldTypes.valueOf( addLink.id().get()));
 
-      client.getClient( pageItem ).postCommand( "create", builder.newInstance() );
+         client.getClient( pageItem ).postCommand( addLink.href().get(), builder.newInstance() );
+         
+      } else if ("createfieldgroup".equals( addLink.rel().get() )) {
+         ValueBuilder<CreateFieldGroupDTO> builder = module.valueBuilderFactory().newValueBuilder( CreateFieldGroupDTO.class );
+         builder.prototype().name().set( name );
+         builder.prototype().fieldGroup().set( addLink.id().get());
+
+         client.getClient( pageItem ).postCommand( addLink.href().get(), builder.newInstance() );
+      }
+      
    }
 
    public void addPage( String pageName )

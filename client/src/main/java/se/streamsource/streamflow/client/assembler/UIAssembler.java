@@ -59,6 +59,7 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Fiel
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorComboBoxFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorCommentFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorDateFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorFieldGroupValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorListBoxFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorNumberFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorOpenSelectionFieldValueView;
@@ -386,7 +387,8 @@ public class UIAssembler
             FieldEditorOptionButtonsFieldValueView.class,
             FieldEditorOpenSelectionFieldValueView.class,
             FieldEditorTextAreaFieldValueView.class,
-            FieldEditorTextFieldValueView.class);
+            FieldEditorTextFieldValueView.class,
+            FieldEditorFieldGroupValueView.class);
 
       addDialogs(module, FieldCreationDialog.class);
 

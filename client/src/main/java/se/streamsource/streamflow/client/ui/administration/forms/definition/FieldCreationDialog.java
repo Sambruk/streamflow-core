@@ -16,18 +16,30 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.TextField;
+
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.api.administration.form.FieldTypes;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.i18n;
+import org.qi4j.api.injection.scope.Uses;
 
-import javax.swing.*;
-import java.awt.*;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.SeparatorListCellRenderer;
+import se.streamsource.streamflow.client.util.TitledLinkGroupingComparator;
+import se.streamsource.streamflow.client.util.i18n;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * A dialog for creating a form field. One must provide a name and a type of the field.
@@ -43,7 +55,7 @@ public class FieldCreationDialog
    private JComboBox box;
 
 
-   public FieldCreationDialog( @Service ApplicationContext context )
+   public FieldCreationDialog( @Service ApplicationContext context, @Uses FieldCreationModel model )
    {
       super( new BorderLayout() );
 
@@ -54,29 +66,11 @@ public class FieldCreationDialog
 
       nameField = new TextField();
       formBuilder.append( i18n.text( AdministrationResources.name_label ), nameField );
-      box = new JComboBox( new FieldTypes[] {
-            FieldTypes.text,
-            FieldTypes.textarea,
-            FieldTypes.checkboxes,
-            FieldTypes.combobox,
-            FieldTypes.listbox,
-            FieldTypes.optionbuttons,
-            FieldTypes.openselection,
-            FieldTypes.date,
-            FieldTypes.number,
-            FieldTypes.attachment,
-            FieldTypes.comment
-      } );
-
-      box.setRenderer( new DefaultListCellRenderer() {
-
-         @Override
-         public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
-         {
-            FieldTypes type = (FieldTypes) o;
-            return super.getListCellRendererComponent( jList, i18n.text( AdministrationResources.valueOf( type.toString() ) ), i, b, b1 );
-         }
-      });
+      box = new JComboBox();
+      SeparatorList<TitledLinkValue> separatorList = new SeparatorList<TitledLinkValue>( model.getPossibleFields(), new TitledLinkGroupingComparator(), 1, 10000);
+      box.setModel(new EventComboBoxModel<TitledLinkValue>(separatorList));
+      box.setRenderer( new SeparatorListCellRenderer(new LinkListCellRenderer()));
+      
       formBuilder.append( i18n.text( AdministrationResources.field_type_selection ) , box );
       add( panel, BorderLayout.CENTER );
    }
@@ -95,9 +89,13 @@ public class FieldCreationDialog
       WindowUtils.findWindow( this ).dispose();
    }
 
-   public FieldTypes getFieldType()
-   {
-      return (FieldTypes) box.getSelectedItem();
+   public LinkValue getAddLink()
+   {  
+      if (box.getSelectedItem() instanceof LinkValue) 
+      {
+         return (LinkValue) box.getSelectedItem();
+      } 
+      return null;
    }
 
    public String name()

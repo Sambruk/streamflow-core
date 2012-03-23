@@ -40,6 +40,9 @@ public interface FieldDefinitionAdminValue
    
    @Optional
    Property<LinkValue> datatype();
+   
+   @Optional
+   Property<LinkValue> fieldgroup();
 
    Property<FieldValue> fieldValue();
 

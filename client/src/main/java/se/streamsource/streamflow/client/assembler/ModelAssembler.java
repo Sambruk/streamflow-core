@@ -44,6 +44,7 @@ import se.streamsource.streamflow.client.ui.administration.filters.RulesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldCreationModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldValueEditModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormPagesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignatureModel;
@@ -192,6 +193,7 @@ public class ModelAssembler
             CaseTypeModel.class,
             AdministratorsModel.class,
             FieldValueEditModel.class,
+            FieldCreationModel.class,
             FormsModel.class,
             FormModel.class,
             //FormElementsModel.class,
