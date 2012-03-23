@@ -40,9 +40,11 @@ import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
+import se.streamsource.streamflow.api.administration.form.CreateFieldGroupDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
@@ -159,7 +161,8 @@ public class ClientAPIAssembler
               ChangePasswordDTO.class,
               NewUserDTO.class,
               NewProxyUserDTO.class,
-              CreateFieldDTO.class);
+              CreateFieldDTO.class,
+              CreateFieldGroupDTO.class);
 
       // Queries
       administration.values(LinkTree.class, UserEntityDTO.class, ProxyUserListDTO.class, ProxyUserDTO.class);
@@ -191,7 +194,8 @@ public class ClientAPIAssembler
               OpenSelectionFieldValue.class,
               SelectionFieldValue.class,
               TextAreaFieldValue.class,
-              TextFieldValue.class);
+              TextFieldValue.class,
+              FieldGroupFieldValue.class);
 
       // Surface
       administration.values(EmailAccessPointDTO.class,

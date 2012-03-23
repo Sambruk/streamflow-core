@@ -32,6 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemp
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -65,6 +66,7 @@ public interface OrganizationEntity
       Describable.Data,
       Forms.Data,
       DatatypeDefinitions.Data,
+      FieldGroups.Data,
       Labels.Data,
       OrganizationalUnits.Data,
       OwningOrganization,

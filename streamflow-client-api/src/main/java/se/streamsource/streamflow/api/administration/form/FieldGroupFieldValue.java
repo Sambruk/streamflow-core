@@ -16,36 +16,14 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * JAVADOC
  */
-public interface FieldDefinitionAdminValue
-      extends ValueComposite
+public interface FieldGroupFieldValue
+      extends FieldValue
 {
-   Property<EntityReference> field();
-
-   Property<String> description();
-
-   Property<String> note();
-
-   Property<String> fieldId();
-   
-   @Optional
-   Property<LinkValue> datatype();
-   
-   @Optional
-   Property<LinkValue> fieldgroup();
-
-   Property<FieldValue> fieldValue();
-
-   @UseDefaults
-   Property<Boolean> mandatory();
+   Property<EntityReference> fieldGroup();
 }

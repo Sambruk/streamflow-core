@@ -16,36 +16,18 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-
-import se.streamsource.dci.value.link.LinkValue;
+import org.qi4j.library.constraints.annotation.MaxLength;
 
 /**
  * JAVADOC
  */
-public interface FieldDefinitionAdminValue
+public interface CreateFieldGroupDTO
       extends ValueComposite
 {
-   Property<EntityReference> field();
+   @MaxLength(100)
+   Property<String> name();
 
-   Property<String> description();
-
-   Property<String> note();
-
-   Property<String> fieldId();
-   
-   @Optional
-   Property<LinkValue> datatype();
-   
-   @Optional
-   Property<LinkValue> fieldgroup();
-
-   Property<FieldValue> fieldValue();
-
-   @UseDefaults
-   Property<Boolean> mandatory();
+   Property<String> fieldGroup();
 }

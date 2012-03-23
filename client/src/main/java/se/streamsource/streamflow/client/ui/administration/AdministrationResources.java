@@ -161,5 +161,9 @@ public enum AdministrationResources
    archival_type,
    archival_settings_separator,
    delete,
-   formonclose_separator, choose_form_on_close, none, export
+   formonclose_separator, 
+   choose_form_on_close, 
+   none, 
+   export,
+   fieldgroup_field_type
 }

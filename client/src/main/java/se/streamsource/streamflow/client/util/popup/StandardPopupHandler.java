@@ -84,13 +84,11 @@ public class StandardPopupHandler implements PopupHandler
       } );
    }
 
-   @Override
    public StreamflowToggleButton getButton()
    {
       return button;
    }
 
-   @Override
    public void setPanelContent(JPanel filterPanel)
    {
       optionsPanel.add( filterPanel );

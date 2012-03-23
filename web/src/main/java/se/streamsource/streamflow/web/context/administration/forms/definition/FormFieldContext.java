@@ -36,6 +36,7 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
@@ -49,6 +50,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Datatype;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroup;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
@@ -130,6 +132,16 @@ public interface FormFieldContext
             linkValueBuilder.prototype().id().set(EntityReference.getEntityReference( fieldEntity.datatype().get()).identity() );
             linkValueBuilder.prototype().rel().set( "datatype" );
             builder.prototype().datatype().set( linkValueBuilder.newInstance());
+         }
+         if (fieldEntity.fieldValue().get() instanceof FieldGroupFieldValue)
+         {
+            ValueBuilder<LinkValue> linkValueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+            FieldGroup fieldGroup = module.unitOfWorkFactory().currentUnitOfWork().get( FieldGroup.class, ((FieldGroupFieldValue) fieldEntity.fieldValue().get()).fieldGroup().get().identity());
+            linkValueBuilder.prototype().href().set( "" );
+            linkValueBuilder.prototype().text().set( fieldGroup.getDescription());
+            linkValueBuilder.prototype().id().set(EntityReference.getEntityReference( fieldGroup ).identity());
+            linkValueBuilder.prototype().rel().set( "fieldgroup" );
+            builder.prototype().fieldgroup().set( linkValueBuilder.newInstance());
          }
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );

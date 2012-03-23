@@ -131,7 +131,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       filtersList = new SelectionList( Arrays.asList( system.name(), system_trace.name(), custom.name(), contact.name(), form.name(),
             conversation.name(), attachment.name() ), model.getSelectedFilters(), new ValueToLabelConverter()
       {
-         @Override
          public String convert(String value)
          {
             return text( valueOf( value.toString() ) );
@@ -139,7 +138,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       }, new ListSelectionListener()
       {
 
-         @Override
          public void valueChanged(ListSelectionEvent event)
          {
             if (!event.getValueIsAdjusting())
@@ -164,7 +162,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       filterPopupHandler = new StandardPopupHandler( CaseLogView.this, getActionMap().get( "filter" ), Position.right,
             false, new RefreshHandler()
             {
-               @Override
                public void refresh()
                {
                   model.refresh();
@@ -219,13 +216,10 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
 
       newMessageArea.addKeyListener( new KeyListener()
       {
-
-         @Override
          public void keyTyped(KeyEvent e)
          {
          }
 
-         @Override
          public void keyReleased(KeyEvent e)
          {
             if (e.getKeyCode() == 10)
@@ -237,7 +231,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
             }
          }
 
-         @Override
          public void keyPressed(KeyEvent e)
          {
             if (e.getKeyCode() == 10)
@@ -256,7 +249,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       listSelectionListener = new ListSelectionListener()
       {
          
-         @Override
          public void valueChanged(ListSelectionEvent event)
          {
             if (! event.getValueIsAdjusting()){
@@ -279,7 +271,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       
       addHierarchyListener( new HierarchyListener()
       {
-         @Override
          public void hierarchyChanged(HierarchyEvent e)
          {
             if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && !isShowing() && editMode){
