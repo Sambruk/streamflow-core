@@ -165,5 +165,5 @@ public enum AdministrationResources
    choose_form_on_close, 
    none, 
    export,
-   fieldgroup_field_type
+   casepriorities_tab, add_casepriority_title, name_show_color, choose_color, casepriority_separator, casepriority_mandatory, casepriority_visible, fieldgroup_field_type
 }

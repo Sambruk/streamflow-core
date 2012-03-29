@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.client.util;
 
+import org.jdesktop.swingx.JXColorSelectionButton;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXLabel;
 import org.qi4j.api.common.QualifiedName;
@@ -35,6 +36,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * Bind components to value names to allow them to be updated from a given source
@@ -61,7 +64,8 @@ public class ValueBinder
             JXDatePicker.class,
             JComboBox.class,
             JRadioButton.class,
-            RemovableLabel.class);
+            RemovableLabel.class,
+            StreamflowJXColorSelectionButton.class);
    }
 
    public void registerBinder( Binder binder, Class<? extends Component>... componentTypes )
@@ -215,6 +219,18 @@ public class ValueBinder
             {
                datePicker.setDate( (Date) value );
             }
+         }else if (component instanceof StreamflowJXColorSelectionButton)
+         {
+            StreamflowJXColorSelectionButton colorSelectionButton = (StreamflowJXColorSelectionButton) component;
+
+            if (value instanceof String)
+            {
+               if (!((String) value).isEmpty())
+               {
+                  colorSelectionButton.setBackground( new Color( parseInt( (String) value ) ) );
+               }
+            }
+
          } else if (component instanceof JComboBox)
          {
             JComboBox box = (JComboBox) component;
@@ -222,7 +238,7 @@ public class ValueBinder
          } else if (component instanceof JRadioButton)
          {
             JRadioButton button = (JRadioButton) component;
-            button.setSelected(button.getActionCommand().equals(value.toString()));
+            button.setSelected( button.getActionCommand().equals( value.toString() ) );
          } else if (component instanceof RemovableLabel)
          {
             RemovableLabel label = (RemovableLabel) component;

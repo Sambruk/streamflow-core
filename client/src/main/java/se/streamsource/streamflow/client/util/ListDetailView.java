@@ -16,12 +16,16 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import se.streamsource.streamflow.client.util.StreamflowButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -31,15 +35,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.OptionsAction;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import ca.odell.glazedlists.swing.EventListModel;
-
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
 /**
  * JAVADOC
@@ -63,6 +60,11 @@ public abstract class ListDetailView
 
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory)
    {
+      initMaster( listModel, createAction, selectionActions, false, factory);  
+   }
+
+   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, boolean actionsWithoutOption, final DetailFactory factory)
+   {
       list = new JList(listModel);
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       list.setCellRenderer( new LinkListCellRenderer() );
@@ -77,16 +79,28 @@ public abstract class ListDetailView
 
       if (createAction != null)
          toolbar.add( new StreamflowButton( createAction ) );
-
-      if (selectionActions.length != 0)
+      
+      if( actionsWithoutOption)
       {
-         JPopupMenu options = new JPopupMenu();
          for (Action selectionAction : selectionActions)
          {
-            options.add( selectionAction );
+            toolbar.add( new StreamflowButton( selectionAction ) );
+            list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( selectionActions ) );
          }
-         list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( selectionActions ) );
-         toolbar.add( new StreamflowButton( new OptionsAction( options ) ) );
+         
+      } else
+      {
+         if (selectionActions.length != 0)
+         {
+            JPopupMenu options = new JPopupMenu();
+            for (Action selectionAction : selectionActions)
+            {
+               options.add( selectionAction );
+               list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( selectionActions ) );
+            }
+            
+            toolbar.add( new StreamflowButton( new OptionsAction( options ) ) );
+         }
       }
 
       master.add( toolbar, BorderLayout.SOUTH);

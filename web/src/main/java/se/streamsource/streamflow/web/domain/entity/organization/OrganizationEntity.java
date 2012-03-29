@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplat
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriorityDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
@@ -83,6 +84,7 @@ public interface OrganizationEntity
       DefaultPdfTemplate.Data,
       FormPdfTemplate.Data,
       CasePdfTemplate.Data,
+      CasePriorityDefinitions.Data,
            
       //Queries
       OrganizationParticipationsQueries,
