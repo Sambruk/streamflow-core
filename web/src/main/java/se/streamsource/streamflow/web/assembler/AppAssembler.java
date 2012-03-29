@@ -43,6 +43,8 @@ import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationConfiguration;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
@@ -91,6 +93,8 @@ public class AppAssembler
 
       archival(layer.module("Archival"));
 
+      dueOnNotifiation(layer.module("DueOn Notification"));
+      
       replay(layer.module("Replay"));
 
       console( layer.module( "Console" ) );
@@ -146,6 +150,12 @@ public class AppAssembler
       configuration().entities(ArchivalConfiguration.class);
    }
 
+   private void dueOnNotifiation(ModuleAssembly dueOnNotification)
+   {
+      dueOnNotification.services(DueOnNotificationService.class).identifiedBy("dueOnNotification").instantiateOnStartup().visibleIn(Visibility.application);
+      configuration().entities(DueOnNotificationConfiguration.class);
+   }
+   
    private void replay( ModuleAssembly module ) throws AssemblyException
    {
       module.services( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.application );

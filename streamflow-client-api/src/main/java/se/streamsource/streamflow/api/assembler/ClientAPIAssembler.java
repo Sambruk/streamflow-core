@@ -22,6 +22,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
+import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
@@ -157,6 +158,7 @@ public class ClientAPIAssembler
       // Commands
       administration.values(
               ArchivalSettingsDTO.class,
+              DueOnNotificationSettingsDTO.class,
               RegisterUserDTO.class,
               ChangePasswordDTO.class,
               NewUserDTO.class,

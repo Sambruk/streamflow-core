@@ -54,6 +54,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -156,6 +157,9 @@ public interface ManagerComposite
 
       @Service
       ArchivalService archival;
+      
+      @Service
+      DueOnNotificationService dueOnNotification;
 
       @Structure
       ModuleSPI module;
@@ -563,6 +567,18 @@ public interface ManagerComposite
          }
       }
 
+      public void notifyExpiredDueOn()
+      {
+         try
+         {
+            logger.info("Start notify on expired due on");
+            dueOnNotification.performNotification();
+            logger.info("Finished notify on expired due on");
+         } catch (UnitOfWorkCompletionException e)
+         {
+            logger.warn("Could not perform notify on expired due on", e);
+         }
+      }
       private File getLatestBackup() throws ParseException
       {
          File latest = null;
