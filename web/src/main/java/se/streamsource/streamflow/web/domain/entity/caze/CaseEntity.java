@@ -60,6 +60,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
@@ -133,6 +134,8 @@ public interface CaseEntity
       SubCase.Data,
       History.Data,
       CaseLoggable.Data,
+      CasePriority.Events,
+      CasePriority.Data,
       Origin,
 
       // Queries

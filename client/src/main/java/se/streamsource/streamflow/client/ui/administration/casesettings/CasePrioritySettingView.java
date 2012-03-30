@@ -41,7 +41,7 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
    {
       this.context = context;
       this.model = model;
-      //model.addObserver( this );
+      this.model.addObserver( this );
 
       FormLayout layout = new FormLayout( "150dlu, 2dlu, 50, 70", "pref, pref" );
       setLayout( layout );

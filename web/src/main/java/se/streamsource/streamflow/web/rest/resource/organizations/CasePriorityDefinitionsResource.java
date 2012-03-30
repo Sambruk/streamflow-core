@@ -22,7 +22,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.administration.CasePriorityDefinitionContext;
 import se.streamsource.streamflow.web.context.administration.CasePriorityDefinitionsContext;
-import se.streamsource.streamflow.web.domain.structure.caze.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 
 /**
  *Case priorities resource.

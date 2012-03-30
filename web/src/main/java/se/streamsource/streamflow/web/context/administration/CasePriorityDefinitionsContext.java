@@ -26,7 +26,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
-import se.streamsource.streamflow.web.domain.structure.caze.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 
 /**
  * Case priorities context

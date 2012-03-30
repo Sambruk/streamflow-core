@@ -20,7 +20,7 @@ import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
-import se.streamsource.streamflow.web.domain.structure.caze.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 
 import java.io.IOException;
 

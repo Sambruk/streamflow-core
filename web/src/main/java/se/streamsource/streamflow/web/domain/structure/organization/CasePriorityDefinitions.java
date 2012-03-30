@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.caze;
+package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
@@ -72,7 +72,7 @@ public interface CasePriorityDefinitions
 
       public void removePriority( int index )
       {
-         removedPriority( null,data.prioritys().get().get( index ) );
+         removedPriority( null, data.prioritys().get().get( index ) );
       }
       
       public void removedPriority( DomainEvent event, CasePriorityValue priority )

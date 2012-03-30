@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -36,6 +37,8 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -44,6 +47,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Possib
 import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -58,8 +62,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -68,6 +74,8 @@ import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
 import javax.swing.text.DefaultFormatterFactory;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -81,6 +89,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import static java.lang.Integer.parseInt;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -115,6 +124,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private StreamflowButton labelButton;
    private final ApplicationContext appContext;
    private CaseNoteView caseNotes;
+   private JComboBox casePriority;
 
    public CaseGeneralView(@Service ApplicationContext appContext, @Uses CaseGeneralModel generalModel,
          @Uses CaseLogView caseLogView, @Structure Module module)
@@ -197,9 +207,41 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       leftBuilder.add( caseTypeButton, new CellConstraints( 1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 2, 0, 5, 0 ) ) );
-      leftBuilder.add( selectedCaseType, new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM,
+      leftBuilder.add( selectedCaseType, new CellConstraints(3 , 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM,
             new Insets( 5, 5, 0, 0 ) ) );
 
+      JLabel priorityLabel = leftBuilder.getComponentFactory().createLabel(
+            i18n.text( WorkspaceResources.priority_label ) );
+      priorityLabel.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
+
+      leftBuilder.add( priorityLabel  ,
+            new CellConstraints( 4, 3, 1, 1, CellConstraints.FILL, CellConstraints.BOTTOM,
+                  new Insets(4, 0, 0, 0 ) ) );
+
+      leftBuilder.add( valueBinder.bind( "priority", actionBinder.bind(
+            "changePriority", casePriority = (JComboBox)COMBOBOX.newField() ) )  ,
+            new CellConstraints( 4, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
+            new Insets(4, 0, 0, 0 ) ) );
+
+      priorityLabel.setLabelFor( casePriority );
+      refreshComponents.visibleOn( "changepriority", casePriority, priorityLabel );
+      refreshComponents.enabledOn( "changepriority", casePriority, priorityLabel );
+      casePriority.setRenderer( new LinkListCellRenderer(){
+         public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
+         {
+            
+               CasePriorityDTO itemValue = (CasePriorityDTO) value;
+               String val = itemValue == null ? "" : itemValue.text().get();
+
+               Component c = super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
+               if( itemValue != null && itemValue.priority().get() != null )
+               {
+                  c.setForeground( new Color( parseInt( itemValue.priority().get().color().get() ) ) );
+               }
+               return c;
+            }
+      });
+      
       leftBuilder.nextLine();
 
       // Select labels
@@ -293,6 +335,26 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       valueBinder.update( model.getGeneral() );
       selectedCaseType.setClickLink( model.getGeneral().caseType().get() );
+      
+      if( model.getCommandEnabled( "changepriority" ) )
+      {
+         EventComboBoxModel comboBoxModel = model.getCasePriorities(); 
+         casePriority.setModel( comboBoxModel );
+         CasePriorityValue selectPriority = model.getGeneral().priority().get();
+         if( selectPriority != null )
+         {
+            // omit first element since priority is always null in the first element
+            for(int i = 1; i < comboBoxModel.getSize(); i++)
+            {
+               CasePriorityValue casePriorityValue = ((CasePriorityDTO)comboBoxModel.getElementAt( i )).priority().get();
+               if( casePriorityValue.name().get().equals( selectPriority.name().get() ))
+               {
+                  casePriority.setSelectedItem( comboBoxModel.getElementAt( i ) );
+                  casePriority.setForeground( new Color( parseInt( casePriorityValue.color().get() ) ) );
+               }
+            }
+         }
+      }
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
@@ -393,10 +455,30 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
          }
       };
    }
+   
+   @Action
+   public Task changePriority()
+   {
+      final CasePriorityDTO selected = (CasePriorityDTO)casePriority.getSelectedItem();
+      if( selected != null
+            && ( selected.priority().get() == null && model.getGeneral().priority().get() != null
+            || ! selected.priority().get().equals( model.getGeneral().priority().get() ) ) )
+      {
+         return new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               model.changePriority( selected.priority().get() );
+            }
+         };
+      } else
+         return null;
+   }
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (matches( withNames( "addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus" ),
+      if (matches( withNames( "addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus", "changedPriority" ),
             transactions ))
       {
          refresh();

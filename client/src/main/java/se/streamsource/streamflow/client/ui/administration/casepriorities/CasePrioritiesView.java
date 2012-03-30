@@ -155,7 +155,8 @@ public class CasePrioritiesView
             {
                if( link.text().get().equals( oldSelection.text().get() ))
                {
-                  list.setSelectedIndex( count ); 
+                  list.setSelectedIndex( count );
+                  return;
                }
                count++;
             }
