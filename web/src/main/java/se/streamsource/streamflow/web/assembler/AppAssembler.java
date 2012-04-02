@@ -45,6 +45,7 @@ import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfigu
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationConfiguration;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotification;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
