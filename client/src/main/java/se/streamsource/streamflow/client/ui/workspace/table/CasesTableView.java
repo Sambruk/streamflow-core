@@ -24,6 +24,7 @@ import ca.odell.glazedlists.swing.EventJXTableModel;
 import ca.odell.glazedlists.swing.EventTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.color.ColorUtil;
 import org.jdesktop.swingx.decorator.AbstractHighlighter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -38,6 +39,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -57,6 +59,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -72,14 +75,18 @@ import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.font.TextAttribute;
+import java.awt.geom.Ellipse2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -96,6 +103,8 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.TimeZone;
 
+import static java.awt.RenderingHints.*;
+import static java.lang.Integer.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -239,8 +248,10 @@ public class CasesTableView
       caseTable.getColumn( 7 ).setPreferredWidth( 150 );
       caseTable.getColumn( 7 ).setMaxWidth( 150 );
       caseTable.getColumn( 7 ).setResizable( false );
-      caseTable.getColumn( 8 ).setMaxWidth( 50 );
-      caseTable.getColumn( 8 ).setResizable( false );
+      caseTable.getColumn( 8 ).setPreferredWidth( 100 );
+      caseTable.getColumn( 8 ).setMaxWidth( 100 );
+      caseTable.getColumn( 9 ).setMaxWidth( 50 );
+      caseTable.getColumn( 9 ).setResizable( false );
 
       caseTable.setAutoCreateColumnsFromModel( false );
 
@@ -335,6 +346,57 @@ public class CasesTableView
             return this;
          }
       } );
+
+      caseTable.setDefaultRenderer( CasePriorityValue.class, new DefaultTableCellRenderer()
+      {
+         @Override
+         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
+         {
+            final CasePriorityValue priority = (CasePriorityValue) value;
+            String val = priority == null ? "" : priority.name().get();
+
+            JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 2, 0 ) );
+
+            panel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
+            JLabel label = new JLabel( ){
+               @Override
+               protected void paintComponent(Graphics g) {
+                  Color color = getBackground();
+                  if( priority != null )
+                  {
+                     color = new Color( parseInt( priority.color().get() ) );
+                  }
+                  final Color FILL_COLOR = ColorUtil.removeAlpha( color );
+
+                  Graphics2D g2 = (Graphics2D) g.create();
+
+                  try {
+                     g2.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+                     g2.setColor(Color.LIGHT_GRAY);
+                     final int DIAM = Math.min(getWidth(), getHeight());
+                     final int inset = 3;
+                     g2.fill(new Ellipse2D.Float(inset, inset, DIAM-2*inset, DIAM-2*inset));
+                     g2.setColor(FILL_COLOR);
+                     final int border = 1;
+                     g2.fill(new Ellipse2D.Float(inset+border, inset+border, DIAM-2*inset-2*border, DIAM-2*inset-2*border));
+                  } finally {
+                     g2.dispose();
+                  }
+               }
+            };
+            label.setPreferredSize( new Dimension( 17, 17 ) );
+            panel.add( ( Strings.empty(val) || "-".equals( val ) ) ? new JLabel( ) : label);
+            JLabel text = new JLabel( val );
+
+            panel.add( text );
+            if (isSelected)
+            {
+               panel.setBackground( table.getSelectionBackground() );
+               text.setForeground( table.getSelectionForeground() );
+            }
+            return panel;
+         }
+      });
       caseTable.setDefaultRenderer( SeparatorList.Separator.class, new DefaultTableCellRenderer()
       {
          @Override
@@ -511,7 +573,7 @@ public class CasesTableView
 
               for( int i=0, n=model.getRowCount(); i < n; i++ )
                {
-                  if( model.getValueAt( i, 9 ).toString().endsWith( EventParameters.getParameter( event, "param1" ) + "/") )
+                  if( model.getValueAt( i, model.getColumnCount() ).toString().endsWith( EventParameters.getParameter( event, "param1" ) + "/") )
                   {
                      caseTable.getSelectionModel().setSelectionInterval( caseTable.convertRowIndexToView( i ), caseTable.convertRowIndexToView( i )  );
                      caseTable.scrollRectToVisible( caseTable.getCellRect( i, 0, true ) );
@@ -526,7 +588,7 @@ public class CasesTableView
             "changedOwner", "assignedTo", "unassigned", "changedRemoved","deletedEntity",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "changedDueOn", "submittedForm", "createdAttachment",
-            "removedAttachment" ), transactions ))
+            "removedAttachment", "changedPriority" ), transactions ))
       {
          context.getTaskService().execute( new CommandTask()
          {

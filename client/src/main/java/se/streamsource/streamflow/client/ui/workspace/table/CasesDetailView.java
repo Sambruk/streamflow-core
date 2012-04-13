@@ -214,7 +214,7 @@ public class CasesDetailView
          boolean rowFound = false;
          for( int i=0, n=model.getRowCount(); i < n; i++ )
          {
-            if( currentCase.toString().endsWith( model.getValueAt( i, 9 ).toString() ) )
+            if( currentCase.toString().endsWith( model.getValueAt( i, model.getColumnCount() ).toString() ) )
             {
                cases.getSelectionModel().setSelectionInterval( cases.convertRowIndexToView( i ), cases.convertRowIndexToView( i )  );
                cases.scrollRectToVisible( cases.getCellRect( i, 0, true ) );
