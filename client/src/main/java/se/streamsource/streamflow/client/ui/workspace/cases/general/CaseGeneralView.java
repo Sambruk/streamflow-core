@@ -28,6 +28,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
+import org.jdesktop.swingx.color.ColorUtil;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -59,6 +60,7 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -77,10 +79,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.geom.Ellipse2D;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -89,7 +95,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static java.lang.Integer.parseInt;
+import static java.awt.RenderingHints.*;
+import static java.lang.Integer.*;
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -221,7 +228,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       leftBuilder.add( valueBinder.bind( "priority", actionBinder.bind(
             "changePriority", casePriority = (JComboBox)COMBOBOX.newField() ) )  ,
             new CellConstraints( 4, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
-            new Insets(4, 0, 0, 0 ) ) );
+            new Insets(2, 0, 0, 0 ) ) );
 
       priorityLabel.setLabelFor( casePriority );
       refreshComponents.visibleOn( "changepriority", casePriority, priorityLabel );
@@ -229,17 +236,47 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       casePriority.setRenderer( new LinkListCellRenderer(){
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
          {
-            
-               CasePriorityDTO itemValue = (CasePriorityDTO) value;
-               String val = itemValue == null ? "" : itemValue.text().get();
 
-               Component c = super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
-               if( itemValue != null && itemValue.priority().get() != null )
-               {
-                  c.setForeground( new Color( parseInt( itemValue.priority().get().color().get() ) ) );
+            final CasePriorityDTO itemValue = (CasePriorityDTO) value;
+            String val = itemValue == null ? "" : itemValue.text().get();
+
+            JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 2, 0 ) );
+
+            panel.setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
+            JLabel label = new JLabel( ){
+               @Override
+               protected void paintComponent(Graphics g) {
+                  Color color = getBackground();
+                  if( itemValue != null && itemValue.priority().get() != null )
+                  {
+                     color = new Color( parseInt( itemValue.priority().get().color().get() ) );
+                  }
+                  final Color FILL_COLOR = ColorUtil.removeAlpha( color );
+
+                  Graphics2D g2 = (Graphics2D) g.create();
+
+                  try {
+                     g2.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+                     g2.setColor(Color.LIGHT_GRAY);
+                     final int DIAM = Math.min(getWidth(), getHeight());
+                     final int inset = 3;
+                     g2.fill(new Ellipse2D.Float(inset, inset, DIAM-2*inset, DIAM-2*inset));
+                     g2.setColor(FILL_COLOR);
+                     final int border = 1;
+                     g2.fill(new Ellipse2D.Float(inset+border, inset+border, DIAM-2*inset-2*border, DIAM-2*inset-2*border));
+                  } finally {
+                     g2.dispose();
+                  }
                }
-               return c;
-            }
+            };
+            label.setPreferredSize( new Dimension( 20, 20 ) );
+            panel.add( ( Strings.empty(val) || "-".equals( val ) ) ? new JLabel( ) : label);
+            JLabel text = new JLabel( val );
+
+            panel.add( text );
+
+            return panel;
+         }
       });
       
       leftBuilder.nextLine();
@@ -350,7 +387,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                if( casePriorityValue.name().get().equals( selectPriority.name().get() ))
                {
                   casePriority.setSelectedItem( comboBoxModel.getElementAt( i ) );
-                  casePriority.setForeground( new Color( parseInt( casePriorityValue.color().get() ) ) );
                }
             }
          }
@@ -394,6 +430,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
          @Override
          public void command() throws Exception
          {
+
             model.changeDueOn( dueOnField.getDate() );
          }
       };
