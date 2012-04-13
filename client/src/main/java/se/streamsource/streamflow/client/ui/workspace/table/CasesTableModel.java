@@ -550,4 +550,17 @@ public class CasesTableModel extends Observable
    {
       return client.getReference().getLastSegment().equals("assignments") || client.getReference().getLastSegment().equals("drafts");
    }
+
+   public boolean containsCaseWithPriority()
+   {
+
+      for(CaseTableValue value : getEventList() )
+      {
+         if( value.priority().get() != null )
+         {
+            return true;
+         }
+      }
+      return false;
+   }
 }

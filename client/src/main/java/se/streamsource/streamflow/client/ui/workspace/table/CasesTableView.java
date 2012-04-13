@@ -228,6 +228,9 @@ public class CasesTableView
                if (tm.getColumnExt( invisibleCol ).isVisible())
                   caseTable.getColumnExt( invisibleCol ).setVisible( false );
             }
+
+            if( !model.containsCaseWithPriority() )
+              caseTable.getColumnExt(8).setVisible( false );
          }
       } );
 
