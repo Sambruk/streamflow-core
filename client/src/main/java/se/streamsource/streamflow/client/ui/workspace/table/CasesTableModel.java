@@ -32,6 +32,7 @@ import se.streamsource.dci.value.table.ColumnValue;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -195,7 +196,7 @@ public class CasesTableModel extends Observable
             else if( columnValue.id().get().equals( "removed" ))
                prototype.removed().set( (Boolean)cell.v().get() );
             else if( columnValue.id().get().equals( "priority" ) && cell.v().get() != null )
-               prototype.priority().set( module.valueBuilderFactory().newValueFromJSON(CasePriorityValue.class, cell.v().get().toString()) );
+               prototype.priority().set( module.valueBuilderFactory().newValueFromJSON(CasePriorityDTO.class, cell.v().get().toString()) );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }

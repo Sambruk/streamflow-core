@@ -41,16 +41,15 @@ public interface CasePriority
       void changedPriority( @Optional DomainEvent event, @Optional CasePriorityValue priority );
    }
 
-   class Mixin
+   abstract class Mixin
       implements CasePriority, Events
    {
       @This
       Data data;
-
       public void changePriority( @Optional CasePriorityValue priority )
       {
          // check if there would actually be a change before changing
-         if( (data.priority().get() == null && priority == null) ||
+         if( ( data.priority().get() == null && priority == null) ||
                ( priority != null && priority.equals( data.priority().get() )))
             return;
          
