@@ -137,8 +137,8 @@ public class CasesTableView
             case project:
                return o1.owner().get().compareTo( o2.owner().get() );
             case priority:
-               String o1String = o1.priority().get() == null ? "" : o1.priority().get().name().get();
-               String o2String = o2.priority().get() == null ? "" : o2.priority().get().name().get();
+               String o1String = o1.priority().get() == null ? "" : o1.priority().get().priority().get().name().get();
+               String o2String = o2.priority().get() == null ? "" : o2.priority().get().priority().get().name().get();
                return o1String.compareTo( o2String );
             default:
                return 0;
@@ -430,8 +430,8 @@ public class CasesTableView
                   break;
                case priority:
                   emptyDescription =  ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get() == null
-                        || Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().color().get() );
-                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().name().get() : text( WorkspaceResources.no_priority);
+                        || Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().priority().get().color().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().priority().get().name().get() : text( WorkspaceResources.no_priority);
                   break;
             }
 
