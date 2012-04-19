@@ -35,6 +35,8 @@ import org.restlet.routing.Template;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
 import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityFilter;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
 import se.streamsource.streamflow.web.rest.resource.admin.ConsoleServerResource;
@@ -52,7 +54,9 @@ public class APIRouter
    private ObjectBuilderFactory factory;
    private AuthenticationFilterService filterService;
 
-   public APIRouter(@Uses Context context, @Structure Module module, @Service AuthenticationFilterService filterService) throws Exception
+   public APIRouter(@Uses Context context, @Structure Module module,
+                    @Service AuthenticationFilterService filterService,
+                    @Service AvailabilityService availabilityService ) throws Exception
    {
       super(context);
       this.factory = module.objectBuilderFactory();
@@ -61,8 +65,8 @@ public class APIRouter
       Restlet cqr = factory.newObjectBuilder(CommandQueryRestlet.class).use(getContext()).newInstance();
 
       Filter authenticationFilter = factory.newObjectBuilder(AuthenticationFilter.class).use(getContext(), cqr, this.filterService).newInstance();
-
-      Filter noCacheFilter = new NoCacheFilter(context, authenticationFilter);
+      Filter availabilityFilter = factory.newObjectBuilder( AvailabilityFilter.class ).use( getContext(), authenticationFilter, availabilityService ).newInstance();
+      Filter noCacheFilter = new NoCacheFilter(context, availabilityFilter);
       Filter performanceLoggingFilter = new PerformanceLoggingFilter(context, noCacheFilter);
 
       attachDefault(new ExtensionMediaTypeFilter(getContext(), performanceLoggingFilter));
