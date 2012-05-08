@@ -142,10 +142,11 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportProjectName().set( bundle.getString( "supportProjectName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForIncomingEmailName().set( bundle.getString( "supportCaseTypeForIncomingEmailName" ) );
 
+      // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
       system.services( AvailabilityService.class ).identifiedBy( "availability" ).
             instantiateOnStartup().
             visibleIn( Visibility.application ).
-            setMetaInfo( new CircuitBreaker() );
+            setMetaInfo( new CircuitBreaker( 1, 1000 * 60 * 60 * 12 ) );
       configuration().entities( AvailabilityConfiguration.class );
       configuration().forMixin( AvailabilityConfiguration.class ).declareDefaults().enabled().set( true );
    }

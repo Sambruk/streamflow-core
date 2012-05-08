@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import org.qi4j.api.cache.CacheOptions;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.common.TypeName;
 import org.qi4j.api.common.Visibility;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -66,6 +68,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.management.CompositeMBean;
 import se.streamsource.streamflow.web.management.ErrorLogService;
 import se.streamsource.streamflow.web.management.EventManagerService;
+import se.streamsource.streamflow.web.management.HistoryCleanup;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminConfiguration;
 import se.streamsource.streamflow.web.management.InstantMessagingAdminService;
 import se.streamsource.streamflow.web.management.ManagerComposite;
@@ -79,6 +82,8 @@ import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfig
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorService;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import static org.qi4j.api.common.Visibility.*;
@@ -199,8 +204,12 @@ public class ManagementAssembler extends AbstractLayerAssembler
          public void update( Application app, final Module module ) throws Exception
          {
             // For each case create a new Notes association, create a NoteValue, put it into the notes list and delete the note from Notable.
-            final int[] count = new int[]{0};
-            final UnitOfWork[] uows = new UnitOfWork[1];
+            // Fetch a list of relevant case id's first and work with the list.
+            // JDBM is not happy about committing stuff to the database
+            // while traversing the index. ( results in random EOFExceptions!! )
+            int count = 0;
+            final List<String> caseIds = new ArrayList<String>();
+
             try
             {
                Input<EntityState, EntityStoreException> entities = ((EntityStore) module.serviceFinder().findService( EntityStore.class ).get()).entityStates( (ModuleSPI) module );
@@ -215,112 +224,127 @@ public class ManagementAssembler extends AbstractLayerAssembler
                   }
                }, Outputs.withReceiver( new Receiver<EntityState, Throwable>()
                {
-                  UnitOfWork uow = null;
-
                   public void receive( EntityState state ) throws Throwable
                   {
-                     try
-                     {
-                        if (uows[0] == null)
-                        {
-                           uows[0] = uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Upgrade_1.6.0.0" ) );
-                        }
-                        CaseEntity caze = uow.get( CaseEntity.class, state.identity().identity() );
-                        ServiceReference<IdentityGenerator> identityGenerator = module.serviceFinder().findService( IdentityGenerator.class );
-
-                        if (caze.notes().get() == null)
-                        {
-                           // Create list of Notes
-                           NotesTimeLine notesEntity = module.unitOfWorkFactory().currentUnitOfWork().newEntity( NotesTimeLine.class, identityGenerator.get().generate( Identity.class ) );
-                           caze.notes().set( notesEntity );
-                           ValueBuilder<NoteValue> noteValueBuilder = module.valueBuilderFactory().newValueBuilder( NoteValue.class );
-                           noteValueBuilder.prototype().note().set( caze.note().get() );
-                           noteValueBuilder.prototype().createdBy().set( EntityReference.getEntityReference( caze.createdBy().get() ) );
-                           noteValueBuilder.prototype().createdOn().set( caze.createdOn().get() );
-
-                           ((NotesTimeLine.Data) caze.notes().get()).notes().get().add( noteValueBuilder.newInstance() );
-
-                           caze.note().set( "" );
-                        }
-
-                        if (caze.caselog().get() == null)
-                        {
-                           // Transform History to CaseLog
-                           CaseLogEntity caseLog = module.unitOfWorkFactory().currentUnitOfWork().newEntity( CaseLogEntity.class, identityGenerator.get().generate( Identity.class ) );
-                           caze.caselog().set( caseLog );
-                           Conversation history = caze.history().get();
-                           if (history != null)
-                           {
-                              for (Message message : ((Messages.Data) history).messages())
-                              {
-                                 Message.Data messageData = (Message.Data) message;
-                                 ValueBuilder<CaseLogEntryValue> builder = module.valueBuilderFactory().newValueBuilder(
-                                       CaseLogEntryValue.class );
-                                 builder.prototype().createdBy()
-                                       .set( EntityReference.getEntityReference( messageData.sender().get() ) );
-                                 builder.prototype().createdOn().set( messageData.createdOn().get() );
-
-                                 if (messageData.body().get() != null && messageData.body().get().startsWith( "{" ))
-                                 {
-                                    builder.prototype().entryType().set( CaseLogEntryTypes.system );
-                                 } else
-                                 {
-                                    builder.prototype().entryType().set( CaseLogEntryTypes.custom );
-                                 }
-                                 builder.prototype().message().set( messageData.body().get() );
-                                 ((CaseLog.Data) caze.caselog().get()).addedEntry( null, builder.newInstance() );
-                              }
-                           }
-                        }
-
-                        count[0]++;
-
-                        if (count[0] % 10000 == 0)
-                        {
-                           logger.info( " " + count[0] + " cases notes and/or caselog migrated and about to commit" );
-                           uows[0].complete();
-                           uows[0] = uow = null;
-                           logger.info( "Commit succeded." );
-                        }
-                     } catch (Throwable e)
-                     {
-                        uows[0].discard();
-                        logger.error( e.getMessage() );
-                        throw new RuntimeException( "Upgrade failed at case count " + count[0], e );
-                     }
+                     caseIds.add( state.identity().identity() );
                   }
                } ) ) );
 
+               logger.info( "Found " + caseIds.size() + " cases eligible for update migration." );
+               UnitOfWork uow = null;
+
+               ServiceReference<IdentityGenerator> identityGenerator = module.serviceFinder().findService( IdentityGenerator.class );
+               for( String id : caseIds )
+               {
+                  try
+                  {
+                     if (uow == null)
+                     {
+                        uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.buildUsecase( "Upgrade_1.6.0.0" ).with( CacheOptions.NEVER ).newUsecase( ) );
+                     }
+                     CaseEntity caze = uow.get( CaseEntity.class, id );
+
+
+                     if (caze.notes().get() == null)
+                     {
+                        // Create list of Notes
+                        NotesTimeLine notesEntity = module.unitOfWorkFactory().currentUnitOfWork().newEntity( NotesTimeLine.class, identityGenerator.get().generate( Identity.class ) );
+                        caze.notes().set( notesEntity );
+                        ValueBuilder<NoteValue> noteValueBuilder = module.valueBuilderFactory().newValueBuilder( NoteValue.class );
+                        noteValueBuilder.prototype().note().set( caze.note().get() );
+                        noteValueBuilder.prototype().createdBy().set( EntityReference.getEntityReference( caze.createdBy().get() ) );
+                        noteValueBuilder.prototype().createdOn().set( caze.createdOn().get() );
+
+                        ((NotesTimeLine.Data) caze.notes().get()).notes().get().add( noteValueBuilder.newInstance() );
+
+                        caze.note().set( "" );
+                     }
+
+                     if (caze.caselog().get() == null)
+                     {
+                        // Transform History to CaseLog
+                        CaseLogEntity caseLog = module.unitOfWorkFactory().currentUnitOfWork().newEntity( CaseLogEntity.class, identityGenerator.get().generate( Identity.class ) );
+                        caze.caselog().set( caseLog );
+                        Conversation history = caze.history().get();
+                        if (history != null)
+                        {
+                           for (Message message : ((Messages.Data) history).messages())
+                           {
+                              Message.Data messageData = (Message.Data) message;
+                              ValueBuilder<CaseLogEntryValue> builder = module.valueBuilderFactory().newValueBuilder(
+                                    CaseLogEntryValue.class );
+                              builder.prototype().createdBy()
+                                    .set( EntityReference.getEntityReference( messageData.sender().get() ) );
+                              builder.prototype().createdOn().set( messageData.createdOn().get() );
+
+                              if (messageData.body().get() != null && messageData.body().get().startsWith( "{" ))
+                              {
+                                 builder.prototype().entryType().set( CaseLogEntryTypes.system );
+                              } else
+                              {
+                                 builder.prototype().entryType().set( CaseLogEntryTypes.custom );
+                              }
+                              builder.prototype().message().set( messageData.body().get() );
+                              ((CaseLog.Data) caze.caselog().get()).addedEntry( null, builder.newInstance() );
+                           }
+                        }
+                     }
+
+                     count++;
+
+                     if (count % 1000 == 0)
+                     {
+                        logger.info( " " + count + " cases notes and/or caselog migrated and about to commit" );
+                        uow.complete();
+                        uow = null;
+                        logger.info( "Commit succeded." );
+                     }
+                  } catch (Throwable e)
+                  {
+                     uow.discard();
+                     logger.error( e.getMessage() );
+                     throw new RuntimeException( "Upgrade failed at case count " + count + " !", e );
+                  }
+               }
+
                // only try to commit if Outputs was not empty set
                // if we haven't received anything the uow will be null!
-               if (uows[0] != null)
-                  uows[0].complete();
-               logger.info( "Upgrade migration for 1.6.0.0 migrated " + count[0] + " cases successfully." );
+               if (uow != null)
+                  uow.complete();
+               logger.info( "Upgrade migration for 1.6.0.0 migrated " + count + " cases successfully." );
 
-               ManagerService mgrService = (ManagerService) module.serviceFinder().findService( ManagerService.class ).get();
-               ServiceReference<DataSource> dataSource = module.serviceFinder().findService( DataSource.class );
-               try
+               // now we may open up for client trafik again - set the circuitbreaker to on
+               // database is migrated and history was dereferenced before deleting.
+               AvailabilityService availablilityService = (AvailabilityService) module.serviceFinder().findService( AvailabilityService.class ).get();
+               availablilityService.getCircuitBreaker().turnOn();
+
+               // Run refresh statistics only if we found any case's to migrate
+               if (caseIds.size() > 0)
                {
-                  if (dataSource != null && dataSource.isActive())
-                     mgrService.getManager().refreshStatistics();
-                  else
-                     logger.info( "Could not refresh statistics, DataSource streamflowds is not active!" );
-               } catch (StatisticsStoreException e)
-               {
-                  logger.info( "Could not refresh statistics", e );
+                  ManagerService mgrService = (ManagerService) module.serviceFinder().findService( ManagerService.class ).get();
+                  ServiceReference<DataSource> dataSource = module.serviceFinder().findService( DataSource.class );
+                  try
+                  {
+                     if (dataSource != null && dataSource.isActive())
+                        mgrService.getManager().refreshStatistics();
+                     else
+                        logger.info( "Could not refresh statistics, DataSource streamflowds is not active!" );
+                  } catch (StatisticsStoreException e)
+                  {
+                     logger.info( "Could not refresh statistics", e );
+                  }
                }
             } catch (Throwable e)
             {
-               if (uows[0] != null)
-                  uows[0].discard();
                logger.error( e.getMessage() );
-               throw new RuntimeException( "Upgrade failed!", e );
+               throw new RuntimeException( "Upgrade failed at case count " + count + " !", e );
             }
          }
       } );
 
       update.services( UpdateService.class ).identifiedBy( "update" ).setMetaInfo( updateBuilder )
             .visibleIn( layer ).instantiateOnStartup();
+      update.objects( HistoryCleanup.class );
       configuration().entities( UpdateConfiguration.class ).visibleIn( application );
       // default value for first installation has to be the same version as the UpdateBuilder start version.
       configuration().forMixin( UpdateConfiguration.class ).declareDefaults().lastStartupVersion().set( "1.4.0.0" );

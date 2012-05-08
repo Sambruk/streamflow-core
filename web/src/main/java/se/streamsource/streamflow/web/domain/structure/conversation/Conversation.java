@@ -17,12 +17,13 @@
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 /**
  * JAVADOC
  */
 public interface Conversation
-   extends Describable, CreatedOn, Messages, ConversationOwnable, ConversationParticipants
+   extends Describable, CreatedOn, Messages, ConversationOwnable, ConversationParticipants, Removable
 {
 }

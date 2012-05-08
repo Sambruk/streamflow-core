@@ -62,6 +62,7 @@ public interface UpdateService
       AvailabilityService availabilityService;
 
       private ExecutorService executor;
+      private HistoryCleanup cleanup;
 
       private boolean wasOn;
 
@@ -69,15 +70,18 @@ public interface UpdateService
 
       public void activate() throws Exception
       {
-         log = LoggerFactory.getLogger(UpdateService.class);
+         log = LoggerFactory.getLogger( UpdateService.class );
 
          executor = Executors.newSingleThreadExecutor( new NamedThreadFactory( "UpdateMigration" ) );
-         executor.submit(this );
+         executor.submit( this );
+         //cleanup
+         executor.submit( cleanup = module.objectBuilderFactory().newObject( HistoryCleanup.class ) );
          log.info( "Activate: Executer submitted." );
       }
 
       public void passivate() throws Exception
       {
+         cleanup.stopAndDiscard();
          executor.shutdown();
 
          log.info( "Passivate: Executor shut down." );

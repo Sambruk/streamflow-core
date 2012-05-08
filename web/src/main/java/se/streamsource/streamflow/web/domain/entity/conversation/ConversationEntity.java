@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.This;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
@@ -34,13 +35,14 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 /**
  * JAVADOC
  */
-@Concerns({ConversationEntity.CaseLogMessageConcern.class})
+@Concerns({ConversationEntity.CaseLogMessageConcern.class, ConversationEntity.RemovableConcern.class})
 public interface ConversationEntity
    extends
       Conversation,
       ConversationParticipants.Data,
       Describable.Data,
       Messages.Data,
+      Removable.Data,
 
       ConversationParticipantsQueries,
 
@@ -62,5 +64,31 @@ public interface ConversationEntity
          return next.createMessage( body, participant );
       }
 
+   }
+
+   abstract class RemovableConcern
+      extends ConcernOf<Removable>
+      implements Removable
+   {
+      @This
+      Messages.Data messages;
+
+      public void deleteEntity()
+      {
+         for( Message message : messages.messages() )
+         {
+            message.deleteEntity();
+         }
+         next.deleteEntity();
+      }
+
+      public boolean removeEntity()
+      {
+         for( Message message : messages.messages() )
+         {
+            message.removeEntity();
+         }
+         return next.removeEntity();
+      }
    }
 }
