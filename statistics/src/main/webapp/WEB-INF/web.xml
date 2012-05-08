@@ -31,6 +31,9 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <listener>
+        <listener-class>org.streamsource.streamflow.statistic.web.AppContextListener</listener-class>
+    </listener>
 
     <servlet-mapping>
         <servlet-name>streamflow-statistic</servlet-name>

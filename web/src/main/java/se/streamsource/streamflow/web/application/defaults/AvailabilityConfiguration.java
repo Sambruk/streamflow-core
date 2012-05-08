@@ -14,16 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.conversation;
+package se.streamsource.streamflow.web.application.defaults;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
 
 /**
- * JAVADOC
+ * Marker interface for AvailabilityService configuration.
  */
-public interface Conversation
-   extends Describable, CreatedOn, Messages, ConversationOwnable, ConversationParticipants, Removable
+public interface AvailabilityConfiguration
+   extends ConfigurationComposite, Enabled
 {
 }

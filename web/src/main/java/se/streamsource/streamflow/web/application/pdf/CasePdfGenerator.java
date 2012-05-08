@@ -149,7 +149,7 @@ public class CasePdfGenerator implements CaseOutput
             bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
             bundle.getString( "resolution" ), bundle.getString( "dueOn" ) );
 
-      document.printLabelAndTextWithTabStop( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont,
+      document.printLabelAndTextWithTabStop( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription() == null ? "" : caze.getDescription(), valueFont,
             tabStop );
       document.printLabelAndTextWithTabStop( bundle.getString( "createdOn" ) + ": ", valueFontBold,
             DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ),

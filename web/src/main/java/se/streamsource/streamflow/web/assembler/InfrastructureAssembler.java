@@ -151,6 +151,7 @@ public class InfrastructureAssembler
       {
          module.services( EmbeddedSolrService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
          module.services( SolrQueryService.class ).visibleIn( Visibility.application ).identifiedBy( "solr" ).instantiateOnStartup();
+            //.withConcerns( SolrPerformanceLogConcern.class );
 
          module.objects( EntityStateSerializer.class );
       }
@@ -194,7 +195,7 @@ public class InfrastructureAssembler
 
       module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
       module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
-//            withConcerns( PerformanceLogConcern.class );
+            //.withConcerns( RdfPerformanceLogConcern.class );
       module.services( RdfQueryParserFactory.class );
    }
 
@@ -213,7 +214,7 @@ public class InfrastructureAssembler
       {
          // JDBM storage
          module.services( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
-//               withConcerns( EntityStorePerformanceCheck.class );
+               //.withConcerns( EntityStorePerformanceCheck.class );
          module.services( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
 
          configuration().entities( JdbmConfiguration.class ).visibleIn( Visibility.application );
@@ -249,8 +250,8 @@ public class InfrastructureAssembler
       }
    }
 
-/*
-   public abstract static class EntityStorePerformanceCheck
+
+   /*public abstract static class EntityStorePerformanceCheck
          extends ConcernOf<EntityStoreSPI>
          implements EntityStoreSPI
    {
@@ -270,7 +271,7 @@ public class InfrastructureAssembler
       }
    }
 
-   public static class PerformanceLogConcern
+   public static class RdfPerformanceLogConcern
          extends GenericConcern
    {
       public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
@@ -284,9 +285,28 @@ public class InfrastructureAssembler
             long end = System.nanoTime();
             long timeMicro = (end - start) / 1000;
             double timeMilli = timeMicro / 1000.0;
-            System.out.println(method.getName()+":"+ timeMilli );
+            System.out.println("RDF." + method.getName()+":"+ timeMilli );
          }
       }
    }
-*/
+
+   public static class SolrPerformanceLogConcern
+         extends GenericConcern
+   {
+      public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+      {
+         long start = System.nanoTime();
+         try
+         {
+            return next.invoke( proxy, method, args );
+         } finally
+         {
+            long end = System.nanoTime();
+            long timeMicro = (end - start) / 1000;
+            double timeMilli = timeMicro / 1000.0;
+            System.out.println("SOLR." + method.getName()+":"+ timeMilli );
+         }
+      }
+   }*/
+
 }

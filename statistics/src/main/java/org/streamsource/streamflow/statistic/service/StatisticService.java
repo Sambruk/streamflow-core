@@ -16,7 +16,6 @@
  */
 package org.streamsource.streamflow.statistic.service;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -27,6 +26,7 @@ import org.streamsource.streamflow.statistic.dto.ScatterChartValue;
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 import org.streamsource.streamflow.statistic.dto.StatisticsResult;
 import org.streamsource.streamflow.statistic.dto.TopOu;
+import org.streamsource.streamflow.statistic.web.AppContextListener;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.prefs.Preferences;
 
 /**
  * A service that fetches case statistics data from the statistics database.
@@ -55,19 +54,7 @@ public class StatisticService
    {
       this.criteria = criteria;
 
-      Preferences preference = Preferences.userRoot().node( "/streamsource/streamflow/StreamflowServer/streamflowds/properties" );
-      String dbUrl = preference.get( "url", "n/a" );
-      String dbUser = preference.get( "username", "n/a" );
-      String dbPwd = preference.get( "password", "n/a" );
-      String dbDriver = preference.get( "driver", "n/a" );
-
-      BasicDataSource ds = new BasicDataSource();
-      ds.setDriverClassName( dbDriver );
-      ds.setUrl( dbUrl );
-      ds.setUsername( dbUser );
-      ds.setPassword( dbPwd );
-
-      jdbcTemplate = new JdbcTemplate( ds );
+      jdbcTemplate = AppContextListener.getJdbcTemplate();
    }
 
    protected String getCaseOrgTotalQuery( )

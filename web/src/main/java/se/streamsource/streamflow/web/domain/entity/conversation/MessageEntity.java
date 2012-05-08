@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.domain.entity.conversation;
 
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
@@ -25,6 +26,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 public interface MessageEntity
    extends Message,
       Message.Data,
+      Removable.Data,
       DomainEntity
 {
 }

@@ -41,6 +41,8 @@ import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityConfiguration;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
@@ -123,6 +125,7 @@ public class AppAssembler
    {
       system.services( SystemDefaultsService.class )
             .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
+
       configuration().entities( SystemDefaultsConfiguration.class );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( true );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
@@ -138,6 +141,14 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportOrganizationName().set( bundle.getString( "supportOuName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportProjectName().set( bundle.getString( "supportProjectName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForIncomingEmailName().set( bundle.getString( "supportCaseTypeForIncomingEmailName" ) );
+
+      // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
+      system.services( AvailabilityService.class ).identifiedBy( "availability" ).
+            instantiateOnStartup().
+            visibleIn( Visibility.application ).
+            setMetaInfo( new CircuitBreaker( 1, 1000 * 60 * 60 * 12 ) );
+      configuration().entities( AvailabilityConfiguration.class );
+      configuration().forMixin( AvailabilityConfiguration.class ).declareDefaults().enabled().set( true );
    }
 
    private void archival(ModuleAssembly archival)
