@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitMod
 import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessOptionalDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
@@ -186,6 +187,7 @@ public class ModelAssembler
             OrganizationModel.class,
             OrganizationalUnitModel.class,
             CaseAccessDefaultsModel.class,
+            CaseAccessOptionalDefaultsModel.class,
             CaseDefaultDaysToCompleteModel.class,
             CaseArchivalSettingModel.class,
             FormOnCloseModel.class,

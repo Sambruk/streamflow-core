@@ -165,5 +165,7 @@ public enum AdministrationResources
    choose_form_on_close, 
    none, 
    export,
+   caseaccessoptionaldefaults_separator,
+   optional_security_settings,
    fieldgroup_field_type
 }

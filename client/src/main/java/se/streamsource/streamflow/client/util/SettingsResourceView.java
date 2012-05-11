@@ -39,6 +39,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessOptionalDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
@@ -60,6 +61,8 @@ public class SettingsResourceView
    static
    {
       addSettings("caseaccessdefaults", AdministrationResources.caseaccessdefaults_separator, CaseAccessDefaultsView.class);
+
+      addSettings( "caseaccessoptionaldefaults", AdministrationResources.caseaccessoptionaldefaults_separator, CaseAccessOptionalDefaultsView.class );
 
       addSettings("defaultdaystocomplete", AdministrationResources.default_days_to_complete_separator, CaseDefaultDaysToCompleteView.class);
 
