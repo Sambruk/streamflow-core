@@ -56,8 +56,8 @@ public interface Manager
 
    public void performArchival();
    
-   public void notifyExpiredDueOn();
-
+   public void sendDueOnNotifications();
+   
    @Computed
    Property<Integer> failedLogins();
 

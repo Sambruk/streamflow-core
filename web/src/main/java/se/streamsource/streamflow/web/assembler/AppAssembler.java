@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+
+import java.util.Properties;
+import java.util.ResourceBundle;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
@@ -30,6 +37,7 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
@@ -44,8 +52,8 @@ import se.streamsource.streamflow.web.application.contact.StreamflowContactLooku
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationConfiguration;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
-import se.streamsource.streamflow.web.application.dueon.DueOnNotification;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
@@ -71,13 +79,9 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitV
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
+import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
-
-import java.util.Properties;
-import java.util.ResourceBundle;
-
-import static org.qi4j.api.common.Visibility.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -93,8 +97,6 @@ public class AppAssembler
       system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
-
-      dueOnNotifiation(layer.module("DueOn Notification"));
       
       replay(layer.module("Replay"));
 
@@ -117,6 +119,10 @@ public class AppAssembler
       {
          mail( layer.module( "Mail" ) );
       }
+
+      scheduler( layer.module( "Scheduler" ));
+      
+      dueOnNotifiation(layer.module("DueOn Notification"));
 
       knowledgebase(layer.module("Knowledgebase"));
 
@@ -155,6 +161,14 @@ public class AppAssembler
    {
       dueOnNotification.services(DueOnNotificationService.class).identifiedBy("dueOnNotification").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(DueOnNotificationConfiguration.class);
+      configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().enabled().set( true );
+   }
+
+
+   private void scheduler( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( Qi4JQuartzJobFactory.class, QuartzSchedulerService.class ).visibleIn( Visibility.application );
+      module.transients( DueOnNotificationJob.class).visibleIn( application );
    }
    
    private void replay( ModuleAssembly module ) throws AssemblyException

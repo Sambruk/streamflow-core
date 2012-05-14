@@ -69,7 +69,7 @@ public class StreamflowWebContextTestAssembler
       ModuleAssembly module = layer1.module( "Module 1" );
       module.values( EntityValue.class );
       applicationAssembly.layer( "Domain infrastructure" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
-
+      
       ModuleAssembly knowledgebase = appLayer.module("Knowledgebase");
       Properties props = new Properties();
       try
@@ -93,6 +93,7 @@ public class StreamflowWebContextTestAssembler
       configurationModule.entities(KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class).visibleIn(Visibility.application);
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( true );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
+
    }
 
    @Override
