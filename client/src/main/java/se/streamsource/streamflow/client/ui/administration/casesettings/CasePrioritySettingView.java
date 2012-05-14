@@ -27,6 +27,7 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.FormValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -38,6 +39,8 @@ import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
+
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Shows case priority settings per case type.
@@ -70,8 +73,8 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      new ActionBinder( am ).bind( "updateCasePrioritySetting", visible );
-      new ActionBinder( am ).bind( "updateCasePrioritySetting", mandatory );
+      new ActionBinder( am ).bind( "updateCasePriorityVisibility", visible );
+      new ActionBinder( am ).bind( "updateCasePriorityMandate", mandatory );
 
       new RefreshWhenShowing( this, model );
    }
@@ -82,16 +85,40 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
 
       visible.setSelected( Boolean.parseBoolean( prioritySettings.form().get().get( "visible" ) ) );
       mandatory.setSelected( Boolean.parseBoolean( prioritySettings.form().get().get( "mandatory" ) ) );
+      mandatory.setEnabled( model.command( "updatemandatory" ) != null );
    }
 
    @Action
-   public void updateCasePrioritySetting()
+   public void updateCasePriorityVisibility()
    {
-      model.changeCasePrioritySetting( visible.isSelected(), mandatory.isSelected() );
+      new CommandTask(){
+
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeCasePriorityVisibility( visible.isSelected() );
+         }
+      }.execute();
+
+   }
+
+   @Action
+   public void updateCasePriorityMandate()
+   {
+      new CommandTask(){
+
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeCasePriorityMandate( mandatory.isSelected() );
+         }
+      }.execute();
+
    }
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      model.refresh();
+      if(matches( withUsecases( "updatevisibility" ), transactions ) )
+         model.refresh();
    }
 }

@@ -37,7 +37,10 @@ public @interface RequiresCasePriorityVisible
    {
       public boolean isValid( RequiresCasePriorityVisible visible, TypedCase.Data value )
       {
-         return ((CasePrioritySetting.Data)value.caseType().get()).visible().get();
+         if( value.caseType().get() == null )
+            return false;
+         else
+            return ((CasePrioritySetting.Data)value.caseType().get()).visible().get();
       }
    }
 }

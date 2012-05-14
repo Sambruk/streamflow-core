@@ -26,12 +26,19 @@ import se.streamsource.streamflow.client.ResourceModel;
 public class CasePrioritySettingModel
    extends ResourceModel<FormValue>
 {
-   public void changeCasePrioritySetting( Boolean visible, Boolean mandatory )
+   public void changeCasePriorityVisibility( Boolean visible )
    {
       Form form = new Form();
       form.set( "visible", visible.toString() );
+
+      client.postLink(command("updatevisibility"), form);
+   }
+
+   public void changeCasePriorityMandate( Boolean mandatory )
+   {
+      Form form = new Form();
       form.set( "mandatory", mandatory.toString() );
 
-      client.postLink(command("update"), form);
+      client.postLink(command("updatemandatory"), form);
    }
 }

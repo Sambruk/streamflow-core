@@ -136,13 +136,22 @@ public class CasesTableView
                return o1.assignedTo().get().compareTo( o2.assignedTo().get() );
             case project:
                return o1.owner().get().compareTo( o2.owner().get() );
-            case priority:
-               String o1String = o1.priority().get() == null ? "" : o1.priority().get().priority().get().name().get();
-               String o2String = o2.priority().get() == null ? "" : o2.priority().get().priority().get().name().get();
-               return o1String.compareTo( o2String );
+
             default:
                return 0;
          }
+      }
+   };
+
+   private Comparator<CaseTableValue> priorityComparator = new Comparator<CaseTableValue>()
+   {
+      public int compare( CaseTableValue o1, CaseTableValue o2 )
+      {
+         Map<String,Integer> priorityMap = model.getPriorityDefinitionMap();
+
+         Integer o1Priority = o1.priority().get() == null ? new Integer( priorityMap.size() ) : priorityMap.get( o1.priority().get().name().get() );
+         Integer o2Priority = o2.priority().get() == null ? new Integer( priorityMap.size() ) : priorityMap.get( o2.priority().get().name().get() );
+         return o1Priority.compareTo( o2Priority );
       }
    };
 
@@ -219,7 +228,13 @@ public class CasesTableView
             if (model.getGroupBy() == GroupBy.none)
             {
                caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
-            } else
+            } else if( model.getGroupBy() == GroupBy.priority )
+            {
+               SeparatorList<CaseTableValue> groupingList = new SeparatorList<CaseTableValue>( model.getEventList(),
+                     priorityComparator , 1, 10000 );
+               caseTable.setModel( new EventJXTableModel<CaseTableValue>( groupingList, tableFormat ) );
+            }
+            else
             {
                SeparatorList<CaseTableValue> groupingList = new SeparatorList<CaseTableValue>( model.getEventList(),
                      groupingComparator, 1, 10000 );
@@ -233,7 +248,7 @@ public class CasesTableView
                   caseTable.getColumnExt( invisibleCol ).setVisible( false );
             }
 
-            if( !model.containsCaseWithPriority() )
+            if( !model.containsCaseWithPriority() && !model.getInvisibleColumns().contains( 8 ) )
               caseTable.getColumnExt(8).setVisible( false );
          }
       } );
@@ -430,8 +445,8 @@ public class CasesTableView
                   break;
                case priority:
                   emptyDescription =  ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get() == null
-                        || Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().priority().get().color().get() );
-                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().priority().get().name().get() : text( WorkspaceResources.no_priority);
+                        || Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().color().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().name().get() : text( WorkspaceResources.no_priority);
                   break;
             }
 

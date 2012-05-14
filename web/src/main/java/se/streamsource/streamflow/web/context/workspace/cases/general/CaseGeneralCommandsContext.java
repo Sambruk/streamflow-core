@@ -41,6 +41,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresCasePriorityVisible;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
@@ -132,10 +133,15 @@ public interface CaseGeneralCommandsContext
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "changepriority" );
          ValueBuilder<CasePriorityDTO> linkBuilder = module.valueBuilderFactory().newValueBuilder( CasePriorityDTO.class );
-         linkBuilder.prototype().text().set( "-" );
-         linkBuilder.prototype().id().set( "-1" );
-         linkBuilder.prototype().href().set( "" );
-         builder.addLink( linkBuilder.newInstance() );
+         CasePrioritySetting.Data casePriority = (CasePrioritySetting.Data)((TypedCase.Data)RoleMap.role( TypedCase.class )).caseType().get();
+         // if not mandatory add an empty option
+         if( !casePriority.mandatory().get() )
+         {
+            linkBuilder.prototype().text().set( "-" );
+            linkBuilder.prototype().id().set( "-1" );
+            linkBuilder.prototype().href().set( "" );
+            builder.addLink( linkBuilder.newInstance() );
+         }
 
          int count = 0;
          for( CasePriorityValue priority : RoleMap.role( CasePriorityDefinitions.Data.class ).prioritys().get() )

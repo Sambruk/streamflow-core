@@ -22,7 +22,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
 import java.util.Date;
@@ -85,5 +85,5 @@ public interface CaseTableValue
    Property<Boolean> removed();
 
    @Optional
-   Property<CasePriorityDTO> priority();
+   Property<CasePriorityValue> priority();
 }

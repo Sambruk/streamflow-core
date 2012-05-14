@@ -29,8 +29,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins( CasePrioritySetting.Mixin.class )
 public interface CasePrioritySetting   
 {
-   void changeCasePrioritySetting(Boolean visible, Boolean mandatory );
-   
+   void changeCasePriorityVisibility( Boolean visible );
+   void changeCasePriorityMandate( Boolean mandatory );
+
    interface Data
    {
       @UseDefaults
@@ -42,7 +43,8 @@ public interface CasePrioritySetting
    
    interface Events
    {
-      void changedCasePrioritySetting( @Optional DomainEvent event, Boolean visible, Boolean show );
+      void changedCasePriorityVisibility( @Optional DomainEvent event, Boolean visible );
+      void changedCasePriorityMandate( @Optional DomainEvent event, Boolean mandatory );
    }
    
    class Mixin
@@ -52,19 +54,33 @@ public interface CasePrioritySetting
       Data data;
 
 
-      public void changeCasePrioritySetting( Boolean visible, Boolean mandatory )
+      public void changeCasePriorityVisibility( Boolean visible )
       {
          // if there is no real change do nothing
-         if( data.visible().get().equals( visible ) && data.mandatory().get().equals( mandatory ))
+         if( data.visible().get().equals( visible ) )
             return;
          
-         changedCasePrioritySetting( null, visible, mandatory );
+         changedCasePriorityVisibility( null, visible );
       }
 
-      public void changedCasePrioritySetting( @Optional DomainEvent event, Boolean visible, Boolean mandatory )
+      public void changedCasePriorityVisibility( @Optional DomainEvent event, Boolean visible )
       {
          data.visible().set( visible );
+      }
+
+      public void changeCasePriorityMandate( Boolean mandatory )
+      {
+         // if there is no real change do nothing
+         if( data.mandatory().get().equals( mandatory ) )
+            return;
+
+         changedCasePriorityMandate( null, mandatory );
+      }
+
+      public void changedCasePriorityMandate( @Optional DomainEvent event, Boolean mandatory )
+      {
          data.mandatory().set( mandatory );
       }
+
    }
 }
