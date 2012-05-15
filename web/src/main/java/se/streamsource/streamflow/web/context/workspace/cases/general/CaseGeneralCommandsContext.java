@@ -129,7 +129,6 @@ public interface CaseGeneralCommandsContext
       {
          Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
          Organization org = orgs.organization().get();
-         //Organization org = ( (OwningOrganization) ((OwningOrganizationalUnit.Data) RoleMap.role( Ownable.Data.class ).owner().get()).organizationalUnit().get() ).organization().get();
          RoleMap.current().set( org );
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "changepriority" );
