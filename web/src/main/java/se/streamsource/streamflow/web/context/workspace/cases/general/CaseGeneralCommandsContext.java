@@ -36,8 +36,8 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresCasePriorityVisible;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
@@ -47,8 +47,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 import java.util.Date;
 
@@ -128,7 +127,9 @@ public interface CaseGeneralCommandsContext
       
       public LinksValue casepriorities()
       {
-         Organization org = ( (OwningOrganization) ((OwningOrganizationalUnit.Data) RoleMap.role( Ownable.Data.class ).owner().get()).organizationalUnit().get() ).organization().get();
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         Organization org = orgs.organization().get();
+         //Organization org = ( (OwningOrganization) ((OwningOrganizationalUnit.Data) RoleMap.role( Ownable.Data.class ).owner().get()).organizationalUnit().get() ).organization().get();
          RoleMap.current().set( org );
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "changepriority" );
