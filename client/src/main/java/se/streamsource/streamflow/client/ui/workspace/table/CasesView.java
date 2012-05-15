@@ -16,11 +16,21 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.net.URL;
+import ca.odell.glazedlists.SeparatorList;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CasesModel;
+import se.streamsource.streamflow.client.util.HtmlPanel;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -32,23 +42,11 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.net.URL;
 
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CasesModel;
-import se.streamsource.streamflow.client.util.HtmlPanel;
-import se.streamsource.streamflow.client.util.i18n;
-import ca.odell.glazedlists.SeparatorList;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -179,7 +177,7 @@ public class CasesView
                      if (!caseTable.getSelectionModel().isSelectionEmpty())
                      {
                         int selectedRow = caseTable.getSelectedRow();
-                        Object selectedValue = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 9 );
+                        Object selectedValue = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 10 );
                         if (selectedRow != -1 && !(selectedValue instanceof SeparatorList.Separator) )
                         {
                            String href = (String) selectedValue;

@@ -28,19 +28,11 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
-import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.caze.History;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
-import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 
 /**
  * JAVADOC
@@ -75,6 +67,7 @@ public class CaseGeneralContext
       builder.prototype().caseId().set( aCase.caseId().get() );
       builder.prototype().dueOn().set( aCase.dueOn().get() );
       builder.prototype().status().set( aCase.status().get() );
+      builder.prototype().priority().set( aCase.priority().get() );
 
       return builder.newInstance();
    }

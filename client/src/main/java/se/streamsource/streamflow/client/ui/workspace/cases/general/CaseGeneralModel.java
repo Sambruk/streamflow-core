@@ -16,24 +16,21 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import static org.qi4j.api.util.Iterables.matchesAny;
-import static se.streamsource.dci.value.link.Links.withRel;
-
-import java.util.Date;
-import java.util.Observable;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.client.OperationException;
@@ -41,8 +38,12 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
 import se.streamsource.streamflow.client.util.Refreshable;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+
+import java.util.Date;
+import java.util.Observable;
+
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.dci.value.link.Links.*;
 
 /**
  * Model for the general info about a case.
@@ -157,5 +158,32 @@ public class CaseGeneralModel
    {
       return module.objectBuilderFactory().newObjectBuilder( CaseNoteModel.class ).use(  client.getClient( "../note/" ) ).newInstance();
 
+   }
+
+   public EventComboBoxModel<LinkValue> getCasePriorities()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         LinksValue listValue = client.query( "casepriorities",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
+
+         return new EventComboBoxModel<LinkValue>( list );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
+      }
+   }
+
+   public void changePriority( CasePriorityValue casePriorityValue )
+   {
+      Form form = new Form( );
+      form.set( "name", casePriorityValue == null ? "" : casePriorityValue.name().get() );
+      form.set( "color", casePriorityValue == null ? "" : casePriorityValue.color().get() );
+
+      client.postCommand( "changepriority", form );
    }
 }

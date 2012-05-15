@@ -30,6 +30,7 @@ import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
+import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
@@ -65,7 +66,10 @@ public interface CaseTypeEntity
       Resolutions.Data,
       SelectedResolutions.Data,
       FormOnClose.Data,
-      FormOnClose.Events
+      FormOnClose.Events,
+      CasePrioritySetting.Data,
+      CasePrioritySetting.Events
+   
 {
    abstract class RemovableConcern
       extends ConcernOf<Removable>

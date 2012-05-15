@@ -1,0 +1,64 @@
+/**
+ *
+ * Copyright 2009-2012 Streamsource AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package se.streamsource.streamflow.web.domain.structure.caze;
+
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+
+/**
+ * Contains case priority information for a case.
+ */
+@Mixins(CasePriority.Mixin.class)
+public interface CasePriority
+{
+   void changePriority( @Optional CasePriorityValue priority );
+   interface Data
+   {
+      @Optional
+      Property<CasePriorityValue> priority();
+   }
+   
+   interface Events
+   {
+      void changedPriority( @Optional DomainEvent event, @Optional CasePriorityValue priority );
+   }
+
+   abstract class Mixin
+      implements CasePriority, Events
+   {
+      @This
+      Data data;
+      public void changePriority( @Optional CasePriorityValue priority )
+      {
+         // check if there would actually be a change before changing
+         if( ( data.priority().get() == null && priority == null) ||
+               ( priority != null && priority.equals( data.priority().get() )))
+            return;
+         
+         changedPriority( null, priority );
+      }
+
+      public void changedPriority( @Optional DomainEvent event, @Optional CasePriorityValue priority )
+      {
+         data.priority().set( priority );
+      }
+   }
+}

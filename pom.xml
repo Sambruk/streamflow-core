@@ -318,7 +318,7 @@
                         <exclude>**/**.wiki</exclude>
                         <exclude>**/webapp/resources/css/external/**</exclude>
                         <exclude>**/webapp/resources/js/external/**</exclude>
-
+                        <exclude>**/StreamflowJXColorSelectionButton.java</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>

@@ -128,4 +128,10 @@ public class OrganizationResource
    {
       subResource( FieldGroupsResource.class );
    }
+   
+   @SubResource
+   public void casepriorities()
+   {
+      subResource( CasePriorityDefinitionsResource.class );
+   }
 }

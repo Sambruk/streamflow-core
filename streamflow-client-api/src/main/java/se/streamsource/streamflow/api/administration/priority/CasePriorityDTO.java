@@ -14,13 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.workspace.table;
+package se.streamsource.streamflow.api.administration.priority;
 
-public enum SortBy
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import se.streamsource.dci.value.link.LinkValue;
+
+/**
+ *
+ * Data transfer object extending LinkValue for case priority data.
+ */
+public interface CasePriorityDTO
+   extends LinkValue
 {
-   none,
-   createdOn,
-   description,
-   dueOn,
-   priority
+   @Optional
+   Property<CasePriorityValue> priority();
 }

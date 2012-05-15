@@ -16,18 +16,14 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ResourceBundle;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXColorSelectionButton;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -41,15 +37,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.injection.scope.Uses;
-
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Bind components to actions, which are invoked when the components state is updated
@@ -146,7 +145,21 @@ public class ActionBinder
          } else if (component instanceof AbstractButton)
          {
             final AbstractButton button = (AbstractButton) component;
-            button.addActionListener( action );
+            if (component instanceof StreamflowJXColorSelectionButton)
+            {
+
+               button.addPropertyChangeListener( "background", new PropertyChangeListener()
+               {
+                  public void propertyChange( PropertyChangeEvent e )
+                  {
+                     action.actionPerformed( new ActionEvent(button, ActionEvent.ACTION_PERFORMED, action.getValue( Action.NAME ).toString()) );
+                  }
+               } );
+
+            } else
+            {
+               button.addActionListener( action );
+            }
          } else if (component instanceof JXDatePicker)
          {
             final JXDatePicker datePicker = (JXDatePicker) component;
@@ -161,7 +174,7 @@ public class ActionBinder
                }
             } );
 
-         } else if (component instanceof JComboBox)
+         }else if (component instanceof JComboBox)
          {
             final JComboBox comboBox = (JComboBox) component;
 

@@ -32,10 +32,10 @@ import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -93,7 +93,11 @@ public interface InboxContext
             } else if (orderByValue[0].equals("createdOn"))
             {
                query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
+            } else if( orderByValue[0].equals( "priority" ))
+            {
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CasePriority.Data.class).priority(), order));
             }
+
          }
          return query;
 

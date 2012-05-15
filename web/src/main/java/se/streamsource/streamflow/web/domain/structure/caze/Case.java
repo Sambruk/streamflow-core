@@ -71,6 +71,7 @@ public interface Case
       SubCase,
       CaseAccess,
       History,
-      CaseLoggable
+      CaseLoggable,
+      CasePriority
 {
 }

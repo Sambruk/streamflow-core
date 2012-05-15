@@ -32,6 +32,7 @@ import se.streamsource.dci.value.table.ColumnValue;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
@@ -43,7 +44,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
@@ -193,6 +196,8 @@ public class CasesTableModel extends Observable
                prototype.href().set( cell.v().get().toString() );
             else if( columnValue.id().get().equals( "removed" ))
                prototype.removed().set( (Boolean)cell.v().get() );
+            else if( columnValue.id().get().equals( "priority" ) && cell.v().get() != null )
+               prototype.priority().set( module.valueBuilderFactory().newValueFromJSON(CasePriorityValue.class, cell.v().get().toString()) );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }
@@ -546,5 +551,29 @@ public class CasesTableModel extends Observable
    public boolean isCreateCaseEnabled()
    {
       return client.getReference().getLastSegment().equals("assignments") || client.getReference().getLastSegment().equals("drafts");
+   }
+
+   public boolean containsCaseWithPriority()
+   {
+
+      for(CaseTableValue value : getEventList() )
+      {
+         if( value.priority().get() != null )
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public Map<String,Integer> getPriorityDefinitionMap()
+   {
+      LinksValue linksValue = client.query( "casepriorities", LinksValue.class );
+      HashMap<String,Integer> priorityDefinitionMap = new HashMap<String,Integer>();
+      for(LinkValue link : linksValue.links().get() )
+      {
+         priorityDefinitionMap.put( link.text().get(), new Integer( link.id().get() ) );
+      }
+      return priorityDefinitionMap;
    }
 }

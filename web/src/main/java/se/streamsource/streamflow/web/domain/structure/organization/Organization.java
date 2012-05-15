@@ -57,6 +57,7 @@ public interface Organization
       FormPdfTemplate,
       CasePdfTemplate,
       DatatypeDefinitions,
-      FieldGroups
+      FieldGroups,
+      CasePriorityDefinitions
 {
 }

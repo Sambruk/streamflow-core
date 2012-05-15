@@ -14,13 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.workspace.table;
+package se.streamsource.streamflow.api.administration.priority;
 
-public enum SortBy
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+/**
+ * This class contains all information needed for case priority.
+ * Name, priority and optionally color.
+ */
+public interface CasePriorityValue
+   extends ValueComposite
 {
-   none,
-   createdOn,
-   description,
-   dueOn,
-   priority
+
+   Property<String> name();
+
+   @Optional
+   Property<String> color();
 }
