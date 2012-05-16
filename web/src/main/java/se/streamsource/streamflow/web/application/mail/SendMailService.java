@@ -169,6 +169,10 @@ public interface SendMailService
          {
             try
             {
+               // Make sure mail.jar and activation.jar are loaded by the same class loader.
+               // http://http://stackoverflow.com/questions/1969667/send-a-mail-from-java5-and-java6
+               Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
                Session session = Session.getInstance( props, authenticator );
 
                session.setDebug( config.configuration().debug().get() );
