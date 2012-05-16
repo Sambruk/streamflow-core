@@ -47,7 +47,15 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessOptionalDefaults;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessSecurityApplies;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyAdded;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyApplies;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyNotAdded;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
@@ -63,6 +71,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.qi4j.api.util.Iterables.*;
 import static se.streamsource.dci.api.RoleMap.*;
@@ -155,6 +164,15 @@ public interface CaseCommandsContext
    @RequiresRemoved()
    @RequiresPermission(PermissionType.administrator)
    public void reinstate();
+
+
+   @RequiresSecrecyApplies()
+   @RequiresSecrecyNotAdded()
+   public void addsecrecy();
+
+   @RequiresSecrecyApplies()
+   @RequiresSecrecyAdded()
+   public void removesecrecy();
 
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
@@ -329,6 +347,51 @@ public interface CaseCommandsContext
       {
          Removable caze = RoleMap.role( Removable.class );
          caze.reinstate();
+      }
+
+      public void addsecrecy()
+      {
+         CaseAccessSecurityApplies secrecy = RoleMap.role( CaseAccessSecurityApplies.class );
+         secrecy.setSecrecySetting( true );
+
+         Ownable.Data owner = RoleMap.role( Ownable.Data.class );
+
+         CaseAccessOptionalDefaults.Data defaults = (CaseAccessOptionalDefaults.Data) owner.owner().get();
+         CaseAccess access = RoleMap.role( CaseAccess.class );
+         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessOptionalPermissionDefaults().get().entrySet())
+         {
+            access.changeAccess( entry.getKey(), entry.getValue() );
+         }
+      }
+
+      /**
+       * This is not a perfect "undo". We cannot
+       * go back to the previous settings before the
+       * secrecy was enabled. Instead we force the
+       * settings for the project and the case type
+       */
+      public void removesecrecy()
+      {
+         CaseAccessSecurityApplies secrecy = RoleMap.role( CaseAccessSecurityApplies.class );
+         secrecy.setSecrecySetting( false );
+
+         Ownable.Data owner = RoleMap.role( Ownable.Data.class );
+
+         // force set secrecy setting of the project
+         CaseAccessDefaults.Data defaults = (CaseAccessDefaults.Data) owner.owner().get();
+         CaseAccess access = RoleMap.role( CaseAccess.class );
+         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
+         {
+            access.forceAccess( entry.getKey(), entry.getValue() );
+         }
+
+         // apply the case type setting
+         TypedCase.Data data = RoleMap.role( TypedCase.Data.class );
+         defaults = (CaseAccessDefaults.Data) data.caseType().get();
+         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
+         {
+            access.changeAccess( entry.getKey(), entry.getValue() );
+         }
       }
 
       public void createSubCase()

@@ -35,6 +35,8 @@ public interface CaseAccess
 {
    void changeAccess(PermissionType permissionType, CaseAccessType accessType);
 
+   void forceAccess(PermissionType permissionType, CaseAccessType accessType);
+
    CaseAccessType getAccessType(PermissionType permissionType);
 
    interface Data
@@ -48,6 +50,15 @@ public interface CaseAccess
    abstract class Mixin
       implements CaseAccess, Data
    {
+      public void forceAccess( PermissionType permissionType, CaseAccessType accessType )
+      {
+         CaseAccessType current = getAccessType( permissionType );
+         if ( current != accessType )
+         {
+            changedAccess( null, permissionType, accessType );
+         }
+      }
+
       public void changeAccess( PermissionType permissionType, CaseAccessType accessType )
       {
          CaseAccessType current = getAccessType( permissionType );

@@ -98,6 +98,16 @@ public class CaseModel
       client.delete();
    }
 
+   public void applySecurity()
+   {
+      client.command( "addsecrecy" );
+   }
+
+   public void unApplySecurity()
+   {
+      client.command( "removesecrecy" );
+   }
+
    public EventList<TitledLinkValue> getPossibleSendTo()
    {
       BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
