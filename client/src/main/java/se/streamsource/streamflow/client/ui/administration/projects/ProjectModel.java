@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessOptionalDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;
@@ -41,5 +42,6 @@ public class ProjectModel
       relationModelMapping("selectedcasetypes", SelectedCaseTypesModel.class);
       relationModelMapping("filters", FiltersModel.class);
       relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
+      relationModelMapping("caseaccessoptionaldefaults", CaseAccessOptionalDefaultsModel.class);
    }
 }

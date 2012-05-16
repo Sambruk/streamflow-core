@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
+import se.streamsource.streamflow.api.administration.CaseAccessOptionalDefaultsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
@@ -162,6 +163,7 @@ public class ClientAPIAssembler
       administration.values(
               ArchivalSettingsDTO.class,
               RegisterUserDTO.class,
+              CaseAccessOptionalDefaultsDTO.class,
               ChangePasswordDTO.class,
               NewUserDTO.class,
               NewProxyUserDTO.class,

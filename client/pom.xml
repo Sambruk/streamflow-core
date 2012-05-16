@@ -148,12 +148,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-swing</artifactId>
-            <version>1.2.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>cuke4duke</groupId>
             <artifactId>cuke4duke</artifactId>
             <version>${cuke4duke.version}</version>

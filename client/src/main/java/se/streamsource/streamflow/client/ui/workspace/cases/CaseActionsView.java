@@ -113,9 +113,9 @@ public class CaseActionsView extends JPanel
       reopen,
       delete,
       exportpdf,
-      reinstate;
-
-
+      reinstate,
+      addsecrecy,
+      removesecrecy
    }
 
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
@@ -384,10 +384,36 @@ public class CaseActionsView extends JPanel
          return null;
    }
 
+   @Action(block = Task.BlockingScope.COMPONENT )
+   public Task addsecrecy()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.applySecurity();
+         }
+      };
+   }
+
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task removesecrecy()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.unApplySecurity();
+         }
+      };
+   }
+
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate", "addsecrecy", "removesecrecy"), transactions ))
       {
          model.refresh();
       }
