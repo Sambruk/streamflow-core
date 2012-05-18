@@ -132,7 +132,6 @@ public enum AdministrationResources
    choose_default_access_type,
    casesettings_tab,
    caseaccessdefaults_separator,
-   default_days_to_complete_separator,
    choose_move_casetype_to,
    choose_accesspoint_title,
    emailaccesspoints_tab,
@@ -153,7 +152,12 @@ public enum AdministrationResources
    send_email_to,
    close_case,
    match_label,
+   default_days_to_complete_separator,
    default_days_to_complete,
+   dueon_notification_separator,
+   dueon_notification_active,
+   dueon_notification_threshold,
+   dueon_notification_additional_receiver,
    add_filter_action,
    add_filter_close_action_confirmation,
    settings_tab,
@@ -165,5 +169,5 @@ public enum AdministrationResources
    choose_form_on_close, 
    none, 
    export,
-   fieldgroup_field_type
+   fieldgroup_field_type, 
 }

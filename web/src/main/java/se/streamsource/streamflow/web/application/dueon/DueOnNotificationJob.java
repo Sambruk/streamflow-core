@@ -323,8 +323,6 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       }
 
 
-
-
       @Override
       public void execute(JobExecutionContext context) throws JobExecutionException
       {

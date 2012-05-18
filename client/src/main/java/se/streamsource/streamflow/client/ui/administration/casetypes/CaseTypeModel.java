@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.administration.casetypes;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDueOnNotificationModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
@@ -44,6 +45,7 @@ public class CaseTypeModel
       relationModelMapping("selectedresolutions", SelectedResolutionsModel.class);
       relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
       relationModelMapping("defaultdaystocomplete", CaseDefaultDaysToCompleteModel.class);
+      relationModelMapping("dueonnotification", CaseDueOnNotificationModel.class);
       relationModelMapping("archival", CaseArchivalSettingModel.class);
       relationModelMapping( "formonclose", FormOnCloseModel.class );
    }

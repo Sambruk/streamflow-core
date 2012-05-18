@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDueOnNotificationView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
 import ca.odell.glazedlists.EventList;
 
@@ -62,6 +63,8 @@ public class SettingsResourceView
       addSettings("caseaccessdefaults", AdministrationResources.caseaccessdefaults_separator, CaseAccessDefaultsView.class);
 
       addSettings("defaultdaystocomplete", AdministrationResources.default_days_to_complete_separator, CaseDefaultDaysToCompleteView.class);
+
+      addSettings("dueonnotification", AdministrationResources.dueon_notification_separator, CaseDueOnNotificationView.class);
 
       addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
 

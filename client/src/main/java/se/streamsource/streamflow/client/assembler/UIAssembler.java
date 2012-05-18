@@ -40,6 +40,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDueOnNotificationView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
@@ -358,6 +359,7 @@ public class UIAssembler
             SelectedResolutionsView.class,
             CaseAccessDefaultsView.class,
             CaseDefaultDaysToCompleteView.class,
+            CaseDueOnNotificationView.class,
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
             UsersAdministrationView.class,
