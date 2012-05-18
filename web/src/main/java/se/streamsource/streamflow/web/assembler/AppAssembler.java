@@ -120,6 +120,8 @@ public class AppAssembler
          mail( layer.module( "Mail" ) );
       }
 
+      velocity( layer.module( "Velocity" ));
+      
       scheduler( layer.module( "Scheduler" ));
       
       dueOnNotifiation(layer.module("DueOn Notification"));
@@ -157,11 +159,11 @@ public class AppAssembler
       configuration().entities(ArchivalConfiguration.class);
    }
 
-   private void dueOnNotifiation(ModuleAssembly dueOnNotification)
+   private void dueOnNotifiation(ModuleAssembly module)
    {
-      dueOnNotification.services(DueOnNotificationService.class).identifiedBy("dueOnNotification").instantiateOnStartup().visibleIn(Visibility.application);
+      module.services(DueOnNotificationService.class).identifiedBy("dueOnNotification").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(DueOnNotificationConfiguration.class);
-      configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().enabled().set( true );
+      configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().enabled().set( false );
    }
 
 
@@ -299,7 +301,7 @@ public class AppAssembler
       module.services( ConsoleService.class ).visibleIn( application );
    }
 
-   private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException
+   private void velocity(ModuleAssembly module) throws AssemblyException
    {
       Properties props = new Properties();
       try
@@ -308,14 +310,17 @@ public class AppAssembler
 
          VelocityEngine velocity = new VelocityEngine(props);
 
-         knowledgebase.importedServices(VelocityEngine.class)
-                 .importedBy(INSTANCE).setMetaInfo(velocity);
+         module.importedServices(VelocityEngine.class)
+                 .importedBy(INSTANCE).setMetaInfo(velocity).visibleIn( layer );
 
       } catch (Exception e)
       {
          throw new AssemblyException("Could not load velocity properties", e);
       }
-
+   }
+   
+   private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException
+   {
       knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
       configuration().entities(KnowledgebaseConfiguration.class);
    }

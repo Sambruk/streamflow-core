@@ -27,12 +27,12 @@ public class DueOnNotification
 
    private Contactable recipient;
 
-   private List<CaseEntity> personalOverdueCases = new ArrayList<CaseEntity>();
-   private List<CaseEntity> personalThresholdCases = new ArrayList<CaseEntity>();
-   private List<CaseEntity> functionOverdueCases = new ArrayList<CaseEntity>();
-   private List<CaseEntity> functionThresholdCases = new ArrayList<CaseEntity>();
-   private List<CaseEntity> monitoredOverdueCases = new ArrayList<CaseEntity>();
-   private List<CaseEntity> monitoredThresholdCases = new ArrayList<CaseEntity>();
+   private List<DueOnItem> personalOverdueCases = new ArrayList<DueOnItem>();
+   private List<DueOnItem> personalThresholdCases = new ArrayList<DueOnItem>();
+   private List<DueOnItem> functionOverdueCases = new ArrayList<DueOnItem>();
+   private List<DueOnItem> functionThresholdCases = new ArrayList<DueOnItem>();
+   private List<DueOnItem> monitoredOverdueCases = new ArrayList<DueOnItem>();
+   private List<DueOnItem> monitoredThresholdCases = new ArrayList<DueOnItem>();
    
    public DueOnNotification(Contactable recipient) 
    {
@@ -44,34 +44,35 @@ public class DueOnNotification
       return recipient;
    }
 
-   public List<CaseEntity> getPersonalOverdueCases()
+   public List<DueOnItem> getPersonalOverdueCases()
    {
       return personalOverdueCases;
    }
 
-   public List<CaseEntity> getPersonalThresholdCases()
+   public List<DueOnItem> getPersonalThresholdCases()
    {
       return personalThresholdCases;
    }
 
-   public List<CaseEntity> getFunctionOverdueCases()
+   public List<DueOnItem> getFunctionOverdueCases()
    {
       return functionOverdueCases;
    }
 
-   public List<CaseEntity> getFunctionThresholdCases()
+   public List<DueOnItem> getFunctionThresholdCases()
    {
       return functionThresholdCases;
    }
 
-   public List<CaseEntity> getMonitoredOverdueCases()
+   public List<DueOnItem> getMonitoredOverdueCases()
    {
       return monitoredOverdueCases;
    }
 
-   public List<CaseEntity> getMonitoredThresholdCases()
+   public List<DueOnItem> getMonitoredThresholdCases()
    {
       return monitoredThresholdCases;
    }
+
 
 }

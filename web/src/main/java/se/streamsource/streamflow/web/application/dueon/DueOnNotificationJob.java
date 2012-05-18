@@ -23,12 +23,21 @@ import static org.qi4j.api.query.QueryExpressions.notEq;
 import static org.qi4j.api.query.QueryExpressions.or;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.qi4j.api.composite.TransientComposite;
@@ -54,9 +63,9 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -90,10 +99,16 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       @Structure
       Module module;
 
+      @Service
+      VelocityEngine velocity;
+      
       Usecase dueOnCheck = UsecaseBuilder.newUsecase("DueOn Notification check");
 
       Logger logger = LoggerFactory.getLogger(DueOnNotificationService.class);
 
+      // Force swedish until we have locale support in user profile...
+      Locale locale = new Locale("SV", "se");
+      
       public void performNotification() throws UnitOfWorkCompletionException
       {
          final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(dueOnCheck);
@@ -119,19 +134,19 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                for (CaseEntity caze : dueOnCases(caseType))
                {
                   if (caze.assignedTo().get() != null) {
-                     getNotification((Contactable) caze.assignedTo().get(), contactablesMap).getPersonalOverdueCases().add( caze );
+                     getNotification((Contactable) caze.assignedTo().get(), contactablesMap).getPersonalOverdueCases().add( new DueOnItem(caze, locale) );
                   } else {
                      List<Contactable> recipients = resolveFunctionRecipients(((Members.Data)caze.owner().get()).members().toList());
                      for (Contactable recipient : recipients)
                      {
-                        getNotification(recipient, contactablesMap).getFunctionOverdueCases().add( caze );
+                        getNotification(recipient, contactablesMap).getFunctionOverdueCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
                   if (settings.additionalrecievers().get() != null && !settings.additionalrecievers().get().isEmpty()) {
                      for (EntityReference contactableRef : settings.additionalrecievers().get())
                      {
                         Contactable contactable = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, contactableRef.identity());
-                        getNotification( contactable, contactablesMap).getMonitoredOverdueCases().add( caze );
+                        getNotification( contactable, contactablesMap).getMonitoredOverdueCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
                }
@@ -146,19 +161,19 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                for (CaseEntity caze : dueOnThresholdCases(data))
                {
                   if (caze.assignedTo().get() != null) {
-                     getNotification((Contactable) caze.assignedTo().get(), contactablesMap).getPersonalThresholdCases().add( caze );
+                     getNotification((Contactable) caze.assignedTo().get(), contactablesMap).getPersonalThresholdCases().add( new DueOnItem(caze, locale)  );
                   } else {
                      List<Contactable> recipients = resolveFunctionRecipients(((Members.Data)caze.owner().get()).members().toList());
                      for (Contactable recipient : recipients)
                      {
-                        getNotification(recipient, contactablesMap).getFunctionThresholdCases().add( caze );
+                        getNotification(recipient, contactablesMap).getFunctionThresholdCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
                   if (settings.additionalrecievers().get() != null && !settings.additionalrecievers().get().isEmpty()) {
                      for (EntityReference contactableRef : settings.additionalrecievers().get())
                      {
                         Contactable contactable = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, contactableRef.identity());
-                        getNotification( contactable, contactablesMap).getMonitoredThresholdCases().add( caze );
+                        getNotification( contactable, contactablesMap).getMonitoredThresholdCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
                }
@@ -199,73 +214,46 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
 
                builder.prototype().to().set( recipientEmail.emailAddress().get() );
                builder.prototype().subject().set( "Streamflow updates");
-               builder.prototype().content().set( createTextFormatedReport(notification) );
+               builder.prototype().content().set( createFormatedReport(notification,"dueonnotificationtextmail_sv.html") );
                builder.prototype().contentType().set( "text/plain" );
+               builder.prototype().contentHtml().set( createFormatedReport(notification,"dueonnotificationhtmlmail_sv.html") );
            
                mailSender.sentEmail( null, builder.newInstance() );
             }
          }
       }
       
-      private String createTextFormatedReport(DueOnNotification notification)
+      private String createFormatedReport(DueOnNotification notification, String template)
       {
-         StringBuffer message = new StringBuffer();
-         // Personal overdue cases
-         if (!notification.getPersonalOverdueCases().isEmpty()) {
-            message.append("== Overdue cases assigned to me:\r\n");
-         }
-         for (CaseEntity caze : notification.getPersonalOverdueCases())
+         VelocityContext context = new VelocityContext();
+         context.put( "user", "Henrik Reinhold" );
+         context.put( "notification", notification );
+         context.put( "today", Strings.capitalize( (new SimpleDateFormat( "d':e' MMMM", locale )).format( new Date() )));
+         StringWriter writer = new StringWriter();
+         try
          {
-            message.append("   CaseId: ").append( caze.caseId().get()).append(" Duedate: ").append( caze.dueOn().get()).append( "\r\n" );
-         }
-         
-         // Function overdue cases
-         if (!notification.getFunctionOverdueCases().isEmpty()) {
-            message.append("== Overdue cases assigned to one of my functions:\r\n");
-         }
-         for (CaseEntity caze : notification.getFunctionOverdueCases())
-         {
-            message.append("   CaseId: ").append( caze.caseId().get()).append("  Duedate: ").append( caze.dueOn().get()).append("  Function: ").append( ((Describable)caze.owner().get()).getDescription()).append( "\r\n" );
-         }
-         
-         // Monitored overdue cases
-         if (!notification.getMonitoredOverdueCases().isEmpty()) {
-            message.append("== Overdue cases that I monitor:\r\n");
-         }
-         for (CaseEntity caze : notification.getMonitoredOverdueCases())
-         {
-            message.append("   CaseId: ").append( caze.caseId().get()).append("  Duedate: ").append( caze.dueOn().get()).append( "\r\n" );
-         }
-         
-         // Personal threshold cases
-         if (!notification.getPersonalThresholdCases().isEmpty()) {
-            message.append("== Threshold Overdue cases assigned to me:\r\n");
-         }
-         for (CaseEntity caze : notification.getPersonalThresholdCases())
-         {
-            message.append("   CaseId: ").append( caze.caseId().get()).append(" Duedate: ").append( caze.dueOn().get()).append( "\r\n" );
-         }
-         
-         // Function threshold cases
-         if (!notification.getFunctionThresholdCases().isEmpty()) {
-            message.append("== Threshold overdue cases assigned to one of my functions:\r\n");
-         }
-         for (CaseEntity caze : notification.getFunctionThresholdCases())
-         {
-            message.append("   CaseId: ").append( caze.caseId().get()).append("  Duedate: ").append( caze.dueOn().get()).append("  Function: ").append( ((Describable)caze.owner().get()).getDescription()).append( "\r\n" );
-         }
-         
-         // Monitored threshold cases
-         if (!notification.getMonitoredThresholdCases().isEmpty()) {
-            message.append(" Overdue cases that I monitor:\r\n");
-         }
-         for (CaseEntity caze : notification.getMonitoredThresholdCases())
-         {
-            message.append("   CaseId: ").append( caze.caseId().get()).append("  Duedate: ").append( caze.dueOn().get()).append( "\r\n" );
-         }
-         return message.toString();
-      }
+            velocity.evaluate(context, writer, "dueonnotificationmail", getTemplate( template, getClass() ));
 
+            return writer.toString();
+         } catch (IOException e)
+         {
+            throw new IllegalArgumentException("Could not create html mail", e);
+         }
+      }
+      
+      public static String getTemplate(String resourceName, Class resourceClass) throws IOException
+      {
+         StringBuilder template = new StringBuilder( "" );
+         InputStream in = resourceClass.getResourceAsStream( resourceName );
+         BufferedReader reader = new BufferedReader( new InputStreamReader( in ) );
+         String line;
+         while ((line = reader.readLine()) != null)
+            template.append( line + "\n" );
+         reader.close();
+
+         return template.toString();
+      }
+      
       private List<Contactable> resolveFunctionRecipients(List<Member> members)
       {
          List<Contactable> contacts = new ArrayList<Contactable>();
@@ -345,7 +333,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
          {
             logger.error("Could not complete sending due on notifications", e);
          }
-         
-      }   
+      }
    }
+   
 }

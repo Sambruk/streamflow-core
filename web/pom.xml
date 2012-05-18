@@ -295,6 +295,10 @@
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+        </dependency>
             
         <!--  Scheduler -->
 		<dependency>

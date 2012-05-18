@@ -1,0 +1,80 @@
+#*
+<!--
+
+
+    Copyright 2009-2012 Streamsource AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+*#
+Streamflow Statusrapport, $today
+				
+#if(!$notification.personalOverdueCases.empty || !$notification.personalThresholdCases.empty)
+====================================
+Ärenden tilldelade till $user
+#end
+
+#if (!$notification.personalOverdueCases.empty)
+-- Passerat förfallodatum
+#foreach( $case in $notification.personalOverdueCases )
+     $case.caseId	$case.dueOn	$case.description
+#end
+#end
+#if(!$notification.personalThresholdCases.empty)
+--- På väg att passera förfallodatum
+#foreach( $case in $notification.personalThresholdCases )
+     $case.caseId	$case.dueOn	$case.description
+#end
+#end
+			
+#if (!$notification.functionOverdueCases.empty || !$notification.functionThresholdCases.empty)
+
+====================================
+Ärenden tilldelade till någon av $user:s funktioner
+
+#end
+#if(!$notification.functionOverdueCases.empty)
+-- Passerat förfallodatum
+#foreach( $case in $notification.functionOverdueCases )
+     $case.caseId	$case.dueOn	$case.owner	$case.description
+#end
+#end
+#if(!$notification.functionThresholdCases.empty)
+--- På väg att passera förfallodatum
+#foreach( $case in $notification.functionThresholdCases )
+     $case.caseId	$case.dueOn	$case.owner	$case.description
+#end
+#end
+				
+#if (!$notification.monitoredOverdueCases.empty || !$notification.monitoredThresholdCases.empty)
+
+====================================
+Ärenden som bevakas av $user
+
+#end
+#if(!$notification.monitoredOverdueCases.empty)
+-- Passerat förfallodatum
+#foreach( $case in $notification.monitoredOverdueCases )
+     $case.caseId	$case.dueOn #if ($case.assignedTo) $case.owner ($case.assignedTo) #else $case.owner #end $case.description
+#end
+#end
+#if(!$notification.monitoredThresholdCases.empty)
+-- På väg att passera förfallodatum
+#foreach( $case in $notification.monitoredThresholdCases )
+     $case.caseId	$case.dueOn #if ($case.assignedTo) $case.owner ($case.assignedTo) #else $case.owner #end $case.description
+#end
+#end
+
+
+Powered by Streamflow(TM)
