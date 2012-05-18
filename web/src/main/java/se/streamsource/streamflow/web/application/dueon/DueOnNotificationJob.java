@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -66,6 +67,7 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
+import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -108,6 +110,8 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
 
       // Force swedish until we have locale support in user profile...
       Locale locale = new Locale("SV", "se");
+
+      private ResourceBundle bundle = ResourceBundle.getBundle( DueOnNotificationJob.class.getName(), locale );
       
       public void performNotification() throws UnitOfWorkCompletionException
       {
@@ -213,7 +217,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                }
 
                builder.prototype().to().set( recipientEmail.emailAddress().get() );
-               builder.prototype().subject().set( "Streamflow updates");
+               builder.prototype().subject().set( bundle.getString( "mail.title" ));
                builder.prototype().content().set( createFormatedReport(notification,"dueonnotificationtextmail_sv.html") );
                builder.prototype().contentType().set( "text/plain" );
                builder.prototype().contentHtml().set( createFormatedReport(notification,"dueonnotificationhtmlmail_sv.html") );
@@ -226,7 +230,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       private String createFormatedReport(DueOnNotification notification, String template)
       {
          VelocityContext context = new VelocityContext();
-         context.put( "user", "Henrik Reinhold" );
+         context.put( "user", notification.getRecipient().getContact().name().get() );
          context.put( "notification", notification );
          context.put( "today", Strings.capitalize( (new SimpleDateFormat( "d':e' MMMM", locale )).format( new Date() )));
          StringWriter writer = new StringWriter();
