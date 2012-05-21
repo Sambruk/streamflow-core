@@ -499,7 +499,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       final CasePriorityDTO selected = (CasePriorityDTO)casePriority.getSelectedItem();
       if( selected != null
             && ( selected.priority().get() == null && model.getGeneral().priority().get() != null
-            || ! selected.priority().get().equals( model.getGeneral().priority().get() ) ) )
+            || selected.priority().get() != null && !selected.priority().get().equals( model.getGeneral().priority().get() ) ) )
       {
          return new CommandTask()
          {
