@@ -152,7 +152,7 @@ public class CaseStatisticsServiceTest
       final UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
       Users users = uow.newEntity(UsersEntity.class, UsersEntity.USERS_ID);
-      final UserEntity user1 = (UserEntity) users.createUser("user1", "user1");
+      final UserEntity user1 = (UserEntity) users.createUser("user1", "userpwd");
 
       RoleMap.newCurrentRoleMap();
       RoleMap.current().set(new UserPrincipal(user1.userName().get()));

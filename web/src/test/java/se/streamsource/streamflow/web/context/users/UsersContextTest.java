@@ -60,7 +60,7 @@ public class UsersContextTest
          RoleMap.newCurrentRoleMap();
          playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
          playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
-         context( OrganizationUsersContext.class).join( entityValue("test" ) );
+         context( OrganizationUsersContext.class).join( entityValue("testing" ) );
          uow.complete();
       }
    }
@@ -71,7 +71,7 @@ public class UsersContextTest
       RoleMap.newCurrentRoleMap();
       playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
-      playRole( User.class, "test");
+      playRole( User.class, "testing");
 
       context( OrganizationUserContext.class).delete();
 
@@ -83,7 +83,7 @@ public class UsersContextTest
    {
       // Create user
       clearEvents();
-      createUser( "test" );
+      createUser( "testing" );
       eventsOccurred( "createdUser", "joinedOrganization" );
 
       // Check that user can be found
@@ -92,7 +92,7 @@ public class UsersContextTest
          RoleMap.newCurrentRoleMap();
          playRole( Users.class, UsersEntity.USERS_ID);
 
-         Assert.assertThat( valueContains( context(UsersContext.class).index(), "test" ), equalTo(true ));
+         Assert.assertThat( valueContains( context(UsersContext.class).index(), "testing" ), equalTo(true ));
 
          uow.discard();
       }
