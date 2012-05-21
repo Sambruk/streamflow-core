@@ -67,9 +67,9 @@ public class SettingsResourceView
 
       addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
 
-      addSettings( "formonclose", AdministrationResources.formonclose_separator, FormOnCloseView.class );
-      
       addSettings( "caseprioritysetting", AdministrationResources.casepriority_separator, CasePrioritySettingView.class );
+
+      addSettings( "formonclose", AdministrationResources.formonclose_separator, FormOnCloseView.class );
    }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)
