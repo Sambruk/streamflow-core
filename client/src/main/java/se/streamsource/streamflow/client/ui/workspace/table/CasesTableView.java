@@ -248,7 +248,9 @@ public class CasesTableView
                   caseTable.getColumnExt( invisibleCol ).setVisible( false );
             }
 
-            if( !model.containsCaseWithPriority() && !model.getInvisibleColumns().contains( 8 ) )
+            if( !model.containsCaseWithPriority()
+                  && !model.getInvisibleColumns().contains( 8 )
+                  && caseTable.getColumnCount( ) > 8 )
               caseTable.getColumnExt(8).setVisible( false );
          }
       } );
