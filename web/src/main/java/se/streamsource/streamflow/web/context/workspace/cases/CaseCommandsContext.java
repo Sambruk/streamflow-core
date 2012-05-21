@@ -388,9 +388,12 @@ public interface CaseCommandsContext
          // apply the case type setting
          TypedCase.Data data = RoleMap.role( TypedCase.Data.class );
          defaults = (CaseAccessDefaults.Data) data.caseType().get();
-         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
+         if( defaults != null )
          {
-            access.changeAccess( entry.getKey(), entry.getValue() );
+            for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
+            {
+               access.changeAccess( entry.getKey(), entry.getValue() );
+            }
          }
       }
 
