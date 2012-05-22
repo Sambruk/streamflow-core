@@ -41,6 +41,7 @@ import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 /**
  * The context for a note.
  */
+@RequiresPermission( PermissionType.read )
 @Mixins(NoteContext.Mixin.class)
 public interface NoteContext
    extends IndexContext<NoteDTO>, Context

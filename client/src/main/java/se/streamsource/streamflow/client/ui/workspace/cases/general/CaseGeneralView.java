@@ -97,7 +97,6 @@ import java.util.TimeZone;
 
 import static java.awt.RenderingHints.*;
 import static java.lang.Integer.*;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
@@ -364,11 +363,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    public void refresh()
    {
       model.refresh();
-
-      boolean enabled = model.getCaseStatus().equals( DRAFT ) || model.getCaseStatus().equals( OPEN );
-      labelButton.setEnabled( enabled );
-      labels.setEnabled( enabled );
-      forms.setEnabled( enabled );
 
       valueBinder.update( model.getGeneral() );
       selectedCaseType.setClickLink( model.getGeneral().caseType().get() );

@@ -16,54 +16,22 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.caselog;
 
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.attachment;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.contact;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.conversation;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.custom;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.form;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.system_trace;
-import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.valueOf;
-import static se.streamsource.streamflow.client.util.i18n.ICON_16;
-import static se.streamsource.streamflow.client.util.i18n.icon;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Arrays;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowToggleButton;
@@ -77,13 +45,32 @@ import se.streamsource.streamflow.client.util.popup.ValueToLabelConverter;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Arrays;
+
+import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class CaseLogView extends JPanel implements TransactionListener, Refreshable
 {
@@ -185,7 +172,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       editButton.setMargin( new Insets( 3, 7, 1, 5 ) );
       rightBuilder.add(editButton, new CellConstraints( 4, 1, 1, 1, CellConstraints.RIGHT,
             CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
-      
+
       // Caselog
       rightBuilder.nextLine();
       ((JXList) list).addHighlighter( HighlighterFactory.createAlternateStriping() );
@@ -279,9 +266,6 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
             }  
          }
       });
-      
-      RefreshComponents refreshComponents = new RefreshComponents();
-      refreshComponents.enabledOn( "addMessage", newMessagePane.getViewport().getView() );
 
       new RefreshWhenShowing( this, this );
    }
@@ -321,6 +305,11 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    public void refresh()
    {
       model.refresh();
+
+
+      boolean isEditable = model.getCommandEnabled( "addmessage" );
+      newMessagePane.getViewport().getView().setEnabled( isEditable );
+      editButton.setEnabled( isEditable );
 
       if (!editMode) {
          list.ensureIndexIsVisible( list.getModel().getSize() - 1 );

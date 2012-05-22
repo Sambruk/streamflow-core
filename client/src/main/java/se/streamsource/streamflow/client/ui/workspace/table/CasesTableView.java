@@ -324,6 +324,7 @@ public class CasesTableView
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
+            if (value == null) return this;
             if (value instanceof SeparatorList.Separator)
                return caseTable.getDefaultRenderer( SeparatorList.Separator.class )
                      .getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
@@ -348,6 +349,8 @@ public class CasesTableView
          public Component getTableCellRendererComponent( JTable table, Object value,
                                                          boolean isSelected, boolean hasFocus, int row, int column )
          {
+            if( value == null ) return this;
+
             EventTableModel model = (EventTableModel) table.getModel();
             boolean hasResolution = !Strings.empty( ((CaseTableValue) model.getElementAt( row )).resolution().get() );
             boolean removed = ((CaseTableValue)model.getElementAt( row )).removed().get();
