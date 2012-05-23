@@ -565,6 +565,11 @@
                 <artifactId>pdfbox</artifactId>
                 <version>1.4.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-tools</artifactId>
+                <version>2.0</version>
+            </dependency>
 
             <!-- Logging -->
             <dependency>
@@ -689,6 +694,13 @@
                             <scope>test</scope>
                         </dependency>
             -->
+            
+            <!-- Scheduler -->
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>2.1.5</version>
+            </dependency>
 
             <!-- Test -->
             <dependency>

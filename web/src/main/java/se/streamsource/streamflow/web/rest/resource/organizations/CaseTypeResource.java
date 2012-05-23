@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsC
 import se.streamsource.streamflow.web.context.administration.CaseDefaultDaysToCompleteContext;
 import se.streamsource.streamflow.web.context.administration.CasePrioritySettingContext;
 import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
+import se.streamsource.streamflow.web.context.administration.DueOnNotificationSettingsContext;
 import se.streamsource.streamflow.web.context.administration.FormOnCloseContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
@@ -105,7 +106,7 @@ public class CaseTypeResource
    {
       subResourceContexts(ArchivalSettingsContext.class);
    }
-
+   
    @SubResource
    public void formonclose()
    {

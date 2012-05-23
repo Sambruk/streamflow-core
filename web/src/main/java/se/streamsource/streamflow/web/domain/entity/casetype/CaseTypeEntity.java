@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -33,10 +34,10 @@ import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings
 import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
+import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
-import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;

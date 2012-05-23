@@ -16,9 +16,29 @@
  */
 package se.streamsource.streamflow.web.management;
 
+import static org.qi4j.api.util.Iterables.count;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.zip.GZIPOutputStream;
+
 import org.openrdf.repository.Repository;
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.composite.Composite;
+import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
@@ -44,6 +64,7 @@ import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactory;
@@ -54,6 +75,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -61,25 +84,6 @@ import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.zip.GZIPOutputStream;
-
-import static org.qi4j.api.util.Iterables.count;
-import static org.qi4j.api.util.Iterables.filter;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * Implementation of Manager interface. All general JMX management methods
@@ -157,6 +161,9 @@ public interface ManagerComposite
       @Service
       ArchivalService archival;
 
+      @Service
+      DueOnNotificationService dueOnNotificationService;
+      
       @Structure
       ModuleSPI module;
 
@@ -563,6 +570,21 @@ public interface ManagerComposite
          }
       }
 
+      public void sendDueOnNotifications()
+      {
+         try
+         {
+            logger.info("Start to send dueOn notifications");
+            TransientBuilder<? extends DueOnNotificationJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder( DueOnNotificationJob.class );
+            DueOnNotificationJob dueOnNotificationJob = newJobBuilder.newInstance();
+            dueOnNotificationJob.performNotification();
+            logger.info("Finished sending dueOn notifications");
+         } catch (UnitOfWorkCompletionException e)
+         {
+            logger.warn("Could not send dueOn notifications", e);
+         }
+      }
+      
       private File getLatestBackup() throws ParseException
       {
          File latest = null;

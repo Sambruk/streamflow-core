@@ -66,6 +66,8 @@ import se.streamsource.streamflow.client.ui.administration.policy.Administrators
 import se.streamsource.streamflow.client.ui.administration.projects.MembersModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
@@ -192,6 +194,8 @@ public class ModelAssembler
             CaseAccessDefaultsModel.class,
             CaseAccessOptionalDefaultsModel.class,
             CaseDefaultDaysToCompleteModel.class,
+            CaseDueOnNotificationModel.class,
+            RecipientsModel.class,
             CaseArchivalSettingModel.class,
             FormOnCloseModel.class,
             CaseTypesModel.class,

@@ -16,31 +16,33 @@
  */
 package se.streamsource.streamflow.client.ui.administration.casesettings;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.CaseAccessOptionalDefaultsDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * JAVADOC

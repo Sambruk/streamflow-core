@@ -14,36 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.application.mail;
-
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+package se.streamsource.streamflow.api.administration;
 
 import java.util.List;
-import java.util.Map;
 
-/**
- * Represents an email
- */
-public interface EmailValue
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Range;
+
+public interface DueOnNotificationSettingsDTO
    extends ValueComposite
 {
-   @Optional Property<String> fromName();
-   @Optional Property<String> from();
-   @Optional Property<String> replyTo();
-   Property<String> to();
-   @Optional Property<String> subject();
-   Property<String> content();
-   Property<String> contentType();
-   Property<String> contentHtml();
-   @Optional Property<String> messageId();
+   @UseDefaults
+   @Range(min = 0, max = Double.MAX_VALUE)
+   Property<Integer> threshold();
 
    @UseDefaults
-   Property<List<AttachedFileValue>> attachments();
-
+   Property<Boolean> active();
+   
    @UseDefaults
-   Property<Map<String,String>> headers();
+   Property<List<EntityReference>> additionalrecipients();
 }

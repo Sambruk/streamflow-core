@@ -87,4 +87,13 @@ public class Strings
         return humanReadableString.toString();
     }
 
+    public static String capitalize(final String string)
+    {
+       if (string == null)
+          throw new NullPointerException();
+       if (string.equals(""))
+          throw new NullPointerException();
+
+       return Character.toUpperCase(string.charAt(0)) + string.substring(1);
+    }
 }

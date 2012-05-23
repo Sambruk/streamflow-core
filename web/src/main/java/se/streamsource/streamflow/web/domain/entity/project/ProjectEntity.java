@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessOptionalDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificationSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -82,6 +83,8 @@ public interface ProjectEntity
         SelectedCaseTypes.Data,
         Filters.Data,
         Filters.Events,
+        DueOnNotificationSettings.Data,
+        DueOnNotificationSettings.Events,
 
         // Queries
         AssignmentsQueries,
