@@ -168,6 +168,10 @@ public interface SendMailService
          {
             try
             {
+               // Make sure mail.jar and activation.jar are loaded by the same class loader.
+               // http://http://stackoverflow.com/questions/1969667/send-a-mail-from-java5-and-java6
+               Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
                Session session = Session.getInstance( props, authenticator );
 
                session.setDebug( config.configuration().debug().get() );
@@ -175,7 +179,7 @@ public interface SendMailService
                SendMimeMessage msg = new SendMimeMessage( session, email );
 
                if (email.fromName().get() == null)
-                  msg.setFrom( new InternetAddress( config.configuration().from().get() ) );
+                  msg.setFrom( new InternetAddress( config.configuration().from().get(), config.configuration().fromName().get(), "ISO-8859-1" ) );
                else
                   msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get(), "ISO-8859-1" ) );
 
