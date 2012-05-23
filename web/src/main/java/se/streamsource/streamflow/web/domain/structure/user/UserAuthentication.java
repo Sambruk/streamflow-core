@@ -35,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
 @Mixins(UserAuthentication.Mixin.class)
 public interface UserAuthentication
 {
-   void changePassword( @Password String currentPassword, @Password String newPassword ) throws WrongPasswordException;
+   void changePassword( String currentPassword, @Password String newPassword ) throws WrongPasswordException;
 
    void resetPassword( @Password String password );
 
