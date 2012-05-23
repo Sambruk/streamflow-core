@@ -35,5 +35,5 @@ public interface DueOnNotificationSettingsDTO
    Property<Boolean> active();
    
    @UseDefaults
-   Property<List<EntityReference>> additionalrecievers();
+   Property<List<EntityReference>> additionalrecipients();
 }

@@ -41,8 +41,8 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDueOnNotificationView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 import ca.odell.glazedlists.EventList;
 
 /**

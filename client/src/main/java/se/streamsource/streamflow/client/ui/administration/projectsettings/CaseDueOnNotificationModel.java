@@ -14,11 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.casesettings;
+package se.streamsource.streamflow.client.ui.administration.projectsettings;
 
-import java.util.List;
-
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.data.Form;
 
 import se.streamsource.dci.value.FormValue;
@@ -31,14 +28,25 @@ public class CaseDueOnNotificationModel
       extends ResourceModel<FormValue>
 {
 
-   public void changeNotificationSettings(Integer threshold, Boolean active, List<EntityReference> receivers)
+   public CaseDueOnNotificationModel()
+   {
+      relationModelMapping("recipients", RecipientsModel.class );
+   }
+   
+   public void changeThreshold(Integer threshold)
    {
       Form form = new Form();
-      form.set( "active", active.toString() );
       form.set("threshold", threshold.toString() );
-      form.set("additionalrecievers", "[]");
       
-      client.postLink(command("update"), form);
+      client.postLink(command("changenotificationthreshold"), form);
+   }
+
+   public void activateNotifications(Boolean activate)
+   {
+      Form form = new Form();
+      form.set("activate", activate.toString() );
+      
+      client.postLink(command("activatenotifications"), form);
    }
    
 

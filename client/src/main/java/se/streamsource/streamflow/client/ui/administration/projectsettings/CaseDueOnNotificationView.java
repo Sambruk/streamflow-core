@@ -14,14 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.casesettings;
+package se.streamsource.streamflow.client.ui.administration.projectsettings;
+
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.first;
+import static se.streamsource.dci.value.link.Links.withRel;
 
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.ActionMap;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -39,8 +45,11 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.CellConstraints.Alignment;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
@@ -58,8 +67,12 @@ public class CaseDueOnNotificationView
 
    private CaseDueOnNotificationModel model;
 
+   protected RecipientsView recipientsView;
+   
    private JTextField threshold = new JTextField(2);
    private JCheckBox active = new JCheckBox("Aktiv");
+
+   private DefaultFormBuilder builder;
 
    public CaseDueOnNotificationView(@Service ApplicationContext context, @Uses CaseDueOnNotificationModel model)
    {
@@ -67,18 +80,22 @@ public class CaseDueOnNotificationView
       model.addObserver( this );
 
       threshold.setColumns(2);
-      FormLayout layout = new FormLayout( "150dlu, 2dlu, 50, 80", "pref" );
+      FormLayout layout = new FormLayout( "150dlu, 2dlu, 50, 200", "pref, pref, pref" );
       setLayout(layout);
       setMaximumSize( new Dimension( Short.MAX_VALUE, 50 ) );
-      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this);
-      builder.append(i18n.text(AdministrationResources.dueon_notification_threshold), threshold);
-      builder.append( i18n.text( AdministrationResources.dueon_notification_active), active,2 );
+      builder = new DefaultFormBuilder( layout, this);
+      builder.add( new JLabel(i18n.text(AdministrationResources.dueon_notification_threshold)), new CellConstraints(1,1));
+      builder.add( threshold, new CellConstraints(3,1));
+      
+      builder.add( new JLabel(i18n.text(AdministrationResources.dueon_notification_active)), new CellConstraints(1,2));
+      builder.add( active, new CellConstraints(3,2,2,1));
 
+      builder.add(new JLabel(i18n.text(AdministrationResources.dueon_notification_additional_recipient)), new CellConstraints(1,3,1,1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 4, 0, 0, 0 )));
       ActionMap am = context.getActionMap(this);
       setActionMap(am);
 
-      new ActionBinder(am).bind("changeDueOnSettings", threshold);
-      new ActionBinder(am).bind("changeDueOnSettings", active);
+      new ActionBinder(am).bind("changeThreshold", threshold);
+      new ActionBinder(am).bind("activateNotifications", active);
       
 
       new RefreshWhenShowing( this, model );
@@ -95,16 +112,35 @@ public class CaseDueOnNotificationView
          active.setSelected( settings.active().get() );
          threshold.setText(settings.threshold().get().toString());  
       }
+      
+      if (recipientsView == null)
+      {
+         recipientsView = module
+               .objectBuilderFactory()
+               .newObjectBuilder( RecipientsView.class )
+               .use( model.newResourceModel( first( filter( withRel( "recipients" ), model.getResourceValue()
+                     .resources().get() ) ) ) ).newInstance();
+         builder.add( recipientsView, new CellConstraints( 3, 3, 2, 1) );
+      }
    }
 
    @org.jdesktop.application.Action
-   public void changeDueOnSettings()
+   public void changeThreshold()
    {
-      model.changeNotificationSettings( Integer.parseInt( threshold.getText() ), active.isSelected(), null);
+      model.changeThreshold( Integer.parseInt( threshold.getText() ));
+   }
+
+   @org.jdesktop.application.Action
+   public void activateNotifications()
+   {
+      model.activateNotifications( active.isSelected());
    }
    
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      model.refresh();
+      if (Events.matches( Events.withNames( "changedDueOnNotifications"), transactions ))
+      {
+         model.refresh();
+      }
    }
 }

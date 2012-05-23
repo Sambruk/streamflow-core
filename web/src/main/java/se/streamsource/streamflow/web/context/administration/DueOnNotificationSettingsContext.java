@@ -16,9 +16,12 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificationSettings;
 
@@ -26,15 +29,24 @@ import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificatio
  * TODO
  */
 public class DueOnNotificationSettingsContext
-   implements IndexContext<DueOnNotificationSettingsDTO>, UpdateContext<DueOnNotificationSettingsDTO>
+   implements IndexContext<DueOnNotificationSettingsDTO>
 {
+   @Structure
+   Module module;
+   
    public DueOnNotificationSettingsDTO index()
    {
       return RoleMap.role(DueOnNotificationSettings.Data.class).notificationSettings().get();
    }
 
-   public void update(DueOnNotificationSettingsDTO value)
+   public void activatenotifications(@Name("activate") Boolean activate)
    {
-      RoleMap.role(DueOnNotificationSettings.class).changeNotificationSettings(value);
+      RoleMap.role(DueOnNotificationSettings.class).activateNotifications( activate );
    }
+
+   public void changenotificationthreshold(@Name("threshold") Integer threshold)
+   {
+      RoleMap.role(DueOnNotificationSettings.class).changeNotificationThreshold( threshold );
+   }
+
 }

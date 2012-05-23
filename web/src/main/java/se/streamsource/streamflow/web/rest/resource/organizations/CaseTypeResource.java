@@ -105,12 +105,6 @@ public class CaseTypeResource
    {
       subResourceContexts(ArchivalSettingsContext.class);
    }
-
-   @SubResource
-   public void dueonnotification()
-   {
-      subResourceContexts(DueOnNotificationSettingsContext.class);
-   }
    
    @SubResource
    public void formonclose()

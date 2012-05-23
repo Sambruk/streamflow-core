@@ -71,8 +71,11 @@ import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificationSettings;
@@ -82,6 +85,7 @@ import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
 @Mixins(DueOnNotificationJob.Mixin.class)
@@ -130,7 +134,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
          
          Map<Contactable,DueOnNotification> contactablesMap = new HashMap<Contactable, DueOnNotification>();
          
-         for (CaseTypeEntity caseType : dueOnNotificationSettings())
+         for (ProjectEntity caseType : dueOnNotificationSettings())
          {
             final DueOnNotificationSettingsDTO settings = caseType.notificationSettings().get();
             if (settings.active().get())
@@ -146,8 +150,8 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                         getNotification(recipient, contactablesMap).getFunctionOverdueCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
-                  if (settings.additionalrecievers().get() != null && !settings.additionalrecievers().get().isEmpty()) {
-                     for (EntityReference contactableRef : settings.additionalrecievers().get())
+                  if (settings.additionalrecipients().get() != null && !settings.additionalrecipients().get().isEmpty()) {
+                     for (EntityReference contactableRef : settings.additionalrecipients().get())
                      {
                         Contactable contactable = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, contactableRef.identity());
                         getNotification( contactable, contactablesMap).getMonitoredOverdueCases().add( new DueOnItem(caze, locale)  );
@@ -173,8 +177,8 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                         getNotification(recipient, contactablesMap).getFunctionThresholdCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
-                  if (settings.additionalrecievers().get() != null && !settings.additionalrecievers().get().isEmpty()) {
-                     for (EntityReference contactableRef : settings.additionalrecievers().get())
+                  if (settings.additionalrecipients().get() != null && !settings.additionalrecipients().get().isEmpty()) {
+                     for (EntityReference contactableRef : settings.additionalrecipients().get())
                      {
                         Contactable contactable = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, contactableRef.identity());
                         getNotification( contactable, contactablesMap).getMonitoredThresholdCases().add( new DueOnItem(caze, locale)  );
@@ -285,10 +289,10 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
          return contacts;
       }
 
-      private Iterable<CaseTypeEntity> dueOnNotificationSettings()
+      private Iterable<ProjectEntity> dueOnNotificationSettings()
       {
          Property<Boolean> active = templateFor(DueOnNotificationSettings.Data.class).notificationSettings().get().active();
-         Query<CaseTypeEntity> settings = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class).where(eq(active, true)).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+         Query<ProjectEntity> settings = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class).where(eq(active, true)).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
          return settings;
       }
       
@@ -304,7 +308,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       {
         return module.queryBuilderFactory().
                   newQueryBuilder( CaseEntity.class ).
-                  where( and( eq( templateFor( TypedCase.Data.class ).caseType(), (CaseType) setting ),
+                  where( and( eq( templateFor( Ownable.Data.class ).owner(), (Project) setting ),
                               or( eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
                                     eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ) ),
                               lt( templateFor( DueOn.Data.class ).dueOn(), new DateTime().toDate() ) ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
@@ -316,7 +320,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
 
          return module.queryBuilderFactory().
                newQueryBuilder( CaseEntity.class ).
-               where( and( eq( templateFor( TypedCase.Data.class ).caseType(), (CaseType) setting ),
+               where( and( eq( templateFor( Ownable.Data.class ).owner(), (Project) setting ),
                            or( eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
                                  eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ) ),
                            eq( templateFor( DueOn.Data.class ).dueOn(), thresholdDate ) ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );

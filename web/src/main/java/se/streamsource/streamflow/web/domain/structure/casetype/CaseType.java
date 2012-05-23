@@ -35,7 +35,6 @@ public interface CaseType
       ArchivalSettings,
       CaseAccessDefaults,
       DefaultDaysToComplete,
-      DueOnNotificationSettings,
       Describable,
       Forms,
       Labels,

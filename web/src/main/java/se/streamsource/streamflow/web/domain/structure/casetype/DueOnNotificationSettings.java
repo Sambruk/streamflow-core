@@ -17,9 +17,13 @@
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -30,7 +34,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins(DueOnNotificationSettings.Mixin.class)
 public interface DueOnNotificationSettings
 {
-   void changeNotificationSettings(DueOnNotificationSettingsDTO settings);
+   void activateNotifications( Boolean activate);
+   void changeNotificationThreshold( Integer days );
+   void addRecipient( EntityReference recipient );
+   void removeRecipient( EntityReference recipient );
 
    interface Data
    {
@@ -49,14 +56,54 @@ public interface DueOnNotificationSettings
       @This
       Data data;
 
-      public void changeNotificationSettings(DueOnNotificationSettingsDTO settings)
+      @Structure
+      Module module;
+      
+      public void activateNotifications( Boolean activate)
       {
-         changedNotificationSettings(null, settings);
+         ValueBuilder<DueOnNotificationSettingsDTO> builder = getBuilder();
+         builder.prototype().active().set( activate );
+         changedNotificationSettings( null, builder.newInstance() );
+      }
+
+      public void changeNotificationThreshold( Integer days )
+      {
+         ValueBuilder<DueOnNotificationSettingsDTO> builder = getBuilder();
+         builder.prototype().threshold().set( days );
+         changedNotificationSettings( null, builder.newInstance() );
+      }
+      
+      public void addRecipient( EntityReference recipient )
+      {
+         ValueBuilder<DueOnNotificationSettingsDTO> builder = getBuilder();
+         if (!data.notificationSettings().get().additionalrecipients().get().contains( recipient ))
+         {
+            builder.prototype().additionalrecipients().get().add( recipient );
+            changedNotificationSettings( null, builder.newInstance() );
+         }
+      }
+      
+      public void removeRecipient( EntityReference recipient )
+      {
+         ValueBuilder<DueOnNotificationSettingsDTO> builder = getBuilder();
+         builder.prototype().additionalrecipients().get().remove( recipient );
+         changedNotificationSettings( null, builder.newInstance() );  
       }
 
       public void changedNotificationSettings(@Optional DomainEvent event, DueOnNotificationSettingsDTO settings)
       {
          data.notificationSettings().set(settings);
+      }
+      
+      private ValueBuilder<DueOnNotificationSettingsDTO> getBuilder()
+      {
+         if (data.notificationSettings().get() == null)
+         {
+            return module.valueBuilderFactory().newValueBuilder( DueOnNotificationSettingsDTO.class );
+         } else
+         {
+            return module.valueBuilderFactory().newValueBuilder( DueOnNotificationSettingsDTO.class ).withPrototype( data.notificationSettings().get() );
+         }
       }
    }
 }
