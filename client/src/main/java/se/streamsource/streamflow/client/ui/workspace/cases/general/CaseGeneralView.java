@@ -302,7 +302,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       
       leftBuilder.add( caseNotes, new CellConstraints( 1, 6, 4, 1, CellConstraints.FILL, CellConstraints.TOP,
             new Insets( 0, 2, 5, 0 ) ) );
-      
+
       // Forms
       JLabel formsLabel = new JLabel( i18n.text( WorkspaceResources.forms_label ) );
       refreshComponents.visibleOn( "changedescription", formsLabel );

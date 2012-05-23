@@ -25,16 +25,12 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 /**
  * Model for the list of currently selected labels of a case
  */
 public class CaseLabelsModel
    extends ResourceModel<LinksValue>
-   implements TransactionListener
 {
    @Uses
    CommandQueryClient client;
@@ -71,11 +67,5 @@ public class CaseLabelsModel
    public LinkValue getKnowledgeBaseLink(LinkValue selected)
    {
       return client.getClient(selected).query("knowledgebase", LinkValue.class);
-   }
-
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
-   {
-      if (Events.matches( Events.withNames("addedLabel", "removedLabel" ), transactions ))
-         refresh();
    }
 }
