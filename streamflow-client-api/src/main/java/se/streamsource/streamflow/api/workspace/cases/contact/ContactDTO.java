@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.contact;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -59,6 +60,9 @@ public interface ContactDTO
 
    @UseDefaults
    Property<String> note();
+
+   @Optional
+   Property<ContactPreference> contactPreference();
 
    ContactEmailDTO defaultEmail();
 

@@ -28,8 +28,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 
 import java.util.List;
 
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -59,6 +58,7 @@ public class ContactsContext
          contactBuilder.prototype().addresses().set( contact.addresses().get() );
          contactBuilder.prototype().emailAddresses().set( contact.emailAddresses().get() );
          contactBuilder.prototype().phoneNumbers().set( contact.phoneNumbers().get() );
+         contactBuilder.prototype().contactPreference().set( contact.contactPreference().get() );
          list.add( contactBuilder.newInstance() );
       }
       return builder.newInstance();
