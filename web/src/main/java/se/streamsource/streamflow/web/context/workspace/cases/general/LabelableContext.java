@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -37,23 +38,23 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import java.util.HashSet;
 
 import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
  */
+@RequiresPermission( PermissionType.read )
 public class LabelableContext
       implements IndexContext<LinksValue>
 {
    @Structure
    Module module;
 
-   @RequiresPermission( PermissionType.read )
    public LinksValue index()
    {
       return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( role( Labelable.Data.class ).labels() ).newLinks();
    }
 
-   @RequiresPermission(PermissionType.write)
    public LinksValue possiblelabels()
    {
       // Fetch all labels from set CaseType ---> Organization
@@ -100,6 +101,7 @@ public class LabelableContext
       return builder.newLinks();
    }
 
+   @RequiresStatus( {DRAFT, OPEN} )
    @RequiresPermission( PermissionType.write )
    public void addlabel( EntityValue reference )
    {
