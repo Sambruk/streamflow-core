@@ -179,7 +179,7 @@ public interface SendMailService
                SendMimeMessage msg = new SendMimeMessage( session, email );
 
                if (email.fromName().get() == null)
-                  msg.setFrom( new InternetAddress( config.configuration().from().get() ) );
+                  msg.setFrom( new InternetAddress( config.configuration().from().get(), config.configuration().fromName().get(), "ISO-8859-1" ) );
                else
                   msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get(), "ISO-8859-1" ) );
 
