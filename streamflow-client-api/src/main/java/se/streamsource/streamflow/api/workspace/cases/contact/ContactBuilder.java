@@ -59,6 +59,12 @@ public class ContactBuilder
       return this;
    }
 
+   public ContactBuilder contactPreference( ContactPreference contactPreference )
+   {
+      contactBuilder.prototype().contactPreference().set(  contactPreference );
+      return this;
+   }
+
    public ContactBuilder phoneNumber(String phoneNumber)
    {
       List<ContactPhoneDTO> phoneNumbers = contactBuilder.prototype().phoneNumbers().get();

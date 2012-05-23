@@ -69,6 +69,7 @@ public enum WorkspaceResources
    forms_label,
    choose_casetype,
    case_log,
+   contact_preference_label,
 
    // Form submission
    mandatory_field_missing,
@@ -142,6 +143,12 @@ public enum WorkspaceResources
    OPEN,
    ON_HOLD,
    choose_date, CLOSED,
+
+   // contact preference
+   letter,
+   email,
+   sms,
+   phone,
 
    // Conversation
    sender_column_header,
