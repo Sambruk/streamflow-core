@@ -22,17 +22,17 @@ Streamflow Statusrapport, $today
 				
 #if(!$notification.personalOverdueCases.empty || !$notification.personalThresholdCases.empty)
 ====================================
-Ärenden tilldelade till $user
+√Ñrenden tilldelade till $user
 #end
 
 #if (!$notification.personalOverdueCases.empty)
--- Passerat förfallodatum
+-- Passerat f√∂rfallodatum
 #foreach( $case in $notification.personalOverdueCases )
      $case.caseId	$case.dueOn	$case.description
 #end
 #end
 #if(!$notification.personalThresholdCases.empty)
---- På väg att passera förfallodatum
+--- P√• v√§g att passera f√∂rfallodatum
 #foreach( $case in $notification.personalThresholdCases )
      $case.caseId	$case.dueOn	$case.description
 #end
@@ -41,17 +41,17 @@ Streamflow Statusrapport, $today
 #if (!$notification.functionOverdueCases.empty || !$notification.functionThresholdCases.empty)
 
 ====================================
-Ärenden tilldelade till någon av $user:s funktioner
+√Ñrenden tilldelade till n√•gon av $user:s funktioner
 
 #end
 #if(!$notification.functionOverdueCases.empty)
--- Passerat förfallodatum
+-- Passerat f√∂rfallodatum
 #foreach( $case in $notification.functionOverdueCases )
      $case.caseId	$case.dueOn	$case.owner	$case.description
 #end
 #end
 #if(!$notification.functionThresholdCases.empty)
---- På väg att passera förfallodatum
+--- P√• v√§g att passera f√∂rfallodatum
 #foreach( $case in $notification.functionThresholdCases )
      $case.caseId	$case.dueOn	$case.owner	$case.description
 #end
@@ -60,17 +60,17 @@ Streamflow Statusrapport, $today
 #if (!$notification.monitoredOverdueCases.empty || !$notification.monitoredThresholdCases.empty)
 
 ====================================
-Ärenden som bevakas av $user
+√Ñrenden som bevakas av $user
 
 #end
 #if(!$notification.monitoredOverdueCases.empty)
--- Passerat förfallodatum
+-- Passerat f√∂rfallodatum
 #foreach( $case in $notification.monitoredOverdueCases )
      $case.caseId	$case.dueOn #if ($case.assignedTo) $case.owner ($case.assignedTo) #else $case.owner #end $case.description
 #end
 #end
 #if(!$notification.monitoredThresholdCases.empty)
--- På väg att passera förfallodatum
+-- P√• v√§g att passera f√∂rfallodatum
 #foreach( $case in $notification.monitoredThresholdCases )
      $case.caseId	$case.dueOn #if ($case.assignedTo) $case.owner ($case.assignedTo) #else $case.owner #end $case.description
 #end

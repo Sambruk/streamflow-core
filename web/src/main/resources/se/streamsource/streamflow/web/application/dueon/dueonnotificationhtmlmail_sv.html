@@ -93,7 +93,7 @@
             </tr>
          </table>
 		
-         <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFF" style="color:#333;border:solid 1px #3cc2ed;-moz-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;">
+         <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" style="color:#333333;border:solid 1px #3cc2ed;-moz-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;">
             <tr>
                <td colspan="3">
                   <table width="1" border="0" cellspacing="0" cellpadding="0">
@@ -121,7 +121,7 @@
                   <table width="100%" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                         <td valign="middle" style="font-size:16px;">
-                           Ärenden tilldelade till $user
+                           √Ñrenden tilldelade till $user
                         </td>
                         <td align="right" valign="middle">
                            <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
@@ -149,7 +149,7 @@
 				
 				#if (!$notification.personalOverdueCases.empty)
                   <!-- OverDue assigned to me -->
-                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat förfallodatum</div>
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat f√∂rfallodatum</div>
 
                   <table width="1" border="0" cellspacing="0" cellpadding="0">
                      <tr>
@@ -162,7 +162,7 @@
 				#foreach( $case in $notification.personalOverdueCases )
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                      <tr>
-                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td width="100" valign="top" style="font-size:13px;font-style:italic;">$case.caseId</td>
                         <td>
                            <table width="10" border="0" cellspacing="0" cellpadding="0">
                               <tr>
@@ -185,7 +185,7 @@
                            </table>
                         </td>
                         <td width="75%" valign="top">
-                           <div style="font-size:15px;">$case.description</div>
+                           <div style="font-size:13px;">$case.description</div>
                         </td>
                      </tr>
                   </table>
@@ -212,7 +212,7 @@
                   </table>
 
                   <!-- Case that has reach overdue threshold that are assigned to me -->
-                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">På väg att passera förfallodatum</div>
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">P√• v√§g att passera f√∂rfallodatum</div>
 
                   <table width="1" border="0" cellspacing="0" cellpadding="0">
                      <tr>
@@ -225,7 +225,7 @@
 				#foreach( $case in $notification.personalThresholdCases )
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                      <tr>
-                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td width="100" valign="top" style="font-size:13px;font-style:italic;">$case.caseId</td>
                         <td>
                            <table width="10" border="0" cellspacing="0" cellpadding="0">
                               <tr>
@@ -248,7 +248,7 @@
                            </table>
                         </td>
                         <td width="75%" valign="top">
-                           <div style="font-size:15px;">$case.description</div>
+                           <div style="font-size:13px;">$case.description</div>
                         </td>
                      </tr>
                   </table>
@@ -276,7 +276,7 @@
 						<table width="100%" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                         <td valign="middle" style="font-size:16px;">
-                           Ärenden tilldelade till någon av $user:s funktioner
+                           √Ñrenden tilldelade till n√•gon av $user:s funktioner
                         </td>
                         <td align="right" valign="middle">
                            <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
@@ -305,7 +305,7 @@
                   
                   #if(!$notification.functionOverdueCases.empty)
                   <!-- OverDue assigned to one of my projects -->
-                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat förfallodatum</div>
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat f√∂rfallodatum</div>
 
                   <table width="1" border="0" cellspacing="0" cellpadding="0">
                      <tr>
@@ -318,7 +318,7 @@
 				#foreach( $case in $notification.functionOverdueCases )
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                      <tr>
-                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td width="100" valign="top" style="font-size:13px;font-style:italic;">$case.caseId</td>
                         <td>
                            <table width="10" border="0" cellspacing="0" cellpadding="0">
                               <tr>
@@ -344,7 +344,7 @@
                            </table>
                         </td>
                         <td width="50%" valign="top">
-                           <div style="font-size:15px;">$case.description</div>
+                           <div style="font-size:13px;">$case.description</div>
                         </td>
                      </tr>
                   </table>
@@ -372,7 +372,7 @@
                   </table>
 
                   <!-- Case that has reach overdue threshold that are assigned to one of my projects -->
-                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">På väg att passera förfallodatum</div>
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">P√• v√§g att passera f√∂rfallodatum</div>
 
                   <table width="1" border="0" cellspacing="0" cellpadding="0">
                      <tr>
@@ -386,7 +386,7 @@
 				#foreach( $case in $notification.functionThresholdCases )
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                      <tr>
-                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td width="100" valign="top" style="font-size:13px;font-style:italic;">$case.caseId</td>
                         <td>
                            <table width="10" border="0" cellspacing="0" cellpadding="0">
                               <tr>
@@ -412,7 +412,7 @@
                            </table>
                         </td>
                         <td width="50%" valign="top">
-                           <div style="font-size:15px;">$case.description</div>
+                           <div style="font-size:13px;">$case.description</div>
                         </td>
                      </tr>
                   </table>
@@ -439,7 +439,7 @@
 						<table width="100%" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                         <td valign="middle" style="font-size:16px;">
-                           Ärenden som bevakas av $user
+                           √Ñrenden som bevakas av $user
                         </td>
                         <td align="right" valign="middle">
                            <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
@@ -468,7 +468,7 @@
                   
                   #if(!$notification.monitoredOverdueCases.empty)
                   <!-- OverDue assigned to one of my projects -->
-                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat förfallodatum</div>
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat f√∂rfallodatum</div>
 
                   <table width="1" border="0" cellspacing="0" cellpadding="0">
                      <tr>
@@ -481,7 +481,7 @@
 				#foreach( $case in $notification.monitoredOverdueCases )
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                      <tr>
-                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td width="100" valign="top" style="font-size:13px;font-style:italic;">$case.caseId</td>
                         <td>
                            <table width="10" border="0" cellspacing="0" cellpadding="0">
                               <tr>
@@ -511,7 +511,7 @@
                            </table>
                         </td>
                         <td width="50%" valign="top">
-                           <div style="font-size:15px;">$case.description</div>
+                           <div style="font-size:13px;">$case.description</div>
                         </td>
                      </tr>
                   </table>
@@ -539,7 +539,7 @@
                   </table>
 
                   <!-- Case that has reach overdue threshold that are assigned to one of my projects -->
-                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">På väg att passera förfallodatum</div>
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">P√• v√§g att passera f√∂rfallodatum</div>
 
                   <table width="1" border="0" cellspacing="0" cellpadding="0">
                      <tr>
@@ -553,7 +553,7 @@
 				#foreach( $case in $notification.monitoredThresholdCases )
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                      <tr>
-                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td width="100" valign="top" style="font-size:13px;font-style:italic;">$case.caseId</td>
                         <td>
                            <table width="10" border="0" cellspacing="0" cellpadding="0">
                               <tr>
@@ -583,7 +583,7 @@
                            </table>
                         </td>
                         <td width="50%" valign="top">
-                           <div style="font-size:15px;">$case.description</div>
+                           <div style="font-size:13px;">$case.description</div>
                         </td>
                      </tr>
                   </table>
