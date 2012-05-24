@@ -16,17 +16,28 @@
  */
 package se.streamsource.streamflow.web.application.mail;
 
-import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.withBreaker;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.spi.service.ServiceDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
+import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
+import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
+import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
+import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
+import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -41,30 +52,14 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
-import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.util.Visitor;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.*;
 
 /**
  * Send emails. This service
@@ -174,7 +169,10 @@ public interface SendMailService
          {
             try
             {
-               Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+               // Make sure mail.jar and activation.jar are loaded by the same class loader.
+               // http://stackoverflow.com/questions/1969667/send-a-mail-from-java5-and-java6
+               Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
                Session session = Session.getInstance( props, authenticator );
 
                session.setDebug( config.configuration().debug().get() );
@@ -182,7 +180,7 @@ public interface SendMailService
                SendMimeMessage msg = new SendMimeMessage( session, email );
 
                if (email.fromName().get() == null)
-                  msg.setFrom( new InternetAddress( config.configuration().from().get() ) );
+                  msg.setFrom( new InternetAddress( config.configuration().from().get(), config.configuration().fromName().get(), "ISO-8859-1" ) );
                else
                   msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get(), "ISO-8859-1" ) );
 
@@ -206,7 +204,7 @@ public interface SendMailService
                multipart.addBodyPart(messageBodyPart);
                
                // HTML content
-               if (!Strings.empty( email.contentHtml().get()))
+               if (!Strings.empty( email.contentHtml().get() ))
                {
                   MimeBodyPart htmlMimeBodyPart = new MimeBodyPart();
                   htmlMimeBodyPart.setContent( email.contentHtml().get(), "text/html" );
@@ -332,26 +330,6 @@ public interface SendMailService
          {
             super.updateHeaders();
          }
-      }
-      
-      private String findClass(String className) throws ClassNotFoundException
-      {
-         String msg = null;
-         Class cls = Class.forName(className);
-         ProtectionDomain domain = cls.getProtectionDomain();
-         if (domain == null) {
-             msg = "No ProtectionDomain for '" + className + "'";
-         } else {
-             CodeSource codeSource = domain.getCodeSource();
-             if (codeSource == null) {
-                 msg = "No CodeSource for '" + className + "'";
-             } else {
-                 URL url = codeSource.getLocation();
-                 msg = "Class '" + className + "' is loaded from " + url;
-             }
-         }
-         System.out.println(msg);
-         return msg;
       }
    }
 }

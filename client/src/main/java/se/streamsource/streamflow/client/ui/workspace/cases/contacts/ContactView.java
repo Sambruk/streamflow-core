@@ -335,6 +335,8 @@ public class ContactView
       this.model = model;
       if (model != null)
       {
+         handleContactPreference();
+
          suggestModel.setContactModel( model );
          contactBinder.updateWith(model.getContact());
          phoneNumberBinder.updateWith(model.getPhoneNumber());
@@ -347,7 +349,6 @@ public class ContactView
          addressViewBinder.update(model.getAddress());
          emailViewBinder.update(model.getEmailAddress());
 
-         handleContactPreference();
 
          javax.swing.Action action = getActionMap().get("lookupContact");
          action.setEnabled(model.isContactLookupEnabled());
@@ -570,6 +571,11 @@ public class ContactView
    private void handleContactPreference()
    {
       ContactPreference val = model.getContact().contactPreference().get();
+      if ( val == null )
+      {
+         model.getContact().contactPreference().set( ContactPreference.none );
+         val = model.getContact().contactPreference().get();
+      }
       if ( val == ContactPreference.none )
       {
          contactPreferenceLabel.setVisible( false );

@@ -86,6 +86,13 @@ public interface SendMailConfiguration
    Property<String> from();
 
    /**
+    * The from name.
+    * @return
+    */
+   @UseDefaults
+   Property<String> fromName();
+
+   /**
     * Use of authentication.
     * @return true or false
     */
