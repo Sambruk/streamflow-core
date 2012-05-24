@@ -22,7 +22,6 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.util.Iterables;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -37,6 +36,9 @@ import java.awt.EventQueue;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.List;
+
+import static se.streamsource.streamflow.api.ErrorResources.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * All Swing actions that want to trigger commands in the domain model
@@ -118,15 +120,20 @@ public abstract class CommandTask
          if (re.getStatus().equals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY) ||
                re.getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
          {
+            String exceptionMessage = re.getStatus().getDescription();
+            if( valueOf( exceptionMessage ) != null )
+            {
+               exceptionMessage = text( valueOf( exceptionMessage ) );
+            }
             // Show error dialog
             final Frame frame = source instanceof Component ? (Frame) SwingUtilities.getAncestorOfClass(Frame.class,
                   (Component) source) : ((SingleFrameApplication)Application.getInstance()).getMainFrame();
 
-            JOptionPane.showMessageDialog(frame, new JLabel(re.getStatus().getDescription()), "", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, new JLabel( exceptionMessage ), "", JOptionPane.ERROR_MESSAGE);
          }
       } else if (throwable instanceof OperationException)
          throw (OperationException) throwable;
       else
-         throw new OperationException( ErrorResources.error, throwable );
+         throw new OperationException( error, throwable );
    }
 }

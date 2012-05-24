@@ -25,6 +25,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
@@ -145,7 +146,7 @@ public interface ProjectEntity
          if (inbox.inboxHasActiveCases()
                  || assignments.assignmentsHaveActiveCases())
          {
-            throw new IllegalStateException("Cannot remove project with OPEN cases.");
+            throw new IllegalStateException( ErrorResources.project_remove_failed_open_cases.name() );
 
          } else
          {
