@@ -42,6 +42,5 @@ public class ProjectModel
       relationModelMapping("selectedcasetypes", SelectedCaseTypesModel.class);
       relationModelMapping("filters", FiltersModel.class);
       relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
-      relationModelMapping("caseaccessoptionaldefaults", CaseAccessOptionalDefaultsModel.class);
    }
 }

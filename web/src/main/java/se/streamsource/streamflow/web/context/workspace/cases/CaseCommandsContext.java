@@ -50,12 +50,11 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessOptionalDefaults;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessSecurityApplies;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyAdded;
-import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyApplies;
-import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyNotAdded;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresRestricted;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresUnrestricted;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
@@ -166,13 +165,11 @@ public interface CaseCommandsContext
    public void reinstate();
 
 
-   @RequiresSecrecyApplies()
-   @RequiresSecrecyNotAdded()
-   public void addsecrecy();
+   @RequiresUnrestricted()
+   public void restrict();
 
-   @RequiresSecrecyApplies()
-   @RequiresSecrecyAdded()
-   public void removesecrecy();
+   @RequiresRestricted()
+   public void unrestrict();
 
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
@@ -349,10 +346,10 @@ public interface CaseCommandsContext
          caze.reinstate();
       }
 
-      public void addsecrecy()
+      public void restrict()
       {
-         CaseAccessSecurityApplies secrecy = RoleMap.role( CaseAccessSecurityApplies.class );
-         secrecy.setSecrecySetting( true );
+         CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
+         secrecy.isRestricted( true );
 
          Ownable.Data owner = RoleMap.role( Ownable.Data.class );
 
@@ -370,10 +367,10 @@ public interface CaseCommandsContext
        * secrecy was enabled. Instead we force the
        * settings for the project and the case type
        */
-      public void removesecrecy()
+      public void unrestrict()
       {
-         CaseAccessSecurityApplies secrecy = RoleMap.role( CaseAccessSecurityApplies.class );
-         secrecy.setSecrecySetting( false );
+         CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
+         secrecy.isRestricted( false );
 
          Ownable.Data owner = RoleMap.role( Ownable.Data.class );
 

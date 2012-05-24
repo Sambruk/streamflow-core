@@ -22,6 +22,7 @@ import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.RestrictionsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.OrganizationAttachmentsResource;
@@ -128,4 +129,11 @@ public class OrganizationResource
    {
       subResource( FieldGroupsResource.class );
    }
+
+   @SubResource
+   public void restrictions()
+   {
+      subResourceContexts( RestrictionsContext.class );
+   }
+
 }

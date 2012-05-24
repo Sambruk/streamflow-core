@@ -68,7 +68,6 @@ public interface ProjectEntity
 
         // Data
         CaseAccessDefaults.Data,
-        CaseAccessOptionalDefaults.Data,
         Members.Data,
         Describable.Data,
         OwningOrganizationalUnit.Data,

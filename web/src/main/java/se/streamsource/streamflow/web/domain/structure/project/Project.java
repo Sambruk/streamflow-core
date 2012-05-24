@@ -39,7 +39,6 @@ public interface Project
       Forms,
       CaseTypes,
       CaseAccessDefaults,
-      CaseAccessOptionalDefaults,
       SelectedCaseTypes,
       Labels,
       SelectedLabels,

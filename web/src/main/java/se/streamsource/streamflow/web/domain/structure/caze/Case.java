@@ -26,7 +26,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessSecurityApplies;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
@@ -71,7 +71,7 @@ public interface Case
       SubCases,
       SubCase,
       CaseAccess,
-      CaseAccessSecurityApplies,
+      CaseAccessRestriction,
       History,
       CaseLoggable
 {

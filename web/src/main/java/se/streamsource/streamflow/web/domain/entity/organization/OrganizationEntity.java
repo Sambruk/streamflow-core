@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
@@ -83,6 +84,7 @@ public interface OrganizationEntity
       DefaultPdfTemplate.Data,
       FormPdfTemplate.Data,
       CasePdfTemplate.Data,
+      CaseAccessDefaults.Data,
            
       //Queries
       OrganizationParticipationsQueries,

@@ -22,41 +22,36 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.Map;
-
-import static java.util.Arrays.*;
-import static se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType.*;
-
 /**
  * Containing the option representing whether the
  * security setting has been selected for this case
  */
-@Mixins(CaseAccessSecurityApplies.Mixin.class)
-public interface CaseAccessSecurityApplies
+@Mixins(CaseAccessRestriction.Mixin.class)
+public interface CaseAccessRestriction
 {
-   void setSecrecySetting( Boolean enable );
+   void isRestricted( Boolean enable );
 
    interface Data
    {
       @UseDefaults
-      Property<Boolean> secrecyApplies();
+      Property<Boolean> restricted();
 
-      void secrecyChanged( @Optional DomainEvent event, Boolean security );
+      void restrictionChanged( @Optional DomainEvent event, Boolean restriction );
    }
 
    abstract class Mixin
-      implements CaseAccessSecurityApplies, Data
+      implements CaseAccessRestriction, Data
    {
-      public void setSecrecySetting( Boolean enable )
+      public void isRestricted( Boolean enable )
       {
-         if ( secrecyApplies().get() != enable ) {
-            secrecyChanged(  null, enable );
+         if ( restricted().get() != enable ) {
+            restrictionChanged( null, enable );
          }
       }
 
-      public void secrecyChanged( @Optional DomainEvent event, Boolean security )
+      public void restrictionChanged( @Optional DomainEvent event, Boolean restriction )
       {
-         secrecyApplies().set(  security );
+         restricted().set( restriction );
       }
    }
 }
