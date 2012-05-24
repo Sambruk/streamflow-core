@@ -95,7 +95,8 @@ public interface AssignmentsQueries
          Query<CaseEntity> assignmentsQuery = queryBuilder.where(and(
                isNotNull(assignedId),
                eq(ownedId, owner),
-               eq(templateFor(Status.Data.class).status(), CaseStates.OPEN))).
+               eq(templateFor(Status.Data.class).status(), CaseStates.OPEN),
+               eq( templateFor(Removable.Data.class).removed(), Boolean.FALSE ))).
                  newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          return assignmentsQuery.count() > 0;
