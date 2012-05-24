@@ -28,6 +28,7 @@ import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -35,6 +36,7 @@ import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
@@ -55,12 +57,14 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
+import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
@@ -78,13 +82,16 @@ import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.net.URISyntaxException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -98,7 +105,7 @@ import java.util.Map;
       CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
       CaseEntity.CaseLogContactConcern.class, CaseEntity.CaseLogConversationConcern.class,
       CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class,
-      CaseEntity.AssignableConcern.class})
+      CaseEntity.AssignableConcern.class, CaseEntity.TypedCaseDefaultObligatoryPriorityConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -135,6 +142,8 @@ public interface CaseEntity
       SubCase.Data,
       History.Data,
       CaseLoggable.Data,
+      CasePriority.Events,
+      CasePriority.Data,
       Origin,
 
       // Queries
@@ -239,6 +248,40 @@ public interface CaseEntity
                Calendar now = Calendar.getInstance();
                now.add(Calendar.DAY_OF_MONTH,defaultDaysToComplete.defaultDaysToComplete().get() );
                dueOn.defaultDueOn(now.getTime());
+            }
+         }
+      }
+   }
+
+   class TypedCaseDefaultObligatoryPriorityConcern
+      extends ConcernOf<TypedCase>
+      implements TypedCase
+   {
+
+      @This
+      CasePriority priority;
+
+      @Structure
+      Module module;
+
+      public void changeCaseType( @Optional CaseType newCaseType )
+      {
+         next.changeCaseType( newCaseType );
+
+         if( newCaseType == null )
+         {
+            priority.changePriority( null );
+         } else
+         {
+            // if it has not been set before get the lowest priority and set it
+            if (((CasePrioritySetting.Data) newCaseType).mandatory().get()
+                  && ((CasePriority.Data) priority).priority().get() == null)
+            {
+
+               Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+               List<CasePriorityValue> casePriorityValues = ((CasePriorityDefinitions.Data) ((Organizations.Data) organizations).organization().get()).prioritys().get();
+               priority.changePriority( casePriorityValues.get( casePriorityValues.size() - 1 ) );
+
             }
          }
       }

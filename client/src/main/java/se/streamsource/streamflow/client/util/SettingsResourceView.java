@@ -27,7 +27,9 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -61,7 +63,11 @@ public class SettingsResourceView
 
       addSettings("defaultdaystocomplete", AdministrationResources.default_days_to_complete_separator, CaseDefaultDaysToCompleteView.class);
 
+      addSettings("dueonnotification", AdministrationResources.dueon_notification_separator, CaseDueOnNotificationView.class);
+
       addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
+
+      addSettings( "caseprioritysetting", AdministrationResources.casepriority_separator, CasePrioritySettingView.class );
 
       addSettings( "formonclose", AdministrationResources.formonclose_separator, FormOnCloseView.class );
 

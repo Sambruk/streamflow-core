@@ -21,5 +21,6 @@ public enum SortBy
    none,
    createdOn,
    description,
-   dueOn
+   dueOn,
+   priority
 }

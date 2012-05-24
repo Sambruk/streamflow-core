@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @ConstraintDeclaration
 @Retention(RUNTIME)
-@Matches("[\\p{Graph}åäöÅÄÖ]{4,30}")
+@Matches("[\\p{Graph}åäöÅÄÖ]{6,30}")
 public @interface Password
 {
 }

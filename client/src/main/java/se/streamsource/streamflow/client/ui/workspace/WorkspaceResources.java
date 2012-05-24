@@ -69,6 +69,7 @@ public enum WorkspaceResources
    forms_label,
    choose_casetype,
    case_log,
+   contact_preference_label,
 
    // Form submission
    mandatory_field_missing,
@@ -143,6 +144,12 @@ public enum WorkspaceResources
    ON_HOLD,
    choose_date, CLOSED,
 
+   // contact preference
+   letter,
+   email,
+   sms,
+   phone,
+
    // Conversation
    sender_column_header,
    message_column_header,
@@ -153,5 +160,5 @@ public enum WorkspaceResources
    no_project,
    search_period,
    printing_configuration,
-   caze_reinstate;
+   caze_reinstate, priority_label, case_priority_header, no_priority;
 }

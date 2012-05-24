@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordExcepti
 public interface AccountContext
    extends TransientComposite
 {
-   public void changepassword(@Name("oldpassword") @Password String oldPassword, @Name("newpassword") @Password String newPassword)
+   public void changepassword(@Name("oldpassword") String oldPassword, @Name("newpassword") @Password String newPassword)
          throws WrongPasswordException;
 
    abstract class Mixin

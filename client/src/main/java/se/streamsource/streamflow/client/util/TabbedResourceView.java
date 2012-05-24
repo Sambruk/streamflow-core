@@ -16,24 +16,15 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import static se.streamsource.dci.value.link.Links.withRel;
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.event.KeyEvent;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.swing.JComponent;
-import javax.swing.JTabbedPane;
-
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
@@ -56,7 +47,15 @@ import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPo
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
-import ca.odell.glazedlists.EventList;
+
+import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
+import java.awt.event.KeyEvent;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static se.streamsource.dci.value.link.Links.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Show a REST resource as a tabbed view. To determine tabs, do a query to the resources directory URL ("/") to get
@@ -82,6 +81,7 @@ public class TabbedResourceView
 
       addTab( "casetypes", AdministrationResources.casetypes_tab, CaseTypesView.class );
       addTab( "selectedcasetypes", AdministrationResources.selected_casetypes_tab, SelectedCaseTypesView.class );
+      addTab( "casepriorities", AdministrationResources.casepriorities_tab, CasePrioritiesView.class );
 
       addTab( "labels", AdministrationResources.labels_tab, LabelsView.class );
       addTab( "selectedlabels", AdministrationResources.selected_labels_tab, SelectedLabelsView.class );

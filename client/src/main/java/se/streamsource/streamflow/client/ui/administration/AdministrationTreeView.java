@@ -16,27 +16,9 @@
  */
 package se.streamsource.streamflow.client.ui.administration;
 
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntityTypes;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.BorderLayout;
-import java.util.ArrayList;
-
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TreeList;
+import ca.odell.glazedlists.swing.EventTreeModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -50,7 +32,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
@@ -60,17 +41,32 @@ import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.ResourceActionEnabler;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TreeList;
-import ca.odell.glazedlists.swing.EventTreeModel;
+
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -170,6 +166,10 @@ public class AdministrationTreeView
          @Override
          protected ResourceValue getResource()
          {
+            // nothing selected -- return null
+            if( tree.getSelectionPath() == null )
+               return null;
+
             ResourceModel resourceModel = (ResourceModel) model.newResourceModel((LinkValue) ((TreeList.Node)tree.getSelectionPath().getLastPathComponent()).getElement());
             resourceModel.refresh();
             return resourceModel.getResourceValue();
@@ -184,8 +184,10 @@ public class AdministrationTreeView
             if (tree.isSelectionEmpty())
             {
                am.get("create").setEnabled(false);
+               optionsButton.setEnabled( false );
             } else
             {
+               optionsButton.setEnabled( true );
                resourceActionEnabler.refresh();
             }
 /*

@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
@@ -30,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -55,6 +56,7 @@ public class CasesTableFormatter
             text( created_by_column_header ),
             text( duedate_column_header ),
             text( project_column_header ),
+            text( case_priority_header ),
             text( case_status_header )};
       columnClasses = new Class[]{
             String.class,
@@ -65,6 +67,7 @@ public class CasesTableFormatter
             String.class,
             Date.class,
             String.class,
+            CasePriorityValue.class,
             CaseStates.class
       };
    }
@@ -154,9 +157,12 @@ public class CasesTableFormatter
                return caseValue.owner().get();
 
             case 8:
-               return caseValue.status().get();
-            
+               return caseValue.priority().get();
+
             case 9:
+               return caseValue.status().get();
+
+           case 10:
                return caseValue.href().get();
          }
 

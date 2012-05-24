@@ -37,9 +37,12 @@ import se.streamsource.streamflow.client.ui.account.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
+import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesView;
+import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
@@ -82,6 +85,8 @@ import se.streamsource.streamflow.client.ui.administration.policy.Administrators
 import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
@@ -358,6 +363,8 @@ public class UIAssembler
             SelectedResolutionsView.class,
             CaseAccessDefaultsView.class,
             CaseDefaultDaysToCompleteView.class,
+            CaseDueOnNotificationView.class,
+            RecipientsView.class,
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
             UsersAdministrationView.class,
@@ -374,7 +381,10 @@ public class UIAssembler
             RulesView.class,
             FormEditView.class,
             ActionsView.class,
-            LabelRuleView.class);
+            LabelRuleView.class,
+            CasePrioritiesView.class,
+            CasePriorityView.class,
+            CasePrioritySettingView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,

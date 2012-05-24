@@ -73,6 +73,7 @@ public interface Case
       CaseAccess,
       CaseAccessRestriction,
       History,
-      CaseLoggable
+      CaseLoggable,
+      CasePriority
 {
 }

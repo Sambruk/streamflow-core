@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.administration.CaseAccessOptionalDefaultsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
+import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
@@ -58,6 +59,8 @@ import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValu
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
@@ -123,7 +126,9 @@ public class ClientAPIAssembler
               CaseLogEntryDTO.class,
               CaseLogFilterValue.class,
               NoteDTO.class,
-              ExternalEmailValue.class);
+              ExternalEmailValue.class,
+              CasePriorityDTO.class,
+              CasePriorityValue.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,
@@ -158,6 +163,7 @@ public class ClientAPIAssembler
       // Commands
       administration.values(
               ArchivalSettingsDTO.class,
+              DueOnNotificationSettingsDTO.class,
               RegisterUserDTO.class,
               CaseAccessOptionalDefaultsDTO.class,
               ChangePasswordDTO.class,

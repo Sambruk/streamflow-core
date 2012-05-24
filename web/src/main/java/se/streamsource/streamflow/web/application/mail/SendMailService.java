@@ -34,6 +34,7 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
@@ -58,7 +59,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.withBreaker;
+import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.*;
 
 /**
  * Send emails. This service
@@ -168,6 +169,10 @@ public interface SendMailService
          {
             try
             {
+               // Make sure mail.jar and activation.jar are loaded by the same class loader.
+               // http://stackoverflow.com/questions/1969667/send-a-mail-from-java5-and-java6
+               Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
                Session session = Session.getInstance( props, authenticator );
 
                session.setDebug( config.configuration().debug().get() );
@@ -175,7 +180,7 @@ public interface SendMailService
                SendMimeMessage msg = new SendMimeMessage( session, email );
 
                if (email.fromName().get() == null)
-                  msg.setFrom( new InternetAddress( config.configuration().from().get() ) );
+                  msg.setFrom( new InternetAddress( config.configuration().from().get(), config.configuration().fromName().get(), "ISO-8859-1" ) );
                else
                   msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get(), "ISO-8859-1" ) );
 
@@ -186,16 +191,29 @@ public interface SendMailService
                   msg.setHeader( header.getKey(), header.getValue() );
                }
 
+               Multipart multipart = new MimeMultipart("alternative");
                MimeBodyPart messageBodyPart = new MimeBodyPart();
+               // Regular content
                if (email.contentType().get().equals("text/plain"))
+               {
                   messageBodyPart.setText( email.content().get(), "UTF-8" );
-               else
+               } else
+               {
                   messageBodyPart.setContent( email.content().get(), email.contentType().get() );
+               }
+               multipart.addBodyPart(messageBodyPart);
+               
+               // HTML content
+               if (!Strings.empty( email.contentHtml().get() ))
+               {
+                  MimeBodyPart htmlMimeBodyPart = new MimeBodyPart();
+                  htmlMimeBodyPart.setContent( email.contentHtml().get(), "text/html" );
+                  multipart.addBodyPart( htmlMimeBodyPart );
+               }
 
                // Add attachments
                Iterator<AttachedFileValue> attachments = email.attachments().get().iterator();
-               Multipart multipart = new MimeMultipart();
-               multipart.addBodyPart(messageBodyPart);
+               
                if (attachments.hasNext())
                {
                   AttachedFileValue attachedFileValue = attachments.next();

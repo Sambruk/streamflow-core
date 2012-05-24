@@ -30,9 +30,12 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPreference;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
+
+import java.util.List;
 
 /**
  * Model for a contact of a case
@@ -48,7 +51,6 @@ public class ContactModel
    @Structure
    Module module;
 
-   
    public ContactDTO getContact()
    {
       return contact;
@@ -179,5 +181,18 @@ public class ContactModel
       ValueBuilder<StreetSearchDTO> builder = module.valueBuilderFactory().newValueBuilder( StreetSearchDTO.class );
       builder.prototype().address().set( query );
       return client.query( "searchstreets", StreetsDTO.class, builder.newInstance());
+   }
+
+   public void changeContactPreference( ContactPreference preference )
+   {
+      Form form = new Form();
+      if ( preference == null )
+      {
+         form.set( "contactpreference", "" );
+      } else
+      {
+         form.set( "contactpreference", preference.name() );
+      }
+      client.putCommand( "update", form.getWebRepresentation() );
    }
 }

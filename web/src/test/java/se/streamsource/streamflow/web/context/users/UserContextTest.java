@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;
@@ -41,7 +40,7 @@ public class UserContextTest
    @BeforeClass
    public static void before() throws UnitOfWorkCompletionException
    {
-      UsersContextTest.createUser( "test" );
+      UsersContextTest.createUser( "testing" );
       clearEvents();
    }
 
@@ -49,7 +48,7 @@ public class UserContextTest
    public static void after() throws UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      uow.remove( uow.get( User.class, "test" ));
+      uow.remove( uow.get( User.class, "testing" ));
       uow.complete();
    }
 
@@ -58,7 +57,7 @@ public class UserContextTest
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       RoleMap.newCurrentRoleMap();
-      playRole(User.class, "test");
+      playRole(User.class, "testing");
       context(UserContext.class).changedisabled();
       uow.complete();
       eventsOccurred( "changedEnabled" );
@@ -70,10 +69,10 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
          try
          {
-            context( AccountContext.class).changepassword( "test", "test2");
+            context( AccountContext.class).changepassword( "testing", "testing2");
          } catch (WrongPasswordException e)
          {
             Assert.fail( "Should have been able to change password" );
@@ -86,10 +85,10 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
          try
          {
-            context(AccountContext.class).changepassword( "test", "test3");
+            context(AccountContext.class).changepassword( "testing", "testing3");
             Assert.fail( "Should not have been able to change password" );
          } catch (WrongPasswordException e)
          {
@@ -107,7 +106,7 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
 
          context(ProfileContext.class).changemessagedeliverytype(MessageRecipient.MessageDeliveryTypes.none);
          uow.complete();
@@ -117,7 +116,7 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
 
          context( ProfileContext.class).changemessagedeliverytype( MessageRecipient.MessageDeliveryTypes.email );
          uow.complete();

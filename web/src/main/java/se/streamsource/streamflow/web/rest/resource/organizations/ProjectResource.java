@@ -82,4 +82,10 @@ public class ProjectResource
    {
       subResource(FiltersResource.class);
    }
+
+   @SubResource
+   public void dueonnotification()
+   {
+      subResource(DueOnNotificationSettingsResource.class);
+   }
 }

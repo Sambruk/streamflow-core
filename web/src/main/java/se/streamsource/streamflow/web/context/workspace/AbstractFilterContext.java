@@ -20,15 +20,22 @@ import org.qi4j.api.entity.Entity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.HashSet;
@@ -43,6 +50,8 @@ public interface AbstractFilterContext extends Context
    public LinksValue possibleCaseTypes();
 
    public LinksValue possibleLabels();
+
+   LinksValue casepriorities();
 
    abstract class Mixin
            implements AbstractFilterContext
@@ -96,6 +105,30 @@ public interface AbstractFilterContext extends Context
          {
             builder.addDescribable(caseType);
          }
+         return builder.newLinks();
+      }
+
+      public LinksValue casepriorities()
+      {
+         Organization org = ( (OwningOrganization) ((OwningOrganizationalUnit.Data) RoleMap.role( Ownable.Data.class )).organizationalUnit().get() ).organization().get();
+         RoleMap.current().set( org );
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         ValueBuilder<CasePriorityDTO> linkBuilder = module.valueBuilderFactory().newValueBuilder( CasePriorityDTO.class );
+
+         int count = 0;
+         for( CasePriorityValue priority : RoleMap.role( CasePriorityDefinitions.Data.class ).prioritys().get() )
+         {
+            linkBuilder.prototype().priority().set( priority );
+            linkBuilder.prototype().text().set( priority.name().get() );
+            linkBuilder.prototype().id().set( ""+count );
+            linkBuilder.prototype().rel().set( "priority" );
+            linkBuilder.prototype().href().set( "" );
+
+            builder.addLink( linkBuilder.newInstance() );
+            count++;
+         }
+
          return builder.newLinks();
       }
    }

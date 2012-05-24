@@ -23,5 +23,6 @@ public enum GroupBy
    caseType,
    dueOn,
    assignee,
-   project
+   project,
+   priority
 }

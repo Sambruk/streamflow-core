@@ -29,10 +29,13 @@ import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
 import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesModel;
+import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessOptionalDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
@@ -63,6 +66,8 @@ import se.streamsource.streamflow.client.ui.administration.policy.Administrators
 import se.streamsource.streamflow.client.ui.administration.projects.MembersModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
@@ -189,6 +194,8 @@ public class ModelAssembler
             CaseAccessDefaultsModel.class,
             CaseAccessOptionalDefaultsModel.class,
             CaseDefaultDaysToCompleteModel.class,
+            CaseDueOnNotificationModel.class,
+            RecipientsModel.class,
             CaseArchivalSettingModel.class,
             FormOnCloseModel.class,
             CaseTypesModel.class,
@@ -228,7 +235,10 @@ public class ModelAssembler
             FormPagesModel.class,
             FormModel.class,
             ActionsModel.class,
-            LabelRuleModel.class);
+            LabelRuleModel.class,
+            CasePrioritiesModel.class,
+            CasePriorityModel.class,
+            CasePrioritySettingModel.class);
 
 
       addModels(module, LinksListModel.class,

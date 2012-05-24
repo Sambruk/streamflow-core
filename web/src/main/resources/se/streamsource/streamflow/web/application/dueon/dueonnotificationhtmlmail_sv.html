@@ -1,0 +1,665 @@
+<!--
+
+
+    Copyright 2009-2012 Streamsource AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<html>
+<head>
+<title>Streamflow Statusrapport </title>
+</head>
+<body bgcolor="#fff" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:solid 1px #DDD;-moz-border-radius:10px;-webkit-border-radius:10px;border-radius:10px;background-color: #EEE;">
+   <tr>
+      <td colspan="3">
+         <table width="1" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="height:5px;font-size:5px;line-height:5px;">&nbsp;</div>
+               </td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+   <tr>
+      <td width="3%">
+         <table width="10" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+               </td>
+            </tr>
+         </table>
+      </td><!-- 5% with min-width of 10px -->
+      <td width="94%" style="font-family:Arial;">
+         <table width="300" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+               </td>
+            </tr>
+         </table><!-- min-width of 300px -->
+
+         <!-- HEADER -->
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <table width="10" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+               <td align="left" valign="middle">
+                  <img src="http://demo.sf.streamsource.se/app_icons57x57.png" width="57" height="57" alt="Streamflow">
+               </td>
+               <td>
+                  <table width="10" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+               <td align="left" valign="middle" width="99%" style="font-family:Arial;color:#333333;">
+                  <div style="font-size:12px;color:#666666;">Streamflow</div>
+                  <div style="font-size:20px;color:#666">Statusrapport, $today</div>
+               </td>
+               
+            </tr>
+         </table>
+		
+         <table width="1" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="height:15px;font-size:15px;line-height:15px;">&nbsp;</div>
+               </td>
+            </tr>
+         </table>
+		
+         <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFF" style="color:#333;border:solid 1px #3cc2ed;-moz-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;">
+            <tr>
+               <td colspan="3">
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:7px;font-size:7px;line-height:7px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+            <tr>
+           		<td>
+                  <table width="16" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+               <td>
+				
+				#if(!$notification.personalOverdueCases.empty || !$notification.personalThresholdCases.empty)
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                     <tr>
+                        <td valign="middle" style="font-size:16px;">
+                           Ärenden tilldelade till $user
+                        </td>
+                        <td align="right" valign="middle">
+                           <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:7px;font-size:7px;line-height:7px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+				
+						<div style="height:1px;font-size:1px;line-height:1px;border-top:1px solid #DDDDDD;">&nbsp;</div>
+						<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:9px;font-size:9px;line-height:9px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+				#end
+				
+				#if (!$notification.personalOverdueCases.empty)
+                  <!-- OverDue assigned to me -->
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat förfallodatum</div>
+
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+				#foreach( $case in $notification.personalOverdueCases )
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.dueOn
+                        </td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="75%" valign="top">
+                           <div style="font-size:15px;">$case.description</div>
+                        </td>
+                     </tr>
+                  </table>
+
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:8px;font-size:12px;line-height:8px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>						
+				#end
+				#end
+						
+			    #if(!$notification.personalThresholdCases.empty)
+                  <div style="height:1px;font-size:1px;line-height:1px;border-top:1px solid #DDDDDD;">&nbsp;</div>
+						
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:9px;font-size:9px;line-height:9px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+                  <!-- Case that has reach overdue threshold that are assigned to me -->
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">På väg att passera förfallodatum</div>
+
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+				#foreach( $case in $notification.personalThresholdCases )
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.dueOn
+                        </td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="75%" valign="top">
+                           <div style="font-size:15px;">$case.description</div>
+                        </td>
+                     </tr>
+                  </table>
+
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:8px;font-size:12px;line-height:8px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>						
+				#end
+				#end
+			
+			
+			    #if (!$notification.functionOverdueCases.empty || !$notification.functionThresholdCases.empty)
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:30px;font-size:30px;line-height:30px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+                     <tr>
+                        <td valign="middle" style="font-size:16px;">
+                           Ärenden tilldelade till någon av $user:s funktioner
+                        </td>
+                        <td align="right" valign="middle">
+                           <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:7px;font-size:7px;line-height:7px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+                  <div style="height:1px;font-size:1px;line-height:1px;border-top:1px solid #DDDDDD;">&nbsp;</div>
+						
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:9px;font-size:9px;line-height:9px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+                  #end
+                  
+                  #if(!$notification.functionOverdueCases.empty)
+                  <!-- OverDue assigned to one of my projects -->
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat förfallodatum</div>
+
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+				#foreach( $case in $notification.functionOverdueCases )
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.dueOn
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.owner
+                        </td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="50%" valign="top">
+                           <div style="font-size:15px;">$case.description</div>
+                        </td>
+                     </tr>
+                  </table>
+
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:8px;font-size:12px;line-height:8px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>						
+				#end
+				#end
+			
+						
+				#if(!$notification.functionThresholdCases.empty)
+                  <div style="height:1px;font-size:1px;line-height:1px;border-top:1px solid #DDDDDD;">&nbsp;</div>
+						
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:9px;font-size:9px;line-height:9px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+                  <!-- Case that has reach overdue threshold that are assigned to one of my projects -->
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">På väg att passera förfallodatum</div>
+
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+
+				#foreach( $case in $notification.functionThresholdCases )
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.dueOn
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.owner
+                        </td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="50%" valign="top">
+                           <div style="font-size:15px;">$case.description</div>
+                        </td>
+                     </tr>
+                  </table>
+
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:8px;font-size:12px;line-height:8px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>						
+				#end
+				#end
+				
+				#if (!$notification.monitoredOverdueCases.empty || !$notification.monitoredThresholdCases.empty)
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:30px;font-size:30px;line-height:30px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+                     <tr>
+                        <td valign="middle" style="font-size:16px;">
+                           Ärenden som bevakas av $user
+                        </td>
+                        <td align="right" valign="middle">
+                           <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:7px;font-size:7px;line-height:7px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+                  <div style="height:1px;font-size:1px;line-height:1px;border-top:1px solid #DDDDDD;">&nbsp;</div>
+						
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:9px;font-size:9px;line-height:9px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+                  #end
+                  
+                  #if(!$notification.monitoredOverdueCases.empty)
+                  <!-- OverDue assigned to one of my projects -->
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">Passerat förfallodatum</div>
+
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+				#foreach( $case in $notification.monitoredOverdueCases )
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.dueOn
+                        </td>
+                        <td width="240" valign="top" style="font-size:13px;">
+                           #if ($case.assignedTo)
+                              $case.owner ($case.assignedTo)
+                           #else
+                              $case.owner
+                           #end 
+                        </td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="50%" valign="top">
+                           <div style="font-size:15px;">$case.description</div>
+                        </td>
+                     </tr>
+                  </table>
+
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:8px;font-size:12px;line-height:8px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>						
+				#end
+				#end
+			
+						
+				#if(!$notification.monitoredThresholdCases.empty)
+                  <div style="height:1px;font-size:1px;line-height:1px;border-top:1px solid #DDDDDD;">&nbsp;</div>
+						
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:9px;font-size:9px;line-height:9px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+                  <!-- Case that has reach overdue threshold that are assigned to one of my projects -->
+                  <div style="font-family:Arial;font-weight:bold;font-size:13px;">På väg att passera förfallodatum</div>
+
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+
+
+				#foreach( $case in $notification.monitoredThresholdCases )
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td width="100" valign="top" style="font-size:15px;font-style:italic;">$case.caseId</td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="140" valign="top" style="font-size:13px;">
+                           $case.dueOn
+                        </td>
+                        <td width="240" valign="top" style="font-size:13px;">
+                           #if ($case.assignedTo)
+                              $case.owner ($case.assignedTo)
+                           #else
+                              $case.owner
+                           #end 
+                        </td>
+                        <td>
+                           <table width="10" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                 <td>
+                                    <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                        <td width="50%" valign="top">
+                           <div style="font-size:15px;">$case.description</div>
+                        </td>
+                     </tr>
+                  </table>
+
+					<table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:8px;font-size:12px;line-height:8px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>						
+				#end
+				#end
+               </td>
+               <td>
+                  <table width="16" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+            <tr>
+               <td colspan="3">
+                  <table width="1" border="0" cellspacing="0" cellpadding="0">
+                     <tr>
+                        <td>
+                           <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+
+      </td>
+      <td width="3%">
+         <table width="10" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="height:0px;font-size:0px;line-height:0px;">&nbsp;</div>
+               </td>
+            </tr>
+         </table>
+      </td><!-- 3% with min-width of 10px -->
+   </tr>
+   <tr><!-- COPYRIGHT -->
+   	<td></td>
+   	<td>
+   		<table width="1" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="height:10px;font-size:10px;line-height:10px;">&nbsp;</div>
+               </td>
+            </tr>
+         </table>
+   		<table width="99%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="font-size:9px">&nbsp;Powered by Streamflow&#153;</div>
+               </td>
+            </tr>
+         </table>
+   		<table width="1" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+               <td>
+                  <div style="height:15px;font-size:15px;line-height:15px;">&nbsp;</div>
+               </td>
+            </tr>
+         </table>
+   	</td>
+   	<td></td>
+   </tr>
+</table>
+
+</body>
+</html>

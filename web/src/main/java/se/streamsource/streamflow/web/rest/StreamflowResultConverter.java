@@ -414,6 +414,13 @@ public class StreamflowResultConverter
                {
                   return ((Removable.Data)caseEntity).removed().get();
                }
+            } ).
+            column( "priority", "Priority", STRING, new Function<CaseEntity, Object>()
+            {
+               public Object map( CaseEntity caseEntity )
+               {
+                  return caseEntity.priority().get();
+               }
             } );
       
       if (!"*".equals( query.select() ))

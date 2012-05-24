@@ -55,7 +55,9 @@ public interface Manager
    public String performArchivalCheck();
 
    public void performArchival();
-
+   
+   public void sendDueOnNotifications();
+   
    @Computed
    Property<Integer> failedLogins();
 

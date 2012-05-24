@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+
+import javax.sql.DataSource;
+
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
@@ -35,6 +39,7 @@ import org.qi4j.migration.MigrationConfiguration;
 import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
+
 import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.infrastructure.database.DataSourceService;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
@@ -67,10 +72,6 @@ import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddres
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
-
-import javax.sql.DataSource;
-
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -151,6 +152,7 @@ public class InfrastructureAssembler
       {
          module.services( EmbeddedSolrService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
          module.services( SolrQueryService.class ).visibleIn( Visibility.application ).identifiedBy( "solr" ).instantiateOnStartup();
+            //.withConcerns( SolrPerformanceLogConcern.class );
 
          module.objects( EntityStateSerializer.class );
       }
@@ -194,7 +196,7 @@ public class InfrastructureAssembler
 
       module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
       module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
-//            withConcerns( PerformanceLogConcern.class );
+            //.withConcerns( RdfPerformanceLogConcern.class );
       module.services( RdfQueryParserFactory.class );
    }
 
@@ -213,7 +215,7 @@ public class InfrastructureAssembler
       {
          // JDBM storage
          module.services( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
-//               withConcerns( EntityStorePerformanceCheck.class );
+               //.withConcerns( EntityStorePerformanceCheck.class );
          module.services( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
 
          configuration().entities( JdbmConfiguration.class ).visibleIn( Visibility.application );
@@ -249,8 +251,8 @@ public class InfrastructureAssembler
       }
    }
 
-/*
-   public abstract static class EntityStorePerformanceCheck
+
+   /*public abstract static class EntityStorePerformanceCheck
          extends ConcernOf<EntityStoreSPI>
          implements EntityStoreSPI
    {
@@ -270,7 +272,7 @@ public class InfrastructureAssembler
       }
    }
 
-   public static class PerformanceLogConcern
+   public static class RdfPerformanceLogConcern
          extends GenericConcern
    {
       public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
@@ -284,9 +286,28 @@ public class InfrastructureAssembler
             long end = System.nanoTime();
             long timeMicro = (end - start) / 1000;
             double timeMilli = timeMicro / 1000.0;
-            System.out.println(method.getName()+":"+ timeMilli );
+            System.out.println("RDF." + method.getName()+":"+ timeMilli );
          }
       }
    }
-*/
+
+   public static class SolrPerformanceLogConcern
+         extends GenericConcern
+   {
+      public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+      {
+         long start = System.nanoTime();
+         try
+         {
+            return next.invoke( proxy, method, args );
+         } finally
+         {
+            long end = System.nanoTime();
+            long timeMicro = (end - start) / 1000;
+            double timeMilli = timeMicro / 1000.0;
+            System.out.println("SOLR." + method.getName()+":"+ timeMilli );
+         }
+      }
+   }*/
+
 }

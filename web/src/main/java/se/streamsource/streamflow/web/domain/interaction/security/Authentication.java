@@ -16,12 +16,10 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.security;
 
-import se.streamsource.streamflow.api.Password;
-
 /**
  * JAVADOC
  */
 public interface Authentication
 {
-   boolean login( @Password String password );
+   boolean login( String password );
 }

@@ -121,13 +121,13 @@ public class CaseCommandsContextTest
          uow.complete();
       }
 
-      UsersContextTest.createUser("test");
+      UsersContextTest.createUser("testing");
 
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole(project1);
-         context(MembersContext.class).addmember(entityValue("test"));
+         context(MembersContext.class).addmember(entityValue("testing"));
          uow.complete();
       }
 
@@ -147,8 +147,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          DraftsContext drafts = context(DraftsContext.class);
          drafts.createcase();
          uow.complete();
@@ -160,8 +160,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
 
          DraftsContext drafts = context(DraftsContext.class);
          Iterable<Case> caseList = drafts.cases(valueBuilderFactory.newValueFromJSON(TableQuery.class, "{tq:'select *'}"));
@@ -174,8 +174,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          playRole(caze);
 
          context(CaseGeneralCommandsContext.class).changedescription("Case1");
@@ -192,8 +192,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          playRole(caze);
 
          CaseCommandsContext context = context(CaseCommandsContext.class);
@@ -211,8 +211,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          playRole(caze);
 
          CaseGeneralCommandsContext context = context(CaseGeneralCommandsContext.class);
@@ -226,8 +226,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          playRole(caze);
 
          LabelableContext context = context(LabelableContext.class);
@@ -241,8 +241,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          playRole(caze);
 
          context(CaseCommandsContext.class).open();
@@ -260,8 +260,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
 
          playRole(Project.class, findLink(context(WorkspaceProjectsContext.class).index(), "Project1"));
 // TODO This is random!         playRole( first( context( InboxContext.class ).index() ) );
@@ -282,8 +282,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
 
          playRole(Project.class, findLink(context(WorkspaceProjectsContext.class).index(), "Project1"));
 //         playRole( first( context( AssignmentsContext.class ).index() ) );
@@ -307,8 +307,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          playRole(caze);
 
          context(CaseCommandsContext.class).reopen();
@@ -326,8 +326,8 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
-         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(User.class, "testing");
+         RoleMap.current().set(new UserPrincipal("testing"));
          playRole(caze);
 
          context(CaseCommandsContext.class).close();
@@ -346,10 +346,10 @@ public class CaseCommandsContextTest
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       RoleMap.newCurrentRoleMap();
-      RoleMap.current().set(new UserPrincipal("test"));
+      RoleMap.current().set(new UserPrincipal("testing"));
       playRole(caze);
-      playRole(User.class, "test");
-      RoleMap.current().set(new UserPrincipal("test"));
+      playRole(User.class, "testing");
+      RoleMap.current().set(new UserPrincipal("testing"));
 
       List<String> actions = new ArrayStack();
       Iterables.addAll(actions, Iterables.map(new Function<Method, String>()

@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.management;
 
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
@@ -28,6 +29,12 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.NamedThreadFactory;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
+
+import java.beans.PropertyVetoException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * TODO
@@ -37,7 +44,7 @@ public interface UpdateService
       extends ServiceComposite, Configuration, Activatable
 {
    abstract class Mixin
-         implements UpdateService, Activatable
+         implements UpdateService, Activatable, Runnable
    {
       @Structure
       Application app;
@@ -51,14 +58,44 @@ public interface UpdateService
       @Uses
       ServiceDescriptor descriptor;
 
+      @Service
+      AvailabilityService availabilityService;
+
+      private ExecutorService executor;
+      private HistoryCleanup cleanup;
+
+      private boolean wasOn;
+
       Logger log;
 
       public void activate() throws Exception
       {
+         log = LoggerFactory.getLogger( UpdateService.class );
+
+         executor = Executors.newSingleThreadExecutor( new NamedThreadFactory( "UpdateMigration" ) );
+         executor.submit( this );
+         //cleanup
+         executor.submit( cleanup = module.objectBuilderFactory().newObject( HistoryCleanup.class ) );
+         log.info( "Activate: Executer submitted." );
+      }
+
+      public void passivate() throws Exception
+      {
+         cleanup.stopAndDiscard();
+         executor.shutdown();
+
+         log.info( "Passivate: Executor shut down." );
+      }
+
+      public void run()
+      {
+         Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+         // make rest api unavailable during operation
+         wasOn = availabilityService.getCircuitBreaker().isOn();
+         availabilityService.getCircuitBreaker().trip();
+
          UpdateBuilder builder = descriptor.metaInfo( UpdateBuilder.class );
-
-         log = LoggerFactory.getLogger(UpdateService.class);
-
          String version = app.version();
          String lastVersion = config.configuration().lastStartupVersion().get();
 
@@ -84,14 +121,17 @@ public interface UpdateService
             } catch (Exception e)
             {
                log.error("Update failed. Aborting! Try fixing the problem and start again", e);
-
-               throw e;
-            }
+             }
          }
-      }
-
-      public void passivate() throws Exception
-      {
+         try
+         {
+            // if rest api was on previously make it available again
+            if( wasOn )
+               availabilityService.getCircuitBreaker().turnOn();
+         } catch (PropertyVetoException e)
+         {
+            log.error( "Could not turn on availability circuit breaker.", e );
+         }
       }
    }
 }
