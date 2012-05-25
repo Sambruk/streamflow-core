@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -253,7 +254,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       {
          StringBuilder template = new StringBuilder( "" );
          InputStream in = resourceClass.getResourceAsStream( resourceName );
-         BufferedReader reader = new BufferedReader( new InputStreamReader( in ) );
+         BufferedReader reader = new BufferedReader( new InputStreamReader( in, "UTF-8") );
          String line;
          while ((line = reader.readLine()) != null)
             template.append( line + "\n" );
