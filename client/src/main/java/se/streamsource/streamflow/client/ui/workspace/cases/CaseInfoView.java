@@ -24,6 +24,7 @@ import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -51,6 +52,7 @@ public class CaseInfoView extends JPanel
    private JLabel owner = new JLabel("");
    private JLabel assignedTo = new JLabel("");
    private JLabel createdBy = new JLabel("");
+   private JLabel lock = new JLabel( "" );
 
    private CaseStatusLabel statusLabel = new CaseStatusLabel();
 
@@ -94,6 +96,9 @@ public class CaseInfoView extends JPanel
       assignedHeader.setFocusable( false );
       assignedHeader.setForeground( Color.GRAY );
 
+      lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
+      lock.setToolTipText( "Case is restricted" );
+      addLock( lock );
       addBox(statusHeader, statusLabel);
       addBox(titleHeader, title);
       addBox(typeHeader, caseType);
@@ -103,6 +108,16 @@ public class CaseInfoView extends JPanel
 
       model.addObserver(this);
    }
+
+   private void addLock( JComponent component )
+   {
+      JPanel box = new JPanel();
+      box.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
+      box.setLayout( new BorderLayout() );
+      box.add(component, BorderLayout.CENTER);
+      add(box);
+   }
+
 
    private void addBox( JLabel label, JComponent component )
    {
@@ -117,6 +132,8 @@ public class CaseInfoView extends JPanel
    public void update( Observable o, Object arg )
    {
       CaseDTO aCase = model.getIndex();
+
+      lock.setVisible( aCase.restricted().get() );
 
       statusLabel.setStatus( aCase.status().get(), aCase.resolution().get() );
 

@@ -86,6 +86,7 @@ public interface OrganizationEntity
       FormPdfTemplate.Data,
       CasePdfTemplate.Data,
       CasePriorityDefinitions.Data,
+      CaseAccessDefaults.Data,
            
       //Queries
       OrganizationParticipationsQueries,

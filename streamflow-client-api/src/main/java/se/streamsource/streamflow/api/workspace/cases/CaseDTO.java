@@ -70,4 +70,7 @@ public interface CaseDTO
 
    @Optional
    Property<LinkValue> parentCase();
+
+   @UseDefaults
+   Property<Boolean> restricted();
 }

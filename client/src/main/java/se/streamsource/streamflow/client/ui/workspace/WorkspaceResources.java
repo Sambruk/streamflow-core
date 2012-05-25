@@ -29,6 +29,8 @@ public enum WorkspaceResources
    welcome,
    choose_case,
 
+   unrestrict_case,
+
    // Case table
    title_column_header,
    info_column_header,

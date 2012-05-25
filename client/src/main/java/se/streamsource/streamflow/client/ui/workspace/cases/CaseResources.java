@@ -45,6 +45,8 @@ public enum CaseResources
    case_status_closed_text,
    case_status_on_hold_text,
 
+   case_restricted_icon,
+
    // Conversation
    new_conversation_topic,
    choose_participant,
