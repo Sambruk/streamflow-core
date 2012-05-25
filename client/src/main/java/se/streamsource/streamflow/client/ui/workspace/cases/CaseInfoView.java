@@ -97,7 +97,7 @@ public class CaseInfoView extends JPanel
       assignedHeader.setForeground( Color.GRAY );
 
       lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
-      lock.setToolTipText( "Case is restricted" );
+      lock.setToolTipText( i18n.text( WorkspaceResources.case_is_restricted ) );
       addLock( lock );
       addBox(statusHeader, statusLabel);
       addBox(titleHeader, title);
