@@ -29,5 +29,6 @@ public enum ErrorResources
    search_string_malformed,
    error,
    user_already_exists,
-   description_cannot_be_more_than_50
+   description_cannot_be_more_than_50,
+   project_remove_failed_open_cases
 }
