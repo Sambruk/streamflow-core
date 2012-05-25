@@ -18,6 +18,8 @@ package se.streamsource.streamflow.web.application.dueon;
 
 import static org.qi4j.api.query.QueryExpressions.and;
 import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.gt;
+import static org.qi4j.api.query.QueryExpressions.le;
 import static org.qi4j.api.query.QueryExpressions.lt;
 import static org.qi4j.api.query.QueryExpressions.notEq;
 import static org.qi4j.api.query.QueryExpressions.or;
@@ -49,6 +51,8 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -67,19 +71,14 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
-import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificationSettings;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
@@ -253,7 +252,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       {
          StringBuilder template = new StringBuilder( "" );
          InputStream in = resourceClass.getResourceAsStream( resourceName );
-         BufferedReader reader = new BufferedReader( new InputStreamReader( in ) );
+         BufferedReader reader = new BufferedReader( new InputStreamReader( in, "UTF-8") );
          String line;
          while ((line = reader.readLine()) != null)
             template.append( line + "\n" );
@@ -311,7 +310,9 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                   where( and( eq( templateFor( Ownable.Data.class ).owner(), (Project) setting ),
                               or( eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
                                     eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ) ),
-                              lt( templateFor( DueOn.Data.class ).dueOn(), new DateTime().toDate() ) ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+                              lt( templateFor( DueOn.Data.class ).dueOn(), new DateTime().toDate() ) ) )
+                  .newQuery( module.unitOfWorkFactory().currentUnitOfWork() )
+                  .orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( DueOn.Data.class ).dueOn(), OrderBy.Order.ASCENDING ) );
       }
 
       private Iterable<CaseEntity> dueOnThresholdCases(DueOnNotificationSettings.Data setting)
@@ -323,7 +324,10 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                where( and( eq( templateFor( Ownable.Data.class ).owner(), (Project) setting ),
                            or( eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
                                  eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ) ),
-                           eq( templateFor( DueOn.Data.class ).dueOn(), thresholdDate ) ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+                           and(le( templateFor( DueOn.Data.class ).dueOn(), thresholdDate ),
+                              gt( templateFor( DueOn.Data.class ).dueOn(), new DateTime().toDate() ))) )
+               .newQuery( module.unitOfWorkFactory().currentUnitOfWork() )
+               .orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( DueOn.Data.class ).dueOn(), OrderBy.Order.ASCENDING ) );
       }
 
 
