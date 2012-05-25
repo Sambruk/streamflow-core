@@ -19,9 +19,7 @@ package se.streamsource.streamflow.api.assembler;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
-import se.streamsource.streamflow.api.administration.CaseAccessOptionalDefaultsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
@@ -165,7 +163,6 @@ public class ClientAPIAssembler
               ArchivalSettingsDTO.class,
               DueOnNotificationSettingsDTO.class,
               RegisterUserDTO.class,
-              CaseAccessOptionalDefaultsDTO.class,
               ChangePasswordDTO.class,
               NewUserDTO.class,
               NewProxyUserDTO.class,

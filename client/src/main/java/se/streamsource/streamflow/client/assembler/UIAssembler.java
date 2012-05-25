@@ -40,7 +40,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesView;
 import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessOptionalDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
@@ -363,7 +362,6 @@ public class UIAssembler
             SelectedLabelsView.class,
             SelectedResolutionsView.class,
             CaseAccessDefaultsView.class,
-            CaseAccessOptionalDefaultsView.class,
             CaseDefaultDaysToCompleteView.class,
             CaseDueOnNotificationView.class,
             RecipientsView.class,

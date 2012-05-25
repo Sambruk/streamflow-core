@@ -21,7 +21,6 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessOptionalDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificationSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -40,7 +39,6 @@ public interface Project
       Forms,
       CaseTypes,
       CaseAccessDefaults,
-      CaseAccessOptionalDefaults,
       SelectedCaseTypes,
       Labels,
       SelectedLabels,

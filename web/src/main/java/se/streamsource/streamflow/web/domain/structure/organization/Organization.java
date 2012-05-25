@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
@@ -58,6 +59,7 @@ public interface Organization
       CasePdfTemplate,
       DatatypeDefinitions,
       FieldGroups,
-      CasePriorityDefinitions
+      CasePriorityDefinitions,
+      CaseAccessDefaults
 {
 }

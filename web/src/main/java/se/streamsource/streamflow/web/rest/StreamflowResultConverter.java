@@ -223,6 +223,7 @@ public class StreamflowResultConverter
          prototype.parentCase().set(linkBuilder.newInstance());
       }
 
+      prototype.restricted().set( aCase.restricted().get() );
       return builder.newInstance();
    }
 

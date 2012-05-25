@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -49,13 +50,11 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessOptionalDefaults;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessSecurityApplies;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyAdded;
-import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyApplies;
-import se.streamsource.streamflow.web.domain.interaction.security.RequiresSecrecyNotAdded;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresRestricted;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresUnrestricted;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
@@ -66,6 +65,8 @@ import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
@@ -165,14 +166,11 @@ public interface CaseCommandsContext
    @RequiresPermission(PermissionType.administrator)
    public void reinstate();
 
+   @RequiresUnrestricted()
+   public void restrict();
 
-   @RequiresSecrecyApplies()
-   @RequiresSecrecyNotAdded()
-   public void addsecrecy();
-
-   @RequiresSecrecyApplies()
-   @RequiresSecrecyAdded()
-   public void removesecrecy();
+   @RequiresRestricted()
+   public void unrestrict();
 
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
@@ -349,16 +347,17 @@ public interface CaseCommandsContext
          caze.reinstate();
       }
 
-      public void addsecrecy()
+      public void restrict()
       {
-         CaseAccessSecurityApplies secrecy = RoleMap.role( CaseAccessSecurityApplies.class );
-         secrecy.setSecrecySetting( true );
+         CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
+         secrecy.isRestricted( true );
 
-         Ownable.Data owner = RoleMap.role( Ownable.Data.class );
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         Organization org = orgs.organization().get();
+         CaseAccessDefaults.Data defaults = (CaseAccessDefaults.Data) org;
 
-         CaseAccessOptionalDefaults.Data defaults = (CaseAccessOptionalDefaults.Data) owner.owner().get();
          CaseAccess access = RoleMap.role( CaseAccess.class );
-         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessOptionalPermissionDefaults().get().entrySet())
+         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
          {
             access.changeAccess( entry.getKey(), entry.getValue() );
          }
@@ -370,10 +369,10 @@ public interface CaseCommandsContext
        * secrecy was enabled. Instead we force the
        * settings for the project and the case type
        */
-      public void removesecrecy()
+      public void unrestrict()
       {
-         CaseAccessSecurityApplies secrecy = RoleMap.role( CaseAccessSecurityApplies.class );
-         secrecy.setSecrecySetting( false );
+         CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
+         secrecy.isRestricted( false );
 
          Ownable.Data owner = RoleMap.role( Ownable.Data.class );
 

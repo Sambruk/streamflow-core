@@ -16,12 +16,20 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import static se.streamsource.dci.value.link.Links.withRel;
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.Font;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,23 +37,12 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import java.awt.Font;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessOptionalDefaultsView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
-import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
-import ca.odell.glazedlists.EventList;
+import static se.streamsource.dci.value.link.Links.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Show settings for a REST resource, with each part as its own panel with a separator. To determine panels, do a query
@@ -64,8 +61,6 @@ public class SettingsResourceView
    {
       addSettings("caseaccessdefaults", AdministrationResources.caseaccessdefaults_separator, CaseAccessDefaultsView.class);
 
-      addSettings( "caseaccessoptionaldefaults", AdministrationResources.caseaccessoptionaldefaults_separator, CaseAccessOptionalDefaultsView.class );
-
       addSettings("defaultdaystocomplete", AdministrationResources.default_days_to_complete_separator, CaseDefaultDaysToCompleteView.class);
 
       addSettings("dueonnotification", AdministrationResources.dueon_notification_separator, CaseDueOnNotificationView.class);
@@ -75,6 +70,8 @@ public class SettingsResourceView
       addSettings( "caseprioritysetting", AdministrationResources.casepriority_separator, CasePrioritySettingView.class );
 
       addSettings( "formonclose", AdministrationResources.formonclose_separator, FormOnCloseView.class );
+
+      addSettings( "restrictions", AdministrationResources.restrictions_settings_separator,  CaseAccessDefaultsView.class);
    }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)

@@ -19,9 +19,6 @@ package se.streamsource.streamflow.web.domain.interaction.security;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
-import org.qi4j.api.entity.association.Association;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,15 +28,15 @@ import java.lang.annotation.RetentionPolicy;
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(RequiresSecrecyNotAdded.RequiresSecrecyAppliesConstraint.class)
-public @interface RequiresSecrecyNotAdded
+@Constraints(RequiresUnrestricted.RequiresSecrecyAppliesConstraint.class)
+public @interface RequiresUnrestricted
 {
    public class RequiresSecrecyAppliesConstraint
-         implements Constraint<RequiresSecrecyNotAdded, CaseAccessSecurityApplies.Data>
+         implements Constraint<RequiresUnrestricted, CaseAccessRestriction.Data>
    {
-      public boolean isValid( RequiresSecrecyNotAdded applies, CaseAccessSecurityApplies.Data value )
+      public boolean isValid( RequiresUnrestricted applies, CaseAccessRestriction.Data value )
       {
-         return !value.secrecyApplies().get();
+         return !value.restricted().get();
       }
    }
 }
