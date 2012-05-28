@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.rest.resource.organizations;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
-import se.streamsource.streamflow.web.context.administration.CaseAccessOptionalDefaultsContext;
 import se.streamsource.streamflow.web.context.administration.ProjectContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.rest.resource.organizations.filters.FiltersResource;
@@ -76,12 +75,6 @@ public class ProjectResource
    public void caseaccessdefaults()
    {
       subResourceContexts( CaseAccessDefaultsContext.class );
-   }
-
-   @SubResource
-   public void caseaccessoptionaldefaults()
-   {
-      subResourceContexts( CaseAccessOptionalDefaultsContext.class );
    }
 
    @SubResource

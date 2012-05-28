@@ -114,8 +114,8 @@ public class CaseActionsView extends JPanel
       delete,
       exportpdf,
       reinstate,
-      addsecrecy,
-      removesecrecy
+      restrict,
+      unrestrict
    }
 
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
@@ -385,35 +385,44 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT )
-   public Task addsecrecy()
+   public Task restrict()
    {
       return new CommandTask()
       {
          @Override
          protected void command() throws Exception
          {
-            model.applySecurity();
+            model.restrict();
          }
       };
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task removesecrecy()
+   public Task unrestrict()
    {
-      return new CommandTask()
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setCustomMessage( i18n.text( WorkspaceResources.unrestrict_case ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
       {
-         @Override
-         protected void command() throws Exception
+         return new CommandTask()
          {
-            model.unApplySecurity();
-         }
-      };
+            @Override
+            protected void command() throws Exception
+            {
+               model.unrestrict();
+            }
+         };
+      } else
+      {
+         return null;
+      }
    }
 
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate", "addsecrecy", "removesecrecy"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate", "restrict", "unrestrict"), transactions ))
       {
          model.refresh();
       }

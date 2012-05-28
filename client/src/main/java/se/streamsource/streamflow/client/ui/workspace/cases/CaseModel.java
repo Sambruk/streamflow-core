@@ -98,14 +98,14 @@ public class CaseModel
       client.delete();
    }
 
-   public void applySecurity()
+   public void restrict()
    {
-      client.command( "addsecrecy" );
+      client.command( "restrict" );
    }
 
-   public void unApplySecurity()
+   public void unrestrict()
    {
-      client.command( "removesecrecy" );
+      client.command( "unrestrict" );
    }
 
    public EventList<TitledLinkValue> getPossibleSendTo()

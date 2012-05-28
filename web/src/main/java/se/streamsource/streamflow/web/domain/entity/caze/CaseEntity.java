@@ -49,7 +49,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessSecurityApplies;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -123,7 +123,7 @@ public interface CaseEntity
       Status.Data,
       Conversations.Data,
       CaseAccess.Data,
-      CaseAccessSecurityApplies.Data,
+      CaseAccessRestriction.Data,
 
       // Structure
       Closed,

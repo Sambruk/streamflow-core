@@ -37,7 +37,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessOptionalDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificationSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -70,7 +69,6 @@ public interface ProjectEntity
 
         // Data
         CaseAccessDefaults.Data,
-        CaseAccessOptionalDefaults.Data,
         Members.Data,
         Describable.Data,
         OwningOrganizationalUnit.Data,

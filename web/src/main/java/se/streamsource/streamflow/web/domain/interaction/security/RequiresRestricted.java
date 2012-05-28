@@ -19,11 +19,6 @@ package se.streamsource.streamflow.web.domain.interaction.security;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
-import org.qi4j.api.entity.association.Association;
-import se.streamsource.streamflow.api.workspace.cases.CaseStates;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,18 +28,15 @@ import java.lang.annotation.RetentionPolicy;
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(RequiresSecrecyApplies.RequiresSecrecyAppliesConstraint.class)
-public @interface RequiresSecrecyApplies
+@Constraints(RequiresRestricted.RequiresSecrecyAppliesConstraint.class)
+public @interface RequiresRestricted
 {
    public class RequiresSecrecyAppliesConstraint
-         implements Constraint<RequiresSecrecyApplies, Ownable.Data>
+         implements Constraint<RequiresRestricted, CaseAccessRestriction.Data>
    {
-      public boolean isValid( RequiresSecrecyApplies applies, Ownable.Data value )
+      public boolean isValid( RequiresRestricted applies, CaseAccessRestriction.Data value )
       {
-         Association<Owner> owner = value.owner();
-         if ( owner.get() == null ) return false;
-
-         return ((CaseAccessOptionalDefaults.Data)owner.get()).enableOptionalDefaults().get();
+         return value.restricted().get();
       }
    }
 }
