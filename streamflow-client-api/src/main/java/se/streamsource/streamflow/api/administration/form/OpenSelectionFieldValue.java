@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
 /**

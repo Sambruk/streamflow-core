@@ -16,10 +16,34 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.util.MultiFieldHelper;
+
+import java.util.List;
+
 /**
  * JAVADOC
  */
+@Mixins( CheckboxesFieldValue.Mixin.class )
 public interface CheckboxesFieldValue
       extends SelectionFieldValue
 {
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      @This CheckboxesFieldValue definition;
+
+      public Boolean validate( String value )
+      {
+         if ("".equals( value )) return true;
+         for (String selection : MultiFieldHelper.options( value ))
+         {
+            if (!definition.values().get().contains( selection ))
+               return false;
+         }
+         return true;
+      }
+   }
 }

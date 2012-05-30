@@ -30,7 +30,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
@@ -178,6 +180,12 @@ public class CaseSubmittedFormView
          buttons.put(button, attachment);
          panel.add(button);
          component = panel;
+      } else if (fieldType.equals( CheckboxesFieldValue.class.getName()) || fieldType.equals( ListBoxFieldValue.class.getName() ))
+      {
+         // replace all [ with " and ] with "
+         fieldValue = fieldValue.replaceAll( "\\[", "\"" );
+         fieldValue = fieldValue.replaceAll( "\\]", "\"" );
+         component = new JLabel( fieldValue );
       } else
       {
          component = new JLabel(fieldValue);

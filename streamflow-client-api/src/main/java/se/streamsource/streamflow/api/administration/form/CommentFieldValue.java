@@ -16,10 +16,22 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.mixin.Mixins;
+
 /**
  * JAVADOC
  */
+@Mixins( CommentFieldValue.Mixin.class )
 public interface CommentFieldValue
       extends FieldValue
 {
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      public Boolean validate( String value )
+      {
+         return false;
+      }
+   }
 }

@@ -18,11 +18,18 @@ package se.streamsource.streamflow.api.administration.form;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.util.Strings;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * JAVADOC
  */
+@Mixins( TextFieldValue.Mixin.class )
 public interface TextFieldValue
       extends FieldValue
 {
@@ -36,4 +43,32 @@ public interface TextFieldValue
 
    @UseDefaults
    Property<Boolean> mandatory();
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      @This TextFieldValue definition;
+
+      public Boolean validate( String value )
+      {
+         if (!Strings.empty( value ))
+         {
+            if (!Strings.empty( definition.regularExpression().get() ))
+            {
+               if (value != null)
+               {
+                  Pattern pattern = Pattern.compile( definition.regularExpression().get() );
+                  Matcher matcher = pattern.matcher( value );
+
+                  return matcher.matches();
+               }
+               return false;
+            }
+            return true;
+         } else {
+            return !definition.mandatory().get();
+         }
+
+      }
+   }
 }

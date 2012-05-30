@@ -49,6 +49,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.MultiFieldHelper;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 
@@ -111,49 +112,15 @@ public interface FormDraft
       public void changeFieldValue( EntityReference fieldId, String newValue )
       {
          FormDraftDTO formDraft = formDraftValue().get();
-
          FieldSubmissionDTO field = findField( formDraft, fieldId );
 
-         boolean update = false;
          if (field.value().get() != null && field.value().get().equals( newValue ))
          {
             return;
          } // Skip update - same value
 
          FieldValue value = field.field().get().fieldValue().get();
-         if (value instanceof CheckboxesFieldValue)
-         {
-            update = validate( (CheckboxesFieldValue) value, newValue );
-         } else if (value instanceof ComboBoxFieldValue)
-         {
-            update = validate( (ComboBoxFieldValue) value, newValue );
-         } else if (value instanceof CommentFieldValue)
-         {
-            update = validate( (CommentFieldValue) value, newValue );
-         } else if (value instanceof DateFieldValue)
-         {
-            update = validate( (DateFieldValue) value, newValue );
-         } else if (value instanceof ListBoxFieldValue)
-         {
-            update = validate( (ListBoxFieldValue) value, newValue );
-         } else if (value instanceof NumberFieldValue)
-         {
-            update = validate( (NumberFieldValue) value, newValue );
-         } else if (value instanceof OptionButtonsFieldValue)
-         {
-            update = validate( (OptionButtonsFieldValue) value, newValue );
-         } else if (value instanceof OpenSelectionFieldValue)
-         {
-            update = validate( (OpenSelectionFieldValue) value, newValue );
-         } else if (value instanceof TextAreaFieldValue)
-         {
-            update = validate( (TextAreaFieldValue) value, newValue );
-         } else if (value instanceof TextFieldValue)
-         {
-            update = validate( (TextFieldValue) value, newValue );
-         }
-
-         if (update)
+         if (value.validate( newValue ))
          {
             changedFieldValue( null, fieldId, newValue );
          }
@@ -169,102 +136,6 @@ public interface FormDraft
       public void removeFormSignatures()
       {
          removedFormSignatures( null );
-      }
-
-      private boolean validate( OpenSelectionFieldValue openSelectionFieldValue, String newValue )
-      {
-         return true;
-      }
-
-      private boolean validate( CheckboxesFieldValue definition, String value )
-      {
-         if ("".equals( value )) return true;
-         return validateMultiple( definition.values().get(), value );
-      }
-
-      private boolean validateMultiple( List<String> values, String value )
-      {
-         String[] selections = value.split( ", " );
-         for (String selection : selections)
-         {
-            if (!values.contains( selection ))
-               return false;
-         }
-         return true;
-      }
-
-      private boolean validate( ComboBoxFieldValue definition, String value )
-      {
-         return true;
-      }
-
-      private boolean validate( CommentFieldValue definition, String value )
-      {
-         return false;
-      }
-
-      private boolean validate( DateFieldValue definition, String value )
-      {
-         try
-         {
-            DateFunctions.fromString( value );
-            return true;
-         } catch (IllegalStateException e)
-         {
-            return false;
-         }
-      }
-
-      private boolean validate( ListBoxFieldValue definition, String value )
-      {
-         if ("".equals( value )) return true;
-         return validateMultiple( definition.values().get(), value );
-      }
-
-      private boolean validate( NumberFieldValue definition, String value )
-      {
-         if ("".equals( value )) return true;
-         try
-         {
-            // quick fix to make it accept ,
-            value = value.replace( ',', '.' );
-            Object o = (definition.integer().get() ? Integer.parseInt( value ) : Double.parseDouble( value ));
-            return true;
-         } catch (NumberFormatException e)
-         {
-            return false;
-         }
-      }
-
-      private boolean validate( OptionButtonsFieldValue definition, String value )
-      {
-         return definition.values().get().contains( value );
-      }
-
-      private boolean validate( TextAreaFieldValue definition, String value )
-      {
-         return value != null;
-      }
-
-      private boolean validate( TextFieldValue definition, String value )
-      {
-         if (!Strings.empty( value ))
-         {
-            if (!Strings.empty( definition.regularExpression().get() ))
-            {
-               if (value != null)
-               {
-                  Pattern pattern = Pattern.compile( definition.regularExpression().get() );
-                  Matcher matcher = pattern.matcher( value );
-
-                  return matcher.matches();
-               }
-               return false;
-            }
-            return true;
-         } else {
-            return !definition.mandatory().get();
-         }
       }
 
       private FieldSubmissionDTO findField( FormDraftDTO draft, EntityReference fieldRef )
