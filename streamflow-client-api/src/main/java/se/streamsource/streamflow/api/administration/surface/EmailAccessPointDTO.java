@@ -20,6 +20,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.link.LinkValue;
 
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public interface EmailAccessPointDTO
    Property<String> project();
 
    @Optional
-   Property<String> caseType();
+   Property<LinkValue> caseType();
 
    // Formatting
    @UseDefaults
