@@ -38,7 +38,7 @@ public interface EmailValue
    @Optional Property<String> subject();
    Property<String> content();
    Property<String> contentType();
-   Property<String> contentHtml();
+   @Optional Property<String> contentHtml();
    @Optional Property<String> messageId();
 
    @UseDefaults

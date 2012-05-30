@@ -147,7 +147,7 @@ public interface CreateCaseFromEmailService
                   {
                      // No AP for this email address - create support case.
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
-                     String subj = "Unknown accesspoint: " + builder.prototype().subject().get();
+                     String subj = "Unknown accesspoint: " + builder.prototype().to().get() + " - " + builder.prototype().subject().get();
                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      uow.discard();
@@ -203,7 +203,7 @@ public interface CreateCaseFromEmailService
             } catch (Exception ex)
             {
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
-               String subj = "General error: " + builder.prototype().subject().get();
+               String subj = "General error: " + builder.prototype().to().get() + " - " + builder.prototype().subject().get();
                builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
                systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
 
