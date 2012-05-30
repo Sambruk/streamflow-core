@@ -16,12 +16,23 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
+@Mixins( FieldValue.Mixin.class )
 public interface FieldValue
       extends ValueComposite
 {
+   Boolean validate( String value );
+
+   abstract class Mixin implements FieldValue
+   {
+      public Boolean validate( String value )
+      {
+         return true;
+      }
+   }
 }

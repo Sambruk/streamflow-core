@@ -37,6 +37,7 @@ import se.streamsource.streamflow.client.util.StreamflowButton;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import se.streamsource.streamflow.util.MultiFieldHelper;
 
 public class ListBoxPanel
       extends AbstractFieldPanel
@@ -119,7 +120,14 @@ public class ListBoxPanel
       for ( int i=0; i<model.getSize(); i++ )
       {
          if (!first) sb.append( ", " );
-         sb.append( model.getElementAt( i ) );
+         String elm = (String) model.getElementAt( i );
+         if ( elm.contains( "," ))
+         {
+            sb.append( "[" ).append( elm ).append( "]" );
+         } else
+         {
+            sb.append( elm );
+         }
          first = false;
       }
       return sb.toString();
@@ -129,11 +137,10 @@ public class ListBoxPanel
    public void setValue( String newValue )
    {
       if ( newValue == null || newValue.equals( "" )) return;
-      String[] elements = newValue.split( ", " );
       DefaultListModel model = (DefaultListModel) selectedElements.getModel();
       DefaultListModel possibleModel = (DefaultListModel) possibleElements.getModel();
 
-      for ( String element : elements )
+      for ( String element : MultiFieldHelper.options( newValue ) )
       {
          model.addElement( element );
          possibleModel.removeElement( element );

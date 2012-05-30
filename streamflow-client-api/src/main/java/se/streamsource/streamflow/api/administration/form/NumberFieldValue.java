@@ -16,13 +16,38 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC
  */
+@Mixins( NumberFieldValue.Mixin.class )
 public interface NumberFieldValue
       extends FieldValue
 {
    Property<Boolean> integer();
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      @This NumberFieldValue definition;
+
+      public Boolean validate( String value )
+      {
+         if ("".equals( value )) return true;
+         try
+         {
+            // quick fix to make it accept ,
+            value = value.replace( ',', '.' );
+            Object o = (definition.integer().get() ? Integer.parseInt( value ) : Double.parseDouble( value ));
+            return true;
+         } catch (NumberFormatException e)
+         {
+            return false;
+         }
+      }
+
+   }
 }

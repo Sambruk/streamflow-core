@@ -169,6 +169,8 @@ public enum AdministrationResources
    formonclose_separator, 
    choose_form_on_close,
    restrictions_settings_separator,
+   illegal_name,
+   no_such_character,
    none,
    export,
    casepriorities_tab,

@@ -16,10 +16,33 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.util.MultiFieldHelper;
+
 /**
  * JAVADOC
  */
+@Mixins( ListBoxFieldValue.Mixin.class )
 public interface ListBoxFieldValue
       extends SelectionFieldValue
 {
+
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      @This ListBoxFieldValue definition;
+
+      public Boolean validate( String value)
+      {
+         if ("".equals( value )) return true;
+         for (String selection : MultiFieldHelper.options( value ))
+         {
+            if (!definition.values().get().contains( selection ))
+               return false;
+         }
+         return true;
+      }
+   }
 }

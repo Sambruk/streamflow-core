@@ -17,16 +17,35 @@
 package se.streamsource.streamflow.api.administration.form;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.util.DateFunctions;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
+@Mixins( DateFieldValue.Mixin.class )
 public interface DateFieldValue
       extends FieldValue
 {
    @Optional
    Property<Date> date();
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      public Boolean validate( String value )
+      {
+         try
+         {
+            DateFunctions.fromString( value );
+            return true;
+         } catch (IllegalStateException e)
+         {
+            return false;
+         }
+      }
+   }
 }

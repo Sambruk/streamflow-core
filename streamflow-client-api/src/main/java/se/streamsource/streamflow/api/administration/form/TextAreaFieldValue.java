@@ -16,15 +16,27 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC
  */
+@Mixins( TextAreaFieldValue.Mixin.class )
 public interface TextAreaFieldValue
       extends FieldValue
 {
    Property<Integer> cols();
 
    Property<Integer> rows();
+
+
+   abstract class Mixin
+         implements FieldValue
+   {
+      public Boolean validate( String value )
+      {
+         return value != null;
+      }
+   }
 }

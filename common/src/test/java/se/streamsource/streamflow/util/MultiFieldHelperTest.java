@@ -14,14 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.administration.form;
+package se.streamsource.streamflow.util;
 
-import org.qi4j.api.mixin.Mixins;
+import junit.framework.Assert;
+import org.junit.Test;
 
-/**
- * JAVADOC
- */
-public interface ComboBoxFieldValue
-      extends SelectionFieldValue
+import java.util.List;
+
+public class MultiFieldHelperTest
 {
+
+   @Test
+   public void testMixed()
+   {
+      List<String> options = MultiFieldHelper.options( "one, two, [three, four], five" );
+
+      Assert.assertEquals( 4, options.size() );
+      Assert.assertEquals( "three, four", options.get( 0 ) );
+      Assert.assertEquals( "one", options.get( 1 ) );
+      Assert.assertEquals( "two", options.get( 2 ) );
+      Assert.assertEquals( "five", options.get( 3 ) );
+   }
 }
