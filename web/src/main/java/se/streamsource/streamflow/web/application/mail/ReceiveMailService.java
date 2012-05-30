@@ -27,6 +27,7 @@ import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.Usecase;
@@ -48,6 +49,8 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEn
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
@@ -55,6 +58,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
+import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.FetchProfile;
@@ -78,6 +82,7 @@ import java.beans.VetoableChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -330,7 +335,6 @@ public interface ReceiveMailService
                   // Get email fields
                   builder.prototype().from().set(((InternetAddress) message.getFrom()[0]).getAddress());
                   builder.prototype().fromName().set(((InternetAddress) message.getFrom()[0]).getPersonal());
-                  builder.prototype().to().set(((InternetAddress) message.getRecipients(Message.RecipientType.TO)[0]).getAddress());
                   builder.prototype().subject().set(message.getSubject() == null ? "" : message.getSubject());
 
                   // Get headers
@@ -338,6 +342,8 @@ public interface ReceiveMailService
                   {
                      builder.prototype().headers().get().put(header.getName(), header.getValue());
                   }
+
+                  builder.prototype().to().set( toaddress( message.getRecipients( Message.RecipientType.TO ), builder.prototype().headers().get().get( "References" )));
 
                   builder.prototype().messageId().set(message.getHeader("Message-ID")[0]);
 
@@ -486,6 +492,50 @@ public interface ReceiveMailService
                logger.error("Could not close inbox", e1);
             }
          }
+      }
+
+      /**
+       * Try to determine what address from the to address list should be used as main TO address for
+       * the different EmailReceiver's.
+       * In case the references header is null we try to find a matching email access point.
+       * @param recipients The recipients from the TO address list
+       * @param references The references header
+       * @return A hopefully valid email address as a string
+       */
+      private String toaddress( final Address[] recipients, String references )
+      {
+         String result = "";
+
+         if (references == null)
+         {
+            Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
+            EmailAccessPoints.Data emailAccessPoints = (EmailAccessPoints.Data) organizations.organization().get();
+
+            Iterable<EmailAccessPoint> possibleAccesspoints = Iterables.filter( new Specification<EmailAccessPoint>()
+            {
+               public boolean satisfiedBy( final EmailAccessPoint accessPoint )
+               {
+                  return Iterables.matchesAny( new Specification<Address>()
+                  {
+                     public boolean satisfiedBy( Address address )
+                     {
+                        return ((InternetAddress) address).getAddress().equals( accessPoint.getDescription() );
+                     }
+                  }, Arrays.asList( recipients ) );
+               }
+            }, emailAccessPoints.emailAccessPoints().toList() );
+
+            if (Iterables.count( possibleAccesspoints ) > 0)
+               result = Iterables.first( possibleAccesspoints ).getDescription();
+            else
+               result = ((InternetAddress) recipients[0]).getAddress();
+
+         } else
+         {
+            result = ((InternetAddress) recipients[0]).getAddress();
+         }
+
+         return result;
       }
    }
 }
