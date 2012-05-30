@@ -105,4 +105,9 @@ public class EmailAccessPointModel
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient("labels")).newInstance();
    }
+
+   public void removeCaseType()
+   {
+      client.postCommand( "removecasetype" );
+   }
 }

@@ -59,7 +59,7 @@ public class AccessPointLabelableContext
       CaseType caseType = accessPoint.caseType().get();
 
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addlabel" );
-      if (project != null && caseType != null)
+      if ( project != null )
       {
          ProjectLabelsQueries labelsQueries = (ProjectLabelsQueries) project;
 

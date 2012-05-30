@@ -16,6 +16,33 @@
  */
 package se.streamsource.streamflow.client.ui.administration.surface;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -25,32 +52,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
-import se.streamsource.streamflow.client.util.ActionBinder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.Insets;
 
 /**
  * TODO
@@ -71,7 +73,7 @@ public class EmailAccessPointView
    private JList emailTemplateList = new JList();
    private JTextArea emailTemplateText = new JTextArea();
    private JLabel project;
-   private JLabel casetype;
+   private RemovableLabel casetype = new RemovableLabel(  );
    private StreamflowButton casetypeButton;
    private StreamflowButton projectButton;
    private StreamflowButton labelsButton;
@@ -95,10 +97,10 @@ public class EmailAccessPointView
       formBuilder.append(project = new JLabel());
       formBuilder.nextLine();
       formBuilder.append(casetypeButton = new StreamflowButton(getActionMap().get("casetype")));
-      formBuilder.append(casetype = new JLabel());
+      formBuilder.add( casetype, new CellConstraints( 3, 2, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 3, 0, 0, 0 ) ) );
       formBuilder.nextLine();
       formBuilder.append(labelsButton = new StreamflowButton(labels.getActionMap().get("addLabel")));
-      formBuilder.append(labels);
+      formBuilder.add(labels, new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 3, -3 , 0, 0 ) ) );
       formBuilder.nextLine();
       formBuilder.addSeparator(i18n.text(AdministrationResources.emailTemplates));
       formBuilder.nextLine();
@@ -123,8 +125,9 @@ public class EmailAccessPointView
       });
 
       ActionBinder actionBinder = new ActionBinder(getActionMap());
-      actionBinder.bind("save", emailTemplateText);
-      actionBinder.bind("changeSubject", subject);
+      actionBinder.bind( "save", emailTemplateText );
+      actionBinder.bind( "changeSubject", subject );
+      actionBinder.bind( "removecasetype", casetype );
 
       new RefreshWhenShowing(this, this);
    }
@@ -169,7 +172,19 @@ public class EmailAccessPointView
             }
          }
       };
+   }
 
+   @Action
+   public Task removecasetype()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.removeCaseType();
+         }
+      };
    }
 
    public void refresh()

@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.domain.entity.project;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -33,7 +34,7 @@ import java.util.Map;
 @Mixins(ProjectLabelsQueries.Mixin.class)
 public interface ProjectLabelsQueries
 {
-   Map<Label, SelectedLabels> possibleLabels( CaseType caseType );
+   Map<Label, SelectedLabels> possibleLabels( @Optional CaseType caseType );
 
    class Mixin
          implements ProjectLabelsQueries
@@ -51,7 +52,8 @@ public interface ProjectLabelsQueries
 
          addLabels( labels, selectedLabels );
 
-         addLabels( labels, caseType );
+         if( caseType != null )
+            addLabels( labels, caseType );
 
          // Add labels from OU
          OrganizationalUnit ou = ownerOU.organizationalUnit().get();

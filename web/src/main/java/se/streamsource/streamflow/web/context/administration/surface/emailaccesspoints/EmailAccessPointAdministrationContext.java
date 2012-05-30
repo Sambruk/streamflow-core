@@ -17,12 +17,16 @@
 package se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints;
 
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
@@ -38,9 +42,8 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-import static se.streamsource.dci.api.RoleMap.role;
+import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * TODO
@@ -75,7 +78,16 @@ public class EmailAccessPointAdministrationContext
       if (project != null)
       {
          SelectedCaseTypes.Data data = (SelectedCaseTypes.Data) project;
-         return data.selectedCaseTypes();
+
+         return Iterables.filter(new Specification<CaseType>()
+         {
+            public boolean satisfiedBy( CaseType item )
+            {
+               if(item.equals( role( AccessPointSettings.Data.class ).caseType().get() ) )
+                  return false;
+               return true;
+            }
+         }, data.selectedCaseTypes());
       } else
          return Collections.emptyList();
    }
@@ -100,16 +112,28 @@ public class EmailAccessPointAdministrationContext
       EmailAccessPointEntity eap = role(EmailAccessPointEntity.class);
 
       ValueBuilder<EmailAccessPointDTO> builder = module.valueBuilderFactory().newValueBuilder(EmailAccessPointDTO.class);
+      ValueBuilder<LinkValue> linkValueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
 
       builder.prototype().subject().set(eap.subject().get());
       builder.prototype().email().set(eap.getDescription());
       CaseType caseType = eap.caseType().get();
-      builder.prototype().caseType().set(caseType == null ? null : caseType.getDescription());
+      if( caseType != null )
+      {
+         linkValueBuilder.prototype().id().set( EntityReference.getEntityReference( caseType ).identity() );
+         linkValueBuilder.prototype().text().set( caseType.getDescription() );
+         linkValueBuilder.prototype().href().set( "removecasetype" );
+         builder.prototype().caseType().set( linkValueBuilder.newInstance() );
+      }
       Project project = eap.project().get();
       builder.prototype().project().set(project == null ? null : project.getDescription());
 
       builder.prototype().messages().set(eap.emailTemplates().get());
 
       return builder.newInstance();
+   }
+
+   public void removecasetype()
+   {
+      role(AccessPointSettings.class).removeCaseType();
    }
 }

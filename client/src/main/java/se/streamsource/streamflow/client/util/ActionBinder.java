@@ -17,13 +17,13 @@
 package se.streamsource.streamflow.client.util;
 
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.swingx.JXColorSelectionButton;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -179,6 +179,10 @@ public class ActionBinder
             final JComboBox comboBox = (JComboBox) component;
 
             comboBox.addActionListener( action );
+         } else if (component instanceof RemovableLabel)
+         {
+            final RemovableLabel removableLabel = (RemovableLabel) component;
+            removableLabel.getButton().addActionListener( action );
          } else
             return false;
 
