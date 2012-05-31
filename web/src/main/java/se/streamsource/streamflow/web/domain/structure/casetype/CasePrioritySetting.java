@@ -21,6 +21,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -31,6 +32,9 @@ public interface CasePrioritySetting
 {
    void changeCasePriorityVisibility( Boolean visible );
    void changeCasePriorityMandate( Boolean mandatory );
+   void changeCasePriorityDefault( @Optional CasePriorityValue defaultPriority );
+
+
 
    interface Data
    {
@@ -39,12 +43,16 @@ public interface CasePrioritySetting
       
       @UseDefaults
       Property<Boolean> mandatory();
+
+      @Optional
+      Property<CasePriorityValue> defaultPriority();
    }
    
    interface Events
    {
       void changedCasePriorityVisibility( @Optional DomainEvent event, Boolean visible );
       void changedCasePriorityMandate( @Optional DomainEvent event, Boolean mandatory );
+      void changedCasePriorityDefault( @Optional DomainEvent event, @Optional CasePriorityValue defaultPriority );
    }
    
    class Mixin
@@ -80,6 +88,19 @@ public interface CasePrioritySetting
       public void changedCasePriorityMandate( @Optional DomainEvent event, Boolean mandatory )
       {
          data.mandatory().set( mandatory );
+      }
+
+      public void changeCasePriorityDefault( CasePriorityValue defaultPriority )
+      {
+         if( (defaultPriority != null && defaultPriority.equals( data.defaultPriority().get() ))
+               || (defaultPriority == null && data.defaultPriority().get() == null ))
+            return;
+         changedCasePriorityDefault( null, defaultPriority );
+      }
+
+      public void changedCasePriorityDefault( DomainEvent event, CasePriorityValue defaultPriority )
+      {
+         data.defaultPriority().set( defaultPriority );
       }
 
    }

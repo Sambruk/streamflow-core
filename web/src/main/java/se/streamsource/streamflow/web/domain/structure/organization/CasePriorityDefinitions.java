@@ -18,20 +18,28 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
 
 import java.util.List;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * Contains priority definitions.
  */
+@Concerns( CasePriorityDefinitions.RemovePriorityConcern.class )
 @Mixins( CasePriorityDefinitions.Mixin.class )
 public interface CasePriorityDefinitions
 {
@@ -130,5 +138,31 @@ public interface CasePriorityDefinitions
          }
          return false;
       }
+   }
+
+   abstract class RemovePriorityConcern
+      extends ConcernOf<CasePriorityDefinitions>
+      implements CasePriorityDefinitions
+   {
+      @Structure
+      Module module;
+
+      @This
+      Data data;
+
+      public void removePriority( int index)
+      {
+         Query<CasePrioritySetting> query = module.queryBuilderFactory().newQueryBuilder( CasePrioritySetting.class )
+               .where( eq(
+                     templateFor( CasePrioritySetting.Data.class ).defaultPriority().get().name(),
+                     data.prioritys().get().get( index ).name().get() ) )
+               .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+         if( query.count() > 0 )
+            throw new IllegalStateException( ErrorResources.priority_remove_failed_default_exist.toString() );
+
+         next.removePriority( index );
+      }
+
    }
 }

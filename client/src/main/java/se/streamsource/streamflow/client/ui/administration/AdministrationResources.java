@@ -182,5 +182,6 @@ public enum AdministrationResources
    casepriority_visible,
    caseaccessoptionaldefaults_separator,
    optional_security_settings,
+   casepriority_default_value,
    fieldgroup_field_type
 }

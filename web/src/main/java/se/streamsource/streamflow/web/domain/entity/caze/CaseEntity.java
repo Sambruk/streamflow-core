@@ -277,10 +277,16 @@ public interface CaseEntity
             if (((CasePrioritySetting.Data) newCaseType).mandatory().get()
                   && ((CasePriority.Data) priority).priority().get() == null)
             {
+               CasePriorityValue priorityValue = ((CasePrioritySetting.Data) newCaseType).defaultPriority().get();
 
-               Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
-               List<CasePriorityValue> casePriorityValues = ((CasePriorityDefinitions.Data) ((Organizations.Data) organizations).organization().get()).prioritys().get();
-               priority.changePriority( casePriorityValues.get( casePriorityValues.size() - 1 ) );
+               if( priorityValue == null )
+               {
+                  Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+                  List<CasePriorityValue> casePriorityValues = ((CasePriorityDefinitions.Data) ((Organizations.Data) organizations).organization().get()).prioritys().get();
+                  priorityValue = casePriorityValues.get( Math.round( casePriorityValues.size() / 2 ) );
+               }
+
+               priority.changePriority( priorityValue );
 
             }
          }

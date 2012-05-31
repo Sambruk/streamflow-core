@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -24,9 +25,18 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.FormValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresCasePrioritySettingVisibility;
 import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
+import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 /**
  * Context for case priority settings.
@@ -40,6 +50,10 @@ public interface CasePrioritySettingContext
    void updatemandatory( @Name("mandatory") Boolean mandatory );
 
    void updatevisibility( @Name("visible") Boolean visible );
+
+   void defaultpriority( @Optional @Name("name") String name, @Optional @Name("color") String color );
+
+   LinksValue casepriorities();
 
    abstract class Mixin implements CasePrioritySettingContext, IndexContext<FormValue>
    {
@@ -57,6 +71,8 @@ public interface CasePrioritySettingContext
          ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
          builder.prototype().form().get().put( "visible", prioritySettingData.visible().get().toString() );
          builder.prototype().form().get().put( "mandatory", prioritySettingData.mandatory().get().toString() );
+         builder.prototype().form().get().put( "defaultpriority", prioritySettingData.defaultPriority().get() != null
+               ? prioritySettingData.defaultPriority().get().name().get() : "-" );
          return builder.newInstance();
       }
 
@@ -68,6 +84,49 @@ public interface CasePrioritySettingContext
       public void updatemandatory( Boolean mandatory )
       {
          prioritySetting.changeCasePriorityMandate( mandatory );
+      }
+
+      public void defaultpriority( String name, String color )
+      {
+         if( name != null )
+         {
+            ValueBuilder<CasePriorityValue> builder = module.valueBuilderFactory().newValueBuilder( CasePriorityValue.class );
+            builder.prototype().name().set( name );
+            builder.prototype().color().set( color );
+            prioritySetting.changeCasePriorityDefault( builder.newInstance() );
+         } else
+            prioritySetting.changeCasePriorityDefault( null );
+      }
+
+      public LinksValue casepriorities()
+      {
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         Organization org = orgs.organization().get();
+         RoleMap.current().set( org );
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "defaultpriority" );
+         ValueBuilder<CasePriorityDTO> linkBuilder = module.valueBuilderFactory().newValueBuilder( CasePriorityDTO.class );
+
+         linkBuilder.prototype().text().set( "-" );
+         linkBuilder.prototype().id().set( "-1" );
+         linkBuilder.prototype().href().set( "" );
+         builder.addLink( linkBuilder.newInstance() );
+
+
+         int count = 0;
+         for( CasePriorityValue priority : RoleMap.role( CasePriorityDefinitions.Data.class ).prioritys().get() )
+         {
+            linkBuilder.prototype().priority().set( priority );
+            linkBuilder.prototype().text().set( priority.name().get() );
+            linkBuilder.prototype().id().set( ""+count );
+            linkBuilder.prototype().rel().set( "priority" );
+            linkBuilder.prototype().href().set( "" );
+
+            builder.addLink( linkBuilder.newInstance() );
+            count++;
+         }
+
+         return builder.newLinks();
       }
 
    }

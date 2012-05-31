@@ -239,7 +239,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             final CasePriorityDTO itemValue = (CasePriorityDTO) value;
             String val = itemValue == null ? "" : itemValue.text().get();
 
-            JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 2, 0 ) );
+            JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 0, 0 ) );
 
             panel.setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
             JLabel label = new JLabel( ){
@@ -375,12 +375,14 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
          if( selectPriority != null )
          {
             // omit first element since priority is always null in the first element
-            for(int i = 1; i < comboBoxModel.getSize(); i++)
+            for(int i = 0; i < comboBoxModel.getSize(); i++)
             {
                CasePriorityValue casePriorityValue = ((CasePriorityDTO)comboBoxModel.getElementAt( i )).priority().get();
+               if( casePriorityValue == null ) continue;
                if( casePriorityValue.name().get().equals( selectPriority.name().get() ))
                {
                   casePriority.setSelectedItem( comboBoxModel.getElementAt( i ) );
+                  casePriority.setToolTipText( selectPriority.name().get() );
                }
             }
          }

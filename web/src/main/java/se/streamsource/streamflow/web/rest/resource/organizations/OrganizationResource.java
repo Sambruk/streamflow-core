@@ -136,4 +136,11 @@ public class OrganizationResource
       subResourceContexts( RestrictionsContext.class );
    }
 
+   @SubResource
+   public void casepriorities()
+   {
+      subResource( CasePriorityDefinitionsResource.class );
+   }
+
+
 }

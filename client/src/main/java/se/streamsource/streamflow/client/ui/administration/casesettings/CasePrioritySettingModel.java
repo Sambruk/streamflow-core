@@ -16,9 +16,17 @@
  */
 package se.streamsource.streamflow.client.ui.administration.casesettings;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
 import org.restlet.data.Form;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
+import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 /**
  * Model behind CasePrioritySettingView
@@ -40,5 +48,32 @@ public class CasePrioritySettingModel
       form.set( "mandatory", mandatory.toString() );
 
       client.postLink(command("updatemandatory"), form);
+   }
+
+   public void defaultPriority( CasePriorityValue casePriorityValue )
+   {
+      Form form = new Form( );
+      form.set( "name", casePriorityValue == null ? "" : casePriorityValue.name().get() );
+      form.set( "color", casePriorityValue == null ? "" : casePriorityValue.color().get() );
+
+      client.postCommand( "defaultpriority", form );
+   }
+
+   public EventComboBoxModel<LinkValue> getCasePriorities()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         LinksValue listValue = client.query( "casepriorities",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
+
+         return new EventComboBoxModel<LinkValue>( list );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
+      }
    }
 }

@@ -104,7 +104,7 @@ public interface AssignmentsContext
                query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
             }else if( orderByValue[0].equals( "priority" ))
             {
-               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CasePriority.Data.class).priority(), order));
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CasePriority.Data.class).priority().get().name(), order));
             }
          }
          return query;
