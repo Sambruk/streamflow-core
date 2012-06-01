@@ -79,7 +79,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -239,7 +238,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             final CasePriorityDTO itemValue = (CasePriorityDTO) value;
             String val = itemValue == null ? "" : itemValue.text().get();
 
-            JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 0, 0 ) );
+            JPanel panel = new JPanel( );
+            FormLayout layout = new FormLayout( "10dlu, 60dlu:grow", "pref" );
+            DefaultFormBuilder formBuilder = new DefaultFormBuilder( layout, panel );
 
             panel.setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
             JLabel label = new JLabel( ){
@@ -248,7 +249,10 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                   Color color = getBackground();
                   if( itemValue != null && itemValue.priority().get() != null )
                   {
-                     color = new Color( parseInt( itemValue.priority().get().color().get() ) );
+                     if( !Strings.empty( itemValue.priority().get().color().get() ) )
+                        color = new Color( parseInt( itemValue.priority().get().color().get() ) );
+                     else
+                        color = Color.BLACK;
                   }
                   final Color FILL_COLOR = ColorUtil.removeAlpha( color );
 
@@ -268,11 +272,13 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                   }
                }
             };
-            label.setPreferredSize( new Dimension( 20, 20 ) );
-            panel.add( ( Strings.empty(val) || "-".equals( val ) ) ? new JLabel( ) : label);
+            label.setPreferredSize( new Dimension( 10, 10 ) );
+            formBuilder.add( ( Strings.empty(val) || "-".equals( val ) ) ? new JLabel( ) : label,
+                  new CellConstraints(1 , 1, 1, 1, CellConstraints.FILL, CellConstraints.FILL,
+                        new Insets( 0, 0, 0, 0 ) ) );
             JLabel text = new JLabel( val );
-
-            panel.add( text );
+             formBuilder.add( text, new CellConstraints(2 , 1, 1, 1, CellConstraints.LEFT, CellConstraints.FILL,
+                  new Insets( 0, 0, 0, 0 ) ) );
 
             return panel;
          }

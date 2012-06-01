@@ -22,6 +22,9 @@ import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 import ca.odell.glazedlists.swing.EventTableModel;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.color.ColorUtil;
@@ -80,6 +83,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -382,7 +386,9 @@ public class CasesTableView
             final CasePriorityValue priority = (CasePriorityValue) value;
             String val = priority == null ? "" : priority.name().get();
 
-            JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 2, 0 ) );
+            JPanel panel = new JPanel( );
+            FormLayout layout = new FormLayout( "10dlu, 50dlu:grow", "pref" );
+            DefaultFormBuilder formBuilder = new DefaultFormBuilder( layout, panel );
 
             panel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
             JLabel label = new JLabel( ){
@@ -391,7 +397,10 @@ public class CasesTableView
                   Color color = getBackground();
                   if( priority != null )
                   {
-                     color = new Color( parseInt( priority.color().get() ) );
+                     if( !Strings.empty( priority.color().get() ) )
+                        color = new Color( parseInt( priority.color().get() ) );
+                     else
+                        color = Color.BLACK;
                   }
                   final Color FILL_COLOR = ColorUtil.removeAlpha( color );
 
@@ -411,11 +420,16 @@ public class CasesTableView
                   }
                }
             };
-            label.setPreferredSize( new Dimension( 17, 17 ) );
-            panel.add( ( Strings.empty(val) || "-".equals( val ) ) ? new JLabel( ) : label);
+            label.setPreferredSize( new Dimension( 10, 10 ) );
+            //label.setBorder( BorderFactory.createLineBorder( Color.RED ) );
+            formBuilder.add( ( Strings.empty(val) || "-".equals( val ) ) ? new JLabel( ) : label,
+                  new CellConstraints(1 , 1, 1, 1, CellConstraints.FILL, CellConstraints.FILL,
+                        new Insets( 0, 0, 0, 0 ) ) );
             JLabel text = new JLabel( val );
+            //text.setBorder( BorderFactory.createLineBorder( Color.RED ) );
+            formBuilder.add( text, new CellConstraints(2, 1, 1, 1, CellConstraints.LEFT, CellConstraints.FILL,
+                  new Insets( 0, 0, 0, 0 ) ) );
 
-            panel.add( text );
             if (isSelected)
             {
                panel.setBackground( table.getSelectionBackground() );

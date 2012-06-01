@@ -31,6 +31,7 @@ import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 /**
  * Contains priority definitions.
  */
-@Concerns( CasePriorityDefinitions.RemovePriorityConcern.class )
+@Concerns( {CasePriorityDefinitions.RemovePriorityConcern.class, CasePriorityDefinitions.ChangePriorityConcern.class} )
 @Mixins( CasePriorityDefinitions.Mixin.class )
 public interface CasePriorityDefinitions
 {
@@ -164,5 +165,32 @@ public interface CasePriorityDefinitions
          next.removePriority( index );
       }
 
+   }
+
+   abstract class ChangePriorityConcern
+      extends ConcernOf<CasePriorityDefinitions>
+      implements CasePriorityDefinitions
+   {
+      @Structure
+      Module module;
+
+      @This
+      Data data;
+
+      public void changePriority( int index, CasePriorityValue value )
+      {
+         String oldPriorityName = data.prioritys().get().get( index ).name().get();
+
+         next.changePriority( index, value );
+
+         // update all cases that have the old priority
+         Query<CasePriority.Data> query = module.queryBuilderFactory().newQueryBuilder( CasePriority.Data.class )
+               .where( eq( templateFor( CasePriority.Data.class ).priority().get().name(), oldPriorityName ) )
+               .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         for(CasePriority.Data priority : query )
+         {
+            priority.priority().set( value );
+         }
+      }
    }
 }
