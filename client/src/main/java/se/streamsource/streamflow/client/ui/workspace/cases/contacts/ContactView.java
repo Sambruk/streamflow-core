@@ -16,31 +16,10 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.BorderFactory;
-
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactPreference;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -50,23 +29,41 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPreference;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
@@ -136,17 +133,19 @@ public class ContactView
       {
          public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
          {
+            JLabel comp = new JLabel( "null" );
             if (o instanceof ContactPreference)
             {
                if (((ContactPreference) o) == ContactPreference.none )
                {
-                  return new JLabel( " " );
+                  comp = new JLabel( " " );
                } else
                {
-                  return new JLabel( i18n.text( WorkspaceResources.valueOf( ((ContactPreference) o).name() ) ) );
+                  comp = new JLabel( i18n.text( WorkspaceResources.valueOf( ((ContactPreference) o).name() ) ) );
                }
             }
-            return new JLabel( "null" );
+            comp.setBorder( BorderFactory.createEmptyBorder( 2, 4, 2, 0 ) );
+            return comp;
          }
       });
 
@@ -234,7 +233,9 @@ public class ContactView
          builder.nextLine();
          builder.add( createLabel( WorkspaceResources.contact_preference_label ) );
          builder.nextColumn( 2 );
-         builder.add( contactBinder.bind( contactPreferenceField, template.contactPreference() ) );
+         builder.add( contactBinder.bind( contactPreferenceField, template.contactPreference() ),
+               new CellConstraints( 3, 12, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(
+                     5, 0, 0, 0 ) ) );
          builder.nextLine(2);
          builder.add(createLabel(WorkspaceResources.note_label));
          builder.nextColumn(2);
