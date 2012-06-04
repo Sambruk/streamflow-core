@@ -184,12 +184,22 @@ public interface CasePriorityDefinitions
          next.changePriority( index, value );
 
          // update all cases that have the old priority
-         Query<CasePriority.Data> query = module.queryBuilderFactory().newQueryBuilder( CasePriority.Data.class )
+         Query<CasePriority.Data> casePriorityQuery = module.queryBuilderFactory().newQueryBuilder( CasePriority.Data.class )
                .where( eq( templateFor( CasePriority.Data.class ).priority().get().name(), oldPriorityName ) )
                .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-         for(CasePriority.Data priority : query )
+         for(CasePriority.Data priority : casePriorityQuery )
          {
             priority.priority().set( value );
+         }
+
+         // update all case priority settings that use this priority
+         Query<CasePrioritySetting.Data> prioritySettingQuery = module.queryBuilderFactory().newQueryBuilder( CasePrioritySetting.Data.class )
+               .where( eq(  templateFor( CasePriority.Data.class ).priority().get().name(), oldPriorityName ) )
+               .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+         for( CasePrioritySetting.Data prioritySetting : prioritySettingQuery )
+         {
+            prioritySetting.defaultPriority().set( value );
          }
       }
    }
