@@ -24,7 +24,6 @@ import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -68,8 +67,14 @@ public class CaseInfoView extends JPanel
       setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
       setPreferredSize( new Dimension( 800, 50 ) );
 
-      BoxLayout layout = new BoxLayout(this, BoxLayout.X_AXIS);
-      setLayout( layout );
+      setLayout( new BorderLayout() );
+      lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
+      lock.setToolTipText( i18n.text( WorkspaceResources.case_is_restricted ) );
+      add( lock, BorderLayout.WEST );
+
+      JPanel topPanel = new JPanel();
+      BoxLayout layout = new BoxLayout(topPanel, BoxLayout.X_AXIS);
+      topPanel.setLayout( layout );
 
       JLabel statusHeader = new JLabel( i18n.text( WorkspaceResources.case_status_header ) );
       statusHeader.setFocusable( false );
@@ -96,37 +101,26 @@ public class CaseInfoView extends JPanel
       assignedHeader.setFocusable( false );
       assignedHeader.setForeground( Color.GRAY );
 
-      lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
-      lock.setToolTipText( i18n.text( WorkspaceResources.case_is_restricted ) );
-      addLock( lock );
-      addBox(statusHeader, statusLabel);
-      addBox(titleHeader, title);
-      addBox(typeHeader, caseType);
-      addBox(ownerHeader, owner);
-      addBox(createdHeader, createdBy);
-      addBox(assignedHeader, assignedTo);
+      addBox(topPanel, statusHeader, statusLabel);
+      addBox(topPanel, titleHeader, title);
+      addBox(topPanel, typeHeader, caseType);
+      addBox(topPanel, ownerHeader, owner);
+      addBox(topPanel, createdHeader, createdBy);
+      addBox(topPanel, assignedHeader, assignedTo);
 
+      add( topPanel, BorderLayout.CENTER );
       model.addObserver(this);
    }
 
-   private void addLock( JComponent component )
-   {
-      JPanel box = new JPanel();
-      box.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
-      box.setLayout( new BorderLayout() );
-      box.add(component, BorderLayout.CENTER);
-      add(box);
-   }
 
-
-   private void addBox( JLabel label, JComponent component )
+   private void addBox( JPanel container, JLabel label, JComponent component )
    {
       JPanel box = new JPanel();
       box.setBorder( BorderFactory.createEmptyBorder( 0,0,0,10 ) );
       box.setLayout(new BorderLayout());
       box.add(label, BorderLayout.NORTH);
       box.add(component, BorderLayout.CENTER);
-      add(box);
+      container.add( box );
    }
 
    public void update( Observable o, Object arg )
