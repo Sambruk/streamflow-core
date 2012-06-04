@@ -80,6 +80,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -356,61 +357,7 @@ public interface ReceiveMailService
                      builder.prototype().contentType().set(message.getContentType());
                   } else if (content instanceof Multipart)
                   {
-                     Multipart multipart = (Multipart) content;
-                     for (int i = 0, n = multipart.getCount(); i < n; i++)
-                     {
-                        BodyPart part = multipart.getBodyPart(i);
-
-                        String disposition = part.getDisposition();
-
-                        if ((disposition != null) &&
-                                ((disposition.equalsIgnoreCase( Part.ATTACHMENT ) ||
-                                        (disposition.equalsIgnoreCase( Part.INLINE )))))
-                        {
-                           // Create attachment
-                           ValueBuilder<AttachedFileValue> attachmentBuilder = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
-
-                           AttachedFileValue prototype = attachmentBuilder.prototype();
-                           //check contentType and fetch just the first part if necessary
-                           String contentType = "";
-                           if(part.getContentType().indexOf( ';' ) == -1 )
-                              contentType = part.getContentType();
-                           else
-                              contentType = part.getContentType().substring( 0, part.getContentType().indexOf( ';' ) );
-
-                           prototype.mimeType().set( contentType );
-                           prototype.modificationDate().set((message.getSentDate()));
-                           prototype.name().set( MimeUtility.decodeText( part.getFileName() ) );
-                           prototype.size().set((long) part.getSize());
-
-                           InputStream inputStream = part.getInputStream();
-                           String id = attachmentStore.storeAttachment(Inputs.byteBuffer(inputStream, 4096));
-                           String uri = "store:"+id;
-                           prototype.uri().set(uri);
-
-                           builder.prototype().attachments().get().add(attachmentBuilder.newInstance());
-                        } else
-                        {
-                           if (part.isMimeType("text/plain"))
-                           {
-                              body = (String) part.getContent();
-                              builder.prototype().content().set(body);
-                              builder.prototype().contentType().set(part.getContentType());
-                           } else if (part.getContent() instanceof Multipart) {
-                              Multipart bodyMultipart = (Multipart) part.getContent();
-                              for (int j = 0, k = bodyMultipart.getCount(); j < k; j++)
-                              {
-                                 BodyPart bodyPart = bodyMultipart.getBodyPart(i);
-                                 if (bodyPart.isMimeType("text/plain"))
-                                 {
-                                    body = (String) bodyPart.getContent();
-                                    builder.prototype().content().set(body);
-                                    builder.prototype().contentType().set(bodyPart.getContentType());
-                                 }
-                              }
-                           }
-                        }
-                     }
+                     handleMultipart( (Multipart)content, message, builder );
                   } else if (content instanceof InputStream)
                   {
                      content = new MimeMessage(session, (InputStream) content).getContent();
@@ -478,6 +425,7 @@ public interface ReceiveMailService
             circuitBreaker.success();
          } catch (Throwable e)
          {
+            logger.error( "Error in mail receiver: ", e );
             circuitBreaker.throwable(e);
 
             try
@@ -490,6 +438,65 @@ public interface ReceiveMailService
             } catch (Throwable e1)
             {
                logger.error("Could not close inbox", e1);
+            }
+         }
+      }
+
+      /**
+       * Handel multipart messages recursiveley until we find the first text/plain message.
+       * @param multipart the multipart portion
+       * @param message the message
+       * @param builder the email value builder
+       * @throws MessagingException
+       * @throws IOException
+       */
+      private void handleMultipart( Multipart multipart, Message message, ValueBuilder<EmailValue> builder )
+            throws MessagingException, IOException
+      {
+         String body = "";
+
+         for (int i = 0, n = multipart.getCount(); i < n; i++)
+         {
+            BodyPart part = multipart.getBodyPart(i);
+
+            String disposition = part.getDisposition();
+
+            if ((disposition != null) &&
+                  ((disposition.equalsIgnoreCase( Part.ATTACHMENT ) ||
+                        (disposition.equalsIgnoreCase( Part.INLINE )))))
+            {
+               // Create attachment
+               ValueBuilder<AttachedFileValue> attachmentBuilder = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
+
+               AttachedFileValue prototype = attachmentBuilder.prototype();
+               //check contentType and fetch just the first part if necessary
+               String contentType = "";
+               if(part.getContentType().indexOf( ';' ) == -1 )
+                  contentType = part.getContentType();
+               else
+                  contentType = part.getContentType().substring( 0, part.getContentType().indexOf( ';' ) );
+
+               prototype.mimeType().set( contentType );
+               prototype.modificationDate().set((message.getSentDate()));
+               prototype.name().set( MimeUtility.decodeText( part.getFileName() ) );
+               prototype.size().set((long) part.getSize());
+
+               InputStream inputStream = part.getInputStream();
+               String id = attachmentStore.storeAttachment(Inputs.byteBuffer(inputStream, 4096));
+               String uri = "store:"+id;
+               prototype.uri().set(uri);
+
+               builder.prototype().attachments().get().add(attachmentBuilder.newInstance());
+            } else
+            {
+               if (part.isMimeType("text/plain"))
+               {
+                  body = (String) part.getContent();
+                  builder.prototype().content().set(body);
+                  builder.prototype().contentType().set(part.getContentType());
+               } else if (part.getContent() instanceof Multipart) {
+                  handleMultipart( (Multipart)part.getContent(), message, builder );
+               }
             }
          }
       }
