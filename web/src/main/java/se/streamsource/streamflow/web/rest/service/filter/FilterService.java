@@ -97,7 +97,10 @@ public interface FilterService
 
       public void changedStatus(@Optional DomainEvent event, CaseStates status)
       {
-         if (event.entityType().get().equals(CaseEntity.class.getName()) && status.equals(CaseStates.OPEN))
+         // omit use case create case from email to avoid sending twice - changeOwner has already triggered a send mail.
+          if (event.entityType().get().equals(CaseEntity.class.getName())
+               && status.equals(CaseStates.OPEN)
+               && !event.usecase().get().equals("Create case from email") )
          {
             CaseEntity caze = module.unitOfWorkFactory().currentUnitOfWork().get(CaseEntity.class, event.entity().get());
             Owner owner = caze.owner().get();

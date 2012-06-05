@@ -16,15 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.services;
 
-import static se.streamsource.streamflow.util.ForEach.forEach;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -40,7 +31,6 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.Role;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
@@ -71,6 +61,15 @@ import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static se.streamsource.streamflow.util.ForEach.*;
 
 /**
  * TODO
@@ -271,14 +270,8 @@ public class ApplyFilterContext
             {
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
 
-               try
-               {
-                  builder.prototype().from().set(administrator.contact().get().defaultEmail().emailAddress().get());
-               } catch ( NullPointerException npe )
-               {
-                  throw new IllegalStateException( "Mail notification failed! Administrator mail address is not set." );
-               }
-               builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
+               // leave from address and fromName empty to allow mail sender to pick up
+               // default values from mail sender configuration
                builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
                builder.prototype().content().set(bundle.getString( "message" ));
                builder.prototype().contentType().set("text/plain");
