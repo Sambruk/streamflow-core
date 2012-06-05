@@ -25,6 +25,7 @@ import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountsModel;
 import se.streamsource.streamflow.client.ui.account.ProfileModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.FormOnRemoveModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
 import se.streamsource.streamflow.client.ui.administration.ServerModel;
@@ -196,6 +197,7 @@ public class ModelAssembler
             RecipientsModel.class,
             CaseArchivalSettingModel.class,
             FormOnCloseModel.class,
+            FormOnRemoveModel.class,
             CaseTypesModel.class,
             CaseTypeModel.class,
             AdministratorsModel.class,

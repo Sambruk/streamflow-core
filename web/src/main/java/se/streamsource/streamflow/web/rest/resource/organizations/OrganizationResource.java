@@ -21,6 +21,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.context.administration.FormOnRemoveContext;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.administration.RestrictionsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
@@ -142,5 +143,10 @@ public class OrganizationResource
       subResource( CasePriorityDefinitionsResource.class );
    }
 
+   @SubResource
+   public void formonremove()
+   {
+      subResourceContexts( FormOnRemoveContext.class );
+   }
 
 }

@@ -24,6 +24,7 @@ import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.FormOnRemoveView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
@@ -72,6 +73,8 @@ public class SettingsResourceView
       addSettings( "formonclose", AdministrationResources.formonclose_separator, FormOnCloseView.class );
 
       addSettings( "restrictions", AdministrationResources.restrictions_settings_separator,  CaseAccessDefaultsView.class);
+
+      addSettings( "formonremove", AdministrationResources.formonremove_separator, FormOnRemoveView.class );
    }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)
