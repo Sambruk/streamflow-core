@@ -23,9 +23,8 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.ArchivalSettingsContext;
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
 import se.streamsource.streamflow.web.context.administration.CaseDefaultDaysToCompleteContext;
-import se.streamsource.streamflow.web.context.administration.CasePrioritySettingContext;
+import se.streamsource.streamflow.web.context.administration.PriorityOnCaseContext;
 import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
-import se.streamsource.streamflow.web.context.administration.DueOnNotificationSettingsContext;
 import se.streamsource.streamflow.web.context.administration.FormOnCloseContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
@@ -114,8 +113,8 @@ public class CaseTypeResource
    }
    
    @SubResource
-   public void caseprioritysetting()
+   public void priorityoncase()
    {
-      subResourceContexts( CasePrioritySettingContext.class );
+      subResourceContexts( PriorityOnCaseContext.class );
    }
 }

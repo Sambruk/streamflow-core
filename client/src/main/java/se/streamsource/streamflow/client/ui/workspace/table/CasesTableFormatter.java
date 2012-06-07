@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
@@ -67,7 +67,7 @@ public class CasesTableFormatter
             String.class,
             Date.class,
             String.class,
-            CasePriorityValue.class,
+            PriorityValue.class,
             CaseStates.class
       };
    }

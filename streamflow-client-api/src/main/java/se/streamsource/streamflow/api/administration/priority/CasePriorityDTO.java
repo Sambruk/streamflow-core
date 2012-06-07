@@ -28,5 +28,5 @@ public interface CasePriorityDTO
    extends LinkValue
 {
    @Optional
-   Property<CasePriorityValue> priority();
+   Property<PriorityValue> priority();
 }

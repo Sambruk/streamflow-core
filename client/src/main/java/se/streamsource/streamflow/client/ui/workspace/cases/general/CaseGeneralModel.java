@@ -30,7 +30,6 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.client.OperationException;
@@ -166,7 +165,7 @@ public class CaseGeneralModel
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query( "casepriorities",
+         LinksValue listValue = client.query( "priorities",
                LinksValue.class );
          list.addAll( listValue.links().get() );
 
@@ -178,11 +177,10 @@ public class CaseGeneralModel
       }
    }
 
-   public void changePriority( CasePriorityValue casePriorityValue )
+   public void changePriority( String id )
    {
       Form form = new Form( );
-      form.set( "name", casePriorityValue == null ? "" : casePriorityValue.name().get() );
-      form.set( "color", casePriorityValue == null ? "" : casePriorityValue.color().get() );
+      form.set( "id", "-1".equals( id ) ? "" : id );
 
       client.postCommand( "changepriority", form );
    }

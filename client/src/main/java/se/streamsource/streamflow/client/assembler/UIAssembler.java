@@ -42,7 +42,7 @@ import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePr
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
@@ -384,7 +384,7 @@ public class UIAssembler
             LabelRuleView.class,
             CasePrioritiesView.class,
             CasePriorityView.class,
-            CasePrioritySettingView.class);
+            PriorityOnCaseView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,

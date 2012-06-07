@@ -39,7 +39,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -377,18 +377,18 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       {
          EventComboBoxModel comboBoxModel = model.getCasePriorities(); 
          casePriority.setModel( comboBoxModel );
-         CasePriorityValue selectPriority = model.getGeneral().priority().get();
+         LinkValue selectPriority = model.getGeneral().priority().get();
          if( selectPriority != null )
          {
             // omit first element since priority is always null in the first element
             for(int i = 0; i < comboBoxModel.getSize(); i++)
             {
-               CasePriorityValue casePriorityValue = ((CasePriorityDTO)comboBoxModel.getElementAt( i )).priority().get();
-               if( casePriorityValue == null ) continue;
-               if( casePriorityValue.name().get().equals( selectPriority.name().get() ))
+               PriorityValue priorityValue = ((PriorityValue)comboBoxModel.getElementAt( i ));
+               if( priorityValue == null ) continue;
+               if( priorityValue.id().get().equals( selectPriority.id().get() ))
                {
                   casePriority.setSelectedItem( comboBoxModel.getElementAt( i ) );
-                  casePriority.setToolTipText( selectPriority.name().get() );
+                  casePriority.setToolTipText( selectPriority.text().get() );
                }
             }
          }
@@ -498,17 +498,16 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    @Action
    public Task changePriority()
    {
-      final CasePriorityDTO selected = (CasePriorityDTO)casePriority.getSelectedItem();
-      if( selected != null
-            && ( selected.priority().get() == null && model.getGeneral().priority().get() != null
-            || selected.priority().get() != null && !selected.priority().get().equals( model.getGeneral().priority().get() ) ) )
+      final PriorityValue selected = (PriorityValue)casePriority.getSelectedItem();
+      String oldPriority = model.getGeneral().priority().get() != null ? model.getGeneral().priority().get().id().get() : "-1";
+      if( !selected.id().get().equals( oldPriority ) )
       {
          return new CommandTask()
          {
             @Override
             protected void command() throws Exception
             {
-               model.changePriority( selected.priority().get() );
+               model.changePriority( selected.id().get() );
             }
          };
       } else

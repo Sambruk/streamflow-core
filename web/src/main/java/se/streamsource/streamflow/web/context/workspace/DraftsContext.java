@@ -32,7 +32,7 @@ import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -48,7 +48,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -177,7 +177,7 @@ public interface DraftsContext
          ValueBuilder<CasePriorityDTO> linkBuilder = module.valueBuilderFactory().newValueBuilder( CasePriorityDTO.class );
 
          int count = 0;
-         for( CasePriorityValue priority : (( CasePriorityDefinitions.Data )org).prioritys().get() )
+         for( PriorityValue priority : (( Priorities.Data )org).prioritys().get() )
          {
             linkBuilder.prototype().priority().set( priority );
             linkBuilder.prototype().text().set( priority.name().get() );

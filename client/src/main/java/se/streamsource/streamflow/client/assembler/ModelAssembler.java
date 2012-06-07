@@ -34,7 +34,7 @@ import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePr
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
@@ -236,7 +236,7 @@ public class ModelAssembler
             LabelRuleModel.class,
             CasePrioritiesModel.class,
             CasePriorityModel.class,
-            CasePrioritySettingModel.class);
+            PriorityOnCaseModel.class);
 
 
       addModels(module, LinksListModel.class,

@@ -156,7 +156,7 @@ public class CasePrioritiesView
       
       super.notifyTransactions( transactions );
 
-      if ( matches( withNames( "createdPriority", "changedPriority", "changedPriorityOrder", "removedPriority" ), transactions ))
+      if ( matches( withNames( "createdPriority", "changedDescription", "changedPriority", "removedPriority" ), transactions ))
       {   
          model.refresh();
          
@@ -164,12 +164,12 @@ public class CasePrioritiesView
          {
             list.setSelectedIndex( list.getModel().getSize() - 1 );
 
-         } else if( matches( withNames( "changedPriority", "changedPriorityOrder" ), transactions ) )
+         } else if( matches( withNames( "changedDescription", "changedPriority" ), transactions ) )
          {
             int count = 0;
             for( LinkValue link : model.getUnsortedList())
             {
-               if( link.text().get().equals( oldSelection.text().get() ))
+               if( link.id().get().equals( oldSelection.id().get() ))
                {
                   list.setSelectedIndex( count );
                   return;

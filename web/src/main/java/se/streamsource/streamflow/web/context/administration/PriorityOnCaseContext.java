@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.workspace.cases.general;
+package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
@@ -23,27 +23,17 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.FormValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
-import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.context.RequiresPermission;
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresCasePriorityVisible;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresPriorityVisibility;
+import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
@@ -52,83 +42,65 @@ import se.streamsource.streamflow.web.domain.structure.organization.PrioritySett
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
-
 /**
- * Commands for the General view of a Case. They all require the "write" permission
+ * Context for case priority settings.
  */
-@Mixins(CaseGeneralCommandsContext.Mixin.class)
-@RequiresPermission(PermissionType.write)
-public interface CaseGeneralCommandsContext
-      extends
-      Context
+@Mixins(PriorityOnCaseContext.Mixin.class)
+public interface PriorityOnCaseContext
+      extends Context, IndexContext<FormValue>
 {
-   @RequiresStatus({DRAFT, OPEN})
-   void changedueon( @Name("date") Date dueOnValue );
 
-   @RequiresStatus({DRAFT, OPEN})
-   void casetype( EntityValue dto );
+   @RequiresPriorityVisibility
+   void updatemandatory( @Name("mandatory") Boolean mandatory );
 
-   @RequiresStatus({DRAFT, OPEN})
-   void changedescription( @Optional @MaxLength(50) @Name("description") String stringValue );
+   void updatevisibility( @Name("visible") Boolean visible );
 
-   LinksValue possiblecasetypes();
-   
-   @RequiresStatus({DRAFT, OPEN})
-   @RequiresCasePriorityVisible
-   void changepriority( @Optional @Name("id") String id );
+   void prioritydefault( @Optional @Name("id") String id );
 
-   @RequiresCasePriorityVisible
    LinksValue priorities();
 
-   abstract class Mixin
-         implements CaseGeneralCommandsContext
+   abstract class Mixin implements PriorityOnCaseContext, IndexContext<FormValue>
    {
       @Structure
       Module module;
 
       @Uses
-      CasePriority casePriority;
+      PriorityOnCase priorityOnCase;
 
-      public void changedescription( String stringValue )
+      @Uses
+      PriorityOnCase.Data priorityOnCaseData;
+
+      public FormValue index()
       {
-         Describable describable = RoleMap.role( Describable.class );
-         describable.changeDescription( stringValue );
+         ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
+         builder.prototype().form().get().put( "visible", priorityOnCaseData.visibility().get().toString() );
+         builder.prototype().form().get().put( "mandatory", priorityOnCaseData.mandate().get().toString() );
+         builder.prototype().form().get().put( "prioritydefault", priorityOnCaseData.priorityDefault().get() != null
+               ? EntityReference.getEntityReference( priorityOnCaseData.priorityDefault().get() ).identity() : "-" );
+         return builder.newInstance();
       }
 
-      public void changedueon( Date newDueOn )
+      public void updatevisibility( Boolean visible )
       {
-         DueOn dueOn = RoleMap.role( DueOn.class );
-         dueOn.dueOn( newDueOn );
+         priorityOnCase.changeVisibility( visible );
       }
 
-      public LinksValue possiblecasetypes()
+      public void updatemandatory( Boolean mandatory )
       {
-         CaseTypeQueries aCase = RoleMap.role( CaseTypeQueries.class );
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "casetype" );
-
-         aCase.possibleCaseTypes( builder );
-
-         return builder.newLinks();
+         priorityOnCase.changeMandate( mandatory );
       }
 
-      public void casetype( EntityValue dto )
+      public void prioritydefault( String id )
       {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         TypedCase aCase = RoleMap.role( TypedCase.class );
-
-         String entityReference = dto.entity().get();
-         if (entityReference != null)
+         if( id != null )
          {
-            CaseType caseType = uow.get( CaseType.class, entityReference );
-            aCase.changeCaseType( caseType );
+            priorityOnCase.changePriorityDefault( module.unitOfWorkFactory().currentUnitOfWork().get( Priority.class, id ) );
          } else
-            aCase.changeCaseType( null );
+            priorityOnCase.changePriorityDefault( null );
       }
-      
+
       public LinksValue priorities()
       {
          Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
@@ -137,7 +109,7 @@ public interface CaseGeneralCommandsContext
 
          Priorities.Data priorities = RoleMap.role( Priorities.Data.class );
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-         builder.command( "changepriority" );
+         builder.command( "prioritydefault" );
 
          ValueBuilder<PriorityValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( PriorityValue.class );
 
@@ -160,14 +132,7 @@ public interface CaseGeneralCommandsContext
             builder.addLink( priority.getDescription(), EntityReference.getEntityReference( priority ).identity() );
          }
          return builder.newLinks();
-      }
-      
-      public void changepriority( String id )
-      {
-         if(Strings.empty( id ) )
-            casePriority.changePriority( null );
-         else
-            casePriority.changePriority( module.unitOfWorkFactory().currentUnitOfWork().get( Priority.class, id ) );
-      }
+       }
+
    }
 }

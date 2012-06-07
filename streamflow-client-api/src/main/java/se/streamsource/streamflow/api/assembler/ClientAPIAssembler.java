@@ -58,7 +58,7 @@ import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
@@ -126,7 +126,7 @@ public class ClientAPIAssembler
               NoteDTO.class,
               ExternalEmailValue.class,
               CasePriorityDTO.class,
-              CasePriorityValue.class);
+              PriorityValue.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,

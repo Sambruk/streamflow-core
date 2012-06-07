@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
-import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
+import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 import java.lang.annotation.Retention;
@@ -40,7 +40,7 @@ public @interface RequiresCasePriorityVisible
          if( value.caseType().get() == null )
             return false;
          else
-            return ((CasePrioritySetting.Data)value.caseType().get()).visible().get();
+            return ((PriorityOnCase.Data)value.caseType().get()).visibility().get();
       }
    }
 }

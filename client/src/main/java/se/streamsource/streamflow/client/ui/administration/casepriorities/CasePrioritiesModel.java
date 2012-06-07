@@ -35,13 +35,13 @@ public class CasePrioritiesModel
 
    public void remove( LinkValue link)
    {
-      client.getClient( link ).delete();
+      client.postLink( link );
    }
 
    public void up( LinkValue selected )
    {
       Form form = new Form();
-      form.set( "index", selected.id().get() );
+      form.set( "id", selected.id().get() );
       
       client.postCommand( "up", form );
    }
@@ -49,7 +49,7 @@ public class CasePrioritiesModel
    public void down( LinkValue selected )
    {
       Form form = new Form();
-      form.set( "index", selected.id().get() );
+      form.set( "id", selected.id().get() );
 
       client.postCommand( "down", form );
    }

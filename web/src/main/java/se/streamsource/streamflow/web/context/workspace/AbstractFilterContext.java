@@ -25,14 +25,14 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -117,7 +117,7 @@ public interface AbstractFilterContext extends Context
          ValueBuilder<CasePriorityDTO> linkBuilder = module.valueBuilderFactory().newValueBuilder( CasePriorityDTO.class );
 
          int count = 0;
-         for( CasePriorityValue priority : RoleMap.role( CasePriorityDefinitions.Data.class ).prioritys().get() )
+         for( PriorityValue priority : RoleMap.role( Priorities.Data.class ).prioritys().get() )
          {
             linkBuilder.prototype().priority().set( priority );
             linkBuilder.prototype().text().set( priority.name().get() );

@@ -17,11 +17,11 @@
 package se.streamsource.streamflow.web.domain.structure.caze;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 
 /**
  * Contains case priority information for a case.
@@ -29,16 +29,16 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins(CasePriority.Mixin.class)
 public interface CasePriority
 {
-   void changePriority( @Optional CasePriorityValue priority );
+   void changePriority( @Optional Priority priority );
    interface Data
    {
       @Optional
-      Property<CasePriorityValue> priority();
+      Association<Priority> priority();
    }
    
    interface Events
    {
-      void changedPriority( @Optional DomainEvent event, @Optional CasePriorityValue priority );
+      void changedPriority( @Optional DomainEvent event, @Optional Priority priority );
    }
 
    abstract class Mixin
@@ -46,7 +46,7 @@ public interface CasePriority
    {
       @This
       Data data;
-      public void changePriority( @Optional CasePriorityValue priority )
+      public void changePriority( @Optional Priority priority )
       {
          // check if there would actually be a change before changing
          if( ( data.priority().get() == null && priority == null) ||
@@ -54,11 +54,6 @@ public interface CasePriority
             return;
          
          changedPriority( null, priority );
-      }
-
-      public void changedPriority( @Optional DomainEvent event, @Optional CasePriorityValue priority )
-      {
-         data.priority().set( priority );
       }
    }
 }

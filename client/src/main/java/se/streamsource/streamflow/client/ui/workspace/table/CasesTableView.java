@@ -42,7 +42,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -378,12 +378,12 @@ public class CasesTableView
          }
       } );
 
-      caseTable.setDefaultRenderer( CasePriorityValue.class, new DefaultTableCellRenderer()
+      caseTable.setDefaultRenderer( PriorityValue.class, new DefaultTableCellRenderer()
       {
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
-            final CasePriorityValue priority = (CasePriorityValue) value;
+            final PriorityValue priority = (PriorityValue) value;
             String val = priority == null ? "" : priority.name().get();
 
             JPanel panel = new JPanel( );

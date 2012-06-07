@@ -21,7 +21,6 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 
 import java.util.Date;
@@ -53,5 +52,5 @@ public interface CaseGeneralDTO
    Property<Date> dueOn();
    
    @Optional
-   Property<CasePriorityValue> priority();
+   Property<LinkValue> priority();
 }
