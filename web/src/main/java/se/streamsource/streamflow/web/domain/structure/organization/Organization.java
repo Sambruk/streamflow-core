@@ -43,6 +43,7 @@ public interface Organization
       ProjectRoles,
       RolePolicy,
       Forms,
+      FormOnRemove,
       Labels,
       OrganizationalUnits,
       Owner,

@@ -52,5 +52,6 @@ public class OrganizationModel
       relationModelMapping("proxyusers", ProxyUsersModel.class);
       relationModelMapping("templates", SelectedTemplatesModel.class);
       relationModelMapping( "restrictions", CaseAccessDefaultsModel.class );
+      relationModelMapping( "formonremove", FormOnRemoveModel.class );
    }
 }

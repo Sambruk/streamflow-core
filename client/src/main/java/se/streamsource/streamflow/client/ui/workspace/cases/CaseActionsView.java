@@ -110,6 +110,7 @@ public class CaseActionsView extends JPanel
       close,
       resolve,
       formonclose,
+      formonremove,
       reopen,
       delete,
       exportpdf,
@@ -235,8 +236,12 @@ public class CaseActionsView extends JPanel
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
       if (focusOwner != null)
          focusOwner.transferFocus();
-      
-      if( formOnCloseWizard() )
+
+      CommandQueryClient formOnCloseClient = model.getClient().getClient( "submitformonclose/" );
+      formOnCloseClient.postCommand( "create" );
+      LinkValue formDraftLink = formOnCloseClient.query( "formdraft", LinkValue.class );
+
+      if( formWizard( formDraftLink ) )
       {
          return new CommandTask()
          {
@@ -251,6 +256,32 @@ public class CaseActionsView extends JPanel
          return null;
    }
 
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task formonremove()
+   {
+      // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+      Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+      if (focusOwner != null)
+         focusOwner.transferFocus();
+
+      CommandQueryClient formOnRemoveClient = model.getClient().getClient( "submitformonremove/" );
+      formOnRemoveClient.postCommand( "create" );
+      LinkValue formDraftLink = formOnRemoveClient.query( "formdraft", LinkValue.class );
+
+      if( formWizard( formDraftLink ) )
+      {
+         return new CommandTask()
+         {
+            @Override
+            protected void command()
+                  throws Exception
+            {
+               model.formOnRemove();
+            }
+         };
+      } else
+         return null;
+   }
 
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task delete()
@@ -422,7 +453,7 @@ public class CaseActionsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate", "restrict", "unrestrict"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formonremove", "reinstate", "restrict", "unrestrict"), transactions ))
       {
          model.refresh();
       }
@@ -461,19 +492,15 @@ public class CaseActionsView extends JPanel
       repaint();
    }
 
-   private boolean formOnCloseWizard()
+
+   private boolean formWizard( LinkValue formDraftLink )
    {
-      CommandQueryClient formOnCloseClient = model.getClient().getClient( "submitformonclose/" );
-
-      formOnCloseClient.postCommand( "create" );
-      LinkValue formDraftLink = formOnCloseClient.query( "formdraft", LinkValue.class );
-
       // get the form submission value;
       final CommandQueryClient formDraftClient = model.getClient().getClient( formDraftLink );
 
       final FormDraftModel formDraftModel = module.objectBuilderFactory().newObjectBuilder(FormDraftModel.class).use(formDraftClient).newInstance();
 
-      FormDraftDTO formDraftDTO = (FormDraftDTO) ((FormDraftModel) formDraftModel).getFormDraftDTO().buildWith().prototype();
+      FormDraftDTO formDraftDTO = (FormDraftDTO) formDraftModel.getFormDraftDTO().buildWith().prototype();
 
       final WizardPage[] wizardPages = new WizardPage[ formDraftDTO.pages().get().size() ];
       for (int i = 0; i < formDraftDTO.pages().get().size(); i++)

@@ -37,6 +37,7 @@ import se.streamsource.streamflow.client.ui.account.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
+import se.streamsource.streamflow.client.ui.administration.FormOnRemoveView;
 import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesView;
 import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
@@ -367,6 +368,7 @@ public class UIAssembler
             RecipientsView.class,
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
+            FormOnRemoveView.class,
             UsersAdministrationView.class,
             ProxyUsersView.class,
             AccessPointsView.class,

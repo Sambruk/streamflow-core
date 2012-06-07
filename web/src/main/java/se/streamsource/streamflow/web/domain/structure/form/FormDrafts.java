@@ -43,12 +43,15 @@ import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.organization.FormOnRemove;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 /**
  * JAVADOC
@@ -110,6 +113,15 @@ public interface FormDrafts
             return null;
          }
 
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         FormOnRemove.Data data = (FormOnRemove.Data) orgs.organization().get();
+         Form formOnRemove = data.formOnRemove().get();
+
+         if ( formOnRemove != null && form.equals( formOnRemove ) )
+         {
+            return createDraft( form );
+         }
+
          CaseType caseType = typedCase.caseType().get();
          if (caseType != null)
          {
@@ -118,58 +130,63 @@ public interface FormDrafts
 
             if (forms.selectedForms().contains( form ) || form.equals( formOnClose.formOnClose().get() ))
             {
-               SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
-
-               ValueBuilder<FormDraftDTO> builder = module.valueBuilderFactory().newValueBuilder( FormDraftDTO.class );
-
-               builder.prototype().description().set( form.getDescription() );
-               builder.prototype().form().set( EntityReference.getEntityReference( form ) );
-
-               ValueBuilder<PageSubmissionDTO> pageBuilder = module.valueBuilderFactory().newValueBuilder(
-                     PageSubmissionDTO.class );
-               ValueBuilder<FieldSubmissionDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(
-                     FieldSubmissionDTO.class );
-               ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
-                     FieldDefinitionValue.class );
-               
-               builder.prototype().pages().set( new ArrayList<PageSubmissionDTO>() );
-
-               Pages.Data pageEntities = (Pages.Data) form;
-               for (Page page : pageEntities.pages())
-               {
-                  pageBuilder.prototype().title().set( page.getDescription() );
-                  pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ) );
-                  pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionDTO>() );
-                  
-                  
-                  Fields.Data fieldEntities = (Fields.Data) page;
-                  for (Field field : fieldEntities.fields())
-                  {
-                     FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
-
-                     if (fieldValue instanceof FieldGroupFieldValue) {
-                        UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-                        FieldGroup fieldGroup = uow.get( FieldGroup.class, ((FieldGroupFieldValue)fieldValue).fieldGroup().get().identity() );
-                        
-                        for (Field subField : ((Fields.Data)fieldGroup).fields()) {
-                           FieldValue subFieldValue = ((FieldValueDefinition.Data) subField).fieldValue().get();
-                           pageBuilder.prototype().fields().get().add( createFieldSubmission( subField, subFieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
-                        }
-                     } else {
-                        pageBuilder.prototype().fields().get().add( createFieldSubmission( field, fieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
-                     }
-                  }
-                  builder.prototype().pages().get().add( pageBuilder.newInstance() );
-               }
-
-               int pages = builder.prototype().pages().get().size();
-               builder.prototype().pages().get().remove( pages - 1 );
-               builder.prototype().pages().get().add( pageBuilder.newInstance() );
-
-               return createdFormDraft( null, builder.newInstance(), idgen.generate( FormDraftEntity.class ) );
+               return createDraft( form );
             }
          }
          return null;
+      }
+
+      private FormDraft createDraft( Form form )
+      {
+         SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
+
+         ValueBuilder<FormDraftDTO> builder = module.valueBuilderFactory().newValueBuilder( FormDraftDTO.class );
+
+         builder.prototype().description().set( form.getDescription() );
+         builder.prototype().form().set( EntityReference.getEntityReference( form ) );
+
+         ValueBuilder<PageSubmissionDTO> pageBuilder = module.valueBuilderFactory().newValueBuilder(
+               PageSubmissionDTO.class );
+         ValueBuilder<FieldSubmissionDTO> fieldBuilder = module.valueBuilderFactory().newValueBuilder(
+               FieldSubmissionDTO.class );
+         ValueBuilder<FieldDefinitionValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
+               FieldDefinitionValue.class );
+
+         builder.prototype().pages().set( new ArrayList<PageSubmissionDTO>() );
+
+         Pages.Data pageEntities = (Pages.Data) form;
+         for (Page page : pageEntities.pages())
+         {
+            pageBuilder.prototype().title().set( page.getDescription() );
+            pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ) );
+            pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionDTO>() );
+
+
+            Fields.Data fieldEntities = (Fields.Data) page;
+            for (Field field : fieldEntities.fields())
+            {
+               FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
+
+               if (fieldValue instanceof FieldGroupFieldValue) {
+                  UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+                  FieldGroup fieldGroup = uow.get( FieldGroup.class, ((FieldGroupFieldValue)fieldValue).fieldGroup().get().identity() );
+
+                  for (Field subField : ((Fields.Data)fieldGroup).fields()) {
+                     FieldValue subFieldValue = ((FieldValueDefinition.Data) subField).fieldValue().get();
+                     pageBuilder.prototype().fields().get().add( createFieldSubmission( subField, subFieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
+                  }
+               } else {
+                  pageBuilder.prototype().fields().get().add( createFieldSubmission( field, fieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
+               }
+            }
+            builder.prototype().pages().get().add( pageBuilder.newInstance() );
+         }
+
+         int pages = builder.prototype().pages().get().size();
+         builder.prototype().pages().get().remove( pages - 1 );
+         builder.prototype().pages().get().add( pageBuilder.newInstance() );
+
+         return createdFormDraft( null, builder.newInstance(), idgen.generate( FormDraftEntity.class ) );
       }
 
       private FieldSubmissionDTO createFieldSubmission(Field field, FieldValue fieldValue,

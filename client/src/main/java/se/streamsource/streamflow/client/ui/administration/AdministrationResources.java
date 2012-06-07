@@ -183,5 +183,7 @@ public enum AdministrationResources
    caseaccessoptionaldefaults_separator,
    optional_security_settings,
    casepriority_default_value,
+   formonremove_separator,
+   choose_form_on_remove,
    fieldgroup_field_type
 }

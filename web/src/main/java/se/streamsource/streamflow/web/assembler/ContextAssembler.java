@@ -39,6 +39,7 @@ import se.streamsource.streamflow.surface.api.assembler.SurfaceAPIAssembler;
 import se.streamsource.streamflow.util.ClassScanner;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.context.workspace.cases.HasFormOnRemove;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 /**
@@ -63,7 +64,7 @@ public class ContextAssembler
       module.objects(InteractionConstraintsService.class);
 
       module.objects(RequiresPermission.RequiresPermissionConstraint.class,
-              ServiceAvailable.ServiceAvailableConstraint.class).visibleIn(Visibility.application);
+              ServiceAvailable.ServiceAvailableConstraint.class, HasFormOnRemove.HasFormOnRemoveConstraint.class).visibleIn(Visibility.application);
 
       // Named queries
       NamedQueries namedQueries = new NamedQueries();

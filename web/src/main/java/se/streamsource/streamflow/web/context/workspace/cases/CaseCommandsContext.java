@@ -65,6 +65,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.organization.FormOnRemove;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -138,6 +139,11 @@ public interface CaseCommandsContext
    @SubCasesAreClosed
    public void formonclose();
 
+   @RequiresStatus({OPEN, DRAFT})
+   @HasFormOnRemove(true)
+   @RequiresRemoved(false)
+   public void formonremove();
+
    /**
     * Mark the case as on-hold
     */
@@ -159,6 +165,7 @@ public interface CaseCommandsContext
    public void unassign();
 
    @RequiresStatus({OPEN, DRAFT})
+   @HasFormOnRemove(false)
    @RequiresRemoved(false)
    public void delete();
 
@@ -288,6 +295,34 @@ public interface CaseCommandsContext
             throw new RuntimeException( "No form on close submission." );
          }
 
+      }
+
+      public void formonremove()
+      {
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         FormOnRemove.Data data = (FormOnRemove.Data) orgs.organization().get();
+
+         final Form form = data.formOnRemove().get();
+
+         List<SubmittedFormValue> submittedForms = RoleMap.role( SubmittedForms.Data.class ).submittedForms().get();
+
+         boolean formOnCloseExists = matchesAny( new Specification<SubmittedFormValue>()
+         {
+            public boolean satisfiedBy( SubmittedFormValue item )
+            {
+               if (item.form().get().identity().equals( form.toString() ))
+                  return true;
+               return false;
+            }
+         }, submittedForms );
+
+         if ( formOnCloseExists )
+         {
+            delete();
+         } else
+         {
+            throw new RuntimeException( "No form on remove submission." );
+         }
       }
 
       public void onhold()

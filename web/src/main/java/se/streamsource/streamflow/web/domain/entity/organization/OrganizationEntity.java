@@ -40,6 +40,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.FormOnRemove;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -67,6 +68,8 @@ public interface OrganizationEntity
       // Data
       Describable.Data,
       Forms.Data,
+      FormOnRemove.Data,
+      FormOnRemove.Events,
       DatatypeDefinitions.Data,
       FieldGroups.Data,
       Labels.Data,
