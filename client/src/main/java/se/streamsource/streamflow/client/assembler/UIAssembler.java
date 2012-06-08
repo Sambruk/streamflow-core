@@ -123,7 +123,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.PdfPrintingDialog;
-import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactLookupResultDialog;
@@ -264,7 +263,6 @@ public class UIAssembler
             CaseInfoView.class,
             CasesDetailView.class,
             CaseDetailView.class,
-            SubCasesView.class,
             ContactsAdminView.class,
             ContactsView.class,
             ContactView.class,

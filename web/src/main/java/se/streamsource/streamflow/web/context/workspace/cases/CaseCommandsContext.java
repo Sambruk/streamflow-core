@@ -95,10 +95,6 @@ public interface CaseCommandsContext
 
    public LinksValue possibleresolutions();
 
-   // Commands
-   @RequiresStatus({OPEN, DRAFT})
-   public void createSubCase();
-
    /**
     * Assign the case to the user invoking the method
     */
@@ -448,26 +444,6 @@ public interface CaseCommandsContext
             {
                access.changeAccess( entry.getKey(), entry.getValue() );
             }
-         }
-      }
-
-      public void createSubCase()
-      {
-         RoleMap.role( SubCases.class ).createSubCase();
-
-         Assignable assignable = RoleMap.role( Assignable.class );
-         if (assignable.isAssigned())
-         {
-            // Set to same owner as current case
-            ManyAssociation<Case> caseManyAssociation = RoleMap.role( SubCases.Data.class ).subCases();
-            Case createdCase = caseManyAssociation.get(caseManyAssociation.count()-1);
-            createdCase.changeOwner( RoleMap.role( Ownable.Data.class).owner().get() );
-
-            // Open the case
-            createdCase.open();
-
-            // Assign to same user
-            createdCase.assignTo( RoleMap.role(Assignable.Data.class).assignedTo().get() );
          }
       }
 

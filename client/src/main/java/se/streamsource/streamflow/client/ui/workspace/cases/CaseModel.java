@@ -72,12 +72,6 @@ public class CaseModel
       return subcases;
    }
 
-   // Commands and queries
-   public void createSubCase()
-   {
-      client.command( "createsubcase" );
-   }
-
    public void open()
    {
       client.command( "open" );

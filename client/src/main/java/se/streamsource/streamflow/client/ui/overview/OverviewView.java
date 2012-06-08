@@ -144,13 +144,7 @@ public class OverviewView
                {
                   ContextItem contextItem = (ContextItem) list.getSelectedValue();
                   TableFormat tableFormat;
-                  /*if (contextItem.getRelation().equals(Icons.assign.name()))
-                  {
-                     tableFormat = new OverviewAssignmentsCaseTableFormatter();
-                  } else
-                  {*/
                   tableFormat = new CasesTableFormatter();
-                  //}
                   CasesTableView casesTable = module.objectBuilderFactory().newObjectBuilder(CasesTableView.class).use(contextItem.getClient(), tableFormat).newInstance();
 
                   casesView.showTable(casesTable);

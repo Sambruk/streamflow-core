@@ -107,7 +107,6 @@ public class CaseActionsView extends JPanel
       unassign,
       onhold,
       resume,
-      createsubcase,
       close,
       resolve,
       formonclose,
@@ -134,21 +133,6 @@ public class CaseActionsView extends JPanel
       setActionMap( context.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseActionsView.class, this ) );
-   }
-
-   // Case actions
-   @Action
-   public Task createsubcase()
-   {
-      return new CommandTask()
-      {
-         @Override
-         public void command()
-               throws Exception
-         {
-            model.createSubCase();
-         }
-      };
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)

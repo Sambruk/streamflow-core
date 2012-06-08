@@ -260,8 +260,8 @@ public class CasesTableView
       } );
 
       caseTable.getColumn( 0 ).setPreferredWidth( 500 );
-      caseTable.getColumn( 1 ).setPreferredWidth( 100 );
-      caseTable.getColumn( 1 ).setMaxWidth( 100 );
+      caseTable.getColumn( 1 ).setPreferredWidth( 70 );
+      caseTable.getColumn( 1 ).setMaxWidth( 70 );
       caseTable.getColumn( 1 ).setResizable( false );
       caseTable.getColumn( 2 ).setPreferredWidth( 300 );
       caseTable.getColumn( 2 ).setMaxWidth( 300 );
