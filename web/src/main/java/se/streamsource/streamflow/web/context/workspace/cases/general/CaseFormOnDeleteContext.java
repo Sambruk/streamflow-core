@@ -21,7 +21,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.web.context.workspace.cases.HasFormOnRemove;
+import se.streamsource.streamflow.web.context.workspace.cases.HasFormOnDelete;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
@@ -32,12 +32,12 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 /**
  * JAVADOC
  */
-public class CaseFormOnRemoveContext
+public class CaseFormOnDeleteContext
 {
    @Structure
    Module module;
 
-   @HasFormOnRemove()
+   @HasFormOnDelete()
    public void create( )
    {
       Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
@@ -48,7 +48,7 @@ public class CaseFormOnRemoveContext
       formDrafts.createFormDraft( form );
    }
 
-   @HasFormOnRemove()
+   @HasFormOnDelete()
    public LinkValue formdraft(  )
    {
       Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );

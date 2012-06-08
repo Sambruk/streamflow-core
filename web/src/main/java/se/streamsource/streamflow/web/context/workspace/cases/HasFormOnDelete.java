@@ -30,28 +30,28 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@InteractionConstraintDeclaration(HasFormOnRemove.HasFormOnRemoveConstraint.class)
+@InteractionConstraintDeclaration(HasFormOnDelete.HasFormOnRemoveConstraint.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface HasFormOnRemove
+public @interface HasFormOnDelete
 {
    boolean value() default true;
 
    class HasFormOnRemoveConstraint
-         implements InteractionConstraint<HasFormOnRemove>
+         implements InteractionConstraint<HasFormOnDelete>
    {
 
       @Structure
       Module module;
 
-      public boolean isValid( HasFormOnRemove hasFormOnRemove, RoleMap roleMap )
+      public boolean isValid( HasFormOnDelete hasFormOnDelete, RoleMap roleMap )
       {
          Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
          FormOnRemove.Data data = (FormOnRemove.Data) orgs.organization().get();
 
          boolean isSet = data.formOnRemove().get() != null;
 
-         return hasFormOnRemove.value() == isSet;
+         return hasFormOnDelete.value() == isSet;
       }
    }
 }

@@ -74,7 +74,7 @@ public class SettingsResourceView
 
       addSettings( "restrictions", AdministrationResources.restrictions_settings_separator,  CaseAccessDefaultsView.class);
 
-      addSettings( "formonremove", AdministrationResources.formonremove_separator, FormOnRemoveView.class );
+      addSettings( "formondelete", AdministrationResources.formondelete_separator, FormOnRemoveView.class );
    }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)

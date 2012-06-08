@@ -57,6 +57,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -110,7 +111,7 @@ public class CaseActionsView extends JPanel
       close,
       resolve,
       formonclose,
-      formonremove,
+      formondelete,
       reopen,
       delete,
       exportpdf,
@@ -257,30 +258,42 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task formonremove()
+   public Task formondelete()
    {
       // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
       if (focusOwner != null)
          focusOwner.transferFocus();
 
-      CommandQueryClient formOnRemoveClient = model.getClient().getClient( "submitformonremove/" );
-      formOnRemoveClient.postCommand( "create" );
-      LinkValue formDraftLink = formOnRemoveClient.query( "formdraft", LinkValue.class );
 
-      if( formWizard( formDraftLink ) )
+      StringValue name = model.getClient().query( "formondeletename", StringValue.class );
+
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setCustomMessage( String.format( i18n.text( StreamflowResources.formondelete_confirmation ), name.string().get() ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
       {
-         return new CommandTask()
+         CommandQueryClient formOnRemoveClient = model.getClient().getClient( "submitformondelete/" );
+         formOnRemoveClient.postCommand( "create" );
+         LinkValue formDraftLink = formOnRemoveClient.query( "formdraft", LinkValue.class );
+
+         if( formWizard( formDraftLink ) )
          {
-            @Override
-            protected void command()
-                  throws Exception
+            return new CommandTask()
             {
-               model.formOnRemove();
-            }
-         };
+               @Override
+               protected void command()
+                     throws Exception
+               {
+                  model.formOnRemove();
+               }
+            };
+         } else
+            return null;
       } else
+      {
          return null;
+      }
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
@@ -453,7 +466,7 @@ public class CaseActionsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formonremove", "reinstate", "restrict", "unrestrict"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formondelete", "reinstate", "restrict", "unrestrict"), transactions ))
       {
          model.refresh();
       }
