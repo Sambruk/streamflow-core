@@ -144,7 +144,7 @@ public class OrganizationResource
    }
 
    @SubResource
-   public void formonremove()
+   public void formondelete()
    {
       subResourceContexts( FormOnRemoveContext.class );
    }

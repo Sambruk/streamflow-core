@@ -26,6 +26,7 @@ public enum StreamflowResources
    export_data_file_with_open_option,
    export_completed,
    excel_file,
+   formondelete_confirmation,
    confirmation,
    proceed_label,
    tooltip_delay_initial,

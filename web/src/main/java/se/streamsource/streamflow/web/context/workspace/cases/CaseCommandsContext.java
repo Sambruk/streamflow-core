@@ -24,10 +24,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -140,9 +141,14 @@ public interface CaseCommandsContext
    public void formonclose();
 
    @RequiresStatus({OPEN, DRAFT})
-   @HasFormOnRemove(true)
+   @HasFormOnDelete(true)
    @RequiresRemoved(false)
-   public void formonremove();
+   public void formondelete();
+
+   @RequiresStatus({OPEN, DRAFT})
+   @HasFormOnDelete(true)
+   @RequiresRemoved(false)
+   public StringValue formondeletename();
 
    /**
     * Mark the case as on-hold
@@ -165,7 +171,7 @@ public interface CaseCommandsContext
    public void unassign();
 
    @RequiresStatus({OPEN, DRAFT})
-   @HasFormOnRemove(false)
+   @HasFormOnDelete(false)
    @RequiresRemoved(false)
    public void delete();
 
@@ -297,12 +303,9 @@ public interface CaseCommandsContext
 
       }
 
-      public void formonremove()
+      public void formondelete()
       {
-         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
-         FormOnRemove.Data data = (FormOnRemove.Data) orgs.organization().get();
-
-         final Form form = data.formOnRemove().get();
+         final Form form = getFormOnDelete();
 
          List<SubmittedFormValue> submittedForms = RoleMap.role( SubmittedForms.Data.class ).submittedForms().get();
 
@@ -323,6 +326,23 @@ public interface CaseCommandsContext
          {
             throw new RuntimeException( "No form on remove submission." );
          }
+      }
+
+      public StringValue formondeletename()
+      {
+         final Form form = getFormOnDelete();
+
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
+         builder.prototype().string().set( form.getDescription() );
+         return builder.newInstance();
+      }
+
+      private Form getFormOnDelete()
+      {
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         FormOnRemove.Data data = (FormOnRemove.Data) orgs.organization().get();
+
+         return data.formOnRemove().get();
       }
 
       public void onhold()

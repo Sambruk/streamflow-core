@@ -165,7 +165,7 @@ public class CaseModel
 
    public void formOnRemove()
    {
-      client.command( "formonremove" );
+      client.command( "formondelete" );
    }
 
    public File export(CaseOutputConfigDTO config) throws IOException

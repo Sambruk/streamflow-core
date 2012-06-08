@@ -29,11 +29,9 @@ import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
-import se.streamsource.streamflow.web.context.workspace.cases.general.CaseFormOnRemoveContext;
+import se.streamsource.streamflow.web.context.workspace.cases.general.CaseFormOnDeleteContext;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.caze.History;
-import se.streamsource.streamflow.web.rest.resource.workspace.cases.conversation.ConversationResource;
 import se.streamsource.streamflow.web.rest.resource.workspace.cases.conversation.ConversationsResource;
 import se.streamsource.streamflow.web.rest.resource.workspace.cases.form.CaseSubmittedFormsResource;
 
@@ -147,9 +145,9 @@ public class CaseResource
    }
 
    @SubResource
-   public void submitformonremove()
+   public void submitformondelete()
    {
-      subResourceContexts( CaseFormOnRemoveContext.class );
+      subResourceContexts( CaseFormOnDeleteContext.class );
    }
 
    @SubResource
