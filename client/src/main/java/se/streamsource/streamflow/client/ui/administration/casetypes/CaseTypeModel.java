@@ -47,6 +47,6 @@ public class CaseTypeModel
       relationModelMapping("defaultdaystocomplete", CaseDefaultDaysToCompleteModel.class);
       relationModelMapping("archival", CaseArchivalSettingModel.class);
       relationModelMapping( "formonclose", FormOnCloseModel.class );
-      relationModelMapping( "caseprioritysetting", PriorityOnCaseModel.class );
+      relationModelMapping( "priorityoncase", PriorityOnCaseModel.class );
    }
 }

@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.domain.structure.casetype;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -46,18 +47,16 @@ public interface PriorityOnCase
       Property<Boolean> mandate();
 
       @Optional
+      @Aggregated
       Association<Priority> priorityDefault();
-   }
-   
-   interface Events
-   {
+
       void changedVisibility( @Optional DomainEvent event, Boolean visible );
       void changedMandate( @Optional DomainEvent event, Boolean mandatory );
       void changedPriorityDefault( @Optional DomainEvent event, @Optional Priority defaultPriority );
    }
-   
+
    abstract class Mixin
-      implements PriorityOnCase, Events
+      implements PriorityOnCase, Data
    {
       @This
       Data data;
@@ -69,24 +68,29 @@ public interface PriorityOnCase
          if( data.visibility().get().equals( visible ) )
             return;
          
-         changedVisibility( null, visible );
+         data.changedVisibility( null, visible );
       }
 
       public void changeMandate( Boolean mandatory )
       {
-         // if there is no real change do nothing
+         // if there is no real change do nothings
          if( data.mandate().get().equals( mandatory ) )
             return;
 
-         changedMandate( null, mandatory );
+         data.changedMandate( null, mandatory );
       }
 
-      public void changeDefaultPriority( Priority defaultPriority )
+      public void changePriorityDefault( Priority defaultPriority )
       {
          if( (defaultPriority != null && defaultPriority.equals( data.priorityDefault().get() ))
                || (defaultPriority == null && data.priorityDefault().get() == null ))
             return;
-         changedPriorityDefault( null, defaultPriority );
+         data.changedPriorityDefault( null, defaultPriority );
+      }
+
+      public void changedPriorityDefault( DomainEvent event, Priority defaultPriority)
+      {
+         data.priorityDefault().set( defaultPriority );
       }
    }
 }

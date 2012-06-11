@@ -17,17 +17,15 @@
 package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.constraint.Name;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
@@ -42,9 +40,9 @@ import java.util.List;
  */
 @Mixins( PrioritiesContext.Mixin.class )
 public interface PrioritiesContext
-   extends IndexContext<LinksValue>, Context
+   extends IndexContext<Iterable<Priority>>, CreateContext<String,Priority>, Context
 {
-   public void create( @Name( "name" ) String name );
+   public Priority create( @Name( "name" ) String name );
    
    public void up( @Name( "id" ) String id );
    
@@ -56,11 +54,9 @@ public interface PrioritiesContext
       @Structure
       Module module;
       
-      public LinksValue index()
+      public Iterable<Priority> index()
       {
          Priorities.Data priorities = RoleMap.role( Priorities.Data.class );
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-         builder.command( "delete" );
 
          List<Priority> sortedList =  priorities.prioritys().toList();
          Collections.sort( sortedList, new Comparator<Priority>()
@@ -70,17 +66,13 @@ public interface PrioritiesContext
                return ((PrioritySettings.Data)o1).priority().get().compareTo( ((PrioritySettings.Data)o2).priority().get() );
             }
          } );
-
-         for(Priority priority : sortedList )
-         {
-            builder.addLink( priority.getDescription(), EntityReference.getEntityReference( priority ).identity() );
-         }
-         return builder.newLinks();
+         return sortedList;
       }
       
-      public void create( final String name )
+      public Priority create( final String name )
       {
          Priorities priorities = RoleMap.role( Priorities.class );
+         Priority priority = null;
          if( !Iterables.matchesAny( new Specification<Describable>()
          {
             public boolean satisfiedBy( Describable describable )
@@ -89,9 +81,10 @@ public interface PrioritiesContext
             }
          }, ((Priorities.Data)priorities).prioritys().toList() ) )
          {
-            Priority priority = priorities.createPriority( );
+            priority = priorities.createPriority( );
             priority.changeDescription( name );
          }
+         return priority;
       }
       
       public void up( String id )

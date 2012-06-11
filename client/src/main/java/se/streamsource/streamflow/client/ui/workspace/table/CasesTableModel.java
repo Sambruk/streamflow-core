@@ -44,9 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
@@ -564,16 +562,5 @@ public class CasesTableModel extends Observable
          }
       }
       return false;
-   }
-
-   public Map<String,Integer> getPriorityDefinitionMap()
-   {
-      LinksValue linksValue = client.query( "casepriorities", LinksValue.class );
-      HashMap<String,Integer> priorityDefinitionMap = new HashMap<String,Integer>();
-      for(LinkValue link : linksValue.links().get() )
-      {
-         priorityDefinitionMap.put( link.text().get(), new Integer( link.id().get() ) );
-      }
-      return priorityDefinitionMap;
    }
 }

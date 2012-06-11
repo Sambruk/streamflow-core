@@ -34,15 +34,11 @@ public interface CasePriority
    {
       @Optional
       Association<Priority> priority();
-   }
-   
-   interface Events
-   {
       void changedPriority( @Optional DomainEvent event, @Optional Priority priority );
    }
 
    abstract class Mixin
-      implements CasePriority, Events
+      implements CasePriority, Data
    {
       @This
       Data data;
@@ -53,7 +49,12 @@ public interface CasePriority
                ( priority != null && priority.equals( data.priority().get() )))
             return;
          
-         changedPriority( null, priority );
+         data.changedPriority( null, priority );
+      }
+
+      public void changedPriority( DomainEvent event, Priority priority )
+      {
+         data.priority().set( priority );
       }
    }
 }

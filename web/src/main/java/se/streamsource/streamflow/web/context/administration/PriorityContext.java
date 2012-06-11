@@ -16,18 +16,16 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 
@@ -36,21 +34,18 @@ import java.io.IOException;
 /**
  * Case priority definition context.
  */
-@Mixins( {PriorityContext.Mixin.class, DescribableContext.Mixin.class} )
-public interface PriorityContext
-   extends IndexContext<PriorityValue>, DeleteContext, DescribableContext
+public class PriorityContext
+   implements IndexContext<PriorityValue>, DeleteContext
 {
-   void changecolor( @Optional @Name( "color" ) String color );
 
-   abstract class Mixin
-      implements PriorityContext
-   {
       @Structure
       Module module;
 
       public void delete() throws IOException
       {
-         RoleMap.role( Priority.class ).deleteEntity();
+         Priority priority = RoleMap.role( Priority.class );
+         RoleMap.role( Priorities.class ).removePriority( priority );
+         priority.removeEntity();
 
       }
 
@@ -66,9 +61,9 @@ public interface PriorityContext
          return builder.newInstance();
       }
 
-      public void changeColor( @Name("color") String color )
+      public void changecolor( @Name("color") String color )
       {
          RoleMap.role( Priority.class ).changeColor( color );
       }
-   }
+
 }

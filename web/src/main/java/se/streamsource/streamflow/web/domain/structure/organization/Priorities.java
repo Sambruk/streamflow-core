@@ -16,9 +16,15 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -27,6 +33,7 @@ import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -35,28 +42,71 @@ import static org.qi4j.api.query.QueryExpressions.*;
  * Contains priority definitions.
  */
 @Concerns( {Priorities.RemovePriorityConcern.class} )
-@Mixins( Priorities.Mixin.class )
+@Mixins( {Priorities.Mixin.class} )
 public interface Priorities
 {
-   public Priority createPriority();
-   
-   public boolean removePriority( Priority priority );
+   Priority createPriority();
 
-   public void changePriorityOrder( Priority priority, int direction );
+   void addPriority( Priority priority );
+   
+   boolean removePriority( Priority priority );
+
+   void changePriorityOrder( Priority priority, int direction );
    
    interface Data
    {
+      @Aggregated
       ManyAssociation<Priority> prioritys();
    }
 
+   interface Event
+   {
+      Priority createdPriority( @Optional DomainEvent event, String id );
+      void addedPriority( @Optional DomainEvent event, Priority priority );
+      void removedPriority( @Optional DomainEvent event, Priority priority );
+   }
+
    abstract class Mixin
-      implements Priorities, Data
+      implements Priorities, Event
    {
       @This
       Data data;
+
+      @This
+      Event event;
       
       @Structure
       Module module;
+
+      @Service
+      IdentityGenerator idgen;
+
+      public Priority createPriority()
+      {
+
+         Priority priority = createdPriority( null, idgen.generate( Identity.class ) );
+         addPriority( priority );
+
+         return priority;
+      }
+
+      public void addPriority( Priority priority )
+      {
+         if( !data.prioritys().contains( priority ) )
+            event.addedPriority( null, priority );
+      }
+
+      public boolean removePriority( Priority priority )
+      {
+         if (data.prioritys().contains( priority ))
+         {
+
+            event.removedPriority( null, priority );
+            priority.removeEntity();
+            return true;
+         } else
+            return false;
+      }
 
       public void changePriorityOrder( final Priority priority, final int direction )
       {
@@ -75,6 +125,13 @@ public interface Priorities
             priority.changePriority( ((PrioritySettings.Data)move).priority().get() );
             move.changePriority( new Integer( ((PrioritySettings.Data)move).priority().get().intValue() + (direction * -1) ) );
          }
+      }
+
+      public Priority createdPriority( @Optional DomainEvent event, String id )
+      {
+         EntityBuilder<Priority> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Priority.class, id );
+         builder.instanceFor( PrioritySettings.Data.class ).priority().set( data.prioritys().count() );
+         return builder.newInstance();
       }
    }
 

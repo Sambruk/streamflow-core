@@ -42,6 +42,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresCasePriorit
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -140,11 +141,14 @@ public interface CaseGeneralCommandsContext
          builder.command( "changepriority" );
 
          ValueBuilder<PriorityValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( PriorityValue.class );
-
-         linkBuilder.prototype().text().set( "-" );
-         linkBuilder.prototype().id().set( "-1" );
-         linkBuilder.prototype().href().set( "" );
-         builder.addLink( linkBuilder.newInstance() );
+         if( !((PriorityOnCase.Data)RoleMap.role( TypedCase.Data.class).caseType().get()).mandate().get())
+         {
+            linkBuilder.prototype().text().set( "-" );
+            linkBuilder.prototype().id().set( "-1" );
+            linkBuilder.prototype().href().set( "" );
+            linkBuilder.prototype().priority().set( -1 );
+            builder.addLink( linkBuilder.newInstance() );
+         }
 
          List<Priority> sortedList =  priorities.prioritys().toList();
          Collections.sort( sortedList, new Comparator<Priority>()
@@ -157,7 +161,14 @@ public interface CaseGeneralCommandsContext
 
          for(Priority priority : sortedList )
          {
-            builder.addLink( priority.getDescription(), EntityReference.getEntityReference( priority ).identity() );
+            String id = EntityReference.getEntityReference( priority ).identity();
+            linkBuilder.prototype().priority().set( ((PrioritySettings.Data)priority).priority().get() );
+            linkBuilder.prototype().color().set( ((PrioritySettings.Data)priority).color().get() );
+            linkBuilder.prototype().id().set( id );
+            linkBuilder.prototype().text().set( priority.getDescription() );
+            linkBuilder.prototype().href().set( "changepriority" );
+
+            builder.addLink( linkBuilder.newInstance() );
          }
          return builder.newLinks();
       }

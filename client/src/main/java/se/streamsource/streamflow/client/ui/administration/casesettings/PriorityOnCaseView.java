@@ -28,7 +28,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.FormValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.ActionBinder;
@@ -95,7 +94,7 @@ public class PriorityOnCaseView extends JPanel implements Observer, TransactionL
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
          {
 
-            final CasePriorityDTO itemValue = (CasePriorityDTO) value;
+            final PriorityValue itemValue = (PriorityValue) value;
             String val = itemValue == null ? "" : itemValue.text().get();
 
             JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 2, 0 ) );
@@ -105,9 +104,9 @@ public class PriorityOnCaseView extends JPanel implements Observer, TransactionL
                @Override
                protected void paintComponent(Graphics g) {
                   Color color = getBackground();
-                  if( itemValue != null && itemValue.priority().get() != null )
+                  if( itemValue != null && itemValue.color().get() != null )
                   {
-                     color = new Color( parseInt( itemValue.priority().get().color().get() ) );
+                     color = new Color( parseInt( itemValue.color().get() ) );
                   }
                   final Color FILL_COLOR = ColorUtil.removeAlpha( color );
 

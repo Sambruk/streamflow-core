@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.casepriorities;
+package se.streamsource.streamflow.client.ui.administration.priorities;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -45,7 +45,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 /**
  * Case priority view.
  */
-public class CasePriorityView
+public class PriorityView
    extends JPanel implements Refreshable
 {
    private ValueBinder values;
@@ -56,11 +56,11 @@ public class CasePriorityView
    //private JTextField color;
    private StreamflowJXColorSelectionButton color;
    
-   private CasePriorityModel model;
+   private PriorityModel model;
    
    private Module module;
    
-   public CasePriorityView( @Service ApplicationContext context, @Uses CasePriorityModel model, @Structure Module module )
+   public PriorityView( @Service ApplicationContext context, @Uses PriorityModel model, @Structure Module module )
    {
       this.model = model;
       this.module = module;
@@ -77,7 +77,7 @@ public class CasePriorityView
       values = module.objectBuilderFactory().newObject(ValueBinder.class);
       BindingFormBuilder2 binding = new BindingFormBuilder2(formBuilder, actions, values, context.getResourceMap(getClass()));
 
-      binding.appendWithLabel( AdministrationResources.name_label, name = new JTextField(), "name", "changeDescription");
+      binding.appendWithLabel( AdministrationResources.name_label, name = new JTextField(), "text", "changeDescription");
 
       binding.appendWithLabel( AdministrationResources.name_show_color, color = new StreamflowJXColorSelectionButton(), "color", "changeColor");
       color.setPreferredSize( new Dimension( 190,25 ) );

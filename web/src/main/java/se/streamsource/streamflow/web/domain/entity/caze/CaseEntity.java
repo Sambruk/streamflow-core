@@ -144,7 +144,6 @@ public interface CaseEntity
       SubCase.Data,
       History.Data,
       CaseLoggable.Data,
-      CasePriority.Events,
       CasePriority.Data,
       Origin,
 

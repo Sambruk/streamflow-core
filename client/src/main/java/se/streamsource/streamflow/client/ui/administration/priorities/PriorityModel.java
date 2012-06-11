@@ -14,17 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.casepriorities;
+package se.streamsource.streamflow.client.ui.administration.priorities;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.dci.value.StringValue;
 
 /**
  * Model containing priority info
  */
-public class CasePriorityModel 
+public class PriorityModel
    extends ResourceModel<PriorityValue>
 {
    @Uses
@@ -32,11 +35,23 @@ public class CasePriorityModel
 
    public void changeColor( String color )
    {
-      client.postCommand( "changecolor", color );
+      if( !color.equals( getIndex().color().get() ) )
+      {
+         Form form = new Form();
+         form.add( "color", color );
+
+         client.postCommand( "changecolor", form );
+      }
    }
 
    public void changeDescription( String description )
    {
-      client.postCommand( "changedescription", description );
+      if( !getIndex().text().equals( description ) )
+      {
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
+         builder.prototype().string().set( description );
+
+         client.postCommand( "changedescription", builder.newInstance() );
+      }
    }
 }

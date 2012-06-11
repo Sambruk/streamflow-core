@@ -20,9 +20,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.administration.PriorityContext;
 import se.streamsource.streamflow.web.context.administration.PrioritiesContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 
 /**
@@ -36,9 +34,10 @@ public class PrioritiesResource
    {
       super( PrioritiesContext.class );
    }
+
    public void resource( String segment ) throws ResourceException
    {
       findManyAssociation( RoleMap.role( Priorities.Data.class ).prioritys(), segment );
-      subResourceContexts( PriorityContext.class );
+      subResource( PriorityResource.class );
    }
 }

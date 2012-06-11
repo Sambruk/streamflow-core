@@ -17,7 +17,7 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
@@ -46,7 +46,7 @@ public class OrganizationModel
       relationModelMapping("roles", RolesModel.class);
       relationModelMapping("forms", FormsModel.class);
       relationModelMapping("casetypes", CaseTypesModel.class);
-      relationModelMapping("casepriorities", CasePrioritiesModel.class);
+      relationModelMapping("priorities", PrioritiesModel.class);
       relationModelMapping("accesspoints", AccessPointsModel.class);
       relationModelMapping("emailaccesspoints", EmailAccessPointsModel.class);
       relationModelMapping("proxyusers", ProxyUsersModel.class);

@@ -1,3 +1,19 @@
+/**
+ *
+ * Copyright 2009-2012 Streamsource AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.common.Optional;
@@ -20,17 +36,16 @@ public interface PrioritySettings
       @Optional
       Property<String> color();
 
+      @Optional
       Property<Integer> priority();
-   }
 
-   interface Event
-   {
       void changedColor( @Optional DomainEvent event, String newColor );
       void changedPriority( @Optional DomainEvent event, Integer newPriority );
    }
 
+
    abstract class Mixin
-      implements PrioritySettings, Event
+      implements PrioritySettings, Data
    {
       @This
       Data data;
@@ -40,13 +55,14 @@ public interface PrioritySettings
          if(((data.color().get() != null) && !data.color().get().equals( newColor ))
                || ((data.color().get() == null) && (newColor != null)))
          {
-            changedColor( null, newColor );
+            data.changedColor( null, newColor );
          }
       }
 
       public void changePriority( Integer newPriority )
       {
-         changedPriority( null, newPriority );
+         if( !newPriority.equals( data.priority().get() ))
+            data.changedPriority( null, newPriority );
       }
    }
 }

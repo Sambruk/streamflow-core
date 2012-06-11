@@ -30,12 +30,14 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteModel;
+import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.util.Date;
@@ -159,17 +161,17 @@ public class CaseGeneralModel
 
    }
 
-   public EventComboBoxModel<LinkValue> getCasePriorities()
+   public EventComboBoxModel<PriorityValue> getCasePriorities()
    {
       try
       {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+         BasicEventList<PriorityValue> list = new BasicEventList<PriorityValue>();
 
          LinksValue listValue = client.query( "priorities",
                LinksValue.class );
-         list.addAll( listValue.links().get() );
+         EventListSynch.synchronize( listValue.links().get(), list );
 
-         return new EventComboBoxModel<LinkValue>( list );
+         return new EventComboBoxModel<PriorityValue>( list );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_refresh,

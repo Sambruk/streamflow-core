@@ -37,8 +37,8 @@ import se.streamsource.streamflow.client.ui.account.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesView;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PriorityView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
@@ -382,8 +382,8 @@ public class UIAssembler
             FormEditView.class,
             ActionsView.class,
             LabelRuleView.class,
-            CasePrioritiesView.class,
-            CasePriorityView.class,
+            PrioritiesView.class,
+            PriorityView.class,
             PriorityOnCaseView.class);
 
       addViews(module,

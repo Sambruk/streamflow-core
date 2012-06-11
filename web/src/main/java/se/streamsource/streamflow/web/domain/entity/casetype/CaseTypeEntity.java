@@ -68,8 +68,7 @@ public interface CaseTypeEntity
       SelectedResolutions.Data,
       FormOnClose.Data,
       FormOnClose.Events,
-      PriorityOnCase.Data,
-      PriorityOnCase.Events
+      PriorityOnCase.Data
    
 {
    abstract class RemovableConcern

@@ -29,8 +29,8 @@ import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
 import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesModel;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PriorityModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
@@ -234,8 +234,8 @@ public class ModelAssembler
             FormModel.class,
             ActionsModel.class,
             LabelRuleModel.class,
-            CasePrioritiesModel.class,
-            CasePriorityModel.class,
+            PrioritiesModel.class,
+            PriorityModel.class,
             PriorityOnCaseModel.class);
 
 

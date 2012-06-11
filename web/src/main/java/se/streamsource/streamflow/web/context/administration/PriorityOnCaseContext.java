@@ -78,7 +78,7 @@ public interface PriorityOnCaseContext
          builder.prototype().form().get().put( "visible", priorityOnCaseData.visibility().get().toString() );
          builder.prototype().form().get().put( "mandatory", priorityOnCaseData.mandate().get().toString() );
          builder.prototype().form().get().put( "prioritydefault", priorityOnCaseData.priorityDefault().get() != null
-               ? EntityReference.getEntityReference( priorityOnCaseData.priorityDefault().get() ).identity() : "-" );
+               ? EntityReference.getEntityReference( priorityOnCaseData.priorityDefault().get() ).identity() : "-1" );
          return builder.newInstance();
       }
 
@@ -116,6 +116,7 @@ public interface PriorityOnCaseContext
          linkBuilder.prototype().text().set( "-" );
          linkBuilder.prototype().id().set( "-1" );
          linkBuilder.prototype().href().set( "" );
+         linkBuilder.prototype().priority().set( -1 );
          builder.addLink( linkBuilder.newInstance() );
 
          List<Priority> sortedList =  priorities.prioritys().toList();
@@ -129,7 +130,14 @@ public interface PriorityOnCaseContext
 
          for(Priority priority : sortedList )
          {
-            builder.addLink( priority.getDescription(), EntityReference.getEntityReference( priority ).identity() );
+            String id = EntityReference.getEntityReference( priority ).identity();
+            linkBuilder.prototype().priority().set( ((PrioritySettings.Data)priority).priority().get() );
+            linkBuilder.prototype().color().set( ((PrioritySettings.Data)priority).color().get() );
+            linkBuilder.prototype().id().set( id );
+            linkBuilder.prototype().text().set( priority.getDescription() );
+            linkBuilder.prototype().href().set( "prioritydefault" );
+
+            builder.addLink( linkBuilder.newInstance() );
          }
          return builder.newLinks();
        }

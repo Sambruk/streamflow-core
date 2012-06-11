@@ -38,7 +38,6 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -235,7 +234,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
          {
 
-            final CasePriorityDTO itemValue = (CasePriorityDTO) value;
+            final PriorityValue itemValue = (PriorityValue) value;
             String val = itemValue == null ? "" : itemValue.text().get();
 
             JPanel panel = new JPanel( );
@@ -247,10 +246,10 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                @Override
                protected void paintComponent(Graphics g) {
                   Color color = getBackground();
-                  if( itemValue != null && itemValue.priority().get() != null )
+                  if( itemValue != null )
                   {
-                     if( !Strings.empty( itemValue.priority().get().color().get() ) )
-                        color = new Color( parseInt( itemValue.priority().get().color().get() ) );
+                     if( !Strings.empty( itemValue.color().get() ) )
+                        color = new Color( parseInt( itemValue.color().get() ) );
                      else
                         color = Color.BLACK;
                   }
@@ -500,7 +499,8 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    {
       final PriorityValue selected = (PriorityValue)casePriority.getSelectedItem();
       String oldPriority = model.getGeneral().priority().get() != null ? model.getGeneral().priority().get().id().get() : "-1";
-      if( !selected.id().get().equals( oldPriority ) )
+      String newPriority = selected != null ? selected.id().get() : "-1";
+      if( !newPriority.equals( oldPriority ) )
       {
          return new CommandTask()
          {
