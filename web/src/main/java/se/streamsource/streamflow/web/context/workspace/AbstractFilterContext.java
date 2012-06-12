@@ -17,28 +17,34 @@
 package se.streamsource.streamflow.web.context.workspace;
 
 import org.qi4j.api.entity.Entity;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
+import se.streamsource.streamflow.web.domain.structure.organization.Priority;
+import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 
 
 /**
@@ -51,7 +57,9 @@ public interface AbstractFilterContext extends Context
 
    public LinksValue possibleLabels();
 
-   LinksValue casepriorities();
+   LinksValue priorities();
+
+   OrderBy.Order revertSortOrder( OrderBy.Order order );
 
    abstract class Mixin
            implements AbstractFilterContext
@@ -108,28 +116,43 @@ public interface AbstractFilterContext extends Context
          return builder.newLinks();
       }
 
-      public LinksValue casepriorities()
+      public LinksValue priorities()
       {
-         Organization org = ( (OwningOrganization) ((OwningOrganizationalUnit.Data) RoleMap.role( Ownable.Data.class )).organizationalUnit().get() ).organization().get();
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         Organization org = orgs.organization().get();
          RoleMap.current().set( org );
 
+         Priorities.Data priorities = RoleMap.role( Priorities.Data.class );
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-         ValueBuilder<CasePriorityDTO> linkBuilder = module.valueBuilderFactory().newValueBuilder( CasePriorityDTO.class );
+         ValueBuilder<PriorityValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( PriorityValue.class );
 
-         int count = 0;
-         for( CasePriorityValue priority : RoleMap.role( CasePriorityDefinitions.Data.class ).prioritys().get() )
+         List<Priority> sortedList =  priorities.prioritys().toList();
+         Collections.sort( sortedList, new Comparator<Priority>()
          {
-            linkBuilder.prototype().priority().set( priority );
-            linkBuilder.prototype().text().set( priority.name().get() );
-            linkBuilder.prototype().id().set( ""+count );
-            linkBuilder.prototype().rel().set( "priority" );
-            linkBuilder.prototype().href().set( "" );
+            public int compare( Priority o1, Priority o2 )
+            {
+               return ((PrioritySettings.Data) o1).priority().get().compareTo( ((PrioritySettings.Data) o2).priority().get() );
+            }
+         } );
 
+         for(Priority priority : sortedList )
+         {
+            linkBuilder.prototype().id().set( EntityReference.getEntityReference( priority ).identity() );
+            linkBuilder.prototype().color().set( ((PrioritySettings.Data)priority).color().get() );
+            linkBuilder.prototype().priority().set( ((PrioritySettings.Data)priority).priority().get() );
+            linkBuilder.prototype().href().set( "na" );
+            linkBuilder.prototype().text().set( priority.getDescription() );
             builder.addLink( linkBuilder.newInstance() );
-            count++;
          }
-
          return builder.newLinks();
+      }
+
+      public OrderBy.Order revertSortOrder( OrderBy.Order order )
+      {
+         if( OrderBy.Order.ASCENDING.equals( order ))
+            return OrderBy.Order.DESCENDING;
+         else
+            return OrderBy.Order.ASCENDING;
       }
    }
 }

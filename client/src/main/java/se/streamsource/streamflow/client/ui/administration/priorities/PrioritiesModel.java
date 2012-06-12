@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.casepriorities;
+package se.streamsource.streamflow.client.ui.administration.priorities;
 
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.util.DefinitionListModel;
@@ -23,25 +23,20 @@ import org.restlet.data.Form;
 /**
  * Model for fetching case priorities.
  */
-public class CasePrioritiesModel
+public class PrioritiesModel
       extends DefinitionListModel
 {
-   public CasePrioritiesModel( )
+   public PrioritiesModel()
    {
       super( "create" );
 
-      relationModelMapping("priority", CasePriorityModel.class);
-   }
-
-   public void remove( LinkValue link)
-   {
-      client.getClient( link ).delete();
+      relationModelMapping("resource", PriorityModel.class);
    }
 
    public void up( LinkValue selected )
    {
       Form form = new Form();
-      form.set( "index", selected.id().get() );
+      form.set( "id", selected.id().get() );
       
       client.postCommand( "up", form );
    }
@@ -49,7 +44,7 @@ public class CasePrioritiesModel
    public void down( LinkValue selected )
    {
       Form form = new Form();
-      form.set( "index", selected.id().get() );
+      form.set( "id", selected.id().get() );
 
       client.postCommand( "down", form );
    }

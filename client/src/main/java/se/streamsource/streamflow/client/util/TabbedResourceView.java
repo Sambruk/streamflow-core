@@ -24,7 +24,7 @@ import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
@@ -81,7 +81,7 @@ public class TabbedResourceView
 
       addTab( "casetypes", AdministrationResources.casetypes_tab, CaseTypesView.class );
       addTab( "selectedcasetypes", AdministrationResources.selected_casetypes_tab, SelectedCaseTypesView.class );
-      addTab( "casepriorities", AdministrationResources.casepriorities_tab, CasePrioritiesView.class );
+      addTab( "priorities", AdministrationResources.casepriorities_tab, PrioritiesView.class );
 
       addTab( "labels", AdministrationResources.labels_tab, LabelsView.class );
       addTab( "selectedlabels", AdministrationResources.selected_labels_tab, SelectedLabelsView.class );

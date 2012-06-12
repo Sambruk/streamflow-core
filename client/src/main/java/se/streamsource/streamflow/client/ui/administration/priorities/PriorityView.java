@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.casepriorities;
+package se.streamsource.streamflow.client.ui.administration.priorities;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -25,8 +25,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.BindingFormBuilder2;
@@ -40,7 +38,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import java.awt.Dimension;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
@@ -48,7 +45,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 /**
  * Case priority view.
  */
-public class CasePriorityView
+public class PriorityView
    extends JPanel implements Refreshable
 {
    private ValueBinder values;
@@ -59,11 +56,11 @@ public class CasePriorityView
    //private JTextField color;
    private StreamflowJXColorSelectionButton color;
    
-   private CasePriorityModel model;
+   private PriorityModel model;
    
    private Module module;
    
-   public CasePriorityView( @Service ApplicationContext context, @Uses CasePriorityModel model, @Structure Module module )
+   public PriorityView( @Service ApplicationContext context, @Uses PriorityModel model, @Structure Module module )
    {
       this.model = model;
       this.module = module;
@@ -80,9 +77,9 @@ public class CasePriorityView
       values = module.objectBuilderFactory().newObject(ValueBinder.class);
       BindingFormBuilder2 binding = new BindingFormBuilder2(formBuilder, actions, values, context.getResourceMap(getClass()));
 
-      binding.appendWithLabel( AdministrationResources.name_label, name = new JTextField(), "name", "change");
+      binding.appendWithLabel( AdministrationResources.name_label, name = new JTextField(), "text", "changeDescription");
 
-      binding.appendWithLabel( AdministrationResources.name_show_color, color = new StreamflowJXColorSelectionButton(), "color", "change");
+      binding.appendWithLabel( AdministrationResources.name_show_color, color = new StreamflowJXColorSelectionButton(), "color", "changeColor");
       color.setPreferredSize( new Dimension( 190,25 ) );
       
 
@@ -90,17 +87,27 @@ public class CasePriorityView
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task change()
+   public Task changeColor()
    {
       return new CommandTask()
       {
          @Override
          protected void command() throws Exception
          {
-            ValueBuilder<CasePriorityValue> builder = module.valueBuilderFactory().newValueBuilder( CasePriorityValue.class );
-            builder.prototype().name().set( name.getText() );
-            builder.prototype().color().set( "" + color.getBackground().getRGB() );
-            model.change( builder.newInstance() );
+            model.changeColor( "" + color.getBackground().getRGB() );
+         }
+      };
+   }
+
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task changeDescription()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeDescription( name.getText() );
          }
       };
    }
@@ -113,7 +120,7 @@ public class CasePriorityView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withNames( "changedPriority" ), transactions ))
+      if (matches( withNames( "changedColor", "changedDescription" ), transactions ))
       {
          refresh();
       }

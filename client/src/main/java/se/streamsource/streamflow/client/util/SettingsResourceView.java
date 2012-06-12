@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.ui.administration.FormOnRemoveView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 
@@ -68,7 +68,7 @@ public class SettingsResourceView
 
       addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
 
-      addSettings( "caseprioritysetting", AdministrationResources.casepriority_separator, CasePrioritySettingView.class );
+      addSettings( "priorityoncase", AdministrationResources.casepriority_separator, PriorityOnCaseView.class );
 
       addSettings( "formonclose", AdministrationResources.formonclose_separator, FormOnCloseView.class );
 

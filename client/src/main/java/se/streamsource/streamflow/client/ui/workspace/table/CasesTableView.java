@@ -42,7 +42,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -140,22 +140,14 @@ public class CasesTableView
                return o1.assignedTo().get().compareTo( o2.assignedTo().get() );
             case project:
                return o1.owner().get().compareTo( o2.owner().get() );
+            case priority:
+               Integer prio1 = o1.priority().get() != null ? o1.priority().get().priority().get() : new Integer( 9999 );
+               Integer prio2 = o2.priority().get() != null ? o2.priority().get().priority().get() : new Integer( 9999 );
+               return prio1.compareTo( prio2 );
 
             default:
                return 0;
          }
-      }
-   };
-
-   private Comparator<CaseTableValue> priorityComparator = new Comparator<CaseTableValue>()
-   {
-      public int compare( CaseTableValue o1, CaseTableValue o2 )
-      {
-         Map<String,Integer> priorityMap = model.getPriorityDefinitionMap();
-
-         Integer o1Priority = o1.priority().get() == null ? new Integer( priorityMap.size() ) : priorityMap.get( o1.priority().get().name().get() );
-         Integer o2Priority = o2.priority().get() == null ? new Integer( priorityMap.size() ) : priorityMap.get( o2.priority().get().name().get() );
-         return o1Priority.compareTo( o2Priority );
       }
    };
 
@@ -232,11 +224,6 @@ public class CasesTableView
             if (model.getGroupBy() == GroupBy.none)
             {
                caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
-            } else if( model.getGroupBy() == GroupBy.priority )
-            {
-               SeparatorList<CaseTableValue> groupingList = new SeparatorList<CaseTableValue>( model.getEventList(),
-                     priorityComparator , 1, 10000 );
-               caseTable.setModel( new EventJXTableModel<CaseTableValue>( groupingList, tableFormat ) );
             }
             else
             {
@@ -378,13 +365,13 @@ public class CasesTableView
          }
       } );
 
-      caseTable.setDefaultRenderer( CasePriorityValue.class, new DefaultTableCellRenderer()
+      caseTable.setDefaultRenderer( PriorityValue.class, new DefaultTableCellRenderer()
       {
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
-            final CasePriorityValue priority = (CasePriorityValue) value;
-            String val = priority == null ? "" : priority.name().get();
+            final PriorityValue priority = (PriorityValue) value;
+            String val = priority == null ? "" : priority.text().get();
 
             JPanel panel = new JPanel( );
             FormLayout layout = new FormLayout( "10dlu, 50dlu:grow", "pref" );
@@ -465,7 +452,7 @@ public class CasesTableView
                case priority:
                   emptyDescription =  ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get() == null
                         || Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().color().get() );
-                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().name().get() : text( WorkspaceResources.no_priority);
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).priority().get().text().get() : text( WorkspaceResources.no_priority);
                   break;
             }
 

@@ -14,22 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.administration.priority;
+package se.streamsource.streamflow.web.rest.resource.organizations;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.streamflow.web.context.administration.PriorityContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
 /**
- * This class contains all information needed for case priority.
- * Name, priority and optionally color.
+ *
  */
-public interface CasePriorityValue
-   extends ValueComposite
+public class PriorityResource
+   extends CommandQueryResource
 {
-
-   Property<String> name();
-
-   @Optional
-   Property<String> color();
+   public PriorityResource()
+   {
+      super( PriorityContext.class, DescribableContext.class);
+   }
 }

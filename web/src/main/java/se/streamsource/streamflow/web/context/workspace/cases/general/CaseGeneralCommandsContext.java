@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.context.workspace.cases.general;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
@@ -29,8 +30,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
@@ -41,15 +41,20 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresCasePriorityVisible;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
-import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
+import se.streamsource.streamflow.web.domain.structure.organization.Priority;
+import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
@@ -75,10 +80,10 @@ public interface CaseGeneralCommandsContext
    
    @RequiresStatus({DRAFT, OPEN})
    @RequiresCasePriorityVisible
-   void changepriority( @Optional CasePriorityValue priority );
+   void changepriority( @Optional @Name("id") String id );
 
    @RequiresCasePriorityVisible
-   LinksValue casepriorities();
+   LinksValue priorities();
 
    abstract class Mixin
          implements CaseGeneralCommandsContext
@@ -125,46 +130,55 @@ public interface CaseGeneralCommandsContext
             aCase.changeCaseType( null );
       }
       
-      public LinksValue casepriorities()
+      public LinksValue priorities()
       {
          Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
          Organization org = orgs.organization().get();
          RoleMap.current().set( org );
 
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "changepriority" );
-         ValueBuilder<CasePriorityDTO> linkBuilder = module.valueBuilderFactory().newValueBuilder( CasePriorityDTO.class );
-         CasePrioritySetting.Data casePriority = (CasePrioritySetting.Data)((TypedCase.Data)RoleMap.role( TypedCase.class )).caseType().get();
-         // if not mandatory add an empty option
-         if( !casePriority.mandatory().get() )
+         Priorities.Data priorities = RoleMap.role( Priorities.Data.class );
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         builder.command( "changepriority" );
+
+         ValueBuilder<PriorityValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( PriorityValue.class );
+         if( !((PriorityOnCase.Data)RoleMap.role( TypedCase.Data.class).caseType().get()).mandate().get())
          {
             linkBuilder.prototype().text().set( "-" );
             linkBuilder.prototype().id().set( "-1" );
             linkBuilder.prototype().href().set( "" );
+            linkBuilder.prototype().priority().set( -1 );
             builder.addLink( linkBuilder.newInstance() );
          }
 
-         int count = 0;
-         for( CasePriorityValue priority : RoleMap.role( CasePriorityDefinitions.Data.class ).prioritys().get() )
+         List<Priority> sortedList =  priorities.prioritys().toList();
+         Collections.sort( sortedList, new Comparator<Priority>()
          {
-            linkBuilder.prototype().priority().set( priority );
-            linkBuilder.prototype().text().set( priority.name().get() );
-            linkBuilder.prototype().id().set( ""+count );
-            linkBuilder.prototype().rel().set( "priority" );
-            linkBuilder.prototype().href().set( "" );
+            public int compare( Priority o1, Priority o2 )
+            {
+               return ((PrioritySettings.Data) o1).priority().get().compareTo( ((PrioritySettings.Data) o2).priority().get() );
+            }
+         } );
+
+         for(Priority priority : sortedList )
+         {
+            String id = EntityReference.getEntityReference( priority ).identity();
+            linkBuilder.prototype().priority().set( ((PrioritySettings.Data)priority).priority().get() );
+            linkBuilder.prototype().color().set( ((PrioritySettings.Data)priority).color().get() );
+            linkBuilder.prototype().id().set( id );
+            linkBuilder.prototype().text().set( priority.getDescription() );
+            linkBuilder.prototype().href().set( "changepriority" );
 
             builder.addLink( linkBuilder.newInstance() );
-            count++;
          }
-         
          return builder.newLinks();
       }
       
-      public void changepriority( CasePriorityValue priority )
+      public void changepriority( String id )
       {
-         if(Strings.empty( priority.name().get() ) )
+         if(Strings.empty( id ) )
             casePriority.changePriority( null );
          else
-            casePriority.changePriority( priority );
+            casePriority.changePriority( module.unitOfWorkFactory().currentUnitOfWork().get( Priority.class, id ) );
       }
    }
 }

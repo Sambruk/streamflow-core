@@ -21,12 +21,14 @@ import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.link.LinkValue;
 
 /**
+ * This class contains all information needed for case priority.
  *
- * Data transfer object extending LinkValue for case priority data.
  */
-public interface CasePriorityDTO
+public interface PriorityValue
    extends LinkValue
 {
    @Optional
-   Property<CasePriorityValue> priority();
+   Property<String> color();
+
+   Property<Integer> priority();
 }
