@@ -28,7 +28,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.FormOnRemoveModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
-import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesModel;
 import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityModel;
@@ -228,7 +227,6 @@ public class ModelAssembler
             SelectedTemplatesModel.class,
             SelectedFormsModel.class,
             UsersAdministrationModel.class,
-            ServerModel.class,
             FiltersModel.class,
             FilterModel.class,
             RulesModel.class,

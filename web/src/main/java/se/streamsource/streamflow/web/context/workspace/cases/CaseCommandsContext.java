@@ -201,7 +201,7 @@ public interface CaseCommandsContext
          CaseType caseType = RoleMap.role( TypedCase.Data.class ).caseType().get();
          for (Project project : projects)
          {
-            if (!ownable.isOwnedBy( (Owner) project ))
+            if (!ownable.isOwnedBy( project ))
             {
                if (caseType == null || project.hasSelectedCaseType( caseType ))
                   builder.addDescribable( project, ((OwningOrganizationalUnit.Data) project).organizationalUnit().get() );

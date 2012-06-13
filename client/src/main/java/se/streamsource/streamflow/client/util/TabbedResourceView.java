@@ -71,7 +71,7 @@ public class TabbedResourceView
 
    static
    {
-      addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
+      //addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
 
       addTab( "members", AdministrationResources.members_tab, MembersView.class );
       addTab( "projects", AdministrationResources.projects_tab, ProjectsView.class );
@@ -89,7 +89,7 @@ public class TabbedResourceView
       addTab( "resolutions", AdministrationResources.resolutions_tab, ResolutionsView.class );
       addTab( "selectedresolutions", AdministrationResources.selected_resolutions_tab, SelectedResolutionsView.class );
 
-      addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
+      addTab( "organizationusers", AdministrationResources.users_tab, UsersAdministrationView.class );
 
       addTab( "filters", AdministrationResources.filters_tab, FiltersView.class );
 

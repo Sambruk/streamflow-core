@@ -107,7 +107,8 @@ public class AdministrationTreeView
                      return i18n.icon( Icons.valueOf( link.rel().get() ) );
                   } else
                   {
-                     return i18n.icon(Icons.server);
+                     return null;
+                     //return i18n.icon(Icons.server);
                   }
                }
             },

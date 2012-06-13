@@ -35,12 +35,6 @@ public class AdministrationResource
    }
 
    @SubResource
-   public void server()
-   {
-      subResource( ServerResource.class );
-   }
-
-   @SubResource
    public void organizations()
    {
       setRole( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );

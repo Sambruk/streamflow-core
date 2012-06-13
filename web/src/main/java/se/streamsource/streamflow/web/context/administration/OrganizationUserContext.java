@@ -16,11 +16,16 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
-import se.streamsource.dci.api.DeleteContext;
+import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
-
-import java.io.IOException;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import static se.streamsource.dci.api.RoleMap.role;
 
@@ -28,13 +33,41 @@ import static se.streamsource.dci.api.RoleMap.role;
  * JAVADOC
  */
 public class OrganizationUserContext
-      implements DeleteContext
+      implements IndexContext<LinksValue>
 {
-   public void delete() throws IOException
-   {
-      Organization org = role( Organization.class );
-      OrganizationParticipations uop = role( OrganizationParticipations.class );
+   @Structure
+   Module module;
 
-      uop.leave( org );
+   public LinksValue index()
+   {
+      return new LinksBuilder( module.valueBuilderFactory() ).
+            addLink( "Drafts", "drafts", "drafts", "workspace/user/drafts/cases", null ).
+            addLink( "Inbox", "inbox", "inbox", "workspace/user/inbox/cases", null ).
+            addLink( "Assignments", "assignments", "assignments", "workspace/user/assignments/cases", null ).
+            newLinks();
+   }
+
+   public void resetpassword( @Name("password") String password )
+   {
+      UserAuthentication user = RoleMap.role( UserAuthentication.class );
+
+      user.resetPassword( password );
+   }
+
+   public void changedisabled()
+   {
+      UserAuthentication user = RoleMap.role( UserAuthentication.class );
+      UserAuthentication.Data userData = RoleMap.role( UserAuthentication.Data.class );
+
+      user.changeEnabled( userData.disabled().get() );
+
+      Organization org = role( Organization.class );
+      OrganizationParticipations role = role( OrganizationParticipations.class );
+      if ( userData.disabled().get() )
+      {
+         role.leave( org );
+      } else {
+         role.join( org );
+      }
    }
 }

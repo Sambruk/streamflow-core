@@ -50,11 +50,6 @@ public class AdministrationContext
 
       // Add server admin link as root
       ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
-      linkBuilder.prototype().text().set( "Server" );
-      linkBuilder.prototype().id().set( "server" );
-      linkBuilder.prototype().rel().set( "server" );
-      linkBuilder.prototype().href().set("server/");
-      linksBuilder.addLink(linkBuilder.newInstance());
 
       // Add organizations
       Participant participant = RoleMap.role( Participant.class );
