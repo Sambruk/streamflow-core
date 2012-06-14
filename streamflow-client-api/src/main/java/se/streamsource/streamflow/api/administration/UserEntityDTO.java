@@ -26,4 +26,5 @@ public interface UserEntityDTO
       extends LinkValue
 {
    Property<Boolean> disabled();
+   Property<Boolean> joined();
 }

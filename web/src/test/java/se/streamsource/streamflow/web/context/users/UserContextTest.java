@@ -67,7 +67,7 @@ public class UserContextTest
       OrganizationEntity organization = (OrganizationEntity) data.organization().get();
       playRole( Organization.class, organization.identity().get() );
 
-      context(OrganizationUserContext.class).changedisabled();
+      context(OrganizationUserContext.class).setdisabled();
       uow.complete();
       eventsOccurred( "changedEnabled" );
    }

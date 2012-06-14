@@ -101,7 +101,8 @@ import se.streamsource.streamflow.client.ui.administration.templates.SelectedTem
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.CreateUserDialog;
 import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
+import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailView;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListView;
 import se.streamsource.streamflow.client.ui.menu.AccountMenu;
 import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 import se.streamsource.streamflow.client.ui.menu.EditMenu;
@@ -367,7 +368,8 @@ public class UIAssembler
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
             FormOnRemoveView.class,
-            UsersAdministrationView.class,
+            UserAdministrationDetailView.class,
+            UsersAdministrationListView.class,
             ProxyUsersView.class,
             AccessPointsView.class,
             AccessPointView.class,

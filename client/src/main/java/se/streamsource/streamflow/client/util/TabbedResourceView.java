@@ -36,7 +36,6 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Form
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
-import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
@@ -46,7 +45,7 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsV
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListView;
 
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
@@ -89,7 +88,7 @@ public class TabbedResourceView
       addTab( "resolutions", AdministrationResources.resolutions_tab, ResolutionsView.class );
       addTab( "selectedresolutions", AdministrationResources.selected_resolutions_tab, SelectedResolutionsView.class );
 
-      addTab( "organizationusers", AdministrationResources.users_tab, UsersAdministrationView.class );
+      addTab( "organizationusers", AdministrationResources.users_tab, UsersAdministrationListView.class );
 
       addTab( "filters", AdministrationResources.filters_tab, FiltersView.class );
 

@@ -29,7 +29,7 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsM
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListModel;
 
 /**
  * Represents an organization in the administration model.
@@ -42,7 +42,7 @@ public class OrganizationModel
       relationModelMapping("administrators", AdministratorsModel.class);
       relationModelMapping("labels", LabelsModel.class);
       relationModelMapping("selectedlabels", SelectedLabelsModel.class);
-      relationModelMapping("organizationusers", UsersAdministrationModel.class);
+      relationModelMapping("organizationusers", UsersAdministrationListModel.class);
       relationModelMapping("roles", RolesModel.class);
       relationModelMapping("forms", FormsModel.class);
       relationModelMapping("casetypes", CaseTypesModel.class);

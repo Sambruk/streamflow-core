@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -58,6 +59,11 @@ public abstract class ListDetailView
       setOneTouchExpandable( true );
    }
 
+   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory, ListCellRenderer renderer )
+   {
+      initMaster( listModel, createAction, selectionActions, false, factory, renderer );
+   }
+
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory)
    {
       initMaster( listModel, createAction, selectionActions, false, factory);  
@@ -65,9 +71,14 @@ public abstract class ListDetailView
 
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, boolean actionsWithoutOption, final DetailFactory factory)
    {
+      initMaster( listModel, createAction, selectionActions, actionsWithoutOption, factory, new LinkListCellRenderer() );
+   }
+
+   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, boolean actionsWithoutOption, final DetailFactory factory, ListCellRenderer renderer)
+   {
       list = new JList(listModel);
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-      list.setCellRenderer( new LinkListCellRenderer() );
+      list.setCellRenderer( renderer );
 
       JScrollPane scrollPane = new JScrollPane( list );
 

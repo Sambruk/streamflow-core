@@ -50,24 +50,41 @@ public class OrganizationUserContext
    public void resetpassword( @Name("password") String password )
    {
       UserAuthentication user = RoleMap.role( UserAuthentication.class );
-
       user.resetPassword( password );
    }
 
-   public void changedisabled()
+   @UserDisabled( false )
+   public void setdisabled()
    {
       UserAuthentication user = RoleMap.role( UserAuthentication.class );
       UserAuthentication.Data userData = RoleMap.role( UserAuthentication.Data.class );
 
       user.changeEnabled( userData.disabled().get() );
 
+   }
+
+   @UserDisabled( true )
+   public void setenabled()
+   {
+      UserAuthentication user = RoleMap.role( UserAuthentication.class );
+      UserAuthentication.Data userData = RoleMap.role( UserAuthentication.Data.class );
+
+      user.changeEnabled( userData.disabled().get() );
+   }
+
+   @HasJoined( true )
+   public void leave()
+   {
       Organization org = role( Organization.class );
       OrganizationParticipations role = role( OrganizationParticipations.class );
-      if ( userData.disabled().get() )
-      {
-         role.leave( org );
-      } else {
-         role.join( org );
-      }
+      role.leave( org );
+   }
+
+   @HasJoined( false )
+   public void join()
+   {
+      Organization org = role( Organization.class );
+      OrganizationParticipations role = role( OrganizationParticipations.class );
+      role.join( org );
    }
 }

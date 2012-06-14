@@ -76,7 +76,8 @@ import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPo
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailModel;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
@@ -226,7 +227,8 @@ public class ModelAssembler
             SelectedResolutionsModel.class,
             SelectedTemplatesModel.class,
             SelectedFormsModel.class,
-            UsersAdministrationModel.class,
+            UsersAdministrationListModel.class,
+            UserAdministrationDetailModel.class,
             FiltersModel.class,
             FilterModel.class,
             RulesModel.class,
