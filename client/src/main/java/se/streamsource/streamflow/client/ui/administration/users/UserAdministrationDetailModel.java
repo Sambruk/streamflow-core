@@ -17,12 +17,19 @@
 package se.streamsource.streamflow.client.ui.administration.users;
 
 import org.restlet.data.Form;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.*;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 public class UserAdministrationDetailModel
       extends LinkValueListModel
 {
 
+
+   private ContactDTO contact;
 
    public void setdisabled()
    {
@@ -50,4 +57,76 @@ public class UserAdministrationDetailModel
       form.set("password", password);
       client.putCommand( "resetpassword", form );
    }
+
+
+   public void changeMessageDeliveryType( String newDeliveryType )
+         throws ResourceException
+   {
+      Form form = new Form();
+      form.set("messagedeliverytype", newDeliveryType);
+      client.putCommand( "changemessagedeliverytype", form.getWebRepresentation() );
+   }
+
+   public String getMessageDeliveryType()
+   {
+      return client.query( "messagedeliverytype", StringValue.class )
+            .string().get();
+   }
+
+   public void refresh()
+   {
+      contact = client.query("contact", ContactDTO.class ).<ContactDTO>buildWith().prototype();
+      super.refresh();
+      setChanged();
+      notifyObservers();
+   }
+
+   public ContactDTO getContact()
+   {
+      return contact;
+   }
+
+   public ContactPhoneDTO getPhoneNumber()
+   {
+      if (contact.phoneNumbers().get().isEmpty())
+      {
+         ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class)
+               .<ContactPhoneDTO>buildWith().prototype();
+         contact.phoneNumbers().get().add( phone );
+      }
+      return contact.phoneNumbers().get().get( 0 );
+   }
+
+   public ContactEmailDTO getEmailAddress()
+   {
+      if (contact.emailAddresses().get().isEmpty())
+      {
+         ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class)
+               .<ContactEmailDTO>buildWith().prototype();
+         contact.emailAddresses().get().add( email );
+      }
+      return contact.emailAddresses().get().get( 0 );
+   }
+
+   public void changeName( String newName )
+   {
+      Form form = new Form();
+      form.set("name", newName);
+      client.putCommand( "update", form.getWebRepresentation() );
+   }
+
+   public void changePhoneNumber( String newPhoneNumber )
+   {
+      Form form = new Form();
+      form.set("phone", newPhoneNumber);
+      client.putCommand( "update", form.getWebRepresentation() );
+   }
+
+   public void changeEmailAddress( String newEmailAddress )
+   {
+      Form form = new Form();
+      form.set("email", newEmailAddress);
+      client.putCommand( "update", form.getWebRepresentation() );
+   }
+
 }
