@@ -60,7 +60,7 @@ public interface Organization
       CasePdfTemplate,
       DatatypeDefinitions,
       FieldGroups,
-      CasePriorityDefinitions,
+      Priorities,
       CaseAccessDefaults
 {
 }

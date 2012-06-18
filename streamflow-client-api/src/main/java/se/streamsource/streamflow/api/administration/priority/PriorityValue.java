@@ -18,18 +18,17 @@ package se.streamsource.streamflow.api.administration.priority;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * This class contains all information needed for case priority.
- * Name, priority and optionally color.
+ *
  */
-public interface CasePriorityValue
-   extends ValueComposite
+public interface PriorityValue
+   extends LinkValue
 {
-
-   Property<String> name();
-
    @Optional
    Property<String> color();
+
+   Property<Integer> priority();
 }

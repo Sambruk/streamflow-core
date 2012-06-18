@@ -33,6 +33,7 @@ import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -54,6 +55,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.PriorityEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
@@ -116,9 +118,10 @@ public class CaseStatisticsServiceTest
               CaseTypeEntity.class,
               ConversationEntity.class,
               MessageEntity.class,
-              CaseLogEntity.class);
+              CaseLogEntity.class,
+              PriorityEntity.class );
       
-      module.values(ContactDTO.class, ParticipantRolesValue.class, CaseLogEntryDTO.class, NoteValue.class, CaseLogEntryValue.class );
+      module.values(ContactDTO.class, ParticipantRolesValue.class, CaseLogEntryDTO.class, NoteValue.class, CaseLogEntryValue.class, PriorityValue.class );
 
       module.objects(TimeService.class, CaseStatisticsServiceTest.class);
       module.transients(GroupsContext.class);

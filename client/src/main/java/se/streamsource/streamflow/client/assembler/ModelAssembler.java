@@ -28,14 +28,13 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.FormOnRemoveModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
-import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesModel;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PriorityModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
@@ -77,7 +76,8 @@ import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPo
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailModel;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
@@ -227,8 +227,8 @@ public class ModelAssembler
             SelectedResolutionsModel.class,
             SelectedTemplatesModel.class,
             SelectedFormsModel.class,
-            UsersAdministrationModel.class,
-            ServerModel.class,
+            UsersAdministrationListModel.class,
+            UserAdministrationDetailModel.class,
             FiltersModel.class,
             FilterModel.class,
             RulesModel.class,
@@ -236,9 +236,9 @@ public class ModelAssembler
             FormModel.class,
             ActionsModel.class,
             LabelRuleModel.class,
-            CasePrioritiesModel.class,
-            CasePriorityModel.class,
-            CasePrioritySettingModel.class);
+            PrioritiesModel.class,
+            PriorityModel.class,
+            PriorityOnCaseModel.class);
 
 
       addModels(module, LinksListModel.class,

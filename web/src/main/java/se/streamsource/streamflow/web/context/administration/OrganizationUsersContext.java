@@ -17,23 +17,27 @@
 package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
+import se.streamsource.streamflow.api.administration.NewUserDTO;
+import se.streamsource.streamflow.api.administration.UserEntityDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-import static se.streamsource.dci.api.RoleMap.role;
+import java.util.List;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -46,30 +50,41 @@ public class OrganizationUsersContext
 
    public LinksValue index()
    {
-      OrganizationParticipationsQueries participants = role( OrganizationParticipationsQueries.class );
+      UsersQueries users = RoleMap.role( UsersQueries.class );
 
-      QueryBuilder<User> builder = participants.users();
-      Query<User> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
+      ValueBuilder<LinksValue> listBuilder = module.valueBuilderFactory().newValueBuilder(LinksValue.class);
+      List<LinkValue> userlist = listBuilder.prototype().links().get();
 
-      return new LinksBuilder( module.valueBuilderFactory() ).rel( "user" ).addDescribables( query ).newLinks();
+      ValueBuilder<UserEntityDTO> builder = module.valueBuilderFactory().newValueBuilder(UserEntityDTO.class);
+
+
+      Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      for (UserEntity user : users.users())
+      {
+         builder.prototype().href().set( user.toString() + "/" );
+         builder.prototype().id().set( user.toString() );
+         builder.prototype().text().set( user.userName().get() );
+         builder.prototype().disabled().set( user.disabled().get() );
+         builder.prototype().joined().set( user.organizations().contains( orgs.organization().get() ) );
+         builder.prototype().rel().set( "user" );
+
+         userlist.add( builder.newInstance() );
+      }
+
+      return listBuilder.newInstance();
    }
 
-   public LinksValue possibleusers()
+   public void importusers()
    {
-      OrganizationParticipationsQueries participants = role( OrganizationParticipationsQueries.class );
-
-      Query<User> query = participants.possibleUsers();
-
-      return new LinksBuilder( module.valueBuilderFactory() ).command( "join" ).addDescribables( query ).newLinks();
+      // Marker method for now. Refactor OrganizationUsersResource.importusers to call this instead
    }
 
-   public void join( EntityValue userDTO )
+   public void createuser( NewUserDTO DTO)
    {
-      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+      Users users = RoleMap.role( Users.class );
+      User user = users.createUser( DTO.username().get(), DTO.password().get() );
 
       Organization org = role( Organization.class );
-
-      OrganizationParticipations user = uow.get( OrganizationParticipations.class, userDTO.entity().get() );
       user.join( org );
    }
 }

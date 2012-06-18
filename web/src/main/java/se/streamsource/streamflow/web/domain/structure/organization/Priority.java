@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.administration.priority;
+package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.property.Property;
-import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 
 /**
  *
- * Data transfer object extending LinkValue for case priority data.
  */
-public interface CasePriorityDTO
-   extends LinkValue
+
+public interface Priority
+   extends Describable,
+      PrioritySettings,
+      Removable
 {
-   @Optional
-   Property<CasePriorityValue> priority();
 }

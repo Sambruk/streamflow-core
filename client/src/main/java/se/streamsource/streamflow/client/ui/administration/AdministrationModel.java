@@ -87,7 +87,6 @@ public class AdministrationModel
 
    public AdministrationModel()
    {
-      relationModelMapping("server", ServerModel.class);
       relationModelMapping("organization", OrganizationModel.class);
       relationModelMapping("organizationalunit", OrganizationalUnitModel.class);
    }
@@ -129,7 +128,7 @@ public class AdministrationModel
       LinkValue link = (LinkValue) treeNode.getElement();
       try
       {
-         client.getClient(link).delete();;
+         client.getClient(link).delete();
       } catch (ResourceException e)
       {
          if (Status.SERVER_ERROR_INTERNAL.equals( e.getStatus() ))

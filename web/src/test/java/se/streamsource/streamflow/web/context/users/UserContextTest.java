@@ -26,8 +26,12 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;
-import se.streamsource.streamflow.web.context.administration.UserContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationUserContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
@@ -58,7 +62,12 @@ public class UserContextTest
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       RoleMap.newCurrentRoleMap();
       playRole(User.class, "testing");
-      context(UserContext.class).changedisabled();
+
+      Organizations.Data data = (Organizations.Data) uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      OrganizationEntity organization = (OrganizationEntity) data.organization().get();
+      playRole( Organization.class, organization.identity().get() );
+
+      context(OrganizationUserContext.class).setdisabled();
       uow.complete();
       eventsOccurred( "changedEnabled" );
    }

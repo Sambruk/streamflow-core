@@ -23,12 +23,13 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -57,9 +58,9 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
-import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
+import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
@@ -82,16 +83,17 @@ import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
+import se.streamsource.streamflow.web.domain.structure.organization.Priority;
+import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.net.URISyntaxException;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -142,7 +144,6 @@ public interface CaseEntity
       SubCase.Data,
       History.Data,
       CaseLoggable.Data,
-      CasePriority.Events,
       CasePriority.Data,
       Origin,
 
@@ -274,19 +275,24 @@ public interface CaseEntity
          } else
          {
             // if it has not been set before get the lowest priority and set it
-            if (((CasePrioritySetting.Data) newCaseType).mandatory().get()
+            if (((PriorityOnCase.Data) newCaseType).mandate().get()
                   && ((CasePriority.Data) priority).priority().get() == null)
             {
-               CasePriorityValue priorityValue = ((CasePrioritySetting.Data) newCaseType).defaultPriority().get();
+               Priority newPriority = ((PriorityOnCase.Data) newCaseType).priorityDefault().get();
 
-               if( priorityValue == null )
+               if( newPriority == null )
                {
                   Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
-                  List<CasePriorityValue> casePriorityValues = ((CasePriorityDefinitions.Data) ((Organizations.Data) organizations).organization().get()).prioritys().get();
-                  priorityValue = casePriorityValues.get( Math.round( casePriorityValues.size() / 2 ) );
+                  int priorityCount = ((Priorities.Data) ((Organizations.Data) organizations).organization().get()).prioritys().count();
+
+                  Query<Priority> query = module.queryBuilderFactory().newQueryBuilder( Priority.class )
+                        .where( QueryExpressions.eq( QueryExpressions.templateFor( (PrioritySettings.Data.class) ).priority(), Math.round( priorityCount / 2 )) )
+                        .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+                  newPriority = query.find();
                }
 
-               priority.changePriority( priorityValue );
+               priority.changePriority( newPriority );
 
             }
          }

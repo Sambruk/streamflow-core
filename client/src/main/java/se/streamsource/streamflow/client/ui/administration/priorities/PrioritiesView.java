@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.casepriorities;
+package se.streamsource.streamflow.client.ui.administration.priorities;
 
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
@@ -47,11 +47,11 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 /**
  * Case priorities view
  */
-public class CasePrioritiesView
+public class PrioritiesView
       extends ListDetailView
       implements TransactionListener
 {
-   private CasePrioritiesModel model;
+   private PrioritiesModel model;
 
    @Service
    DialogService dialogs;
@@ -59,7 +59,7 @@ public class CasePrioritiesView
    @Structure
    Module module;
 
-   public CasePrioritiesView( @Service ApplicationContext context, @Uses final CasePrioritiesModel model )
+   public PrioritiesView( @Service ApplicationContext context, @Uses final PrioritiesModel model )
    {
       this.model = model;
 
@@ -70,7 +70,7 @@ public class CasePrioritiesView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            return module.objectBuilderFactory().newObjectBuilder( CasePriorityView.class ).use( model.newResourceModel( detailLink ) ).newInstance();
+            return module.objectBuilderFactory().newObjectBuilder( PriorityView.class ).use( model.newResourceModel( detailLink ) ).newInstance();
          }
       } );
 
@@ -156,7 +156,7 @@ public class CasePrioritiesView
       
       super.notifyTransactions( transactions );
 
-      if ( matches( withNames( "createdPriority", "changedPriority", "changedPriorityOrder", "removedPriority" ), transactions ))
+      if ( matches( withNames( "createdPriority", "changedDescription", "changedPriority", "removedPriority" ), transactions ))
       {   
          model.refresh();
          
@@ -164,12 +164,12 @@ public class CasePrioritiesView
          {
             list.setSelectedIndex( list.getModel().getSize() - 1 );
 
-         } else if( matches( withNames( "changedPriority", "changedPriorityOrder" ), transactions ) )
+         } else if( matches( withNames( "changedDescription", "changedPriority" ), transactions ) )
          {
             int count = 0;
             for( LinkValue link : model.getUnsortedList())
             {
-               if( link.text().get().equals( oldSelection.text().get() ))
+               if( link.id().get().equals( oldSelection.id().get() ))
                {
                   list.setSelectedIndex( count );
                   return;

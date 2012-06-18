@@ -20,24 +20,24 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.administration.CasePriorityDefinitionContext;
-import se.streamsource.streamflow.web.context.administration.CasePriorityDefinitionsContext;
-import se.streamsource.streamflow.web.domain.structure.organization.CasePriorityDefinitions;
+import se.streamsource.streamflow.web.context.administration.PrioritiesContext;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 
 /**
  *Case priorities resource.
  */
-public class CasePriorityDefinitionsResource
+public class PrioritiesResource
    extends CommandQueryResource
    implements SubResources
 {
-   public CasePriorityDefinitionsResource()
+   public PrioritiesResource()
    {
-      super( CasePriorityDefinitionsContext.class );
+      super( PrioritiesContext.class );
    }
+
    public void resource( String segment ) throws ResourceException
    {
-      findList( RoleMap.role( CasePriorityDefinitions.Data.class ).prioritys().get() , segment );
-      subResourceContexts( CasePriorityDefinitionContext.class );
+      findManyAssociation( RoleMap.role( Priorities.Data.class ).prioritys(), segment );
+      subResource( PriorityResource.class );
    }
 }

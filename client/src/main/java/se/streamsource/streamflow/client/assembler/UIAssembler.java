@@ -38,13 +38,11 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationTreeVie
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.FormOnRemoveView;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePrioritiesView;
-import se.streamsource.streamflow.client.ui.administration.casepriorities.CasePriorityView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CasePrioritySettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsView;
@@ -83,6 +81,8 @@ import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PriorityView;
 import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
@@ -101,7 +101,8 @@ import se.streamsource.streamflow.client.ui.administration.templates.SelectedTem
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.CreateUserDialog;
 import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
+import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailView;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListView;
 import se.streamsource.streamflow.client.ui.menu.AccountMenu;
 import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 import se.streamsource.streamflow.client.ui.menu.EditMenu;
@@ -367,7 +368,8 @@ public class UIAssembler
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
             FormOnRemoveView.class,
-            UsersAdministrationView.class,
+            UserAdministrationDetailView.class,
+            UsersAdministrationListView.class,
             ProxyUsersView.class,
             AccessPointsView.class,
             AccessPointView.class,
@@ -382,9 +384,9 @@ public class UIAssembler
             FormEditView.class,
             ActionsView.class,
             LabelRuleView.class,
-            CasePrioritiesView.class,
-            CasePriorityView.class,
-            CasePrioritySettingView.class);
+            PrioritiesView.class,
+            PriorityView.class,
+            PriorityOnCaseView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,

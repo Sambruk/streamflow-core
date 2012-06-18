@@ -138,9 +138,9 @@ public class OrganizationResource
    }
 
    @SubResource
-   public void casepriorities()
+   public void priorities()
    {
-      subResource( CasePriorityDefinitionsResource.class );
+      subResource( PrioritiesResource.class );
    }
 
    @SubResource

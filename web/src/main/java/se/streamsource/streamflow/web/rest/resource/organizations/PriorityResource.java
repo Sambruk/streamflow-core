@@ -14,19 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration;
+package se.streamsource.streamflow.web.rest.resource.organizations;
 
-import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.streamflow.web.context.administration.PriorityContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
 /**
- * This represents the server in the administration model
+ *
  */
-public class ServerModel
-   extends ResourceModel
+public class PriorityResource
+   extends CommandQueryResource
 {
-   public ServerModel()
+   public PriorityResource()
    {
-      relationModelMapping("users", UsersAdministrationModel.class);
+      super( PriorityContext.class, DescribableContext.class);
    }
 }

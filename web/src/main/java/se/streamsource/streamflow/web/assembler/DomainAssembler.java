@@ -48,6 +48,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.PriorityEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
@@ -164,7 +165,7 @@ public class DomainAssembler
    private void organizations(ModuleAssembly module) throws AssemblyException
    {
       module.entities(OrganizationsEntity.class, OrganizationEntity.class,
-              OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class).visibleIn( application );
+              OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class, PriorityEntity.class).visibleIn( application );
       module.values(ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 

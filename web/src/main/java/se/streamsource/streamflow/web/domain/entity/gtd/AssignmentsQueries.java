@@ -69,18 +69,6 @@ public interface AssignmentsQueries
                  eq(ownedId, owner))
          );
 
-         // Find all my ON_HOLD cases assigned to optional assignee
-         /*QueryBuilder<Case> onHoldQueryBuilder = qbf.newQueryBuilder( Case.class );
-         onHoldQueryBuilder = onHoldQueryBuilder.where( and(
-               eq( templateFor( Status.Data.class ).status(), CaseStates.ON_HOLD ),
-               assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
-               eq( ownedId, owner ))
-               );
-
-
-         Iterable<Case> assignables = flatten(openQueryBuilder.newQuery(uowf.currentUnitOfWork() ), onHoldQueryBuilder.newQuery( uowf.currentUnitOfWork() ));
-         return qbf.newQueryBuilder( Case.class ).newQuery( assignables );
-         */
          if (!Strings.empty(filter))
             openQueryBuilder = applyFilter(openQueryBuilder, filter);
 
