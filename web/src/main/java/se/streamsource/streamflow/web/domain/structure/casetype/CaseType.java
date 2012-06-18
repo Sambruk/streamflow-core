@@ -46,7 +46,7 @@ public interface CaseType
       SelectedLabels,
       SelectedResolutions,
       FormOnClose,
-      CasePrioritySetting,
+      PriorityOnCase,
       Removable
 {
 }

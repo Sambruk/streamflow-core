@@ -20,21 +20,21 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.swing.EventComboBoxModel;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.FormValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.form.FormValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.EventListSynch;
 
 /**
- * Model behind CasePrioritySettingView
+ * Model behind PriorityOnCaseView
  */
-public class CasePrioritySettingModel
+public class PriorityOnCaseModel
    extends ResourceModel<FormValue>
 {
-   public void changeCasePriorityVisibility( Boolean visible )
+   public void changeVisibility( Boolean visible )
    {
       Form form = new Form();
       form.set( "visible", visible.toString() );
@@ -42,7 +42,7 @@ public class CasePrioritySettingModel
       client.postLink(command("updatevisibility"), form);
    }
 
-   public void changeCasePriorityMandate( Boolean mandatory )
+   public void changeMandate( Boolean mandatory )
    {
       Form form = new Form();
       form.set( "mandatory", mandatory.toString() );
@@ -50,26 +50,28 @@ public class CasePrioritySettingModel
       client.postLink(command("updatemandatory"), form);
    }
 
-   public void defaultPriority( CasePriorityValue casePriorityValue )
+   public void priorityDefault( String id )
    {
-      Form form = new Form( );
-      form.set( "name", casePriorityValue == null ? "" : casePriorityValue.name().get() );
-      form.set( "color", casePriorityValue == null ? "" : casePriorityValue.color().get() );
+      if( !id.equals( getIndex().form().get().get( "prioritydefault" ) ) )
+      {
+         Form form = new Form( );
+         form.set( "id", "-1".equals( id ) ? "" : id );
 
-      client.postCommand( "defaultpriority", form );
+         client.postLink( command("prioritydefault"), form );
+      }
    }
 
-   public EventComboBoxModel<LinkValue> getCasePriorities()
+   public EventComboBoxModel<PriorityValue> getCasePriorities()
    {
       try
       {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+         BasicEventList<PriorityValue> list = new BasicEventList<PriorityValue>();
 
-         LinksValue listValue = client.query( "casepriorities",
+         LinksValue listValue = client.query( "priorities",
                LinksValue.class );
-         list.addAll( listValue.links().get() );
+         EventListSynch.synchronize( listValue.links().get(), list );
 
-         return new EventComboBoxModel<LinkValue>( list );
+         return new EventComboBoxModel<PriorityValue>( list );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_refresh,

@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
-import se.streamsource.streamflow.web.domain.structure.casetype.CasePrioritySetting;
+import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,15 +28,15 @@ import java.lang.annotation.RetentionPolicy;
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(RequiresCasePrioritySettingVisibility.Constraint.class)
-public @interface RequiresCasePrioritySettingVisibility
+@Constraints(RequiresPriorityVisibility.Constraint.class)
+public @interface RequiresPriorityVisibility
 {
    public class Constraint
-         implements org.qi4j.api.constraint.Constraint<RequiresCasePrioritySettingVisibility, CasePrioritySetting.Data>
+         implements org.qi4j.api.constraint.Constraint<RequiresPriorityVisibility, PriorityOnCase.Data>
    {
-      public boolean isValid( RequiresCasePrioritySettingVisibility visibility, CasePrioritySetting.Data value )
+      public boolean isValid( RequiresPriorityVisibility visibility, PriorityOnCase.Data value )
       {
-         return value.visible().get();
+         return value.visibility().get();
       }
    }
 }

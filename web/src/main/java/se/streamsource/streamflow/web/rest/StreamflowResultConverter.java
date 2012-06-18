@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.rest;
 
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -37,6 +38,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
@@ -55,6 +57,8 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.Priority;
+import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 
 import java.util.Collections;
 
@@ -420,7 +424,18 @@ public class StreamflowResultConverter
             {
                public Object map( CaseEntity caseEntity )
                {
-                  return caseEntity.priority().get();
+                  if( caseEntity.priority().get() != null )
+                  {
+                     Priority priority = caseEntity.priority().get();
+                     ValueBuilder<PriorityValue> builder = module.valueBuilderFactory().newValueBuilder( PriorityValue.class );
+                     builder.prototype().id().set( EntityReference.getEntityReference( priority ).identity() );
+                     builder.prototype().priority().set( ((PrioritySettings.Data)priority).priority().get() );
+                     builder.prototype().href().set( "priority" );
+                     builder.prototype().color().set( ((PrioritySettings.Data)priority).color().get() );
+                     builder.prototype().text().set( priority.getDescription() );
+                     return builder.newInstance();
+                  }
+                  return null;
                }
             } );
       

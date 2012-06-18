@@ -28,8 +28,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.FormValue;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityDTO;
-import se.streamsource.streamflow.api.administration.priority.CasePriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -64,19 +63,19 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 /**
  * Shows case priority settings per case type.
  */
-public class CasePrioritySettingView extends JPanel implements Observer, TransactionListener
+public class PriorityOnCaseView extends JPanel implements Observer, TransactionListener
 {
    @Structure
    Module module;
 
-   private CasePrioritySettingModel model;
+   private PriorityOnCaseModel model;
    private final ApplicationContext context;
 
    private JCheckBox visible = new JCheckBox(  );
    private JCheckBox mandatory = new JCheckBox( );
    private JComboBox defaultPriority = new JComboBox(  );
 
-   public CasePrioritySettingView(@Service ApplicationContext context, @Uses CasePrioritySettingModel model)
+   public PriorityOnCaseView( @Service ApplicationContext context, @Uses PriorityOnCaseModel model )
    {
       this.context = context;
       this.model = model;
@@ -95,7 +94,7 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
          {
 
-            final CasePriorityDTO itemValue = (CasePriorityDTO) value;
+            final PriorityValue itemValue = (PriorityValue) value;
             String val = itemValue == null ? "" : itemValue.text().get();
 
             JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEADING, 2, 0 ) );
@@ -105,9 +104,9 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
                @Override
                protected void paintComponent(Graphics g) {
                   Color color = getBackground();
-                  if( itemValue != null && itemValue.priority().get() != null )
+                  if( itemValue != null && itemValue.color().get() != null )
                   {
-                     color = new Color( parseInt( itemValue.priority().get().color().get() ) );
+                     color = new Color( parseInt( itemValue.color().get() ) );
                   }
                   final Color FILL_COLOR = ColorUtil.removeAlpha( color );
 
@@ -141,9 +140,9 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      new ActionBinder( am ).bind( "updateCasePriorityVisibility", visible );
-      new ActionBinder( am ).bind( "updateCasePriorityMandate", mandatory );
-      new ActionBinder( am ).bind( "defaultPriority", defaultPriority );
+      new ActionBinder( am ).bind( "updateVisibility", visible );
+      new ActionBinder( am ).bind( "updateMandate", mandatory );
+      new ActionBinder( am ).bind( "priorityDefault", defaultPriority );
 
       new RefreshWhenShowing( this, model );
    }
@@ -158,14 +157,14 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
 
       EventComboBoxModel comboBoxModel = model.getCasePriorities();
       defaultPriority.setModel( comboBoxModel );
-      String selectPriority = prioritySettings.form().get().get( "defaultpriority" );
+      String selectPriority = prioritySettings.form().get().get( "prioritydefault" );
       if( !"".equals( selectPriority ) )
       {
          // omit first element since priority is always null in the first element
          for(int i = 1; i < comboBoxModel.getSize(); i++)
          {
-            CasePriorityValue casePriorityValue = ((CasePriorityDTO)comboBoxModel.getElementAt( i )).priority().get();
-            if( casePriorityValue.name().get().equals( selectPriority ))
+            PriorityValue priorityValue = ((PriorityValue)comboBoxModel.getElementAt( i ));
+            if( priorityValue.id().get().equals( selectPriority ))
             {
                defaultPriority.setSelectedItem( comboBoxModel.getElementAt( i ) );
             }
@@ -174,42 +173,42 @@ public class CasePrioritySettingView extends JPanel implements Observer, Transac
    }
 
    @Action
-   public Task updateCasePriorityVisibility()
+   public Task updateVisibility()
    {
       return new CommandTask(){
 
          @Override
          protected void command() throws Exception
          {
-            model.changeCasePriorityVisibility( visible.isSelected() );
+            model.changeVisibility( visible.isSelected() );
          }
       };
 
    }
 
    @Action
-   public Task updateCasePriorityMandate()
+   public Task updateMandate()
    {
      return new CommandTask(){
 
          @Override
          protected void command() throws Exception
          {
-            model.changeCasePriorityMandate( mandatory.isSelected() );
+            model.changeMandate( mandatory.isSelected() );
          }
       };
 
    }
 
    @Action
-   public Task defaultPriority()
+   public Task priorityDefault()
    {
       return new CommandTask()
       {
          @Override
          protected void command() throws Exception
          {
-            model.defaultPriority( ((CasePriorityDTO)defaultPriority.getSelectedItem()).priority().get() );
+            model.priorityDefault( ((PriorityValue) defaultPriority.getSelectedItem()).id().get() );
          }
       };
 
