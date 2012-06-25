@@ -91,6 +91,16 @@ public interface SubmittedForms
          formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
+         // Check for signatures
+         RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, DTO.form().get().identity() );
+         if (!requiredSignatures.requiredSignatures().get().isEmpty())
+         {
+            if (requiredSignatures.requiredSignatures().get().size() != DTO.signatures().get().size())
+            {
+               throw new IllegalArgumentException( "signatures_missing" );
+            }
+         }
+         
          ValueBuilder<SubmittedFieldValue> fieldBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFieldValue.class);
          for (PageSubmissionDTO pageDTO : DTO.pages().get())
          {
