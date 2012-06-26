@@ -269,31 +269,40 @@ public interface CaseEntity
       {
          next.changeCaseType( newCaseType );
 
-         if( newCaseType == null )
+         if (newCaseType == null)
          {
             priority.changePriority( null );
          } else
          {
-            // if it has not been set before get the lowest priority and set it
-            if (((PriorityOnCase.Data) newCaseType).mandate().get()
-                  && ((CasePriority.Data) priority).priority().get() == null)
+            Priority defaultPriority = ((PriorityOnCase.Data) newCaseType).defaultPriority().get();
+
+            if (((CasePriority.Data) priority).priority().get() == null)
             {
-               Priority newPriority = ((PriorityOnCase.Data) newCaseType).priorityDefault().get();
-
-               if( newPriority == null )
+               if (defaultPriority != null)
                {
-                  Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
-                  int priorityCount = ((Priorities.Data) ((Organizations.Data) organizations).organization().get()).prioritys().count();
+                  // Set default priority if priority is missing and there is a
+                  // default setting
+                  priority.changePriority( ((PriorityOnCase.Data) newCaseType).defaultPriority().get() );
 
-                  Query<Priority> query = module.queryBuilderFactory().newQueryBuilder( Priority.class )
-                        .where( QueryExpressions.eq( QueryExpressions.templateFor( (PrioritySettings.Data.class) ).priority(), Math.round( priorityCount / 2 )) )
+               } else if (((PriorityOnCase.Data) newCaseType).mandatory().get())
+               {
+                  // If default priority is missing and priority is mandatory
+                  // then set the priority that is closest to middle...
+                  Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork()
+                        .get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+                  int priorityCount = ((Priorities.Data) ((Organizations.Data) organizations).organization().get())
+                        .prioritys().count();
+
+                  Query<Priority> query = module
+                        .queryBuilderFactory()
+                        .newQueryBuilder( Priority.class )
+                        .where(
+                              QueryExpressions.eq( QueryExpressions.templateFor( (PrioritySettings.Data.class) )
+                                    .priority(), Math.round( priorityCount / 2 ) ) )
                         .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
-                  newPriority = query.find();
+                  priority.changePriority( query.find() );
                }
-
-               priority.changePriority( newPriority );
-
             }
          }
       }

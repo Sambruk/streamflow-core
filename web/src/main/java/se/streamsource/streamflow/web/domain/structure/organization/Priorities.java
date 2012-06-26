@@ -149,7 +149,7 @@ public interface Priorities
       {
          Query<PriorityOnCase> query = module.queryBuilderFactory().newQueryBuilder( PriorityOnCase.class )
                .where( eq(
-                     templateFor( PriorityOnCase.Data.class ).priorityDefault(),
+                     templateFor( PriorityOnCase.Data.class ).defaultPriority(),
                      priority ) )
                .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 

@@ -36,7 +36,7 @@ public @interface RequiresPriorityVisibility
    {
       public boolean isValid( RequiresPriorityVisibility visibility, PriorityOnCase.Data value )
       {
-         return value.visibility().get();
+         return value.visible().get();
       }
    }
 }
