@@ -495,9 +495,14 @@ public interface CaseEntity
          caseLoggable.caselog().get().addTypedEntry( "{changedOwner,owner=" + ((Project) owner).getDescription() + "}", CaseLogEntryTypes.system );
       }
 
-      public void createSubCase()
+      public void restrict()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{createdSubCase}", CaseLogEntryTypes.system );
+         caseLoggable.caselog().get().addTypedEntry( "{restrict}", CaseLogEntryTypes.system );
+      }
+      
+      public void unrestrict()
+      {
+         caseLoggable.caselog().get().addTypedEntry( "{unrestrict}", CaseLogEntryTypes.system );
       }
    }
 

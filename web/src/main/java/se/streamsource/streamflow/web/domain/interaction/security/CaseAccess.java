@@ -35,8 +35,8 @@ public interface CaseAccess
 {
    void changeAccess(PermissionType permissionType, CaseAccessType accessType);
 
-   void forceAccess(PermissionType permissionType, CaseAccessType accessType);
-
+   void clearAccess();
+   
    CaseAccessType getAccessType(PermissionType permissionType);
 
    interface Data
@@ -45,19 +45,13 @@ public interface CaseAccess
       Property<Map<PermissionType, CaseAccessType>> accessPermissions();
 
       void changedAccess(@Optional DomainEvent event, PermissionType permissionType, CaseAccessType accessType);
+      
+      void clearedAccess(@Optional DomainEvent event);
    }
 
    abstract class Mixin
       implements CaseAccess, Data
    {
-      public void forceAccess( PermissionType permissionType, CaseAccessType accessType )
-      {
-         CaseAccessType current = getAccessType( permissionType );
-         if ( current != accessType )
-         {
-            changedAccess( null, permissionType, accessType );
-         }
-      }
 
       public void changeAccess( PermissionType permissionType, CaseAccessType accessType )
       {
@@ -78,6 +72,16 @@ public interface CaseAccess
          accessPermissions().set( permissionAccess );
       }
 
+      public void clearAccess()
+      {
+         clearedAccess( null );
+      }
+      
+      public void clearedAccess(@Optional DomainEvent event)
+      {
+         accessPermissions().get().clear();
+      }
+      
       public CaseAccessType getAccessType( PermissionType permissionType )
       {
          CaseAccessType current = accessPermissions().get().get( permissionType );

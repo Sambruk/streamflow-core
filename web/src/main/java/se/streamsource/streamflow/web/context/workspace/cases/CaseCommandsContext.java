@@ -16,19 +16,31 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases;
 
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.CLOSED;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.ON_HOLD;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -61,8 +73,6 @@ import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -71,14 +81,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.dci.api.RoleMap.*;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -401,7 +403,7 @@ public interface CaseCommandsContext
       public void restrict()
       {
          CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
-         secrecy.isRestricted( true );
+         secrecy.restrict();
 
          Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
          Organization org = orgs.organization().get();
@@ -423,16 +425,17 @@ public interface CaseCommandsContext
       public void unrestrict()
       {
          CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
-         secrecy.isRestricted( false );
+         secrecy.unrestrict();
 
          Ownable.Data owner = RoleMap.role( Ownable.Data.class );
 
          // force set secrecy setting of the project
          CaseAccessDefaults.Data defaults = (CaseAccessDefaults.Data) owner.owner().get();
          CaseAccess access = RoleMap.role( CaseAccess.class );
+         access.clearAccess();
          for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
          {
-            access.forceAccess( entry.getKey(), entry.getValue() );
+            access.changeAccess( entry.getKey(), entry.getValue() );
          }
 
          // apply the case type setting

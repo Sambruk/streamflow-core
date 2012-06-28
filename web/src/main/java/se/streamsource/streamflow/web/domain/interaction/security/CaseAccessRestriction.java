@@ -29,7 +29,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins(CaseAccessRestriction.Mixin.class)
 public interface CaseAccessRestriction
 {
-   void isRestricted( Boolean enable );
+   void restrict();
+   
+   void unrestrict();
 
    interface Data
    {
@@ -42,13 +44,19 @@ public interface CaseAccessRestriction
    abstract class Mixin
       implements CaseAccessRestriction, Data
    {
-      public void isRestricted( Boolean enable )
+      public void restrict( )
       {
-         if ( restricted().get() != enable ) {
-            restrictionChanged( null, enable );
+         if ( !restricted().get() ) {
+            restrictionChanged( null, Boolean.TRUE );
          }
       }
-
+      
+      public void unrestrict( )
+      {
+         if ( restricted().get() ) {
+            restrictionChanged( null, Boolean.FALSE );
+         }
+      }
       public void restrictionChanged( @Optional DomainEvent event, Boolean restriction )
       {
          restricted().set( restriction );
