@@ -16,30 +16,49 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Queryable;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
+import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Maintains list of submitted forms on a case
@@ -113,7 +132,7 @@ public interface SubmittedForms
                   if( field.field().get().fieldValue().get() instanceof AttachmentFieldValue )
                   {
                      try
-                     { 
+                     {
                         AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get());
                         AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
                         ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
@@ -150,5 +169,6 @@ public interface SubmittedForms
       {
          return !state.submittedForms().get().isEmpty();
       }
+
    }
 }

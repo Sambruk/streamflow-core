@@ -84,6 +84,7 @@ import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
+import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 /**
  * JAVADOC
@@ -219,6 +220,8 @@ public class AppAssembler
    private void mail( ModuleAssembly module ) throws AssemblyException
    {
       module.services(EmailTemplatesUpdateService.class).instantiateOnStartup();
+      module.services( MailSenderService.class ).identifiedBy( "mailsender" )
+            .visibleIn( application ).instantiateOnStartup();
 
       module.values( EmailValue.class ).visibleIn(Visibility.application);
       

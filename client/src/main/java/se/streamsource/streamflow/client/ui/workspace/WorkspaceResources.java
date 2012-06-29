@@ -164,5 +164,5 @@ public enum WorkspaceResources
    no_project,
    search_period,
    printing_configuration,
-   caze_reinstate, priority_label, case_priority_header, no_priority, ;
+   caze_reinstate, priority_label, case_priority_header, no_priority, mail_selection_message;
 }

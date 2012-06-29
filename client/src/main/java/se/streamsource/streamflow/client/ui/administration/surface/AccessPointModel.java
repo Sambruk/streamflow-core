@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
@@ -169,6 +170,22 @@ public class AccessPointModel extends Observable
          ValueBuilder<EntityValue> builder = module.valueBuilderFactory().newValueBuilder(EntityValue.class);
          client.postCommand( "setformtemplate", builder.newInstance() );
       }
+   }
+
+   public void setMailSelectionMessage( String message )
+   {
+      Form form = new Form( );
+      if ( message.isEmpty() )
+      {
+         message = null;
+      }
+      form.set( "mailmessage", message );
+      client.postCommand( "changemailselectionmessage", form );
+   }
+
+   public void resetMailSelectionMessage()
+   {
+      client.postCommand( "resetmailselectionmessage" );
    }
 
    private StringValue getStringValue( String id )

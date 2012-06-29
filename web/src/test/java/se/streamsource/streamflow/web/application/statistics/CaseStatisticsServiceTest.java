@@ -36,6 +36,8 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
@@ -71,6 +73,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 
 import java.security.PrivilegedActionException;
@@ -93,12 +96,13 @@ public class CaseStatisticsServiceTest
 
       module.services(MemoryEntityStoreService.class);
 
-      module.services(CaseStatisticsService.class,
-              MemoryEventStoreService.class,
-              UuidIdentityGeneratorService.class,
-              LoggingStatisticsStore.class).instantiateOnStartup();
-      module.importedServices(TimeService.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
-      module.services(DomainEventFactoryService.class).instantiateOnStartup();
+      module.services( CaseStatisticsService.class,
+            MemoryEventStoreService.class,
+            UuidIdentityGeneratorService.class,
+            LoggingStatisticsStore.class ).instantiateOnStartup();
+      module.importedServices( TimeService.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
+      module.services( DomainEventFactoryService.class ).instantiateOnStartup();
+
 
       module.entities(StatisticsConfiguration.class);
       module.forMixin(TransactionTrackerConfiguration.class).declareDefaults().enabled().set(true);

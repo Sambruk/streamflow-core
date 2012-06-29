@@ -38,7 +38,7 @@ public class SurfaceFormDraftsResource
 
    public void resource( String segment ) throws ResourceException
    {
-      FormDraft draft = findManyAssociation( RoleMap.role(FormDrafts.Data.class).formDrafts(), segment );
+      FormDraft draft = findManyAssociation( RoleMap.role( FormDrafts.Data.class ).formDrafts(), segment );
       RoleMap.current().set( draft.getFormDraftValue() );
       subResource( SurfaceFormDraftResource.class );
    }
