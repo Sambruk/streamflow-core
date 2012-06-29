@@ -16,8 +16,28 @@
  */
 package se.streamsource.streamflow.client.ui.administration.users;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.RADIOBUTTON;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
+
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -28,6 +48,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
@@ -43,35 +64,14 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.sound.sampled.BooleanControl;
-import javax.swing.ActionMap;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
-
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class UserAdministrationDetailView
       extends JPanel
@@ -94,11 +94,13 @@ public class UserAdministrationDetailView
    public JRadioButton noneButton;
    public JRadioButton emailButton;
 
-
    private UserAdministrationDetailModel model;
 
-   private Box actionsPanel = Box.createVerticalBox();
+   private JPanel actionsPanel;
    private JPanel profilePanel;
+   
+   private DefaultFormBuilder actionsBuilder ;
+   
    private ApplicationContext context;
 
    private enum UserAdministrationButtonTemplate
@@ -123,6 +125,12 @@ public class UserAdministrationDetailView
 
       setActionMap( context.getActionMap( this ) );
 
+      actionsPanel = new JPanel();
+      FormLayout actionsLayout = new FormLayout("pref",
+            "pref, pref, pref, pref:grow, ");
+      actionsPanel.setBorder( new EmptyBorder(new Insets(25, 0, 0, 0)) );
+      actionsBuilder = new DefaultFormBuilder(actionsLayout, actionsPanel);
+      
       ActionMap am = getActionMap();
       profilePanel = new JPanel(new BorderLayout());
       profilePanel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
@@ -130,7 +138,7 @@ public class UserAdministrationDetailView
       contactForm = new JPanel();
       profilePanel.add(contactForm, BorderLayout.CENTER);
       FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
-            "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
+            "pref, pref, pref, pref, pref, pref, pref, pref");
 
       contactBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       contactBinder.setResourceMap(context.getResourceMap(getClass()));
@@ -149,8 +157,10 @@ public class UserAdministrationDetailView
 
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout, contactForm);
 
-      contactBuilder.appendSeparator(i18n
+      JLabel title = new JLabel(i18n
             .text( AccountResources.contact_info_for_user_separator));
+      title.setFont(title.getFont().deriveFont(Font.BOLD));
+      contactBuilder.append(title, 3);
       contactBuilder.nextLine();
 
       contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
@@ -247,7 +257,7 @@ public class UserAdministrationDetailView
    public Task leave()
    {
       ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
-      dialog.setCustomMessage( i18n.text( WorkspaceResources.unrestrict_case ) );
+      dialog.setCustomMessage( i18n.text( AdministrationResources.leave_organization_confirmation ) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
@@ -300,7 +310,7 @@ public class UserAdministrationDetailView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "join", "leave", "changedisabled" ), transactions ))
+      if (matches( withUsecases( "join", "leave", "setdisabled", "setenabled" ), transactions ))
       {
          model.refresh();
       }
@@ -310,9 +320,11 @@ public class UserAdministrationDetailView
    {
       // Update list of action buttons
       actionsPanel.removeAll();
+      actionsBuilder.setRow( 1 );
+      actionsBuilder.setColumn( 1 );
 
       ActionMap am = getActionMap();
-
+      
       for (UserAdministrationButtonTemplate buttonOrder : UserAdministrationButtonTemplate.values())
       {
          for (LinkValue commandLink : Iterables.flatten( model.getCommands(), model.getQueries() ))
@@ -327,8 +339,8 @@ public class UserAdministrationDetailView
                         .getValue( javax.swing.Action.ACCELERATOR_KEY ),
                         JComponent.WHEN_IN_FOCUSED_WINDOW );
                   button.setHorizontalAlignment( SwingConstants.LEFT );
-                  actionsPanel.add( button );
-                  actionsPanel.add( Box.createVerticalStrut( 2 ) );
+                  actionsBuilder.add( button );
+                  actionsBuilder.nextLine();
                   action1.putValue( "sourceButton", button );
                }
             }

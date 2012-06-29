@@ -16,17 +16,14 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.TransactionList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
+import static org.qi4j.api.specification.Specifications.or;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
+
 import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.structure.Module;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.ErrorResources;
@@ -35,10 +32,10 @@ import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-
-import static org.qi4j.api.specification.Specifications.or;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransactionList;
 
 /**
  * A general super class for models that use LinkValue lists shown in a JList.

@@ -45,6 +45,7 @@ public enum AdministrationResources
    import_users,
    users_tab,
    join_organization,
+   leave_organization_confirmation,
    import_files,
    create_account_name,
    create_account_server,
