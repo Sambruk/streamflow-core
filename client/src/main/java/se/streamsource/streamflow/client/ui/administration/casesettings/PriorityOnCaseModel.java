@@ -52,12 +52,12 @@ public class PriorityOnCaseModel
 
    public void priorityDefault( String id )
    {
-      if( !id.equals( getIndex().form().get().get( "prioritydefault" ) ) )
+      if( !id.equals( getIndex().form().get().get( "defaultpriority" ) ) )
       {
          Form form = new Form( );
          form.set( "id", "-1".equals( id ) ? "" : id );
 
-         client.postLink( command("prioritydefault"), form );
+         client.postLink( command("defaultpriority"), form );
       }
    }
 

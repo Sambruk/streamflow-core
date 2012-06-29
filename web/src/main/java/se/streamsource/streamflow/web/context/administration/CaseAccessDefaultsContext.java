@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
@@ -42,11 +43,9 @@ public class CaseAccessDefaultsContext
    @Uses
    Locale locale;
 
-   @Uses
-   CaseAccessDefaults caseAccessDefaults;
-
    public LinksValue index()
    {
+      CaseAccessDefaults caseAccessDefaults = RoleMap.role( CaseAccessDefaults.class );
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), locale );
       ResourceBundle permissionTypeBundle = ResourceBundle.getBundle( PermissionType.class.getName(), locale );
@@ -63,6 +62,7 @@ public class CaseAccessDefaultsContext
 
    public LinksValue possibledefaultaccess(@Name("permission") PermissionType permissionType)
    {
+      CaseAccessDefaults caseAccessDefaults = RoleMap.role( CaseAccessDefaults.class );
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), locale );
       for (CaseAccessType possibleType : CaseAccessType.values())
@@ -76,6 +76,7 @@ public class CaseAccessDefaultsContext
 
    public void changedefaultaccess(@Name("permission") PermissionType permissionType, @Name("accesstype") CaseAccessType accessType)
    {
+      CaseAccessDefaults caseAccessDefaults = RoleMap.role( CaseAccessDefaults.class );
       caseAccessDefaults.changeAccessDefault( permissionType, accessType );
    }
 }

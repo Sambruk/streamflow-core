@@ -16,7 +16,12 @@
  */
 package se.streamsource.streamflow.client.ui.administration.users;
 
+import static org.qi4j.api.specification.Specifications.or;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
+
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.specification.Specifications;
 import org.restlet.data.MediaType;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
@@ -27,6 +32,8 @@ import se.streamsource.streamflow.api.administration.NewUserDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import java.io.File;
 
@@ -66,4 +73,22 @@ public class UsersAdministrationListModel
       }
    }
 
+
+   @Override
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   {
+      // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
+      if (matches( 
+            or( 
+                  onEntities( client.getReference().getParentRef().getLastSegment() ), 
+                  onEntities( client.getReference().getLastSegment() ),
+                  onEntities( "users" ),
+                  Specifications.and( 
+                        Events.withNames( "createdUser", "changedDescription", "changedEnabled", "leftOrganization", "joinedOrganization" ), 
+                        onEntities( linkValues )
+                  )
+             ), 
+          transactions ))
+         refresh();
+   }
 }

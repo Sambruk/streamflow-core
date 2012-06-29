@@ -27,32 +27,32 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 
 /**
- *Composite for case priority settings.
+ * Composite for case priority settings.
  */
 @Mixins( PriorityOnCase.Mixin.class )
 public interface PriorityOnCase
 {
    void changeVisibility( Boolean visible );
-   void changeMandate( Boolean mandatory );
-   void changePriorityDefault( @Optional Priority priority );
+   void changeMandatory( Boolean mandatory );
+   void changeDefaultPriority( @Optional Priority priority );
 
 
 
    interface Data
    {
       @UseDefaults
-      Property<Boolean> visibility();
+      Property<Boolean> visible();
       
       @UseDefaults
-      Property<Boolean> mandate();
+      Property<Boolean> mandatory();
 
       @Optional
       @Aggregated
-      Association<Priority> priorityDefault();
+      Association<Priority> defaultPriority();
 
       void changedVisibility( @Optional DomainEvent event, Boolean visible );
-      void changedMandate( @Optional DomainEvent event, Boolean mandatory );
-      void changedPriorityDefault( @Optional DomainEvent event, @Optional Priority defaultPriority );
+      void changedMandatory( @Optional DomainEvent event, Boolean mandatory );
+      void changedDefaultPriority( @Optional DomainEvent event, @Optional Priority defaultPriority );
    }
 
    abstract class Mixin
@@ -65,32 +65,37 @@ public interface PriorityOnCase
       public void changeVisibility( Boolean visible )
       {
          // if there is no real change do nothing
-         if( data.visibility().get().equals( visible ) )
+         if( data.visible().get().equals( visible ) )
             return;
          
          data.changedVisibility( null, visible );
       }
 
-      public void changeMandate( Boolean mandatory )
+      public void changeMandatory( Boolean mandatory )
       {
          // if there is no real change do nothings
-         if( data.mandate().get().equals( mandatory ) )
+         if( data.mandatory().get().equals( mandatory ) )
             return;
 
-         data.changedMandate( null, mandatory );
+         data.changedMandatory( null, mandatory );
       }
 
-      public void changePriorityDefault( Priority defaultPriority )
+      public void changeDefaultPriority( Priority defaultPriority )
       {
-         if( (defaultPriority != null && defaultPriority.equals( data.priorityDefault().get() ))
-               || (defaultPriority == null && data.priorityDefault().get() == null ))
+         if( (defaultPriority != null && defaultPriority.equals( data.defaultPriority().get() ))
+               || (defaultPriority == null && data.defaultPriority().get() == null ))
             return;
-         data.changedPriorityDefault( null, defaultPriority );
+         data.changedDefaultPriority( null, defaultPriority );
       }
 
-      public void changedPriorityDefault( DomainEvent event, Priority defaultPriority)
+      public void changedVisibility( DomainEvent event, Boolean visible)
       {
-         data.priorityDefault().set( defaultPriority );
+         data.visible().set( visible );
+      }
+
+      public void changedDefaultPriority( DomainEvent event, Priority defaultPriority)
+      {
+         data.defaultPriority().set( defaultPriority );
       }
    }
 }

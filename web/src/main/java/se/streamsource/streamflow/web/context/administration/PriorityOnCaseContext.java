@@ -57,7 +57,7 @@ public interface PriorityOnCaseContext
 
    void updatevisibility( @Name("visible") Boolean visible );
 
-   void prioritydefault( @Optional @Name("id") String id );
+   void defaultpriority( @Optional @Name("id") String id );
 
    LinksValue priorities();
 
@@ -75,10 +75,10 @@ public interface PriorityOnCaseContext
       public FormValue index()
       {
          ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
-         builder.prototype().form().get().put( "visible", priorityOnCaseData.visibility().get().toString() );
-         builder.prototype().form().get().put( "mandatory", priorityOnCaseData.mandate().get().toString() );
-         builder.prototype().form().get().put( "prioritydefault", priorityOnCaseData.priorityDefault().get() != null
-               ? EntityReference.getEntityReference( priorityOnCaseData.priorityDefault().get() ).identity() : "-1" );
+         builder.prototype().form().get().put( "visible", priorityOnCaseData.visible().get().toString() );
+         builder.prototype().form().get().put( "mandatory", priorityOnCaseData.mandatory().get().toString() );
+         builder.prototype().form().get().put( "prioritydefault", priorityOnCaseData.defaultPriority().get() != null
+               ? EntityReference.getEntityReference( priorityOnCaseData.defaultPriority().get() ).identity() : "-1" );
          return builder.newInstance();
       }
 
@@ -89,16 +89,16 @@ public interface PriorityOnCaseContext
 
       public void updatemandatory( Boolean mandatory )
       {
-         priorityOnCase.changeMandate( mandatory );
+         priorityOnCase.changeMandatory( mandatory );
       }
 
-      public void prioritydefault( String id )
+      public void defaultpriority( String id )
       {
          if( id != null )
          {
-            priorityOnCase.changePriorityDefault( module.unitOfWorkFactory().currentUnitOfWork().get( Priority.class, id ) );
+            priorityOnCase.changeDefaultPriority( module.unitOfWorkFactory().currentUnitOfWork().get( Priority.class, id ) );
          } else
-            priorityOnCase.changePriorityDefault( null );
+            priorityOnCase.changeDefaultPriority( null );
       }
 
       public LinksValue priorities()

@@ -16,49 +16,31 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Queryable;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
-import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.util.Visitor;
-import se.streamsource.streamflow.web.application.mail.EmailValue;
-import se.streamsource.streamflow.web.application.mail.MailSender;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
-import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Maintains list of submitted forms on a case
@@ -102,12 +84,23 @@ public interface SubmittedForms
       public void submitForm( FormDraft formSubmission, Submitter submitter )
       {
          FormDraftDTO DTO = formSubmission.getFormDraftValue();
+         
          ValueBuilder<SubmittedFormValue> formBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormValue.class);
 
          formBuilder.prototype().submitter().set( EntityReference.getEntityReference(submitter) );
          formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
+         // Check for signatures
+         RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, DTO.form().get().identity() );
+         if (!requiredSignatures.requiredSignatures().get().isEmpty())
+         {
+            if (requiredSignatures.requiredSignatures().get().size() != DTO.signatures().get().size())
+            {
+               throw new IllegalArgumentException( "signatures_missing" );
+            }
+         }
+         
          ValueBuilder<SubmittedFieldValue> fieldBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFieldValue.class);
          for (PageSubmissionDTO pageDTO : DTO.pages().get())
          {
@@ -119,6 +112,13 @@ public interface SubmittedForms
                // ignore comment fields when submitting
                if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
                {
+                  // Is mandatory field missing?
+                  if (field.field().get().mandatory().get() && Strings.empty( field.value().get() ))
+                     throw new IllegalArgumentException( "mandatory_value_missing" );
+                  // Validate
+                  if (field.field().get() != null && field.value().get() != null && !field.field().get().fieldValue().get().validate( field.value().get() ))
+                     throw new IllegalArgumentException( "invalid_value" );
+
                   fieldBuilder.prototype().field().set( field.field().get().field().get() );
                   if ( field.value().get() == null )
                   {

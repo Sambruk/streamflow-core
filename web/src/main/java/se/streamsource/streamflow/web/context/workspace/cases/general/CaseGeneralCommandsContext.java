@@ -141,7 +141,7 @@ public interface CaseGeneralCommandsContext
          builder.command( "changepriority" );
 
          ValueBuilder<PriorityValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( PriorityValue.class );
-         if( !((PriorityOnCase.Data)RoleMap.role( TypedCase.Data.class).caseType().get()).mandate().get())
+         if( !((PriorityOnCase.Data)RoleMap.role( TypedCase.Data.class).caseType().get()).mandatory().get())
          {
             linkBuilder.prototype().text().set( "-" );
             linkBuilder.prototype().id().set( "-1" );
