@@ -253,7 +253,7 @@ public class CaseActionsView extends JPanel
       StringValue name = model.getClient().query( "formondeletename", StringValue.class );
 
       ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
-      dialog.setCustomMessage( String.format( i18n.text( StreamflowResources.formondelete_confirmation ), name.string().get() ) );
+      dialog.setCustomMessage( i18n.text( WorkspaceResources.formondelete_confirmation, name.string().get() ));
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {

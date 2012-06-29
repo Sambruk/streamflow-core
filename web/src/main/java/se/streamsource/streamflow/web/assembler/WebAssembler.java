@@ -47,6 +47,7 @@ import se.streamsource.streamflow.web.rest.service.conversation.ConversationResp
 import se.streamsource.streamflow.web.rest.service.conversation.NotificationService;
 import se.streamsource.streamflow.web.rest.service.filter.FilterConfiguration;
 import se.streamsource.streamflow.web.rest.service.filter.FilterService;
+import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import static org.qi4j.api.common.Visibility.*;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;

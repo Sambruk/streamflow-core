@@ -34,6 +34,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -83,12 +84,23 @@ public interface SubmittedForms
       public void submitForm( FormDraft formSubmission, Submitter submitter )
       {
          FormDraftDTO DTO = formSubmission.getFormDraftValue();
+         
          ValueBuilder<SubmittedFormValue> formBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormValue.class);
 
          formBuilder.prototype().submitter().set( EntityReference.getEntityReference(submitter) );
          formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
+         // Check for signatures
+         RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, DTO.form().get().identity() );
+         if (!requiredSignatures.requiredSignatures().get().isEmpty())
+         {
+            if (requiredSignatures.requiredSignatures().get().size() != DTO.signatures().get().size())
+            {
+               throw new IllegalArgumentException( "signatures_missing" );
+            }
+         }
+         
          ValueBuilder<SubmittedFieldValue> fieldBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFieldValue.class);
          for (PageSubmissionDTO pageDTO : DTO.pages().get())
          {
@@ -100,6 +112,13 @@ public interface SubmittedForms
                // ignore comment fields when submitting
                if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
                {
+                  // Is mandatory field missing?
+                  if (field.field().get().mandatory().get() && Strings.empty( field.value().get() ))
+                     throw new IllegalArgumentException( "mandatory_value_missing" );
+                  // Validate
+                  if (field.field().get() != null && field.value().get() != null && !field.field().get().fieldValue().get().validate( field.value().get() ))
+                     throw new IllegalArgumentException( "invalid_value" );
+
                   fieldBuilder.prototype().field().set( field.field().get().field().get() );
                   if ( field.value().get() == null )
                   {
@@ -113,7 +132,7 @@ public interface SubmittedForms
                   if( field.field().get().fieldValue().get() instanceof AttachmentFieldValue )
                   {
                      try
-                     { 
+                     {
                         AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get());
                         AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
                         ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
@@ -150,5 +169,6 @@ public interface SubmittedForms
       {
          return !state.submittedForms().get().isEmpty();
       }
+
    }
 }

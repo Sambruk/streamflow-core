@@ -40,7 +40,7 @@ public @interface RequiresCasePriorityVisible
          if( value.caseType().get() == null )
             return false;
          else
-            return ((PriorityOnCase.Data)value.caseType().get()).visibility().get();
+            return ((PriorityOnCase.Data)value.caseType().get()).visible().get();
       }
    }
 }

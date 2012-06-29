@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.interaction.security;
+package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
@@ -23,43 +23,40 @@ import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
- * Containing the option representing whether the
- * security setting has been selected for this case
+ * JAVADOC
  */
-@Mixins(CaseAccessRestriction.Mixin.class)
-public interface CaseAccessRestriction
+@Mixins(MailSelectionMessage.Mixin.class)
+public interface MailSelectionMessage
 {
-   void restrict();
-   
-   void unrestrict();
+   void changeMailSelectionMessage( @Optional String newMessage );
+
+   String getMailSelectionMessage();
 
    interface Data
    {
-      @UseDefaults
-      Property<Boolean> restricted();
+      @Optional
+      Property<String> mailSelectionMessage();
 
-      void restrictionChanged( @Optional DomainEvent event, Boolean restriction );
+      void changedMailSelectionMessage( @Optional DomainEvent event, @Optional String message );
    }
 
    abstract class Mixin
-      implements CaseAccessRestriction, Data
+         implements MailSelectionMessage, Data
    {
-      public void restrict( )
+
+      public String getMailSelectionMessage()
       {
-         if ( !restricted().get() ) {
-            restrictionChanged( null, Boolean.TRUE );
-         }
+         return mailSelectionMessage().get();
       }
-      
-      public void unrestrict( )
+
+      public void changeMailSelectionMessage( @Optional String newMessage )
       {
-         if ( restricted().get() ) {
-            restrictionChanged( null, Boolean.FALSE );
-         }
+         changedMailSelectionMessage( null, newMessage );
       }
-      public void restrictionChanged( @Optional DomainEvent event, Boolean restriction )
+
+      public void changedMailSelectionMessage( @Optional DomainEvent event, @Optional String message )
       {
-         restricted().set( restriction );
+         mailSelectionMessage().set(  message );
       }
    }
 }

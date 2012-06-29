@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.general;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
@@ -37,4 +38,10 @@ public interface FormDraftDTO
 
    @UseDefaults
    Property<List<FormSignatureDTO>> signatures();
+
+   @Optional
+   Property<Boolean> mailSelectionEnablement();
+
+   @Optional
+   Property<String> enteredEmails();
 }

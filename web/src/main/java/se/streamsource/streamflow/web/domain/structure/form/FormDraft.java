@@ -17,9 +17,6 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
@@ -28,20 +25,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
 
-import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
-import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
-import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
-import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
-import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
-import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
@@ -49,8 +36,6 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.util.MultiFieldHelper;
-import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 
 /**
@@ -73,6 +58,12 @@ public interface FormDraft
 
    FieldSubmissionDTO getFieldValue( EntityReference fieldId );
 
+   void enableEmailMessage();
+
+   void disableEmailMessage();
+
+   void changeEmailsToBeNotified( StringValue message );
+
    interface Data
    {
       Property<FormDraftDTO> formDraftValue();
@@ -86,6 +77,10 @@ public interface FormDraft
       void removedFormSignatures( @Optional DomainEvent event );
 
       void changedFieldAttachmentValue( @Optional DomainEvent event, AttachmentFieldDTO fieldAttachment );
+
+      void changedNotifyByEmail( @Optional DomainEvent event, Boolean value );
+
+      void changedEmailsToBeNotified( @Optional DomainEvent event, String emails );
    }
 
    abstract class Mixin
@@ -163,6 +158,36 @@ public interface FormDraft
          formDraftValue().set(formDraftDTO);
       }
 
+      public void enableEmailMessage()
+      {
+         Boolean current = formDraftValue().get().mailSelectionEnablement().get();
+         if ( current == null )
+         {
+            changedNotifyByEmail( null, Boolean.TRUE );
+         } else if ( current.equals( Boolean.FALSE ))
+         {
+            changedNotifyByEmail( null, Boolean.TRUE );
+         }
+      }
+
+      public void disableEmailMessage()
+      {
+         Boolean current = formDraftValue().get().mailSelectionEnablement().get();
+         if ( current == null )
+         {
+            changedNotifyByEmail( null, Boolean.FALSE );
+         } else if ( current.equals( Boolean.TRUE ))
+         {
+            changedNotifyByEmail( null, Boolean.FALSE );
+         }
+      }
+
+      public void changeEmailsToBeNotified( StringValue message )
+      {
+         changedEmailsToBeNotified( null, message.string().get() );
+      }
+
+
       public void changedFieldValue( @Optional DomainEvent event, EntityReference fieldId, String fieldValue )
       {
          ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
@@ -209,6 +234,22 @@ public interface FormDraft
          valueBuilder.prototype().name().set( fieldAttachment.name().get() );
 
          field.value().set( valueBuilder.newInstance().toJSON() );
+
+         formDraftValue().set( builder.newInstance() );
+      }
+
+      public void changedNotifyByEmail( @Optional DomainEvent event, Boolean value )
+      {
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
+         builder.prototype().mailSelectionEnablement().set( value );
+
+         formDraftValue().set( builder.newInstance() );
+      }
+
+      public void changedEmailsToBeNotified( @Optional DomainEvent event, String emails )
+      {
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
+         builder.prototype().enteredEmails().set( emails );
 
          formDraftValue().set( builder.newInstance() );
       }

@@ -14,35 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.administration.form;
+package se.streamsource.streamflow.web.rest.service.mail;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.MailSender;
 
-import se.streamsource.streamflow.util.MultiFieldHelper;
-
-/**
- * JAVADOC
- */
-@Mixins( CheckboxesFieldValue.Mixin.class )
-public interface CheckboxesFieldValue
-      extends SelectionFieldValue
+@Mixins( MailSenderService.Mixin.class )
+public interface MailSenderService
+   extends MailSender, ServiceComposite
 {
+   void sentEmail( EmailValue email );
 
    abstract class Mixin
-      implements FieldValue
+      implements MailSenderService
    {
-      @This CheckboxesFieldValue definition;
 
-      public Boolean validate( String value )
+      @This
+      MailSender mailSender;
+
+      public void sentEmail( EmailValue email )
       {
-         if ("".equals( value )) return true;
-         for (String selection : MultiFieldHelper.options( value ))
-         {
-            if (!definition.values().get().contains( selection ))
-               return false;
-         }
-         return true;
+         mailSender.sentEmail( null, email );
       }
    }
 }

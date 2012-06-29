@@ -24,7 +24,11 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.ActionMap;
+
+import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,6 +53,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLab
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
@@ -81,6 +86,8 @@ public class AccessPointView
    private JLabel selectedProject = new JLabel();
    private StreamflowButton formButton;
    private JLabel selectedForm = new JLabel();
+   private JButton mailSelectionMessageButton;
+   private JLabel mailSelectionMessage = new JLabel();
 
    private StreamflowButton templateButton;
    private RemovableLabel selectedTemplate = new RemovableLabel();
@@ -108,8 +115,13 @@ public class AccessPointView
             if (value instanceof LinkValue)
             {
                return ((LinkValue) value).text().get();
+            } else if ( value instanceof StringValue )
+            {
+               return ((StringValue) value).string().get();
             } else
+            {
                return value;
+            }
          }
 
          public Object fromComponent( Object value )
@@ -226,6 +238,16 @@ public class AccessPointView
 
       accessPointBinder.updateWith( model.getAccessPointValue() );
 
+      javax.swing.Action mailSelectionAction = am.get( "changeMailSelectionMessage" );
+      mailSelectionMessageButton = new JButton( mailSelectionAction );
+
+      mailSelectionMessageButton.setHorizontalAlignment( SwingConstants.LEFT );
+
+      builder.add( mailSelectionMessageButton, cc.xy( 1, 11, CellConstraints.LEFT, CellConstraints.TOP ) );
+
+      builder.add( accessPointBinder.bind( mailSelectionMessage, template.mailSelectionMessage() ),
+            new CellConstraints( 3, 11, 1,1 , CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3,0,0,0 )));
+
       new RefreshWhenShowing( this, model );
    }
 
@@ -318,6 +340,30 @@ public class AccessPointView
 
    }
 
+   @Action
+   public Task changeMailSelectionMessage()
+   {
+      final NameDialog dialog = module.objectBuilderFactory().newObjectBuilder( NameDialog.class ).newInstance();
+
+      dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.mail_selection_message ));
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            if ( dialog.name().isEmpty() )
+            {
+               model.resetMailSelectionMessage();
+            } else
+            {
+               model.setMailSelectionMessage( dialog.name() );
+            }
+         }
+      };
+   }
+
    public void update( Observable o, Object arg )
    {
       if (o == accessPointBinder)
@@ -367,7 +413,7 @@ public class AccessPointView
       if (Events.matches( Events.withNames( "addedLabel",
             "removedLabel", "addedCaseType", "addedProject",
             "addedSelectedForm", "changedProject", "changedCaseType",
-            "formPdfTemplateSet" ), transactions ))
+            "formPdfTemplateSet", "changedMailSelectionMessage" ), transactions ))
       {
          model.refresh();
       }

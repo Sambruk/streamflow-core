@@ -41,6 +41,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplat
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
@@ -82,6 +83,10 @@ public interface AccessPointAdministrationContext
 
    void setformtemplate( EntityValue id );
 
+   void changemailselectionmessage( @Name("mailmessage") String message );
+
+   void resetmailselectionmessage();
+
    abstract class Mixin
          implements AccessPointAdministrationContext
    {
@@ -117,6 +122,16 @@ public interface AccessPointAdministrationContext
             linkBuilder.prototype().href().set( ref.identity() );
             builder.prototype().template().set( linkBuilder.newInstance() );
          }
+
+         ValueBuilder<StringValue> stringBuilder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
+         if ( accessPoint.getMailSelectionMessage() == null )
+         {
+            stringBuilder.prototype().string().set(  "" );
+         } else
+         {
+            stringBuilder.prototype().string().set(  accessPoint.getMailSelectionMessage() );
+         }
+         builder.prototype().mailSelectionMessage().set( stringBuilder.newInstance() );
 
          return builder.newInstance();
       }
@@ -284,6 +299,18 @@ public interface AccessPointAdministrationContext
          FormPdfTemplate accessPoint = role( FormPdfTemplate.class );
 
          accessPoint.setFormPdfTemplate( id.entity().get() == null ? null : module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id.entity().get() ) );
+      }
+
+      public void changemailselectionmessage( @Name("mailmessage") String message )
+      {
+         MailSelectionMessage role = role( MailSelectionMessage.class );
+         role.changeMailSelectionMessage( message );
+      }
+
+      public void resetmailselectionmessage()
+      {
+         MailSelectionMessage role = role( MailSelectionMessage.class );
+         role.changeMailSelectionMessage( null );
       }
    }
 }

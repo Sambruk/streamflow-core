@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -56,6 +57,7 @@ public interface AccessPointEntity
       Labelable.Data,
       SelectedForms.Data,
       FormPdfTemplate.Data,
+      MailSelectionMessage.Data,
       Removable.Data
 {
    abstract class AddProjectConcern

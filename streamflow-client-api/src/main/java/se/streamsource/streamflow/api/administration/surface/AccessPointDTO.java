@@ -19,6 +19,7 @@ package se.streamsource.streamflow.api.administration.surface;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.link.LinkValue;
 
 /**
@@ -40,4 +41,7 @@ public interface AccessPointDTO
 
    @Optional
    Property<LinkValue> template();
+
+   @Optional
+   Property<StringValue> mailSelectionMessage();
 }
