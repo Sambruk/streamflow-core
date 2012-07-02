@@ -144,7 +144,7 @@ public interface SurfaceSummaryContext
          userCases.submitFormAndSendCase( aCase, formSubmission, user );
          FormDraftDTO form = role( FormDraftDTO.class );
 
-         if ( form.mailSelectionEnablement().get() )
+         if ( form.mailSelectionEnablement() != null && form.mailSelectionEnablement().get() )
          {
             try
             {
