@@ -63,6 +63,7 @@ import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -166,7 +167,8 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       leftPane.setFocusable( false );
       DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout, leftPane );
       leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2, Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX11 ) );
-
+      
+      
       selectedCaseType.getLabel().setFont( selectedCaseType.getLabel().getFont().deriveFont( Font.BOLD ) );
       selectedCaseType.getButton().addActionListener( am.get( "removeCaseType" ) );
       valueBinder.bind( "caseType", selectedCaseType );
@@ -222,15 +224,38 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             new CellConstraints( 4, 3, 1, 1, CellConstraints.FILL, CellConstraints.BOTTOM,
                   new Insets(4, 0, 0, 0 ) ) );
 
-      leftBuilder.add( valueBinder.bind( "priority", actionBinder.bind(
-            "changePriority", casePriority = (JComboBox)COMBOBOX.newField() ) )  ,
+      leftBuilder.nextLine();
+
+      // Select labels
+      javax.swing.Action labelAction = labels.getActionMap().get( "addLabel" );
+      labelButton = new StreamflowButton( labelAction );
+      // NotificationGlassPane.registerButton(labelButton);
+      labelButton.registerKeyboardAction( labelAction,
+            (KeyStroke) labelAction.getValue( javax.swing.Action.ACCELERATOR_KEY ), JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      labelButton.setHorizontalAlignment( SwingConstants.LEFT );
+      labels.setButtonRelation( labelButton );
+      refreshLabelComponents.enabledOn( "addlabel", labelButton, labels );
+
+      leftBuilder.add( labelButton, new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
+            new Insets( 5, 0, 0, 0 ) ) );
+
+      labels.setPreferredSize( new Dimension( 500, 50 ) );
+      leftBuilder.add( labels, new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(
+            5, 0, 0, 0 ) ) );
+      
+      JPanel prioPanel = new JPanel(new BorderLayout());
+      prioPanel.add(  valueBinder.bind( "priority", actionBinder.bind(
+            "changePriority", casePriority = (JComboBox)COMBOBOX.newField() ) ) );
+      leftBuilder.add(prioPanel  ,
             new CellConstraints( 4, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
+                  
             new Insets(2, 0, 0, 0 ) ) );
 
       priorityLabel.setLabelFor( casePriority );
       refreshComponents.visibleOn( "changepriority", casePriority, priorityLabel );
       refreshComponents.enabledOn( "changepriority", casePriority, priorityLabel );
-      casePriority.setRenderer( new LinkListCellRenderer(){
+      casePriority.setRenderer( new DefaultListCellRenderer(){
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
          {
 
@@ -238,10 +263,11 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             String val = itemValue == null ? "" : itemValue.text().get();
 
             JPanel panel = new JPanel( );
+            panel.setOpaque( false );
             FormLayout layout = new FormLayout( "10dlu, 60dlu:grow", "pref" );
             DefaultFormBuilder formBuilder = new DefaultFormBuilder( layout, panel );
 
-            panel.setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
+            panel.setBorder( BorderFactory.createEmptyBorder( 2,0,1,0 ) );
             JLabel label = new JLabel( ){
                @Override
                protected void paintComponent(Graphics g) {
@@ -282,26 +308,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             return panel;
          }
       });
-      
-      leftBuilder.nextLine();
-
-      // Select labels
-      javax.swing.Action labelAction = labels.getActionMap().get( "addLabel" );
-      labelButton = new StreamflowButton( labelAction );
-      // NotificationGlassPane.registerButton(labelButton);
-      labelButton.registerKeyboardAction( labelAction,
-            (KeyStroke) labelAction.getValue( javax.swing.Action.ACCELERATOR_KEY ), JComponent.WHEN_IN_FOCUSED_WINDOW );
-
-      labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      labels.setButtonRelation( labelButton );
-      refreshLabelComponents.enabledOn( "addlabel", labelButton, labels );
-
-      leftBuilder.add( labelButton, new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP,
-            new Insets( 5, 0, 0, 0 ) ) );
-
-      labels.setPreferredSize( new Dimension( 500, 50 ) );
-      leftBuilder.add( labels, new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(
-            5, 0, 0, 0 ) ) );
       leftBuilder.nextLine();
 
       
