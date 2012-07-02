@@ -43,6 +43,12 @@ public class SurfaceSubmittedFormContext
 
    public PDDocument generateformaspdf() throws Throwable
    {
+      return generatePdf();
+
+   }
+
+   private PDDocument generatePdf() throws Throwable
+   {
       SubmittedFormValue submittedFormValue = role(SubmittedFormValue.class);
 
       FormPdfTemplate.Data selectedTemplate = role( FormPdfTemplate.Data.class);
@@ -67,6 +73,5 @@ public class SurfaceSubmittedFormContext
       CaseId.Data idData = role( CaseId.Data.class);
 
       return pdfGenerator.generateSubmittedFormPdf( submittedFormValue, idData, uri, locale );
-
    }
 }

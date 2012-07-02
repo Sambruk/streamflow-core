@@ -113,7 +113,7 @@ public interface SubmittedForms
                if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
                {
                   // Is mandatory field missing?
-                  if (field.field().get().mandatory().get() && Strings.empty( field.value().get()))
+                  if (field.field().get().mandatory().get() && Strings.empty( field.value().get() ))
                      throw new IllegalArgumentException( "mandatory_value_missing" );
                   // Validate
                   if (field.field().get() != null && field.value().get() != null && !field.field().get().fieldValue().get().validate( field.value().get() ))
@@ -132,7 +132,7 @@ public interface SubmittedForms
                   if( field.field().get().fieldValue().get() instanceof AttachmentFieldValue )
                   {
                      try
-                     { 
+                     {
                         AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get());
                         AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
                         ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
@@ -169,5 +169,6 @@ public interface SubmittedForms
       {
          return !state.submittedForms().get().isEmpty();
       }
+
    }
 }

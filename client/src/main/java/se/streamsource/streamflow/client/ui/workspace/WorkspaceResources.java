@@ -167,7 +167,7 @@ public enum WorkspaceResources
    caze_reinstate, priority_label, case_priority_header, no_priority,
    
    // Form on Close
-   formondelete_confirmation;
-   
-   
+   formondelete_confirmation,
+
+   mail_selection_message
 }

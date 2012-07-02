@@ -224,7 +224,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                builder.prototype().content().set( createFormatedReport(notification,"dueonnotificationtextmail_sv.html") );
                builder.prototype().contentType().set( "text/plain" );
                builder.prototype().contentHtml().set( createFormatedReport(notification,"dueonnotificationhtmlmail_sv.html") );
-           
+
                mailSender.sentEmail( null, builder.newInstance() );
             }
          }
