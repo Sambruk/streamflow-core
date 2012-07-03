@@ -344,24 +344,31 @@ public class AccessPointView
    public Task changeMailSelectionMessage()
    {
       final NameDialog dialog = module.objectBuilderFactory().newObjectBuilder( NameDialog.class ).newInstance();
+      dialog.nameField.setText( mailSelectionMessage.getText() );
 
       dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.mail_selection_message ));
 
-      return new CommandTask()
+      if ( dialog.name() != null )
       {
-         @Override
-         public void command()
-               throws Exception
+         return new CommandTask()
          {
-            if ( dialog.name().isEmpty() )
+            @Override
+            public void command()
+                  throws Exception
             {
-               model.resetMailSelectionMessage();
-            } else
-            {
-               model.setMailSelectionMessage( dialog.name() );
+               if ( dialog.name().isEmpty() )
+               {
+                  model.resetMailSelectionMessage();
+               } else
+               {
+                  model.setMailSelectionMessage( dialog.name() );
+               }
             }
-         }
-      };
+         };
+      } else
+      {
+         return null;
+      }
    }
 
    public void update( Observable o, Object arg )
