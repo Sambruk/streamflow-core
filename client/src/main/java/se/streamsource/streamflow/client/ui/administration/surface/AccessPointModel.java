@@ -175,10 +175,6 @@ public class AccessPointModel extends Observable
    public void setMailSelectionMessage( String message )
    {
       Form form = new Form( );
-      if ( message.isEmpty() )
-      {
-         message = null;
-      }
       form.set( "mailmessage", message );
       client.postCommand( "changemailselectionmessage", form );
    }

@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.administration.surface;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -26,12 +27,16 @@ import java.util.Observer;
 import javax.swing.ActionMap;
 
 import se.streamsource.dci.value.*;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
@@ -53,6 +58,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLab
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -66,6 +72,7 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.Sizes;
+import se.streamsource.streamflow.util.Strings;
 
 
 public class AccessPointView
@@ -86,8 +93,9 @@ public class AccessPointView
    private JLabel selectedProject = new JLabel();
    private StreamflowButton formButton;
    private JLabel selectedForm = new JLabel();
-   private JButton mailSelectionMessageButton;
-   private JLabel mailSelectionMessage = new JLabel();
+
+   private JLabel mailSelectionLabel = new JLabel();
+   private JTextField mailSelectionField;
 
    private StreamflowButton templateButton;
    private RemovableLabel selectedTemplate = new RemovableLabel();
@@ -238,14 +246,12 @@ public class AccessPointView
 
       accessPointBinder.updateWith( model.getAccessPointValue() );
 
-      javax.swing.Action mailSelectionAction = am.get( "changeMailSelectionMessage" );
-      mailSelectionMessageButton = new JButton( mailSelectionAction );
+      mailSelectionLabel.setText( i18n.text( AdministrationResources.changeMailSelectionMessage ) );
+      mailSelectionLabel.setToolTipText( i18n.text( AdministrationResources.changeMailSelectionMessageHint ) );
+      builder.add( mailSelectionLabel, cc.xy( 1, 11, CellConstraints.LEFT, CellConstraints.TOP ) );
 
-      mailSelectionMessageButton.setHorizontalAlignment( SwingConstants.LEFT );
-
-      builder.add( mailSelectionMessageButton, cc.xy( 1, 11, CellConstraints.LEFT, CellConstraints.TOP ) );
-
-      builder.add( accessPointBinder.bind( mailSelectionMessage, template.mailSelectionMessage() ),
+      builder.add( accessPointBinder.bind( mailSelectionField = (JTextField) BindingFormBuilder.Fields.TEXTFIELD.newField(),
+            template.mailSelectionMessage() ),
             new CellConstraints( 3, 11, 1,1 , CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3,0,0,0 )));
 
       new RefreshWhenShowing( this, model );
@@ -344,9 +350,9 @@ public class AccessPointView
    public Task changeMailSelectionMessage()
    {
       final NameDialog dialog = module.objectBuilderFactory().newObjectBuilder( NameDialog.class ).newInstance();
-      dialog.nameField.setText( mailSelectionMessage.getText() );
+      //dialog.nameField.setText( mailSelectionMessage.getText() );
 
-      dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.mail_selection_message ));
+      dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.mail_selection_message ) );
 
       if ( dialog.name() != null )
       {
@@ -385,6 +391,21 @@ public class AccessPointView
                      throws Exception
                {
                   model.setTemplate( null );
+               }
+            }.execute();
+         } else if ( property.qualifiedName().name().equals( "mailSelectionMessage" ))
+         {
+            new CommandTask(){
+               @Override
+               protected void command() throws Exception
+               {
+                  String message = (String) property.get();
+                  if (Strings.empty( message ) )
+                  {
+                     model.resetMailSelectionMessage();
+                  } else {
+                     model.setMailSelectionMessage( message );
+                  }
                }
             }.execute();
          }

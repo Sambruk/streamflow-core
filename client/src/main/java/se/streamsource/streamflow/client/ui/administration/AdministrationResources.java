@@ -186,5 +186,7 @@ public enum AdministrationResources
    casepriority_default_value,
    formondelete_separator,
    choose_form_on_remove,
-   fieldgroup_field_type
+   fieldgroup_field_type,
+   changeMailSelectionMessage,
+   changeMailSelectionMessageHint,
 }
