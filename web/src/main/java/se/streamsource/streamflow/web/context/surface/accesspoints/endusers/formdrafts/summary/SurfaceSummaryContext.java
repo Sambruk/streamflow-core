@@ -35,21 +35,29 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.*;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
+import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
@@ -65,6 +73,8 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -161,7 +171,26 @@ public interface SurfaceSummaryContext
                }
                if ( submittedFormValue != null )
                {
-                  notifyByMail( submittedFormValue, form.enteredEmails().get() );
+                  // find all form attachments and attach them to the email as well
+                  List<AttachedFileValue> formAttachments = new ArrayList<AttachedFileValue>();
+                  for (SubmittedFieldValue value : submittedFormValue.fields())
+                  {
+                     FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, value.field().get().identity() );
+                     if ( field.fieldValue().get() instanceof AttachmentFieldValue )
+                     {
+                        AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, value.value().get() );
+                        AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+
+                        ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory().newValueBuilder( AttachedFileValue.class );
+                        formAttachment.prototype().mimeType().set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name().get() ) );
+                        formAttachment.prototype().uri().set( attachment.uri().get() );
+                        formAttachment.prototype().modificationDate().set( attachment.modificationDate().get() );
+                        formAttachment.prototype().name().set( currentFormDraftAttachmentField.name().get() );
+                        formAttachment.prototype().size().set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
+                        formAttachments.add( formAttachment.newInstance() );
+                     }
+                  }
+                  notifyByMail( submittedFormValue, form.enteredEmails().get(), formAttachments );
                }
             } catch (Throwable throwable)
             {
@@ -248,7 +277,7 @@ public interface SurfaceSummaryContext
          return pdfGenerator.generateSubmittedFormPdf( submittedFormValue, idData, uri, locale );
       }
 
-      private void notifyByMail( SubmittedFormValue form, String emails ) throws Throwable
+      private void notifyByMail( SubmittedFormValue form, String emails, List<AttachedFileValue> formAttachments ) throws Throwable
       {
          String[] mails = emails.split( "," );
          PDDocument document = generatePdf( form );
@@ -257,10 +286,10 @@ public interface SurfaceSummaryContext
          AccessPoint role = role( AccessPoint.class );
          Date submittedOn = form.submissionDate().get();
 
-         mailFormPDF( role.getDescription(), submittedOn, document, mails );
+         mailFormPDF( role.getDescription(), submittedOn, document, formAttachments, mails );
       }
 
-      private void mailFormPDF( String accessPointName, Date submittedOn, PDDocument document, String... recipients )
+      private void mailFormPDF( String accessPointName, Date submittedOn, PDDocument document, List<AttachedFileValue> formAttachments, String... recipients )
       {
          ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), locale );
 
@@ -286,6 +315,13 @@ public interface SurfaceSummaryContext
                attachment.prototype().name().set( accessPointName + ".pdf");
                attachment.prototype().size().set(attachmentStore.getAttachmentSize(id));
                attachments.add(attachment.newInstance());
+
+               if ( formAttachments.size() > 0 ) {
+                  for (AttachedFileValue formAttachment : formAttachments)
+                  {
+                     attachments.add( formAttachment );
+                  }
+               }
                mailSender.sentEmail( builder.newInstance() );
             }
          } catch (Throwable throwable)
