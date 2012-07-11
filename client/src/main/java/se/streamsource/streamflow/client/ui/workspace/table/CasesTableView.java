@@ -232,6 +232,10 @@ public class CasesTableView
                caseTable.setModel( new EventJXTableModel<CaseTableValue>( groupingList, tableFormat ) );
             }
 
+            if( !model.containsCaseWithPriority()) {
+               model.addInvisibleColumn( 8 );
+            }
+            
             for (Integer invisibleCol : model.getInvisibleColumns())
             {
                TableColumnModelExt tm = (TableColumnModelExt) caseTable.getColumnModel();
@@ -239,10 +243,6 @@ public class CasesTableView
                   caseTable.getColumnExt( invisibleCol ).setVisible( false );
             }
 
-            if( !model.containsCaseWithPriority()
-                  && !model.getInvisibleColumns().contains( 8 )
-                  && caseTable.getColumnCount( ) > 8 )
-              caseTable.getColumnExt(8).setVisible( false );
          }
       } );
 
