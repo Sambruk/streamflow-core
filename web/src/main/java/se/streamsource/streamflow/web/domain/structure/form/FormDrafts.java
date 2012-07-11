@@ -167,15 +167,32 @@ public interface FormDrafts
             {
                FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
 
-               if (fieldValue instanceof FieldGroupFieldValue) {
+               if (fieldValue instanceof FieldGroupFieldValue)
+               {
+
                   UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
                   FieldGroup fieldGroup = uow.get( FieldGroup.class, ((FieldGroupFieldValue)fieldValue).fieldGroup().get().identity() );
 
-                  for (Field subField : ((Fields.Data)fieldGroup).fields()) {
+                  ValueBuilder<FieldGroupFieldValue> fieldValueBuilder = module.valueBuilderFactory().newValueBuilder( FieldGroupFieldValue.class ).withPrototype( (FieldGroupFieldValue) fieldValue );
+                  fieldValueBuilder.prototype().fieldCount().set( ((Fields.Data)fieldGroup).fields().count() );
+                  FieldSubmissionDTO fieldGroupDefinition = createFieldSubmission( field, fieldValueBuilder.newInstance(), submittedFormValue, fieldBuilder, valueBuilder );
+
+                  pageBuilder.prototype().fields().get().add( fieldGroupDefinition );
+
+                  for (Field subField : ((Fields.Data)fieldGroup).fields())
+                  {
                      FieldValue subFieldValue = ((FieldValueDefinition.Data) subField).fieldValue().get();
-                     pageBuilder.prototype().fields().get().add( createFieldSubmission( subField, subFieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
+
+                     ValueBuilder<FieldSubmissionDTO> fieldSubmissionBuilder = fieldSubmissionBuilder( subField, subFieldValue, submittedFormValue, fieldBuilder, valueBuilder );
+                     // the field group is flattened and fields can be recognized by their entity reference "groupId"_"fieldId"
+                     // when submitting this will be changed from "groupId"_"fieldId" to "fieldId"
+                     valueBuilder.prototype().field().set( EntityReference.parseEntityReference( EntityReference.getEntityReference( field ) + "_" + EntityReference.getEntityReference( subField ) ) );
+                     fieldSubmissionBuilder.prototype().field().set( valueBuilder.newInstance() );
+
+                     pageBuilder.prototype().fields().get().add( fieldSubmissionBuilder.newInstance() );
                   }
-               } else {
+               } else
+               {
                   pageBuilder.prototype().fields().get().add( createFieldSubmission( field, fieldValue, submittedFormValue, fieldBuilder, valueBuilder ) );
                }
             }
@@ -190,6 +207,13 @@ public interface FormDrafts
       }
 
       private FieldSubmissionDTO createFieldSubmission(Field field, FieldValue fieldValue,
+                                                       SubmittedFormValue submittedFormValue, ValueBuilder<FieldSubmissionDTO> fieldBuilder,
+                                                       ValueBuilder<FieldDefinitionValue> valueBuilder)
+      {
+         return fieldSubmissionBuilder( field, fieldValue, submittedFormValue, fieldBuilder, valueBuilder ).newInstance();
+      }
+
+      private ValueBuilder<FieldSubmissionDTO> fieldSubmissionBuilder(Field field, FieldValue fieldValue,
             SubmittedFormValue submittedFormValue, ValueBuilder<FieldSubmissionDTO> fieldBuilder,
             ValueBuilder<FieldDefinitionValue> valueBuilder)
       {
@@ -223,7 +247,7 @@ public interface FormDrafts
          fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
          fieldBuilder.prototype().enabled().set( true );
 
-         return fieldBuilder.newInstance();
+         return fieldBuilder;
       }
       
       public FormDraft createdFormDraft(@Optional DomainEvent event, FormDraftDTO formDraftDTO, String id)

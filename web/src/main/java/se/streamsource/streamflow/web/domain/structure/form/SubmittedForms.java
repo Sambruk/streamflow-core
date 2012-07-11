@@ -29,6 +29,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -119,7 +120,18 @@ public interface SubmittedForms
                   if (field.field().get() != null && field.value().get() != null && !field.field().get().fieldValue().get().validate( field.value().get() ))
                      throw new IllegalArgumentException( "invalid_value" );
 
-                  fieldBuilder.prototype().field().set( field.field().get().field().get() );
+                  if ( field.field().get().field().get().identity().contains( "_" ) )
+                  {
+                     // this is a field of a field group. The entity id need to be fixed
+                     // back from the change done in FormDrafts.createDraft
+                     String concatenated = field.field().get().field().get().identity();
+                     String fixed = concatenated.substring( concatenated.indexOf( "_" ) + 1 );
+                     fieldBuilder.prototype().field().set( EntityReference.parseEntityReference( fixed ) );
+                  } else
+                  {
+                     fieldBuilder.prototype().field().set( field.field().get().field().get() );
+                  }
+
                   if ( field.value().get() == null )
                   {
                      fieldBuilder.prototype().value().set( "" );

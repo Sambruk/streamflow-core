@@ -16,14 +16,20 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Holds the definition of a Group Field.
+ * The field count is used for UI elements
+ * to know how many elements is included
  */
 public interface FieldGroupFieldValue
       extends FieldValue
 {
    Property<EntityReference> fieldGroup();
+
+   @Optional
+   Property<Integer> fieldCount();
 }
