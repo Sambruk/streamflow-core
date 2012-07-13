@@ -369,6 +369,8 @@ public interface ReceiveMailService
                      // and create failure case
                      String subj = "Unkonwn content type: " + message.getSubject();
                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     builder.prototype().content().set( body );
+                     builder.prototype().contentType().set( message.getContentType() );
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      copyToArchive.add( message );
 
@@ -380,6 +382,8 @@ public interface ReceiveMailService
                      // and create failure case
                      String subj = "Unkonwn content type: " + message.getSubject();
                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     builder.prototype().content().set( body );
+                     builder.prototype().contentType().set( message.getContentType() );
                      systemDefaults.createCaseOnEmailFailure(  builder.newInstance() );
                      copyToArchive.add( message );
 
@@ -401,6 +405,8 @@ public interface ReceiveMailService
                {
                   String subj = "Unknown error: " + message.getSubject();
                   builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                  builder.prototype().content().set( e.getMessage() );
+                  builder.prototype().contentType().set( message.getContentType() );
                   systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                   copyToArchive.add( message );
 
