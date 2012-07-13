@@ -78,24 +78,25 @@ public class CasesDetailView
       setPreferredSize( new Dimension( getWidth(), 500 ) );
    }
 
-   public void show( final CaseModel model )
+   public void show( CaseModel model )
    {
+      int selectedTab = -1;
+
       if (currentCase == null || !currentCase.equals( model ))
       {
+
          if (currentView != null)
          {
-            int tab = currentView.getSelectedTab();
-            currentCase = model;
-            currentView = module.objectBuilderFactory().newObjectBuilder(CaseDetailView.class).use( model ).newInstance();
-            currentView.setSelectedTab( tab );
-            casePanel.add( currentView, BorderLayout.CENTER );
-         } else
-         {
-            currentCase = model;
-            currentView = module.objectBuilderFactory().newObjectBuilder(CaseDetailView.class).use( model ).newInstance();
-            casePanel.add( currentView, BorderLayout.CENTER );
-            layout.show( this, "detail" );
+            selectedTab = currentView.getSelectedTab();
+            casePanel.remove( currentView );
+            currentView = null;
          }
+         currentCase = model;
+         currentView = module.objectBuilderFactory().newObjectBuilder(CaseDetailView.class).use( model ).newInstance();
+         if( selectedTab != -1 )
+            currentView.setSelectedTab( selectedTab );
+         casePanel.add( currentView, BorderLayout.CENTER );
+         layout.show( this, "detail" );
          currentView.requestFocusInWindow();
       }
    }
