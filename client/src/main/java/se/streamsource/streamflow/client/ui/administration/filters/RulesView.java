@@ -16,12 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.administration.filters;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.Component;
-
-import javax.swing.ActionMap;
-
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -29,20 +24,23 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import ca.odell.glazedlists.swing.EventListModel;
+
+import javax.swing.ActionMap;
+import java.awt.Component;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * TODO
@@ -102,7 +100,7 @@ public class RulesView
    public Task remove()
    {
       ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
-      final LinkValue linkValue = model.getIndex().links().get().get(list.getSelectedIndex());
+      final LinkValue linkValue = (LinkValue)list.getSelectedValue();
       dialog.setRemovalMessage(linkValue.text().get());
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(StreamflowResources.confirmation) );
       if (dialog.isConfirmed())
