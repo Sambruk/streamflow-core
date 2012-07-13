@@ -96,7 +96,6 @@ public class AdministrationModel
       super.refresh();
 
       LinksValue administration = getIndex();
-      links.clear();
       EventListSynch.synchronize(administration.links().get(), links);
    }
 

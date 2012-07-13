@@ -40,6 +40,7 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.ResourceActionEnabler;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
@@ -73,7 +74,8 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  */
 public class AdministrationTreeView
       extends JPanel
-      implements TransactionListener
+      implements TransactionListener,Refreshable
+
 {
    private JXTree tree;
 
@@ -90,10 +92,12 @@ public class AdministrationTreeView
    {
       super( new BorderLayout() );
       this.model = model;
+
       tree = new JXTree( new EventTreeModel<LinkValue>(model.getLinkTree()) );
 
       tree.setRootVisible( false );
       tree.setShowsRootHandles( true );
+      tree.setExpandsSelectedPaths( true );
 
       DefaultTreeRenderer renderer = new DefaultTreeRenderer( new WrappingProvider(
             new IconValue()
@@ -184,7 +188,7 @@ public class AdministrationTreeView
          {
             if (tree.isSelectionEmpty())
             {
-               am.get("create").setEnabled(false);
+               am.get("create").setEnabled( false );
                optionsButton.setEnabled( false );
             } else
             {
@@ -205,6 +209,7 @@ public class AdministrationTreeView
          }
       } );
 
+      new RefreshWhenShowing( this,this );
    }
 
 
@@ -356,5 +361,10 @@ public class AdministrationTreeView
 
          tree.setSelectionRows( selected );
       }
+   }
+
+   public void refresh()
+   {
+      tree.expandRow(0);
    }
 }
