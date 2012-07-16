@@ -392,6 +392,12 @@ public interface ReceiveMailService
                      continue;
                   }
 
+                  // make sure mail content fit's into statistic database - truncate on 65.500 characters.
+                  if( builder.prototype().content().get().length() > 65000 )
+                  {
+                     builder.prototype().content().set( builder.prototype().content().get().substring( 0, 65000 ) );
+                  }
+
                   mailReceiver.receivedEmail(null, builder.newInstance());
 
                   uow.complete();
