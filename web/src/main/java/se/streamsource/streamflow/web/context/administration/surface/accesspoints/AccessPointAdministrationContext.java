@@ -64,7 +64,7 @@ import static se.streamsource.dci.api.RoleMap.role;
 public interface AccessPointAdministrationContext
       extends IndexContext<AccessPointDTO>, Context, DeleteContext
 {
-   void changedescription( @MaxLength(50) @Name("string") String name )
+   void changedescription( @MaxLength(50) @Name("name") String name )
          throws IllegalArgumentException;
 
    List<Project> possibleprojects();

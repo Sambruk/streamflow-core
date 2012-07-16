@@ -23,6 +23,7 @@ import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -41,6 +42,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 import static se.streamsource.dci.api.RoleMap.*;
@@ -53,6 +55,25 @@ public class EmailAccessPointAdministrationContext
 {
    @Structure
    Module module;
+
+   public void changedescription( @MaxLength(50) @Name("name") String name )
+         throws IllegalArgumentException
+   {
+      // check if the new description is valid
+      EmailAccessPoints.Data accessPoints = RoleMap.role( EmailAccessPoints.Data.class );
+      List<EmailAccessPoint> accessPointsList = accessPoints.emailAccessPoints().toList();
+      for (EmailAccessPoint accessPoint : accessPointsList)
+      {
+         if (accessPoint.getDescription().equals( name ))
+         {
+            throw new IllegalArgumentException( "accesspoint_already_exists" );
+         }
+      }
+
+      RoleMap.role( EmailAccessPoint.class ).changeDescription( name );
+
+   }
+
 
    public void delete() throws IOException
    {
