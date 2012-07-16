@@ -169,11 +169,11 @@
     </contributors>
 
     <inceptionYear>2009-2012</inceptionYear>
-    <url>http://www.streamsource.se</url>
+    <url>http://www.jayway.com/streamflow/</url>
 
     <organization>
-        <name>Streamsource AB</name>
-        <url>www.streamsource.se</url>
+        <name>Jayway Products AB</name>
+        <url>http://www.jayway.com/streamflow/</url>
     </organization>
 
     <build>

@@ -1,6 +1,6 @@
 @REM
 @REM
-@REM Copyright 2009-2012 Streamsource AB
+@REM Copyright 2009-2012 Jayway Products AB
 @REM
 @REM Licensed under the Apache License, Version 2.0 (the "License");
 @REM you may not use this file except in compliance with the License.
