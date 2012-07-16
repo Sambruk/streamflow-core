@@ -249,7 +249,7 @@ public class CaseNoteView
             itemPanel.setLayout( new BoxLayout( itemPanel, BoxLayout.X_AXIS ) );
             
             JLabel date = new JLabel(DateFormats.getProgressiveDateTimeValue( note.createdOn().get(),
-                  Locale.getDefault() ) + "\t", JLabel.LEFT );
+                  Locale.getDefault() ) + "   ", JLabel.LEFT );
             JLabel name = new JLabel( note.creator().get(), JLabel.RIGHT);
             
             itemPanel.add( date, Box.LEFT_ALIGNMENT);
