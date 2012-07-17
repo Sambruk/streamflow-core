@@ -41,6 +41,7 @@ import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValu
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
@@ -178,16 +179,19 @@ public interface SurfaceSummaryContext
                      FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, value.field().get().identity() );
                      if ( field.fieldValue().get() instanceof AttachmentFieldValue )
                      {
-                        AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, value.value().get() );
-                        AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+                        if ( !Strings.empty( value.value().get() ) )
+                        {
+                           AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, value.value().get() );
+                           AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
 
-                        ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory().newValueBuilder( AttachedFileValue.class );
-                        formAttachment.prototype().mimeType().set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name().get() ) );
-                        formAttachment.prototype().uri().set( attachment.uri().get() );
-                        formAttachment.prototype().modificationDate().set( attachment.modificationDate().get() );
-                        formAttachment.prototype().name().set( currentFormDraftAttachmentField.name().get() );
-                        formAttachment.prototype().size().set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
-                        formAttachments.add( formAttachment.newInstance() );
+                           ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory().newValueBuilder( AttachedFileValue.class );
+                           formAttachment.prototype().mimeType().set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name().get() ) );
+                           formAttachment.prototype().uri().set( attachment.uri().get() );
+                           formAttachment.prototype().modificationDate().set( attachment.modificationDate().get() );
+                           formAttachment.prototype().name().set( currentFormDraftAttachmentField.name().get() );
+                           formAttachment.prototype().size().set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
+                           formAttachments.add( formAttachment.newInstance() );
+                        }
                      }
                   }
                   notifyByMail( submittedFormValue, form.enteredEmails().get(), formAttachments );
