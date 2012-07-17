@@ -50,40 +50,7 @@ public class AdministrationModel
    Module module;
 
    private EventList<LinkValue> links = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
-   private TreeList<LinkValue> linkTree = new TreeList<LinkValue>(links, new TreeList.Format<LinkValue>()
-   {
-      public void getPath(List<LinkValue> linkValues, LinkValue linkValue)
-      {
-         String classes = linkValue.classes().get();
-         if (classes != null)
-            for (LinkValue value : links)
-            {
-               if (classes.contains(value.id().get()))
-               {
-                  getPath(linkValues, value);
-                  break;
-               }
-            }
-
-         linkValues.add(linkValue);
-      }
-
-      public boolean allowsChildren(LinkValue linkValue)
-      {
-         for (LinkValue link : links)
-         {
-            String classes = link.classes().get();
-            if (classes != null && classes.contains(linkValue.id().get()))
-               return true;
-         }
-         return false;
-      }
-
-      public Comparator<? extends LinkValue> getComparator(int i)
-      {
-         return null;
-      }
-   }, TreeList.NODES_START_EXPANDED);
+   private TreeList<LinkValue> linkTree = new TreeList<LinkValue>(links, new LinkValueFormat(), TreeList.NODES_START_EXPANDED);
 
    public AdministrationModel()
    {
@@ -97,6 +64,8 @@ public class AdministrationModel
 
       LinksValue administration = getIndex();
       EventListSynch.synchronize(administration.links().get(), links);
+
+      linkTree = new TreeList<LinkValue>(links, new LinkValueFormat(), TreeList.NODES_START_EXPANDED);
    }
 
    public TreeList<LinkValue> getLinkTree()
@@ -176,5 +145,40 @@ public class AdministrationModel
    {
 // TODO       if (Events.matches( transactions, Events.onEntities( )))
       refresh();
+   }
+
+   private class LinkValueFormat implements TreeList.Format<LinkValue>
+   {
+      public void getPath(List<LinkValue> linkValues, LinkValue linkValue)
+      {
+         String classes = linkValue.classes().get();
+         if (classes != null)
+            for (LinkValue value : links)
+            {
+               if (classes.contains(value.id().get()))
+               {
+                  getPath(linkValues, value);
+                  break;
+               }
+            }
+
+         linkValues.add(linkValue);
+      }
+
+      public boolean allowsChildren(LinkValue linkValue)
+      {
+         for (LinkValue link : links)
+         {
+            String classes = link.classes().get();
+            if (classes != null && classes.contains(linkValue.id().get()))
+               return true;
+         }
+         return false;
+      }
+
+      public Comparator<? extends LinkValue> getComparator(int i)
+      {
+         return null;
+      }
    }
 }

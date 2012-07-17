@@ -353,6 +353,7 @@ public class AdministrationTreeView
          int[] selected = tree.getSelectionRows();
 
          model.notifyTransactions( transactions );
+         tree.setModel( new EventTreeModel<LinkValue>(model.getLinkTree()) );
 
          for (Integer expandedRow : expandedRows)
          {
