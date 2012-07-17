@@ -69,8 +69,7 @@ public class CaseInfoView extends JPanel
       setPreferredSize( new Dimension( 800, 50 ) );
 
       setLayout( new BorderLayout() );
-      lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
-      lock.setToolTipText( i18n.text( WorkspaceResources.case_is_restricted ) );
+      lock.setIcon( i18n.icon( CaseResources.case_unrestricted_icon ) );
       add( lock, BorderLayout.WEST );
 
       JPanel topPanel = new JPanel();
@@ -128,7 +127,14 @@ public class CaseInfoView extends JPanel
    {
       CaseDTO aCase = model.getIndex();
 
-      lock.setVisible( aCase.restricted().get() );
+      if ( aCase.restricted().get() )
+      {
+         lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
+      } else
+      {
+         lock.setIcon( i18n.icon( CaseResources.case_unrestricted_icon ) );
+         lock.setToolTipText( i18n.text( WorkspaceResources.case_is_unrestricted ) );
+      }
       PermissionsDTO permissions = model.permissions();
       if ( permissions.readAccess().get() != null &&
            permissions.writeAccess().get() != null )
