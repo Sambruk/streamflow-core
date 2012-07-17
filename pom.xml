@@ -834,7 +834,7 @@
                                         <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
                                         <resourceBundles>
                                             <resourceBundle>
-                                                se.streamsource.streamflow:streamflow-jar-resource-bundle:1.2
+                                                se.streamsource.streamflow:streamflow-jar-resource-bundle:1.3
                                             </resourceBundle>
                                         </resourceBundles>
                                         <supplementalModelArtifacts>
