@@ -133,14 +133,8 @@ public class CaseInfoView extends JPanel
       } else
       {
          lock.setIcon( i18n.icon( CaseResources.case_unrestricted_icon ) );
-         lock.setToolTipText( i18n.text( WorkspaceResources.case_is_unrestricted ) );
       }
-      PermissionsDTO permissions = model.permissions();
-      if ( permissions.readAccess().get() != null &&
-           permissions.writeAccess().get() != null )
-      {
-         lock.setToolTipText( buildToolTipText( permissions ) );
-      }
+      lock.setToolTipText( buildToolTipText( model.permissions() ) );
 
       statusLabel.setStatus( aCase.status().get(), aCase.resolution().get() );
 
