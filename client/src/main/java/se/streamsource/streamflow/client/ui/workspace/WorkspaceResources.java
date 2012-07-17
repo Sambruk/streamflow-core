@@ -172,7 +172,5 @@ public enum WorkspaceResources
    // Form on Close
    formondelete_confirmation,
 
-   case_is_unrestricted,
-
    mail_selection_message
 }
