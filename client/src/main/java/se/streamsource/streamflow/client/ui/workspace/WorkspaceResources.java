@@ -117,6 +117,9 @@ public enum WorkspaceResources
    wrong_format_title,
 
    case_is_restricted,
+   restrict,
+   read,
+   write,
 
    // CasesTableView sorting and grouping
    search,
@@ -165,7 +168,7 @@ public enum WorkspaceResources
    search_period,
    printing_configuration,
    caze_reinstate, priority_label, case_priority_header, no_priority,
-   
+
    // Form on Close
    formondelete_confirmation,
 

@@ -16,9 +16,24 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * JAVADOC
@@ -26,8 +41,36 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 public class CaseContext
    implements IndexContext<Case>
 {
+   @Structure
+   Module module;
+
+   @Uses
+   Locale locale;
+
    public Case index()
    {
       return RoleMap.role( Case.class );
+   }
+
+   public PermissionsDTO permissions()
+   {
+      // find the organization setting for case restriction
+      Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork()
+            .get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+
+      CaseAccessDefaults caseAccessDefaults =  ((Organizations.Data) organizations).organization().get();
+
+      ValueBuilder<PermissionsDTO> builder = module.valueBuilderFactory().newValueBuilder( PermissionsDTO.class );
+      ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), locale );
+      ResourceBundle permissionTypeBundle = ResourceBundle.getBundle( PermissionType.class.getName(), locale );
+      Case aCase = RoleMap.role( Case.class );
+      if ( ((CaseAccessRestriction.Data)aCase).restricted().get() )
+      {
+         CaseAccessType read  = aCase.getAccessType( PermissionType.read );
+         builder.prototype().readAccess().set( permissionTypeBundle.getString( PermissionType.read.name() ) + ": " + bundle.getString( read.name() ) );
+         CaseAccessType write = aCase.getAccessType( PermissionType.write );
+         builder.prototype().writeAccess().set( permissionTypeBundle.getString( PermissionType.write.name())+ ": " + bundle.getString( write.name() ) );
+      }
+      return builder.newInstance();
    }
 }
