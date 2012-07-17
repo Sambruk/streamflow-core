@@ -33,6 +33,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
 import se.streamsource.streamflow.client.util.LinkedLabel;
@@ -68,8 +69,7 @@ public class CaseInfoView extends JPanel
       setPreferredSize( new Dimension( 800, 50 ) );
 
       setLayout( new BorderLayout() );
-      lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
-      lock.setToolTipText( i18n.text( WorkspaceResources.case_is_restricted ) );
+      lock.setIcon( i18n.icon( CaseResources.case_unrestricted_icon ) );
       add( lock, BorderLayout.WEST );
 
       JPanel topPanel = new JPanel();
@@ -127,7 +127,20 @@ public class CaseInfoView extends JPanel
    {
       CaseDTO aCase = model.getIndex();
 
-      lock.setVisible( aCase.restricted().get() );
+      if ( aCase.restricted().get() )
+      {
+         lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
+      } else
+      {
+         lock.setIcon( i18n.icon( CaseResources.case_unrestricted_icon ) );
+         lock.setToolTipText( i18n.text( WorkspaceResources.case_is_unrestricted ) );
+      }
+      PermissionsDTO permissions = model.permissions();
+      if ( permissions.readAccess().get() != null &&
+           permissions.writeAccess().get() != null )
+      {
+         lock.setToolTipText( buildToolTipText( permissions ) );
+      }
 
       statusLabel.setStatus( aCase.status().get(), aCase.resolution().get() );
 
@@ -150,5 +163,20 @@ public class CaseInfoView extends JPanel
 
       assignedTo.setText( aCase.assignedTo().get() != null ? aCase.assignedTo().get() : "" );
       assignedTo.setToolTipText( assignedTo.getText() );
+   }
+
+   private String buildToolTipText( PermissionsDTO permissions )
+   {
+      StringBuilder sb = new StringBuilder();
+      String read  = permissions.readAccess().get();
+      String write = permissions.writeAccess().get();
+      sb.append( "<html><b>" )
+         .append( i18n.text( WorkspaceResources.restrict ) ).append( "</b><br>" );
+
+      sb.append( read.substring( 0, 1 ).toUpperCase() );
+      sb.append( read.substring( 1 ) ).append( "<br>" );
+      sb.append( write.substring( 0,1 ).toUpperCase() );
+      sb.append( write.substring( 1 ) ).append( "</html>" );
+      return sb.toString();
    }
 }

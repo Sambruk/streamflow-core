@@ -46,11 +46,13 @@ public enum CaseResources
    case_status_on_hold_text,
 
    case_restricted_icon,
+   case_unrestricted_icon,
 
    // Conversation
    new_conversation_topic,
    choose_participant,
    regular_expression_does_not_validate,
    invalidinteger,
-   could_not_upload_file, parent, caze, subcases, choose_external_participant, invalidfloat
+   could_not_upload_file, parent, caze, subcases, choose_external_participant,
+   invalidfloat
 }

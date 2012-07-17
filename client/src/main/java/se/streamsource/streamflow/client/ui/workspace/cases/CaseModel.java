@@ -30,6 +30,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogModel;
@@ -162,6 +163,11 @@ public class CaseModel
       client.command( "formondelete" );
    }
 
+   public PermissionsDTO permissions()
+   {
+      return client.query( "permissions", PermissionsDTO.class );
+   }
+
    public File export(CaseOutputConfigDTO config) throws IOException
    {
       Representation representation = client.query("exportpdf", Representation.class, config);
@@ -194,7 +200,7 @@ public class CaseModel
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseLogModel.class).use(client.getSubClient("caselog" )).newInstance();
    }
-   
+
    public CaseSubmittedFormsModel newSubmittedFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormsModel.class).use(client.getSubClient("submittedforms" )).newInstance();

@@ -94,6 +94,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
 
 /**
  * Assembler for the Streamflow Client API.
@@ -124,6 +125,7 @@ public class ClientAPIAssembler
               CaseLogFilterValue.class,
               NoteDTO.class,
               ExternalEmailValue.class,
+              PermissionsDTO.class,
               PriorityValue.class);
 
       workspace.values(FieldDTO.class,
