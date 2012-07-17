@@ -16,30 +16,11 @@
  */
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.ActionMap;
-
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.ActionBinder;
-import se.streamsource.streamflow.client.util.BindingFormBuilder;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -48,31 +29,41 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
-
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
 import se.streamsource.streamflow.util.Strings;
+
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
 
 
 public class AccessPointView
@@ -141,7 +132,7 @@ public class AccessPointView
       AccessPointDTO template = accessPointBinder
             .bindingTemplate( AccessPointDTO.class );
 
-      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
+      FormLayout layout = new FormLayout( "85dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -179,7 +170,7 @@ public class AccessPointView
       builder.add( projectButton, cc.xy( 1, 1 ) );
 
       builder.add( accessPointBinder.bind( selectedProject, template.project() ),
-            new CellConstraints( 3, 1, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 1, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
 
       // Select case type
@@ -193,7 +184,7 @@ public class AccessPointView
       builder.add( caseTypeButton, cc.xy( 1, 3 ) );
 
       builder.add( accessPointBinder.bind( selectedCaseType, template.caseType() ),
-            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
 
       // Select labels
@@ -225,7 +216,7 @@ public class AccessPointView
       builder.add( formButton, cc.xy( 1, 7, CellConstraints.FILL, CellConstraints.TOP ) );
 
       builder.add( accessPointBinder.bind( selectedForm, template.form() ),
-            new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
       // Select template
       javax.swing.Action templateAction = am.get( "template" );
@@ -240,7 +231,7 @@ public class AccessPointView
       builder.add( templateButton, cc.xy( 1, 9, CellConstraints.FILL, CellConstraints.TOP ) );
 
       builder.add( accessPointBinder.bind( selectedTemplate, template.template() ),
-            new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 3, 0, 0, 0 ) ) );
 
       add( panel, BorderLayout.CENTER );
 
@@ -248,11 +239,11 @@ public class AccessPointView
 
       mailSelectionLabel.setText( i18n.text( AdministrationResources.changeMailSelectionMessage ) );
       mailSelectionLabel.setToolTipText( i18n.text( AdministrationResources.changeMailSelectionMessageHint ) );
-      builder.add( mailSelectionLabel, cc.xy( 1, 11, CellConstraints.LEFT, CellConstraints.TOP ) );
+      builder.add( mailSelectionLabel, cc.xy( 1, 11, CellConstraints.RIGHT, CellConstraints.BOTTOM ) );
 
       builder.add( accessPointBinder.bind( mailSelectionField = (JTextField) BindingFormBuilder.Fields.TEXTFIELD.newField(),
             template.mailSelectionMessage() ),
-            new CellConstraints( 3, 11, 1,1 , CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3,0,0,0 )));
+            new CellConstraints( 3, 11, 1,1 , CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 3,0,0,0 )));
 
       new RefreshWhenShowing( this, model );
    }
