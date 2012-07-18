@@ -69,6 +69,8 @@ public class ConfigurationAssembler
       module.entities(
             PluginConfiguration.class,
             KartagoPluginConfiguration.class ).visibleIn( Visibility.application );
+      module.forMixin( PluginConfiguration.class ).declareDefaults().enabled().set( false );
+      module.forMixin( KartagoPluginConfiguration.class ).declareDefaults().enabled().set( false );
    }
 
    private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException
