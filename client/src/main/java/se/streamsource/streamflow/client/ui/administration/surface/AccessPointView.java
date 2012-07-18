@@ -132,7 +132,7 @@ public class AccessPointView
       AccessPointDTO template = accessPointBinder
             .bindingTemplate( AccessPointDTO.class );
 
-      FormLayout layout = new FormLayout( "85dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
+      FormLayout layout = new FormLayout( "90dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,

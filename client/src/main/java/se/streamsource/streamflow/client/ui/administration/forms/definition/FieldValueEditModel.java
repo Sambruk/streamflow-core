@@ -138,7 +138,8 @@ public class FieldValueEditModel
    {
       Form form = new Form(  );
       form.set( "hint", hint );
-      client.postCommand( "changehint", form.getWebRepresentation() );
+
+      client.postCommand( "changehint", form.getWebRepresentation());
    }
 
    public void changeRegularExpression( String regularExpression ) throws ResourceException
