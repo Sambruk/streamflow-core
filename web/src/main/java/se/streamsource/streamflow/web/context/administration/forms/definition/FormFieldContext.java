@@ -78,7 +78,7 @@ public interface FormFieldContext
    public void changehint( @Optional @Name("hint") String hint );
 
    @Requires(TextFieldValue.class)
-   public void changewidth( @Optional @Name("width") int newWidth );
+   public void changewidth( @Name("width") int newWidth );
 
    @Requires(TextFieldValue.class)
    public void changeregularexpression( @Optional @Name("expression") String regularExpression );
