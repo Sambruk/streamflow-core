@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -66,7 +67,7 @@ public interface FormFieldContext
 
    public LinksValue possibledatatypes();
    
-   public void changedescription( @MaxLength(100) @Name("description") String description );
+   public void changedescription( @Optional @MaxLength(100) @Name("description") String description );
 
    public void changemandatory( @Name("mandatory") boolean mandatory );
 
@@ -74,13 +75,13 @@ public interface FormFieldContext
    
    public void changedatatype( @Name("datatype") EntityValue dto);
 
-   public void changehint( @Name("hint") String hint );
+   public void changehint( @Optional @Name("hint") String hint );
 
    @Requires(TextFieldValue.class)
-   public void changewidth( @Name("width") int newWidth );
+   public void changewidth( @Optional @Name("width") int newWidth );
 
    @Requires(TextFieldValue.class)
-   public void changeregularexpression( @Name("expression") String regularExpression );
+   public void changeregularexpression( @Optional @Name("expression") String regularExpression );
 
    @Requires(TextAreaFieldValue.class)
    public void changerows( @Name("rows") int newRows );
