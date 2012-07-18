@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,31 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases;
 
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.CLOSED;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.ON_HOLD;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -38,6 +51,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -47,26 +61,26 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresRestricted;
+import se.streamsource.streamflow.web.domain.interaction.security.RequiresUnrestricted;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.organization.FormOnRemove;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-
-import java.util.List;
-import java.util.Locale;
-
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.dci.api.RoleMap.*;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -82,10 +96,6 @@ public interface CaseCommandsContext
    public LinksValue possiblesendto();
 
    public LinksValue possibleresolutions();
-
-   // Commands
-   @RequiresStatus({OPEN, DRAFT})
-   public void createSubCase();
 
    /**
     * Assign the case to the user invoking the method
@@ -128,6 +138,16 @@ public interface CaseCommandsContext
    @SubCasesAreClosed
    public void formonclose();
 
+   @RequiresStatus({OPEN, DRAFT})
+   @HasFormOnDelete(true)
+   @RequiresRemoved(false)
+   public void formondelete();
+
+   @RequiresStatus({OPEN, DRAFT})
+   @HasFormOnDelete(true)
+   @RequiresRemoved(false)
+   public StringValue formondeletename();
+
    /**
     * Mark the case as on-hold
     */
@@ -149,12 +169,19 @@ public interface CaseCommandsContext
    public void unassign();
 
    @RequiresStatus({OPEN, DRAFT})
+   @HasFormOnDelete(false)
    @RequiresRemoved(false)
    public void delete();
 
    @RequiresRemoved()
    @RequiresPermission(PermissionType.administrator)
    public void reinstate();
+
+   @RequiresUnrestricted()
+   public void restrict();
+
+   @RequiresRestricted()
+   public void unrestrict();
 
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
@@ -176,7 +203,7 @@ public interface CaseCommandsContext
          CaseType caseType = RoleMap.role( TypedCase.Data.class ).caseType().get();
          for (Project project : projects)
          {
-            if (!ownable.isOwnedBy( (Owner) project ))
+            if (!ownable.isOwnedBy( project ))
             {
                if (caseType == null || project.hasSelectedCaseType( caseType ))
                   builder.addDescribable( project, ((OwningOrganizationalUnit.Data) project).organizationalUnit().get() );
@@ -274,6 +301,48 @@ public interface CaseCommandsContext
 
       }
 
+      public void formondelete()
+      {
+         final Form form = getFormOnDelete();
+
+         List<SubmittedFormValue> submittedForms = RoleMap.role( SubmittedForms.Data.class ).submittedForms().get();
+
+         boolean formOnCloseExists = matchesAny( new Specification<SubmittedFormValue>()
+         {
+            public boolean satisfiedBy( SubmittedFormValue item )
+            {
+               if (item.form().get().identity().equals( form.toString() ))
+                  return true;
+               return false;
+            }
+         }, submittedForms );
+
+         if ( formOnCloseExists )
+         {
+            delete();
+         } else
+         {
+            throw new RuntimeException( "No form on remove submission." );
+         }
+      }
+
+      public StringValue formondeletename()
+      {
+         final Form form = getFormOnDelete();
+
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
+         builder.prototype().string().set( form.getDescription() );
+         return builder.newInstance();
+      }
+
+      private Form getFormOnDelete()
+      {
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         FormOnRemove.Data data = (FormOnRemove.Data) orgs.organization().get();
+
+         return data.formOnRemove().get();
+      }
+
       public void onhold()
       {
          RoleMap.role( Status.class ).onHold();
@@ -331,23 +400,53 @@ public interface CaseCommandsContext
          caze.reinstate();
       }
 
-      public void createSubCase()
+      public void restrict()
       {
-         RoleMap.role( SubCases.class ).createSubCase();
+         CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
+         secrecy.restrict();
 
-         Assignable assignable = RoleMap.role( Assignable.class );
-         if (assignable.isAssigned())
+         Organizations.Data orgs = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         Organization org = orgs.organization().get();
+         CaseAccessDefaults.Data defaults = (CaseAccessDefaults.Data) org;
+
+         CaseAccess access = RoleMap.role( CaseAccess.class );
+         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
          {
-            // Set to same owner as current case
-            ManyAssociation<Case> caseManyAssociation = RoleMap.role( SubCases.Data.class ).subCases();
-            Case createdCase = caseManyAssociation.get(caseManyAssociation.count()-1);
-            createdCase.changeOwner( RoleMap.role( Ownable.Data.class).owner().get() );
+            access.changeAccess( entry.getKey(), entry.getValue() );
+         }
+      }
 
-            // Open the case
-            createdCase.open();
+      /**
+       * This is not a perfect "undo". We cannot
+       * go back to the previous settings before the
+       * secrecy was enabled. Instead we force the
+       * settings for the project and the case type
+       */
+      public void unrestrict()
+      {
+         CaseAccessRestriction secrecy = RoleMap.role( CaseAccessRestriction.class );
+         secrecy.unrestrict();
 
-            // Assign to same user
-            createdCase.assignTo( RoleMap.role(Assignable.Data.class).assignedTo().get() );
+         Ownable.Data owner = RoleMap.role( Ownable.Data.class );
+
+         // force set secrecy setting of the project
+         CaseAccessDefaults.Data defaults = (CaseAccessDefaults.Data) owner.owner().get();
+         CaseAccess access = RoleMap.role( CaseAccess.class );
+         access.clearAccess();
+         for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
+         {
+            access.changeAccess( entry.getKey(), entry.getValue() );
+         }
+
+         // apply the case type setting
+         TypedCase.Data data = RoleMap.role( TypedCase.Data.class );
+         defaults = (CaseAccessDefaults.Data) data.caseType().get();
+         if( defaults != null )
+         {
+            for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
+            {
+               access.changeAccess( entry.getKey(), entry.getValue() );
+            }
          }
       }
 

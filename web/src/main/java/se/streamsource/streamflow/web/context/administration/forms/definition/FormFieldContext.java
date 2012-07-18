@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import java.util.List;
-
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -27,7 +26,6 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.Requires;
@@ -36,6 +34,7 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
@@ -49,10 +48,13 @@ import se.streamsource.streamflow.web.domain.structure.form.Datatype;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroup;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
+
+import java.util.List;
 
 /**
  * JAVADOC
@@ -65,7 +67,7 @@ public interface FormFieldContext
 
    public LinksValue possibledatatypes();
    
-   public void changedescription( @MaxLength(100) @Name("description") String description );
+   public void changedescription( @Optional @MaxLength(100) @Name("description") String description );
 
    public void changemandatory( @Name("mandatory") boolean mandatory );
 
@@ -73,13 +75,13 @@ public interface FormFieldContext
    
    public void changedatatype( @Name("datatype") EntityValue dto);
 
-   public void changehint( @Name("hint") String hint );
+   public void changehint( @Optional @Name("hint") String hint );
 
    @Requires(TextFieldValue.class)
    public void changewidth( @Name("width") int newWidth );
 
    @Requires(TextFieldValue.class)
-   public void changeregularexpression( @Name("expression") String regularExpression );
+   public void changeregularexpression( @Optional @Name("expression") String regularExpression );
 
    @Requires(TextAreaFieldValue.class)
    public void changerows( @Name("rows") int newRows );
@@ -130,6 +132,16 @@ public interface FormFieldContext
             linkValueBuilder.prototype().id().set(EntityReference.getEntityReference( fieldEntity.datatype().get()).identity() );
             linkValueBuilder.prototype().rel().set( "datatype" );
             builder.prototype().datatype().set( linkValueBuilder.newInstance());
+         }
+         if (fieldEntity.fieldValue().get() instanceof FieldGroupFieldValue)
+         {
+            ValueBuilder<LinkValue> linkValueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+            FieldGroup fieldGroup = module.unitOfWorkFactory().currentUnitOfWork().get( FieldGroup.class, ((FieldGroupFieldValue) fieldEntity.fieldValue().get()).fieldGroup().get().identity());
+            linkValueBuilder.prototype().href().set( "" );
+            linkValueBuilder.prototype().text().set( fieldGroup.getDescription());
+            linkValueBuilder.prototype().id().set(EntityReference.getEntityReference( fieldGroup ).identity());
+            linkValueBuilder.prototype().rel().set( "fieldgroup" );
+            builder.prototype().fieldgroup().set( linkValueBuilder.newInstance());
          }
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );

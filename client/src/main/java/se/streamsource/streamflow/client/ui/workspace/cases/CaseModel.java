@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogModel;
@@ -72,12 +73,6 @@ public class CaseModel
       return subcases;
    }
 
-   // Commands and queries
-   public void createSubCase()
-   {
-      client.command( "createsubcase" );
-   }
-
    public void open()
    {
       client.command( "open" );
@@ -96,6 +91,16 @@ public class CaseModel
    public void delete()
    {
       client.delete();
+   }
+
+   public void restrict()
+   {
+      client.command( "restrict" );
+   }
+
+   public void unrestrict()
+   {
+      client.command( "unrestrict" );
    }
 
    public EventList<TitledLinkValue> getPossibleSendTo()
@@ -153,6 +158,16 @@ public class CaseModel
       client.command( "formonclose" );
    }
 
+   public void formOnRemove()
+   {
+      client.command( "formondelete" );
+   }
+
+   public PermissionsDTO permissions()
+   {
+      return client.query( "permissions", PermissionsDTO.class );
+   }
+
    public File export(CaseOutputConfigDTO config) throws IOException
    {
       Representation representation = client.query("exportpdf", Representation.class, config);
@@ -185,7 +200,7 @@ public class CaseModel
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseLogModel.class).use(client.getSubClient("caselog" )).newInstance();
    }
-   
+
    public CaseSubmittedFormsModel newSubmittedFormsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormsModel.class).use(client.getSubClient("submittedforms" )).newInstance();

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import se.streamsource.dci.value.table.ColumnValue;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
@@ -193,6 +194,8 @@ public class CasesTableModel extends Observable
                prototype.href().set( cell.v().get().toString() );
             else if( columnValue.id().get().equals( "removed" ))
                prototype.removed().set( (Boolean)cell.v().get() );
+            else if( columnValue.id().get().equals( "priority" ) && cell.v().get() != null )
+               prototype.priority().set( module.valueBuilderFactory().newValueFromJSON(PriorityValue.class, cell.v().get().toString()) );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }
@@ -546,5 +549,18 @@ public class CasesTableModel extends Observable
    public boolean isCreateCaseEnabled()
    {
       return client.getReference().getLastSegment().equals("assignments") || client.getReference().getLastSegment().equals("drafts");
+   }
+
+   public boolean containsCaseWithPriority()
+   {
+
+      for(CaseTableValue value : getEventList() )
+      {
+         if( value.priority().get() != null )
+         {
+            return true;
+         }
+      }
+      return false;
    }
 }

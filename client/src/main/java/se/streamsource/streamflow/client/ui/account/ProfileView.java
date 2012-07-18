@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.R
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
@@ -106,8 +107,10 @@ public class ProfileView
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout,
             contactForm);
 
-      contactBuilder.appendSeparator(i18n
-            .text(AccountResources.contact_info_for_user_separator));
+      JLabel title = new JLabel(i18n
+            .text( AccountResources.contact_info_for_user_separator));
+      title.setFont(title.getFont().deriveFont(Font.BOLD));
+      contactBuilder.append(title, 3);
       contactBuilder.nextLine();
 
       contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));

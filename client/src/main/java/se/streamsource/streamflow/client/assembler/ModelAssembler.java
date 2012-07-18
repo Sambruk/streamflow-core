@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,16 @@ import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountsModel;
 import se.streamsource.streamflow.client.ui.account.ProfileModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.FormOnRemoveModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
-import se.streamsource.streamflow.client.ui.administration.ServerModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PriorityModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
@@ -44,6 +47,7 @@ import se.streamsource.streamflow.client.ui.administration.filters.RulesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldCreationModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldValueEditModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormPagesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignatureModel;
@@ -61,6 +65,8 @@ import se.streamsource.streamflow.client.ui.administration.policy.Administrators
 import se.streamsource.streamflow.client.ui.administration.projects.MembersModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
@@ -70,7 +76,8 @@ import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPo
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailModel;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
@@ -186,12 +193,16 @@ public class ModelAssembler
             OrganizationalUnitModel.class,
             CaseAccessDefaultsModel.class,
             CaseDefaultDaysToCompleteModel.class,
+            CaseDueOnNotificationModel.class,
+            RecipientsModel.class,
             CaseArchivalSettingModel.class,
             FormOnCloseModel.class,
+            FormOnRemoveModel.class,
             CaseTypesModel.class,
             CaseTypeModel.class,
             AdministratorsModel.class,
             FieldValueEditModel.class,
+            FieldCreationModel.class,
             FormsModel.class,
             FormModel.class,
             //FormElementsModel.class,
@@ -216,15 +227,18 @@ public class ModelAssembler
             SelectedResolutionsModel.class,
             SelectedTemplatesModel.class,
             SelectedFormsModel.class,
-            UsersAdministrationModel.class,
-            ServerModel.class,
+            UsersAdministrationListModel.class,
+            UserAdministrationDetailModel.class,
             FiltersModel.class,
             FilterModel.class,
             RulesModel.class,
             FormPagesModel.class,
             FormModel.class,
             ActionsModel.class,
-            LabelRuleModel.class);
+            LabelRuleModel.class,
+            PrioritiesModel.class,
+            PriorityModel.class,
+            PriorityOnCaseModel.class);
 
 
       addModels(module, LinksListModel.class,

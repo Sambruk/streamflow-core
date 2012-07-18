@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsModel;
@@ -46,5 +47,6 @@ public class CaseTypeModel
       relationModelMapping("defaultdaystocomplete", CaseDefaultDaysToCompleteModel.class);
       relationModelMapping("archival", CaseArchivalSettingModel.class);
       relationModelMapping( "formonclose", FormOnCloseModel.class );
+      relationModelMapping( "priorityoncase", PriorityOnCaseModel.class );
    }
 }

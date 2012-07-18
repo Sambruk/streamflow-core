@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.contact;
 
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
@@ -26,13 +24,13 @@ import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPreference;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
@@ -43,6 +41,8 @@ import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
+
+import java.util.List;
 
 /**
  * JAVADOC
@@ -88,6 +88,7 @@ public class ContactContext
                       @Optional @Name("city") String city,
                       @Optional @Name("region") String region,
                       @Optional @Name("country") String country,
+                      @Optional @Name("contactpreference") String contactPreference,
                       @Optional @Name("note") String note)
    {
       Contacts contacts = RoleMap.role( Contacts.class );
@@ -99,25 +100,34 @@ public class ContactContext
       if (name != null)
          builder.name(name );
       if (contactId != null)
-         builder.contactId(contactId);
+         builder.contactId( contactId );
       if (company != null)
-         builder.company(company);
+         builder.company( company );
       if (isCompany != null)
-         builder.isCompany(isCompany);
+         builder.isCompany( isCompany );
       if (phone != null)
-         builder.phoneNumber(phone);
+         builder.phoneNumber( phone );
       if (email != null)
-         builder.email(email);
+         builder.email( email );
       if (address != null)
-         builder.address(address);
+         builder.address( address );
       if (zip != null)
-         builder.zipCode(zip);
+         builder.zipCode( zip );
       if (city != null)
-         builder.city(city);
+         builder.city( city );
       if (region != null)
-         builder.region(region);
+         builder.region( region );
       if (country != null)
-         builder.country(country);
+         builder.country( country );
+      if ( contactPreference != null )
+      {
+         try
+         {
+            builder.contactPreference( ContactPreference.valueOf( contactPreference ) );
+         } catch (IllegalArgumentException e ) {
+            builder.contactPreference( null );
+         }
+      }
       if (note != null)
          builder.note(note);
 

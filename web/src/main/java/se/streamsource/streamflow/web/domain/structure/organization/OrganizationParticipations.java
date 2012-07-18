@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -93,6 +95,9 @@ public interface OrganizationParticipations
       @This
       Participant participant;
 
+      @Structure
+      Qi4j api;
+
       public void leave( Organization ou )
       {
          for (OrganizationalUnit organizationalUnit : ((OrganizationalUnits.Data) ou).organizationalUnits())
@@ -105,6 +110,9 @@ public interface OrganizationParticipations
 
       private void userLeaves( OrganizationalUnit org )
       {
+         Participant participant = api.dereference( this.participant );
+         Member member = api.dereference( this.member );
+
          // Remove permissions
          org.revokeRoles( participant );
 

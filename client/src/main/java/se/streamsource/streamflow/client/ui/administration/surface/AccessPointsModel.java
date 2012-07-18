@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ package se.streamsource.streamflow.client.ui.administration.surface;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -66,12 +64,12 @@ public class AccessPointsModel
 
    public void changeDescription( LinkValue link, String newName )
    {
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
-      builder.prototype().string().set( newName );
+      Form form = new Form( );
+      form.set( "name", newName );
 
       try
       {
-         client.getSubClient( link.id().get() ).putCommand( "changedescription", builder.newInstance() );
+         client.getSubClient( link.id().get() ).putCommand( "changedescription", form.getWebRepresentation() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))

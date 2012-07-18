@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
@@ -70,7 +71,9 @@ public interface Case
       SubCases,
       SubCase,
       CaseAccess,
+      CaseAccessRestriction,
       History,
-      CaseLoggable
+      CaseLoggable,
+      CasePriority
 {
 }

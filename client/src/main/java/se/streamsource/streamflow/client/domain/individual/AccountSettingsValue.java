@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.Matches;
-import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.api.Username;
 
 /**
@@ -39,6 +38,6 @@ public interface AccountSettingsValue
    @Username
    Property<String> userName();
 
-   @Password
+
    Property<String> password();
 }

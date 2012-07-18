@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,15 @@
  */
 package se.streamsource.streamflow.client.ui.account;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.PASSWORD;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
-
-import java.awt.BorderLayout;
-import java.awt.Insets;
-
-import javax.swing.ActionMap;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
-import javax.swing.border.EmptyBorder;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -43,17 +33,26 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-
+import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.ActionMap;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Insets;
+
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -215,7 +214,15 @@ public class AccountView extends JScrollPane
                   .text( AdministrationResources.old_password_incorrect)));
          } else
          {
-            model.changePassword(DTO.oldPassword().get(), DTO.newPassword().get());
+            try
+            {
+               model.changePassword(DTO.oldPassword().get(), DTO.newPassword().get());
+
+            } catch ( Exception cve )
+            {
+               dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( ErrorResources.password_violation ) ) );
+               return;
+            }
          }
       }
    }

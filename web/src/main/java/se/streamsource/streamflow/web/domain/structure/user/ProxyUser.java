@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 /**
  * A ProxyUser represents an entire external system. Actual users
  * are federated under this user. This means that only the ProxyUser
- * needs to have an actual login to the system. It will then provide
+* needs to have an actual login to the system. It will then provide
  * the identity of the user in the external system, which can then be an Actor
  * in this system.
  */

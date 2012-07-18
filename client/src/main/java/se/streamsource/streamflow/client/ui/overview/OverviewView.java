@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,13 +144,7 @@ public class OverviewView
                {
                   ContextItem contextItem = (ContextItem) list.getSelectedValue();
                   TableFormat tableFormat;
-                  /*if (contextItem.getRelation().equals(Icons.assign.name()))
-                  {
-                     tableFormat = new OverviewAssignmentsCaseTableFormatter();
-                  } else
-                  {*/
                   tableFormat = new CasesTableFormatter();
-                  //}
                   CasesTableView casesTable = module.objectBuilderFactory().newObjectBuilder(CasesTableView.class).use(contextItem.getClient(), tableFormat).newInstance();
 
                   casesView.showTable(casesTable);

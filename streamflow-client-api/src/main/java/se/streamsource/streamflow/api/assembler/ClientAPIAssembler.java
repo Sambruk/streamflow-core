@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package se.streamsource.streamflow.api.assembler;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
+import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
@@ -40,9 +40,11 @@ import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
+import se.streamsource.streamflow.api.administration.form.CreateFieldGroupDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
@@ -55,6 +57,7 @@ import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValu
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
@@ -91,6 +94,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
 
 /**
  * Assembler for the Streamflow Client API.
@@ -120,7 +124,9 @@ public class ClientAPIAssembler
               CaseLogEntryDTO.class,
               CaseLogFilterValue.class,
               NoteDTO.class,
-              ExternalEmailValue.class);
+              ExternalEmailValue.class,
+              PermissionsDTO.class,
+              PriorityValue.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,
@@ -155,11 +161,13 @@ public class ClientAPIAssembler
       // Commands
       administration.values(
               ArchivalSettingsDTO.class,
+              DueOnNotificationSettingsDTO.class,
               RegisterUserDTO.class,
               ChangePasswordDTO.class,
               NewUserDTO.class,
               NewProxyUserDTO.class,
-              CreateFieldDTO.class);
+              CreateFieldDTO.class,
+              CreateFieldGroupDTO.class);
 
       // Queries
       administration.values(LinkTree.class, UserEntityDTO.class, ProxyUserListDTO.class, ProxyUserDTO.class);
@@ -191,7 +199,8 @@ public class ClientAPIAssembler
               OpenSelectionFieldValue.class,
               SelectionFieldValue.class,
               TextAreaFieldValue.class,
-              TextFieldValue.class);
+              TextFieldValue.class,
+              FieldGroupFieldValue.class);
 
       // Surface
       administration.values(EmailAccessPointDTO.class,

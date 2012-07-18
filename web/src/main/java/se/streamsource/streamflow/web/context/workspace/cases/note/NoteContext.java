@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 /**
  * The context for a note.
  */
+@RequiresPermission( PermissionType.read )
 @Mixins(NoteContext.Mixin.class)
 public interface NoteContext
    extends IndexContext<NoteDTO>, Context

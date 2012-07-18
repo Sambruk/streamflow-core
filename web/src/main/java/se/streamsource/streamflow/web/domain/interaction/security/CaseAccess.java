@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ public interface CaseAccess
 {
    void changeAccess(PermissionType permissionType, CaseAccessType accessType);
 
+   void clearAccess();
+   
    CaseAccessType getAccessType(PermissionType permissionType);
 
    interface Data
@@ -43,11 +45,14 @@ public interface CaseAccess
       Property<Map<PermissionType, CaseAccessType>> accessPermissions();
 
       void changedAccess(@Optional DomainEvent event, PermissionType permissionType, CaseAccessType accessType);
+      
+      void clearedAccess(@Optional DomainEvent event);
    }
 
    abstract class Mixin
       implements CaseAccess, Data
    {
+
       public void changeAccess( PermissionType permissionType, CaseAccessType accessType )
       {
          CaseAccessType current = getAccessType( permissionType );
@@ -67,6 +72,16 @@ public interface CaseAccess
          accessPermissions().set( permissionAccess );
       }
 
+      public void clearAccess()
+      {
+         clearedAccess( null );
+      }
+      
+      public void clearedAccess(@Optional DomainEvent event)
+      {
+         accessPermissions().get().clear();
+      }
+      
       public CaseAccessType getAccessType( PermissionType permissionType )
       {
          CaseAccessType current = accessPermissions().get().get( permissionType );

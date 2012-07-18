@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import se.streamsource.streamflow.web.rest.service.conversation.ConversationResp
 import se.streamsource.streamflow.web.rest.service.conversation.NotificationService;
 import se.streamsource.streamflow.web.rest.service.filter.FilterConfiguration;
 import se.streamsource.streamflow.web.rest.service.filter.FilterService;
+import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import static org.qi4j.api.common.Visibility.*;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;

@@ -2,7 +2,7 @@
 <!--
 
 
-    Copyright 2009-2012 Streamsource AB
+    Copyright 2009-2012 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,6 +18,23 @@
 
 -->
 <supplementalDataModels>
+    <supplement>
+        <project>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <name>AntLR Parser Generator</name>
+            <organization>
+                <name>AntLR Parser Generator</name>
+                <url>http://www.antlr.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>Public Domain - ANTLR 2 License</name>
+                    <url>http://www.antlr2.org/license.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
     <supplement>
         <project>
             <groupId>aopalliance</groupId>
@@ -126,6 +143,23 @@
                 <name>JHlabs</name>
                 <url>http://www.jhlabs.com/ip/index.html</url>
             </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <name>Commons Beanutils</name>
+            <organization>
+                <name>The Apache Software Foundation</name>
+                <url>http://www.apache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -243,6 +277,23 @@
                 <license>
                     <name>BSD license</name>
                     <url>http://www.dnsjava.org/dnsjava-current/README</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <name>dom4j</name>
+            <organization>
+                <name>MetaStuff Ltd.</name>
+                <url>http://dom4j.sourceforge.net/dom4j-1.6.1/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>BSD license</name>
+                    <url>http://dom4j.sourceforge.net/dom4j-1.6.1/license.html</url>
                 </license>
             </licenses>
         </project>
@@ -951,6 +1002,23 @@
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
             </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <name>Quartz Enterprise Job Scheduler</name>
+            <organization>
+                <name>Quartz</name>
+                <url>http://quartz-scheduler.org</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>

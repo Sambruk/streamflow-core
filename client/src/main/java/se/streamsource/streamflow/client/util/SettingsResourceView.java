@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,21 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import static se.streamsource.dci.value.link.Links.withRel;
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.Font;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.FormOnRemoveView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,20 +38,12 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import java.awt.Font;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
-import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
-import ca.odell.glazedlists.EventList;
+import static se.streamsource.dci.value.link.Links.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Show settings for a REST resource, with each part as its own panel with a separator. To determine panels, do a query
@@ -63,9 +64,17 @@ public class SettingsResourceView
 
       addSettings("defaultdaystocomplete", AdministrationResources.default_days_to_complete_separator, CaseDefaultDaysToCompleteView.class);
 
+      addSettings("dueonnotification", AdministrationResources.dueon_notification_separator, CaseDueOnNotificationView.class);
+
       addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
 
+      addSettings( "priorityoncase", AdministrationResources.casepriority_separator, PriorityOnCaseView.class );
+
       addSettings( "formonclose", AdministrationResources.formonclose_separator, FormOnCloseView.class );
+
+      addSettings( "restrictions", AdministrationResources.restrictions_settings_separator,  CaseAccessDefaultsView.class);
+
+      addSettings( "formondelete", AdministrationResources.formondelete_separator, FormOnRemoveView.class );
    }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)

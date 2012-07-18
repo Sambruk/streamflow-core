@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,10 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
-
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.BorderFactory;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -46,23 +29,43 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactPreference;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.ValueBinder;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -97,6 +100,9 @@ public class ContactView
    private JTextField emailField = (JTextField) TEXTFIELD.newField();
    private JTextField contactIdField = (JTextField) TEXTFIELD.newField();
    private JTextField companyField = (JTextField) TEXTFIELD.newField();
+   private JComboBox contactPreferenceField = (JComboBox) COMBOBOX.newField();
+   // do this out of the state binder otherwise the translation is hard
+   private JLabel contactPreferenceLabel = new JLabel( );
 
    private ApplicationContext context;
    private JPanel lookupPanel;
@@ -116,6 +122,33 @@ public class ContactView
 
       add(new JLabel(), "EMPTY");
 
+      DefaultComboBoxModel contactPreferenceModel = new DefaultComboBoxModel();
+      for (ContactPreference preference : ContactPreference.values())
+      {
+         contactPreferenceModel.addElement( preference );
+      }
+      contactPreferenceField.setModel( contactPreferenceModel );
+      contactPreferenceField.setSelectedIndex( 0 );
+      contactPreferenceField.setRenderer( new ListCellRenderer()
+      {
+         public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
+         {
+            JLabel comp = new JLabel( "null" );
+            if (o instanceof ContactPreference)
+            {
+               if (((ContactPreference) o) == ContactPreference.none )
+               {
+                  comp = new JLabel( " " );
+               } else
+               {
+                  comp = new JLabel( i18n.text( WorkspaceResources.valueOf( ((ContactPreference) o).name() ) ) );
+               }
+            }
+            comp.setBorder( BorderFactory.createEmptyBorder( 2, 4, 2, 0 ) );
+            return comp;
+         }
+      });
+
       viewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
       phoneViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
       addressViewBinder = module.objectBuilderFactory().newObject(ValueBinder.class);
@@ -129,7 +162,7 @@ public class ContactView
       {
          FormLayout formLayout = new FormLayout(
                "right:70dlu, 5dlu, 150dlu:grow",
-               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
          form = new JPanel();
@@ -187,16 +220,22 @@ public class ContactView
          builder.nextLine();
 
          builder.add(createLabel(WorkspaceResources.email_label));
-         builder.nextColumn(2);
-         builder.add(emailBinder.bind(emailField, emailTemplate.emailAddress()));
+         builder.nextColumn( 2 );
+         builder.add( emailBinder.bind( emailField, emailTemplate.emailAddress() ) );
          builder.nextLine();
-         builder.add(createLabel(WorkspaceResources.contact_id_label));
-         builder.nextColumn(2);
-         builder.add(contactBinder.bind(contactIdField, template.contactId()));
+         builder.add( createLabel( WorkspaceResources.contact_id_label ) );
+         builder.nextColumn( 2 );
+         builder.add( contactBinder.bind( contactIdField, template.contactId() ) );
          builder.nextLine();
-         builder.add(createLabel(WorkspaceResources.company_label));
-         builder.nextColumn(2);
-         builder.add(contactBinder.bind(companyField, template.company()));
+         builder.add( createLabel( WorkspaceResources.company_label ) );
+         builder.nextColumn( 2 );
+         builder.add( contactBinder.bind( companyField, template.company() ) );
+         builder.nextLine();
+         builder.add( createLabel( WorkspaceResources.contact_preference_label ) );
+         builder.nextColumn( 2 );
+         builder.add( contactBinder.bind( contactPreferenceField, template.contactPreference() ),
+               new CellConstraints( 3, 12, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(
+                     5, 0, 0, 0 ) ) );
          builder.nextLine(2);
          builder.add(createLabel(WorkspaceResources.note_label));
          builder.nextColumn(2);
@@ -219,7 +258,7 @@ public class ContactView
       {
          FormLayout formLayout = new FormLayout(
                "right:70dlu, 5dlu, 150dlu:grow",
-               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
+               "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref");
          this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
          form = new JPanel();
@@ -261,16 +300,21 @@ public class ContactView
          builder.nextLine();
 
          builder.add(createLabel(WorkspaceResources.email_label));
-         builder.nextColumn(2);
-         builder.add(emailViewBinder.bind("emailAddress", visibleIfNotEmpty(new JLabel("!"))));
+         builder.nextColumn( 2 );
+         builder.add( emailViewBinder.bind( "emailAddress", visibleIfNotEmpty( new JLabel( "!" ) ) ) );
          builder.nextLine();
-         builder.add(createLabel(WorkspaceResources.contact_id_label));
-         builder.nextColumn(2);
-         builder.add(viewBinder.bind("contactId", visibleIfNotEmpty(new JLabel("!"))));
+         builder.add( createLabel( WorkspaceResources.contact_id_label ) );
+         builder.nextColumn( 2 );
+         builder.add( viewBinder.bind( "contactId", visibleIfNotEmpty( new JLabel( "!" ) ) ) );
          builder.nextLine();
-         builder.add(createLabel(WorkspaceResources.company_label));
-         builder.nextColumn(2);
-         builder.add(viewBinder.bind("company", visibleIfNotEmpty(new JLabel("!"))));
+         builder.add( createLabel( WorkspaceResources.company_label ) );
+         builder.nextColumn( 2 );
+         builder.add( viewBinder.bind( "company", visibleIfNotEmpty( new JLabel( "!" ) ) ) );
+         builder.nextLine();
+         builder.add( createLabel( WorkspaceResources.contact_preference_label ) );
+         builder.nextColumn( 2 );
+         builder.add( contactPreferenceLabel );
+
          builder.nextLine(2);
          builder.add(createLabel(WorkspaceResources.note_label));
          builder.nextColumn(2);
@@ -292,6 +336,8 @@ public class ContactView
       this.model = model;
       if (model != null)
       {
+         handleContactPreference();
+
          suggestModel.setContactModel( model );
          contactBinder.updateWith(model.getContact());
          phoneNumberBinder.updateWith(model.getPhoneNumber());
@@ -299,16 +345,18 @@ public class ContactView
          suggestAddress.getTextField().setText( model.getAddress().address() != null ? model.getAddress().address().get() : "" );
          emailBinder.updateWith(model.getEmailAddress());
 
-         viewBinder.update(model.getContact());
+         viewBinder.update( model.getContact() );
          phoneViewBinder.update(model.getPhoneNumber());
          addressViewBinder.update(model.getAddress());
          emailViewBinder.update(model.getEmailAddress());
+
 
          javax.swing.Action action = getActionMap().get("lookupContact");
          action.setEnabled(model.isContactLookupEnabled());
          lookupPanel.setVisible(action.isEnabled());
 
-         if (model.getContact().toJSON().equals("{\"addresses\":[{\"address\":\"\",\"city\":\"\",\"contactType\":\"HOME\",\"country\":\"\",\"region\":\"\",\"zipCode\":\"\"}],\"company\":\"\",\"contactId\":\"\",\"emailAddresses\":[{\"contactType\":\"HOME\",\"emailAddress\":\"\"}],\"isCompany\":false,\"name\":\"\",\"note\":\"\",\"phoneNumbers\":[{\"contactType\":\"HOME\",\"phoneNumber\":\"\"}],\"picture\":\"\"}"))
+         // TODO do a better way of checking if the contact is empty
+         if (model.getContact().toJSON().equals("{\"addresses\":[{\"address\":\"\",\"city\":\"\",\"contactType\":\"HOME\",\"country\":\"\",\"region\":\"\",\"zipCode\":\"\"}],\"company\":\"\",\"contactId\":\"\",\"contactPreference\":\"none\",\"emailAddresses\":[{\"contactType\":\"HOME\",\"emailAddress\":\"\"}],\"isCompany\":false,\"name\":\"\",\"note\":\"\",\"phoneNumbers\":[{\"contactType\":\"HOME\",\"phoneNumber\":\"\"}],\"picture\":\"\"}"))
             layout.show(this, "EDIT");
          else
             layout.show(this, "VIEW");
@@ -363,6 +411,15 @@ public class ContactView
             } else if (propertyName.equals("contactId"))
             {
                model.changeContactId((String) property.get());
+            } else if (propertyName.equals( "contactPreference" ))
+            {
+               if ( property.get() instanceof ContactPreference )
+               {
+                  model.changeContactPreference( (ContactPreference) property.get() );
+               } else
+               {
+                  model.changeContactPreference( null );
+               }
             }
          }
       }.execute();
@@ -512,6 +569,26 @@ public class ContactView
       return contactBuilder.newInstance();
    }
 
+   private void handleContactPreference()
+   {
+      ContactPreference val = model.getContact().contactPreference().get();
+      if ( val == null )
+      {
+         model.getContact().contactPreference().set( ContactPreference.none );
+         val = model.getContact().contactPreference().get();
+      }
+      if ( val == ContactPreference.none )
+      {
+         contactPreferenceLabel.setVisible( false );
+      } else
+      {
+         contactPreferenceLabel.setVisible( true );
+         contactPreferenceLabel.setText( i18n.text( WorkspaceResources.valueOf( val.name() ) ) );
+      }
+      alignSibling( contactPreferenceLabel );
+   }
+
+
    private JLabel visibleIfNotEmpty(final JLabel label)
    {
       label.addPropertyChangeListener("text", new PropertyChangeListener()
@@ -519,20 +596,24 @@ public class ContactView
          public void propertyChange(PropertyChangeEvent evt)
          {
             label.setVisible(!evt.getNewValue().equals(""));
-
-            Container container = label.getParent();
-            for (int i = 0; i < container.getComponents().length; i++)
-            {
-               Component component = container.getComponents()[i];
-               if (component == label)
-               {
-                  JLabel labelForLabel = (JLabel) container.getComponent(i - 1);
-                  labelForLabel.setVisible(label.isVisible());
-               }
-            }
+            alignSibling( label );
          }
       });
       return label;
+   }
+
+   private void alignSibling( JLabel label )
+   {
+      Container container = label.getParent();
+      for (int i = 0; i < container.getComponents().length; i++)
+      {
+         Component component = container.getComponents()[i];
+         if (component == label)
+         {
+            JLabel labelForLabel = (JLabel) container.getComponent(i - 1);
+            labelForLabel.setVisible(label.isVisible());
+         }
+      }
    }
 
    public void setFocusOnName()

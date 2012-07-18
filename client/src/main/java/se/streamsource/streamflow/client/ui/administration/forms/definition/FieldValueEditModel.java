@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,7 +138,8 @@ public class FieldValueEditModel
    {
       Form form = new Form(  );
       form.set( "hint", hint );
-      client.postCommand( "changehint", form.getWebRepresentation() );
+
+      client.postCommand( "changehint", form.getWebRepresentation());
    }
 
    public void changeRegularExpression( String regularExpression ) throws ResourceException

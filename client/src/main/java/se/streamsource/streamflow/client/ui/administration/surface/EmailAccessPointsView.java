@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.Component;
-
-import javax.swing.ActionMap;
-
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -29,20 +24,24 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.InputDialog;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
+
+import javax.swing.ActionMap;
+import java.awt.Component;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 
 public class EmailAccessPointsView
@@ -63,7 +62,7 @@ public class EmailAccessPointsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "remove" )}, new DetailFactory()
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "rename" ), am.get( "remove" )}, new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {
@@ -90,6 +89,27 @@ public class EmailAccessPointsView
                throws Exception
             {
                model.createEmailAccessPoint(dialog.value());
+            }
+         };
+      } else
+         return null;
+   }
+
+   @Action
+   public Task rename()
+   {
+      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_accesspoint_title ) );
+
+      if (!Strings.empty( dialog.name() ))
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               model.changeDescription( (LinkValue) list.getSelectedValue(), dialog.name() );
             }
          };
       } else

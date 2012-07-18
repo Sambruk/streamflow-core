@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
 
-import static org.qi4j.api.specification.Specifications.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -184,7 +183,7 @@ public class CaseNoteView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( or( withNames( "addedNote" ), withUsecases( "reopen", "close" ) ), transactions ))
+      if (matches( withNames( "addedNote", "changedStatus" ), transactions ))
       {
          refresh();
       }
@@ -250,7 +249,7 @@ public class CaseNoteView
             itemPanel.setLayout( new BoxLayout( itemPanel, BoxLayout.X_AXIS ) );
             
             JLabel date = new JLabel(DateFormats.getProgressiveDateTimeValue( note.createdOn().get(),
-                  Locale.getDefault() ) + "\t", JLabel.LEFT );
+                  Locale.getDefault() ) + "   ", JLabel.LEFT );
             JLabel name = new JLabel( note.creator().get(), JLabel.RIGHT);
             
             itemPanel.add( date, Box.LEFT_ALIGNMENT);

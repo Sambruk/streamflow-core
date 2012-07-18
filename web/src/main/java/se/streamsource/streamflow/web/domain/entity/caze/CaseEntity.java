@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
@@ -35,6 +37,7 @@ import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
@@ -47,6 +50,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -56,10 +60,12 @@ import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachment
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
+import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
@@ -78,7 +84,11 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
+import se.streamsource.streamflow.web.domain.structure.organization.Priority;
+import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
@@ -97,7 +107,7 @@ import java.util.Map;
       CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
       CaseEntity.CaseLogContactConcern.class, CaseEntity.CaseLogConversationConcern.class,
       CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class,
-      CaseEntity.AssignableConcern.class})
+      CaseEntity.AssignableConcern.class, CaseEntity.TypedCaseDefaultObligatoryPriorityConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -115,6 +125,7 @@ public interface CaseEntity
       Status.Data,
       Conversations.Data,
       CaseAccess.Data,
+      CaseAccessRestriction.Data,
 
       // Structure
       Closed,
@@ -133,6 +144,7 @@ public interface CaseEntity
       SubCase.Data,
       History.Data,
       CaseLoggable.Data,
+      CasePriority.Data,
       Origin,
 
       // Queries
@@ -237,6 +249,60 @@ public interface CaseEntity
                Calendar now = Calendar.getInstance();
                now.add(Calendar.DAY_OF_MONTH,defaultDaysToComplete.defaultDaysToComplete().get() );
                dueOn.defaultDueOn(now.getTime());
+            }
+         }
+      }
+   }
+
+   class TypedCaseDefaultObligatoryPriorityConcern
+      extends ConcernOf<TypedCase>
+      implements TypedCase
+   {
+
+      @This
+      CasePriority priority;
+
+      @Structure
+      Module module;
+
+      public void changeCaseType( @Optional CaseType newCaseType )
+      {
+         next.changeCaseType( newCaseType );
+
+         if (newCaseType == null)
+         {
+            priority.changePriority( null );
+         } else
+         {
+            Priority defaultPriority = ((PriorityOnCase.Data) newCaseType).defaultPriority().get();
+
+            if (((CasePriority.Data) priority).priority().get() == null)
+            {
+               if (defaultPriority != null)
+               {
+                  // Set default priority if priority is missing and there is a
+                  // default setting
+                  priority.changePriority( ((PriorityOnCase.Data) newCaseType).defaultPriority().get() );
+
+               } else if (((PriorityOnCase.Data) newCaseType).mandatory().get())
+               {
+                  // If default priority is missing and priority is mandatory
+                  // then set the priority that is closest to middle...
+                  Organizations organizations = module.unitOfWorkFactory().currentUnitOfWork()
+                        .get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+                  int priorityCount = ((Priorities.Data) ((Organizations.Data) organizations).organization().get())
+                        .prioritys().count();
+
+                  Query<Priority> query = module
+                        .queryBuilderFactory()
+                        .newQueryBuilder( Priority.class )
+                        .where(
+                              QueryExpressions.eq( QueryExpressions.templateFor( (PrioritySettings.Data.class) )
+                                    .priority(), Math.round( priorityCount / 2 ) ) )
+                        .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+                  priority.changePriority( query.find() );
+               }
             }
          }
       }
@@ -429,9 +495,14 @@ public interface CaseEntity
          caseLoggable.caselog().get().addTypedEntry( "{changedOwner,owner=" + ((Project) owner).getDescription() + "}", CaseLogEntryTypes.system );
       }
 
-      public void createSubCase()
+      public void restrict()
       {
-         caseLoggable.caselog().get().addTypedEntry( "{createdSubCase}", CaseLogEntryTypes.system );
+         caseLoggable.caselog().get().addTypedEntry( "{restrict}", CaseLogEntryTypes.system );
+      }
+      
+      public void unrestrict()
+      {
+         caseLoggable.caselog().get().addTypedEntry( "{unrestrict}", CaseLogEntryTypes.system );
       }
    }
 

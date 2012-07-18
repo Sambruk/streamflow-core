@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.link.LinkValue;
 
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public interface EmailAccessPointDTO
    Property<String> project();
 
    @Optional
-   Property<String> caseType();
+   Property<LinkValue> caseType();
 
    // Formatting
    @UseDefaults

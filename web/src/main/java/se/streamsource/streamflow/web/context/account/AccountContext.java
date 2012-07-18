@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordExcepti
 public interface AccountContext
    extends TransientComposite
 {
-   public void changepassword(@Name("oldpassword") @Password String oldPassword, @Name("newpassword") @Password String newPassword)
+   public void changepassword(@Name("oldpassword") String oldPassword, @Name("newpassword") @Password String newPassword)
          throws WrongPasswordException;
 
    abstract class Mixin

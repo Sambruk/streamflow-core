@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,12 @@ package se.streamsource.streamflow.client.ui.administration.surface;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Form;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 
@@ -43,4 +48,22 @@ public class EmailAccessPointsModel
       form.set("email", email);
       client.postCommand( "create", form.getWebRepresentation() );
    }
+
+   public void changeDescription( LinkValue link, String newName )
+   {
+      Form form = new Form( );
+      form.set( "name", newName );
+
+      try
+      {
+         client.getSubClient( link.id().get() ).putCommand( "changedescription", form.getWebRepresentation() );
+      } catch (ResourceException e)
+      {
+         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         {
+            throw new OperationException( AdministrationResources.could_not_rename_accesspoint_name_already_exists, e );
+         }
+      }
+   }
+
 }

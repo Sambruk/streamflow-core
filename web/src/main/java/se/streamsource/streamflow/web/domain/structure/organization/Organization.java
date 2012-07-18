@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -41,6 +43,7 @@ public interface Organization
       ProjectRoles,
       RolePolicy,
       Forms,
+      FormOnRemove,
       Labels,
       OrganizationalUnits,
       Owner,
@@ -55,6 +58,9 @@ public interface Organization
       DefaultPdfTemplate,
       FormPdfTemplate,
       CasePdfTemplate,
-      DatatypeDefinitions
+      DatatypeDefinitions,
+      FieldGroups,
+      Priorities,
+      CaseAccessDefaults
 {
 }

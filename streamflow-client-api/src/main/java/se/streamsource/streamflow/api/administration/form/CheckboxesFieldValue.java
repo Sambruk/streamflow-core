@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,33 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+
+import se.streamsource.streamflow.util.MultiFieldHelper;
+
 /**
  * JAVADOC
  */
+@Mixins( CheckboxesFieldValue.Mixin.class )
 public interface CheckboxesFieldValue
       extends SelectionFieldValue
 {
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      @This CheckboxesFieldValue definition;
+
+      public Boolean validate( String value )
+      {
+         if ("".equals( value )) return true;
+         for (String selection : MultiFieldHelper.options( value ))
+         {
+            if (!definition.values().get().contains( selection ))
+               return false;
+         }
+         return true;
+      }
+   }
 }

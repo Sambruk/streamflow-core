@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.util.Observer;
 
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
@@ -64,6 +65,7 @@ import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
@@ -151,7 +153,10 @@ public class FormSubmissionWizardPageView
       {
          AbstractFieldPanel component;
          FieldValue fieldValue = DTO.field().get().fieldValue().get();
-         if (!(fieldValue instanceof CommentFieldValue))
+         if ( fieldValue instanceof FieldGroupFieldValue )
+         {
+            bb.append( new JLabel( "<html><b>"+DTO.field().get().description().get()+"</b>:</html>" ) );
+         } else if (!(fieldValue instanceof CommentFieldValue))
          {
             component = getComponent(DTO);
             componentFieldMap.put( DTO.field().get().field().get().identity(), component );

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,15 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import static se.streamsource.dci.value.link.Links.withRel;
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.event.KeyEvent;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.swing.JComponent;
-import javax.swing.JTabbedPane;
-
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
@@ -45,7 +36,6 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Form
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
-import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
@@ -55,8 +45,16 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsV
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
-import ca.odell.glazedlists.EventList;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListView;
+
+import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
+import java.awt.event.KeyEvent;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static se.streamsource.dci.value.link.Links.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Show a REST resource as a tabbed view. To determine tabs, do a query to the resources directory URL ("/") to get
@@ -72,7 +70,7 @@ public class TabbedResourceView
 
    static
    {
-      addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
+      //addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
 
       addTab( "members", AdministrationResources.members_tab, MembersView.class );
       addTab( "projects", AdministrationResources.projects_tab, ProjectsView.class );
@@ -82,6 +80,7 @@ public class TabbedResourceView
 
       addTab( "casetypes", AdministrationResources.casetypes_tab, CaseTypesView.class );
       addTab( "selectedcasetypes", AdministrationResources.selected_casetypes_tab, SelectedCaseTypesView.class );
+      addTab( "priorities", AdministrationResources.casepriorities_tab, PrioritiesView.class );
 
       addTab( "labels", AdministrationResources.labels_tab, LabelsView.class );
       addTab( "selectedlabels", AdministrationResources.selected_labels_tab, SelectedLabelsView.class );
@@ -89,7 +88,7 @@ public class TabbedResourceView
       addTab( "resolutions", AdministrationResources.resolutions_tab, ResolutionsView.class );
       addTab( "selectedresolutions", AdministrationResources.selected_resolutions_tab, SelectedResolutionsView.class );
 
-      addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
+      addTab( "organizationusers", AdministrationResources.users_tab, UsersAdministrationListView.class );
 
       addTab( "filters", AdministrationResources.filters_tab, FiltersView.class );
 

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,35 @@
 package se.streamsource.streamflow.api.administration.form;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.util.DateFunctions;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
+@Mixins( DateFieldValue.Mixin.class )
 public interface DateFieldValue
       extends FieldValue
 {
    @Optional
    Property<Date> date();
+
+   abstract class Mixin
+      implements FieldValue
+   {
+      public Boolean validate( String value )
+      {
+         try
+         {
+            DateFunctions.fromString( value );
+            return true;
+         } catch (IllegalStateException e)
+         {
+            return false;
+         }
+      }
+   }
 }

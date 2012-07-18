@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
 @Mixins(UserAuthentication.Mixin.class)
 public interface UserAuthentication
 {
-   void changePassword( @Password String currentPassword, @Password String newPassword ) throws WrongPasswordException;
+   void changePassword( String currentPassword, @Password String newPassword ) throws WrongPasswordException;
 
    void resetPassword( @Password String password );
 

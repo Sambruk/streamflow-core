@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.Action;
-
 import org.jdesktop.application.ApplicationAction;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
+
+import javax.swing.Action;
 
 /**
  * Enable actions based on commands and queries in a REST resource.
@@ -46,6 +45,11 @@ public abstract class ResourceActionEnabler
    public void refresh()
    {
       ResourceValue resource = getResource();
+
+      // no resource --> noting to refresh
+      if ( resource == null)
+         return;
+
       Iterable<LinkValue> commandsAndQueries = Iterables.flatten(resource.commands().get(), resource.queries().get());
 
       Iterable<String> availableCommandsAndQueries = Iterables.map( new Function<LinkValue, String>()

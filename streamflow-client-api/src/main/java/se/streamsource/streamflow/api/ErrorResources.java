@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,5 +29,7 @@ public enum ErrorResources
    search_string_malformed,
    error,
    user_already_exists,
-   description_cannot_be_more_than_50
+   description_cannot_be_more_than_50,
+   project_remove_failed_open_cases,
+   password_violation, priority_remove_failed_default_exist
 }

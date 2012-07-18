@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,33 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CreateFieldDTO;
+import se.streamsource.streamflow.api.administration.form.CreateFieldGroupDTO;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldTypes;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
@@ -41,7 +52,12 @@ import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValu
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.util.Translator;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroup;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
@@ -55,6 +71,9 @@ public class FormPageContext
    @Structure
    Module module;
 
+   private static final String field_group = "field_group";
+   private static final String fieldgroup_group = "fieldgroup_group";
+   
    public PageDefinitionValue index()
    {
       Describable describable = RoleMap.role( Describable.class );
@@ -102,6 +121,18 @@ public class FormPageContext
       fields.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
    }
 
+   public void createfieldgroup(CreateFieldGroupDTO createFieldGroupDTO ) {
+      Fields fields = RoleMap.role( Fields.class );
+
+      ValueBuilder<FieldGroupFieldValue> builder = module.valueBuilderFactory().newValueBuilder( FieldGroupFieldValue.class );
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+      FieldGroup fieldGroup = uow.get( FieldGroup.class, createFieldGroupDTO.fieldGroup().get() );
+      builder.prototype().fieldGroup().set( EntityReference.getEntityReference( fieldGroup) );
+      
+      fields.createField( createFieldGroupDTO.name().get(), builder.newInstance() );
+   }
+   
+   
    private FieldValue getFieldValue( FieldTypes fieldType )
    {
       FieldValue value = null;
@@ -152,5 +183,25 @@ public class FormPageContext
             break;
       }
       return value;
+   }
+   
+
+   public LinksValue possiblefields()
+   {
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      
+      ResourceBundle bundle = ResourceBundle.getBundle( FormPageContext.class.getName(), RoleMap.role( Locale.class ) );
+      
+      for (FieldTypes  fieldType : FieldTypes.values())
+      {
+         builder.addLink( bundle.getString( fieldType.toString()), fieldType.toString(), "createfield", "create", "field", bundle.getString( field_group ) );
+      }
+      List<FieldGroup> fieldGroups = RoleMap.role( FieldGroups.Data.class ).fieldGroups().toList();
+      for (FieldGroup fieldGroup : fieldGroups)
+      {
+         builder.addLink( fieldGroup.getDescription(), EntityReference.getEntityReference( fieldGroup).identity(), "createfieldgroup", "createfieldgroup", "fieldgroup", bundle.getString( fieldgroup_group ) );
+      }
+
+      return builder.newLinks();
    }
 }

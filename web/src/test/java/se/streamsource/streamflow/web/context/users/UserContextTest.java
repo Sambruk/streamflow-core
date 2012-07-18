@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,15 @@ import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;
-import se.streamsource.streamflow.web.context.administration.UserContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationUserContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
@@ -41,7 +44,7 @@ public class UserContextTest
    @BeforeClass
    public static void before() throws UnitOfWorkCompletionException
    {
-      UsersContextTest.createUser( "test" );
+      UsersContextTest.createUser( "testing" );
       clearEvents();
    }
 
@@ -49,7 +52,7 @@ public class UserContextTest
    public static void after() throws UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      uow.remove( uow.get( User.class, "test" ));
+      uow.remove( uow.get( User.class, "testing" ));
       uow.complete();
    }
 
@@ -58,8 +61,13 @@ public class UserContextTest
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       RoleMap.newCurrentRoleMap();
-      playRole(User.class, "test");
-      context(UserContext.class).changedisabled();
+      playRole(User.class, "testing");
+
+      Organizations.Data data = (Organizations.Data) uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      OrganizationEntity organization = (OrganizationEntity) data.organization().get();
+      playRole( Organization.class, organization.identity().get() );
+
+      context(OrganizationUserContext.class).setdisabled();
       uow.complete();
       eventsOccurred( "changedEnabled" );
    }
@@ -70,10 +78,10 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
          try
          {
-            context( AccountContext.class).changepassword( "test", "test2");
+            context( AccountContext.class).changepassword( "testing", "testing2");
          } catch (WrongPasswordException e)
          {
             Assert.fail( "Should have been able to change password" );
@@ -86,10 +94,10 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
          try
          {
-            context(AccountContext.class).changepassword( "test", "test3");
+            context(AccountContext.class).changepassword( "testing", "testing3");
             Assert.fail( "Should not have been able to change password" );
          } catch (WrongPasswordException e)
          {
@@ -107,7 +115,7 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
 
          context(ProfileContext.class).changemessagedeliverytype(MessageRecipient.MessageDeliveryTypes.none);
          uow.complete();
@@ -117,7 +125,7 @@ public class UserContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole(User.class, "test");
+         playRole(User.class, "testing");
 
          context( ProfileContext.class).changemessagedeliverytype( MessageRecipient.MessageDeliveryTypes.email );
          uow.complete();

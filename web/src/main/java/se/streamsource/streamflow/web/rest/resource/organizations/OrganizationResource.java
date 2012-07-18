@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,15 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.context.administration.FormOnRemoveContext;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.RestrictionsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.OrganizationAttachmentsResource;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.ProxyUsersResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.DatatypeDefinitionsResource;
+import se.streamsource.streamflow.web.rest.resource.organizations.forms.FieldGroupsResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
@@ -121,4 +124,29 @@ public class OrganizationResource
    {
       subResource( DatatypeDefinitionsResource.class );
    }
+   
+   @SubResource
+   public void fieldgroups()
+   {
+      subResource( FieldGroupsResource.class );
+   }
+
+   @SubResource
+   public void restrictions()
+   {
+      subResourceContexts( RestrictionsContext.class );
+   }
+
+   @SubResource
+   public void priorities()
+   {
+      subResource( PrioritiesResource.class );
+   }
+
+   @SubResource
+   public void formondelete()
+   {
+      subResourceContexts( FormOnRemoveContext.class );
+   }
+
 }

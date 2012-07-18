@@ -5,7 +5,7 @@
 ${product}(tm) ${subproduct}
 Copyright ${project.inceptionYear} ${company}
 
-Streamsource AB (Swedish organization number 556777-9896),
+${company} (Swedish organization number 556777-9896),
 Hans Michelsensgatan 9, S-211 20 Malmo, Sweden
 
 

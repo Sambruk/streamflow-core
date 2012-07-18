@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,12 @@ public class SurfaceSubmittedFormContext
 
    public PDDocument generateformaspdf() throws Throwable
    {
+      return generatePdf();
+
+   }
+
+   private PDDocument generatePdf() throws Throwable
+   {
       SubmittedFormValue submittedFormValue = role(SubmittedFormValue.class);
 
       FormPdfTemplate.Data selectedTemplate = role( FormPdfTemplate.Data.class);
@@ -67,6 +73,5 @@ public class SurfaceSubmittedFormContext
       CaseId.Data idData = role( CaseId.Data.class);
 
       return pdfGenerator.generateSubmittedFormPdf( submittedFormValue, idData, uri, locale );
-
    }
 }

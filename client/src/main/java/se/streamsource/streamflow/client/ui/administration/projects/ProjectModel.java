@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationModel;
 
 /**
  * Represents a Project in the administration model
@@ -41,5 +42,6 @@ public class ProjectModel
       relationModelMapping("selectedcasetypes", SelectedCaseTypesModel.class);
       relationModelMapping("filters", FiltersModel.class);
       relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
+      relationModelMapping("dueonnotification", CaseDueOnNotificationModel.class);
    }
 }

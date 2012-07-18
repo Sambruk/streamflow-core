@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  */
 package se.streamsource.streamflow.test;
 
-import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.*;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 import java.util.Properties;
@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
+import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 /**
  * JAVADOC
@@ -90,7 +91,7 @@ public class StreamflowWebContextTestAssembler
       ModuleAssembly system = appLayer.module( "System" );
       system.services( SystemDefaultsService.class ).identifiedBy( "system" ).visibleIn( Visibility.application);
       ModuleAssembly configurationModule = module.layer().application().layer("Configuration").module("Configuration");
-      configurationModule.entities(KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class).visibleIn(Visibility.application);
+      configurationModule.entities( KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class ).visibleIn( Visibility.application );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( true );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
    }

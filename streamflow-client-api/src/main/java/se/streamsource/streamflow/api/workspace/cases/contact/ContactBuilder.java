@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,12 @@ public class ContactBuilder
    public ContactBuilder note(String note)
    {
       contactBuilder.prototype().note().set(note);
+      return this;
+   }
+
+   public ContactBuilder contactPreference( ContactPreference contactPreference )
+   {
+      contactBuilder.prototype().contactPreference().set(  contactPreference );
       return this;
    }
 

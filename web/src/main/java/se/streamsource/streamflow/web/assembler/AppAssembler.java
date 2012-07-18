@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,9 @@ import se.streamsource.streamflow.web.application.defaults.AvailabilityConfigura
 import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationConfiguration;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
@@ -70,7 +73,10 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitV
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
+import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
+import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -92,7 +98,7 @@ public class AppAssembler
       system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
-
+      
       replay(layer.module("Replay"));
 
       console( layer.module( "Console" ) );
@@ -114,6 +120,12 @@ public class AppAssembler
       {
          mail( layer.module( "Mail" ) );
       }
+
+      velocity( layer.module( "Velocity" ));
+      
+      scheduler( layer.module( "Scheduler" ));
+      
+      dueOnNotifiation(layer.module("DueOn Notification"));
 
       knowledgebase(layer.module("Knowledgebase"));
 
@@ -157,6 +169,20 @@ public class AppAssembler
       configuration().entities(ArchivalConfiguration.class);
    }
 
+   private void dueOnNotifiation(ModuleAssembly module)
+   {
+      module.services(DueOnNotificationService.class).identifiedBy("dueOnNotification").instantiateOnStartup().visibleIn(Visibility.application);
+      configuration().entities(DueOnNotificationConfiguration.class);
+      configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().enabled().set( false );
+   }
+
+
+   private void scheduler( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( Qi4JQuartzJobFactory.class, QuartzSchedulerService.class ).visibleIn( Visibility.application );
+      module.transients( DueOnNotificationJob.class).visibleIn( application );
+   }
+   
    private void replay( ModuleAssembly module ) throws AssemblyException
    {
       module.services( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.application );
@@ -192,6 +218,8 @@ public class AppAssembler
    private void mail( ModuleAssembly module ) throws AssemblyException
    {
       module.services(EmailTemplatesUpdateService.class).instantiateOnStartup();
+      module.services( MailSenderService.class ).identifiedBy( "mailsender" )
+            .visibleIn( application ).instantiateOnStartup();
 
       module.values( EmailValue.class ).visibleIn(Visibility.application);
       
@@ -285,7 +313,7 @@ public class AppAssembler
       module.services( ConsoleService.class ).visibleIn( application );
    }
 
-   private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException
+   private void velocity(ModuleAssembly module) throws AssemblyException
    {
       Properties props = new Properties();
       try
@@ -294,14 +322,17 @@ public class AppAssembler
 
          VelocityEngine velocity = new VelocityEngine(props);
 
-         knowledgebase.importedServices(VelocityEngine.class)
-                 .importedBy(INSTANCE).setMetaInfo(velocity);
+         module.importedServices(VelocityEngine.class)
+                 .importedBy(INSTANCE).setMetaInfo(velocity).visibleIn( layer );
 
       } catch (Exception e)
       {
          throw new AssemblyException("Could not load velocity properties", e);
       }
-
+   }
+   
+   private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException
+   {
       knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
       configuration().entities(KnowledgebaseConfiguration.class);
    }

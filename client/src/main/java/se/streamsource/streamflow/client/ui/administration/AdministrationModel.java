@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,44 +50,10 @@ public class AdministrationModel
    Module module;
 
    private EventList<LinkValue> links = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
-   private TreeList<LinkValue> linkTree = new TreeList<LinkValue>(links, new TreeList.Format<LinkValue>()
-   {
-      public void getPath(List<LinkValue> linkValues, LinkValue linkValue)
-      {
-         String classes = linkValue.classes().get();
-         if (classes != null)
-            for (LinkValue value : links)
-            {
-               if (classes.contains(value.id().get()))
-               {
-                  getPath(linkValues, value);
-                  break;
-               }
-            }
-
-         linkValues.add(linkValue);
-      }
-
-      public boolean allowsChildren(LinkValue linkValue)
-      {
-         for (LinkValue link : links)
-         {
-            String classes = link.classes().get();
-            if (classes != null && classes.contains(linkValue.id().get()))
-               return true;
-         }
-         return false;
-      }
-
-      public Comparator<? extends LinkValue> getComparator(int i)
-      {
-         return null;
-      }
-   }, TreeList.NODES_START_EXPANDED);
+   private TreeList<LinkValue> linkTree = new TreeList<LinkValue>(links, new LinkValueFormat(), TreeList.NODES_START_EXPANDED);
 
    public AdministrationModel()
    {
-      relationModelMapping("server", ServerModel.class);
       relationModelMapping("organization", OrganizationModel.class);
       relationModelMapping("organizationalunit", OrganizationalUnitModel.class);
    }
@@ -97,8 +63,9 @@ public class AdministrationModel
       super.refresh();
 
       LinksValue administration = getIndex();
-      links.clear();
       EventListSynch.synchronize(administration.links().get(), links);
+
+      linkTree = new TreeList<LinkValue>(links, new LinkValueFormat(), TreeList.NODES_START_EXPANDED);
    }
 
    public TreeList<LinkValue> getLinkTree()
@@ -129,7 +96,7 @@ public class AdministrationModel
       LinkValue link = (LinkValue) treeNode.getElement();
       try
       {
-         client.getClient(link).delete();;
+         client.getClient(link).delete();
       } catch (ResourceException e)
       {
          if (Status.SERVER_ERROR_INTERNAL.equals( e.getStatus() ))
@@ -178,5 +145,40 @@ public class AdministrationModel
    {
 // TODO       if (Events.matches( transactions, Events.onEntities( )))
       refresh();
+   }
+
+   private class LinkValueFormat implements TreeList.Format<LinkValue>
+   {
+      public void getPath(List<LinkValue> linkValues, LinkValue linkValue)
+      {
+         String classes = linkValue.classes().get();
+         if (classes != null)
+            for (LinkValue value : links)
+            {
+               if (classes.contains(value.id().get()))
+               {
+                  getPath(linkValues, value);
+                  break;
+               }
+            }
+
+         linkValues.add(linkValue);
+      }
+
+      public boolean allowsChildren(LinkValue linkValue)
+      {
+         for (LinkValue link : links)
+         {
+            String classes = link.classes().get();
+            if (classes != null && classes.contains(linkValue.id().get()))
+               return true;
+         }
+         return false;
+      }
+
+      public Comparator<? extends LinkValue> getComparator(int i)
+      {
+         return null;
+      }
    }
 }

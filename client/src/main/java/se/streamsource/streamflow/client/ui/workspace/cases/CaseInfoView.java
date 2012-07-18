@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
 import se.streamsource.streamflow.client.util.LinkedLabel;
@@ -51,6 +52,7 @@ public class CaseInfoView extends JPanel
    private JLabel owner = new JLabel("");
    private JLabel assignedTo = new JLabel("");
    private JLabel createdBy = new JLabel("");
+   private JLabel lock = new JLabel( "" );
 
    private CaseStatusLabel statusLabel = new CaseStatusLabel();
 
@@ -66,8 +68,13 @@ public class CaseInfoView extends JPanel
       setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
       setPreferredSize( new Dimension( 800, 50 ) );
 
-      BoxLayout layout = new BoxLayout(this, BoxLayout.X_AXIS);
-      setLayout( layout );
+      setLayout( new BorderLayout() );
+      lock.setIcon( i18n.icon( CaseResources.case_unrestricted_icon ) );
+      add( lock, BorderLayout.WEST );
+
+      JPanel topPanel = new JPanel();
+      BoxLayout layout = new BoxLayout(topPanel, BoxLayout.X_AXIS);
+      topPanel.setLayout( layout );
 
       JLabel statusHeader = new JLabel( i18n.text( WorkspaceResources.case_status_header ) );
       statusHeader.setFocusable( false );
@@ -94,29 +101,40 @@ public class CaseInfoView extends JPanel
       assignedHeader.setFocusable( false );
       assignedHeader.setForeground( Color.GRAY );
 
-      addBox(statusHeader, statusLabel);
-      addBox(titleHeader, title);
-      addBox(typeHeader, caseType);
-      addBox(ownerHeader, owner);
-      addBox(createdHeader, createdBy);
-      addBox(assignedHeader, assignedTo);
+      addBox(topPanel, statusHeader, statusLabel);
+      addBox(topPanel, titleHeader, title);
+      addBox(topPanel, typeHeader, caseType);
+      addBox(topPanel, ownerHeader, owner);
+      addBox(topPanel, createdHeader, createdBy);
+      addBox(topPanel, assignedHeader, assignedTo);
 
+      add( topPanel, BorderLayout.CENTER );
       model.addObserver(this);
    }
 
-   private void addBox( JLabel label, JComponent component )
+
+   private void addBox( JPanel container, JLabel label, JComponent component )
    {
       JPanel box = new JPanel();
       box.setBorder( BorderFactory.createEmptyBorder( 0,0,0,10 ) );
       box.setLayout(new BorderLayout());
       box.add(label, BorderLayout.NORTH);
       box.add(component, BorderLayout.CENTER);
-      add(box);
+      container.add( box );
    }
 
    public void update( Observable o, Object arg )
    {
       CaseDTO aCase = model.getIndex();
+
+      if ( aCase.restricted().get() )
+      {
+         lock.setIcon( i18n.icon( CaseResources.case_restricted_icon ) );
+      } else
+      {
+         lock.setIcon( i18n.icon( CaseResources.case_unrestricted_icon ) );
+      }
+      lock.setToolTipText( buildToolTipText( model.permissions() ) );
 
       statusLabel.setStatus( aCase.status().get(), aCase.resolution().get() );
 
@@ -139,5 +157,20 @@ public class CaseInfoView extends JPanel
 
       assignedTo.setText( aCase.assignedTo().get() != null ? aCase.assignedTo().get() : "" );
       assignedTo.setToolTipText( assignedTo.getText() );
+   }
+
+   private String buildToolTipText( PermissionsDTO permissions )
+   {
+      StringBuilder sb = new StringBuilder();
+      String read  = permissions.readAccess().get();
+      String write = permissions.writeAccess().get();
+      sb.append( "<html><b>" )
+         .append( i18n.text( WorkspaceResources.restrict ) ).append( "</b><br>" );
+
+      sb.append( read.substring( 0, 1 ).toUpperCase() );
+      sb.append( read.substring( 1 ) ).append( "<br>" );
+      sb.append( write.substring( 0,1 ).toUpperCase() );
+      sb.append( write.substring( 1 ) ).append( "</html>" );
+      return sb.toString();
    }
 }

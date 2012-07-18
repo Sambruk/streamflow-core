@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.DueOnNotificationSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -44,6 +45,7 @@ public interface Project
       Describable,
       Owner,
       Ownable,
-      Removable
+      Removable,
+      DueOnNotificationSettings
 {
 }

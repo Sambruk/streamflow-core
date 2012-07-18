@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ public enum AdministrationResources
    import_users,
    users_tab,
    join_organization,
+   leave_organization_confirmation,
    import_files,
    create_account_name,
    create_account_server,
@@ -132,7 +133,6 @@ public enum AdministrationResources
    choose_default_access_type,
    casesettings_tab,
    caseaccessdefaults_separator,
-   default_days_to_complete_separator,
    choose_move_casetype_to,
    choose_accesspoint_title,
    emailaccesspoints_tab,
@@ -153,7 +153,13 @@ public enum AdministrationResources
    send_email_to,
    close_case,
    match_label,
+   default_days_to_complete_separator,
    default_days_to_complete,
+   dueon_notification_separator,
+   dueon_notification_active,
+   dueon_notification_threshold,
+   dueon_notification_additional_recipient,
+   dueon_notification_add_recipient,
    add_filter_action,
    add_filter_close_action_confirmation,
    settings_tab,
@@ -161,5 +167,26 @@ public enum AdministrationResources
    archival_type,
    archival_settings_separator,
    delete,
-   formonclose_separator, choose_form_on_close, none, export
+   formonclose_separator, 
+   choose_form_on_close,
+   restrictions_settings_separator,
+   illegal_name,
+   no_such_character,
+   none,
+   export,
+   casepriorities_tab,
+   add_casepriority_title,
+   name_show_color,
+   choose_color,
+   casepriority_separator,
+   casepriority_mandatory,
+   casepriority_visible,
+   caseaccessoptionaldefaults_separator,
+   optional_security_settings,
+   casepriority_default_value,
+   formondelete_separator,
+   choose_form_on_remove,
+   fieldgroup_field_type,
+   changeMailSelectionMessage,
+   changeMailSelectionMessageHint,
 }

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.awt.Component;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -150,15 +151,22 @@ public class SelectionElementsView
 
       if ( !Strings.empty( dialog.name() ) )
       {
-         return new CommandTask()
+         if ( dialog.name().contains( "[" ) || dialog.name().contains( "]" ))
          {
-            @Override
-            public void command()
-               throws Exception
+            dialogs.showOkDialog( this, new JLabel( i18n.text( AdministrationResources.no_such_character )), i18n.text( AdministrationResources.illegal_name ) );
+            return null;
+         } else
+         {
+            return new CommandTask()
             {
-               model.addElement( dialog.name() );
-            }
-         };
+               @Override
+               public void command()
+                     throws Exception
+               {
+                  model.addElement( dialog.name() );
+               }
+            };
+         }
       }
       else return null;
    }

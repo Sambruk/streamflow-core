@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ public enum WorkspaceResources
    select_account,
    welcome,
    choose_case,
+
+   unrestrict_case,
 
    // Case table
    title_column_header,
@@ -69,6 +71,7 @@ public enum WorkspaceResources
    forms_label,
    choose_casetype,
    case_log,
+   contact_preference_label,
 
    // Form submission
    mandatory_field_missing,
@@ -113,6 +116,11 @@ public enum WorkspaceResources
    wrong_format_msg,
    wrong_format_title,
 
+   case_is_restricted,
+   restrict,
+   read,
+   write,
+
    // CasesTableView sorting and grouping
    search,
    status,
@@ -143,6 +151,12 @@ public enum WorkspaceResources
    ON_HOLD,
    choose_date, CLOSED,
 
+   // contact preference
+   letter,
+   email,
+   sms,
+   phone,
+
    // Conversation
    sender_column_header,
    message_column_header,
@@ -153,5 +167,10 @@ public enum WorkspaceResources
    no_project,
    search_period,
    printing_configuration,
-   caze_reinstate;
+   caze_reinstate, priority_label, case_priority_header, no_priority,
+
+   // Form on Close
+   formondelete_confirmation,
+
+   mail_selection_message
 }

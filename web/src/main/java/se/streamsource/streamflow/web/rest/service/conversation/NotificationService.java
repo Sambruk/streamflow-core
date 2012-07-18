@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,8 @@
  */
 package se.streamsource.streamflow.web.rest.service.conversation;
 
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -35,7 +31,6 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
@@ -47,6 +42,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Tran
 import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.caze.Origin;
@@ -59,6 +55,11 @@ import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessP
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Send and receive notifications. This service
@@ -140,7 +141,14 @@ public interface NotificationService
 
                ConversationOwner owner = conversation.conversationOwner().get();
 
-               String sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+               // check if sender is administrator and in that case dont set fromName - this will be picked up by
+               // MailSender and replaced with the configurated default fromName
+               String sender = null;
+               if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
+               {
+                  sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+               }
+
                String caseId = "n/a";
 
                if (owner != null)

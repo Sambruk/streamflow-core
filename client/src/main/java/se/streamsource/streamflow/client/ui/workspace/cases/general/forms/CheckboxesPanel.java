@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import se.streamsource.streamflow.client.util.StateBinder;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import se.streamsource.streamflow.util.MultiFieldHelper;
 
 public class CheckboxesPanel
       extends AbstractFieldPanel
@@ -64,8 +65,7 @@ public class CheckboxesPanel
    public void setValue( String newValue )
    {
       if ( newValue == null || newValue.equals( "" )) return;
-      String[] boxes = newValue.split( ", " );
-      for (String box : boxes)
+      for (String box : MultiFieldHelper.options( newValue ))
       {
          checkBoxMap.get( box ).setSelected( true );
       }
@@ -81,7 +81,14 @@ public class CheckboxesPanel
          if ( checkBox.isSelected() )
          {
             if (!first) sb.append( ", " );
-            sb.append( checkBox.getText() );
+            String text = checkBox.getText();
+            if ( text.contains( "," ) )
+            {
+               sb.append( "[" ).append( text ).append( "]" );
+            } else
+            {
+               sb.append( text );
+            }
             first = false;
          }
       }

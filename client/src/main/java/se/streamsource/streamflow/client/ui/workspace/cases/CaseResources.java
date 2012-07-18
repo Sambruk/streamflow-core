@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,14 @@ public enum CaseResources
    case_status_closed_text,
    case_status_on_hold_text,
 
+   case_restricted_icon,
+   case_unrestricted_icon,
+
    // Conversation
    new_conversation_topic,
    choose_participant,
    regular_expression_does_not_validate,
    invalidinteger,
-   could_not_upload_file, parent, caze, subcases, choose_external_participant, invalidfloat
+   could_not_upload_file, parent, caze, subcases, choose_external_participant,
+   invalidfloat
 }

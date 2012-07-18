@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,12 @@ import se.streamsource.streamflow.client.ui.account.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
+import se.streamsource.streamflow.client.ui.administration.FormOnRemoveView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsView;
@@ -59,6 +61,7 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Fiel
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorComboBoxFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorCommentFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorDateFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorFieldGroupValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorListBoxFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorNumberFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorOpenSelectionFieldValueView;
@@ -78,9 +81,13 @@ import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PriorityView;
 import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
@@ -94,7 +101,8 @@ import se.streamsource.streamflow.client.ui.administration.templates.SelectedTem
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.CreateUserDialog;
 import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
-import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
+import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailView;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListView;
 import se.streamsource.streamflow.client.ui.menu.AccountMenu;
 import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 import se.streamsource.streamflow.client.ui.menu.EditMenu;
@@ -116,7 +124,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.PdfPrintingDialog;
-import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactLookupResultDialog;
@@ -257,7 +264,6 @@ public class UIAssembler
             CaseInfoView.class,
             CasesDetailView.class,
             CaseDetailView.class,
-            SubCasesView.class,
             ContactsAdminView.class,
             ContactsView.class,
             ContactView.class,
@@ -357,9 +363,13 @@ public class UIAssembler
             SelectedResolutionsView.class,
             CaseAccessDefaultsView.class,
             CaseDefaultDaysToCompleteView.class,
+            CaseDueOnNotificationView.class,
+            RecipientsView.class,
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
-            UsersAdministrationView.class,
+            FormOnRemoveView.class,
+            UserAdministrationDetailView.class,
+            UsersAdministrationListView.class,
             ProxyUsersView.class,
             AccessPointsView.class,
             AccessPointView.class,
@@ -373,7 +383,10 @@ public class UIAssembler
             RulesView.class,
             FormEditView.class,
             ActionsView.class,
-            LabelRuleView.class);
+            LabelRuleView.class,
+            PrioritiesView.class,
+            PriorityView.class,
+            PriorityOnCaseView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,
@@ -386,7 +399,8 @@ public class UIAssembler
             FieldEditorOptionButtonsFieldValueView.class,
             FieldEditorOpenSelectionFieldValueView.class,
             FieldEditorTextAreaFieldValueView.class,
-            FieldEditorTextFieldValueView.class);
+            FieldEditorTextFieldValueView.class,
+            FieldEditorFieldGroupValueView.class);
 
       addDialogs(module, FieldCreationDialog.class);
 

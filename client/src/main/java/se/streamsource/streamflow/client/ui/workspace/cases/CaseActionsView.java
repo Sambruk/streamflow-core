@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -106,16 +107,16 @@ public class CaseActionsView extends JPanel
       unassign,
       onhold,
       resume,
-      createsubcase,
       close,
       resolve,
       formonclose,
+      formondelete,
       reopen,
       delete,
       exportpdf,
-      reinstate;
-
-
+      reinstate,
+      restrict,
+      unrestrict
    }
 
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
@@ -132,21 +133,6 @@ public class CaseActionsView extends JPanel
       setActionMap( context.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseActionsView.class, this ) );
-   }
-
-   // Case actions
-   @Action
-   public Task createsubcase()
-   {
-      return new CommandTask()
-      {
-         @Override
-         public void command()
-               throws Exception
-         {
-            model.createSubCase();
-         }
-      };
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
@@ -235,8 +221,12 @@ public class CaseActionsView extends JPanel
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
       if (focusOwner != null)
          focusOwner.transferFocus();
-      
-      if( formOnCloseWizard() )
+
+      CommandQueryClient formOnCloseClient = model.getClient().getClient( "submitformonclose/" );
+      formOnCloseClient.postCommand( "create" );
+      LinkValue formDraftLink = formOnCloseClient.query( "formdraft", LinkValue.class );
+
+      if( formWizard( formDraftLink ) )
       {
          return new CommandTask()
          {
@@ -251,6 +241,44 @@ public class CaseActionsView extends JPanel
          return null;
    }
 
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task formondelete()
+   {
+      // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+      Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+      if (focusOwner != null)
+         focusOwner.transferFocus();
+
+
+      StringValue name = model.getClient().query( "formondeletename", StringValue.class );
+
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setCustomMessage( i18n.text( WorkspaceResources.formondelete_confirmation, name.string().get() ));
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         CommandQueryClient formOnRemoveClient = model.getClient().getClient( "submitformondelete/" );
+         formOnRemoveClient.postCommand( "create" );
+         LinkValue formDraftLink = formOnRemoveClient.query( "formdraft", LinkValue.class );
+
+         if( formWizard( formDraftLink ) )
+         {
+            return new CommandTask()
+            {
+               @Override
+               protected void command()
+                     throws Exception
+               {
+                  model.formOnRemove();
+               }
+            };
+         } else
+            return null;
+      } else
+      {
+         return null;
+      }
+   }
 
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task delete()
@@ -384,10 +412,45 @@ public class CaseActionsView extends JPanel
          return null;
    }
 
+   @Action(block = Task.BlockingScope.COMPONENT )
+   public Task restrict()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.restrict();
+         }
+      };
+   }
+
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task unrestrict()
+   {
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setCustomMessage( i18n.text( WorkspaceResources.unrestrict_case ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         return new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               model.unrestrict();
+            }
+         };
+      } else
+      {
+         return null;
+      }
+   }
+
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "reinstate"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formondelete", "reinstate", "restrict", "unrestrict"), transactions ))
       {
          model.refresh();
       }
@@ -426,19 +489,15 @@ public class CaseActionsView extends JPanel
       repaint();
    }
 
-   private boolean formOnCloseWizard()
+
+   private boolean formWizard( LinkValue formDraftLink )
    {
-      CommandQueryClient formOnCloseClient = model.getClient().getClient( "submitformonclose/" );
-
-      formOnCloseClient.postCommand( "create" );
-      LinkValue formDraftLink = formOnCloseClient.query( "formdraft", LinkValue.class );
-
       // get the form submission value;
       final CommandQueryClient formDraftClient = model.getClient().getClient( formDraftLink );
 
       final FormDraftModel formDraftModel = module.objectBuilderFactory().newObjectBuilder(FormDraftModel.class).use(formDraftClient).newInstance();
 
-      FormDraftDTO formDraftDTO = (FormDraftDTO) ((FormDraftModel) formDraftModel).getFormDraftDTO().buildWith().prototype();
+      FormDraftDTO formDraftDTO = (FormDraftDTO) formDraftModel.getFormDraftDTO().buildWith().prototype();
 
       final WizardPage[] wizardPages = new WizardPage[ formDraftDTO.pages().get().size() ];
       for (int i = 0; i < formDraftDTO.pages().get().size(); i++)

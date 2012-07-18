@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,12 +91,12 @@ public class AboutDialog
                " Revision: " + p.getProperty( "application.revision" ) + "<br><br>" +
                "---" + "<br><br>" +
                "Streamflow&#0153;<br>" +
-               "Copyright 2009-2012 Streamsource AB<br><br>" +
+               "Copyright 2009-2012 Jayway Products AB<br><br>" +
                "Streamflow&#0153; is licensed under the Apache License, Version 2.0 (the \"License\").<br>" +
                "You may not use Streamflow&#0153; except in compliance with the License.<br>" +
                "A copy of the License is available below and may also be obtained<br>" +
                "at http://www.apache.org/licenses/LICENSE-2.0 .<br>" +
-               "Streamflow&#0153; contains software that is licensed by third parties to Streamsource AB<br>" +
+               "Streamflow&#0153; contains software that is licensed by third parties to Jayway Products AB<br>" +
                "and protected by copyright.<br><br>" +
                "Streamflow&#0153; PlugIns used with Streamflow&#0153; are licensed under their respective software license.</body></html>"
          );

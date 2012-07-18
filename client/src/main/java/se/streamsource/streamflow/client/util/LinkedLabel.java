@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,16 @@
  */
 package se.streamsource.streamflow.client.util;
 
+import org.jdesktop.swingx.JXHyperlink;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.util.Strings;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.jdesktop.swingx.JXHyperlink;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.util.Strings;
 
 /**
  * Show a LinkValue. If the href property is set, then
@@ -101,5 +99,12 @@ public class LinkedLabel
    {
       label.setText(text);
       link.setText(text);
+   }
+
+   @Override
+   public void setEnabled( boolean enabled )
+   {
+      label.setEnabled( enabled );
+      link.setEnabled( enabled );
    }
 }

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,11 @@
  */
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.ActionMap;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -39,28 +29,41 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
-
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
 
 
 public class AccessPointView
@@ -81,6 +84,9 @@ public class AccessPointView
    private JLabel selectedProject = new JLabel();
    private StreamflowButton formButton;
    private JLabel selectedForm = new JLabel();
+
+   private JLabel mailSelectionLabel = new JLabel();
+   private JTextField mailSelectionField;
 
    private StreamflowButton templateButton;
    private RemovableLabel selectedTemplate = new RemovableLabel();
@@ -108,8 +114,13 @@ public class AccessPointView
             if (value instanceof LinkValue)
             {
                return ((LinkValue) value).text().get();
+            } else if ( value instanceof StringValue )
+            {
+               return ((StringValue) value).string().get();
             } else
+            {
                return value;
+            }
          }
 
          public Object fromComponent( Object value )
@@ -121,7 +132,7 @@ public class AccessPointView
       AccessPointDTO template = accessPointBinder
             .bindingTemplate( AccessPointDTO.class );
 
-      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
+      FormLayout layout = new FormLayout( "90dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -159,7 +170,7 @@ public class AccessPointView
       builder.add( projectButton, cc.xy( 1, 1 ) );
 
       builder.add( accessPointBinder.bind( selectedProject, template.project() ),
-            new CellConstraints( 3, 1, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 1, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
 
       // Select case type
@@ -173,7 +184,7 @@ public class AccessPointView
       builder.add( caseTypeButton, cc.xy( 1, 3 ) );
 
       builder.add( accessPointBinder.bind( selectedCaseType, template.caseType() ),
-            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
 
       // Select labels
@@ -205,7 +216,7 @@ public class AccessPointView
       builder.add( formButton, cc.xy( 1, 7, CellConstraints.FILL, CellConstraints.TOP ) );
 
       builder.add( accessPointBinder.bind( selectedForm, template.form() ),
-            new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
       // Select template
       javax.swing.Action templateAction = am.get( "template" );
@@ -220,11 +231,19 @@ public class AccessPointView
       builder.add( templateButton, cc.xy( 1, 9, CellConstraints.FILL, CellConstraints.TOP ) );
 
       builder.add( accessPointBinder.bind( selectedTemplate, template.template() ),
-            new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 3, 0, 0, 0 ) ) );
 
       add( panel, BorderLayout.CENTER );
 
       accessPointBinder.updateWith( model.getAccessPointValue() );
+
+      mailSelectionLabel.setText( i18n.text( AdministrationResources.changeMailSelectionMessage ) );
+      mailSelectionLabel.setToolTipText( i18n.text( AdministrationResources.changeMailSelectionMessageHint ) );
+      builder.add( mailSelectionLabel, cc.xy( 1, 11, CellConstraints.RIGHT, CellConstraints.BOTTOM ) );
+
+      builder.add( accessPointBinder.bind( mailSelectionField = (JTextField) BindingFormBuilder.Fields.TEXTFIELD.newField(),
+            template.mailSelectionMessage() ),
+            new CellConstraints( 3, 11, 1,1 , CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 3,0,0,0 )));
 
       new RefreshWhenShowing( this, model );
    }
@@ -318,6 +337,37 @@ public class AccessPointView
 
    }
 
+   @Action
+   public Task changeMailSelectionMessage()
+   {
+      final NameDialog dialog = module.objectBuilderFactory().newObjectBuilder( NameDialog.class ).newInstance();
+      //dialog.nameField.setText( mailSelectionMessage.getText() );
+
+      dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.mail_selection_message ) );
+
+      if ( dialog.name() != null )
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               if ( dialog.name().isEmpty() )
+               {
+                  model.resetMailSelectionMessage();
+               } else
+               {
+                  model.setMailSelectionMessage( dialog.name() );
+               }
+            }
+         };
+      } else
+      {
+         return null;
+      }
+   }
+
    public void update( Observable o, Object arg )
    {
       if (o == accessPointBinder)
@@ -332,6 +382,21 @@ public class AccessPointView
                      throws Exception
                {
                   model.setTemplate( null );
+               }
+            }.execute();
+         } else if ( property.qualifiedName().name().equals( "mailSelectionMessage" ))
+         {
+            new CommandTask(){
+               @Override
+               protected void command() throws Exception
+               {
+                  String message = (String) property.get();
+                  if (Strings.empty( message ) )
+                  {
+                     model.resetMailSelectionMessage();
+                  } else {
+                     model.setMailSelectionMessage( message );
+                  }
                }
             }.execute();
          }
@@ -367,7 +432,7 @@ public class AccessPointView
       if (Events.matches( Events.withNames( "addedLabel",
             "removedLabel", "addedCaseType", "addedProject",
             "addedSelectedForm", "changedProject", "changedCaseType",
-            "formPdfTemplateSet" ), transactions ))
+            "formPdfTemplateSet", "changedMailSelectionMessage" ), transactions ))
       {
          model.refresh();
       }

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,38 +16,13 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
-import org.jdesktop.application.ApplicationAction;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.FormElementItemListCellRenderer;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.util.Strings;
+import static org.qi4j.api.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.first;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -59,11 +34,40 @@ import javax.swing.JSplitPane;
 import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.FormElementItemListCellRenderer;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.swing.EventListModel;
+
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -84,6 +88,7 @@ public class FormElementsView
    private FormPagesModel model;
    
    private ActionMap am;
+
 
 
    public FormElementsView( @Service ApplicationContext context,
@@ -189,12 +194,14 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task addField()
    {
-      final FieldCreationDialog dialog = module.objectBuilderFactory().newObject(FieldCreationDialog.class);
+      final LinkValue page = findSelectedPage(  getSelectedValue() );
+      FieldCreationModel fieldCreationModel = module.objectBuilderFactory().newObjectBuilder( FieldCreationModel.class ).use( model.getClient().getSubClient( page.id().get() ) ).newInstance();
+      
+      final FieldCreationDialog dialog = module.objectBuilderFactory().newObjectBuilder(FieldCreationDialog.class).use( fieldCreationModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_field_to_form ) );
 
-      if ( !Strings.empty( dialog.name() ) )
+      if ( !Strings.empty( dialog.name() ) && dialog.getAddLink() != null )
       {
-         final LinkValue page = findSelectedPage(  getSelectedValue() );
          list.clearSelection();
          return new CommandTask()
          {
@@ -202,7 +209,7 @@ public class FormElementsView
             public void command()
                   throws Exception
             {
-               model.addField( page, dialog.name(), dialog.getFieldType() );
+               model.addField( page, dialog.name(), dialog.getAddLink() );
             }
          };
       }
@@ -218,9 +225,13 @@ public class FormElementsView
       } else
       {
          int i1 = selected.href().get().indexOf( selected.id().get() );
-         ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder(LinkValue.class).withPrototype( selected );
-         builder.prototype().href().set( selected.href().get().substring( 0, i1 ));
-         return builder.newInstance();
+         String id = selected.href().get().substring( 0, i1-1 );
+         for (LinkValue link : model.getList())
+         {
+            if (id.equals( link.id().get() ))
+               return link;
+         }
+         return null;
       }
    }
 

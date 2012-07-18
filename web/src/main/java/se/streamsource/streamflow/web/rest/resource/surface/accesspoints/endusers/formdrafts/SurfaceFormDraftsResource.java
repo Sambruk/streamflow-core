@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class SurfaceFormDraftsResource
 
    public void resource( String segment ) throws ResourceException
    {
-      FormDraft draft = findManyAssociation( RoleMap.role(FormDrafts.Data.class).formDrafts(), segment );
+      FormDraft draft = findManyAssociation( RoleMap.role( FormDrafts.Data.class ).formDrafts(), segment );
       RoleMap.current().set( draft.getFormDraftValue() );
       subResource( SurfaceFormDraftResource.class );
    }

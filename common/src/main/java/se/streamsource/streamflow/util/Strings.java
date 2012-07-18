@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,4 +87,13 @@ public class Strings
         return humanReadableString.toString();
     }
 
+    public static String capitalize(final String string)
+    {
+       if (string == null)
+          throw new NullPointerException();
+       if (string.equals(""))
+          throw new NullPointerException();
+
+       return Character.toUpperCase(string.charAt(0)) + string.substring(1);
+    }
 }

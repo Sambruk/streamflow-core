@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEnt
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldGroupEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
@@ -47,6 +48,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.PriorityEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
@@ -163,7 +165,7 @@ public class DomainAssembler
    private void organizations(ModuleAssembly module) throws AssemblyException
    {
       module.entities(OrganizationsEntity.class, OrganizationEntity.class,
-              OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class).visibleIn( application );
+              OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class, PriorityEntity.class).visibleIn( application );
       module.values(ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 
@@ -184,7 +186,8 @@ public class DomainAssembler
               FormDraftEntity.class,
               FieldEntity.class,
               PageEntity.class,
-              DatatypeDefinitionEntity.class
+              DatatypeDefinitionEntity.class,
+              FieldGroupEntity.class
       ).visibleIn(Visibility.application);
 
       module.values(SubmittedFormValue.class, SubmittedPageValue.class, SubmittedFieldValue.class).visibleIn(Visibility.application);

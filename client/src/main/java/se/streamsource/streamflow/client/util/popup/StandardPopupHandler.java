@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,13 +84,11 @@ public class StandardPopupHandler implements PopupHandler
       } );
    }
 
-   @Override
    public StreamflowToggleButton getButton()
    {
       return button;
    }
 
-   @Override
    public void setPanelContent(JPanel filterPanel)
    {
       optionsPanel.add( filterPanel );

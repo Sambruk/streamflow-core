@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Streamsource AB
+ * Copyright 2009-2012 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,11 +50,6 @@ public class AdministrationContext
 
       // Add server admin link as root
       ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
-      linkBuilder.prototype().text().set( "Server" );
-      linkBuilder.prototype().id().set( "server" );
-      linkBuilder.prototype().rel().set( "server" );
-      linkBuilder.prototype().href().set("server/");
-      linksBuilder.addLink(linkBuilder.newInstance());
 
       // Add organizations
       Participant participant = RoleMap.role( Participant.class );
