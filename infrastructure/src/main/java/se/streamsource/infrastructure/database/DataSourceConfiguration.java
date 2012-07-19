@@ -39,4 +39,7 @@ public interface DataSourceConfiguration
 
    @UseDefaults
    Property<String> properties();
+
+   @UseDefaults
+   Property<String> dbVendor();
 }

@@ -27,6 +27,7 @@ import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 import org.streamsource.streamflow.statistic.dto.StatisticsResult;
 import org.streamsource.streamflow.statistic.dto.TopOu;
 import org.streamsource.streamflow.statistic.web.AppContextListener;
+import org.streamsource.streamflow.statistic.web.Dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,17 +45,35 @@ public class StatisticService
    SearchCriteria criteria;
    String periodPattern;
 
+
    protected JdbcTemplate jdbcTemplate;
 
-   protected String organizationQuery = "select id, name, organization.left, organization.right from organization where organization.left = 0";
-   protected String topOusQuery = "select id, name, organization.left, organization.right from organization where parent in (select id from organization where organization.left = 0)";
+   protected String organizationQueryMysql = "select id, name, organization.left, organization.right from organization where organization.left = 0";
+   protected String topOusQueryMysql = "select id, name, organization.left, organization.right from organization where parent in (select id from organization where organization.left = 0)";
 
-   
+   protected String organizationQueryMsSql = "select id, name, organization.[left], organization.[right] from organization where organization.[left] = 0";
+   protected String topOusQueryMsSql = "select id, name, organization.[left], organization.[right] from organization where parent in (select id from organization where organization.[left] = 0)";
+
+   protected String organizationQuery = "";
+   protected String topOusQuery = "";
+
    public StatisticService(SearchCriteria criteria )
    {
       this.criteria = criteria;
 
       jdbcTemplate = AppContextListener.getJdbcTemplate();
+
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         organizationQuery = organizationQueryMsSql;
+         topOusQuery = topOusQueryMsSql;
+
+      } else
+      {
+         organizationQuery = organizationQueryMysql;
+         topOusQuery = topOusQueryMysql;
+      }
+
    }
 
    protected String getCaseOrgTotalQuery( )
@@ -130,6 +149,7 @@ public class StatisticService
    public StatisticsResult getStatistics()
    {
       StatisticsResult result = new StatisticsResult();
+
 
       // Organization information
       final TopOu org = jdbcTemplate.query( organizationQuery, new ResultSetExtractor<TopOu>()
