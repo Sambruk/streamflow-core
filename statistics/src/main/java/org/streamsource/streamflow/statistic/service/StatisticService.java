@@ -50,12 +50,16 @@ public class StatisticService
 
    protected String organizationQueryMysql = "select id, name, organization.left, organization.right from organization where organization.left = 0";
    protected String topOusQueryMysql = "select id, name, organization.left, organization.right from organization where parent in (select id from organization where organization.left = 0)";
+   String topOuCasesQueryMysql = "select id from organization where organization.left >= ? and organization.right <= ? ";
 
    protected String organizationQueryMsSql = "select id, name, organization.[left], organization.[right] from organization where organization.[left] = 0";
    protected String topOusQueryMsSql = "select id, name, organization.[left], organization.[right] from organization where parent in (select id from organization where organization.[left] = 0)";
+   String topOuCasesQueryMsSql = "select id from organization where organization.[left] >= ? and organization.[right] <= ? ";
+
 
    protected String organizationQuery = "";
    protected String topOusQuery = "";
+   protected String topOuCasesQuery = "";
 
    public StatisticService(SearchCriteria criteria )
    {
@@ -67,11 +71,13 @@ public class StatisticService
       {
          organizationQuery = organizationQueryMsSql;
          topOusQuery = topOusQueryMsSql;
+         topOuCasesQuery = topOuCasesQueryMsSql;
 
       } else
       {
          organizationQuery = organizationQueryMysql;
          topOusQuery = topOusQueryMysql;
+         topOuCasesQuery = topOuCasesQueryMysql;
       }
 
    }
@@ -113,9 +119,7 @@ public class StatisticService
       return "select date_format( cases.closed_on, '" + periodPattern + "') as period, count(case_id) as number " +
             "from cases where cases.casetype_owner in " +
             "( " +
-            "select id from organization " +
-            "where organization.left >= ? " +
-            " and organization.right <= ? " +
+               topOuCasesQuery +
             ") " +
             "and closed_on >= ? " +
             "and closed_on <= ? " +
