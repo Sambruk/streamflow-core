@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import java.util.ArrayList;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -32,7 +30,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-
+import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
@@ -52,6 +50,8 @@ import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.organization.FormOnRemove;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+
+import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -200,6 +200,10 @@ public interface FormDrafts
          }
 
          int pages = builder.prototype().pages().get().size();
+         if( pages == 0 )
+         {
+            throw new IllegalArgumentException( ErrorResources.form_without_pages.name() );
+         }
          builder.prototype().pages().get().remove( pages - 1 );
          builder.prototype().pages().get().add( pageBuilder.newInstance() );
 

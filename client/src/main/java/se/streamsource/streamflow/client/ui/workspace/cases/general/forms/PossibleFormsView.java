@@ -16,21 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Map;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-
+import ca.odell.glazedlists.EventList;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.netbeans.api.wizard.WizardDisplayer;
 import org.netbeans.spi.wizard.Wizard;
@@ -40,8 +26,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.client.StreamflowApplication;
@@ -50,7 +36,19 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import ca.odell.glazedlists.EventList;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Map;
+
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable, TransactionListener
@@ -125,42 +123,48 @@ public class PossibleFormsView extends JPanel
                      use( formDraftModel, page ).newInstance();
             }
          }
-         wizard = WizardPage.createWizard( formDraftDTO.description().get(), wizardPages, new WizardPage.WizardResultProducer()
+         try
          {
-            public Object finish( Map map ) throws WizardException
+            wizard = WizardPage.createWizard( formDraftDTO.description().get(), wizardPages, new WizardPage.WizardResultProducer()
             {
-               // Force focus move before submit
-               Component focusOwner = WindowUtils.findWindow( wizardPages[ wizardPages.length - 1 ]  ).getFocusOwner();
-               if (focusOwner != null)
+               public Object finish( Map map ) throws WizardException
                {
-                  focusOwner.transferFocus();
+                  // Force focus move before submit
+                  Component focusOwner = WindowUtils.findWindow( wizardPages[ wizardPages.length - 1 ]  ).getFocusOwner();
+                  if (focusOwner != null)
+                  {
+                     focusOwner.transferFocus();
 
+                     new CommandTask()
+                     {
+                        @Override
+                        protected void command() throws Exception
+                        {
+                           formDraftModel.submit();
+                        }
+                     }.execute();
+                  }
+                  return null;
+               }
+
+               public boolean cancel( Map map )
+               {
                   new CommandTask()
                   {
                      @Override
-                     protected void command() throws Exception
+                     public void command()
+                        throws Exception
                      {
-                        formDraftModel.submit();
+                        formDraftModel.delete();
                      }
                   }.execute();
+                  return true;
                }
-               return null;
-            }
-
-            public boolean cancel( Map map )
-            {
-               new CommandTask()
-               {
-                  @Override
-                  public void command()
-                     throws Exception
-                  {
-                     formDraftModel.delete();
-                  }
-               }.execute();
-               return true;
-            }
-         } );
+            } );
+         } catch ( NullPointerException npe )
+         {
+            throw new IllegalArgumentException( ErrorResources.form_page_without_fields.name() );
+         }
          Point onScreen = main.getMainFrame().getLocationOnScreen();
          WizardDisplayer.showWizard( wizard, new Rectangle( onScreen, new Dimension( 800, 600 ) ) );
 

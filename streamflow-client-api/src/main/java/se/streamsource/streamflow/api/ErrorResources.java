@@ -31,5 +31,8 @@ public enum ErrorResources
    user_already_exists,
    description_cannot_be_more_than_50,
    project_remove_failed_open_cases,
-   password_violation, priority_remove_failed_default_exist
+   password_violation,
+   priority_remove_failed_default_exist,
+   form_without_pages,
+   form_page_without_fields
 }

@@ -116,8 +116,15 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                         return;
                      } else if (re.getStatus().equals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY ) )
                      {
-                        showErrorDialog(ex, frame, re.getMessage() + "\n" + re.getStatus().getUri(),
-                              re.getStatus().getDescription());
+                        try
+                        {
+                           showErrorDialog(ex, frame, text( ErrorResources.valueOf( re.getStatus().getDescription() ) ) );
+                        } catch ( Exception e )
+                        {
+
+                           showErrorDialog(ex, frame, re.getMessage() + "\n"
+                                 + re.getStatus().getUri(),re.getStatus().getDescription());
+                        }
                         return;
                      }
                      else
@@ -132,9 +139,15 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                      String message = ex.getMessage();
                      if (message != null)
                      {
-                        message = HtmlErrorMessageExtractor.parse(ex.getMessage());
-                        showErrorDialog(ex, frame,
+                        try
+                        {
+                           showErrorDialog(ex, frame, text( ErrorResources.valueOf( message ) ) );
+                        } catch ( Exception e )
+                        {
+                           message = HtmlErrorMessageExtractor.parse(ex.getMessage());
+                           showErrorDialog(ex, frame,
                               text(StreamflowResources.valueOf(HtmlErrorMessageExtractor.parse(ex.getMessage()))));
+                        }
                      } else
                      {
                         // once again in case the resource enum does not exist
