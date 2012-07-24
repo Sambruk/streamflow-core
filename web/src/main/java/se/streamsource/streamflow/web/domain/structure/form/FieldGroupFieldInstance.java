@@ -16,21 +16,11 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Notable;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 
 /**
- * JAVADOC
+ * Points to the belonging field group
  */
-public interface Form
- extends Describable,
-      FormId,
-      Notable,
-      Pages,
-      Ownable,
-      Removable,
-      RequiredSignatures
+public interface FieldGroupFieldInstance
+      extends FieldGroupValue
 {
 }

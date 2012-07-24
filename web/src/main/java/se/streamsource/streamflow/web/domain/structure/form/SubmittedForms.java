@@ -120,18 +120,7 @@ public interface SubmittedForms
                   if (field.field().get() != null && field.value().get() != null && !field.field().get().fieldValue().get().validate( field.value().get() ))
                      throw new IllegalArgumentException( "invalid_value" );
 
-                  if ( field.field().get().field().get().identity().contains( "_" ) )
-                  {
-                     // this is a field of a field group. The entity id need to be fixed
-                     // back from the change done in FormDrafts.createDraft
-                     String concatenated = field.field().get().field().get().identity();
-                     String fixed = concatenated.substring( concatenated.indexOf( "_" ) + 1 );
-                     fieldBuilder.prototype().field().set( EntityReference.parseEntityReference( fixed ) );
-                  } else
-                  {
-                     fieldBuilder.prototype().field().set( field.field().get().field().get() );
-                  }
-
+                  fieldBuilder.prototype().field().set( field.field().get().field().get() );
                   if ( field.value().get() == null )
                   {
                      fieldBuilder.prototype().value().set( "" );

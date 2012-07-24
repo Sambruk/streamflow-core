@@ -14,23 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.form;
+package se.streamsource.streamflow.web.domain.entity.form;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Notable;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroupFieldInstance;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroupValue;
+import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 
 /**
  * JAVADOC
  */
-public interface Form
- extends Describable,
-      FormId,
-      Notable,
-      Pages,
-      Ownable,
-      Removable,
-      RequiredSignatures
+public interface FieldGroupFieldInstanceEntity
+      extends
+      FieldGroupFieldInstance,
+      FieldGroupValue.Data,
+      DomainEntity
 {
 }

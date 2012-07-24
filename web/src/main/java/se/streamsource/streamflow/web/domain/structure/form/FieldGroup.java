@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 public interface FieldGroup
    extends
    Fields,
+   FieldGroupFieldsInstance,
    Describable,
    Removable
 {

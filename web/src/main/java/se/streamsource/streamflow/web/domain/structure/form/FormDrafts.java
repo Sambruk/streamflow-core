@@ -179,14 +179,12 @@ public interface FormDrafts
 
                   pageBuilder.prototype().fields().get().add( fieldGroupDefinition );
 
-                  for (Field subField : ((Fields.Data)fieldGroup).fields())
+                  for (Field subField : page.listFieldGroupFields( field ))
                   {
                      FieldValue subFieldValue = ((FieldValueDefinition.Data) subField).fieldValue().get();
 
                      ValueBuilder<FieldSubmissionDTO> fieldSubmissionBuilder = fieldSubmissionBuilder( subField, subFieldValue, submittedFormValue, fieldBuilder, valueBuilder );
-                     // the field group is flattened and fields can be recognized by their entity reference "groupId"_"fieldId"
-                     // when submitting this will be changed from "groupId"_"fieldId" to "fieldId"
-                     valueBuilder.prototype().field().set( EntityReference.parseEntityReference( EntityReference.getEntityReference( field ) + "_" + EntityReference.getEntityReference( subField ) ) );
+                     valueBuilder.prototype().field().set( EntityReference.getEntityReference( subField ) );
                      fieldSubmissionBuilder.prototype().field().set( valueBuilder.newInstance() );
 
                      pageBuilder.prototype().fields().get().add( fieldSubmissionBuilder.newInstance() );
