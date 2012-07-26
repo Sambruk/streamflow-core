@@ -27,6 +27,7 @@ import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 import org.streamsource.streamflow.statistic.dto.StatisticsResult;
 import org.streamsource.streamflow.statistic.dto.TopOu;
 import org.streamsource.streamflow.statistic.web.AppContextListener;
+import org.streamsource.streamflow.statistic.web.Dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,97 +40,119 @@ import java.util.Map;
 /**
  * A service that fetches case statistics data from the statistics database.
  */
-public class StatisticService
+public abstract class StatisticService
 {
    SearchCriteria criteria;
-   String periodPattern;
 
    protected JdbcTemplate jdbcTemplate;
 
-   protected String organizationQuery = "select id, name, organization.left, organization.right from organization where organization.left = 0";
-   protected String topOusQuery = "select id, name, organization.left, organization.right from organization where parent in (select id from organization where organization.left = 0)";
+   protected String organizationQueryMysql = "select id, name, organization.left, organization.right from organization where organization.left = 0";
+   protected String topOusQueryMysql = "select id, name, organization.left, organization.right from organization where parent in (select id from organization where organization.left = 0)";
+   String topOuCasesQueryMysql = "select id from organization where organization.left >= ? and organization.right <= ? ";
 
-   
+   protected String organizationQueryMsSql = "select id, name, organization.[left], organization.[right] from organization where organization.[left] = 0";
+   protected String topOusQueryMsSql = "select id, name, organization.[left], organization.[right] from organization where parent in (select id from organization where organization.[left] = 0)";
+   String topOuCasesQueryMsSql = "select id from organization where organization.[left] >= ? and organization.[right] <= ? ";
+
+
+   protected String organizationQuery = "";
+   protected String topOusQuery = "";
+   protected String topOuCasesQuery = "";
+
    public StatisticService(SearchCriteria criteria )
    {
       this.criteria = criteria;
 
       jdbcTemplate = AppContextListener.getJdbcTemplate();
+
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         organizationQuery = organizationQueryMsSql;
+         topOusQuery = topOusQueryMsSql;
+         topOuCasesQuery = topOuCasesQueryMsSql;
+
+      } else
+      {
+         organizationQuery = organizationQueryMysql;
+         topOusQuery = topOusQueryMysql;
+         topOuCasesQuery = topOuCasesQueryMysql;
+      }
+
    }
 
    protected String getCaseOrgTotalQuery( )
    {
-      return "select date_format( closed_on, '" + periodPattern +"' ) as period, count(case_id) as number " +
+      return "select " + getPeriodFunction( "closed_on" ) +" as period, count(case_id) as number " +
             "from casesdescriptions " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +
-            "group by period " +
-            "order by period";
+            "group by " + getGroupOrOrderByClause( "closed_on", "period" ) +
+            " order by " +  getGroupOrOrderByClause( "closed_on", "period" );
    }
 
    protected String getCaseOrgWithCaseTypeQuery( )
    {
-      return "select date_format( closed_on, '" + periodPattern + "' ) as period, count(case_id) as number " +
+      return "select " + getPeriodFunction( "closed_on" ) + " as period, count(case_id) as number " +
             "from casesdescriptions " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +
             "and casetype is not null " +
-            "group by period " +
-            "order by period";
+            "group by " + getGroupOrOrderByClause( "closed_on", "period" ) +
+            " order by " +  getGroupOrOrderByClause( "closed_on", "period" );
    }
 
    protected String getCaseOrgWithoutCaseTypeQuery( )
    {
-      return "select date_format( closed_on, '" + periodPattern + "' ) as period, count(case_id) as number " +
+      return "select " + getPeriodFunction( "closed_on" ) + " as period, count(case_id) as number " +
             "from casesdescriptions " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +
             "and casetype is null " +
-            "group by period " +
-            "order by period";
+            "group by " + getGroupOrOrderByClause( "closed_on", "period" ) +
+            " order by " +  getGroupOrOrderByClause( "closed_on", "period" );
    }
 
    protected String getTopOuCasesQuery( )
    {
-      return "select date_format( cases.closed_on, '" + periodPattern + "') as period, count(case_id) as number " +
-            "from cases where cases.casetype_owner in " +
+      /* was cases.closed_on */
+      return "select " + getPeriodFunction( "closed_on" ) + " as period, count(case_id) as number " +
+            "from cases where casetype_owner in " +
             "( " +
-            "select id from organization " +
-            "where organization.left >= ? " +
-            " and organization.right <= ? " +
+               topOuCasesQuery +
             ") " +
             "and closed_on >= ? " +
             "and closed_on <= ? " +
             "and casetype_owner is not null " +
-            "group by period " +
-            "order by period";
+            "group by " + getGroupOrOrderByClause( "closed_on", "period" ) +
+            " order by " +  getGroupOrOrderByClause( "closed_on", "period" );
    }
 
    protected String getCasetypeOwnerQuery( )
    {
-      return "select casetype_owner, date_format(closed_on, '" + periodPattern + "') as period, count(case_id) as number " +
+      return "select casetype_owner, " + getPeriodFunction( "closed_on" ) + " as period, count(case_id) as number " +
             "from casesdescriptions " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +
             "and casetype_owner is not null " +
-            "group by casetype_owner, period " +
-            "order by casetype_owner, period";
+            "group by casetype_owner, " + getGroupOrOrderByClause( "closed_on", "period" ) +
+            " order by casetype_owner, " + getGroupOrOrderByClause( "closed_on", "period" );
    }
 
    protected String getCasetypeQuery( )
    {
-      return "select casetype, date_format(closed_on, '" + periodPattern + "') as period, count(case_id) as number " +
+      return "select casetype, " + getPeriodFunction( "closed_on" ) + " as period, count(case_id) as number " +
             "from casesdescriptions " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +
             "and casetype is not null " +
-            "group by casetype, period " +
-            "order by casetype, period ";
+            "group by casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) +
+            " order by casetype, " + getGroupOrOrderByClause( "closed_on", "period" );
    }
 
    public StatisticsResult getStatistics()
    {
       StatisticsResult result = new StatisticsResult();
+
 
       // Organization information
       final TopOu org = jdbcTemplate.query( organizationQuery, new ResultSetExtractor<TopOu>()
@@ -298,12 +321,25 @@ public class StatisticService
    
    public List<ScatterChartValue> getVariationForCaseType( String caseTypeId )
    {
-      String sql = "select unix_timestamp(closed_on)*1000, truncate(duration/60000,0) " +
+      String sql = "";
+      if( Dao.getDbVendor().equals( "mssql" ))
+      {
+         sql = "select CONVERT( BIGINT ,DATEDIFF(s,'19700101', [closed_on])) * 1000, " +
+               " CAST( closed_on AS Date )" +
+               " from cases\n" +
+               "where closed_on >= ? " +
+               "and closed_on <= ? " +
+               "and casetype = ? " +
+               "order by closed_on";
+      } else
+      {
+         sql = "select unix_timestamp(closed_on)*1000, truncate(duration/60000,0) " +
             "from cases " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +
             "and casetype = ? " +
             "order by closed_on";
+      }
             
       return jdbcTemplate.query( sql, new Object[]{ criteria.getFormattedFromDate(), criteria.getFormattedToDateTime(), caseTypeId },
             new ResultSetExtractor<List<ScatterChartValue>>()
@@ -342,4 +378,10 @@ public class StatisticService
          }
       } );
    }
+
+   public abstract String getPeriodFunction( String column );
+
+
+   public abstract String getGroupOrOrderByClause( String column, String alias );
+
 }

@@ -29,6 +29,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Classes;
 import org.qi4j.library.constraints.annotation.GreaterThan;
+import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -65,6 +66,9 @@ public interface Fields
       @This
       Data data;
 
+      @This
+      FieldGroupFieldsInstance fieldGroupFields;
+
       @Service
       IdentityGenerator idGen;
 
@@ -74,6 +78,10 @@ public interface Fields
       public Field createField( String name, FieldValue fieldValue )
       {
          Field field = createdField( null, idGen.generate( Identity.class ), fieldValue );
+         if ( fieldValue instanceof FieldGroupFieldValue )
+         {
+            fieldGroupFields.addFieldGroupFields( field );
+         }
          field.changeDescription( name );
          return field;
       }
@@ -83,6 +91,10 @@ public interface Fields
          if (!data.fields().contains( field ))
             return;
 
+         if ( ((FieldValueDefinition.Data) field).fieldValue().get() instanceof FieldGroupFieldValue )
+         {
+            fieldGroupFields.removeFieldGroupFields( field );
+         }
          removedField( null, field );
       }
 

@@ -26,6 +26,7 @@ import java.util.prefs.Preferences;
  */
 public class Dao
 {
+   private static String dbVendor;
    private static BasicDataSource ds;
    private static boolean bDataSourceInitialized=false;
    private static void initializeDataSource()
@@ -35,6 +36,8 @@ public class Dao
       String dbUser = preference.get( "username", "n/a" );
       String dbPwd = preference.get( "password", "n/a" );
       String dbDriver = preference.get( "driver", "n/a" );
+
+      dbVendor = preference.get( "dbVendor", "mysql" );
 
       ds = new BasicDataSource();
       ds.setDriverClassName( dbDriver );
@@ -58,5 +61,15 @@ public class Dao
       }
 
       return(ds);
+   }
+
+   public static String getDbVendor()
+   {
+      if( bDataSourceInitialized == false )
+      {
+         initializeDataSource();
+      }
+
+      return dbVendor;
    }
 }
