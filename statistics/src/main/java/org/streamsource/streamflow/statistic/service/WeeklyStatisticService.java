@@ -17,6 +17,7 @@
 package org.streamsource.streamflow.statistic.service;
 
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
+import org.streamsource.streamflow.statistic.web.Dao;
 
 /**
  * Statistic service for week period.
@@ -28,6 +29,28 @@ public class WeeklyStatisticService
    public WeeklyStatisticService( SearchCriteria criteria )
    {
       super( criteria );
-      periodPattern = "%Y-%v";
    }
+
+   public String getPeriodFunction( String column )
+   {
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         return "CONVERT( VARCHAR(5), [" + column + "], 120 ) + CONVERT( VARCHAR(2),{ fn WEEK([" + column + "]) })";
+      } else
+      {
+         return "date_format( " + column + ", '%Y-%v' )";
+      }
+   }
+
+   public String getGroupOrOrderByClause( String column, String alias )
+   {
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         return getPeriodFunction( column );
+      } else
+      {
+         return alias;
+      }
+   }
+
 }

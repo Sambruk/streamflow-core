@@ -17,6 +17,7 @@
 package org.streamsource.streamflow.statistic.service;
 
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
+import org.streamsource.streamflow.statistic.web.Dao;
 
 /**
  * Statistic service for month period.
@@ -24,9 +25,31 @@ import org.streamsource.streamflow.statistic.dto.SearchCriteria;
 public class MonthlyStatisticService
    extends StatisticService
 {
+
    public MonthlyStatisticService( SearchCriteria criteria)
    {
       super( criteria );
-      periodPattern = "%Y-%m";
+   }
+
+   public String getPeriodFunction( String column )
+   {
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         return "CONVERT( VARCHAR(7), [" + column + "], 120 )";
+      } else
+      {
+         return "date_format( " + column + ", '%Y-%m' )";
+      }
+   }
+
+   public String getGroupOrOrderByClause( String column, String alias )
+   {
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         return getPeriodFunction( column );
+      } else
+      {
+         return alias;
+      }
    }
 }

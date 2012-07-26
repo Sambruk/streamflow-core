@@ -17,6 +17,7 @@
 package org.streamsource.streamflow.statistic.service;
 
 import org.streamsource.streamflow.statistic.dto.SearchCriteria;
+import org.streamsource.streamflow.statistic.web.Dao;
 
 /**
  * Statistic service for year period.
@@ -27,6 +28,29 @@ public class YearlyStatisticService
    public YearlyStatisticService( SearchCriteria criteria )
    {
       super( criteria );
-      periodPattern = "%Y";
+
    }
+
+   public String getPeriodFunction( String column )
+   {
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         return "CONVERT( VARCHAR(4), [" + column + "], 120 )";
+      } else
+      {
+         return "date_format( " + column + ", '%Y' )";
+      }
+   }
+
+   public String getGroupOrOrderByClause( String column, String alias )
+   {
+      if(Dao.getDbVendor().equalsIgnoreCase( "mssql" ))
+      {
+         return getPeriodFunction( column );
+      } else
+      {
+         return alias;
+      }
+   }
+
 }

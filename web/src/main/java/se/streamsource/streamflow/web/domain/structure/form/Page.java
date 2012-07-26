@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.domain.Notable;
 public interface Page
       extends
       Fields,
+      FieldGroupFieldsInstance,
       Describable,
       Notable
 {

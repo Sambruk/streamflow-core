@@ -30,7 +30,7 @@ public interface Form
       Notable,
       Pages,
       Ownable,
-        Removable,
+      Removable,
       RequiredSignatures
 {
 }

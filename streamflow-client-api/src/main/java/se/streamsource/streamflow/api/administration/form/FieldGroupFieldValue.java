@@ -20,6 +20,8 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 
+import java.util.List;
+
 /**
  * Holds the definition of a Group Field.
  * The field count is used for UI elements
@@ -29,6 +31,9 @@ public interface FieldGroupFieldValue
       extends FieldValue
 {
    Property<EntityReference> fieldGroup();
+
+   @Optional
+   Property<List<EntityReference>> fields();
 
    @Optional
    Property<Integer> fieldCount();
