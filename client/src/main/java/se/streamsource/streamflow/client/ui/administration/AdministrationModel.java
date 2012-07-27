@@ -155,7 +155,7 @@ public class AdministrationModel
          if (classes != null)
             for (LinkValue value : links)
             {
-               if (classes.contains(value.id().get()))
+               if (classes.equals(value.id().get()))
                {
                   getPath(linkValues, value);
                   break;
@@ -170,7 +170,7 @@ public class AdministrationModel
          for (LinkValue link : links)
          {
             String classes = link.classes().get();
-            if (classes != null && classes.contains(linkValue.id().get()))
+            if (classes != null && classes.equals(linkValue.id().get()))
                return true;
          }
          return false;
