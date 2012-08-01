@@ -369,6 +369,8 @@ public interface ReceiveMailService
                      // and create failure case
                      String subj = "Unkonwn content type: " + message.getSubject();
                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     builder.prototype().content().set( body );
+                     builder.prototype().contentType().set( message.getContentType() );
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      copyToArchive.add( message );
 
@@ -380,12 +382,20 @@ public interface ReceiveMailService
                      // and create failure case
                      String subj = "Unkonwn content type: " + message.getSubject();
                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     builder.prototype().content().set( body );
+                     builder.prototype().contentType().set( message.getContentType() );
                      systemDefaults.createCaseOnEmailFailure(  builder.newInstance() );
                      copyToArchive.add( message );
 
                      uow.discard();
                      logger.error("Could not parse emails: unknown content type "+content.getClass().getName());
                      continue;
+                  }
+
+                  // make sure mail content fit's into statistic database - truncate on 65.500 characters.
+                  if( builder.prototype().content().get().length() > 65000 )
+                  {
+                     builder.prototype().content().set( builder.prototype().content().get().substring( 0, 65000 ) );
                   }
 
                   mailReceiver.receivedEmail(null, builder.newInstance());
@@ -401,6 +411,8 @@ public interface ReceiveMailService
                {
                   String subj = "Unknown error: " + message.getSubject();
                   builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                  builder.prototype().content().set( e.getMessage() );
+                  builder.prototype().contentType().set( message.getContentType() );
                   systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                   copyToArchive.add( message );
 
