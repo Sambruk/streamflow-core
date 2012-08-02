@@ -73,6 +73,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
+import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
@@ -373,6 +374,8 @@ public interface ReceiveMailService
                      builder.prototype().contentType().set( message.getContentType() );
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      copyToArchive.add( message );
+                     if( expunge )
+                        message.setFlag( Flags.Flag.DELETED, true );
 
                      uow.discard();
                      continue;
@@ -386,6 +389,8 @@ public interface ReceiveMailService
                      builder.prototype().contentType().set( message.getContentType() );
                      systemDefaults.createCaseOnEmailFailure(  builder.newInstance() );
                      copyToArchive.add( message );
+                     if( expunge )
+                        message.setFlag( Flags.Flag.DELETED, true );
 
                      uow.discard();
                      logger.error("Could not parse emails: unknown content type "+content.getClass().getName());
@@ -396,6 +401,34 @@ public interface ReceiveMailService
                   if( builder.prototype().content().get().length() > 65000 )
                   {
                      builder.prototype().content().set( builder.prototype().content().get().substring( 0, 65000 ) );
+                  }
+
+                  // try to reveal if it is a smpt error we are looking at
+                  // X-Failed-Recipients is returned by Gmail
+                  // X-FC-MachineGenerated is returned by FirstClass
+                  // Exchange is following RFC 6522 -  The Multipart/Report Media Type for
+                  // the Reporting of Mail System Administrative Messages
+                  boolean isSmtpErrorReport =
+                        !Strings.empty( builder.prototype().headers().get().get( "X-Failed-Recipients" ) ) ||
+                        ( !Strings.empty( builder.prototype().headers().get().get( "X-FC-MachineGenerated" ) )
+                              && "true".equals( builder.prototype().headers().get().get( "X-FC-MachineGenerated" ) ) ) ||
+                        !Strings.empty( new ContentType( builder.prototype().headers().get().get( "Content-Type" ) ).getParameter( "report-type" ) );
+
+                  if( isSmtpErrorReport )
+                  {
+                     // This is a mail bounce due to SMTP error - create support case.
+
+                     String subj = "Undeliverable mail: " + builder.prototype().subject().get();
+
+                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                     copyToArchive.add( message );
+                     if( expunge )
+                        message.setFlag( Flags.Flag.DELETED, true );
+
+                     uow.discard();
+                     logger.error("Received a mail bounce reply: " + body );
+                     continue;
                   }
 
                   mailReceiver.receivedEmail(null, builder.newInstance());
@@ -415,6 +448,8 @@ public interface ReceiveMailService
                   builder.prototype().contentType().set( message.getContentType() );
                   systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                   copyToArchive.add( message );
+                  if( expunge )
+                     message.setFlag( Flags.Flag.DELETED, true );
 
                   uow.discard();
                   logger.error("Could not parse emails", e);
