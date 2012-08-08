@@ -37,6 +37,9 @@ import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.GroupDetailsValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.GroupListValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.UserListValue;
 
 import java.util.prefs.Preferences;
 
@@ -121,7 +124,10 @@ public class PluginApplicationAssembler
             UserIdentityValue.class,
             UserDetailsValue.class,
             StreetList.class,
-            StreetValue.class).visibleIn( Visibility.application );
+            StreetValue.class,
+            UserListValue.class,
+            GroupListValue.class,
+            GroupDetailsValue.class).visibleIn( Visibility.application );
 
       pluginAssembler.assemble( moduleAssembly );
    }
@@ -133,7 +139,9 @@ public class PluginApplicationAssembler
 
       // Plugin wrappers
       rest.objects( ContactLookupRestlet.class,
-            AuthenticationRestlet.class, StreetAddressLookupRestlet.class );
+            AuthenticationRestlet.class,
+            LdapImporterRestlet.class,
+            StreetAddressLookupRestlet.class );
 
    }
 }

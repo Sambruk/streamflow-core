@@ -64,6 +64,7 @@ public class StreamflowPluginRestApplication
 
       pluginRouter.attach( "/contacts", app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( ContactLookupRestlet.class ), Template.MODE_STARTS_WITH );
       pluginRouter.attach( "/authentication", (Restlet) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( AuthenticationRestlet.class ), Template.MODE_STARTS_WITH );
+      pluginRouter.attach( "/import", app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( LdapImporterRestlet.class ), Template.MODE_STARTS_WITH );
       pluginRouter.attach( "/streets", app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( StreetAddressLookupRestlet.class ), Template.MODE_STARTS_WITH );
 
       return pluginRouter;
