@@ -134,7 +134,7 @@ public class ContactContext
       contacts.updateContact( index, builder.newInstance() );
    }
 
-   @ServiceAvailable(ContactLookupService.class)
+   @ServiceAvailable( service = ContactLookupService.class, availability = true )
    @SkipResourceValidityCheck
    public ContactsDTO searchcontacts()
    {
@@ -169,7 +169,7 @@ public class ContactContext
    }
    
 
-   @ServiceAvailable(StreetAddressLookupService.class)
+   @ServiceAvailable( service = StreetAddressLookupService.class, availability = true )
    @SkipResourceValidityCheck
    public StreetsDTO searchstreets(StreetSearchDTO search)
    {

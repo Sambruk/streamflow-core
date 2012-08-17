@@ -49,7 +49,7 @@ public class LabeledContext
    }
 
 
-   @ServiceAvailable(KnowledgebaseService.class)
+   @ServiceAvailable( service = KnowledgebaseService.class, availability = true)
    public LinkValue knowledgeBase()
    {
       LabelEntity label = RoleMap.role(LabelEntity.class);

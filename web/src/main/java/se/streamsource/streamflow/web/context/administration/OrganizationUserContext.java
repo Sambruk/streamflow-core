@@ -19,8 +19,11 @@ package se.streamsource.streamflow.web.context.administration;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.InteractionValidation;
+import se.streamsource.dci.api.RequiresValid;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
@@ -31,6 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
@@ -38,7 +42,7 @@ import static se.streamsource.dci.api.RoleMap.*;
  * JAVADOC
  */
 public class OrganizationUserContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<LinksValue>, InteractionValidation
 {
    @Structure
    Module module;
@@ -52,12 +56,15 @@ public class OrganizationUserContext
             newLinks();
    }
 
+   @RequiresValid("LdapOffAdminAlways")
    public void resetpassword( @Name("password") String password )
    {
       UserAuthentication user = RoleMap.role( UserAuthentication.class );
       user.resetPassword( password );
    }
 
+
+   @RequiresValid("AdminNever")
    @UserDisabled( false )
    public void setdisabled()
    {
@@ -68,6 +75,7 @@ public class OrganizationUserContext
 
    }
 
+   @RequiresValid("AdminNever")
    @UserDisabled( true )
    public void setenabled()
    {
@@ -77,6 +85,7 @@ public class OrganizationUserContext
       user.changeEnabled( userData.disabled().get() );
    }
 
+   @RequiresValid("LdapOffAdminNever")
    @HasJoined( true )
    public void leave()
    {
@@ -85,6 +94,7 @@ public class OrganizationUserContext
       role.leave( org );
    }
 
+   @RequiresValid("LdapOffAdminNever")
    @HasJoined( false )
    public void join()
    {
@@ -93,6 +103,7 @@ public class OrganizationUserContext
       role.join( org );
    }
 
+   @RequiresValid("LdapOffAdminAlways")
    public void changemessagedeliverytype( @Name("messagedeliverytype") MessageRecipient.MessageDeliveryTypes newDeliveryType )
    {
       MessageRecipient recipient = role( MessageRecipient.class );
@@ -111,6 +122,7 @@ public class OrganizationUserContext
       return contactable.getContact();
    }
 
+   @RequiresValid("LdapOffAdminAlways")
    public void update(@Optional @Name("name") String name,
                       @Optional @Name("contactId") String contactId,
                       @Optional @Name("company") String company,
@@ -155,5 +167,39 @@ public class OrganizationUserContext
          builder.note(note);
 
       contactable.updateContact( builder.newInstance() );
+   }
+
+   public boolean isValid( String name )
+   {
+      boolean isAdminUser = role( UserAuthentication.Data.class ).isAdministrator();
+      ServiceReference ref = module.serviceFinder().findService( LdapImporterService.class );
+      boolean isLdapOn =  ref != null || ref.isAvailable();
+
+      if( "LdapOffAdminAlways".equals( name ))
+      {
+         if(isAdminUser)
+         {
+            return true;
+         } else
+         {
+            return !isLdapOn;
+         }
+      } else if( "LdapOffAdminNever".equals( name ) )
+      {
+         if( isAdminUser )
+         {
+            return false;
+         } else
+         {
+            return !isLdapOn;
+         }
+
+      } else if( "AdminNever".equals( name ) )
+      {
+         return !isAdminUser;
+      } else
+      {
+         return false;
+      }
    }
 }

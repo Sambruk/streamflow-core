@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Role;
 import se.streamsource.streamflow.api.Password;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
@@ -62,7 +63,7 @@ public interface AccountContext
                throw new WrongPasswordException();
             }
 
-            self.changedPassword(null, self.hashPassword(newPassword));
+            self.changedPassword(null, Strings.hashString( newPassword ));
          }
       }
    }

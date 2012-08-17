@@ -39,6 +39,7 @@ import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.server.plugin.ldapimport.GroupDetailsValue;
 import se.streamsource.streamflow.server.plugin.ldapimport.GroupListValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.GroupMemberDetailValue;
 import se.streamsource.streamflow.server.plugin.ldapimport.UserListValue;
 
 import java.util.prefs.Preferences;
@@ -127,7 +128,8 @@ public class PluginApplicationAssembler
             StreetValue.class,
             UserListValue.class,
             GroupListValue.class,
-            GroupDetailsValue.class).visibleIn( Visibility.application );
+            GroupDetailsValue.class,
+            GroupMemberDetailValue.class).visibleIn( Visibility.application );
 
       pluginAssembler.assemble( moduleAssembly );
    }

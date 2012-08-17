@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.entity.organization;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.ExternalReference;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
@@ -38,6 +39,7 @@ public interface GroupEntity
       Participation.Data,
       Participants.Data,
       Removable.Data,
+      ExternalReference.Data,
       DomainEntity
 {
 }

@@ -23,9 +23,8 @@ import org.qi4j.api.value.ValueComposite;
 public interface UserDetailsValue
       extends ValueComposite
 {
-   @UseDefaults
    Property<String> username();
-   
+
    @UseDefaults
    Property<String> name();
 
@@ -33,6 +32,5 @@ public interface UserDetailsValue
    Property<String> emailAddress();
    
    @UseDefaults
-   Property<String> phoneNumber(); 
-
+   Property<String> phoneNumber();
 }

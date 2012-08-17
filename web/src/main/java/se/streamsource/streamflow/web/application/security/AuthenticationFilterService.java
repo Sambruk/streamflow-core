@@ -57,14 +57,16 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
 import java.io.IOException;
 
@@ -72,7 +74,7 @@ import java.io.IOException;
 public interface AuthenticationFilterService extends ServiceComposite, Configuration, Activatable, ServiceCircuitBreaker
 {
    public int beforeHandle(Request request, Response response, Context context);
-   
+
    abstract class Mixin
          implements AuthenticationFilterService
    {
@@ -87,7 +89,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
       ServiceDescriptor descriptor;
 
       @This
-      Configuration<PluginConfiguration> config;
+      Configuration<AuthenticationFilterServiceConfiguration> config;
 
       @Service
       CachingService cachingService;
@@ -99,16 +101,19 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
 
       CircuitBreaker circuitBreaker;
 
+
       public void activate() throws Exception
       {
          circuitBreaker = descriptor.metaInfo( CircuitBreaker.class );
 
          config.configuration();
+
          caching = new Caching( cachingService, Caches.VERIFIEDUSERS );
       }
 
       public void passivate() throws Exception
       {
+         logger.info( "Passivated" );
       }
 
       public CircuitBreaker getCircuitBreaker()
@@ -156,7 +161,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
 
                if (!UserEntity.ADMINISTRATOR_USERNAME.equals(username) && config.configuration().enabled().get() && circuitBreaker.isOn())
                {
-                  ClientResource clientResource = new ClientResource(config.configuration().url().get());
+                  ClientResource clientResource = new ClientResource(config.configuration().url().get() + "/authentication/userdetails" );
 
                   clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, password);
 
@@ -272,9 +277,11 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
             try
             {
                UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(updateUsecase);
-               UserEntity userEntity = unitOfWork.get(UserEntity.class, EntityReference.getEntityReference(user)
+               Organization org = unitOfWork.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID ).organization().get();
+               UserEntity userEntity = unitOfWork.get(UserEntity.class, EntityReference.getEntityReference( user )
                      .identity());
                userEntity.resetPassword(password);
+               userEntity.join( org );
 
                ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
                contactBuilder.prototype().name().set(externalUser.name().get());
@@ -303,8 +310,9 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
          {
             UnitOfWork unitOfWork = module.unitOfWorkFactory().newUnitOfWork(addUsecase);
             UsersEntity usersEntity = unitOfWork.get(UsersEntity.class, UsersEntity.USERS_ID);
+            Organization org = unitOfWork.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID ).organization().get();
             se.streamsource.streamflow.web.domain.structure.user.User user = usersEntity.createUser(username, password);
-            user.changeEnabled(true);
+            user.join( org );
 
             ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
             contactBuilder.prototype().name().set(externalUser.name().get());

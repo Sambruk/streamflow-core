@@ -21,19 +21,19 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
 import se.streamsource.streamflow.api.administration.UserEntityDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
-import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 import java.util.List;
 
@@ -74,11 +74,13 @@ public class OrganizationUsersContext
       return listBuilder.newInstance();
    }
 
+   @ServiceAvailable( service = LdapImporterService.class, availability = false )
    public void importusers()
    {
       // Marker method for now. Refactor OrganizationUsersResource.importusers to call this instead
    }
 
+   @ServiceAvailable( service = LdapImporterService.class, availability = false )
    public void createuser( NewUserDTO DTO)
    {
       Users users = RoleMap.role( Users.class );

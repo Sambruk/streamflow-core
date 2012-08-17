@@ -14,24 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.group;
+package se.streamsource.streamflow.web.infrastructure.plugin.ldap;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.entity.ExternalReference;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
 /**
- * Group in an organization
+ * Configuration for authentication filter and ldap import
  */
-public interface Group
-      extends Describable,
-      Participant,
-      Participants,
-      Member,
-      Ownable,
-      Removable,
-      ExternalReference
+public interface LdapImporterServiceConfiguration
+   extends PluginConfiguration
 {
+   @UseDefaults
+   Property<String> schedule();
 }

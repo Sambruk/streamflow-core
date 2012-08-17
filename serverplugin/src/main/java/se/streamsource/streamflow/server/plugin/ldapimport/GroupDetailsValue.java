@@ -28,10 +28,22 @@ import java.util.List;
 public interface GroupDetailsValue
    extends ValueComposite
 {
-   @UseDefaults
+   /**
+    *  The name of the group.
+    * @return
+    */
    Property<String> name();
 
+   /**
+    * The unique identifier in ldap i.e. dn
+    * @return
+    */
    Property<String> id();
 
-   Property<List<String>> members();
+   /**
+    * The list of unique members for this group
+    * @return
+    */
+   @UseDefaults
+   Property<List<GroupMemberDetailValue>> members();
 }

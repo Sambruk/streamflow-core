@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.context.administration.OrganizationalUnits
 import se.streamsource.streamflow.web.context.administration.RestrictionsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.OrganizationAttachmentsResource;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.ProxyUsersResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.DatatypeDefinitionsResource;
@@ -71,6 +72,12 @@ public class OrganizationResource
       subResource( OrganizationUsersResource.class );
    }
 
+   @SubResource @ServiceAvailable( service = LdapImporterService.class, availability = false )
+   public void groups()
+   {
+      subResource( GroupsResource.class );
+   }
+
    @SubResource
    public void roles()
    {
@@ -95,7 +102,7 @@ public class OrganizationResource
       subResource( AccessPointsAdministrationResource.class );
    }
 
-   @SubResource @ServiceAvailable(CreateCaseFromEmailService.class)
+   @SubResource @ServiceAvailable( service = CreateCaseFromEmailService.class, availability = true )
    public void emailaccesspoints()
    {
       subResource(EmailAccessPointsAdministrationResource.class);

@@ -24,8 +24,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.entity.ExternalReference;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
@@ -43,6 +47,8 @@ public interface Groups
    boolean removeGroup( Group group );
 
    void mergeGroups( Groups groups );
+
+   Group findByExternalReference( String externalReference );
 
    interface Data
    {
@@ -118,6 +124,18 @@ public interface Groups
       public void removedGroup(@Optional DomainEvent event, Group group)
       {
          data.groups().remove(group);
+      }
+
+      public Group findByExternalReference( final String externalReference )
+      {
+         return Iterables.first( Iterables.filter( new Specification<Group>()
+         {
+            public boolean satisfiedBy( Group item )
+            {
+               boolean hasValue = !Strings.empty( ((ExternalReference.Data)item).reference().get() );
+               return  hasValue ? ((ExternalReference.Data)item).reference().get().equals( externalReference ) : hasValue;
+            }
+         }, data.groups() ) );
       }
    }
 }

@@ -91,7 +91,7 @@ public class LabelContext
       RoleMap.current().set( RoleMap.role( CaseTypes.class ), Identity.class );
    }
 
-   @ServiceAvailable(KnowledgebaseService.class)
+   @ServiceAvailable( service = KnowledgebaseService.class, availability = true )
    public LinkValue knowledgeBase()
    {
       LabelEntity label = RoleMap.role(LabelEntity.class);

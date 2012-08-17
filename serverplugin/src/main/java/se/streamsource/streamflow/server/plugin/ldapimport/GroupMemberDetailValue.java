@@ -14,24 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.group;
+package se.streamsource.streamflow.server.plugin.ldapimport;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.entity.ExternalReference;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
- * Group in an organization
+ * Holds detailed information about identity and type of a group member.
  */
-public interface Group
-      extends Describable,
-      Participant,
-      Participants,
-      Member,
-      Ownable,
-      Removable,
-      ExternalReference
+public interface GroupMemberDetailValue
+   extends ValueComposite
 {
+   enum Type{
+      user,
+      group
+   }
+
+   /**
+    * The id of the member - either streamflow userid or ldap dn for groups.
+    * @return
+    */
+   Property<String> id();
+
+   /**
+    * The type of member i.e. user or group
+    * @return
+    */
+   Property<Type> memberType();
 }
