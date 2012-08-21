@@ -151,6 +151,7 @@ public enum AdministrationResources
    filter_actions,
    remove_action_confirmation,
    send_email_to,
+   send_email_notification_to,
    close_case,
    match_label,
    default_days_to_complete_separator,

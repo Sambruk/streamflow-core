@@ -33,6 +33,7 @@ import se.streamsource.streamflow.api.administration.filter.AssignActionValue;
 import se.streamsource.streamflow.api.administration.filter.ChangeOwnerActionValue;
 import se.streamsource.streamflow.api.administration.filter.CloseActionValue;
 import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
+import se.streamsource.streamflow.api.administration.filter.EmailNotificationActionValue;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
@@ -175,7 +176,7 @@ public class ClientAPIAssembler
       // Filters
       administration.values(FilterValue.class);
       administration.values(LabelRuleValue.class); // Rules
-      administration.values(AssignActionValue.class, ChangeOwnerActionValue.class, EmailActionValue.class, CloseActionValue.class); // Actions
+      administration.values(AssignActionValue.class, ChangeOwnerActionValue.class, EmailActionValue.class, EmailNotificationActionValue.class, CloseActionValue.class); // Actions
 
       // Forms
       administration.values(
