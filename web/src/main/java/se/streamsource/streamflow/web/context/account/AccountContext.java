@@ -18,13 +18,16 @@ package se.streamsource.streamflow.web.context.account;
 
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Role;
 import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 /**
  * JAVADOC
@@ -36,9 +39,14 @@ public interface AccountContext
    public void changepassword(@Name("oldpassword") String oldPassword, @Name("newpassword") @Password String newPassword)
          throws WrongPasswordException;
 
+   public String ldapon();
+
    abstract class Mixin
          implements AccountContext
    {
+      @Structure
+      Module module;
+
       AccountAdmin accountAdmin = new AccountAdmin();
 
       public void bind(@Uses UserAuthentication.Data user)
@@ -50,6 +58,11 @@ public interface AccountContext
             throws WrongPasswordException
       {
          accountAdmin.changePassword(oldPassword, newPassword);
+      }
+
+      public String ldapon()
+      {
+         return "" + module.serviceFinder().findService( LdapImporterService.class ).isAvailable();
       }
 
       private class AccountAdmin

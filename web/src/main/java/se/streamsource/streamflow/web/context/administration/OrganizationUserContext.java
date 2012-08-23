@@ -173,7 +173,7 @@ public class OrganizationUserContext
    {
       boolean isAdminUser = role( UserAuthentication.Data.class ).isAdministrator();
       ServiceReference ref = module.serviceFinder().findService( LdapImporterService.class );
-      boolean isLdapOn =  ref != null || ref.isAvailable();
+      boolean isLdapOn =  ref != null && ref.isAvailable();
 
       if( "LdapOffAdminAlways".equals( name ))
       {

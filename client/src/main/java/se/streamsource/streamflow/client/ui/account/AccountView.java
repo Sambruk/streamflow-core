@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.account;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -24,7 +25,6 @@ import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -48,6 +48,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Insets;
@@ -106,21 +107,21 @@ public class AccountView extends JScrollPane
             .text(AccountResources.account_separator));
       accountBuilder.nextLine();
 
-      accountBuilder.add(new JLabel(i18n
-            .text(AccountResources.account_name_label)));
+      accountBuilder.add( new JLabel( i18n
+            .text( AccountResources.account_name_label ) ) );
       accountBuilder.nextColumn(2);
       accountBuilder.add(accountBinder.bind(TEXTFIELD.newField(),
             accountTemplate.name()));
       accountBuilder.nextLine();
 
-      accountBuilder.add(new JLabel(i18n.text(AccountResources.server_label)));
+      accountBuilder.add( new JLabel( i18n.text( AccountResources.server_label ) ) );
       accountBuilder.nextColumn(2);
       accountBuilder.add(accountBinder.bind(TEXTFIELD.newField(),
             accountTemplate.server()));
       accountBuilder.nextLine();
 
       accountBuilder
-            .add(new JLabel(i18n.text(AccountResources.username_label)));
+            .add( new JLabel( i18n.text( AccountResources.username_label ) ) );
       accountBuilder.nextColumn(2);
       accountBuilder.add(accountBinder.bind(TEXTFIELD.newField(),
             accountTemplate.userName()));
@@ -128,7 +129,7 @@ public class AccountView extends JScrollPane
 
       accountBuilder
             .add(new JLabel(i18n.text(AccountResources.password_label)));
-      accountBuilder.nextColumn(2);
+      accountBuilder.nextColumn( 2 );
       accountBuilder.add(accountBinder.bind(PASSWORD.newField(),
             accountTemplate.password()));
       accountBuilder.nextLine();
@@ -137,24 +138,26 @@ public class AccountView extends JScrollPane
 
       contactForm = new JPanel();
       panel.add(contactForm, BorderLayout.CENTER);
-      FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
+      FormLayout contactLayout = new FormLayout("75dlu, 5dlu,80dlu, 80dlu",
             "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout,
             contactForm);
-      // contactBuilder.setDefaultDialogBorder();
 
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(new JToggleButton(am.get("edit")));
-      contactBuilder.nextLine();
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(new StreamflowButton(am.get("test")));
-      contactBuilder.nextLine(2);
+      JToggleButton editBtn = new JToggleButton( am.get( "edit" ) );
+      editBtn.setHorizontalAlignment( SwingConstants.LEFT);
+      contactBuilder.add( editBtn, new CellConstraints( 4, 5, 1, 1, CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) ) );
 
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(new StreamflowButton(am.get("changePassword")));
+      StreamflowButton testBtn = new StreamflowButton( am.get( "test" ) );
+      testBtn.setHorizontalAlignment(SwingConstants.LEFT);
+      contactBuilder.add( testBtn, new CellConstraints( 4, 6, 1, 1, CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) ) );
 
-      setViewportView(panel);
+      StreamflowButton changepasswordBtn = new StreamflowButton( am.get( "changepassword" ) );
+      changepasswordBtn.setHorizontalAlignment(SwingConstants.LEFT);
+      contactBuilder.add( changepasswordBtn, new CellConstraints( 4, 7, 1, 1, CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) )  );
+
+      setViewportView( panel );
+
    }
 
    @Action(block = Task.BlockingScope.APPLICATION)
@@ -198,8 +201,14 @@ public class AccountView extends JScrollPane
    }
 
    @Action
-   public void changePassword() throws Exception
+   public void changepassword() throws Exception
    {
+      if( model.ldapon() )
+      {
+         dialogs.showMessageDialog( this, "   " + i18n.text( WorkspaceResources.change_password_prohibited ) + "   ", i18n.text( WorkspaceResources.change_password_title ) );
+         return;
+      }
+
       ChangePasswordDialog changePasswordDialog = module.objectBuilderFactory().newObject(ChangePasswordDialog.class);
       dialogs.showOkCancelHelpDialog(this, changePasswordDialog, i18n
             .text(WorkspaceResources.change_password_title));
