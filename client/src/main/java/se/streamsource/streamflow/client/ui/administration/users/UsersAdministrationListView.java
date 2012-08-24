@@ -32,9 +32,11 @@ import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JFileChooser;
@@ -61,11 +63,18 @@ public class UsersAdministrationListView
    {
       this.model = model;
 
-      // TODO create property files
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("createuser"), new javax.swing.Action[]{am.get( "importusers" ) }, new DetailFactory()
+
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("createuser"), new SelectionActionEnabler( new Action[]{am.get( "importusers" )} ){
+               @Override
+               public boolean isSelectedValueValid( Action action )
+               {
+                  return action.isEnabled();
+               }
+            },
+          new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {
@@ -95,9 +104,9 @@ public class UsersAdministrationListView
          }
       });
 
-      new RefreshWhenShowing(this, model);
+      //new RefreshWhenShowing(this, model);
 
-      final ResourceActionEnabler resourceActionEnabler = new ResourceActionEnabler(
+      ResourceActionEnabler resourceActionEnabler = new ResourceActionEnabler(
             am.get( "createuser" ),
             am.get( "importusers" )
       )
@@ -105,6 +114,7 @@ public class UsersAdministrationListView
          @Override
          protected ResourceValue getResource()
          {
+            model.refresh();
             return model.getResourceValue();
          }
       };
@@ -133,7 +143,6 @@ public class UsersAdministrationListView
          return null;
       }
    }
-
 
    @org.jdesktop.application.Action
    public Task importusers()

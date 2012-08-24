@@ -26,9 +26,11 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.Role;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 /**
  * JAVADOC
@@ -57,6 +59,7 @@ public interface GroupsContext
          return groups.index();
       }
 
+      @ServiceAvailable( service = LdapImporterService.class, availability = false )
       public Group create( String name )
       {
          return groups.create(name);

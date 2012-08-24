@@ -205,7 +205,9 @@ public class AccountView extends JScrollPane
    {
       if( model.ldapon() )
       {
-         dialogs.showMessageDialog( this, "   " + i18n.text( WorkspaceResources.change_password_prohibited ) + "   ", i18n.text( WorkspaceResources.change_password_title ) );
+         dialogs.showMessageDialog( this,
+               "   " + i18n.text( WorkspaceResources.change_password_prohibited ) + "   ",
+               i18n.text( WorkspaceResources.change_password_title ) );
          return;
       }
 

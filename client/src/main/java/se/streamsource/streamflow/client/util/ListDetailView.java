@@ -61,20 +61,49 @@ public abstract class ListDetailView
 
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory, ListCellRenderer renderer )
    {
-      initMaster( listModel, createAction, selectionActions, false, factory, renderer );
+      initMaster( listModel, createAction, new SelectionActionEnabler( selectionActions ), false, factory, renderer );
    }
 
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory)
    {
-      initMaster( listModel, createAction, selectionActions, false, factory);  
+      initMaster( listModel, createAction, selectionActions, false, factory);
+   }
+
+   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, SelectionActionEnabler selectionActionEnabler, final DetailFactory factory)
+   {
+      initMaster( listModel, createAction, selectionActionEnabler, false, factory);
    }
 
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, boolean actionsWithoutOption, final DetailFactory factory)
    {
-      initMaster( listModel, createAction, selectionActions, actionsWithoutOption, factory, new LinkListCellRenderer() );
+      initMaster( listModel, createAction, new SelectionActionEnabler( selectionActions ), actionsWithoutOption, factory, new LinkListCellRenderer() );
    }
 
-   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, boolean actionsWithoutOption, final DetailFactory factory, ListCellRenderer renderer)
+   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, SelectionActionEnabler selectionActionEnabler, boolean actionsWithoutOption, final DetailFactory factory)
+   {
+      initMaster( listModel, createAction, selectionActionEnabler, actionsWithoutOption, factory, new LinkListCellRenderer() );
+   }
+
+   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, SelectionActionEnabler selectionActionEnabler, final DetailFactory factory, ListCellRenderer renderer )
+   {
+      initMaster( listModel, createAction,selectionActionEnabler, false, factory, renderer );
+   }
+
+   /**
+    * This method creates and regulates a master detail.
+    * This method contains a workaround for the streamflow client server action concept. ResourceModels are telling what kind of resources and commands or querys are available
+    * on the server. Client code should use ResourceActionEnabler, SelectionActionEnabler, RefreshComponents classes to steer what actions become enabled or not.
+    * This is right now not honored completely throughout the administration gui - especially for option actions. They are for the most views enabled by default if a selection in
+    * a list is made. For the time being we will have to work around occasions where option actions need to be steered from server side, hence the usage of SelectionActionEnabler as
+    * method parameter. That makes it possible to send in a custom selection enabler. See @se.streamsource.streamflow.client.ui.administration.users.initMaster()
+    * @param listModel
+    * @param createAction
+    * @param selectionActionEnabler The selection action enabler to use
+    * @param actionsWithoutOption
+    * @param factory
+    * @param renderer
+    */
+   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, SelectionActionEnabler selectionActionEnabler, boolean actionsWithoutOption, final DetailFactory factory, ListCellRenderer renderer)
    {
       list = new JList(listModel);
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
@@ -90,24 +119,24 @@ public abstract class ListDetailView
 
       if (createAction != null)
          toolbar.add( new StreamflowButton( createAction ) );
-      
+
+      list.getSelectionModel().addListSelectionListener( selectionActionEnabler );
+
       if( actionsWithoutOption)
       {
-         for (Action selectionAction : selectionActions)
+         for (Action selectionAction : selectionActionEnabler.getActions())
          {
             toolbar.add( new StreamflowButton( selectionAction ) );
-            list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( selectionActions ) );
          }
-         
+
       } else
       {
-         if (selectionActions.length != 0)
+         if (selectionActionEnabler.getActions().length != 0)
          {
             JPopupMenu options = new JPopupMenu();
-            for (Action selectionAction : selectionActions)
+            for (Action selectionAction : selectionActionEnabler.getActions())
             {
                options.add( selectionAction );
-               list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( selectionActions ) );
             }
             
             toolbar.add( new StreamflowButton( new OptionsAction( options ) ) );

@@ -16,18 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import static org.qi4j.api.specification.Specifications.not;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.BorderLayout;
-import java.util.Set;
-
-import javax.swing.ActionMap;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -37,7 +27,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
-
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -45,14 +35,22 @@ import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.ResourceActionEnabler;
 import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.ActionMap;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.util.Set;
+
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -72,7 +70,7 @@ public class ParticipantsView
    private ParticipantsModel model;
 
    public ParticipantsView( @Service ApplicationContext context,
-                            @Uses ParticipantsModel model)
+                            @Uses final ParticipantsModel model)
    {
       super( new BorderLayout() );
       this.model = model;
@@ -93,6 +91,17 @@ public class ParticipantsView
       add( toolbar, BorderLayout.SOUTH );
 
       new RefreshWhenShowing(this, model);
+      new ResourceActionEnabler(
+            am.get( "add" ),
+            am.get( "remove" ))
+      {
+         @Override
+         protected ResourceValue getResource()
+         {
+            return model.getResourceValue();
+         }
+      }.refresh();
+
    }
 
    @Action

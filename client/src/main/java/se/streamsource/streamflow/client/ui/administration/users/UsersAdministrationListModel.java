@@ -16,10 +16,6 @@
  */
 package se.streamsource.streamflow.client.ui.administration.users;
 
-import static org.qi4j.api.specification.Specifications.or;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
-
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.specification.Specifications;
 import org.restlet.data.MediaType;
@@ -36,6 +32,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import java.io.File;
+
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class UsersAdministrationListModel
       extends LinkValueListModel
