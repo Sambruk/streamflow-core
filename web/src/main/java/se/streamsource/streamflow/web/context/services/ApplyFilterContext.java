@@ -16,16 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.services;
 
-import static se.streamsource.streamflow.util.ForEach.forEach;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -40,7 +30,6 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.Role;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.filter.ActionValue;
@@ -59,7 +48,6 @@ import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContex
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -71,6 +59,16 @@ import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static se.streamsource.streamflow.util.ForEach.*;
 
 /**
  * TODO
@@ -350,6 +348,21 @@ public class ApplyFilterContext
                         attachments.add( attachment.newInstance() );
                      }
                   }
+
+                  if( self.formAttachments().count() > 0 )
+                  {
+                     for( Attachment formAttachment : self.formAttachments())
+                     {
+                        AttachedFile.Data attachedFile = (AttachedFile.Data) formAttachment;
+                        attachment.prototype().mimeType().set(attachedFile.mimeType().get());
+                        attachment.prototype().uri().set(attachedFile.uri().get());
+                        attachment.prototype().modificationDate().set(attachedFile.modificationDate().get());
+                        attachment.prototype().name().set(attachedFile.name().get());
+                        attachment.prototype().size().set(attachedFile.size().get());
+                        attachments.add( attachment.newInstance() );
+                     }
+                  }
+
                   mailSender.sentEmail(null, builder.newInstance());
 
                   logger.info("Emailed " + self.caseId().get() + " to " + contact.getContact().name().get() + "(" + email.emailAddress().get() + ")");
