@@ -358,7 +358,7 @@ public class ApplyFilterContext
                         attachment.prototype().uri().set(attachedFile.uri().get());
                         attachment.prototype().modificationDate().set(attachedFile.modificationDate().get());
                         attachment.prototype().name().set(attachedFile.name().get());
-                        attachment.prototype().size().set(attachedFile.size().get());
+                        attachment.prototype().size().set(attachmentStore.getAttachmentSize( attachedFile.uri().get() ));
                         attachments.add( attachment.newInstance() );
                      }
                   }

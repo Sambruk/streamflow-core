@@ -23,12 +23,17 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
+import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.engine.http.header.DispositionReader;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
+import org.restlet.util.Series;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.link.LinksValue;
@@ -150,9 +155,25 @@ public class FormAttachmentsResource
       {
          InputStream in = representation.getStream();
 
+         Disposition d = null;
+         Series<Parameter> headers = (Series) request.getAttributes().get("org.restlet.http.headers");
+         String header = headers.getFirstValue( HeaderConstants.HEADER_CONTENT_DISPOSITION);
+         if (header != null) {
+            try {
+               d = new DispositionReader(header).readValue();
+            } catch (IOException e) {
+               throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Could not upload file - disposition header missing", e );
+            }
+         }
+
          Attachment attachment = context(FormAttachmentsContext.class).createFormAttachment( in );
-         attachment.changeName( "New attachment" );
+         attachment.changeName( d.getFilename() );
          attachment.changeModificationDate( new Date() );
+         attachment.changeSize( representation.getSize() );
+
+         MediaType mediaType = metadata.getMediaType( d.getFilename().split( "\\." )[1] );
+         if (mediaType != null)
+            attachment.changeMimeType( mediaType.getName() );
       }
    }
 
