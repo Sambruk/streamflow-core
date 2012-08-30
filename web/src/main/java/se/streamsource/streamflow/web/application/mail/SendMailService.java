@@ -52,6 +52,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -261,7 +262,7 @@ public interface SendMailService
                try
                {
                   MimeBodyPart attachmentPart = new MimeBodyPart();
-                  attachmentPart.setFileName(attachedFileValue.name().get());
+                  attachmentPart.setFileName( MimeUtility.encodeText(attachedFileValue.name().get() ));
                   attachmentPart.setDisposition(Part.ATTACHMENT);
                   attachmentPart.setDataHandler(new DataHandler(new DataSource()
                   {
