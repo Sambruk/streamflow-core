@@ -64,7 +64,7 @@ public class AdministratorsContext
       Roles organization = org.organization().get();
       Role adminRole = organization.getAdministratorRole();
 
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "delete" );
       for( Participant participant : policy.participantsWithRole( adminRole ))
       {
          EntityReference reference = EntityReference.getEntityReference( participant );
@@ -73,12 +73,12 @@ public class AdministratorsContext
          {
             if( rolesValue.participant().get().equals( reference ) )
             {
-               inherited = "original";
+               inherited = "resource";
                break;
             }
 
          }
-         linksBuilder.addLink( participant.getDescription(), reference.identity(), inherited, reference.identity(), null );
+         linksBuilder.addLink( participant.getDescription(), reference.identity(), inherited, reference.identity() + "/", null );
       }
 
       return linksBuilder.newLinks();
