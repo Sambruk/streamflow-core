@@ -24,18 +24,20 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
+import static org.qi4j.api.entity.EntityReference.*;
 
 /**
  * Policy for managging Roles assigned to Participants. Participants
@@ -223,14 +225,36 @@ public interface RolePolicy
 
       public ParticipantRolesValue getRoles( Participant participant )
       {
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+
          EntityReference participantRef = getEntityReference( participant );
          for (ParticipantRolesValue participantRolesValue : policy().get())
          {
-            if (participantRolesValue.participant().get().equals( participantRef ))
+            Participant possibleGroup = null;
+            try
             {
-               return participantRolesValue;
+               possibleGroup = uow.get( Participant.class, participantRolesValue.participant().get().identity() );
+            } catch(NoSuchEntityException ne )
+            {
+               // ok - do nothing
+            }
+
+            if ( !participantRolesValue.participant().get().equals( participantRef ) &&
+                  possibleGroup instanceof Participants )
+            {
+               if( ((Participants)possibleGroup).isParticipant( participant ) )
+               {
+                  return participantRolesValue;
+               }
+            } else
+            {
+               if ( participantRolesValue.participant().get().equals( participantRef ))
+               {
+                  return participantRolesValue;
+               }
             }
          }
+
          return null;
       }
 

@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.specification.Specification;
@@ -24,6 +25,8 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
@@ -32,6 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
@@ -47,12 +51,12 @@ import static org.qi4j.api.query.QueryExpressions.*;
  * JAVADOC
  */
 public class AdministratorsContext
-      implements IndexContext<Iterable<Participant>>
+      implements IndexContext<LinksValue>
 {
    @Structure
    Module module;
 
-   public Iterable<Participant> index()
+   public LinksValue index()
    {
       RolePolicy policy = RoleMap.role( RolePolicy.class );
 
@@ -60,7 +64,24 @@ public class AdministratorsContext
       Roles organization = org.organization().get();
       Role adminRole = organization.getAdministratorRole();
 
-      return policy.participantsWithRole(adminRole);
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      for( Participant participant : policy.participantsWithRole( adminRole ))
+      {
+         EntityReference reference = EntityReference.getEntityReference( participant );
+         String inherited = "inherited";
+         for( ParticipantRolesValue rolesValue : ( (RolePolicy.Data) policy ).policy().get() )
+         {
+            if( rolesValue.participant().get().equals( reference ) )
+            {
+               inherited = "original";
+               break;
+            }
+
+         }
+         linksBuilder.addLink( participant.getDescription(), reference.identity(), inherited, reference.identity(), null );
+      }
+
+      return linksBuilder.newLinks();
    }
 
    public void addadministrator( @Name("entity") Participant participant )
