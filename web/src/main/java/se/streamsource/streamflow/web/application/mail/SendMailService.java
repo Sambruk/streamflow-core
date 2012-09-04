@@ -262,7 +262,7 @@ public interface SendMailService
                try
                {
                   MimeBodyPart attachmentPart = new MimeBodyPart();
-                  attachmentPart.setFileName( MimeUtility.encodeText(attachedFileValue.name().get() ));
+                  attachmentPart.setFileName( MimeUtility.encodeText(attachedFileValue.name().get(), "UTF-8", "Q" ));
                   attachmentPart.setDisposition(Part.ATTACHMENT);
                   attachmentPart.setDataHandler(new DataHandler(new DataSource()
                   {
