@@ -392,8 +392,9 @@ public class ApplyFilterContext
             {
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
 
-               // leave from address and fromName empty to allow mail sender to pick up
-               // default values from mail sender configuration
+               // leave from address empty to allow mail sender to pick up
+               // the default mail address from mail sender configuration
+               builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
                builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
                builder.prototype().content().set(bundle.getString( "message" ));
                builder.prototype().contentType().set("text/plain");
