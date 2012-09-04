@@ -156,7 +156,23 @@ public interface Priorities
          if( query.count() > 0 )
             throw new IllegalStateException( ErrorResources.priority_remove_failed_default_exist.toString() );
 
-         return next.removePriority( priority );
+         final Integer removedPriority = ((PrioritySettings.Data)priority).priority().get();
+         boolean result = next.removePriority( priority );
+
+         Iterable<Priority> updatePriorities= Iterables.filter( new Specification<Priority>()
+         {
+            public boolean satisfiedBy( Priority item )
+            {
+               return removedPriority.compareTo( ((PrioritySettings.Data)item).priority().get() ) == -1;
+            }
+         }, data.prioritys().toList() );
+
+         for( Priority movePrio : updatePriorities )
+         {
+            movePrio.changePriority( ((PrioritySettings.Data)movePrio).priority().get() - 1 );
+         }
+
+         return result;
       }
    }
 }

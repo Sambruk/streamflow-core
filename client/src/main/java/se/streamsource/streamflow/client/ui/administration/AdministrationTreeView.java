@@ -36,6 +36,7 @@ import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -81,6 +82,9 @@ public class AdministrationTreeView
 
    @Service
    DialogService dialogs;
+
+   @Service
+   StreamflowApplication application;
 
    private AdministrationModel model;
 

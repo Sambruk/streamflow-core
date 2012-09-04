@@ -87,8 +87,9 @@ public interface OrganizationalUnits
          addOrganizationalUnit( ou );
          ou.changeDescription( name );
 
+         // Removed since we check for admin role recursive upward in the tree
          // Add current user as administrator
-         ou.grantAdministratorToCurrentUser();
+         //ou.grantAdministratorToCurrentUser();
 
          return ou;
       }
