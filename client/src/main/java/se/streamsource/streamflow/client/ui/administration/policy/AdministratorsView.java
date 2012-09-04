@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
@@ -68,10 +69,12 @@ public class AdministratorsView
    public JList administratorList;
 
    public AdministratorsView( @Service ApplicationContext context,
-                              @Uses AdministratorsModel model)
+                              @Uses AdministratorsModel model, @Service StreamflowApplication application)
    {
       super( new BorderLayout() );
       this.model = model;
+      this.model.setApplication( application );
+
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       usersAndGroupsModel = model.newUsersAndGroupsModel();

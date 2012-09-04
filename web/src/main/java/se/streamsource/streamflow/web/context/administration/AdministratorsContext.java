@@ -71,7 +71,7 @@ public class AdministratorsContext
          String inherited = "inherited";
          for( ParticipantRolesValue rolesValue : ( (RolePolicy.Data) policy ).policy().get() )
          {
-            if( rolesValue.participant().get().equals( reference ) )
+            if( rolesValue.participant().get().equals( reference ) && rolesValue.roles().get().contains( EntityReference.getEntityReference( adminRole ) ) )
             {
                inherited = "resource";
                break;
