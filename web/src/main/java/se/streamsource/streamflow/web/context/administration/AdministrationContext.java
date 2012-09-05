@@ -125,7 +125,10 @@ public class AdministrationContext
          group = module.unitOfWorkFactory().currentUnitOfWork().get( Group.class, groupId );
       } catch( NoSuchEntityException ne )
       {
-         // do nothing - id sent in is not a group.
+         // do nothing - there is no entity with this id.
+      } catch (ClassCastException cce )
+      {
+         // do nothing - the found entity is not a group.
       }
 
       return group == null ? false : group.isParticipant( module.unitOfWorkFactory().currentUnitOfWork().get( Participant.class, participantId ) );
