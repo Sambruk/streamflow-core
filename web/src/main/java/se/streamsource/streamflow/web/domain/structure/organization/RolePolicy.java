@@ -35,7 +35,9 @@ import se.streamsource.streamflow.web.domain.structure.role.Role;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.qi4j.api.entity.EntityReference.*;
 
@@ -225,6 +227,9 @@ public interface RolePolicy
 
       public ParticipantRolesValue getRoles( Participant participant )
       {
+         ParticipantRolesValue matchedParticipant = null;
+         Set<EntityReference> mergedRoles = new HashSet<EntityReference>( );
+
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          EntityReference participantRef = getEntityReference( participant );
@@ -244,18 +249,28 @@ public interface RolePolicy
             {
                if( ((Participants)possibleGroup).isParticipant( participant ) )
                {
-                  return participantRolesValue;
+                  mergedRoles.addAll( participantRolesValue.roles().get() );
                }
             } else
             {
                if ( participantRolesValue.participant().get().equals( participantRef ))
                {
-                  return participantRolesValue;
+                  mergedRoles.addAll( participantRolesValue.roles().get() );
+                  matchedParticipant = participantRolesValue;
                }
             }
          }
 
-         return null;
+         if( matchedParticipant != null )
+         {
+            // compile a merged list of roles and set it on a new ParticipantRolesValue to return
+            ValueBuilder<ParticipantRolesValue> builder = module.valueBuilderFactory().newValueBuilder( ParticipantRolesValue.class )
+                  .withPrototype( matchedParticipant );
+            builder.prototype().roles().set( new ArrayList<EntityReference>( mergedRoles ) );
+            matchedParticipant = builder.newInstance();
+         }
+
+         return matchedParticipant;
       }
 
       public List<Participant> participantsWithRole( Role role )

@@ -16,8 +16,10 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -27,6 +29,7 @@ import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
@@ -112,5 +115,19 @@ public class AdministrationContext
             addOrganizationalUnit( organizationalUnit, ou, linksBuilder, participant );
          }
       }
+   }
+
+   public boolean isparticipantingroup( @Name( "groupid" )String groupId, @Name("participantid") String participantId )
+   {
+      Group group = null;
+      try
+      {
+         group = module.unitOfWorkFactory().currentUnitOfWork().get( Group.class, groupId );
+      } catch( NoSuchEntityException ne )
+      {
+         // do nothing - id sent in is not a group.
+      }
+
+      return group == null ? false : group.isParticipant( module.unitOfWorkFactory().currentUnitOfWork().get( Participant.class, participantId ) );
    }
 }

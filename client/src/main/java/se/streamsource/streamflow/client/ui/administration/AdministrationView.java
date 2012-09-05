@@ -28,8 +28,10 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.BorderFactory;
@@ -44,6 +46,7 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 
 import static org.qi4j.api.specification.Specifications.*;
+import static org.qi4j.api.util.Iterables.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -134,12 +137,18 @@ public class AdministrationView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if( matches( and( Events.withUsecases( "delete" ), Events.withNames( "revokedRole" ), Events.paramIs( "param1", application.currentUserId() ) ), transactions ) )
+      if( matches( and( Events.withUsecases( "delete" ), Events.withNames( "revokedRole" ) ), transactions ) )
       {
-         adminTreeView.getTree().setSelectionPath( null );
-         model.notifyTransactions( transactions );
+         DomainEvent event = first( filter( and( withUsecases( "delete" ), withNames( "revokedRole" ) ), events( transactions ) ) );
 
-         mainView.setRightComponent( new JPanel() );
+         if( matches(  Events.paramIs( "param1", application.currentUserId() ), transactions )
+               || model.isParticipantInGroup( EventParameters.getParameter( event, "param1" ), application.currentUserId()))
+         {
+            adminTreeView.getTree().setSelectionPath( null );
+            model.notifyTransactions( transactions );
+
+            mainView.setRightComponent( new JPanel() );
+         }
       }
    }
 }

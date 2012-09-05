@@ -189,5 +189,5 @@ public enum AdministrationResources
    choose_form_on_remove,
    fieldgroup_field_type,
    changeMailSelectionMessage,
-   changeMailSelectionMessageHint,
+   changeMailSelectionMessageHint, remove_user_or_group, remove_user_or_group_title,
 }

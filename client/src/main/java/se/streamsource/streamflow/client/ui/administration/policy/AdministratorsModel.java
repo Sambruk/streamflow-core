@@ -17,14 +17,8 @@
 package se.streamsource.streamflow.client.ui.administration.policy;
 
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -32,7 +26,6 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 public class AdministratorsModel
       extends LinkValueListModel
 {
-   StreamflowApplication application;
 
    public void addAdministrator( LinkValue link )
    {
@@ -42,20 +35,5 @@ public class AdministratorsModel
    public UsersAndGroupsModel newUsersAndGroupsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder( UsersAndGroupsModel.class ).use( client ).newInstance();
-   }
-
-   @Override
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
-   {
-      if ( matches( and( Events.withUsecases( "delete" ), Events.withNames( "revokedRole" ), Events.paramIs( "param1", application.currentUserId() ) ), transactions ))
-      {
-        // no refresh!! consume the event for this model
-      } else
-         super.notifyTransactions( transactions );
-   }
-
-   public void setApplication( StreamflowApplication application )
-   {
-      this.application = application;
    }
 }

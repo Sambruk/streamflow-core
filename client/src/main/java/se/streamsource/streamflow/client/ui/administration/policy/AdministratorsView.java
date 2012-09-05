@@ -27,7 +27,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
@@ -36,7 +36,9 @@ import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
@@ -69,13 +71,12 @@ public class AdministratorsView
    public JList administratorList;
 
    public AdministratorsView( @Service ApplicationContext context,
-                              @Uses AdministratorsModel model, @Service StreamflowApplication application)
+                              @Uses AdministratorsModel model )
    {
       super( new BorderLayout() );
       this.model = model;
-      this.model.setApplication( application );
 
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       usersAndGroupsModel = model.newUsersAndGroupsModel();
 
@@ -150,6 +151,11 @@ public class AdministratorsView
    {
       final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( administratorList.getSelectedValues() );
 
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setRemovalMessage( text( AdministrationResources.remove_user_or_group ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
       return new CommandTask()
       {
          @Override
@@ -162,6 +168,8 @@ public class AdministratorsView
             }
          }
       };
+      } else
+         return null;
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

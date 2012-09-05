@@ -147,6 +147,14 @@ public class AdministrationModel
       refresh();
    }
 
+   public boolean isParticipantInGroup( String groupId, String participantId )
+   {
+      Form form = new Form( );
+      form.add( "groupid", groupId );
+      form.add( "participantid", participantId );
+      return new Boolean( client.query( "isparticipantingroup", String.class, form ) );
+   }
+
    private class LinkValueFormat implements TreeList.Format<LinkValue>
    {
       public void getPath(List<LinkValue> linkValues, LinkValue linkValue)
