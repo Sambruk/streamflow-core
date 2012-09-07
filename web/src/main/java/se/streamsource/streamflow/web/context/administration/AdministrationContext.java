@@ -25,10 +25,10 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.LinkTree;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -63,18 +63,16 @@ public class AdministrationContext
          if (((Removable.Data)organization).removed().get())
             continue; // Skip this one
 
-         ValueBuilder<LinkTree> orgLinkBuilder = module.valueBuilderFactory().newValueBuilder(LinkTree.class);
+         boolean enabled = organization.hasRoles( participant ) || participant.toString().equals( UserEntity.ADMINISTRATOR_USERNAME );
 
          linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
          linkBuilder.prototype().text().set( organization.getDescription() );
          linkBuilder.prototype().id().set( organization.toString() );
          linkBuilder.prototype().rel().set( "organization" );
          linkBuilder.prototype().href().set( "organizations/" + organization.toString() + "/" );
-         linkBuilder.prototype().classes().set("server");
-
+         linkBuilder.prototype().classes().set("server" + ( enabled ? "" : " disabled" ) );
          linksBuilder.addLink(linkBuilder.newInstance());
 
-         orgLinkBuilder.prototype().link().set( linkBuilder.newInstance() );
 
          OrganizationalUnits.Data units = (OrganizationalUnits.Data) organization;
          for (OrganizationalUnit organizationalUnit : units.organizationalUnits())
@@ -90,17 +88,17 @@ public class AdministrationContext
    {
       if (ou.hasRoles( participant ) || participant.toString().equals( UserEntity.ADMINISTRATOR_USERNAME ))
       {
-         ValueBuilder<LinkTree> orgLinkBuilder = module.valueBuilderFactory().newValueBuilder(LinkTree.class);
-
          ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(LinkValue.class);
          linkBuilder.prototype().text().set( ou.getDescription() );
          linkBuilder.prototype().id().set( ou.toString() );
          linkBuilder.prototype().rel().set( "organizationalunit" );
          linkBuilder.prototype().classes().set(parent.toString());
          linkBuilder.prototype().href().set( "organizationalunits/" + ou.toString() + "/" );
-         orgLinkBuilder.prototype().link().set( linkBuilder.newInstance() );
 
-         linksBuilder.addLink(linkBuilder.newInstance());
+         LinkValue link = linkBuilder.newInstance();
+         linksBuilder.addLink( link );
+
+         ensureParentPathExists( participant, link, parent, linkBuilder, linksBuilder );
 
          OrganizationalUnits.Data units = (OrganizationalUnits.Data) ou;
          for (OrganizationalUnit organizationalUnit : units.organizationalUnits())
@@ -115,6 +113,31 @@ public class AdministrationContext
             addOrganizationalUnit( organizationalUnit, ou, linksBuilder, participant );
          }
       }
+   }
+
+   private void ensureParentPathExists(Participant participant, LinkValue existing, Object parent , ValueBuilder<LinkValue> linkBuilder,  LinksBuilder linksBuilder )
+   {
+      boolean isOu = parent instanceof OrganizationalUnit;
+
+      if( isOu )
+      {
+         OrganizationalUnit ou = (OrganizationalUnit)parent;
+         boolean enabled = ou.hasRoles( participant ) || participant.toString().equals( UserEntity.ADMINISTRATOR_USERNAME );
+
+         linkBuilder.prototype().text().set( ou.getDescription() );
+         linkBuilder.prototype().id().set( ou.toString() );
+         linkBuilder.prototype().rel().set( "organizationalunit" );
+         linkBuilder.prototype().classes().set(((Ownable.Data)ou).owner().get().toString() + ( enabled ? "" : " disabled" ));
+         linkBuilder.prototype().href().set( "organizationalunits/" + ou.toString() + "/" );
+
+         LinkValue link = linkBuilder.newInstance();
+         if( ! linksBuilder.contains( link ))
+         {
+            linksBuilder.addLinkBefore( existing, link );
+         }
+         ensureParentPathExists( participant, link, ((Ownable.Data)ou).owner().get(), linkBuilder, linksBuilder );
+      }
+
    }
 
    public boolean isparticipantingroup( @Name( "groupid" )String groupId, @Name("participantid") String participantId )

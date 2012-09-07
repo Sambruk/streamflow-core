@@ -112,7 +112,8 @@ public class AdministrationTreeView
                   {
                      TreeList.Node node = (TreeList.Node) o;
                      LinkValue link = (LinkValue)node.getElement();
-                     return i18n.icon( Icons.valueOf( link.rel().get() ) );
+                     String rel = link.rel().get();
+                     return i18n.icon( Icons.valueOf( rel ) );
                   } else
                   {
                      return null;

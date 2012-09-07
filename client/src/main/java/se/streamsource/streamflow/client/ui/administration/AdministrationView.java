@@ -23,6 +23,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowApplication;
@@ -45,6 +46,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 
+import static java.util.Arrays.asList;
 import static org.qi4j.api.specification.Specifications.*;
 import static org.qi4j.api.util.Iterables.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
@@ -107,7 +109,20 @@ public class AdministrationView
             {
                Object node = path.getLastPathComponent();
 
-               LinkValue link = (LinkValue) ((TreeList.Node)node).getElement();
+               final LinkValue link = (LinkValue) ((TreeList.Node)node).getElement();
+
+               // if node is disabled clear right component and jump out
+               if( matchesAny( new Specification<String>()
+               {
+                  public boolean satisfiedBy( String item )
+                  {
+                     return item.equals( "disabled" );
+                  }
+               }, asList( link.classes().get().split( " " ) )) )
+               {
+                  mainView.setRightComponent( new JPanel() );
+                  return;
+               }
 
                Object linkedModel = model.newResourceModel(link);
 

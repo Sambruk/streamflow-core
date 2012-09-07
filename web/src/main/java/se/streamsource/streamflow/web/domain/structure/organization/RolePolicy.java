@@ -227,7 +227,6 @@ public interface RolePolicy
 
       public ParticipantRolesValue getRoles( Participant participant )
       {
-         ParticipantRolesValue matchedParticipant = null;
          Set<EntityReference> mergedRoles = new HashSet<EntityReference>( );
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
@@ -256,21 +255,15 @@ public interface RolePolicy
                if ( participantRolesValue.participant().get().equals( participantRef ))
                {
                   mergedRoles.addAll( participantRolesValue.roles().get() );
-                  matchedParticipant = participantRolesValue;
                }
             }
          }
 
-         if( matchedParticipant != null )
-         {
-            // compile a merged list of roles and set it on a new ParticipantRolesValue to return
-            ValueBuilder<ParticipantRolesValue> builder = module.valueBuilderFactory().newValueBuilder( ParticipantRolesValue.class )
-                  .withPrototype( matchedParticipant );
-            builder.prototype().roles().set( new ArrayList<EntityReference>( mergedRoles ) );
-            matchedParticipant = builder.newInstance();
-         }
-
-         return matchedParticipant;
+         // compile a merged list of roles and set it on a new ParticipantRolesValue to return
+         ValueBuilder<ParticipantRolesValue> builder = module.valueBuilderFactory().newValueBuilder( ParticipantRolesValue.class );
+         builder.prototype().participant().set( participantRef );
+         builder.prototype().roles().set( new ArrayList<EntityReference>( mergedRoles ) );
+         return builder.newInstance();
       }
 
       public List<Participant> participantsWithRole( Role role )
