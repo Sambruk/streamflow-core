@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.rest.resource.organizations.filters;
 
 import org.qi4j.api.constraint.Name;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
@@ -25,21 +26,12 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.filter.ActionValue;
 import se.streamsource.streamflow.api.administration.filter.CloseActionValue;
 import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
+import se.streamsource.streamflow.api.administration.filter.EmailNotificationActionValue;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;
-import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
-import se.streamsource.streamflow.api.administration.filter.RuleValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.filters.ActionsContext;
-import se.streamsource.streamflow.web.context.administration.filters.FilterContext;
-import se.streamsource.streamflow.web.context.administration.filters.FiltersContext;
-import se.streamsource.streamflow.web.context.administration.filters.RulesContext;
 import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
-
-import java.util.Map;
 
 /**
  * TODO
@@ -66,6 +58,12 @@ public class ActionsResource
             Describable describable = module.unitOfWorkFactory().currentUnitOfWork().get(Describable.class, id);
             links.addLink(describable.getDescription(), idx + "", "emailaction", idx + "/", "");
          }
+         else if (action instanceof EmailNotificationActionValue)
+         {
+            String id = ((EmailNotificationActionValue) action).participant().get().identity();
+            Describable describable = module.unitOfWorkFactory().currentUnitOfWork().get(Describable.class, id);
+            links.addLink(describable.getDescription(), idx + "", "emailnotificationaction", idx + "/", "");
+         }
          else if (action instanceof CloseActionValue)
          {
             links.addLink("", idx + "", "closeaction", idx + "/", "");
@@ -87,9 +85,26 @@ public class ActionsResource
       return builder.newLinks();
    }
 
+   public LinksValue possiblenotificationrecipients()
+   {
+      final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command("createemailnotification");
+
+      for (Member member : context(ActionsContext.class).possibleNotificationRecipients())
+      {
+         builder.addDescribable(member);
+      }
+
+      return builder.newLinks();
+   }
+
    public void createemail(@Name("entity") Member recipient)
    {
       context(ActionsContext.class).createEmail(recipient);
+   }
+   
+   public void createemailnotification(@Name("entity") Member recipient)
+   {
+      context(ActionsContext.class).createEmailNotification(recipient);
    }
 
    public void resource(String segment) throws ResourceException

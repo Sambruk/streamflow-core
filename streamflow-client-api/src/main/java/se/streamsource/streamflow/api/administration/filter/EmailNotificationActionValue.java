@@ -14,26 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.administration.policy;
+package se.streamsource.streamflow.api.administration.filter;
 
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Email notification of a case to a given participant. Participant can be single user or group.
  */
-public class AdministratorsModel
-      extends LinkValueListModel
+public interface EmailNotificationActionValue
+   extends ActionValue
 {
-
-   public void addAdministrator( LinkValue link )
-   {
-      client.postLink( link );
-   }
-
-   public UsersAndGroupsModel newUsersAndGroupsModel()
-   {
-      return module.objectBuilderFactory().newObjectBuilder( UsersAndGroupsModel.class ).use( client ).newInstance();
-   }
+   Property<EntityReference> participant();
 }

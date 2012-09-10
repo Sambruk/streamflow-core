@@ -118,8 +118,10 @@ public interface Users
          }
 
          // Update contact info
+         String userFromName = email.fromName().get() != null ? email.fromName().get() : email.from().get() ;
+
          ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
-         contactBuilder.prototype().name().set(email.fromName().get());
+         contactBuilder.prototype().name().set( userFromName );
 
          ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
          emailBuilder.prototype().emailAddress().set(email.from().get());
@@ -128,7 +130,7 @@ public interface Users
 
          user.updateContact(contactBuilder.newInstance());
 
-         user.changeDescription(email.fromName().get());
+         user.changeDescription( userFromName );
 
          return user;
       }
