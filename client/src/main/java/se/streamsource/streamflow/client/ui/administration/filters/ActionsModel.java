@@ -34,7 +34,17 @@ public class ActionsModel
       return EventListSynch.synchronize(client.query("possiblerecipients", LinksValue.class).links().get(), new BasicEventList<LinkValue>());
    }
 
+   public EventList<LinkValue> getPossibleNotificationRecipients()
+   {
+      return EventListSynch.synchronize(client.query("possiblenotificationrecipients", LinksValue.class).links().get(), new BasicEventList<LinkValue>());
+   }
+   
    public void createEmailAction(LinkValue selectedLink)
+   {
+      client.postLink(selectedLink);
+   }
+   
+   public void createEmailNotificationAction(LinkValue selectedLink)
    {
       client.postLink(selectedLink);
    }

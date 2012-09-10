@@ -21,6 +21,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import ca.odell.glazedlists.TreeList;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
@@ -38,6 +39,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 
 import java.util.Comparator;
 import java.util.List;
+
+import static java.util.Arrays.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * JAVADOC
@@ -147,30 +151,51 @@ public class AdministrationModel
       refresh();
    }
 
+   public boolean isParticipantInGroup( String groupId, String participantId )
+   {
+      Form form = new Form( );
+      form.add( "groupid", groupId );
+      form.add( "participantid", participantId );
+      return new Boolean( client.query( "isparticipantingroup", String.class, form ) );
+   }
+
    private class LinkValueFormat implements TreeList.Format<LinkValue>
    {
       public void getPath(List<LinkValue> linkValues, LinkValue linkValue)
       {
          String classes = linkValue.classes().get();
          if (classes != null)
-            for (LinkValue value : links)
+         {
+            for (final LinkValue value : links)
             {
-               if (classes.contains(value.id().get()))
+               if (matchesAny( new Specification<String>()
+               {
+                  public boolean satisfiedBy( String item )
+                  {
+                     return item.equals( value.id().get() );
+                  }
+               }, asList( classes.split( " " ) ) ))
                {
                   getPath(linkValues, value);
                   break;
                }
             }
-
+         }
          linkValues.add(linkValue);
       }
 
       public boolean allowsChildren(LinkValue linkValue)
       {
-         for (LinkValue link : links)
+         for ( final LinkValue link : links)
          {
             String classes = link.classes().get();
-            if (classes != null && classes.contains(linkValue.id().get()))
+            if (classes != null && matchesAny( new Specification<String>()
+            {
+               public boolean satisfiedBy( String item )
+               {
+                  return item.equals( link.id().get() );
+               }
+            }, asList( classes.split( " " ) )))
                return true;
          }
          return false;

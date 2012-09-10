@@ -94,9 +94,8 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                         // User is not allowed to do this operation
                         JXDialog dialog = new JXDialog(frame, new JLabel(i18n
                               .text(StreamflowResources.operation_not_permitted)));
-                        dialog.setLocationRelativeTo(frame);
                         dialog.pack();
-                        dialog.setVisible(true);
+                        dialog.setLocationRelativeTo(frame);
                         main.show(dialog);
                         return;
                      } else if (re.getStatus().equals(Status.CLIENT_ERROR_CONFLICT)

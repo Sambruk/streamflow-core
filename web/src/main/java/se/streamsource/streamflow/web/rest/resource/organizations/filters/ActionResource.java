@@ -17,24 +17,12 @@
 package se.streamsource.streamflow.web.rest.resource.organizations.filters;
 
 import org.restlet.data.Form;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.RoleMap;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.filter.ActionValue;
 import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
-import se.streamsource.streamflow.api.administration.filter.FilterValue;
-import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
-import se.streamsource.streamflow.api.administration.filter.RuleValue;
-import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.filters.ActionContext;
-import se.streamsource.streamflow.web.context.administration.filters.FilterContext;
-import se.streamsource.streamflow.web.context.administration.filters.FiltersContext;
-import se.streamsource.streamflow.web.context.administration.filters.RuleContext;
 import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 
 /**
  * TODO

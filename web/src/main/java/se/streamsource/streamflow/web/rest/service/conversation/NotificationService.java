@@ -218,7 +218,7 @@ public interface NotificationService
                }
             } catch (Throwable e)
             {
-               logger.error("Could not send notification", e);
+               logger.error("Could not send notification to user entity = " +  event.entity().get() , e);
             }
          }
       }

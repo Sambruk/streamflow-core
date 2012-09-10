@@ -30,6 +30,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
@@ -55,12 +56,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static se.streamsource.streamflow.util.Strings.*;
 
 
 /**
@@ -167,18 +168,10 @@ public interface PdfGeneratorService
                FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
 
                document.print(field.getDescription() + ":", h2Font);
-               if (field.fieldValue().get() instanceof DateFieldValue)
+               if (field.fieldValue().get() instanceof DateFieldValue && !empty( submittedFieldValue.value().get() ))
                {
-                  try
-                  {
-
-                     Date date = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).parse(submittedFieldValue.value().get());
-                     document.print(DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date), valueFont);
-                  } catch (ParseException e)
-                  {
-                     document.print("N/A", valueFont);
-                  }
-
+                  Date date = DateFunctions.fromString( submittedFieldValue.value().get() );
+                  document.print(DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( date ), valueFont);
                } else if (field.fieldValue().get() instanceof AttachmentFieldValue)
                {
                   try
