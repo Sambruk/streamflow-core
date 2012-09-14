@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.management;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormat;
 import org.openrdf.repository.Repository;
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.composite.Composite;
@@ -194,7 +197,7 @@ public interface ManagerComposite
             }
          };
 
-         stream.registerListener(failedLoginListener);
+         stream.registerListener( failedLoginListener );
       }
 
       public void stop() throws Exception
@@ -206,12 +209,18 @@ public interface ManagerComposite
 
       public void reindex() throws Exception
       {
+         DateTime startDateTime = new DateTime( );
+         logger.info( "Starting reindex at " + startDateTime.toString() );
+
+         logger.info( "Remove RDF index." );
          // Delete current index
          removeRdfRepository();
 
+         logger.info( "Remove Solr index." );
          // Remove Lucene index
          removeSolrLuceneIndex();
 
+         logger.info( "Reindexing ..." );
          // Reindex state
          reindexer.reindex();
 
@@ -219,8 +228,11 @@ public interface ManagerComposite
          StreetAddressLookupService streetLookup = (StreetAddressLookupService) module.serviceFinder().findService( StreetAddressLookupService.class ).get();
          if( streetLookup != null && ((StreetAddressLookupConfiguration)streetLookup.configuration()).enabled().get() )
          {
+            logger.info( "Reindexing StreetLookup." );
             streetLookup.reindex();
          }
+
+         logger.info( "Reindexing done in " + PeriodFormat.getDefault().print( new Duration( startDateTime, new DateTime( ) ).toPeriod() ) );
       }
 
       public String exportDatabase(boolean compress) throws IOException
@@ -301,7 +313,7 @@ public interface ManagerComposite
 
       public String exportEvents(@Name("Compress") boolean compress) throws IOException
       {
-         File exportFile = exportEvents0(compress);
+         File exportFile = exportEvents0( compress );
 
          return "Events exported to:" + exportFile.getAbsolutePath();
       }
@@ -331,10 +343,13 @@ public interface ManagerComposite
 
       public String backup() throws IOException, ParseException
       {
+         DateTime startDateTime = new DateTime( );
+         logger.info( "Started backup at " + startDateTime.toString() );
          String backupResult = backupEvents();
 
          backupResult += backupDatabase();
 
+         logger.info( "Backup done successfully in: " + PeriodFormat.getDefault().print( new Duration(startDateTime, new DateTime( ) ).toPeriod() ) );
          return backupResult;
       }
 
@@ -342,6 +357,8 @@ public interface ManagerComposite
       {
          try
          {
+            DateTime startDateTime = new DateTime(  );
+            logger.info( "Starting restore at " + startDateTime.toString() );
 
             // Restore data from latest backup in /backup
             File latestBackup = getLatestBackup();
@@ -351,15 +368,17 @@ public interface ManagerComposite
             {
                return "Error: no backup to restore";
             }
+            logger.info( "Fetching latest backup and start import database and reindex." );
 
-            importDatabase(latestBackup.getAbsolutePath());
+            // contains already a call to reindex
+            importDatabase( latestBackup.getAbsolutePath() );
 
-            // Reindex state
-            reindex();
+            logger.info( "Import database and reindex done. Clearing event database." );
 
             // Add events from backup files
             eventManagement.removeAll();
 
+            logger.info( "Replaying backup event files from time of snapshot backup." );
             File[] eventFiles = getBackupEventFiles();
 
             // Replay events from time of snapshot backup
@@ -395,6 +414,8 @@ public interface ManagerComposite
                if (ex[0] != null)
                   throw ex[0];
             }
+
+            logger.info( "Restore done successfully in: " + PeriodFormat.getDefault().print( new Duration(startDateTime, new DateTime( ) ).toPeriod() ) );
 
             return "Backup restored successfully";
          } catch (Exception ex)
