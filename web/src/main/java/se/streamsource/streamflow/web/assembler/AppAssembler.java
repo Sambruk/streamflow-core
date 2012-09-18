@@ -34,6 +34,10 @@ import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.GroupDetailsValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.GroupListValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.GroupMemberDetailValue;
+import se.streamsource.streamflow.server.plugin.ldapimport.UserListValue;
 import se.streamsource.streamflow.web.application.archival.ArchivalConfiguration;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsService;
@@ -63,6 +67,7 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilterServiceConfiguration;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
@@ -73,6 +78,9 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitV
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
@@ -122,12 +130,14 @@ public class AppAssembler
       }
 
       velocity( layer.module( "Velocity" ));
-      
-      scheduler( layer.module( "Scheduler" ));
-      
+
+      scheduler( layer.module( "Scheduler" ) );
+
       dueOnNotifiation(layer.module("DueOn Notification"));
 
       knowledgebase(layer.module("Knowledgebase"));
+
+      ldapimport( layer.module( "Ldapimport" ) );
 
       // All configurations must be visible in the Application scope
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
@@ -174,15 +184,12 @@ public class AppAssembler
       module.services(DueOnNotificationService.class).identifiedBy("dueOnNotification").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(DueOnNotificationConfiguration.class);
       configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().enabled().set( false );
-   }
+      // default schedule - 08:00 every day
+      configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().schedule().set( "0 0 8 * * ?" );
 
-
-   private void scheduler( ModuleAssembly module ) throws AssemblyException
-   {
-      module.addServices( Qi4JQuartzJobFactory.class, QuartzSchedulerService.class ).visibleIn( Visibility.application );
       module.transients( DueOnNotificationJob.class).visibleIn( application );
    }
-   
+
    private void replay( ModuleAssembly module ) throws AssemblyException
    {
       module.services( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.application );
@@ -284,12 +291,19 @@ public class AppAssembler
 
    private void security( ModuleAssembly module ) throws AssemblyException
    {
-      module.values(UserDetailsValue.class);
-      module.services( AuthenticationFilterService.class )
+      Application.Mode mode = module.layer().application().mode();
+      if (mode.equals( Application.Mode.production ))
+      {
+         module.values( UserDetailsValue.class, GroupDetailsValue.class );
+         module.services( AuthenticationFilterService.class )
             .identifiedBy( "authentication" )
             .instantiateOnStartup()
             .setMetaInfo(new CircuitBreaker(10, 1000 * 60 * 5))
             .visibleIn(application);
+
+         configuration().entities( AuthenticationFilterServiceConfiguration.class ).visibleIn( Visibility.application );
+         configuration().forMixin( AuthenticationFilterServiceConfiguration.class ).declareDefaults().enabled().set( false );
+      }
    }
 
    private void migration( ModuleAssembly module ) throws AssemblyException
@@ -335,5 +349,33 @@ public class AppAssembler
    {
       knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
       configuration().entities(KnowledgebaseConfiguration.class);
+   }
+
+   private void ldapimport( ModuleAssembly module )
+   {
+      module.services( LdapImporterService.class )
+            .identifiedBy( "ldapimport" )
+            .instantiateOnStartup()
+            .setMetaInfo(new CircuitBreaker(10, 1000 * 60 * 5))
+            .visibleIn(application);
+
+      configuration().entities( LdapImporterServiceConfiguration.class ).visibleIn( Visibility.application );
+      configuration().forMixin( LdapImporterServiceConfiguration.class ).declareDefaults().enabled().set( false );
+      // default schedule - run att 17:00 every day
+      configuration().forMixin( LdapImporterServiceConfiguration.class ).declareDefaults().schedule().set( "0 0 17 * * ?" );
+
+      module.transients( LdapImportJob.class).visibleIn( application );
+
+      module.values( UserDetailsValue.class,
+            GroupDetailsValue.class,
+            UserListValue.class,
+            GroupListValue.class,
+            GroupMemberDetailValue.class ).visibleIn( Visibility.application );
+   }
+
+   private void scheduler( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( Qi4JQuartzJobFactory.class, QuartzSchedulerService.class ).visibleIn( Visibility.application );
+
    }
 }

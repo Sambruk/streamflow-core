@@ -151,6 +151,7 @@ public enum AdministrationResources
    filter_actions,
    remove_action_confirmation,
    send_email_to,
+   send_email_notification_to,
    close_case,
    match_label,
    default_days_to_complete_separator,
@@ -188,5 +189,5 @@ public enum AdministrationResources
    choose_form_on_remove,
    fieldgroup_field_type,
    changeMailSelectionMessage,
-   changeMailSelectionMessageHint,
+   changeMailSelectionMessageHint, remove_user_or_group, remove_user_or_group_title,
 }

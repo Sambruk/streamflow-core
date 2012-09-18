@@ -145,9 +145,12 @@ public interface CreateCaseFromEmailService
                      ap = organization.getEmailAccessPoint(email.to().get());
                   } catch (IllegalArgumentException e)
                   {
+
                      // No AP for this email address - create support case.
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
+
                      String subj = "Unknown accesspoint: " + builder.prototype().to().get() + " - " + builder.prototype().subject().get();
+
                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      uow.discard();

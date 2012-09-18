@@ -17,7 +17,6 @@
 package se.streamsource.dci.api;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.service.ServiceFinder;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 
@@ -32,7 +31,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ServiceAvailable
 {
-   Class value();
+   Class service();
+   boolean availability() default true;
 
    public class ServiceAvailableConstraint
          implements InteractionConstraint<ServiceAvailable>
@@ -42,8 +42,8 @@ public @interface ServiceAvailable
 
       public boolean isValid( ServiceAvailable serviceAvailable, RoleMap roleMap )
       {
-         ServiceReference ref = module.serviceFinder().findService( serviceAvailable.value() );
-         return ref != null && ref.isAvailable();
+         ServiceReference ref = module.serviceFinder().findService( serviceAvailable.service() );
+         return serviceAvailable.availability() ? ref != null && ref.isAvailable() : ref == null || !ref.isAvailable();
       }
    }
 }

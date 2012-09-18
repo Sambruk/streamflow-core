@@ -89,6 +89,7 @@ public class ActionsView extends JPanel implements TransactionListener
 
       JPopupMenu addPopup = new JPopupMenu();
       addPopup.add( am.get( "addEmail" ));
+      addPopup.add( am.get( "addEmailNotification" ));
       addPopup.add( am.get( "addClose" ));
       PopupAction popupAction = new PopupAction( addPopup, (String) text( AdministrationResources.add_filter_action ), icon( Icons.add, 16));
       
@@ -117,9 +118,14 @@ public class ActionsView extends JPanel implements TransactionListener
                   if ("closeaction".equals( itemValue.rel().get() ))
                   {
                      val = text( AdministrationResources.close_case );
-                  } else
+                  } 
+                  else if ("emailaction".equals( itemValue.rel().get() ))
                   {
                      val = text( AdministrationResources.send_email_to, itemValue.text().get() );
+                  }
+                  else if ("emailnotificationaction".equals( itemValue.rel().get() ))
+                  {
+                     val = text( AdministrationResources.send_email_notification_to, itemValue.text().get() );
                   }
                }
 
@@ -155,6 +161,28 @@ public class ActionsView extends JPanel implements TransactionListener
    }
 
    @Action
+   public Task addEmailNotification()
+   {
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class )
+            .use( model.getPossibleNotificationRecipients() ).newInstance();
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_recipient_title ) );
+
+      if (dialog.getSelectedLinks() != null && dialog.getSelectedLink() != null)
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command() throws Exception
+            {
+               model.createEmailNotificationAction( dialog.getSelectedLink() );
+            }
+         };
+      } else
+         return null;
+   }
+   
+   @Action
    public Task addClose()
    {
       ConfirmationDialog dialog = module.objectBuilderFactory().newObject( ConfirmationDialog.class );
@@ -185,6 +213,10 @@ public class ActionsView extends JPanel implements TransactionListener
       if ( "emailaction".equals(linkValue.rel().get()))
       {
          dialog.setCustomMessage( text( AdministrationResources.remove_action_confirmation, text( AdministrationResources.send_email_to, linkValue.text().get() )));         
+      }
+      else if ( "emailnotificationaction".equals(linkValue.rel().get()))
+      {
+         dialog.setCustomMessage( text( AdministrationResources.remove_action_confirmation, text( AdministrationResources.send_email_notification_to, linkValue.text().get() )));         
       }
       else if( "closeaction".equals(linkValue.rel().get()))
       {

@@ -16,12 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.Component;
-
-import javax.swing.ActionMap;
-
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -30,7 +25,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
-
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.Links;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -38,13 +33,19 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
+
+import javax.swing.ActionMap;
+import java.awt.Component;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -64,27 +65,58 @@ public class GroupsView
    {
       this.model = model;
 
-      ActionMap am = context.getActionMap( this );
+      final ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "rename" ), am.get( "remove" )}, new DetailFactory()
-      {
-         public Component createDetail( LinkValue detailLink )
-         {
-            GroupModel groupModel = (GroupModel) model.newResourceModel(detailLink);
-            groupModel.refresh();
-            Iterable<LinkValue> participants1 = Iterables.filter(Links.withRel("participants"), (Iterable<LinkValue>) groupModel.getResources());
-            LinkValue participants = Iterables.first(participants1);
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("create"), new SelectionActionEnabler( new javax.swing.Action[]{am.get( "rename" ), am.get( "remove" )} )
+            {
+               @Override
+               public boolean isSelectedValueValid( javax.swing.Action action )
+               {
+                  return action.isEnabled();
+               }
+            },
+            new DetailFactory()
+            {
+               public Component createDetail( LinkValue detailLink )
+               {
+                  final GroupModel groupModel = (GroupModel) model.newResourceModel( detailLink );
 
-            return module.objectBuilderFactory().newObjectBuilder(ParticipantsView.class).use( groupModel.newResourceModel(participants)).newInstance();
-         }
-      });
+                  new ResourceActionEnabler(
+                        am.get( "rename" ),
+                        am.get( "remove" ) )
+                  {
+                     @Override
+                     protected ResourceValue getResource()
+                     {
+                        groupModel.refresh();
+                        return groupModel.getResourceValue();
+                     }
+                  }.refresh();
+                  Iterable<LinkValue> participants1 = Iterables.filter( Links.withRel( "participants" ), (Iterable<LinkValue>) groupModel.getResources() );
+                  LinkValue participants = Iterables.first( participants1 );
+
+                  return module.objectBuilderFactory().newObjectBuilder( ParticipantsView.class ).use( groupModel.newResourceModel( participants ) ).newInstance();
+               }
+            }
+      );
 
       new RefreshWhenShowing(this, model);
+      new ResourceActionEnabler(
+            am.get( "create" ),
+            am.get( "rename" ),
+            am.get( "remove" ))
+      {
+         @Override
+         protected ResourceValue getResource()
+         {
+            return model.getResourceValue();
+         }
+      }.refresh();
    }
 
    @Action
-   public Task add()
+   public Task create()
    {
       NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_group_title ) );

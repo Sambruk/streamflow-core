@@ -151,7 +151,7 @@ public class FormAttachmentsResource
          InputStream in = representation.getStream();
 
          Attachment attachment = context(FormAttachmentsContext.class).createFormAttachment( in );
-         attachment.changeName( "New attachment" );
+         attachment.changeName( "New Form Attachment" );
          attachment.changeModificationDate( new Date() );
       }
    }

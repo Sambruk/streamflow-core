@@ -72,6 +72,12 @@ public class OrganizationResource
    }
 
    @SubResource
+   public void groups()
+   {
+      subResource( GroupsResource.class );
+   }
+
+   @SubResource
    public void roles()
    {
       subResource( RolesResource.class );
@@ -95,7 +101,7 @@ public class OrganizationResource
       subResource( AccessPointsAdministrationResource.class );
    }
 
-   @SubResource @ServiceAvailable(CreateCaseFromEmailService.class)
+   @SubResource @ServiceAvailable( service = CreateCaseFromEmailService.class, availability = true )
    public void emailaccesspoints()
    {
       subResource(EmailAccessPointsAdministrationResource.class);

@@ -16,14 +16,28 @@
  */
 package se.streamsource.streamflow.web.application.mail;
 
-import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.withBreaker;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.spi.service.ServiceDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
+import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
+import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
+import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
+import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
+import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -38,30 +52,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
-import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.util.Visitor;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.*;
 
 /**
  * Send emails. This service
@@ -227,11 +226,14 @@ public interface SendMailService
                   Transport.send( msg );
                }
 
+               // Removed since it would not be possible to resend mail events if the
+               // generated case pdf is already deleted!
+               // TODO: Consider to generate a html multipart for the contents of the case instead - so we would not need to generate and store a pdf file.
                // Delete attachments
-               for (AttachedFileValue attachedFileValue : email.attachments().get())
+               /*for (AttachedFileValue attachedFileValue : email.attachments().get())
                {
                   attachmentStore.deleteAttachment(attachedFileValue.uri().get());
-               }
+               }*/
 
                logger.debug( "Sent mail to " + email.to().get() );
             } catch (Throwable e)
@@ -260,7 +262,7 @@ public interface SendMailService
                try
                {
                   MimeBodyPart attachmentPart = new MimeBodyPart();
-                  attachmentPart.setFileName(attachedFileValue.name().get());
+                  attachmentPart.setFileName( MimeUtility.encodeText(attachedFileValue.name().get(), "UTF-8", "Q" ));
                   attachmentPart.setDisposition(Part.ATTACHMENT);
                   attachmentPart.setDataHandler(new DataHandler(new DataSource()
                   {

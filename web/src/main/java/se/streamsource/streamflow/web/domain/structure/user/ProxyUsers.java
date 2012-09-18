@@ -29,6 +29,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
@@ -66,16 +67,18 @@ public interface ProxyUsers
       public ProxyUser createProxyUser( String description, String password )
             throws IllegalArgumentException
       {
-         return createdProxyUser( null, idGen.generate( Identity.class ), description, password );
+         return createdProxyUser( null, idGen.generate( Identity.class ), description, "#" + Strings.hashString( password ) );
       }
 
       public ProxyUser createdProxyUser( @Optional DomainEvent event, String id, String description, String password )
       {
+         // check if the password is already hashed or not
+         boolean isHashed = password.startsWith( "#" );
          EntityBuilder<ProxyUser> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( ProxyUser.class, id );
          builder.instance().organization().set( organization );
          UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
          userEntity.userName().set( id );
-         userEntity.hashedPassword().set( userEntity.hashPassword( password ) );
+         userEntity.hashedPassword().set( isHashed ? password.replace( "#", "" ) : Strings.hashString( password ) );
 
          Describable.Data desc = builder.instanceFor( Describable.Data.class );
          desc.description().set( description );

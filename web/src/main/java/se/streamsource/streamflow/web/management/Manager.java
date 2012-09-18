@@ -57,7 +57,9 @@ public interface Manager
    public void performArchival();
    
    public void sendDueOnNotifications();
-   
+
+   public String importUserAndGroupsFromLdap();
+
    @Computed
    Property<Integer> failedLogins();
 

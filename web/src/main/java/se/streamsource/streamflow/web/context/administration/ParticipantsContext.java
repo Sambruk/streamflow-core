@@ -22,6 +22,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
@@ -37,6 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -55,6 +57,7 @@ public class ParticipantsContext
       return RoleMap.role( Participants.Data.class ).participants();
    }
 
+   @ServiceAvailable( service = LdapImporterService.class, availability = false )
    public void addparticipant( EntityValue participantId )
    {
       UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();

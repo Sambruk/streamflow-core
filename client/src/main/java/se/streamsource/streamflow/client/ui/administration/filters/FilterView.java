@@ -77,7 +77,7 @@ public class FilterView
       ActionMap am = context.getActionMap(this);
       setActionMap(am);
 
-      FormLayout layout = new FormLayout("70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, pref");
+      FormLayout layout = new FormLayout("100dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, pref");
 
       setLayout(layout);
       formBuilder = new DefaultFormBuilder(layout, this);

@@ -23,6 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * Builder for making it easier to create LinksValue/LinkValue
@@ -165,5 +166,16 @@ public class LinksBuilder<T extends LinksBuilder>
    public LinksValue newLinks()
    {
       return linksBuilder.newInstance();
+   }
+
+   public boolean contains( LinkValue link )
+   {
+      return linksBuilder.prototype().links().get().contains( link );
+   }
+
+   public void addLinkBefore( LinkValue existingLink, LinkValue newLink )
+   {
+      List<LinkValue> linkValues = linksBuilder.prototype().links().get();
+      linkValues.add( linkValues.indexOf( existingLink ), newLink );
    }
 }

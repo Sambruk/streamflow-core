@@ -80,7 +80,7 @@ public class CaseTypeContext
       RoleMap.role( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
    }
 
-   @ServiceAvailable(KnowledgebaseService.class)
+   @ServiceAvailable(service = KnowledgebaseService.class, availability = true)
    public LinkValue knowledgeBase()
    {
       CaseTypeEntity caseType = RoleMap.role(CaseTypeEntity.class);

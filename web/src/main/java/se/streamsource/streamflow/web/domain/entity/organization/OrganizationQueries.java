@@ -16,19 +16,12 @@
  */
 package se.streamsource.streamflow.web.domain.entity.organization;
 
-import static org.qi4j.api.query.QueryExpressions.and;
-import static org.qi4j.api.query.QueryExpressions.contains;
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.matches;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.spi.structure.ModuleSPI;
-
 import se.streamsource.streamflow.util.HierarchicalVisitor;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -51,6 +44,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OrganizationQueries.Mixin.class)
 public interface OrganizationQueries
@@ -149,6 +144,14 @@ public interface OrganizationQueries
             return;
 
          // Visit items on Organization
+
+         if (typeSpecification.satisfiedBy( Groups.class ))
+            for (Group group : ((Groups.Data) org).groups())
+            {
+               if (!visitor.visitGroup( group ))
+                  return;
+            }
+
          if (typeSpecification.satisfiedBy( Labels.class ))
             for (Label label : ((Labels.Data) org).labels())
             {

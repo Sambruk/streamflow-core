@@ -16,7 +16,9 @@
  */
 package se.streamsource.dci.restlet.server.responsewriter;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.qi4j.library.constraints.annotation.InstanceOf;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
@@ -35,14 +37,23 @@ public class JSONResponseWriter
 
    public boolean write( final Object result, final Response response ) throws ResourceException
    {
-      if (result instanceof JSONObject)
+      if (result instanceof JSONObject || result instanceof JSONArray)
       {
          MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes).getMediaType();
+         
+         String jsonValue;
+         if (result instanceof JSONObject)
+         {
+            jsonValue = ((JSONObject) result).toString();
+         } else
+         {
+            jsonValue = ((JSONArray) result).toString();
+         }
+         
          if (MediaType.APPLICATION_JSON.equals(type))
          {
-            JSONObject json = (JSONObject) result;
-
-            StringRepresentation representation = new StringRepresentation( json.toString(),
+            
+            StringRepresentation representation = new StringRepresentation( jsonValue,
                   MediaType.APPLICATION_JSON );
 
             response.setEntity( representation );
@@ -50,9 +61,7 @@ public class JSONResponseWriter
             return true;
          } else if (MediaType.TEXT_HTML.equals(type))
          {
-            JSONObject json = (JSONObject) result;
-
-            StringRepresentation representation = new StringRepresentation( json.toString(),
+            StringRepresentation representation = new StringRepresentation( jsonValue,
                   MediaType.TEXT_HTML );
 
             response.setEntity( representation );

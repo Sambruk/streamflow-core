@@ -46,7 +46,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

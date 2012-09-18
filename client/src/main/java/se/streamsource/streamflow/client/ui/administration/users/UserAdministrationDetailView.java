@@ -16,28 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.administration.users;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.RADIOBUTTON;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
-
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.ActionMap;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -48,7 +28,6 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
@@ -61,17 +40,35 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
+
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class UserAdministrationDetailView
       extends JPanel
@@ -119,6 +116,8 @@ public class UserAdministrationDetailView
       this.module = module;
 
       model.addObserver( this );
+      RefreshComponents refreshComponents = new RefreshComponents();
+      model.addObserver( refreshComponents );
 
       setLayout( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
@@ -163,22 +162,28 @@ public class UserAdministrationDetailView
       contactBuilder.append(title, 3);
       contactBuilder.nextLine();
 
+      JTextField nameTextField;
       contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
       contactBuilder.nextColumn(2);
-      contactBuilder.add( contactBinder.bind(TEXTFIELD.newField(),
+      contactBuilder.add( contactBinder.bind(nameTextField = (JTextField)TEXTFIELD.newField(),
             template.name()));
       contactBuilder.nextLine();
+      refreshComponents.enabledOn( "update", nameTextField );
 
+      JTextField emailTextField;
       contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
       contactBuilder.nextColumn(2);
-      contactBuilder.add(emailBinder.bind( TEXTFIELD.newField(), emailTemplate.emailAddress() ));
+      contactBuilder.add(emailBinder.bind( emailTextField = (JTextField)TEXTFIELD.newField(), emailTemplate.emailAddress() ));
       contactBuilder.nextLine();
+      refreshComponents.enabledOn( "update", emailTextField );
 
+      JTextField phoneNumberTextField;
       contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
       contactBuilder.nextColumn(2);
-      contactBuilder.add(phoneNumberBinder.bind(TEXTFIELD.newField(),
+      contactBuilder.add(phoneNumberBinder.bind( phoneNumberTextField = (JTextField) TEXTFIELD.newField(),
             phoneTemplate.phoneNumber()));
       contactBuilder.nextLine(2);
+      refreshComponents.enabledOn( "update", phoneNumberTextField );
 
       contactBuilder.add(new JLabel( i18n
             .text(WorkspaceResources.choose_message_delivery_type)));
@@ -192,6 +197,8 @@ public class UserAdministrationDetailView
       emailButton = (JRadioButton) RADIOBUTTON.newField();
       emailButton.setAction(am.get("messageDeliveryTypeEmail"));
       contactBuilder.add(emailButton);
+      refreshComponents.enabledOn( "update", noneButton );
+      refreshComponents.enabledOn( "update", emailButton );
 
       // Group the radio buttons.
       ButtonGroup group = new ButtonGroup();

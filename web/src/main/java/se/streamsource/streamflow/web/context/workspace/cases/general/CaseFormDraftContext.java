@@ -138,13 +138,13 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
       formDrafts.discardFormDraft( formDraft );
    }
 
-   @ServiceAvailable(value = KartagoMapService.class)
+   @ServiceAvailable( service = KartagoMapService.class, availability = true )
    public String kartagoclientexe()
    {
       return ((KartagoPluginConfiguration) kartagoMapService.configuration()).installpath().get() ;
    }
 
-   @ServiceAvailable(StreetAddressLookupService.class)
+   @ServiceAvailable( service = StreetAddressLookupService.class, availability = true )
    @SkipResourceValidityCheck
    public StreetsDTO searchstreets(StreetSearchDTO search)
    {

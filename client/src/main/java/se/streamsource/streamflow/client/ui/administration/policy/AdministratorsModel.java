@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.util.LinkValueListModel;
 public class AdministratorsModel
       extends LinkValueListModel
 {
+
    public void addAdministrator( LinkValue link )
    {
       client.postLink( link );

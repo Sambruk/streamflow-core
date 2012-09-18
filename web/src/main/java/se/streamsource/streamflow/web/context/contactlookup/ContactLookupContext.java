@@ -37,7 +37,7 @@ public class ContactLookupContext
    @Service
    StreamflowContactLookupService contactLookup;
 
-   @ServiceAvailable(StreamflowContactLookupService.class)
+   @ServiceAvailable( service = StreamflowContactLookupService.class, availability = true )
    public ContactList contactlookup( ContactValue template )
    {
       if (contactLookup != null)

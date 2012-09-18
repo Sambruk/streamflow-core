@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.account;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -142,6 +144,27 @@ public class AccountModel extends Observable
       {
          uow.discard();
          throw ex;
+      }
+   }
+
+   public boolean ldapon( )
+   {
+      UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
+
+      try
+      {
+         boolean result = false;
+         try
+         {
+            result = new JSONObject( uow.get( account ).server(client).getSubClient( "account" ).query( "ldapon",String.class ) ).getBoolean( "string" );
+         } catch (JSONException e)
+         {
+            // do nothing
+         }
+         return result;
+      } finally
+      {
+         uow.discard();
       }
    }
 }

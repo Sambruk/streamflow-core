@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.rest.resource.organizations;
 
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.RequiresPermission;
@@ -23,6 +24,7 @@ import se.streamsource.streamflow.web.context.administration.OrganizationalUnitC
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
 
 /**
@@ -43,7 +45,7 @@ public class OrganizationalUnitResource
       subResource( AdministratorsResource.class );
    }
 
-   @SubResource
+   @SubResource @ServiceAvailable( service = LdapImporterService.class, availability = false )
    public void groups()
    {
       subResource( GroupsResource.class );

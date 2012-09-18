@@ -16,14 +16,12 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import static org.qi4j.api.specification.Specifications.or;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
-
-import org.qi4j.api.specification.Specifications;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransactionList;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.ErrorResources;
@@ -32,10 +30,9 @@ import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.TransactionList;
+
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * A general super class for models that use LinkValue lists shown in a JList.
@@ -73,7 +70,7 @@ public class LinkValueListModel
    {
       // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
       if (matches( or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( client.getReference().getLastSegment() ),
-            Specifications.and( Events.withNames( "changedDescription" ), onEntities( linkValues ))), transactions ))
+            and( Events.withNames( "changedDescription" ), onEntities( linkValues ) )), transactions ) )
          refresh();
    }
 
