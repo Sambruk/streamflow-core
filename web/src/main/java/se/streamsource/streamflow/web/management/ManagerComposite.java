@@ -686,9 +686,9 @@ public interface ManagerComposite
             public int compare(File o1, File o2)
             {
                String o1Name = o1.getName();
-               o1Name = o1Name.substring(0, o1Name.lastIndexOf('.'));
+               o1Name = o1Name.substring(0, o1Name.indexOf('.'));
                String o2Name = o2.getName();
-               o2Name = o2Name.substring(0, o2Name.lastIndexOf('.'));
+               o2Name = o2Name.substring(0, o2Name.indexOf('.'));
 
                return o1Name.compareTo(o2Name);
             }
