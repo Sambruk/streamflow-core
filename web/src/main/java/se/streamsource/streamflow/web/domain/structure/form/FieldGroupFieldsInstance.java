@@ -32,6 +32,8 @@ import org.qi4j.api.util.Classes;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,16 +115,23 @@ public interface FieldGroupFieldsInstance
          EntityBuilder<FieldGroupFieldInstance> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( FieldGroupFieldInstance.class, id );
 
          EntityBuilder<Field> fieldBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Field.class, fieldGroupFieldId );
+         fieldBuilder.instanceFor(Mandatory.Data.class).mandatory().set( fieldGroupField.isMandatory() );
+         fieldBuilder.instanceFor(Notable.Data.class).note().set( fieldGroupField.getNote() );
+         fieldBuilder.instanceFor(Describable.Data.class).description().set( fieldGroupField.getDescription() );
+         fieldBuilder.instanceFor(Datatype.Data.class).datatype().set( ((Datatype.Data)fieldGroupField).datatype().get() );
+         
          FieldValue fieldValue = definition.fieldValue().get();
          fieldBuilder.instanceFor(FieldValueDefinition.Data.class).fieldValue().set( fieldValue );
+         
+         
          String fieldId = Classes.interfacesOf( fieldValue.getClass()).iterator().next().getSimpleName();
          fieldId = fieldGroup.getDescription() + "_" + fieldId.substring( 0, fieldId.length()-"FieldValue".length() );
          fieldId += data.groupFields().count()+1;
          fieldBuilder.instanceFor(FieldId.Data.class).fieldId().set( fieldId );
 
          Field createdFieldGroupField = fieldBuilder.newInstance();
-         builder.instance().addFieldGroup( fieldGroup );
-         builder.instance().addFieldGroupField( createdFieldGroupField );
+         builder.instanceFor(FieldGroupValue.Data.class).fieldGroup().set( fieldGroup );
+         builder.instanceFor(FieldGroupValue.Data.class).fieldGroupField().set( fieldGroupField );
 
          FieldGroupFieldInstance field = builder.newInstance();
 
