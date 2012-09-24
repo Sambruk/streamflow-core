@@ -18,9 +18,13 @@ package se.streamsource.streamflow.web.context.surface.endusers;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
@@ -34,15 +38,22 @@ public class OpenCasesContext
 
    public Iterable<Case> cases(TableQuery tableQuery)
    {
-      EndUser endUser = RoleMap.role(EndUser.class);
+      EndUser endUser = RoleMap.role( EndUser.class );
 
       StringBuilder queryBuilder = new StringBuilder();
-      queryBuilder.append(" type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity");
-      queryBuilder.append(" status:OPEN");
-      queryBuilder.append(" contactId:" + endUser.toString().split("/")[1]);
+      queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" );
+      queryBuilder.append( " status:OPEN" );
+      queryBuilder.append( " contactId:" + endUser.toString().split( "/" )[1] );
       Query<Case> query = module.queryBuilderFactory()
-              .newNamedQuery(Case.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery").setVariable("query", queryBuilder.toString());
+            .newNamedQuery( Case.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery" )
+            .setVariable( "query", queryBuilder.toString() );
 
-      return query;
+      return Iterables.filter( new Specification<Case>()
+      {
+         public boolean satisfiedBy(Case item)
+         {
+            return !((Removable.Data) item).removed().get();
+         }
+      }, query );
    }
 }
