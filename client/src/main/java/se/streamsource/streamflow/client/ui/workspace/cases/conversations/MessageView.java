@@ -13,6 +13,9 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -36,7 +39,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  *
  */
 public class MessageView extends JPanel
-   implements Refreshable
+   implements Refreshable, TransactionListener
 {
 
    @Structure
@@ -144,5 +147,13 @@ public class MessageView extends JPanel
       createdOnLabelValue.setText( DateFormats.getFullDateTimeValue(
             model.getMessageDTO().createdOn().get(), Locale.getDefault() ) );
 
+   }
+
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
+   {
+      if (Events.matches( Events.withNames( "createdMessage" ), transactions ))
+      {
+         model.refresh();
+      }
    }
 }
