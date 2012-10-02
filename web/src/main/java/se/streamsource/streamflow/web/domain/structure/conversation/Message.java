@@ -25,6 +25,7 @@ import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import java.util.Date;
@@ -36,7 +37,7 @@ import java.util.Map;
  */
 @Mixins(Message.Mixin.class)
 public interface Message
-   extends Removable
+   extends Attachments, Removable
 {
    String translateBody(Map<String, String> translations);
 

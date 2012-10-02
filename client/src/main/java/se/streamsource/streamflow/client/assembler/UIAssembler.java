@@ -134,7 +134,10 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.CreateExternalMailUserDialog;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageAttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
@@ -290,6 +293,9 @@ public class UIAssembler
             ConversationsView.class,
             ConversationView.class,
             ConversationParticipantsView.class,
+            MessagesView.class,
+            MessageView.class,
+            MessageAttachmentsView.class,
             AttachmentsView.class,
             PerspectiveView.class,
             CaseNoteView.class

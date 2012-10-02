@@ -66,4 +66,9 @@ public class MessagesModel
       if (Events.matches( Events.onEntities( client.getReference().getParentRef().getLastSegment() ), transactions ))
          refresh();
    }
+
+   public MessageModel newMessageModel( String href )
+   {
+      return module.objectBuilderFactory().newObjectBuilder( MessageModel.class ).use( client.getSubClient( href ) ).newInstance();
+   }
 }

@@ -70,8 +70,9 @@ public class MessagesContext
          builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
 
          builder.prototype().text().set( message.translateBody(translations));
-         builder.prototype().href().set( ((MessageEntity) message).identity().get() );
-         builder.prototype().id().set( ((MessageEntity) message).identity().get() );
+         builder.prototype().href().set( EntityReference.getEntityReference( message ).identity() );
+         builder.prototype().id().set( EntityReference.getEntityReference( message ).identity() );
+         builder.prototype(  ).hasAttachments().set( message.hasAttachments() );
 
          links.addLink( builder.newInstance() );
       }

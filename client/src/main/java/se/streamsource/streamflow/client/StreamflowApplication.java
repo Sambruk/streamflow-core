@@ -368,6 +368,12 @@ public class StreamflowApplication
       ((ApplicationAction) getContext().getActionMap().get("managePerspectives").getValue("proxy")).actionPerformed(e);
    }
 
+   @Action
+   public void closeMessageDetails(ActionEvent e)
+   {
+      ((ApplicationAction) getContext().getActionMap().get("closeMessageDetails").getValue("proxy")).actionPerformed(e);
+   }
+
    public EventStream getSource()
    {
       return stream;

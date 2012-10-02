@@ -29,13 +29,11 @@ import se.streamsource.streamflow.client.ui.administration.FormOnRemoveModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitModel;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
-import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
-import se.streamsource.streamflow.client.ui.administration.priorities.PriorityModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
-import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
@@ -62,6 +60,8 @@ import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabels
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersModel;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
+import se.streamsource.streamflow.client.ui.administration.priorities.PriorityModel;
 import se.streamsource.streamflow.client.ui.administration.projects.MembersModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
@@ -91,6 +91,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsMod
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
@@ -170,6 +171,7 @@ public class ModelAssembler
             PossibleFormsModel.class,
             FormDraftModel.class,
             MessagesModel.class,
+            MessageModel.class,
             ConversationModel.class,
             ConversationsModel.class,
             ConversationParticipantsModel.class,

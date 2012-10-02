@@ -49,9 +49,12 @@ import se.streamsource.streamflow.web.application.mail.MailReceiver;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -193,7 +196,23 @@ public interface ConversationResponseService
                         RoleMap.current().set( from, ConversationParticipant.class );
                         RoleMap.current().set( caze, CaseLoggable.Data.class );
 
-                        conversation.createMessage( content, from );
+                        Message message = conversation.createMessage( content, from );
+
+                        // Create attachments
+                        for (AttachedFileValue attachedFileValue : email.attachments().get())
+                        {
+                           if (! (attachedFileValue.mimeType().get().contains("text/x-vcard")
+                                 || attachedFileValue.mimeType().get().contains("text/directory")) )
+                           {
+                              Attachment attachment = message.createAttachment(attachedFileValue.uri().get());
+                              attachment.changeDescription( "New Attachment" );
+                              attachment.changeName(attachedFileValue.name().get());
+                              attachment.changeMimeType(attachedFileValue.mimeType().get());
+                              attachment.changeModificationDate(attachedFileValue.modificationDate().get());
+                              attachment.changeSize(attachedFileValue.size().get());
+                              attachment.changeUri(attachedFileValue.uri().get());
+                           }
+                        }
 
                         try
                         {
