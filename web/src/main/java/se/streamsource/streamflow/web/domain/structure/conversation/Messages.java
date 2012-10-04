@@ -27,6 +27,8 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 
 /**
  * JAVADOC
@@ -38,11 +40,15 @@ public interface Messages
 
    Message getLastMessage();
 
+   void createMessageFromDraft( ConversationParticipant participant );
+
    interface Data
    {
       ManyAssociation<Message> messages();
 
       Message createdMessage( @Optional DomainEvent create, String id, String body, ConversationParticipant participant );
+
+      Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant );
    }
 
    abstract class Mixin
@@ -67,7 +73,7 @@ public interface Messages
             participants.addParticipant( participant );
          }
 
-         Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant);
+         Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant );
 
          participants.receiveMessage(message);
 
@@ -94,6 +100,44 @@ public interface Messages
             return messages().get(messages().count()-1);
          else
             return null;
+      }
+
+      public void createMessageFromDraft( ConversationParticipant participant )
+      {
+         if (!participants.isParticipant(participant))
+         {
+            participants.addParticipant( participant );
+         }
+
+         Message message = createdMessageFromDraft( null, idGen.generate( Identity.class ), ((MessageDraft)conversation), participant );
+         for( Attachment attachment : ((Attachments.Data)conversation).attachments() )
+         {
+            message.addAttachment( attachment );
+            // remove attachment from draft attachments data so AttachmentEntity does not get
+            // removed for real - we just moved it to message attachments where it actually belongs after
+            // message creation.
+            ((Attachments.Data)conversation).attachments().remove( attachment );
+         }
+
+         // also reset draft message body
+         ((MessageDraft)conversation).changeDraftMessage( null );
+
+         participants.receiveMessage(message);
+
+      }
+
+      public Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant )
+      {
+         EntityBuilder<Message> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Message.class, id );
+         builder.instanceFor( Message.Data.class ).body().set( ((MessageDraft.Data)draft).draftmessage().get() );
+         builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
+         builder.instanceFor( Message.Data.class ).sender().set( participant );
+         builder.instanceFor( Message.Data.class ).conversation().set( conversation );
+
+         Message message = builder.newInstance();
+         messages().add( message );
+
+         return message;
       }
    }
 }

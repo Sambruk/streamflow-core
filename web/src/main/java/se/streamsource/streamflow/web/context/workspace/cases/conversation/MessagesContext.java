@@ -84,4 +84,9 @@ public class MessagesContext
       Messages messages = RoleMap.role( Messages.class );
       messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
    }
+
+   public void createmessagefromdraft()
+   {
+      RoleMap.role( Messages.class ).createMessageFromDraft( RoleMap.role(ConversationParticipant.class) );
+   }
 }

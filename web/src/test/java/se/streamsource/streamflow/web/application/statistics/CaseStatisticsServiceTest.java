@@ -36,8 +36,6 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
@@ -45,6 +43,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Tran
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.administration.GroupsContext;
+import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
@@ -73,7 +72,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 
 import java.security.PrivilegedActionException;
@@ -122,6 +120,7 @@ public class CaseStatisticsServiceTest
               CaseTypeEntity.class,
               ConversationEntity.class,
               MessageEntity.class,
+              AttachmentEntity.class,
               CaseLogEntity.class,
               PriorityEntity.class );
       

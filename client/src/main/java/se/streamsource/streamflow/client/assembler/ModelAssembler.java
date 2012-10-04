@@ -91,6 +91,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsMod
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageDraftModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormModel;
@@ -172,6 +173,7 @@ public class ModelAssembler
             FormDraftModel.class,
             MessagesModel.class,
             MessageModel.class,
+            MessageDraftModel.class,
             ConversationModel.class,
             ConversationsModel.class,
             ConversationParticipantsModel.class,

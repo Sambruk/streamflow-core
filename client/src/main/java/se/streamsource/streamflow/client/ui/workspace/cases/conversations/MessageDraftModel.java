@@ -16,22 +16,23 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
-import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-public class MessagesModel
-   implements Refreshable, TransactionListener
+/**
+ *
+ */
+public class MessageDraftModel
+      implements Refreshable, TransactionListener
 {
    @Uses
    CommandQueryClient client;
@@ -39,22 +40,11 @@ public class MessagesModel
    @Structure
    Module module;
 
-   BasicEventList<MessageDTO> messages = new BasicEventList<MessageDTO>();
+   StringValue message;
 
    public void refresh()
    {
-      LinksValue messagesLinks = client.query( "index", LinksValue.class );
-      EventListSynch.synchronize( messagesLinks.links().get(), messages );
-   }
-
-   public EventList<MessageDTO> messages()
-   {
-      return messages;
-   }
-
-   public void createMessageFromDraft()
-   {
-      client.postCommand( "createmessagefromdraft" );
+      message = client.query( "index", StringValue.class );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -63,13 +53,20 @@ public class MessagesModel
          refresh();
    }
 
-   public MessageModel newMessageModel( String href )
+   public AttachmentsModel newMessageDraftAttachmentsModel()
    {
-      return module.objectBuilderFactory().newObjectBuilder( MessageModel.class ).use( client.getSubClient( href ) ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder(AttachmentsModel.class).use(client.getSubClient( "attachments" )).newInstance();
    }
 
-   public MessageDraftModel newMessageDraftModel()
+   public void changeMessage( String message )
    {
-      return module.objectBuilderFactory().newObjectBuilder( MessageDraftModel.class ).use( client.getSubClient( "messagedraft" ) ).newInstance();
+      Form form = new Form();
+      form.add( "message", message );
+      client.postCommand( "changemessage", form.getWebRepresentation() );
+   }
+
+   public StringValue getDraftMessage()
+   {
+      return message;
    }
 }

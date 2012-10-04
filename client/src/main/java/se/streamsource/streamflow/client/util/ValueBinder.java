@@ -16,7 +16,6 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.JXColorSelectionButton;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXLabel;
 import org.qi4j.api.common.QualifiedName;
@@ -31,13 +30,24 @@ import org.restlet.data.Parameter;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Integer.*;
 
 /**
  * Bind components to value names to allow them to be updated from a given source
@@ -58,6 +68,7 @@ public class ValueBinder
             JLabel.class,
             JTextField.class,
             JTextArea.class,
+            JTextPane.class,
             JScrollPane.class,
             JPasswordField.class,
             JCheckBox.class,

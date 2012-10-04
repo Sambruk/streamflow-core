@@ -18,18 +18,18 @@ package se.streamsource.streamflow.web.rest.resource.workspace.cases.conversatio
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessageContext;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessageDraftContext;
 import se.streamsource.streamflow.web.rest.resource.workspace.cases.AttachmentsResource;
 
 /**
  *
  */
-public class MessageResource
+public class MessageDraftResource
       extends CommandQueryResource
 {
-   public MessageResource()
+   public MessageDraftResource()
    {
-      super( MessageContext.class );
+      super( MessageDraftContext.class );
    }
 
    @SubResource
