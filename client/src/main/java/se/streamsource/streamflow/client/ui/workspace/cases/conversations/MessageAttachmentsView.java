@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.i18n;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,6 +63,8 @@ public class MessageAttachmentsView
          final AttachmentDTO attachment = attachmentIn;
 
          StreamflowButton attachmentButton = new StreamflowButton( attachment.text().get(), i18n.icon( Icons.attachments, 14 ) );
+         attachmentButton.setBorder( BorderFactory.createEmptyBorder() );
+
          attachmentButton.addActionListener( new ActionListener()
          {
             public void actionPerformed( ActionEvent e )

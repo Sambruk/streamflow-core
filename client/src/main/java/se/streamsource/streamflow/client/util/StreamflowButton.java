@@ -16,10 +16,9 @@
  */
 package se.streamsource.streamflow.client.util;
 
-import java.awt.Insets;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import java.awt.Insets;
 
 /**
  * Common Button class that handles styling
@@ -54,6 +53,12 @@ public class StreamflowButton extends JButton
    public StreamflowButton(String string, ImageIcon icon)
    {
       super( string, icon );
+      setMargin( INSETS );
+   }
+
+   public StreamflowButton(ImageIcon icon)
+   {
+      super( icon );
       setMargin( INSETS );
    }
 

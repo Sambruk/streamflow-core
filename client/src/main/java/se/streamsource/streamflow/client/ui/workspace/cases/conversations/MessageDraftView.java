@@ -52,6 +52,8 @@ public class MessageDraftView
 
    ValueBinder valueBinder;
 
+   MessageDraftAttachmentsView attachmentsView;
+
    public MessageDraftView(@Service final ApplicationContext context,
                            @Structure Module module,
                            @Uses MessageDraftModel model)
@@ -72,7 +74,14 @@ public class MessageDraftView
       valueBinder = module.objectBuilderFactory().newObject( ValueBinder.class );
       valueBinder.bind( "string", newMessage );
 
-      JPanel changeMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+      JPanel footerPanel = new JPanel( new BorderLayout(  ) );
+      attachmentsView = module.objectBuilderFactory()
+            .newObjectBuilder( MessageDraftAttachmentsView.class )
+            .use( model.newMessageDraftAttachmentsModel() ).newInstance();
+
+      footerPanel.add( attachmentsView, BorderLayout.WEST );
+
+      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       // fetch the send action as proxy action from a parent container
       javax.swing.Action createMessageAction = context.getActionMap().get("createMessage");
       StreamflowButton createMessage = new StreamflowButton(createMessageAction);
@@ -80,15 +89,16 @@ public class MessageDraftView
             (KeyStroke) createMessageAction.getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-
       javax.swing.Action cancelAction = context.getActionMap().get("cancelNewMessage");
       StreamflowButton cancel = new StreamflowButton(cancelAction);
 
-      changeMessagePanel.add( createMessage );
-      changeMessagePanel.add( cancel );
+      buttonPanel.add( createMessage );
+      buttonPanel.add( cancel );
+
+      footerPanel.add( buttonPanel, BorderLayout.EAST );
 
       add( messageScroll, BorderLayout.CENTER );
-      add( changeMessagePanel, BorderLayout.SOUTH );
+      add( footerPanel, BorderLayout.SOUTH );
 
       new ActionBinder( getActionMap() ).bind( "changeMessage", newMessage );
 

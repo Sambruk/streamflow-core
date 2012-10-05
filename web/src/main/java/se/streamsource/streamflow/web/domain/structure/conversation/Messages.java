@@ -110,7 +110,7 @@ public interface Messages
          }
 
          Message message = createdMessageFromDraft( null, idGen.generate( Identity.class ), ((MessageDraft)conversation), participant );
-         for( Attachment attachment : ((Attachments.Data)conversation).attachments() )
+         for( Attachment attachment : ((Attachments.Data)conversation).attachments().toList() )
          {
             message.addAttachment( attachment );
             // remove attachment from draft attachments data so AttachmentEntity does not get
