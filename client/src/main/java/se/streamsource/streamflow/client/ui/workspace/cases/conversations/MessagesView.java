@@ -48,7 +48,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -57,7 +56,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
 import java.util.Date;
@@ -77,11 +75,12 @@ public class MessagesView extends JPanel implements TransactionListener
 
    private JXTable messageTable;
    private JPanel detailMessagePanel;
-   private JPanel sendPanel;
-   private JTextPane newMessage;
+   private JPanel sendPanel = new JPanel( new BorderLayout(  ) );
+   //private JTextPane newMessage;
 
    private JPanel messageViewPanel = new JPanel( new BorderLayout(  ) );
    private MessageView messageView;
+   private MessageDraftView messageDraftView;
 
    public MessagesView(@Service ApplicationContext context, @Uses MessagesModel model )
    {
@@ -92,11 +91,18 @@ public class MessagesView extends JPanel implements TransactionListener
 
       this.model = model;
 
-      // Add proxy action
+      // Add proxy actions
       ApplicationAction closeMessageDetailsAction = (ApplicationAction)getActionMap().get("closeMessageDetails");
       javax.swing.Action closeMessageDetails = context.getActionMap().get("closeMessageDetails");
       closeMessageDetails.putValue("proxy", closeMessageDetailsAction);
 
+      ApplicationAction createMessageAction = (ApplicationAction)getActionMap().get("createMessage");
+      javax.swing.Action createMessage = context.getActionMap().get("createMessage");
+      createMessage.putValue("proxy", createMessageAction);
+
+      ApplicationAction cancelNewMessageAction = (ApplicationAction)getActionMap().get("cancelNewMessage");
+      javax.swing.Action cancelNewMessage = context.getActionMap().get("cancelNewMessage");
+      cancelNewMessage.putValue("proxy", cancelNewMessageAction);
 
       messageTable = new JXTable(new EventJXTableModel<MessageDTO>(model.messages(), new TableFormat<MessageDTO>()
       {
@@ -208,30 +214,7 @@ public class MessagesView extends JPanel implements TransactionListener
             JComponent.WHEN_IN_FOCUSED_WINDOW);
       createPanel.add(writeMessage);
 
-      // NEWMESSAGE
-      sendPanel = new JPanel(new BorderLayout());
-      sendPanel.setPreferredSize(new Dimension(100, 250));
-      JScrollPane messageScroll = new JScrollPane();
 
-      newMessage = new JTextPane();
-      newMessage.setContentType("text/plain");
-      newMessage.setEditable(true);
-      messageScroll.getViewport().add(newMessage);
-
-      JPanel sendMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      javax.swing.Action sendMessageAction = getActionMap().get("sendMessage");
-      StreamflowButton sendMessage = new StreamflowButton(sendMessageAction);
-      sendMessage.registerKeyboardAction( sendMessageAction,
-            (KeyStroke) sendMessageAction.getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
-      javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
-      StreamflowButton cancel = new StreamflowButton(cancelAction);
-
-      sendMessagePanel.add(sendMessage);
-      sendMessagePanel.add(cancel);
-
-      sendPanel.add(messageScroll, BorderLayout.CENTER);
-      sendPanel.add(sendMessagePanel, BorderLayout.SOUTH);
 
       detailMessagePanel.add(createPanel, "INITIAL");
       detailMessagePanel.add( sendPanel, "NEW_MESSAGE" );
@@ -243,25 +226,26 @@ public class MessagesView extends JPanel implements TransactionListener
    @Action
    public void writeMessage()
    {
-      detailMessagePanel.add(sendPanel, "NEW_MESSAGE");
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "NEW_MESSAGE");
+      sendPanel.removeAll();
+      messageDraftView = module.objectBuilderFactory().newObjectBuilder( MessageDraftView.class ).use( model.newMessageDraftModel() ).newInstance();
+      sendPanel.add( messageDraftView, BorderLayout.CENTER );
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "NEW_MESSAGE" );
 
-      newMessage.requestFocusInWindow();
+      messageDraftView.requestFocusInWindow();
    }
 
+
    @Action
-   public Task sendMessage()
+   public Task createMessage()
    {
-      final String messageText = newMessage.getText();
-      detailMessagePanel.remove(sendPanel);
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
-      newMessage.setText(null);
+      sendPanel.removeAll();
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
       return new CommandTask()
       {
          @Override
          public void command() throws Exception
          {
-            model.createMessage(messageText);
+            model.createMessageFromDraft();
          }
       };
    }
@@ -269,22 +253,20 @@ public class MessagesView extends JPanel implements TransactionListener
    @Action
    public void cancelNewMessage()
    {
-      detailMessagePanel.remove(sendPanel);
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
-      newMessage.setText(null);
+      sendPanel.removeAll();
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
    }
 
    @Action
    public void closeMessageDetails()
    {
       messageTable.getSelectionModel().clearSelection();
-      //detailMessagePanel.remove( messageView );
       ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
    }
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (Events.matches(Events.withNames("createdMessage"), transactions))
+      if (Events.matches(Events.withNames("createdMessage", "createdMessageFromDraft"), transactions))
       {
          model.refresh();
       }

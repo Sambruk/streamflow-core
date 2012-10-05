@@ -45,6 +45,10 @@ import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.caze.Origin;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
@@ -58,6 +62,7 @@ import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -193,6 +198,24 @@ public interface NotificationService
                      builder.prototype().subject().set( subject );
                      builder.prototype().content().set( formattedMsg );
                      builder.prototype().contentType().set( "text/plain" );
+
+                     // add message attachments if any
+                     if ( message.hasAttachments()) {
+
+                        List<AttachedFileValue> attachments = builder.prototype().attachments().get();
+                        ValueBuilder<AttachedFileValue> attachment = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
+
+                        for (Attachment caseAttachment : ((Attachments.Data)message).attachments())
+                        {
+                           AttachedFile.Data attachedFile = (AttachedFile.Data) caseAttachment;
+                           attachment.prototype().mimeType().set(attachedFile.mimeType().get());
+                           attachment.prototype().uri().set(attachedFile.uri().get());
+                           attachment.prototype().modificationDate().set(attachedFile.modificationDate().get());
+                           attachment.prototype().name().set(attachedFile.name().get());
+                           attachment.prototype().size().set(attachedFile.size().get());
+                           attachments.add( attachment.newInstance() );
+                        }
+                     }
 
                      // Threading headers
                      builder.prototype().messageId().set( "<"+conversation.toString()+"/"+ URLEncoder.encode(user.toString(), "UTF-8")+"@Streamflow>" );

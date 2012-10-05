@@ -14,24 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.conversation;
+package se.streamsource.streamflow.api.workspace.cases.conversation;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import org.qi4j.api.property.Property;
+import se.streamsource.dci.value.link.LinksValue;
 
 /**
- * JAVADOC
+ * Data transfer object for message draft.
  */
-public interface Conversation
-   extends Describable,
-      CreatedOn,
-      Messages,
-      MessageDraft,
-      Attachments,
-      ConversationOwnable,
-      ConversationParticipants,
-      Removable
+public interface MessageDraftValue
 {
+   Property<String> message();
+
+   Property<LinksValue> attachments();
 }

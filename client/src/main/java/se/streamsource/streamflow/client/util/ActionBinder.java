@@ -34,9 +34,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -137,11 +137,11 @@ public class ActionBinder
             final JTextField textField = (JTextField) component;
 
             textField.setInputVerifier( new ActionInputVerifier( action ) );
-         } else if (component instanceof JTextArea)
+         } else if (component instanceof JTextComponent)
          {
-            final JTextArea textArea = (JTextArea) component;
+            final JTextComponent textComponent = (JTextComponent) component;
 
-            textArea.setInputVerifier( new ActionInputVerifier( action ) );
+            textComponent.setInputVerifier( new ActionInputVerifier( action ) );
          } else if (component instanceof AbstractButton)
          {
             final AbstractButton button = (AbstractButton) component;

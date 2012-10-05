@@ -39,9 +39,9 @@ public class MessagesConversationView extends MessagesView
    }
    
    @Action
-   public Task sendMessage()
+   public Task createMessage()
    {
-      return super.sendMessage();
+      return super.createMessage();
    }
    
    @Action

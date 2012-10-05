@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.util;
 
+import org.qi4j.api.property.Property;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -122,4 +123,15 @@ public class Strings
           throw new IllegalStateException( e.getMessage(), e );
        }
     }
+
+   /**
+    * Test if the contents of a Property equals the new value regardless if the property is optional, empty or has value.
+    * @param stringProperty The property to test
+    * @param newValue The new value
+    * @return A boolean
+    */
+   public static boolean propertyEquals( Property<String> stringProperty, String newValue )
+   {
+      return stringProperty.get() == null ? newValue == null : stringProperty.get().equals( newValue );
+   }
 }
