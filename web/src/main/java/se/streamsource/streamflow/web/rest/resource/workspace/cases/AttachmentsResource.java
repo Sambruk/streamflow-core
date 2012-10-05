@@ -120,7 +120,7 @@ public class AttachmentsResource
       } catch ( ClassCastException cce )
       {
          // do nothing
-         System.out.println( "We are on conversation attachments already - This classcast exception was expected." );
+         //System.out.println( "We are on conversation attachments already - This classcast exception was expected." );
       }
 
       return links.newLinks();
