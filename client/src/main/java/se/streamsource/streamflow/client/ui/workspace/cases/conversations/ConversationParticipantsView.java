@@ -29,6 +29,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -97,6 +98,9 @@ public class ConversationParticipantsView
       addParticipantButtons.add(  addExternalParticipant );
       
       add( addParticipantButtons, BorderLayout.EAST );
+
+      model.addObserver( new RefreshComponents().enabledOn( "addparticipant", addParticipants )
+         .enabledOn( "addexternalparticipant", addExternalParticipant ));
 
       new RefreshWhenShowing(this, model);
    }

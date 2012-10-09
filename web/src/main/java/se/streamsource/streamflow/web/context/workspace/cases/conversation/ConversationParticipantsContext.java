@@ -25,6 +25,7 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ExternalEmailValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
@@ -49,6 +50,7 @@ public class ConversationParticipantsContext
       return new LinksBuilder( module.valueBuilderFactory() ).rel( "participant" ).addDescribables( RoleMap.role( ConversationParticipants.Data.class ).participants() ).newLinks();
    }
 
+   @RequiresRemoved(false)
    public void addexternalparticipant( ExternalEmailValue mailUser )
    {
 
@@ -58,6 +60,7 @@ public class ConversationParticipantsContext
       RoleMap.role( ConversationParticipants.class ).addParticipant( participant );
    }
 
+   @RequiresRemoved(false)
    public void addparticipant( EntityValue participantId )
    {
       UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();

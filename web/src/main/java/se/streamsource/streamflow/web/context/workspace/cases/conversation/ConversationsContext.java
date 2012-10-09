@@ -19,11 +19,9 @@ package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -31,6 +29,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
@@ -42,47 +41,43 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 /**
  * JAVADOC
  */
-@Mixins(ConversationsContext.Mixin.class)
-public interface ConversationsContext
-      extends
-      IndexContext<LinksValue>, Context, CreateContext<String, Conversation>
+public class ConversationsContext
+      implements IndexContext<LinksValue>, CreateContext<String, Conversation>
 {
-   public Conversation create( @MaxLength(50) @Name("topic") String topic );
 
-   abstract class Mixin
-         implements ConversationsContext
+
+   @Structure
+   Module module;
+
+   public LinksValue index()
    {
-      @Structure
-      Module module;
+      LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
+      ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
 
-      public LinksValue index()
+      Conversations.Data conversations = RoleMap.role( Conversations.Data.class );
+
+      for (Conversation conversation : conversations.conversations())
       {
-         LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
-         ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
+         builder.prototype().creationDate().set( conversation.createdOn().get() );
+         builder.prototype().creator().set( ((Describable) conversation.createdBy().get()).getDescription() );
+         builder.prototype().messages().set( ((Messages.Data) conversation).messages().count() );
+         builder.prototype().participants().set( ((ConversationParticipants.Data) conversation).participants().count() );
+         builder.prototype().href().set( EntityReference.getEntityReference( conversation ).identity() );
+         builder.prototype().text().set( conversation.getDescription() );
+         builder.prototype().id().set( EntityReference.getEntityReference( conversation ).identity() );
 
-         Conversations.Data conversations = RoleMap.role( Conversations.Data.class );
-
-         for (Conversation conversation : conversations.conversations())
-         {
-            builder.prototype().creationDate().set( conversation.createdOn().get() );
-            builder.prototype().creator().set( ((Describable) conversation.createdBy().get()).getDescription() );
-            builder.prototype().messages().set( ((Messages.Data) conversation).messages().count() );
-            builder.prototype().participants().set( ((ConversationParticipants.Data) conversation).participants().count() );
-            builder.prototype().href().set( EntityReference.getEntityReference( conversation ).identity() );
-            builder.prototype().text().set( conversation.getDescription() );
-            builder.prototype().id().set( EntityReference.getEntityReference( conversation ).identity() );
-
-            links.addLink( builder.newInstance() );
-         }
-         return links.newLinks();
+         links.addLink( builder.newInstance() );
       }
-
-      public Conversation create( String topic )
-      {
-         Conversations conversations = RoleMap.role( Conversations.class );
-         Conversation conversation = conversations.createConversation( topic, RoleMap.role( Creator.class ) );
-         ((ConversationEntity) conversation).addParticipant( RoleMap.role( ConversationParticipant.class ) );
-         return conversation;
-      }
+      return links.newLinks();
    }
+
+   @RequiresRemoved(false)
+   public Conversation create( @MaxLength(50) @Name("topic") String topic )
+   {
+      Conversations conversations = RoleMap.role( Conversations.class );
+      Conversation conversation = conversations.createConversation( topic, RoleMap.role( Creator.class ) );
+      ((ConversationEntity) conversation).addParticipant( RoleMap.role( ConversationParticipant.class ) );
+      return conversation;
+   }
+
 }

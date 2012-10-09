@@ -25,6 +25,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -34,11 +35,14 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
+import java.util.Observable;
+
 import static org.qi4j.api.specification.Specifications.or;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
 
 public class ConversationsModel
+   extends Observable
    implements Refreshable, TransactionListener
 {
    @Uses
@@ -51,8 +55,12 @@ public class ConversationsModel
 
    public void refresh()
    {
-      LinksValue newConversations = client.query( "index", LinksValue.class );
+      ResourceValue resource = client.query();
+      final LinksValue newConversations = (LinksValue) resource.index().get();
       EventListSynch.synchronize( newConversations.links().get(), conversations );
+
+      setChanged();
+      notifyObservers( resource );
    }
 
    public EventList<ConversationDTO> conversations()
