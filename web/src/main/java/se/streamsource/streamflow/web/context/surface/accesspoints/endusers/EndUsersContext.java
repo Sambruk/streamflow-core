@@ -44,7 +44,7 @@ public class EndUsersContext
             // remove last count part per mixin type and check if it is a valid uuid
             // see UuidIdentityGeneratorMixin.generate( Class )
             UUID.fromString( id.substring( 0, id.lastIndexOf( "-" ) ) );
-            description = "Webform";
+            description = "WebForms";
          }
       } catch( IllegalArgumentException iae )
       {

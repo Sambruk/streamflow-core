@@ -173,7 +173,7 @@ public interface CreateCaseFromEmailService
                   // STREAMFLOW-714
                   String subject = email.subject().get();
                   caze.changeDescription( subject.length() > 50 ? subject.substring( 0, 50 ) : subject );
-                  caze.addNote(subject + "\n\r\n\r" + email.content().get());
+                  caze.addNote( email.content().get() );
 
                   // Create conversation
                   Conversation conversation = caze.createConversation(email.subject().get(), (Creator) user);
