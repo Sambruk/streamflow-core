@@ -93,6 +93,10 @@ public interface RemoveAttachmentsService
 
       public void changedRemoved( @Optional DomainEvent event, boolean isRemoved )
       {
+      }
+
+      public void deletedEntity( @Optional DomainEvent event)
+      {
          AttachedFile.Data attachment = module.unitOfWorkFactory().currentUnitOfWork().get(AttachedFile.Data.class, event.entity().get() );
 
          // remove attachment from attachment store
@@ -118,11 +122,6 @@ public interface RemoveAttachmentsService
             logger.error( "Failed to remove attachment:" + uri, ioe );
             throw new EventReplayException( event, ioe );
          }
-      }
-
-      public void deletedEntity( @Optional DomainEvent event)
-      {
-         
       }
    }
 }

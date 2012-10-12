@@ -32,6 +32,8 @@ import org.qi4j.api.util.Classes;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Notable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +59,10 @@ public interface FieldGroupFieldsInstance
       @Aggregated
       ManyAssociation<FieldGroupFieldInstance> groupFields();
 
-      Field fieldGroupFieldsAdded( @Optional DomainEvent event, Field fieldGroup, String id, Field fieldGroupField, String fieldGroupFieldId );
-
+      Field fieldGroupFieldsAdded( @Optional DomainEvent event, Field fieldGroup, String id, Field fieldGroupField);
+      
+      FieldGroupFieldInstance fieldGroupFieldInstanceAdded(@Optional DomainEvent event, Field fieldGroup, String id, Field fieldGroupField);
+      
       void fieldGroupFieldsRemoved( @Optional DomainEvent event, FieldGroupFieldInstance instance );
    }
 
@@ -82,8 +86,9 @@ public interface FieldGroupFieldsInstance
          Fields.Data fields = module.unitOfWorkFactory().currentUnitOfWork().get( Fields.Data.class, value.fieldGroup().get().identity() );
          for ( Field groupField : fields.fields() )
          {
-            Field createdField = fieldGroupFieldsAdded( null, field, idGen.generate( Identity.class ), groupField, idGen.generate( Identity.class ) );
+            Field createdField = fieldGroupFieldsAdded( null, field, idGen.generate( Identity.class ), groupField );
             createdField.changeDescription( groupField.getDescription() );
+            fieldGroupFieldInstanceAdded(null, field, idGen.generate( Identity.class ), createdField );
          }
       }
 
@@ -105,32 +110,41 @@ public interface FieldGroupFieldsInstance
          }
       }
 
-
-      public Field fieldGroupFieldsAdded( @Optional DomainEvent event, Field fieldGroup, String id, Field fieldGroupField, String fieldGroupFieldId )
+      public Field fieldGroupFieldsAdded( @Optional DomainEvent event, Field fieldGroup, String id, Field fieldGroupField )
       {
 
          FieldValueDefinition.Data definition = (FieldValueDefinition.Data) fieldGroupField;
-         EntityBuilder<FieldGroupFieldInstance> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( FieldGroupFieldInstance.class, id );
-
-         EntityBuilder<Field> fieldBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Field.class, fieldGroupFieldId );
+         
+         EntityBuilder<Field> fieldBuilder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Field.class, id );
+         fieldBuilder.instanceFor(Mandatory.Data.class).mandatory().set( fieldGroupField.isMandatory() );
+         fieldBuilder.instanceFor(Notable.Data.class).note().set( fieldGroupField.getNote() );
+         fieldBuilder.instanceFor(Describable.Data.class).description().set( fieldGroupField.getDescription() );
+         fieldBuilder.instanceFor(Datatype.Data.class).datatype().set( ((Datatype.Data)fieldGroupField).datatype().get() );
+         
          FieldValue fieldValue = definition.fieldValue().get();
          fieldBuilder.instanceFor(FieldValueDefinition.Data.class).fieldValue().set( fieldValue );
+         
+         
          String fieldId = Classes.interfacesOf( fieldValue.getClass()).iterator().next().getSimpleName();
          fieldId = fieldGroup.getDescription() + "_" + fieldId.substring( 0, fieldId.length()-"FieldValue".length() );
          fieldId += data.groupFields().count()+1;
          fieldBuilder.instanceFor(FieldId.Data.class).fieldId().set( fieldId );
 
          Field createdFieldGroupField = fieldBuilder.newInstance();
-         builder.instance().addFieldGroup( fieldGroup );
-         builder.instance().addFieldGroupField( createdFieldGroupField );
-
-         FieldGroupFieldInstance field = builder.newInstance();
-
-         data.groupFields().add( field );
 
          return createdFieldGroupField;
       }
 
+      public FieldGroupFieldInstance fieldGroupFieldInstanceAdded(@Optional DomainEvent event, Field fieldGroup, String id, Field fieldGroupField){
+         EntityBuilder<FieldGroupFieldInstance> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( FieldGroupFieldInstance.class, id );
+         builder.instance().addFieldGroup( fieldGroup );
+         builder.instance().addFieldGroupField( fieldGroupField );
+         FieldGroupFieldInstance field = builder.newInstance();
+
+         data.groupFields().add( field );
+         return field;
+      }
+      
       public void fieldGroupFieldsRemoved( @Optional DomainEvent event, FieldGroupFieldInstance instance )
       {
          data.groupFields().remove( instance );

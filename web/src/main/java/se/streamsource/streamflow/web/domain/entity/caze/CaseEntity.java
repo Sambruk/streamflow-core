@@ -342,6 +342,9 @@ public interface CaseEntity
       FormAttachments formAttachments;
 
       @This
+      Conversations conversations;
+
+      @This
       FormAttachments.Data formAttachmentsData;
 
       @This
@@ -352,6 +355,9 @@ public interface CaseEntity
 
       @This
       Notes.Data notes;
+
+      @This
+      Conversations.Data conversationsData;
 
       @This
       Case caze;
@@ -369,6 +375,11 @@ public interface CaseEntity
          for (Attachment attachment : formAttachmentsData.formAttachments().toList())
          {
             attachment.removeEntity();
+         }
+
+         for( Conversation conversation : conversationsData.conversations().toList() )
+         {
+            conversation.removeEntity();
          }
 
          for (Case childCase : subCases.subCases().toList())
@@ -395,6 +406,11 @@ public interface CaseEntity
             attachment.reinstate();
          }
 
+         for( Conversation conversation : conversationsData.conversations().toList() )
+         {
+            conversation.reinstate();
+         }
+
          for (Case childCase : subCases.subCases().toList())
          {
             childCase.reinstate();
@@ -417,6 +433,11 @@ public interface CaseEntity
          for (Attachment attachment : formAttachmentsData.formAttachments().toList())
          {
             formAttachments.removeFormAttachment( attachment );
+         }
+
+         for( Conversation conversation : conversationsData.conversations().toList())
+         {
+            conversations.removeConversation( conversation );
          }
 
          if (subCase.parent().get() != null)

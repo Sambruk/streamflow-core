@@ -25,6 +25,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ExternalEmailValue;
@@ -33,7 +34,10 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
+import java.util.Observable;
+
 public class ConversationParticipantsModel
+   extends Observable
    implements Refreshable
 {
    @Uses
@@ -86,7 +90,11 @@ public class ConversationParticipantsModel
 
    public void refresh()
    {
-      LinksValue participants = client.query( "index", LinksValue.class );
+      ResourceValue resource = client.query();
+      final LinksValue participants = ( LinksValue )resource.index().get();
       EventListSynch.synchronize( participants.links().get(), this.participants );
+
+      setChanged();
+      notifyObservers( resource );
    }
 }

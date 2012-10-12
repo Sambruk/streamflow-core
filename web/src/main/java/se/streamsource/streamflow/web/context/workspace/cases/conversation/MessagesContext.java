@@ -26,6 +26,7 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
@@ -78,6 +79,7 @@ public class MessagesContext
       return links.newLinks();
    }
 
+   @RequiresRemoved(false)
    public void createmessage( StringValue message )
    {
       Messages messages = RoleMap.role( Messages.class );

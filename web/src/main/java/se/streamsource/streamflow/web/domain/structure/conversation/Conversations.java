@@ -43,6 +43,8 @@ public interface Conversations
 
    public boolean hasConversations();
 
+   void removeConversation( Conversation conversation );
+
    interface Data
    {
       @Aggregated
@@ -50,6 +52,8 @@ public interface Conversations
       ManyAssociation<Conversation> conversations();
 
       Conversation createdConversation( @Optional DomainEvent event, String id, Creator creator );
+
+      public void removedConversation( @Optional DomainEvent event, Conversation conversation );
    }
 
    abstract class Mixin
@@ -86,6 +90,20 @@ public interface Conversations
          conversations().add( conversation );
          
          return conversation;
+      }
+
+      public void removeConversation( Conversation conversation )
+      {
+         if( conversations().contains( conversation ) )
+         {
+            removedConversation( null, conversation );
+         }
+      }
+
+      public void removedConversation( @Optional DomainEvent event, Conversation conversation )
+      {
+         conversations().remove( conversation );
+         conversation.deleteEntity();
       }
 
       public boolean hasConversations()

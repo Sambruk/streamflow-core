@@ -299,13 +299,20 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-tools</artifactId>
         </dependency>
-            
-        <!--  Scheduler -->
-		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz</artifactId>
-		</dependency>
-		
+
+			<!-- Scheduler -->
+			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz</artifactId>
+			</dependency>
+			
+         <!--  Wiki style markup -->
+         <dependency>
+            <groupId>org.markdownj</groupId>
+            <artifactId>markdownj</artifactId>
+            <version>0.3.0-1.0.2b4</version>
+         </dependency>
+         
         <dependency>
             <groupId>org.subethamail</groupId>
             <artifactId>subethasmtp</artifactId>

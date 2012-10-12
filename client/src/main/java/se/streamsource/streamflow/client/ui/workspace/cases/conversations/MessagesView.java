@@ -16,19 +16,30 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.message_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.sender_column_header;
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.KeyboardFocusManager;
-import java.util.Date;
-import java.util.Locale;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXLabel;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -44,32 +55,17 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.KeyboardFocusManager;
+import java.util.Date;
+import java.util.Locale;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXLabel;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-
-import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.ui.DateFormats;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class MessagesView extends JPanel implements TransactionListener
 {
@@ -196,6 +192,8 @@ public class MessagesView extends JPanel implements TransactionListener
       sendMessage.registerKeyboardAction(sendMessageAction,
             (KeyStroke) sendMessageAction.getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
+      model.addObserver( new RefreshComponents().enabledOn( "createmessage", sendMessage ));
+
       javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
       StreamflowButton cancel = new StreamflowButton(cancelAction);
 

@@ -30,7 +30,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+
+import com.petebevin.markdown.MarkdownProcessor;
+
 import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
@@ -220,7 +224,13 @@ public interface FormDrafts
             ValueBuilder<FieldDefinitionValue> valueBuilder)
       {
          valueBuilder.prototype().description().set( field.getDescription() );
-         valueBuilder.prototype().note().set( field.getNote() );
+         if (fieldValue instanceof CommentFieldValue) 
+         {
+            valueBuilder.prototype().note().set( (new MarkdownProcessor()).markdown( field.getNote()) );
+         } else
+         {
+            valueBuilder.prototype().note().set( field.getNote() );
+         }
          valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
          valueBuilder.prototype().fieldId().set( ((FieldId.Data) field).fieldId().get() );
          DatatypeDefinition datatypeDefinition = ((Datatype.Data) field).datatype().get();

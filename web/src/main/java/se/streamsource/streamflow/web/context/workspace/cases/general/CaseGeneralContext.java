@@ -50,7 +50,12 @@ public class CaseGeneralContext
       ValueBuilderFactory vbf = module.valueBuilderFactory();
       ValueBuilder<CaseGeneralDTO> builder = vbf.newValueBuilder( CaseGeneralDTO.class );
       CaseEntity aCase = RoleMap.role( CaseEntity.class );
-      builder.prototype().description().set( aCase.description().get() );
+      // STREAMFLOW-714
+      // There might be cases created with desciption longer than 50 characters. CaseGeneralDTO only allows 50 så
+      // we have to make sure we only let 50 chars through to avoid Nullpointer on the klient side.
+      // The real fix for this is in CreateCaseFromEmail
+      String description = aCase.description().get();
+      builder.prototype().description().set( description.length() > 50 ? description.substring( 0, 50 ) : description );
 
       CaseType caseType = aCase.caseType().get();
       if (caseType != null)
