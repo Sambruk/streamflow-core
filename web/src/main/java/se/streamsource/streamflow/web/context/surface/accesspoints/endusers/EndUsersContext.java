@@ -22,6 +22,8 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
 
+import java.util.UUID;
+
 /**
  * JAVADOC
  */
@@ -32,7 +34,24 @@ public class EndUsersContext
    {
       EndUsers endUsers = RoleMap.role( EndUsers.class );
       EndUser user = endUsers.createEndUser(userId.string().get());
-      user.changeDescription( "Anonymous" );
+      String description = "Anonymous";
+
+      try
+      {
+         String id = userId.string().get();
+         if( id.indexOf( "-" ) != -1 )
+         {
+            // remove last count part per mixin type and check if it is a valid uuid
+            // see UuidIdentityGeneratorMixin.generate( Class )
+            UUID.fromString( id.substring( 0, id.lastIndexOf( "-" ) ) );
+            description = "WebForms";
+         }
+      } catch( IllegalArgumentException iae )
+      {
+         // do nothing - id is not an UUID use Anonymous instead
+      }
+
+      user.changeDescription( description );
       return user;
    }
 }

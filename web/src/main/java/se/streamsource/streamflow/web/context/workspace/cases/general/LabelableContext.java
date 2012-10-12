@@ -26,6 +26,7 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
@@ -102,6 +103,7 @@ public class LabelableContext
    }
 
    @RequiresStatus( {DRAFT, OPEN} )
+   @RequiresRemoved(false)
    @RequiresPermission( PermissionType.write )
    public void addlabel( EntityValue reference )
    {

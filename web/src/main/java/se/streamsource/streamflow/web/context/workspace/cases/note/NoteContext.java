@@ -29,6 +29,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Notes;
@@ -50,6 +51,7 @@ public interface NoteContext
    LinksValue allnotes();
 
    @RequiresStatus({DRAFT, OPEN})
+   @RequiresRemoved(false)
    @RequiresPermission( PermissionType.write )
    void addnote(NoteDTO newNote );
 

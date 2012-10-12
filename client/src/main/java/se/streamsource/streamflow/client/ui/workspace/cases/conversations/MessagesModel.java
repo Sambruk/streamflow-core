@@ -21,7 +21,10 @@ import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.client.util.EventListSynch;
@@ -30,7 +33,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
+import java.util.Observable;
+
 public class MessagesModel
+   extends Observable
    implements Refreshable, TransactionListener
 {
    @Uses
@@ -43,15 +49,19 @@ public class MessagesModel
 
    public void refresh()
    {
-      LinksValue messagesLinks = client.query( "index", LinksValue.class );
+      ResourceValue resource = client.query();
+      final LinksValue messagesLinks = ( LinksValue )resource.index().get();
       EventListSynch.synchronize( messagesLinks.links().get(), messages );
+
+      setChanged();
+      notifyObservers( resource );
    }
 
    public EventList<MessageDTO> messages()
    {
       return messages;
    }
-
+   
    public void createMessageFromDraft()
    {
       client.postCommand( "createmessagefromdraft" );

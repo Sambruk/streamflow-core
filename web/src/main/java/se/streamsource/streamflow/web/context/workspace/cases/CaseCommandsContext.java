@@ -16,17 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases;
 
-import static org.qi4j.api.util.Iterables.matchesAny;
-import static se.streamsource.dci.api.RoleMap.role;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.CLOSED;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.ON_HOLD;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Service;
@@ -35,7 +24,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
@@ -82,6 +70,14 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
+
 /**
  * JAVADOC
  */
@@ -102,6 +98,7 @@ public interface CaseCommandsContext
     */
    @RequiresStatus( OPEN )
    @RequiresAssigned(false)
+   @RequiresRemoved(false)
    public void assign();
 
    /**
@@ -109,6 +106,7 @@ public interface CaseCommandsContext
     */
    @RequiresStatus(DRAFT)
    @RequiresOwner
+   @RequiresRemoved(false)
    public void open();
 
    /**
@@ -118,6 +116,7 @@ public interface CaseCommandsContext
    @HasResolutions(false)
    @HasFormOnClose(false)
    @SubCasesAreClosed
+   @RequiresRemoved(false)
    public void close();
 
    /**
@@ -126,6 +125,7 @@ public interface CaseCommandsContext
    @RequiresStatus( OPEN )
    @HasResolutions(true)
    @HasFormOnClose(false)
+   @RequiresRemoved(false)
    @SubCasesAreClosed
    public void resolve( EntityValue resolution );
 
@@ -135,6 +135,7 @@ public interface CaseCommandsContext
     */
    @RequiresStatus( OPEN )
    @HasFormOnClose(true)
+   @RequiresRemoved(false)
    @SubCasesAreClosed
    public void formonclose();
 
@@ -153,19 +154,24 @@ public interface CaseCommandsContext
     */
    @RequiresAssigned
    @RequiresStatus(OPEN)
+   @RequiresRemoved(false)
    public void onhold();
 
    @RequiresStatus({DRAFT,OPEN})
+   @RequiresRemoved(false)
    public void sendto( EntityValue entity );
 
    @RequiresStatus(CLOSED)
+   @RequiresRemoved(false)
    public void reopen();
 
    @RequiresStatus(ON_HOLD)
+   @RequiresRemoved(false)
    public void resume();
 
    @RequiresAssigned()
    @RequiresStatus(OPEN)
+   @RequiresRemoved(false)
    public void unassign();
 
    @RequiresStatus({OPEN, DRAFT})
@@ -178,11 +184,14 @@ public interface CaseCommandsContext
    public void reinstate();
 
    @RequiresUnrestricted()
+   @RequiresRemoved(false)
    public void restrict();
 
    @RequiresRestricted()
+   @RequiresRemoved(false)
    public void unrestrict();
 
+   @RequiresRemoved(false)
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
    abstract class Mixin

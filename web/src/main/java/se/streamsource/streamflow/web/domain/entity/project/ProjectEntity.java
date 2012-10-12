@@ -18,14 +18,22 @@ package se.streamsource.streamflow.web.domain.entity.project;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.administration.filter.ActionValue;
+import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
+import se.streamsource.streamflow.api.administration.filter.EmailNotificationActionValue;
+import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
@@ -51,12 +59,15 @@ import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * JAVADOC
  */
 @SideEffects(ProjectEntity.RemoveMemberSideEffect.class)
 @Mixins({ProjectEntity.ProjectIdGeneratorMixin.class})
-@Concerns(ProjectEntity.RemovableConcern.class)
+@Concerns({ProjectEntity.RemovableConcern.class, ProjectEntity.RemoveMemberConcern.class})
 public interface ProjectEntity
         extends DomainEntity,
 
@@ -150,6 +161,76 @@ public interface ProjectEntity
          {
             members.removeAllMembers();
             return next.removeEntity();
+         }
+      }
+   }
+
+   abstract class RemoveMemberConcern
+         extends ConcernOf<Members>
+         implements Members
+   {
+      @This
+      Filters.Data filters;
+
+      @Structure
+      Module module;
+
+      public void removeMember( final Member member )
+      {
+         next.removeMember( member );
+
+         // find filters that contain actions that are either EmailActionValue or EmailNotificationActionValue
+         // that contain the removed member
+         // remove the action from the filter
+         // and call filters.update to save the change in a fashion that allows event replay
+
+         for( FilterValue filterValue : Iterables.filter( new Specification<FilterValue>()
+            {
+               public boolean satisfiedBy( FilterValue filter )
+               {
+                  return Iterables.matchesAny( new Specification<ActionValue>()
+                  {
+                     public boolean satisfiedBy(ActionValue action )
+                     {
+                        if( action instanceof EmailActionValue )
+                        {
+                           return ((EmailActionValue)action).participant().get().equals( EntityReference.getEntityReference( member ) );
+                        } else if ( action instanceof EmailNotificationActionValue )
+                        {
+                           return ((EmailNotificationActionValue)action).participant().get().equals( EntityReference.getEntityReference( member ) );
+                        }
+                        return false;
+                     }
+                  }, filter.actions().get() ) ;
+               }
+            }, filters.filters().get() ) )
+         {
+            int index = ((Filters) filters).indexOf( filterValue );
+
+            ValueBuilder<FilterValue> builder = module.valueBuilderFactory().newValueBuilder( FilterValue.class ).withPrototype( filterValue );
+            List<ActionValue> actionValueList = new ArrayList<ActionValue>(  );
+            for( ActionValue action : builder.prototype().actions().get() )
+            {
+               if( !( action instanceof EmailActionValue || action instanceof EmailNotificationActionValue ) )
+               {
+                  actionValueList.add( action );
+               } else if( action instanceof EmailActionValue )
+               {
+                  if( !((EmailActionValue)action).participant().get().equals( EntityReference.getEntityReference( member ) ))
+                  {
+                     actionValueList.add( action );
+                  }
+               } else if ( action instanceof  EmailNotificationActionValue )
+               {
+                  if( !((EmailNotificationActionValue)action).participant().get().equals( EntityReference.getEntityReference( member ) ))
+                  {
+                     actionValueList.add( action );
+                  }
+               }
+            }
+            builder.prototype().actions().set( actionValueList );
+
+            ((Filters)filters).updateFilter( index, builder.newInstance() );
          }
       }
    }

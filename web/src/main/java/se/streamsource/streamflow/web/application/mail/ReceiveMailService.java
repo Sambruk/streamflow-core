@@ -443,7 +443,16 @@ public interface ReceiveMailService
                {
                   String subj = "Unknown error: " + message.getSubject();
                   builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
-                  builder.prototype().content().set( e.getMessage() );
+
+                  StringBuilder content = new StringBuilder( );
+                  content.append( "Error Message: " + e.getMessage() );
+                  content.append( "\n\rStackTrace:\n\r" );
+                  for( StackTraceElement trace : Arrays.asList( e.getStackTrace() ))
+                  {
+                     content.append( trace.toString() + "\n\r" );
+                  }
+
+                  builder.prototype().content().set( content.toString() );
                   builder.prototype().contentType().set( message.getContentType() );
                   systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                   copyToArchive.add( message );

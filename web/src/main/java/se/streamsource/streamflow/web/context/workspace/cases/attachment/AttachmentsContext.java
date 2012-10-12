@@ -22,6 +22,7 @@ import org.qi4j.api.io.Inputs;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -52,6 +53,7 @@ public class AttachmentsContext
    }
 
    @RequiresStatus({OPEN, DRAFT})
+   @RequiresRemoved(false)
    public Attachment createAttachment(InputStream inputStream) throws IOException, URISyntaxException
    {
       String id = store.storeAttachment( Inputs.byteBuffer(inputStream, 4096));

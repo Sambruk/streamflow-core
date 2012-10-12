@@ -87,6 +87,23 @@ import java.util.zip.GZIPOutputStream;
 import static org.qi4j.api.util.Iterables.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.zip.GZIPOutputStream;
+
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+
 /**
  * Implementation of Manager interface. All general JMX management methods
  * should be put here for convenience.
@@ -560,7 +577,7 @@ public interface ManagerComposite
       public String databaseSize()
       {
          Transforms.Counter<EntityState> counter = new Transforms.Counter<EntityState>();
-         entityStore.get().entityStates(module).transferTo(Transforms.map(counter, Outputs.<EntityState>noop()));
+         entityStore.get().entityStates(module).transferTo( Transforms.map( counter, Outputs.<EntityState>noop() ) );
 
          return "Database contains " + counter.getCount() + " objects";
       }

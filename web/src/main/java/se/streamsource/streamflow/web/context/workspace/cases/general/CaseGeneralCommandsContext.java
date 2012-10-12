@@ -35,6 +35,7 @@ import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
@@ -68,21 +69,26 @@ public interface CaseGeneralCommandsContext
       Context
 {
    @RequiresStatus({DRAFT, OPEN})
+   @RequiresRemoved(false)
    void changedueon( @Name("date") Date dueOnValue );
 
    @RequiresStatus({DRAFT, OPEN})
+   @RequiresRemoved(false)
    void casetype( EntityValue dto );
 
    @RequiresStatus({DRAFT, OPEN})
+   @RequiresRemoved(false)
    void changedescription( @Optional @MaxLength(50) @Name("description") String stringValue );
 
    LinksValue possiblecasetypes();
    
    @RequiresStatus({DRAFT, OPEN})
+   @RequiresRemoved(false)
    @RequiresCasePriorityVisible
    void changepriority( @Optional @Name("id") String id );
 
    @RequiresCasePriorityVisible
+   @RequiresRemoved(false)
    LinksValue priorities();
 
    abstract class Mixin

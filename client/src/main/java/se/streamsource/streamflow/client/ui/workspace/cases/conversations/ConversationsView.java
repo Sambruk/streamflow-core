@@ -16,13 +16,30 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.io.IOException;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -33,32 +50,13 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.io.IOException;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-import org.restlet.resource.ResourceException;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
-
-import com.jgoodies.forms.factories.Borders;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class ConversationsView
       extends JSplitPane
@@ -132,6 +130,8 @@ public class ConversationsView
 
       setLeftComponent( left );
       this.setDividerLocation( -1 );
+
+      model.addObserver(new RefreshComponents().enabledOn("create", addConversation ));
 
       new RefreshWhenShowing( this, model );
    }
