@@ -185,7 +185,8 @@ public class MessagesView extends JPanel implements TransactionListener
       messageTable.getColumn( 0 ).setWidth( 20 );
       messageTable.getColumn(0).setMaxWidth( 20 );
       messageTable.getColumn(0).setResizable( false );
-      messageTable.getColumn( 1 ).setPreferredWidth(100);
+      messageTable.getColumn( 1 ).setPreferredWidth(250);
+      messageTable.getColumn( 1 ).setMaxWidth( 250 );
       messageTable.getColumn(2).setPreferredWidth(300);
       messageTable.getColumn(3).setPreferredWidth(60);
       messageTable.getColumn(3).setMaxWidth(100);

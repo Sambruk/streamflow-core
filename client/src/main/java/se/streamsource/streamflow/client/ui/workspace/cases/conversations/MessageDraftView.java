@@ -109,6 +109,7 @@ public class MessageDraftView
    {
       model.refresh();
       valueBinder.update( model.getDraftMessage() );
+      newMessage.requestFocusInWindow();
    }
 
    @Action
