@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -42,7 +43,7 @@ public class MessageDraftContext
       return builder.newInstance();
    }
 
-   public void changemessage( @Name( "message" ) String message )
+   public void changemessage( @Optional @Name( "message" ) String message )
    {
       MessageDraft draft = RoleMap.role( MessageDraft.class );
       draft.changeDraftMessage( message );
