@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.infrastructure.plugin.ldap;
+package se.streamsource.streamflow.web.infrastructure.plugin;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
 /**
  * Configuration for authentication filter and ldap import

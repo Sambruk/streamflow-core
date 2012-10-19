@@ -80,7 +80,7 @@ import se.streamsource.streamflow.web.application.statistics.StatisticsConfigura
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
-import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterServiceConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
@@ -149,7 +149,6 @@ public class AppAssembler
             .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
 
       configuration().entities( SystemDefaultsConfiguration.class );
-      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( true );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogAttachmentVisible().set( false );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogContactVisible().set( false );
@@ -170,7 +169,6 @@ public class AppAssembler
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker( 1, 1000 * 60 * 60 * 12 ) );
       configuration().entities( AvailabilityConfiguration.class );
-      configuration().forMixin( AvailabilityConfiguration.class ).declareDefaults().enabled().set( true );
    }
 
    private void archival(ModuleAssembly archival)
@@ -183,7 +181,6 @@ public class AppAssembler
    {
       module.services(DueOnNotificationService.class).identifiedBy("dueOnNotification").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(DueOnNotificationConfiguration.class);
-      configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().enabled().set( false );
       // default schedule - 08:00 every day
       configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().schedule().set( "0 0 8 * * ?" );
 
@@ -302,7 +299,6 @@ public class AppAssembler
             .visibleIn(application);
 
          configuration().entities( AuthenticationFilterServiceConfiguration.class ).visibleIn( Visibility.application );
-         configuration().forMixin( AuthenticationFilterServiceConfiguration.class ).declareDefaults().enabled().set( false );
       }
    }
 
@@ -347,7 +343,7 @@ public class AppAssembler
    
    private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException
    {
-      knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").visibleIn(Visibility.application);
+      knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(KnowledgebaseConfiguration.class);
    }
 
@@ -360,7 +356,6 @@ public class AppAssembler
             .visibleIn(application);
 
       configuration().entities( LdapImporterServiceConfiguration.class ).visibleIn( Visibility.application );
-      configuration().forMixin( LdapImporterServiceConfiguration.class ).declareDefaults().enabled().set( false );
       // default schedule - run att 17:00 every day
       configuration().forMixin( LdapImporterServiceConfiguration.class ).declareDefaults().schedule().set( "0 0 17 * * ?" );
 

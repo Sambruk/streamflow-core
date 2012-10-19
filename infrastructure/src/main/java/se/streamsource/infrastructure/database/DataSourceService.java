@@ -17,7 +17,6 @@
 package se.streamsource.infrastructure.database;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mchange.v2.c3p0.DataSources;
 import org.qi4j.api.composite.PropertyMapper;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
@@ -50,8 +49,10 @@ import java.util.Properties;
 public interface DataSourceService
       extends ServiceImporter, Activatable, ServiceComposite
 {
-   class Mixin
-         implements Activatable, ServiceImporter
+   public DataSourceConfiguration getConfiguration( String identity ) throws InstantiationException;
+
+   abstract class Mixin
+         implements DataSourceService, Activatable, ServiceImporter
    {
       @Structure
       Module module;

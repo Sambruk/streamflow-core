@@ -17,8 +17,6 @@
 package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
@@ -26,7 +24,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Tran
  * Configuration for the SendMailService.
  */
 public interface SendMailConfiguration
-      extends ConfigurationComposite, Enabled, TransactionTrackerConfiguration
+      extends TransactionTrackerConfiguration
 {
    /**
     * Smtp host address

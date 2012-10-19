@@ -64,6 +64,8 @@ public interface KnowledgebaseService
 
       public void activate() throws Exception
       {
+         // force instantiation of config
+         config.configuration().enabled().get();
       }
 
       public void passivate() throws Exception

@@ -14,31 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.infrastructure.database;
+package se.streamsource.streamflow.web.infrastructure.plugin;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.configuration.Enabled;
-import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
 /**
- * Configuration for the DataSource pool
+ * Marker interface
  */
-public interface DataSourceConfiguration
-      extends ConfigurationComposite, Enabled
+public interface ContactLookupServiceConfiguration
+   extends PluginConfiguration
 {
-
-   Property<String> driver();
-
-   Property<String> url();
-
-   Property<String> username();
-
-   Property<String> password();
-
-   @UseDefaults
-   Property<String> properties();
-
-   @UseDefaults
-   Property<String> dbVendor();
 }

@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
+import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
 import static org.quartz.CronScheduleBuilder.*;

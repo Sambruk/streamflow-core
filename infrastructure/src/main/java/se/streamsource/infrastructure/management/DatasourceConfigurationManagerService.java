@@ -103,6 +103,14 @@ public interface DatasourceConfigurationManagerService
          for (ServiceReference<DataSource> dataSource : dataSources)
          {
             String name = dataSource.identity();
+            try
+            {
+               // try to force configuration into existence
+               dataSourceService.get().getConfiguration( name );
+            } catch ( InstantiationException ie )
+            {
+               // do nothing
+            }
             ModuleSPI module = (ModuleSPI) spi.getModule( dataSource );
             EntityDescriptor descriptor = module.entityDescriptor( DataSourceConfiguration.class.getName() );
             List<MBeanAttributeInfo> attributes = new ArrayList<MBeanAttributeInfo>();

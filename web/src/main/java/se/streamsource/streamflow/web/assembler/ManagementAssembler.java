@@ -121,11 +121,12 @@ public class ManagementAssembler extends AbstractLayerAssembler
 
       module.services( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
       configuration().entities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
-      configuration().forMixin( JmxConnectorConfiguration.class ).declareDefaults().enabled().set( true );
+      configuration().forMixin( JmxConnectorConfiguration.class ).declareDefaults().enabled().set( Boolean.TRUE );
       configuration().forMixin( JmxConnectorConfiguration.class ).declareDefaults().port().set( 1099 );
 
       module.services( InstantMessagingAdminService.class ).identifiedBy( "imadmin" ).instantiateOnStartup();
       configuration().entities( InstantMessagingAdminConfiguration.class ).visibleIn( Visibility.application );
+      configuration().forMixin( InstantMessagingAdminConfiguration.class ).declareDefaults().enabled().set( Boolean.FALSE );
    }
 
    private void update( final ModuleAssembly update )

@@ -64,6 +64,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
 
 import java.io.IOException;
 import java.util.List;
