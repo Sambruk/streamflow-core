@@ -42,6 +42,7 @@ import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
@@ -114,22 +115,45 @@ public class SearchContext
       return caseQuery;
    }
 
-   public Query<LabelEntity> possibleLabels()
+   public LinksValue possibleLabels()
    {
       QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class);
       queryBuilder = queryBuilder.where(
               eq(templateFor(Removable.Data.class).removed(), false));
-      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+      Query<LabelEntity> query = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
               orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+      for( LabelEntity labelEntity : query )
+      {
+         Owner owner = ((Ownable.Data)labelEntity).owner().get();
+
+         String title = owner != null ? ((Describable)owner).getDescription() : "";
+         linksBuilder.addLink( labelEntity.getDescription(), labelEntity.identity().get(), "", "", "", title );
+      }
+
+      return linksBuilder.newLinks();
    }
 
-   public Query<CaseTypeEntity> possibleCaseTypes()
+   public LinksValue possibleCaseTypes()
    {
       QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class);
       queryBuilder = queryBuilder.where(
               eq(templateFor(Removable.Data.class).removed(), false));
-      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+      Query<CaseTypeEntity> query = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
               orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+      for( CaseTypeEntity caseTypeEntity : query )
+      {
+         Owner owner = ((Ownable.Data)caseTypeEntity).owner().get();
+
+         String title = owner != null ? ((Describable)owner).getDescription() : "";
+         linksBuilder.addLink( caseTypeEntity.getDescription(), caseTypeEntity.identity().get(),"","","", title );
+      }
+      return linksBuilder.newLinks();
    }
 
    public Query<UserEntity> possibleAssignees()

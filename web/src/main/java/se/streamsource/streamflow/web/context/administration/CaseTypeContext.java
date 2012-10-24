@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -53,7 +54,7 @@ public class CaseTypeContext
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
       for (SelectedCaseTypes selectedCaseTypes : usageQuery)
       {
-         builder.addDescribable( (Describable) selectedCaseTypes );
+         builder.addDescribable( (Describable) selectedCaseTypes, ((Describable)((Ownable.Data)selectedCaseTypes).owner().get()).getDescription() );
       }
 
       return builder.newLinks();

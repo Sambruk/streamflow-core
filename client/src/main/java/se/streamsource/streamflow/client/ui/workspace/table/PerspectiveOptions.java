@@ -24,7 +24,6 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.BottomBorder;
 import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
@@ -53,7 +52,7 @@ public class PerspectiveOptions extends JPanel
 
 
    public PerspectiveOptions(final ApplicationContext context, List<LinkValue> values,
-                             final List selectedValues, final boolean isGrouped)
+                             final List selectedValues, final boolean isGrouped, final String selectionTitle )
    {
 
       super(new BorderLayout());
@@ -76,7 +75,7 @@ public class PerspectiveOptions extends JPanel
             if( count < selectedValues.size())
             {
                ValueBuilder<TitledLinkValue> builder = linkValue.buildWith();
-               builder.prototype().title().set( text( WorkspaceResources.selected_projects ) );
+               builder.prototype().title().set( selectionTitle );
                titledLinks.add( builder.newInstance() );
             }
             else
@@ -85,7 +84,7 @@ public class PerspectiveOptions extends JPanel
             }
             count++;
          }
-         ((GroupedFilteredList)list).setEventList( titledLinks, text( WorkspaceResources.selected_projects ), false );
+         ((GroupedFilteredList)list).setEventList( titledLinks, selectionTitle, false );
 
          this.itemList = ((GroupedFilteredList)list).getList();
          this.filterField = ((GroupedFilteredList)list).getFilterField();
