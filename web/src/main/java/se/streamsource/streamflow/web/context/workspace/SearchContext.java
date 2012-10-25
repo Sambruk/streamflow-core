@@ -27,15 +27,14 @@ import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
@@ -47,6 +46,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
@@ -117,23 +118,20 @@ public class SearchContext
 
    public LinksValue possibleLabels()
    {
-      QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class);
-      queryBuilder = queryBuilder.where(
-              eq(templateFor(Removable.Data.class).removed(), false));
-      Query<LabelEntity> query = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
-              orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+      Query<Labels> labelsList = module.queryBuilderFactory().newQueryBuilder( Labels.class )
+            .where( QueryExpressions.eq( QueryExpressions.templateFor( Removable.Data.class ).removed(), false ) )
+            .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
 
-      for( LabelEntity labelEntity : query )
+      for( Labels labels : labelsList )
       {
-         Owner owner = ((Ownable.Data)labelEntity).owner().get();
-
-         String title = owner != null ? ((Describable)owner).getDescription() : "";
-         linksBuilder.addLink( labelEntity.getDescription(), labelEntity.identity().get(), "", "", "", title );
+         for( Label label : ((Labels.Data)labels).labels() )
+         {
+            builder.addDescribable( (Describable) label, ((Describable) labels).getDescription() );
+         }
       }
-
-      return linksBuilder.newLinks();
+      return builder.newLinks();
    }
 
    public LinksValue possibleCaseTypes()

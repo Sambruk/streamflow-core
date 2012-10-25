@@ -250,7 +250,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(),
             new SelectedLinkValueComparator( model.getSelectedLabels() ) );
       
-      PerspectiveOptions panel = new PerspectiveOptions( context, sortedLabels, model.getSelectedLabelIds(), false, text( WorkspaceResources.selected_labels ));
+      PerspectiveOptions panel = new PerspectiveOptions( context, sortedLabels, model.getSelectedLabelIds(), true, text( WorkspaceResources.selected_labels ));
       optionsPanel.add(panel);
    }
 

@@ -24,6 +24,10 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.labels.LabelContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
@@ -40,11 +44,19 @@ public class LabelResource
 
    public LinksValue possiblemoveto() throws Throwable
    {
-      Iterable labels = context(LabelContext.class).possiblemoveto();
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       builder.command( "move" );
 
-      builder.addDescribables( labels );
+      for( Labels labels : context(LabelContext.class).possiblemoveto() )
+      {
+         if(labels instanceof OrganizationEntity)
+         {
+            builder.addDescribable( (Describable)labels, "" );
+         } else
+         {
+            builder.addDescribable( (Describable) labels, ((Describable)((Ownable.Data)labels).owner().get()).getDescription() );
+         }
+      }
 
       return builder.newLinks();
 

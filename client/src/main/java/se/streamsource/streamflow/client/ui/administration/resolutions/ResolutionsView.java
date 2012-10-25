@@ -16,16 +16,10 @@
  */
 package se.streamsource.streamflow.client.ui.administration.resolutions;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.BorderLayout;
-
-import javax.swing.ActionMap;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -33,8 +27,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -42,18 +36,25 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.SeparatorListCellRenderer;
 import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.TitledLinkGroupingComparator;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.ActionMap;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Admin of resolutions.
@@ -84,7 +85,7 @@ public class ResolutionsView
 
       JPopupMenu options = new JPopupMenu();
       options.add( am.get( "rename" ) );
-//      options.add( am.get( "showUsages" ) );
+      options.add( am.get( "showUsages" ) );
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
@@ -102,6 +103,7 @@ public class ResolutionsView
       list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
 
       new RefreshWhenShowing( this, model );
+
    }
 
    @Action
@@ -153,15 +155,15 @@ public class ResolutionsView
    public void showUsages()
    {
       LinkValue item = (LinkValue) list.getSelectedValue();
-      EventList<LinkValue> usageList = model.usages( item );
+      SeparatorList<TitledLinkValue> separatorList = new SeparatorList<TitledLinkValue>( model.usages( item ), new TitledLinkGroupingComparator(), 1, 10000);
 
       JList list = new JList();
-      list.setCellRenderer( new LinkListCellRenderer() );
-      list.setModel( new EventListModel<LinkValue>( usageList ) );
+      list.setCellRenderer( new SeparatorListCellRenderer( new LinkListCellRenderer() ) );
+      list.setModel( new EventListModel<TitledLinkValue>( separatorList ) );
 
       dialogs.showOkDialog( this, list );
 
-      usageList.dispose();
+      separatorList.dispose();
    }
 
    @Action
