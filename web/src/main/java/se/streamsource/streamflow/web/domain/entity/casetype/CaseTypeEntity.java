@@ -65,6 +65,7 @@ public interface CaseTypeEntity
       Forms.Data,
       SelectedForms.Data,
       Resolutions.Data,
+      Removable.Data,
       SelectedResolutions.Data,
       FormOnClose.Data,
       FormOnClose.Events,

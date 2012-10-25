@@ -22,8 +22,13 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.List;
 
@@ -40,26 +45,35 @@ public class AccessPointAdministrationResource
 
    public LinksValue possibleprojects() throws Throwable
    {
-      return new LinksBuilder(module.valueBuilderFactory()).
-            command( "changeproject" ).
-            addDescribables( context(AccessPointAdministrationContext.class).possibleprojects() ).
-            newLinks();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "changeproject" );
+      for( Project project : context(AccessPointAdministrationContext.class).possibleprojects() )
+      {
+         builder.addDescribable( project, ((Describable)((Ownable.Data)project).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
    }
 
    public LinksValue possiblecasetypes() throws Throwable
    {
-      return new LinksBuilder(module.valueBuilderFactory()).
-            command( "changecasetype" ).
-            addDescribables( context(AccessPointAdministrationContext.class).possiblecasetypes() ).
-            newLinks();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "changecasetype" );
+      for(CaseType caseType : context(AccessPointAdministrationContext.class).possiblecasetypes() )
+      {
+         builder.addDescribable( caseType, ((Describable)((Ownable.Data)caseType).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
    }
 
    public LinksValue possibleforms() throws Throwable
    {
-      return new LinksBuilder(module.valueBuilderFactory()).
-            command( "setform" ).
-            addDescribables( context(AccessPointAdministrationContext.class).possibleforms() ).
-            newLinks();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "setform" );
+      for(Form form : context(AccessPointAdministrationContext.class).possibleforms() )
+      {
+         builder.addDescribable( form, ((Describable)((Ownable.Data)form).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
    }
 
    public LinksValue possibleformtemplates(StringValue extensionFilter) throws Throwable

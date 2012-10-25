@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.context.administration.labels;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
@@ -29,14 +28,21 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -50,18 +56,33 @@ public class LabelContext
    @Service
    KnowledgebaseService knowledgebaseService;
 
-   public Query<SelectedLabels> usages()
+   public LinksValue usages()
    {
-      return role( Labels.class ).usages( role( Label.class ) );
+      Iterable<SelectedLabels> selectedLabels = role( Labels.class ).usages( role( Label.class ) );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+
+      for( SelectedLabels labels : selectedLabels )
+      {
+         if( labels instanceof OrganizationEntity )
+         {
+            builder.addDescribable( (Describable) labels, "" );
+
+         } else
+         {
+            builder.addDescribable( (Describable) labels, ((Describable)((Ownable.Data)labels).owner().get()).getDescription() );
+         }
+      }
+      return builder.newLinks();
    }
 
    public void delete()
    {
       Labels labels = role( Labels.class );
       Label label = role( Label.class );
+      Iterable<SelectedLabels> usages = labels.usages( label );
 
       // Remove selections
-      for (SelectedLabels selectedLabels : usages())
+      for (SelectedLabels selectedLabels : usages )
       {
          selectedLabels.removeSelectedLabel( label );
       }
@@ -77,9 +98,11 @@ public class LabelContext
       {
          public boolean satisfiedBy( Labels item )
          {
-            return !item.equals(thisLabels);
+            return !item.equals( thisLabels );
          }
-      }, module.queryBuilderFactory().newQueryBuilder( Labels.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
+      }, module.queryBuilderFactory().newQueryBuilder( Labels.class )
+            .where( eq( templateFor( Removable.Data.class ).removed(), false ))
+            .newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
    }
 
    public void move( EntityValue to )
