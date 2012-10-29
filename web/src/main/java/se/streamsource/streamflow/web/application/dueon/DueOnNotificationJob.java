@@ -308,8 +308,8 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
         return module.queryBuilderFactory().
                   newQueryBuilder( CaseEntity.class ).
                   where( and( eq( templateFor( Ownable.Data.class ).owner(), (Project) setting ),
-                              or( eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
-                                    eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ) ),
+                              eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
+                              eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ),
                               lt( templateFor( DueOn.Data.class ).dueOn(), new DateTime().toDate() ) ) )
                   .newQuery( module.unitOfWorkFactory().currentUnitOfWork() )
                   .orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( DueOn.Data.class ).dueOn(), OrderBy.Order.ASCENDING ) );
@@ -322,8 +322,8 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
          return module.queryBuilderFactory().
                newQueryBuilder( CaseEntity.class ).
                where( and( eq( templateFor( Ownable.Data.class ).owner(), (Project) setting ),
-                           or( eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
-                                 eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ) ),
+                           eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
+                           eq( templateFor( Removable.Data.class ).removed(), Boolean.FALSE ),
                            and(le( templateFor( DueOn.Data.class ).dueOn(), thresholdDate ),
                               gt( templateFor( DueOn.Data.class ).dueOn(), new DateTime().toDate() ))) )
                .newQuery( module.unitOfWorkFactory().currentUnitOfWork() )
