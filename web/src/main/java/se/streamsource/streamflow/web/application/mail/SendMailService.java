@@ -192,7 +192,11 @@ public interface SendMailService
                   msg.setHeader( header.getKey(), header.getValue() );
                }
 
-               Multipart multipart = new MimeMultipart("alternative");
+               // MimeBodyPart wrap
+               MimeBodyPart wrap = new MimeBodyPart(  );
+
+               // alternative text/html content
+               Multipart bodyText = new MimeMultipart("alternative");
                MimeBodyPart messageBodyPart = new MimeBodyPart();
                // Regular content
                if (email.contentType().get().equals("text/plain"))
@@ -202,15 +206,20 @@ public interface SendMailService
                {
                   messageBodyPart.setContent( email.content().get(), email.contentType().get());
                }
-               multipart.addBodyPart(messageBodyPart);
+               bodyText.addBodyPart( messageBodyPart );
                
                // HTML content
                if (!Strings.empty( email.contentHtml().get() ))
                {
                   MimeBodyPart htmlMimeBodyPart = new MimeBodyPart();
                   htmlMimeBodyPart.setContent( email.contentHtml().get(), "text/html; charset=UTF-8" );
-                  multipart.addBodyPart( htmlMimeBodyPart );
+                  bodyText.addBodyPart( htmlMimeBodyPart );
                }
+
+               wrap.setContent( bodyText );
+
+               Multipart content = new MimeMultipart();
+               content.addBodyPart( wrap );
 
                // Add attachments
                Iterator<AttachedFileValue> attachments = email.attachments().get().iterator();
@@ -218,11 +227,11 @@ public interface SendMailService
                if (attachments.hasNext())
                {
                   AttachedFileValue attachedFileValue = attachments.next();
-                  attachmentStore.attachment(attachedFileValue.uri().get(), new AttachmentVisitor(attachedFileValue, attachments, multipart, msg));
+                  attachmentStore.attachment(attachedFileValue.uri().get(), new AttachmentVisitor(attachedFileValue, attachments, content, msg));
                } else
                {
                   // No attachments
-                  msg.setContent(multipart);
+                  msg.setContent( content );
                   Transport.send( msg );
                }
 
