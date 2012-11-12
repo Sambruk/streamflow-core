@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.context.administration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
@@ -30,7 +31,9 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -53,7 +56,7 @@ public class CaseTypeContext
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
       for (SelectedCaseTypes selectedCaseTypes : usageQuery)
       {
-         builder.addDescribable( (Describable) selectedCaseTypes );
+         builder.addDescribable( (Describable) selectedCaseTypes, ((Describable)((Ownable.Data)selectedCaseTypes).owner().get()).getDescription() );
       }
 
       return builder.newLinks();
@@ -70,7 +73,9 @@ public class CaseTypeContext
 
    public Iterable<CaseTypes> possiblemoveto()
    {
-      return module.queryBuilderFactory().newQueryBuilder( CaseTypes.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+      return module.queryBuilderFactory().newQueryBuilder( CaseTypes.class )
+            .where( QueryExpressions.eq( QueryExpressions.templateFor( Removable.Data.class ).removed(), false ) )
+            .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
    }
 
    public void move( EntityValue to )

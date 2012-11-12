@@ -16,7 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.administration.casetypes;
 
-import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -34,7 +35,9 @@ import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.SeparatorListCellRenderer;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
+import se.streamsource.streamflow.client.util.TitledLinkGroupingComparator;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
@@ -212,15 +215,15 @@ public class CaseTypesView
    public void showUsages()
    {
       LinkValue item = (LinkValue) list.getSelectedValue();
-      EventList<LinkValue> usageList = model.usages( item );
+      SeparatorList<TitledLinkValue> separatorList = new SeparatorList<TitledLinkValue>( model.usages( item ), new TitledLinkGroupingComparator(), 1, 10000);
 
       JList list = new JList();
-      list.setCellRenderer( new LinkListCellRenderer() );
-      list.setModel( new EventListModel<LinkValue>( usageList ) );
+      list.setCellRenderer( new SeparatorListCellRenderer( new LinkListCellRenderer() ) );
+      list.setModel( new EventListModel<TitledLinkValue>( separatorList ) );
 
       dialogs.showOkDialog( this, list );
 
-      usageList.dispose();
+      separatorList.dispose();
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
