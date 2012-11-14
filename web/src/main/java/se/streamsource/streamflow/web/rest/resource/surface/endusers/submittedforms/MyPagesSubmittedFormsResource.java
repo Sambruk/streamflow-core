@@ -22,7 +22,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.surface.endusers.forms.MyPagesSubmittedFormsContext;
+import se.streamsource.streamflow.web.context.surface.endusers.forms.MyCasesSubmittedFormsContext;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 
@@ -35,7 +35,7 @@ public class MyPagesSubmittedFormsResource
 {
    public MyPagesSubmittedFormsResource()
    {
-      super( MyPagesSubmittedFormsContext.class );
+      super( MyCasesSubmittedFormsContext.class );
    }
 
    public void resource( String segment ) throws ResourceException

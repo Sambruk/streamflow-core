@@ -14,29 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface.endusers;
+package se.streamsource.streamflow.web.rest.resource.surface.endusers.conversation;
 
 import org.restlet.resource.ResourceException;
 
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.surface.endusers.OpenCasesContext;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.context.surface.endusers.MyCasesConversationsContext;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 
-/**
- * TODO
- */
-public class OpenCasesResource extends CommandQueryResource implements SubResources
+public class MyCasesConversationsResource
+   extends CommandQueryResource
+   implements SubResources
 {
-   public OpenCasesResource()
-   {
-      super( OpenCasesContext.class );
+
+   public MyCasesConversationsResource() {
+      super (MyCasesConversationsContext.class);
    }
    
    public void resource(String segment) throws ResourceException
    {
-      setResourceValidity( setRole( CaseEntity.class, segment ) );
-      subResource( OpenCaseResource.class );
+      findManyAssociation( RoleMap.role(Conversations.Data.class).conversations(), segment );
+      subResource(MyCasesConversationResource.class );
    }
 
 }

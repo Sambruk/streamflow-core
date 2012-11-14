@@ -16,17 +16,25 @@
  */
 package se.streamsource.streamflow.web.context.surface.endusers;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.surface.api.CaseListItemDTO;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 /**
  * JAVADOC
@@ -36,26 +44,46 @@ public class ClosedCasesContext
    @Structure
    Module module;
 
-   public Iterable<Case> cases(TableQuery tableQuery)
+   public LinksValue cases()
    {
-      EndUser endUser = RoleMap.role( EndUser.class );
+      // EndUser endUser = RoleMap.role( EndUser.class );
+      UserPrincipal userPrincipal = RoleMap.role( UserPrincipal.class );
 
       StringBuilder queryBuilder = new StringBuilder();
       queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" );
       queryBuilder.append( " status:CLOSED" );
-      queryBuilder.append( " contactId:" + endUser.toString().split( "/" )[1] );
+      //queryBuilder.append( " contactId:" + endUser.toString().split( "/" )[1] );
+      queryBuilder.append( " contactId:" + userPrincipal.getName() );
+      
       Query<Case> query = module.queryBuilderFactory()
             .newNamedQuery( Case.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery" )
             .setVariable( "query", queryBuilder.toString() );
 
-      // TODO Sort by description, caseid, lastupdated, lastmessage
       
-      return Iterables.filter( new Specification<Case>()
+      Iterable<Case> cases = Iterables.filter( new Specification<Case>()
       {
          public boolean satisfiedBy(Case item)
          {
             return !((Removable.Data) item).removed().get();
          }
       }, query );
+      
+
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      for (Case caze : cases)
+      {
+         ValueBuilder<CaseListItemDTO> valueBuilder = module.valueBuilderFactory().newValueBuilder( CaseListItemDTO.class );
+         valueBuilder.prototype().rel().set( "mycases/closedcase" );
+         valueBuilder.prototype().href().set( EntityReference.getEntityReference( caze ).identity() + "/");
+         valueBuilder.prototype().id().set( EntityReference.getEntityReference( caze ).identity() );
+         valueBuilder.prototype().caseId().set( ((CaseId.Data)caze).caseId().get() );
+         valueBuilder.prototype().text().set( caze.getDescription() );
+         valueBuilder.prototype().creationDate().set( caze.createdOn().get() );
+         valueBuilder.prototype().caseType().set( ((TypedCase.Data)caze).caseType().get().getDescription() );
+         valueBuilder.prototype().project().set( ((Describable)((Ownable.Data)caze).owner().get()).getDescription() );
+         
+         builder.addLink( valueBuilder.newInstance() );
+      }
+      return builder.newLinks();
    }
 }

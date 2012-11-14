@@ -16,16 +16,11 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.endusers;
 
-import org.qi4j.api.util.Function;
-
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.dci.value.table.TableBuilder;
-import se.streamsource.dci.value.table.TableBuilderFactory;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.web.context.surface.endusers.OpenCaseContext;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.HasConversation;
+import se.streamsource.streamflow.web.rest.resource.surface.endusers.conversation.MyCasesConversationsResource;
 import se.streamsource.streamflow.web.rest.resource.surface.endusers.submittedforms.MyPagesSubmittedFormsResource;
 
 /**
@@ -38,45 +33,17 @@ public class OpenCaseResource
    {
       super(OpenCaseContext.class);
    }
-
-   public TableValue caselog(TableQuery tq) throws Throwable
-   {
-      Iterable<CaseLogEntryDTO> caselog = context(OpenCaseContext.class).caselog();
-
-      TableBuilderFactory tableBuilderFactory = new TableBuilderFactory(module.valueBuilderFactory());
-      
-      tableBuilderFactory.
-              column("created", "Created", TableValue.DATETIME, new Function<CaseLogEntryDTO, Object>()
-              {
-                 public Object map(CaseLogEntryDTO entry)
-                 {
-                    return entry.creationDate().get();
-                 }
-              }).
-              column("message", "Message", TableValue.STRING, new Function<CaseLogEntryDTO, Object>()
-              {
-                 public Object map(CaseLogEntryDTO entry)
-                 {
-                    return entry.text().get();
-                 }
-              }).
-              column("sender", "Sender", TableValue.STRING, new Function<CaseLogEntryDTO, Object>()
-              {
-                 public Object map(CaseLogEntryDTO entry)
-                 {
-                    return entry.creator().get();
-                 }
-              });
-      
-        TableBuilder tableBuilder = tableBuilderFactory.newInstance(tq);
-        
-        TableValue table = tableBuilder.rows(caselog).orderBy().paging().newTable();
-        return table;
-   }
    
    @SubResource
    public void submittedforms( )
    {
       subResource( MyPagesSubmittedFormsResource.class );
+   }
+   
+   @SubResource
+   @HasConversation(true)
+   public void conversations()
+   {
+      subResource( MyCasesConversationsResource.class );
    }
 }

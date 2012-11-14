@@ -30,7 +30,7 @@ import org.restlet.representation.OutputRepresentation;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
-import se.streamsource.streamflow.web.context.surface.endusers.forms.MyPagesSubmittedFormContext;
+import se.streamsource.streamflow.web.context.surface.endusers.forms.MyCasesSubmittedFormContext;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 
@@ -47,7 +47,7 @@ public class MyPagesSubmittedFormResource
 
    public OutputRepresentation generateformaspdf() throws Throwable
    {      
-      final PDDocument pdf = context(MyPagesSubmittedFormContext.class).generateformaspdf();
+      final PDDocument pdf = context(MyCasesSubmittedFormContext.class).generateformaspdf();
 
       SubmittedFormValue submittedFormValue = role(SubmittedFormValue.class);
 

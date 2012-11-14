@@ -16,110 +16,26 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.endusers;
 
-import org.qi4j.api.util.Function;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.dci.value.table.TableBuilder;
-import se.streamsource.dci.value.table.TableBuilderFactory;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.context.surface.endusers.ClosedCasesContext;
-import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-
-import static se.streamsource.dci.value.table.TableValue.DATETIME;
-import static se.streamsource.dci.value.table.TableValue.STRING;
 
 /**
  * TODO
  */
-public class ClosedCasesResource
-   extends CommandQueryResource
-   implements SubResources
+public class ClosedCasesResource extends CommandQueryResource implements SubResources
 {
    public ClosedCasesResource()
    {
-      super(ClosedCasesContext.class);
-   }
-
-   public TableValue cases(TableQuery tq) throws Throwable
-   {
-      Iterable<Case> closedCases = context(ClosedCasesContext.class).cases(tq);
-
-      TableBuilderFactory tableBuilderFactory = new TableBuilderFactory(module.valueBuilderFactory());
-
-      tableBuilderFactory.
-              column("description", "Description", STRING, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    return closedCase.description().get();
-                 }
-              }, null).
-              column("created", "Created", DATETIME, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    return closedCase.createdOn().get();
-                 }
-              }, null).
-              column("closed", "Closed", DATETIME, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    return closedCase.closedOn().get();
-                 }
-              }, null).
-              column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    return closedCase.caseId().get();
-                 }
-              }, null).
-              column("status", "Status", STRING, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    return closedCase.status().get().name();
-                 }
-              }, null).
-              column("project", "Project", STRING, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    return ((Describable) closedCase.owner().get()).getDescription();
-                 }
-              }, null).
-              column("resolution", "Resolution", STRING, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    String resolution = null;
-                    if (closedCase.resolution().get() != null)
-                       resolution = closedCase.resolution().get().getDescription();
-                    return resolution;
-                 }
-              }, null).
-              column("href", "Location", STRING, new Function<CaseEntity, Object>()
-              {
-                 public Object map(CaseEntity closedCase)
-                 {
-                    return closedCase.toString() + "/";
-                 }
-              }, null);
-
-
-      TableBuilder builder = tableBuilderFactory.newInstance(tq);
-
-      return builder.rows(closedCases).orderBy().paging().newTable();
+      super( ClosedCasesContext.class );
    }
 
    public void resource(String segment) throws ResourceException
    {
       setResourceValidity( setRole( CaseEntity.class, segment ) );
-      subResource(ClosedCaseResource.class);
+      subResource( ClosedCaseResource.class );
    }
 }

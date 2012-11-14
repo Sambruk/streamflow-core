@@ -66,11 +66,6 @@ public interface CaseDTO
    @UseDefaults
    Property<Boolean> hasAttachments();
 
-   Property<LinksValue> subcases();
-
-   @Optional
-   Property<LinkValue> parentCase();
-
    @UseDefaults
    Property<Boolean> restricted();
 }

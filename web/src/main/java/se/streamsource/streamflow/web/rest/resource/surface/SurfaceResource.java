@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.rest.resource.surface;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.AccessPointsResource;
+import se.streamsource.streamflow.web.rest.resource.surface.endusers.CustomersResource;
 import se.streamsource.streamflow.web.rest.resource.surface.endusers.EndUsersResource;
 
 /**
@@ -37,5 +38,12 @@ public class SurfaceResource
    public void endusers()
    {
       subResource( EndUsersResource.class );
+   }
+   
+
+   @SubResource
+   public void customers()
+   {
+      subResource( CustomersResource.class );
    }
 }

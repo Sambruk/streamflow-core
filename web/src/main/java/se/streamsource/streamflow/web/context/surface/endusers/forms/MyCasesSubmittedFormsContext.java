@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 /**
  * JAVADOC
  */
-public class MyPagesSubmittedFormsContext
+public class MyCasesSubmittedFormsContext
       implements IndexContext<LinksValue>
 {
    @Structure

@@ -34,7 +34,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 /**
  * JAVADOC
  */
-public class MyPagesSubmittedFormContext
+public class MyCasesSubmittedFormContext
 {
    @Service
    PdfGeneratorService pdfGenerator;

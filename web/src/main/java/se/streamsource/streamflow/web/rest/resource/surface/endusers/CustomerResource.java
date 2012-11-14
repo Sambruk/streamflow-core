@@ -16,27 +16,32 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.endusers;
 
-import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.surface.endusers.OpenCasesContext;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.account.ContactableContext;
+import se.streamsource.streamflow.web.context.account.ProfileContext;
 
 /**
- * TODO
+ * JAVADOC
  */
-public class OpenCasesResource extends CommandQueryResource implements SubResources
+public class CustomerResource
+      extends CommandQueryResource
 {
-   public OpenCasesResource()
+   @SubResource
+   public void open()
    {
-      super( OpenCasesContext.class );
-   }
-   
-   public void resource(String segment) throws ResourceException
-   {
-      setResourceValidity( setRole( CaseEntity.class, segment ) );
-      subResource( OpenCaseResource.class );
+      subResource( OpenCasesResource.class );
    }
 
+   @SubResource
+   public void closed()
+   {
+      subResource( ClosedCasesResource.class );
+   }
+
+   @SubResource
+   public void profile()
+   {
+      subResourceContexts(ProfileContext.class, ContactableContext.class);
+   }
 }

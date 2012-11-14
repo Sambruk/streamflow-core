@@ -14,29 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface.endusers;
+package se.streamsource.streamflow.web.rest.resource.surface.endusers.conversation;
 
-import org.restlet.resource.ResourceException;
-
+import se.streamsource.dci.api.ContextNotFoundException;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.surface.endusers.OpenCasesContext;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.context.surface.endusers.conversation.MyCasesMessagesContext;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 
 /**
- * TODO
+ *
+ *
  */
-public class OpenCasesResource extends CommandQueryResource implements SubResources
+public class MyCasesMessagesResource extends CommandQueryResource implements SubResources
 {
-   public OpenCasesResource()
+   public MyCasesMessagesResource()
    {
-      super( OpenCasesContext.class );
-   }
-   
-   public void resource(String segment) throws ResourceException
-   {
-      setResourceValidity( setRole( CaseEntity.class, segment ) );
-      subResource( OpenCaseResource.class );
+      super( MyCasesMessagesContext.class );
    }
 
+   public void resource(String segment) throws ContextNotFoundException
+   {
+
+      findManyAssociation( RoleMap.role( Messages.Data.class ).messages(), segment );
+      subResource( MyCasesMessageResource.class );
+   }
 }

@@ -16,21 +16,20 @@
  */
 package se.streamsource.streamflow.surface.api;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
 import java.util.Date;
 
-/**
- * Description of an open case
- */
-public interface OpenCaseDTO
-   extends ValueComposite
+import org.qi4j.api.property.Property;
+
+import se.streamsource.dci.value.link.LinkValue;
+
+public interface CaseListItemDTO
+   extends LinkValue
 {
-   Property<String> description();
-   Property<Date> creationDate();
-   Property<String> createdBy();
    Property<String> caseId();
-   Property<String> status();
+   
+   Property<Date> creationDate();
+
+   Property<String> caseType();
+
    Property<String> project();
 }

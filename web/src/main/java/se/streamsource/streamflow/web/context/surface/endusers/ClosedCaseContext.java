@@ -17,7 +17,6 @@
 package se.streamsource.streamflow.web.context.surface.endusers;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -33,10 +32,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.surface.api.ClosedCaseDTO;
 import se.streamsource.streamflow.util.Translator;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -75,10 +75,10 @@ public class ClosedCaseContext
    }
    
 
-   public Iterable<CaseLogEntryDTO> caselog()
+   public LinksValue caselog()
    {
-      List<CaseLogEntryDTO> list = new ArrayList<CaseLogEntryDTO>();
-      ValueBuilder<CaseLogEntryDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryDTO.class );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      ValueBuilder<CaseLogEntryDTO> valueBuilder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryDTO.class );
 
       CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
 
@@ -95,25 +95,25 @@ public class ClosedCaseContext
          {
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
             Describable user = uow.get( Describable.class, entry.createdBy().get().identity() );
-            builder.prototype().creationDate().set( entry.createdOn().get() );
-            builder.prototype().creator().set( user.getDescription() );
+            valueBuilder.prototype().creationDate().set( entry.createdOn().get() );
+            valueBuilder.prototype().creator().set( user.getDescription() );
             String translatedMessage = Translator.translate( entry.message().get(), translations ).replace( "\n", "<br/>" );
-            builder.prototype().message().set( translatedMessage );
+            valueBuilder.prototype().message().set( translatedMessage );
             String id = "";
             if (entry.entity().get() != null)
             {
                id = EntityReference.getEntityReference( entry.entity().get() ).identity();
             }
-            builder.prototype().href().set( id );
-            builder.prototype().id().set( id );
-            builder.prototype().myPagesVisibility().set( entry.availableOnMypages().get() );
-            builder.prototype().caseLogType().set( entry.entryType().get());
+            valueBuilder.prototype().href().set( id );
+            valueBuilder.prototype().id().set( id );
+            valueBuilder.prototype().myPagesVisibility().set( entry.availableOnMypages().get() );
+            valueBuilder.prototype().caseLogType().set( entry.entryType().get());
 
-            builder.prototype().text().set( translatedMessage );
+            valueBuilder.prototype().text().set( translatedMessage );
 
-            list.add( builder.newInstance() );
+            builder.addLink( valueBuilder.newInstance() );
          }
       }
-      return list;
+      return builder.newLinks();
    }
 }
