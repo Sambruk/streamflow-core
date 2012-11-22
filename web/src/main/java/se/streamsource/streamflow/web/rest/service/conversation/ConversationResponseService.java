@@ -112,7 +112,7 @@ public interface ConversationResponseService
       }
 
       public class ReceiveEmails
-            implements MailReceiver
+            extends MailReceiver.Mixin
       {
 
          public void receivedEmail( ApplicationEvent event, EmailValue email )
@@ -123,7 +123,7 @@ public interface ConversationResponseService
             {
                String references = email.headers().get().get( "References" );
 
-               if (references != null)
+               if ( hasStreamflowReference( references ) )
                {
                   // This is a response - handle it!
 

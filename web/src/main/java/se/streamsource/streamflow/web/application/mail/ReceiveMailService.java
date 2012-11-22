@@ -350,6 +350,9 @@ public interface ReceiveMailService
 
                   // Get body and attachments
                   String body = "";
+                  // set content initially so it never can become null
+                  builder.prototype().content().set( body );
+
                   if (content instanceof String)
                   {
                      body = content.toString();
