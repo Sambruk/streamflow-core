@@ -124,7 +124,7 @@ public interface CreateCaseFromEmailService
       }
 
       public class ReceiveEmails
-              implements MailReceiver
+              extends MailReceiver.Mixin
       {
          public void receivedEmail(ApplicationEvent event, EmailValue email)
          {
@@ -135,7 +135,8 @@ public interface CreateCaseFromEmailService
                String references = email.headers().get().get("References");
 
                // This is not in response to something that we sent out - create new case from it
-               if (references == null)
+
+               if ( !hasStreamflowReference( references ) )
                {
                   Organizations.Data organizations = uow.get(Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID);
                   Organization organization = organizations.organization().get();

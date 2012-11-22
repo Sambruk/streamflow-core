@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.management;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormat;
 import org.openrdf.repository.Repository;
@@ -197,7 +198,7 @@ public interface ManagerComposite
 
       public void stop() throws Exception
       {
-         stream.unregisterListener(failedLoginListener);
+         stream.unregisterListener( failedLoginListener );
       }
 
       // Operations
@@ -329,7 +330,7 @@ public interface ManagerComposite
             to = parseFormat.parse(toDate);
          }
 
-         File exportFile = exportEventsRange(compress, from.getTime(), to.getTime());
+         File exportFile = exportEventsRange( compress, from.getTime(), to.getTime() );
 
          return "Events exported to:" + exportFile.getAbsolutePath();
       }
@@ -487,7 +488,7 @@ public interface ManagerComposite
       }
 
       // Backup the database if no backups exist yet,
-      // or if the existing one is older than 24h
+      // or if the existing one was not made today
 
       private boolean shouldBackupDatabase()
               throws ParseException
@@ -495,11 +496,13 @@ public interface ManagerComposite
          boolean exportDatabase = false;
 
          File lastBackup = getLatestBackup();
-         Date twentyFourHoursAgo = new Date(System.currentTimeMillis() - ONE_DAY);
+         //Date twentyFourHoursAgo = new Date(System.currentTimeMillis() - ONE_DAY);
          if (lastBackup != null)
          {
-            Date lastDate = getBackupDate(lastBackup);
-            if (lastDate.before(twentyFourHoursAgo))
+            DateTime lastDate = new DateTime( getBackupDate(lastBackup) );
+
+            //if (lastDate.before(twentyFourHoursAgo))
+            if( DateTimeComparator.getDateOnlyInstance().compare( lastDate, new DateTime( ) ) != 0 )
             {
                exportDatabase = true;
             }

@@ -62,7 +62,7 @@ public interface UpdateService
       AvailabilityService availabilityService;
 
       private ExecutorService executor;
-      private HistoryCleanup cleanup;
+      //private HistoryCleanup cleanup;
 
       private boolean wasOn;
 
@@ -74,14 +74,14 @@ public interface UpdateService
 
          executor = Executors.newSingleThreadExecutor( new NamedThreadFactory( "UpdateMigration" ) );
          executor.submit( this );
-         //cleanup
-         executor.submit( cleanup = module.objectBuilderFactory().newObject( HistoryCleanup.class ) );
+         // As of 1.7.5 remove history cleanup
+         //executor.submit( cleanup = module.objectBuilderFactory().newObject( HistoryCleanup.class ) );
          log.info( "Activate: Executer submitted." );
       }
 
       public void passivate() throws Exception
       {
-         cleanup.stopAndDiscard();
+         //cleanup.stopAndDiscard();
          executor.shutdown();
 
          log.info( "Passivate: Executor shut down." );
