@@ -14,29 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface;
+package se.streamsource.streamflow.web.rest.resource.surface.customers;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.AccessPointsResource;
-import se.streamsource.streamflow.web.rest.resource.surface.customers.CustomersResource;
+import se.streamsource.streamflow.web.context.surface.customers.ClosedCaseContext;
+import se.streamsource.streamflow.web.rest.resource.surface.customers.submittedforms.MyPagesSubmittedFormsResource;
 
 /**
- * JAVADOC
+ * Resource for a closed case
  */
-public class SurfaceResource
-      extends CommandQueryResource
+public class ClosedCaseResource
+        extends CommandQueryResource
 {
-   @SubResource
-   public void accesspoints()
+   public ClosedCaseResource()
    {
-      subResource( AccessPointsResource.class );
-   }
-
-   @SubResource
-   public void customers()
-   {
-      subResource( CustomersResource.class );
+      super(ClosedCaseContext.class);
    }
    
+   @SubResource
+   public void submittedforms( )
+   {
+      subResource( MyPagesSubmittedFormsResource.class );
+   }
 }

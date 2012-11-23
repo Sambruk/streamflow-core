@@ -16,14 +16,15 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-
-import java.util.List;
 
 /**
  * List of required signatures of a form

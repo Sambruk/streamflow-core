@@ -14,25 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.form;
+package se.streamsource.streamflow.web.rest.resource.surface.customers;
 
-import java.util.List;
-
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.account.ContactableContext;
 
 /**
  * JAVADOC
  */
-public interface SubmittedPageValue
-      extends ValueComposite
+public class CustomerResource
+      extends CommandQueryResource
 {
-   Property<EntityReference> page();
+   @SubResource
+   public void open()
+   {
+      subResource(OpenCasesResource.class);
+   }
 
-   @UseDefaults
-   Property<List<SubmittedFieldValue>> fields();
+   @SubResource
+   public void closed()
+   {
+      subResource(ClosedCasesResource.class);
+   }
+
+   @SubResource
+   public void profile()
+   {
+      subResourceContexts(ContactableContext.class);
+   }
 }

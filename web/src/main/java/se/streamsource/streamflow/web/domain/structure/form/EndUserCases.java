@@ -16,10 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import static se.streamsource.streamflow.util.Strings.empty;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -30,8 +33,6 @@ import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
-
-import static se.streamsource.streamflow.util.Strings.empty;
 
 /**
  * JAVADOC

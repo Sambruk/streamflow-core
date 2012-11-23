@@ -14,25 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.form;
+package se.streamsource.streamflow.web.domain.structure.customer;
 
-import java.util.List;
-
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
+import se.streamsource.streamflow.web.domain.Describable;
 
 /**
  * JAVADOC
  */
-public interface SubmittedPageValue
-      extends ValueComposite
-{
-   Property<EntityReference> page();
-
-   @UseDefaults
-   Property<List<SubmittedFieldValue>> fields();
+public interface Customer
+   extends 
+      Describable{
 }

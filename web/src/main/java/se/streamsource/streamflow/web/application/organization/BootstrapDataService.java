@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.application.organization;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -29,9 +31,11 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
@@ -47,8 +51,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
-
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * Ensure that the most basic entities are always created. This includes:
@@ -112,7 +114,16 @@ public interface BootstrapDataService
                ContactDTO contact = contactBuilder.newInstance();
                admin.updateContact( contact );
             }
-
+            
+            try
+            {
+               // Check if customers entity exists
+               uow.get( CustomersEntity.class, CustomersEntity.CUSTOMERS_ID );
+            } catch (NoSuchEntityException e)
+            {
+               // Create bootstrap data
+               uow.newEntity( CustomersEntity.class, CustomersEntity.CUSTOMERS_ID );
+            }
 
             Query<OrganizationEntity> orgs = organizations.organizations().newQuery( uow );
 

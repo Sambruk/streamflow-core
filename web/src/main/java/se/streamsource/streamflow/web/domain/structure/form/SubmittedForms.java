@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.Date;
+import java.util.List;
+
 import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
@@ -27,9 +30,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
-import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -39,9 +42,6 @@ import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Maintains list of submitted forms on a case

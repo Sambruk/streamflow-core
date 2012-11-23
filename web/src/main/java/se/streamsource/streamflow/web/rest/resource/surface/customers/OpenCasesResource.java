@@ -14,29 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface;
+package se.streamsource.streamflow.web.rest.resource.surface.customers;
+
+import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.AccessPointsResource;
-import se.streamsource.streamflow.web.rest.resource.surface.customers.CustomersResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.streamflow.web.context.surface.customers.OpenCasesContext;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 
 /**
- * JAVADOC
+ * TODO
  */
-public class SurfaceResource
-      extends CommandQueryResource
+public class OpenCasesResource extends CommandQueryResource implements SubResources
 {
-   @SubResource
-   public void accesspoints()
+   public OpenCasesResource()
    {
-      subResource( AccessPointsResource.class );
-   }
-
-   @SubResource
-   public void customers()
-   {
-      subResource( CustomersResource.class );
+      super( OpenCasesContext.class );
    }
    
+   public void resource(String segment) throws ResourceException
+   {
+      setResourceValidity( setRole( CaseEntity.class, segment ) );
+      subResource( OpenCaseResource.class );
+   }
+
 }

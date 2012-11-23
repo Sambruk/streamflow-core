@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.ArrayList;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -30,8 +32,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-
-import com.petebevin.markdown.MarkdownProcessor;
 
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
@@ -55,7 +55,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.organization.FormOnRemove;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
-import java.util.ArrayList;
+import com.petebevin.markdown.MarkdownProcessor;
 
 /**
  * JAVADOC

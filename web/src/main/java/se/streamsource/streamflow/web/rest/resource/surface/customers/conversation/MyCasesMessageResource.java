@@ -14,29 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface;
+package se.streamsource.streamflow.web.rest.resource.surface.customers.conversation;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.AccessPointsResource;
-import se.streamsource.streamflow.web.rest.resource.surface.customers.CustomersResource;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessageContext;
+import se.streamsource.streamflow.web.rest.resource.workspace.cases.AttachmentsResource;
 
 /**
- * JAVADOC
+ *
  */
-public class SurfaceResource
+public class MyCasesMessageResource
       extends CommandQueryResource
 {
-   @SubResource
-   public void accesspoints()
+   public MyCasesMessageResource()
    {
-      subResource( AccessPointsResource.class );
+      super( MessageContext.class );
    }
 
    @SubResource
-   public void customers()
+   public void attachments()
    {
-      subResource( CustomersResource.class );
+      subResource( AttachmentsResource.class );
    }
-   
+
 }
