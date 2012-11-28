@@ -47,7 +47,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Possib
 import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -448,6 +447,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    {
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class )
             .use( model.getPossibleCaseTypes() ).newInstance();
+      dialog.setPreferredSize( new Dimension( 400, 200 ) );
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.choose_casetype ) );
 
       caseTypeButton.requestFocusInWindow();
