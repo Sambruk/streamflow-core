@@ -36,9 +36,8 @@ public interface Qi4JQuartzJobFactory extends ServiceComposite, JobFactory
       @Structure
       Module module;
 
-      @Override
       public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException
-      {
+      {					
          TransientBuilder<? extends Job> newJobBuilder = module.transientBuilderFactory().newTransientBuilder( bundle.getJobDetail().getJobClass() );
          return newJobBuilder.newInstance();
       }
