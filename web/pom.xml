@@ -57,7 +57,9 @@
                                                 </systemProperty>
                         -->
                     </systemProperties>
-                    <contextPath>/streamflow</contextPath>
+                    <webApp>
+                        <contextPath>/streamflow</contextPath>
+                    </webApp>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <port>8082</port>
