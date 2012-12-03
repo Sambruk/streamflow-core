@@ -35,10 +35,10 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.surface.OrganizationAttachmentsContext;
-import se.streamsource.streamflow.web.context.workspace.cases.attachment.AttachmentContext;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.rest.resource.workspace.cases.AttachmentResource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +47,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -69,7 +69,7 @@ public class OrganizationAttachmentsResource
 
    public LinksValue index()
    {
-      LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() ).rel( "attachment" );
+      LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
       ValueBuilder<AttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder( AttachmentDTO.class );
       for (Attachment attachment : context(OrganizationAttachmentsContext.class).index())
       {
@@ -80,6 +80,7 @@ public class OrganizationAttachmentsResource
          builder.prototype().size().set( data.size().get() );
          builder.prototype().modificationDate().set( data.modificationDate().get() );
          builder.prototype().mimeType().set( data.mimeType().get() );
+         builder.prototype().rel().set( "attachment" );
 
          links.addLink( builder.newInstance() );
       }
@@ -159,6 +160,6 @@ public class OrganizationAttachmentsResource
    public void resource( String segment ) throws ResourceException
    {
       findManyAssociation( role( Attachments.Data.class ).attachments(), segment );
-      subResourceContexts( AttachmentContext.class );
+      subResource( AttachmentResource.class );
    }
 }
