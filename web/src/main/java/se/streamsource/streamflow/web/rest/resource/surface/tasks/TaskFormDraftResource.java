@@ -14,35 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface;
+package se.streamsource.streamflow.web.rest.resource.surface.tasks;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.AccessPointsResource;
-import se.streamsource.streamflow.web.rest.resource.surface.customers.CustomersResource;
-import se.streamsource.streamflow.web.rest.resource.surface.tasks.DoubleSignatureTasksResource;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftContext;
+import se.streamsource.streamflow.web.context.surface.tasks.TaskFormDraftSummaryContext;
+import se.streamsource.streamflow.web.rest.resource.workspace.cases.FormAttachmentsResource;
 
 /**
  * JAVADOC
  */
-public class SurfaceResource
+public class TaskFormDraftResource
       extends CommandQueryResource
 {
-   @SubResource
-   public void accesspoints()
+   public TaskFormDraftResource()
    {
-      subResource( AccessPointsResource.class );
+      super( SurfaceFormDraftContext.class );
    }
 
    @SubResource
-   public void customers()
+   public void summary( )
    {
-      subResource( CustomersResource.class );
+      subResourceContexts( TaskFormDraftSummaryContext.class );
    }
 
    @SubResource
-   public void tasks()
+   public void attachments()
    {
-      subResource( DoubleSignatureTasksResource.class );
+      subResource( FormAttachmentsResource.class );
    }
 }

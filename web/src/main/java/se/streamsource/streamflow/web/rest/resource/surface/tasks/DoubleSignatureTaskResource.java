@@ -14,35 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface;
+package se.streamsource.streamflow.web.rest.resource.surface.tasks;
 
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.AccessPointsResource;
-import se.streamsource.streamflow.web.rest.resource.surface.customers.CustomersResource;
-import se.streamsource.streamflow.web.rest.resource.surface.tasks.DoubleSignatureTasksResource;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
+import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask.Data;
 
 /**
  * JAVADOC
  */
-public class SurfaceResource
-      extends CommandQueryResource
+public class DoubleSignatureTaskResource extends CommandQueryResource
 {
+   
    @SubResource
-   public void accesspoints()
+   public void formdraft()
    {
-      subResource( AccessPointsResource.class );
-   }
-
-   @SubResource
-   public void customers()
-   {
-      subResource( CustomersResource.class );
-   }
-
-   @SubResource
-   public void tasks()
-   {
-      subResource( DoubleSignatureTasksResource.class );
+      Data doubleSignatureTask = RoleMap.role( DoubleSignatureTask.Data.class );
+      RoleMap.current().set( doubleSignatureTask.formDraft().get(), FormDraft.class );
+      subResource( TaskFormDraftResource.class );
    }
 }

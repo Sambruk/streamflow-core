@@ -48,8 +48,6 @@ public interface SurfaceSignatureContext
    
    void submitandsend();
 
-   LinksValue providers();
-
    abstract class Mixin
       implements SurfaceSignatureContext
    {
@@ -101,10 +99,5 @@ public interface SurfaceSignatureContext
          return valueBuilder.newInstance();
       }
 
-      public LinksValue providers()
-      {
-         //var url = "https://175.145.48.194:8443/eid/sign/";
-         return null;  //To change body of implemented methods use File | Settings | File Templates.
-      }
    }
 }
