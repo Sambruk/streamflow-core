@@ -16,20 +16,32 @@
  */
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.InteractionValidation;
+import se.streamsource.dci.api.RequiresValid;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
@@ -42,6 +54,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage;
+import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
@@ -55,14 +68,14 @@ import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
 @Mixins(AccessPointAdministrationContext.Mixin.class)
 public interface AccessPointAdministrationContext
-      extends IndexContext<AccessPointDTO>, Context, DeleteContext
+      extends IndexContext<AccessPointDTO>, Context, DeleteContext, InteractionValidation
 {
    void changedescription( @MaxLength(50) @Name("name") String name )
          throws IllegalArgumentException;
@@ -77,15 +90,33 @@ public interface AccessPointAdministrationContext
 
    List<Form> possibleforms();
 
+   Iterable<Form> possiblesecondforms();
+
    void setform( EntityValue id );
 
-   List<Attachment> possibleformtemplates( StringValue extensionFilter );
+   List<Attachment> possibleformtemplates( String filteron );
 
    void setformtemplate( EntityValue id );
 
-   void changemailselectionmessage( @Name("mailmessage") String message );
+   void changemailselectionmessage( @Optional @Name("mailmessage") String message );
 
-   void resetmailselectionmessage();
+   void updateprimarysignactive( @Name("active") String active );
+
+   @RequiresValid("primarySignActive")
+   void updateprimarysign( @Optional @Name("active") String active,
+                           @Optional @Name("name") String name,
+                           @Optional @Name("description") String description );
+
+   void updatesecondarysignactive( @Name("active") String active );
+
+   @RequiresValid("secondarySignActive")
+   void updatesecondarysign( @Optional @Name("active") String active,
+                           @Optional @Name("name") String name,
+                           @Optional @Name("description") String description,
+                           @Optional @Name("formid") String formid,
+                           @Optional @Name("formdescription") String formdescription,
+                           @Optional @Name("mandatory") String mandatory,
+                           @Optional @Name("question") String question );
 
    abstract class Mixin
          implements AccessPointAdministrationContext
@@ -102,6 +133,7 @@ public interface AccessPointAdministrationContext
          SelectedForms.Data forms = RoleMap.role( SelectedForms.Data.class );
          Labelable.Data labelsData = RoleMap.role( Labelable.Data.class );
          FormPdfTemplate.Data template = RoleMap.role( FormPdfTemplate.Data.class );
+         RequiredSignatures.Data signatures = RoleMap.role( RequiredSignatures.Data.class );
 
          builder.prototype().accessPoint().set( createLinkValue( accessPoint ) );
          if (accessPointData.project().get() != null)
@@ -112,9 +144,29 @@ public interface AccessPointAdministrationContext
          if (forms.selectedForms().toList().size() > 0)
             builder.prototype().form().set( createLinkValue( forms.selectedForms().toList().get( 0 ) ) );
 
-         if (template.formPdfTemplate().get() != null)
+         Attachment attachment = null;
+         try {
+               attachment = template.formPdfTemplate().get();
+         } catch( NoSuchEntityException nse)
          {
-            Attachment attachment = template.formPdfTemplate().get();
+            // Attachment removable concern might have failed
+            // to avoid errors related to not found template - set it to null
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Cleanup missing form template" ) );
+            AccessPoint cleanAp = uow.get( accessPoint );
+            cleanAp.setFormPdfTemplate( null );
+
+            try
+            {
+               uow.complete();
+            } catch (UnitOfWorkCompletionException e)
+            {
+              throw new ResourceException( Status.CLIENT_ERROR_CONFLICT, "Form pdf attachment is missing and association cleanup failed", e  );
+            }
+
+         }
+
+         if (attachment != null)
+         {
             ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
             EntityReference ref = EntityReference.getEntityReference( attachment );
             linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
@@ -123,16 +175,25 @@ public interface AccessPointAdministrationContext
             builder.prototype().template().set( linkBuilder.newInstance() );
          }
 
-         ValueBuilder<StringValue> stringBuilder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-         if ( accessPoint.getMailSelectionMessage() == null )
-         {
-            stringBuilder.prototype().string().set(  "" );
-         } else
-         {
-            stringBuilder.prototype().string().set(  accessPoint.getMailSelectionMessage() );
-         }
-         builder.prototype().mailSelectionMessage().set( stringBuilder.newInstance() );
+         builder.prototype().mailSelectionMessage().set( accessPoint.getMailSelectionMessage() );
 
+         ValueBuilder<RequiredSignatureValue> primary = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
+         ValueBuilder<RequiredSignatureValue> secondary = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
+
+         switch ( signatures.requiredSignatures().get().size() )
+         {
+            case 0:
+               builder.prototype().primarysign().set( primary.newInstance() );
+               builder.prototype().secondarysign().set( secondary.newInstance() );
+               break;
+            case 1:
+               builder.prototype().primarysign().set( signatures.requiredSignatures().get().get( 0 ).<RequiredSignatureValue>buildWith().newInstance() );
+               builder.prototype().secondarysign().set( secondary.newInstance() );
+               break;
+            case 2:
+               builder.prototype().primarysign().set( signatures.requiredSignatures().get().get( 0 ).<RequiredSignatureValue>buildWith().newInstance() );
+               builder.prototype().secondarysign().set( signatures.requiredSignatures().get().get( 1 ).<RequiredSignatureValue>buildWith().newInstance() );
+         }
          return builder.newInstance();
       }
 
@@ -194,7 +255,7 @@ public interface AccessPointAdministrationContext
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         accessPoint.changedProject(project);
+         accessPoint.changedProject( project );
       }
 
       public List<CaseType> possiblecasetypes()
@@ -218,7 +279,7 @@ public interface AccessPointAdministrationContext
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         accessPoint.changedCaseType(caseType);
+         accessPoint.changedCaseType( caseType );
       }
 
       public List<Form> possibleforms()
@@ -245,6 +306,21 @@ public interface AccessPointAdministrationContext
          return possibleForms;
       }
 
+      public Iterable<Form> possiblesecondforms()
+      {
+         AccessPointSettings.Data accessPoint = RoleMap.role( AccessPointSettings.Data.class );
+         final RequiredSignatures.Data signatures = RoleMap.role( RequiredSignatures.Data.class );
+         CaseType caseType = accessPoint.caseType().get();
+
+         return Iterables.filter( new Specification<Form>()
+         {
+            public boolean satisfiedBy( final Form form )
+            {
+               return !((Identity)form).identity().get().equals( signatures.requiredSignatures().get().get( 1 ).formid().get() );
+            }
+         }, ((SelectedForms.Data)caseType).selectedForms() );
+      }
+
       public void setform( EntityValue id )
       {
          SelectedForms forms = RoleMap.role( SelectedForms.class );
@@ -266,7 +342,7 @@ public interface AccessPointAdministrationContext
          }
       }
 
-      public List<Attachment> possibleformtemplates( final StringValue extensionFilter )
+      public List<Attachment> possibleformtemplates( final String filteron )
       {
          final List<Attachment> possibleFormPdfTemplates = new ArrayList<Attachment>();
          OrganizationQueries organizationQueries = RoleMap.role( OrganizationQueries.class );
@@ -281,7 +357,7 @@ public interface AccessPointAdministrationContext
                for (Attachment attachment : allAttachments)
                {
                   if (!attachment.equals( accessPoint.formPdfTemplate().get() )
-                        && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
+                        && ((AttachedFile.Data) attachment).mimeType().get().endsWith( filteron ))
                   {
                      possibleFormPdfTemplates.add( attachment );
                   }
@@ -301,16 +377,154 @@ public interface AccessPointAdministrationContext
          accessPoint.setFormPdfTemplate( id.entity().get() == null ? null : module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id.entity().get() ) );
       }
 
-      public void changemailselectionmessage( @Name("mailmessage") String message )
+      public void changemailselectionmessage( String message )
       {
          MailSelectionMessage role = role( MailSelectionMessage.class );
          role.changeMailSelectionMessage( message );
       }
 
-      public void resetmailselectionmessage()
+      public void updateprimarysignactive( @Name("active") String active )
       {
-         MailSelectionMessage role = role( MailSelectionMessage.class );
-         role.changeMailSelectionMessage( null );
+         updateprimarysign( active, null, null );
+      }
+
+      public void updateprimarysign( @Optional @Name("active") String active,
+                              @Optional @Name("name") String name,
+                              @Optional @Name("description") String description )
+      {
+         SelectedForms.Data forms = role( SelectedForms.Data.class );
+         RequiredSignatures.Data signaturesData = role( RequiredSignatures.Data.class );
+         RequiredSignatures signatures = role( RequiredSignatures.class );
+
+         RequiredSignatureValue primarySignature = signaturesData.requiredSignatures().get().size() > 0 ? signaturesData.requiredSignatures().get().get( 0 ) : null;
+
+         ValueBuilder<RequiredSignatureValue> valueBuilder = null;
+         if( primarySignature != null )
+         {
+            valueBuilder = primarySignature.buildWith();
+         } else
+         {
+            valueBuilder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
+         }
+
+         RequiredSignatureValue updated = valueBuilder.prototype();
+         if( active != null )
+         {
+            updated.active().set( new Boolean( active ) );
+         } else if( name != null )
+         {
+            updated.name().set( name );
+         } else if( description != null )
+         {
+            updated.description().set( description );
+         }
+
+         if( forms.selectedForms().get( 0 ) != null )
+         {
+            updated.formid().set( ((Identity)forms.selectedForms().get( 0 )).identity().get() );
+            updated.formdescription().set( forms.selectedForms().get( 0 ).getDescription() );
+         }
+
+         updated.mandatory().set( Boolean.TRUE );
+
+         List<RequiredSignatureValue> tempList = signaturesData.requiredSignatures().get();
+         if( tempList.size() > 0 )
+         {
+            signatures.updateRequiredSignature( 0, valueBuilder.newInstance() );
+         } else
+         {
+            signatures.createRequiredSignature( valueBuilder.newInstance() );
+         }
+
+         // if active false and secondary is active set secondary to active false as well
+         if( active != null && !new Boolean( active ).booleanValue()
+               && signaturesData.requiredSignatures().get().size() > 1 )
+         {
+            if( signaturesData.requiredSignatures().get().get( 1 ).active().get() )
+            {
+               updatesecondarysign( "false", null, null, null, null, null, null );
+            }
+
+         }
+
+      }
+
+      public void updatesecondarysignactive( @Name("active") String active )
+      {
+         updatesecondarysign( active, null, null, null, null, null, null );
+      }
+
+      public void updatesecondarysign( @Optional @Name("active") String active,
+                                @Optional @Name("name") String name,
+                                @Optional @Name("description") String description,
+                                @Optional @Name("formid") String formid,
+                                @Optional @Name("formdescription") String formdescription,
+                                @Optional @Name("mandatory") String mandatory,
+                                @Optional @Name("question") String question )
+      {
+         SelectedForms.Data forms = role( SelectedForms.Data.class );
+         RequiredSignatures.Data signaturesData = role( RequiredSignatures.Data.class );
+         RequiredSignatures signatures = role( RequiredSignatures.class );
+
+         RequiredSignatureValue secondarySignature = signaturesData.requiredSignatures().get().size() > 1 ? signaturesData.requiredSignatures().get().get( 1 ) : null;
+
+         ValueBuilder<RequiredSignatureValue> valueBuilder = null;
+         if( secondarySignature != null )
+         {
+            valueBuilder = secondarySignature.buildWith();
+         } else
+         {
+            valueBuilder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
+         }
+
+         RequiredSignatureValue updated = valueBuilder.prototype();
+         if( active != null )
+         {
+            updated.active().set( new Boolean( active ) );
+         } else if( name != null )
+         {
+            updated.name().set( name );
+         } else if( description != null )
+         {
+            updated.description().set( description );
+         } else if( formid != null && formdescription != null )
+         {
+            updated.formid().set( formid );
+            updated.formdescription().set( formdescription );
+         } else if( mandatory != null )
+         {
+            updated.mandatory().set( new Boolean( mandatory ) );
+         } else if( question != null )
+         {
+            updated.question().set( question );
+         }
+
+
+         List<RequiredSignatureValue> tempList = signaturesData.requiredSignatures().get();
+
+         if( tempList.size() > 1 )
+         {
+            signatures.updateRequiredSignature( 1, valueBuilder.newInstance() );
+         } else
+         {
+            signatures.createRequiredSignature( valueBuilder.newInstance() );
+         }
+      }
+
+      public boolean isValid( String name )
+      {
+         RequiredSignatures.Data signaturesData = role( RequiredSignatures.Data.class );
+
+         List<RequiredSignatureValue> signatures = signaturesData.requiredSignatures().get();
+
+         if( "primarySignActive".equals( name ) )
+         {
+            return signatures.size() > 0 && signatures.get( 0 ).active().get();
+         } else if( "secondarySignActive".equals( name ) )
+         {
+            return signatures.size() > 1 && signatures.get( 1 ).active().get();
+         }
+         return false;
       }
    }
 }

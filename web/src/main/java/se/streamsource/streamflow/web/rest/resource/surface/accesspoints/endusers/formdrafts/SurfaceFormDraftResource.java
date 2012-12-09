@@ -19,9 +19,7 @@ package se.streamsource.streamflow.web.rest.resource.surface.accesspoints.enduse
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.signature.SurfaceSignatureContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SurfaceSummaryContext;
-import se.streamsource.streamflow.web.rest.resource.workspace.cases.FormAttachmentResource;
 import se.streamsource.streamflow.web.rest.resource.workspace.cases.FormAttachmentsResource;
 
 /**
@@ -39,12 +37,6 @@ public class SurfaceFormDraftResource
    public void summary( )
    {
       subResourceContexts( SurfaceSummaryContext.class );
-   }
-
-   @SubResource
-   public void signature()
-   {
-      subResourceContexts( SurfaceSignatureContext.class );
    }
 
    @SubResource

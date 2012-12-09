@@ -16,9 +16,9 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.accesspoints;
 
+import org.qi4j.api.constraint.Name;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
@@ -76,11 +76,22 @@ public class AccessPointAdministrationResource
       return builder.newLinks();
    }
 
-   public LinksValue possibleformtemplates(StringValue extensionFilter) throws Throwable
+   public LinksValue possiblesecondforms() throws Throwable
+   {
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "setsecondform" );
+      for(Form form : context(AccessPointAdministrationContext.class).possiblesecondforms() )
+      {
+         builder.addDescribable( form, ((Describable)((Ownable.Data)form).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
+   }
+
+   public LinksValue possibleformtemplates( @Name("filteron") String filteron) throws Throwable
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setformtemplate" );
 
-      List<Attachment> attachments = context(AccessPointAdministrationContext.class).possibleformtemplates(extensionFilter);
+      List<Attachment> attachments = context(AccessPointAdministrationContext.class).possibleformtemplates( filteron );
 
       for (Attachment attachment : attachments)
       {

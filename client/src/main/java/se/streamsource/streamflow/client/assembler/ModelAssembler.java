@@ -74,6 +74,7 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointMo
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointModel;
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
+import se.streamsource.streamflow.client.ui.administration.surface.FormLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
 import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailModel;
@@ -242,7 +243,8 @@ public class ModelAssembler
             LabelRuleModel.class,
             PrioritiesModel.class,
             PriorityModel.class,
-            PriorityOnCaseModel.class);
+            PriorityOnCaseModel.class,
+            FormLabelsModel.class);
 
 
       addModels(module, LinksListModel.class,

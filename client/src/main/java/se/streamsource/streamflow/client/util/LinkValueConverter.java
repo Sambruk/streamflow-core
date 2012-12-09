@@ -26,6 +26,6 @@ public class LinkValueConverter
 {
    public String toComponent( LinkValue value )
    {
-      return value.text().get();
+      return value != null ? value.text().get() : null;
    }
 }

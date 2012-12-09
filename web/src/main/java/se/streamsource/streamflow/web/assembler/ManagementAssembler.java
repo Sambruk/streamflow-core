@@ -48,11 +48,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
@@ -62,6 +64,8 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -339,6 +343,85 @@ public class ManagementAssembler extends AbstractLayerAssembler
             {
                logger.error( e.getMessage() );
                throw new RuntimeException( "Upgrade failed at case count " + count + " !", e );
+            }
+         }
+      } ).toVersion( "1.8.0.0" ).atStartup( new UpdateOperation()
+      {
+         public void update( Application app, Module module ) throws Exception
+         {
+            if (Preferences.userRoot().nodeExists( "/streamsource/streamflow/StreamflowServer/contactlookup" ))
+            {
+               Preferences preference = Preferences.userRoot().node( "/streamsource/streamflow/StreamflowServer/contactlookup" );
+               preference.put( "type", "se.streamsource.streamflow.web.infrastructure.plugin.ContactLookupServiceConfiguration" );
+
+               preference.flush();
+            }
+
+            int count = 0;
+            final List<String> accessPointIds = new ArrayList<String>();
+
+            try
+            {
+               Input<EntityState, EntityStoreException> entities = ((EntityStore) module.serviceFinder().findService( EntityStore.class ).get()).entityStates( (ModuleSPI) module );
+               entities.transferTo( Transforms.filter( new Specification<EntityState>()
+               {
+                  public boolean satisfiedBy( EntityState state )
+                  {
+                     return state.isOfType( TypeName.nameOf( AccessPointEntity.class ) ) &&
+                           (state.getManyAssociation( QualifiedName.fromClass( SelectedForms.Data.class, "selectedForms" ) ).count() > 0 );
+
+                  }
+               }, Outputs.withReceiver( new Receiver<EntityState, Throwable>()
+               {
+                  public void receive( EntityState state ) throws Throwable
+                  {
+                     accessPointIds.add( state.identity().identity() );
+                  }
+               } ) ) );
+
+               logger.info( "Found " + accessPointIds.size() + " access points eligible for update migration." );
+               UnitOfWork uow = null;
+
+               for( String id : accessPointIds )
+               {
+                  try
+                  {
+                     if (uow == null)
+                     {
+                        uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.buildUsecase( "Upgrade_1.8.0.0" ).with( CacheOptions.NEVER ).newUsecase( ) );
+                     }
+                     AccessPointEntity accessPointEntity = uow.get( AccessPointEntity.class, id );
+
+                     List<RequiredSignatureValue> signatureList = ((RequiredSignatures.Data) ((SelectedForms.Data) accessPointEntity).selectedForms().get( 0 )).requiredSignatures().get();
+                     if( signatureList != null && !signatureList.isEmpty() && ((RequiredSignatures.Data)accessPointEntity).requiredSignatures().get().isEmpty() )
+                     {
+                        // Found a suitable signature on existing form and no signature present on access point - move it to access point instead.
+                        RequiredSignatureValue signatureValue = signatureList.get( 0 );
+                        ValueBuilder<RequiredSignatureValue> signatureBuilder = signatureValue.buildWith();
+                        signatureBuilder.prototype().active().set( Boolean.TRUE );
+                        signatureBuilder.prototype().mandatory().set( Boolean.TRUE );
+                        signatureBuilder.prototype().formid().set( ((Identity)accessPointEntity.selectedForms().get( 0 )).identity().get() );
+                        signatureBuilder.prototype().formdescription().set( accessPointEntity.selectedForms().get( 0 ).getDescription() );
+                        accessPointEntity.createRequiredSignature( signatureBuilder.newInstance() );
+                        logger.info( "Upgrade migration for 1.8.0.0 actually moved a signature to access point: " + id );
+                     }
+                     count++;
+                  } catch (Throwable e)
+                  {
+                     uow.discard();
+                     logger.error( e.getMessage() );
+                     throw new RuntimeException( "Upgrade failed at access point count " + count + " !", e );
+                  }
+               }
+
+               if (uow != null)
+                  uow.complete();
+               logger.info( "Upgrade migration for 1.8.0.0 migrated " + count + " access points successfully." );
+            }
+            catch (Throwable e)
+            {
+               logger.error( e.getMessage() );
+               throw new RuntimeException( "Upgrade failed at access point count " + count + " !", e );
             }
          }
       } );

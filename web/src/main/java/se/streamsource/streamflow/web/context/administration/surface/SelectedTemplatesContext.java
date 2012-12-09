@@ -58,6 +58,7 @@ public class SelectedTemplatesContext
          linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
          linkBuilder.prototype().id().set( ref.identity() );
          linkBuilder.prototype().href().set( ref.identity() );
+         linkBuilder.prototype().rel().set( "pdftemplate" );
          builder.prototype().defaultPdfTemplate().set( linkBuilder.newInstance() );
       }
 
@@ -70,6 +71,7 @@ public class SelectedTemplatesContext
          linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
          linkBuilder.prototype().id().set( ref.identity() );
          linkBuilder.prototype().href().set( ref.identity() );
+         linkBuilder.prototype().rel().set( "pdftemplate" );
          builder.prototype().formPdfTemplate().set( linkBuilder.newInstance() );
       }
 
@@ -82,6 +84,7 @@ public class SelectedTemplatesContext
          linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
          linkBuilder.prototype().id().set( ref.identity() );
          linkBuilder.prototype().href().set( ref.identity() );
+         linkBuilder.prototype().rel().set( "pdftemplate" );
          builder.prototype().casePdfTemplate().set( linkBuilder.newInstance() );
       }
 

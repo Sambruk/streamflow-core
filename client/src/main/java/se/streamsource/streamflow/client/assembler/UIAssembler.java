@@ -71,8 +71,6 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Fiel
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldValueObserver;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormEditView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignatureView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsView;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
@@ -96,6 +94,7 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsV
 import se.streamsource.streamflow.client.ui.administration.surface.CreateProxyUserDialog;
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointView;
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
+import se.streamsource.streamflow.client.ui.administration.surface.FormLabelsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
@@ -361,8 +360,8 @@ public class UIAssembler
             LabelsView.class,
             MembersView.class,
             FormElementsView.class,
-            FormSignatureView.class,
-            FormSignaturesView.class,
+            //FormSignatureView.class,
+            //FormSignaturesView.class,
             SelectionElementsView.class,
             PageEditView.class,
             OrganizationUsersView.class,
@@ -396,7 +395,8 @@ public class UIAssembler
             LabelRuleView.class,
             PrioritiesView.class,
             PriorityView.class,
-            PriorityOnCaseView.class);
+            PriorityOnCaseView.class,
+            FormLabelsView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,

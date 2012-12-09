@@ -44,4 +44,7 @@ public interface FormDraftDTO
 
    @Optional
    Property<String> enteredEmails();
+
+   @Optional
+   Property<SecondSigneeInfoValue> secondsignee();
 }
