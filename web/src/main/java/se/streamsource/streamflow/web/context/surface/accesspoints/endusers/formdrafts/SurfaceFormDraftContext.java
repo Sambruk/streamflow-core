@@ -16,13 +16,12 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
@@ -36,6 +35,8 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -83,10 +84,52 @@ public class SurfaceFormDraftContext
       formDraft.addFormSignatureValue( signature );
    }
 
-   public void addsecondsigneeinfo( SecondSigneeInfoValue secondSignee )
+   public void updatesecondsigneeinfo( @Optional @Name("singlesignature") Boolean singlesignature,
+                                       @Optional @Name("name") String name,
+                                       @Optional @Name("socialsecuritynumber") String socialsecuritynumber,
+                                       @Optional @Name("phonenumber") String phonenumber,
+                                       @Optional @Name("email") String email,
+                                       @Optional @Name("secondformdraftreference") String secondformdraftreference )
    {
-      FormDraft formDraft = role( FormDraft.class );
-      formDraft.addSecondSigneeInfo( secondSignee );
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder;
+      SecondSigneeInfoValue secondSignee = formDraft.getFormDraftValue().secondsignee().get();
+
+      if( secondSignee == null )
+      {
+         secondSigneeBuilder = module.valueBuilderFactory().newValueBuilder( SecondSigneeInfoValue.class );
+      } else
+      {
+         secondSigneeBuilder = secondSignee.buildWith();
+      }
+
+      if( singlesignature != null )
+      {
+         secondSigneeBuilder.prototype().singlesignature().set( singlesignature );
+      }
+      if( name != null )
+      {
+         secondSigneeBuilder.prototype().name().set( name );
+      }
+      if( socialsecuritynumber != null )
+      {
+         secondSigneeBuilder.prototype().socialsecuritynumber().set( socialsecuritynumber );
+      }
+      if( phonenumber != null )
+      {
+         secondSigneeBuilder.prototype().phonenumber().set( phonenumber );
+      }
+      if( email != null )
+      {
+         secondSigneeBuilder.prototype().email().set( email );
+      }
+      if( secondformdraftreference != null )
+      {
+         secondSigneeBuilder.prototype().secondformdraftreference().set( secondformdraftreference );
+      }
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
    }
 
    public void removeSignatures()
