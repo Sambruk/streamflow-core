@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -25,6 +29,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
@@ -52,10 +57,6 @@ import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * JAVADOC

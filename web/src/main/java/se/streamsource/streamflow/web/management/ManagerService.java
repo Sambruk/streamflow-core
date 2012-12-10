@@ -16,8 +16,22 @@
  */
 package se.streamsource.streamflow.web.management;
 
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.Entity;
@@ -36,20 +50,6 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.spi.Qi4jSPI;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.DynamicMBean;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
 
 /**
  * JMX Management for Streamflow. Exposes all configurable services as MBeans,

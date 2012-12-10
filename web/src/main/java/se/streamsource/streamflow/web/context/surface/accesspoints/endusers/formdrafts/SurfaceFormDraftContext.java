@@ -16,10 +16,13 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
@@ -28,12 +31,11 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -79,6 +81,12 @@ public class SurfaceFormDraftContext
    {
       FormDraft formDraft = role( FormDraft.class );
       formDraft.addFormSignatureValue( signature );
+   }
+
+   public void addsecondsigneeinfo( SecondSigneeInfoValue secondSignee )
+   {
+      FormDraft formDraft = role( FormDraft.class );
+      formDraft.addSecondSigneeInfo( secondSignee );
    }
 
    public void removeSignatures()

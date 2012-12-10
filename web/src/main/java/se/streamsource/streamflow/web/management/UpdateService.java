@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.management;
 
+import java.beans.PropertyVetoException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -29,12 +33,9 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.infrastructure.NamedThreadFactory;
 import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
-
-import java.beans.PropertyVetoException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * TODO

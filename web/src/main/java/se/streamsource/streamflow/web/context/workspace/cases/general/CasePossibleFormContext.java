@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.context.workspace.cases.general;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.web.domain.structure.form.Form;

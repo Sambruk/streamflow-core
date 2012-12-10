@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.infrastructure.plugin.ldap;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.commons.collections.IteratorUtils;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.composite.TransientComposite;
@@ -42,6 +45,7 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
@@ -65,9 +69,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * A quartz job responsible for import of users an groups from ldap.

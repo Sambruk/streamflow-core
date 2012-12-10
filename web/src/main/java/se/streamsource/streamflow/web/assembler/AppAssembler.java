@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+
+import java.util.Properties;
+import java.util.ResourceBundle;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
@@ -30,6 +37,7 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
@@ -78,19 +86,13 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitV
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
-import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
-
-import java.util.Properties;
-import java.util.ResourceBundle;
-
-import static org.qi4j.api.common.Visibility.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

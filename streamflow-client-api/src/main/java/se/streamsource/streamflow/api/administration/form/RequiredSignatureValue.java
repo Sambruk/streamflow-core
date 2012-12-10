@@ -16,19 +16,40 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 /**
- * A required signature in a form definition. The description is optional,
- * but name is mandatory to provide.
+ * A required signature in a accesspoint definition.
  */
 public interface RequiredSignatureValue
       extends ValueComposite
 {
+   @UseDefaults
+   Property<Boolean> active();
+
+   @UseDefaults
    Property<String> name();
 
    @UseDefaults
    Property<String> description();
+
+   @Optional
+   @UseDefaults
+   Property<String> formid();
+
+   @Optional
+   @UseDefaults
+   Property<String> formdescription();
+
+   @Optional
+   @UseDefaults
+   Property<Boolean> mandatory();
+
+   @Optional
+   @UseDefaults
+   Property<String> question();
+
 }

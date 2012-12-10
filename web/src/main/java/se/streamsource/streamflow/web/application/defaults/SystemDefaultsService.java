@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.application.defaults;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -26,6 +28,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
@@ -50,8 +53,6 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * A service holding system default configuration properties.

@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -55,6 +56,8 @@ public class CaseLabelsView
 
    private CaseLabelsModel model;
    private StreamflowButton actionButton;
+
+   private boolean textBold;
 
    public CaseLabelsView(@Service ApplicationContext context, @Uses CaseLabelsModel model)
    {
@@ -102,9 +105,13 @@ public class CaseLabelsView
          }
 
          RemovableLabel label = new RemovableLabel(linkValue, knowledgeBase);
+         if( textBold )
+         {
+            label.getLabel().setFont( label.getLabel().getFont().deriveFont( Font.BOLD ) );
+         }
 
-         label.setToolTipText(linkValue.text().get());
-         label.getButton().addActionListener(getActionMap().get("remove"));
+         label.setToolTipText( linkValue.text().get() );
+         label.getButton().addActionListener( getActionMap().get( "remove" ) );
          label.setEnabled(isEnabled());
          add(label);
       }
@@ -174,5 +181,10 @@ public class CaseLabelsView
             actionButton.requestFocusInWindow();
          }
       } );
+   }
+
+   public void setTextBold( boolean textBold )
+   {
+      this.textBold = textBold;
    }
 }

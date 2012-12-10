@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import java.util.Date;
 import java.util.List;
 
@@ -23,16 +25,20 @@ import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -42,6 +48,7 @@ import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
  * Maintains list of submitted forms on a case
@@ -92,14 +99,36 @@ public interface SubmittedForms
          formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
-         // Check for signatures
-         RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, DTO.form().get().identity() );
-         if (!requiredSignatures.requiredSignatures().get().isEmpty())
+         // Check for active signatures, catch and ignore IllegalArgumentException if we do not have a role AccessPoint
+         // in that case we are coming from the clients form wizard!!
+         AccessPoint accessPoint = null;
+         try
          {
-            if (requiredSignatures.requiredSignatures().get().size() != DTO.signatures().get().size())
+            accessPoint= role( AccessPoint.class );
+         } catch( IllegalArgumentException ia )
+         {
+            // do nothing - this approach is used to determine if we are coming from Surface Webforms or from client form wizard.
+         }
+         if( accessPoint != null )
+         {
+            RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, ((Identity) accessPoint).identity().get() );
+            Iterable<RequiredSignatureValue> activeSignatures = Iterables.filter( new Specification<RequiredSignatureValue>()
             {
-               throw new IllegalArgumentException( "signatures_missing" );
+               public boolean satisfiedBy( RequiredSignatureValue item )
+               {
+                  return item.active().get();
+               }
+            },requiredSignatures.requiredSignatures().get() );
+
+
+            if ( Iterables.count( activeSignatures ) > 1 )
+            {
+               formBuilder.prototype().secondsignee().set( DTO.secondsignee().get() );
             }
+
+            // Transfer signatures
+            formBuilder.prototype().signatures().get().addAll(DTO.signatures().get());
+
          }
          
          ValueBuilder<SubmittedFieldValue> fieldBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFieldValue.class);
@@ -148,9 +177,6 @@ public interface SubmittedForms
 
             formBuilder.prototype().pages().get().add(pageBuilder.newInstance());
          }
-
-         // Transfer signatures
-         formBuilder.prototype().signatures().get().addAll(DTO.signatures().get());
 
          submittedForm( null, formBuilder.newInstance() );
 

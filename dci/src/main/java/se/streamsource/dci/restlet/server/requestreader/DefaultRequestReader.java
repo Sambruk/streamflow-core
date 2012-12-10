@@ -276,9 +276,15 @@ public class DefaultRequestReader
          // Parameter conversion
          Class<?> parameterType = method.getParameterTypes()[idx];
          Object arg = null;
-         if (parameterType.equals(String.class))
+         if (parameterType.equals(String.class) )
          {
-            arg = argString;
+            if( hasParamWithName( name.value(), queryAsForm, entityAsForm ) && argString == null )
+            {
+               arg = "";
+            } else
+            {
+               arg = argString;
+            }
          } else if (parameterType.equals(EntityReference.class))
          {
             arg = EntityReference.parseEntityReference(argString);
@@ -356,5 +362,13 @@ public class DefaultRequestReader
       if (value == null)
          value = entityAsForm.getFirstValue(name);
       return value;
+   }
+
+   private boolean hasParamWithName( String name, Form queryAsForm, Form entityAsForm )
+   {
+      Parameter param = queryAsForm.getFirst( name );
+      if( param == null )
+         param = entityAsForm.getFirst( name );
+      return param != null;
    }
 }

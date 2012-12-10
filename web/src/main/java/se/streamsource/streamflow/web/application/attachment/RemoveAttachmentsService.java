@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.application.attachment;
 
+import java.io.IOException;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
@@ -29,6 +31,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.EventReplayException;
@@ -41,8 +44,6 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
-import java.io.IOException;
 
 /**
  * Takes care of Attachement and AttachedFile removal.

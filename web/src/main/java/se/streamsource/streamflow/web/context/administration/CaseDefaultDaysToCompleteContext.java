@@ -16,17 +16,18 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import java.util.Locale;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.dci.value.FormValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.DefaultDaysToComplete;
-
-import java.util.Locale;
 
 /**
  * JAVADOC

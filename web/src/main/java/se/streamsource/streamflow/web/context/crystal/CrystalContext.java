@@ -16,6 +16,16 @@
  */
 package se.streamsource.streamflow.web.context.crystal;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.ResourceBundle;
+
+import javax.sql.DataSource;
+
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.json.JSONArray;
@@ -28,19 +38,11 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.value.table.TableBuilder;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.infrastructure.database.Databases;
-
-import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.ResourceBundle;
 
 /**
  * JAVADOC

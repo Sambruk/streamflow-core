@@ -16,16 +16,17 @@
  */
 package se.streamsource.streamflow.web.context.administration.filters;
 
+import java.io.IOException;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
-
-import java.io.IOException;
 
 /**
  * TODO

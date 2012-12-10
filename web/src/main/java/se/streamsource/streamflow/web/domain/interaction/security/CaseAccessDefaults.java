@@ -16,13 +16,14 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.security;
 
+import java.util.Map;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.Map;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Management of default case access rules.

@@ -16,17 +16,17 @@
  */
 package se.streamsource.streamflow.web.context;
 
-import se.streamsource.dci.api.InteractionConstraint;
-import se.streamsource.dci.api.InteractionConstraintDeclaration;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.security.Principal;
+
+import se.streamsource.dci.api.InteractionConstraint;
+import se.streamsource.dci.api.InteractionConstraintDeclaration;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 
 /**
  * Check if current principal has a given permission

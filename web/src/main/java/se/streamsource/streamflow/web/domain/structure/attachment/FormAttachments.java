@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.Identity;
@@ -24,10 +27,8 @@ import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * List of attached files

@@ -16,17 +16,17 @@
  */
 package se.streamsource.streamflow.web.domain.entity.organization;
 
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
-import se.streamsource.streamflow.web.domain.Describable;
+
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * This should be removed entirely in the long run since there are now

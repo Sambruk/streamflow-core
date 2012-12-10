@@ -16,11 +16,11 @@
  */
 package se.streamsource.streamflow.web.application.console;
 
+import java.util.Map;
+
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-
-import java.util.Map;
 
 /**
  * JAVADOC

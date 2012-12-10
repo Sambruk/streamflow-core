@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;

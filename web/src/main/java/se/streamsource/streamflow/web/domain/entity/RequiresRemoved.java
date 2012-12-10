@@ -16,12 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.entity;
 
-import org.qi4j.api.constraint.ConstraintDeclaration;
-import org.qi4j.api.constraint.Constraints;
-import se.streamsource.streamflow.web.domain.Removable;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.api.constraint.Constraints;
+
+import se.streamsource.streamflow.web.domain.Removable;
 
 /**
  * Check that a Removable is removed or not.

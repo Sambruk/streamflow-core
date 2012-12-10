@@ -16,12 +16,18 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -37,11 +43,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

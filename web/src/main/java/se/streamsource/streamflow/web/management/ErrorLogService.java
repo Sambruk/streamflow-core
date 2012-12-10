@@ -16,21 +16,6 @@
  */
 package se.streamsource.streamflow.web.management;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Application;
-
-import javax.management.MBeanException;
-import javax.management.MBeanServer;
-import javax.management.Notification;
-import javax.management.ObjectName;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.ModelMBeanInfoSupport;
-import javax.management.modelmbean.ModelMBeanNotificationInfo;
-import javax.management.modelmbean.RequiredModelMBean;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
@@ -41,6 +26,22 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.Notification;
+import javax.management.ObjectName;
+import javax.management.modelmbean.ModelMBeanInfo;
+import javax.management.modelmbean.ModelMBeanInfoSupport;
+import javax.management.modelmbean.ModelMBeanNotificationInfo;
+import javax.management.modelmbean.RequiredModelMBean;
+
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Application;
 
 /**
  * Service for exposing Logger errors JMX.

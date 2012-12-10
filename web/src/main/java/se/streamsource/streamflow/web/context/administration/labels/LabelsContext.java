@@ -16,18 +16,19 @@
  */
 package se.streamsource.streamflow.web.context.administration.labels;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

@@ -16,12 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
+import java.util.Date;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.Date;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Due date management for cases.

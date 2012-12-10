@@ -26,7 +26,7 @@ import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
@@ -50,6 +50,7 @@ public class AccessPointModel extends Observable
    private CommandQueryClient client;
 
    private AccessPointDTO accessPoint;
+   private ResourceValue resourceValue;
 
    public AccessPointModel(@Uses CommandQueryClient client, @Structure Module module)
    {
@@ -64,11 +65,11 @@ public class AccessPointModel extends Observable
 
    public void refresh() throws OperationException
    {
-      AccessPointDTO updatedDTO = client.query( "index", AccessPointDTO.class );
-      accessPoint = (AccessPointDTO) updatedDTO.buildWith().prototype();
+      resourceValue = client.query();
+      accessPoint = (AccessPointDTO) resourceValue.index().get().buildWith().prototype();
 
       setChanged();
-      notifyObservers();
+      notifyObservers( resourceValue );
    }
 
    public Object getPossibleProjects()
@@ -148,8 +149,11 @@ public class AccessPointModel extends Observable
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
+         Form form = new Form();
+         form.add( "filteron", "pdf" );
+
          LinksValue listValue = client.query( "possibleformtemplates",
-               LinksValue.class, getStringValue( "pdf" ));
+               LinksValue.class, form );
          list.addAll( listValue.links().get() );
 
          return list;
@@ -172,22 +176,125 @@ public class AccessPointModel extends Observable
       }
    }
 
-   public void setMailSelectionMessage( String message )
+   public void changeMailSelectionMessage( String message )
    {
       Form form = new Form( );
       form.set( "mailmessage", message );
       client.postCommand( "changemailselectionmessage", form );
    }
 
-   public void resetMailSelectionMessage()
+   public void setSignActive1( boolean selected )
    {
-      client.postCommand( "resetmailselectionmessage" );
+      if( !accessPoint.primarysign().get().active().get().equals( selected ) )
+      {
+         Form form = new Form( );
+         form.set( "active", "" + selected );
+
+         client.postCommand( "updateprimarysignactive", form );
+      }
    }
 
-   private StringValue getStringValue( String id )
+   public void setSignName1( String text )
    {
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
-      builder.prototype().string().set( id );
-      return builder.newInstance();
+      if( !text.equals( accessPoint.primarysign().get().name().get() ))
+      {
+         Form form = new Form( );
+         form.set( "name", text );
+
+         client.postCommand( "updateprimarysign", form );
+      }
+   }
+
+   public void setSignDescription1( String text )
+   {
+      if( !text.equals( accessPoint.primarysign().get().name().get() ))
+      {
+         Form form = new Form( );
+         form.set( "description", text );
+
+         client.postCommand( "updateprimarysign", form );
+      }
+   }
+
+   public void setSignActive2( boolean selected )
+   {
+      if( !accessPoint.secondarysign().get().active().get().equals( selected ) )
+      {
+         Form form = new Form( );
+         form.set( "active", "" + selected );
+
+         client.postCommand( "updatesecondarysignactive", form );
+      }
+   }
+
+   public void setSignName2( String text )
+   {
+      if( !text.equals( accessPoint.secondarysign().get().name().get() ))
+      {
+         Form form = new Form( );
+         form.set( "name", text );
+
+         client.postCommand( "updatesecondarysign", form );
+      }
+   }
+
+   public void setSignDescription2( String text )
+   {
+      if( !text.equals( accessPoint.secondarysign().get().name().get() ))
+      {
+         Form form = new Form( );
+         form.set( "description", text );
+
+         client.postCommand( "updatesecondarysign", form );
+      }
+   }
+
+   public void changeSecondForm( LinkValue selectedLink )
+   {
+      Form form = new Form();
+      form.set( "formid", selectedLink.id().get() );
+      form.set( "formdescription", selectedLink.text().get() );
+
+      client.postCommand( "updatesecondarysign", form );
+   }
+
+   public void setSecondMandatory( boolean selected )
+   {
+      if( !accessPoint.secondarysign().get().mandatory().get().equals( selected ) )
+      {
+         Form form = new Form( );
+         form.set( "mandatory", "" + selected );
+
+         client.postCommand( "updatesecondarysign", form );
+      }
+   }
+
+   public void setQuestion( String text )
+   {
+      if( !text.equals( accessPoint.secondarysign().get().question().get() ))
+      {
+         Form form = new Form( );
+         form.set( "question", text );
+
+         client.postCommand( "updatesecondarysign", form );
+      }
+   }
+
+   public EventList<LinkValue> getPossibleSecondForms()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         LinksValue listValue = client.query( "possiblesecondforms",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
+      }
    }
 }

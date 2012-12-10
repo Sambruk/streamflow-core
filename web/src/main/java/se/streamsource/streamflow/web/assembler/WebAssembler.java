@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.qi4j.api.common.Visibility;
@@ -36,6 +39,7 @@ import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import org.restlet.security.ChallengeAuthenticator;
+
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.dci.restlet.server.ResultConverter;
@@ -53,9 +57,6 @@ import se.streamsource.streamflow.web.rest.service.conversation.ConversationResp
 import se.streamsource.streamflow.web.rest.service.conversation.NotificationService;
 import se.streamsource.streamflow.web.rest.service.filter.FilterConfiguration;
 import se.streamsource.streamflow.web.rest.service.filter.FilterService;
-
-import static org.qi4j.api.common.Visibility.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

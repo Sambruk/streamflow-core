@@ -16,14 +16,16 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.signature;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -33,8 +35,6 @@ import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

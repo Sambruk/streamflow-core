@@ -16,10 +16,19 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.util.Strings.empty;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.io.Input;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
@@ -27,14 +36,6 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-
-import static se.streamsource.dci.api.RoleMap.role;
-import static se.streamsource.streamflow.util.Strings.empty;
 
 /**
  * JAVADOC

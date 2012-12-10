@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.domain.entity.organization;
 
 import org.qi4j.api.injection.scope.This;
+
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 

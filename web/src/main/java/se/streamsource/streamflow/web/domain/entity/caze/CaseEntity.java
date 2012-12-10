@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.domain.entity.caze;
 
+import java.net.URISyntaxException;
+import java.util.Calendar;
+import java.util.Map;
+
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
@@ -29,6 +33,7 @@ import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
@@ -92,10 +97,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.PrioritySett
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-
-import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.Map;
 
 /**
  * This represents a single Case in the system

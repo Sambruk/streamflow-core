@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.context.workspace.cases;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;

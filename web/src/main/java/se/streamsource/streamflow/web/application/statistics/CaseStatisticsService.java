@@ -16,6 +16,16 @@
  */
 package se.streamsource.streamflow.web.application.statistics;
 
+import static org.qi4j.api.specification.Specifications.and;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntityTypes;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.paramIs;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Stack;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
@@ -36,6 +46,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -86,14 +97,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Stack;
-
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Consumes domain events and creates application events for statistics.

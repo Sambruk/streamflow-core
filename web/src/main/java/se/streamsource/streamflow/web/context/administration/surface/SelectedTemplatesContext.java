@@ -16,10 +16,16 @@
  */
 package se.streamsource.streamflow.web.context.administration.surface;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -30,11 +36,6 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 
 /**
@@ -58,6 +59,7 @@ public class SelectedTemplatesContext
          linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
          linkBuilder.prototype().id().set( ref.identity() );
          linkBuilder.prototype().href().set( ref.identity() );
+         linkBuilder.prototype().rel().set( "pdftemplate" );
          builder.prototype().defaultPdfTemplate().set( linkBuilder.newInstance() );
       }
 
@@ -70,6 +72,7 @@ public class SelectedTemplatesContext
          linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
          linkBuilder.prototype().id().set( ref.identity() );
          linkBuilder.prototype().href().set( ref.identity() );
+         linkBuilder.prototype().rel().set( "pdftemplate" );
          builder.prototype().formPdfTemplate().set( linkBuilder.newInstance() );
       }
 
@@ -82,6 +85,7 @@ public class SelectedTemplatesContext
          linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
          linkBuilder.prototype().id().set( ref.identity() );
          linkBuilder.prototype().href().set( ref.identity() );
+         linkBuilder.prototype().rel().set( "pdftemplate" );
          builder.prototype().casePdfTemplate().set( linkBuilder.newInstance() );
       }
 

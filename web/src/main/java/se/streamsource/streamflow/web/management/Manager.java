@@ -16,15 +16,16 @@
  */
 package se.streamsource.streamflow.web.management;
 
+import java.io.IOException;
+import java.text.ParseException;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 
-import java.io.IOException;
-import java.text.ParseException;
+import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 
 /**
  * Management methods for Streamflow. These operations are available

@@ -16,21 +16,22 @@
  */
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * JAVADOC

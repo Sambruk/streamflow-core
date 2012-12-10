@@ -16,10 +16,10 @@
  */
 package se.streamsource.streamflow.web.infrastructure.index;
 
+import java.io.Reader;
+
 import org.apache.lucene.analysis.WhitespaceTokenizer;
 import org.apache.lucene.util.AttributeSource;
-
-import java.io.Reader;
 
 /**
  * JAVADOC

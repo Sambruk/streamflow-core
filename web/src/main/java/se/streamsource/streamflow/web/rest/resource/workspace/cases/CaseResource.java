@@ -16,12 +16,16 @@
  */
 package se.streamsource.streamflow.web.rest.resource.workspace.cases;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
@@ -34,9 +38,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.rest.resource.workspace.cases.conversation.ConversationsResource;
 import se.streamsource.streamflow.web.rest.resource.workspace.cases.form.CaseSubmittedFormsResource;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * JAVADOC

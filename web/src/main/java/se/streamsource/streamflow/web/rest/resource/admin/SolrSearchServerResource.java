@@ -16,6 +16,12 @@
  */
 package se.streamsource.streamflow.web.rest.resource.admin;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Map;
+
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.qi4j.api.injection.scope.Service;
@@ -28,13 +34,8 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import se.streamsource.streamflow.web.infrastructure.index.SolrSearch;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Map;
+import se.streamsource.streamflow.web.infrastructure.index.SolrSearch;
 
 /**
  * JAVADOC

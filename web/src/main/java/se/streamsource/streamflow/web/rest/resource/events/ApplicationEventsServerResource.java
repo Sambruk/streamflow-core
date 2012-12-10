@@ -16,6 +16,15 @@
  */
 package se.streamsource.streamflow.web.rest.resource.events;
 
+import static java.util.Collections.reverse;
+import static org.qi4j.api.io.Outputs.collection;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.util.DateFunctions;
 import org.restlet.data.CharacterSet;
@@ -31,19 +40,11 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static java.util.Collections.reverse;
-import static org.qi4j.api.io.Outputs.collection;
 
 /**
  * Get application events before or after a given date in various formats
