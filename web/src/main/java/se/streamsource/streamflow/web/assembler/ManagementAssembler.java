@@ -52,6 +52,7 @@ import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
@@ -368,7 +369,8 @@ public class ManagementAssembler extends AbstractLayerAssembler
                   public boolean satisfiedBy( EntityState state )
                   {
                      return state.isOfType( TypeName.nameOf( AccessPointEntity.class ) ) &&
-                           (state.getManyAssociation( QualifiedName.fromClass( SelectedForms.Data.class, "selectedForms" ) ).count() > 0 );
+                           (state.getManyAssociation( QualifiedName.fromClass( SelectedForms.Data.class, "selectedForms" ) ).count() > 0
+                           &&  !(Boolean)state.getProperty( QualifiedName.fromClass( Removable.Data.class, "removed" ) ) );
 
                   }
                }, Outputs.withReceiver( new Receiver<EntityState, Throwable>()

@@ -90,7 +90,8 @@ public interface EndUserCases
             caze.addContact(builder.newInstance());
          }
 
-         if( !formSubmission.getFormDraftValue().secondsignee().get().singlesignature().get() )
+         if( formSubmission.getFormDraftValue().secondsignee().get() != null
+            &&!formSubmission.getFormDraftValue().secondsignee().get().singlesignature().get() )
          {
             SecondSigneeInfoValue secondSignee = formSubmission.getFormDraftValue().secondsignee().get();
             ContactBuilder builder = new ContactBuilder( module.valueBuilderFactory() );

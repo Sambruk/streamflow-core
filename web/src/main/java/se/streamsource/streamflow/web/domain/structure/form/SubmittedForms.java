@@ -98,8 +98,16 @@ public interface SubmittedForms
          formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
-         // Check for active signatures
-         AccessPoint accessPoint = role( AccessPoint.class );
+         // Check for active signatures, catch and ignore IllegalArgumentException if we do not have a role AccessPoint
+         // in that case we are coming from the clients form wizard!!
+         AccessPoint accessPoint = null;
+         try
+         {
+            accessPoint= role( AccessPoint.class );
+         } catch( IllegalArgumentException ia )
+         {
+            // do nothing - this approach is used to determine if we are coming from Surface Webforms or from client form wizard.
+         }
          if( accessPoint != null )
          {
             RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, ((Identity) accessPoint).identity().get() );
