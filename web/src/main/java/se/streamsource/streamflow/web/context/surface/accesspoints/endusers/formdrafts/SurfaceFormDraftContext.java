@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -28,13 +30,12 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
-import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -82,10 +83,20 @@ public class SurfaceFormDraftContext
       formDraft.addFormSignatureValue( signature );
    }
 
-   public void addsecondsigneeinfo( SecondSigneeInfoValue secondSignee )
+   /*public void addsecondsigneeinfo( SecondSigneeInfoValue secondSignee )
    {
       FormDraft formDraft = role( FormDraft.class );
       formDraft.addSecondSigneeInfo( secondSignee );
+   }*/
+
+   public void updatesecondsigneeinfo( @Optional @Name("singlesignature") boolean singlesignature,
+                                       @Optional @Name("name") String name,
+                                       @Optional @Name("socialsecuritynumber") String socialsecuritynumber,
+                                       @Optional @Name("phonenumber") String phonenumber,
+                                       @Optional @Name("email") String email,
+                                       @Optional @Name("secondformdraftreference") String secondformdraftreference )
+   {
+
    }
 
    public void removeSignatures()
