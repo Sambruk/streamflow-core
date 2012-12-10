@@ -16,15 +16,17 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
@@ -39,11 +41,8 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
-import se.streamsource.streamflow.client.util.EventListSynch;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 
 /**
  * Model for the info and actions on a case.
@@ -57,20 +56,11 @@ public class CaseModel
    @Uses
    CasesModel casesModel;
 
-   private TransactionList<LinkValue> subcases = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
-
    public void refresh()
    {
       super.refresh();
 
       CaseDTO caseDTO = getIndex();
-
-      EventListSynch.synchronize( caseDTO.subcases().get().links().get(), subcases );
-   }
-
-   public TransactionList<LinkValue> getSubcases()
-   {
-      return subcases;
    }
 
    public void open()
@@ -184,11 +174,6 @@ public class CaseModel
    public void reinstate()
    {
       client.command( "reinstate" );
-   }
-
-   public CaseModel newParentCase()
-   {
-      return casesModel.newCaseModel(getIndex().parentCase().get().href().get());
    }
 
    public CaseGeneralModel newGeneralModel()

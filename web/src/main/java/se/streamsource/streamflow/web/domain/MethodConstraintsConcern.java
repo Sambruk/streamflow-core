@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.domain;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Collections;
+
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
@@ -29,10 +33,6 @@ import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Invocation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collections;
 
 /**
  * Check method constraints. A method constraint is an 

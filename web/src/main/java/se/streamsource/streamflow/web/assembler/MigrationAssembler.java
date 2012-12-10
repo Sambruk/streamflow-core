@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import java.io.IOException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,8 +30,6 @@ import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.migration.assembly.MigrationOperation;
-
-import java.io.IOException;
 
 /**
  * This assembler contains all the migration rules for Streamflow

@@ -16,12 +16,17 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
@@ -30,10 +35,6 @@ import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Case priorities context

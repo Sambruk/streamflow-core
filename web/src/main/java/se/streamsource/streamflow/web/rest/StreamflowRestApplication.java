@@ -28,6 +28,7 @@ import org.restlet.routing.Router;
 import org.restlet.security.Enroler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.web.application.security.DefaultEnroler;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 import se.streamsource.streamflow.web.rest.resource.APIRouter;

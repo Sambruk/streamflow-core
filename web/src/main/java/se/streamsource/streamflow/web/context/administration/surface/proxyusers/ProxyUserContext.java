@@ -16,19 +16,20 @@
  */
 package se.streamsource.streamflow.web.context.administration.surface.proxyusers;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.io.IOException;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-
-import java.io.IOException;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

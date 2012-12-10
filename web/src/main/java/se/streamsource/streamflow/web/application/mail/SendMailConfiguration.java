@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
 /**

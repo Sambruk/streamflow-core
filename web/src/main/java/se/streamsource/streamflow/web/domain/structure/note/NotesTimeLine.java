@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.domain.structure.note;
 
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
@@ -26,12 +28,11 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
-
-import java.util.List;
 
 /**
  * Marker interface for notes.

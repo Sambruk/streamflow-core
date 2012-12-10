@@ -16,9 +16,12 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
@@ -33,8 +36,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-
-import java.util.List;
 
 /**
  * JAVADOC

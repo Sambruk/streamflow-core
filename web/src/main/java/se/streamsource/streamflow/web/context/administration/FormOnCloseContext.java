@@ -16,11 +16,14 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.dci.value.link.LinkValue;
@@ -39,8 +42,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * The context representing the mandatory form to be filled out on closing a case.

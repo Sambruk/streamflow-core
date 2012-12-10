@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.surface.endusers.forms;
+package se.streamsource.streamflow.web.context.surface.customers.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 /**
  * JAVADOC
  */
-public class MyPagesSubmittedFormsContext
+public class MyCasesSubmittedFormsContext
       implements IndexContext<LinksValue>
 {
    @Structure

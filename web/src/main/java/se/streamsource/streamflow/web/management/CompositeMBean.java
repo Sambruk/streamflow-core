@@ -16,18 +16,18 @@
  */
 package se.streamsource.streamflow.web.management;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.property.StateHolder;
-import org.qi4j.spi.Qi4jSPI;
-import org.slf4j.LoggerFactory;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -44,18 +44,19 @@ import javax.management.MBeanParameterInfo;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ReflectionException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.spi.Qi4jSPI;
+import org.slf4j.LoggerFactory;
 
 /**
  * Expose a TransientComposite as an MBean. All properties are used as JMX attributes. The rest

@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -29,14 +32,12 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Classes;
+
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**

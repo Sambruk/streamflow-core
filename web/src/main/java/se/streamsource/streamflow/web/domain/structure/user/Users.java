@@ -25,6 +25,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.api.Username;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;

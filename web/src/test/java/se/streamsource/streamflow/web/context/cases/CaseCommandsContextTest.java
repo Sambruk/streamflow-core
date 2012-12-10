@@ -16,6 +16,19 @@
  */
 package se.streamsource.streamflow.web.context.cases;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.qi4j.api.util.Iterables.first;
+import static org.qi4j.api.util.Iterables.last;
+
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.ArrayStack;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,6 +42,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.api.Contexts;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
@@ -62,16 +76,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import static java.util.Arrays.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Check lifecycle of a case

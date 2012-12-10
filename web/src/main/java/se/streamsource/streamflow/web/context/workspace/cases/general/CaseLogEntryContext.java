@@ -16,10 +16,14 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
@@ -29,8 +33,6 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
-
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 @RequiresPermission(PermissionType.read)
 public class CaseLogEntryContext

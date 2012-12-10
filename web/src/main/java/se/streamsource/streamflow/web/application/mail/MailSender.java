@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.common.Optional;
+
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreator;
 

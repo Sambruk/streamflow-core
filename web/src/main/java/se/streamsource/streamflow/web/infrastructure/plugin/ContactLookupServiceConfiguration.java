@@ -16,7 +16,6 @@
  */
 package se.streamsource.streamflow.web.infrastructure.plugin;
 
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
 /**
  * Marker interface

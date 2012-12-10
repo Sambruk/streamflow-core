@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.rest.resource.organizations;
 
+import java.util.List;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksBuilder;
@@ -23,8 +25,6 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.administration.surface.SelectedTemplatesContext;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-
-import java.util.List;
 
 public class SelectedTemplatesResource extends CommandQueryResource
 {

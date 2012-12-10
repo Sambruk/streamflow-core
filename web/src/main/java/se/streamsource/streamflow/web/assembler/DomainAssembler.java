@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.specification.Specifications;
@@ -26,6 +28,7 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
 import se.streamsource.streamflow.api.assembler.ClientAPIAssembler;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
@@ -34,6 +37,8 @@ import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
+import se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity;
+import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldGroupEntity;
@@ -68,8 +73,6 @@ import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
-
-import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
@@ -119,7 +122,7 @@ public class DomainAssembler
    private void users(ModuleAssembly module) throws AssemblyException
    {
       module.entities( UsersEntity.class, UserEntity.class, EmailUserEntity.class, ProxyUserEntity.class, EndUserEntity.class,
-            PerspectiveEntity.class ).visibleIn( application );
+            PerspectiveEntity.class, CustomersEntity.class, CustomerEntity.class ).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor("solrquery", "");

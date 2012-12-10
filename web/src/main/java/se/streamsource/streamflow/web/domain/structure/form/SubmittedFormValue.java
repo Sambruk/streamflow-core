@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.Date;
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
@@ -24,12 +27,10 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
+
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * JAVADOC

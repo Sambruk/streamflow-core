@@ -16,10 +16,18 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
@@ -27,13 +35,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
 
 /**
  * JAVADOC

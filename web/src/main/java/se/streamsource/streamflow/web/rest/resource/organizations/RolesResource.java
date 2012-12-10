@@ -16,15 +16,16 @@
  */
 package se.streamsource.streamflow.web.rest.resource.organizations;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.administration.RoleContext;
 import se.streamsource.streamflow.web.context.administration.RolesContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

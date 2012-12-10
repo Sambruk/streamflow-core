@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.web.rest.resource.events;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.service.qualifier.Tagged;
 import org.qi4j.api.util.DateFunctions;
@@ -32,17 +39,11 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Get events before or after a given date in various formats

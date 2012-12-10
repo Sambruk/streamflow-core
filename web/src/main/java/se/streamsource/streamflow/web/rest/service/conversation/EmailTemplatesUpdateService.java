@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.rest.service.conversation;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
@@ -24,11 +28,8 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 
 /**
  * When the list of possible templates for emails has been updated this service

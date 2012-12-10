@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.application.dueon;
 
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
@@ -26,11 +30,8 @@ import org.quartz.JobDetail;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
-import static org.quartz.CronScheduleBuilder.*;
-import static org.quartz.JobBuilder.*;
-import static org.quartz.TriggerBuilder.*;
+import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
 /**
  * TODO

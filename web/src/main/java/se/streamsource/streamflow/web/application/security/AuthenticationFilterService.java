@@ -16,7 +16,10 @@
  */
 package se.streamsource.streamflow.web.application.security;
 
+import java.io.IOException;
+
 import net.sf.ehcache.Element;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -50,6 +53,7 @@ import org.restlet.routing.Filter;
 import org.restlet.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
@@ -67,8 +71,6 @@ import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-
-import java.io.IOException;
 
 @Mixins(AuthenticationFilterService.Mixin.class)
 public interface AuthenticationFilterService extends ServiceComposite, Configuration, Activatable, ServiceCircuitBreaker

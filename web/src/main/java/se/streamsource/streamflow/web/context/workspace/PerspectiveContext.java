@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.context.workspace;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.Collections;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -24,10 +28,6 @@ import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.Perspective;
 import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
-
-import java.util.Collections;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

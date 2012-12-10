@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.infrastructure.caching;
 
 import net.sf.ehcache.CacheManager;
+
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;

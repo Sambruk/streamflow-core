@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.entity.project;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityReference;
@@ -29,6 +32,7 @@ import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.filter.ActionValue;
 import se.streamsource.streamflow.api.administration.filter.EmailActionValue;
@@ -58,9 +62,6 @@ import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JAVADOC

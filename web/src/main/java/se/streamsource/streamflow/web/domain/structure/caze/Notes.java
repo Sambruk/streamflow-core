@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.domain.structure.caze;
 
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -25,11 +27,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
-
-import java.util.List;
 
 /**
  * Maintain a note. A note is a longer multi-line string.

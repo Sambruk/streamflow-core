@@ -16,6 +16,11 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.Date;
+import java.util.List;
+
 import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
@@ -30,6 +35,7 @@ import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
@@ -43,11 +49,6 @@ import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-
-import java.util.Date;
-import java.util.List;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * Maintains list of submitted forms on a case

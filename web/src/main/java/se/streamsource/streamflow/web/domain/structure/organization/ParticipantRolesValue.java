@@ -16,12 +16,12 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import java.util.List;
+
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
 
 /**
  * Roles that a particular participant has

@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
@@ -32,11 +35,10 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * Contains priority definitions.

@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.context.overview;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;

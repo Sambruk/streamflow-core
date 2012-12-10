@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.infrastructure.logging;
 
+import java.io.File;
+
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -23,9 +25,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
-import java.io.File;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
  * JAVADOC

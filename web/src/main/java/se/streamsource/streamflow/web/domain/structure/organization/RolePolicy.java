@@ -16,6 +16,14 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.ConcernOf;
@@ -29,19 +37,12 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
-
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.qi4j.api.entity.EntityReference.*;
 /**
  * Policy for managing Roles assigned to Participants. Participants
  * can have a list of Roles assigned to them, which can be granted and revoked.

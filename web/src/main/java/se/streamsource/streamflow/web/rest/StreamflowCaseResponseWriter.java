@@ -16,15 +16,16 @@
  */
 package se.streamsource.streamflow.web.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.value.Value;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.responsewriter.AbstractResponseWriter;
 
-import java.util.ArrayList;
-import java.util.List;
+import se.streamsource.dci.restlet.server.responsewriter.AbstractResponseWriter;
 
 /**
  * TODO

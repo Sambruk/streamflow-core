@@ -29,6 +29,7 @@ public interface OpenCaseDTO
 {
    Property<String> description();
    Property<Date> creationDate();
+   Property<String> createdBy();
    Property<String> caseId();
    Property<String> status();
    Property<String> project();

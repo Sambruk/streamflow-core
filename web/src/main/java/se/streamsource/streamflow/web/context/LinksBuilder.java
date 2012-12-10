@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.context;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.Describable;
 

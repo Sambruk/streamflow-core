@@ -16,10 +16,10 @@
  */
 package se.streamsource.streamflow.web.application.pdf;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-
-import java.io.IOException;
 
 
 public class PdfFont

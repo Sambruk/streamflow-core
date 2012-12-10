@@ -16,12 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.constraint.ConstraintDeclaration;
-import org.qi4j.api.constraint.Constraints;
-import se.streamsource.streamflow.web.domain.structure.caze.Notes;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.api.constraint.Constraints;
+
+import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 
 /**
  * Check that the note specified is the last note.

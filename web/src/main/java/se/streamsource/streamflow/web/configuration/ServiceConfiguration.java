@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.configuration;
 
+import java.io.File;
+
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,9 +30,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
-import java.io.File;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
  * Initial configurations for all services

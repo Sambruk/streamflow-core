@@ -16,9 +16,14 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.Locale;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -26,10 +31,6 @@ import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemp
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
-
-import java.util.Locale;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

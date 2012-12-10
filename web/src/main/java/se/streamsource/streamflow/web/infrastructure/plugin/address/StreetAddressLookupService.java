@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.infrastructure.plugin.address;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -37,6 +40,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
 import se.streamsource.dci.restlet.client.NullResponseHandler;
@@ -45,9 +49,6 @@ import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Service that looks up street addresses in a REST plugin

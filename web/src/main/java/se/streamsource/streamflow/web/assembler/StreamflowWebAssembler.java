@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
+
 import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
 
 /**

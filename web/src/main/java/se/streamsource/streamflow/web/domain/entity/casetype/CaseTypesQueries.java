@@ -16,6 +16,12 @@
  */
 package se.streamsource.streamflow.web.domain.entity.casetype;
 
+import static org.qi4j.api.query.QueryExpressions.and;
+import static org.qi4j.api.query.QueryExpressions.contains;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.isNotNull;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
@@ -25,6 +31,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -36,8 +43,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC

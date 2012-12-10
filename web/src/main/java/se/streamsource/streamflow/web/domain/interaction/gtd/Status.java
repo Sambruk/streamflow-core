@@ -16,17 +16,21 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.CLOSED;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.ON_HOLD;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
-
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * Status for a case. Possible transitions are:

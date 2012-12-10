@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.infrastructure.attachment;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.qi4j.api.injection.scope.Service;
@@ -27,13 +31,10 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
+
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * JAVADOC

@@ -16,6 +16,15 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
+
+import javax.sql.DataSource;
+
 import org.qi4j.api.cache.CacheOptions;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.common.TypeName;
@@ -46,6 +55,7 @@ import org.qi4j.spi.entitystore.EntityStoreException;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 import se.streamsource.infrastructure.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
@@ -85,13 +95,6 @@ import se.streamsource.streamflow.web.management.UpdateOperation;
 import se.streamsource.streamflow.web.management.UpdateService;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorService;
-
-import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
-
-import static org.qi4j.api.common.Visibility.*;
 
 /**
  * Assembler for management layer

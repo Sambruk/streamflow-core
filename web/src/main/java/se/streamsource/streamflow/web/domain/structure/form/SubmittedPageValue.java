@@ -16,13 +16,14 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.List;
+
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 
-import java.util.List;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 
 /**
  * JAVADOC

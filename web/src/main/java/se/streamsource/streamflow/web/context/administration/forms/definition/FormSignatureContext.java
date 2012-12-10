@@ -16,15 +16,15 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.io.IOException;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
-
-import java.io.IOException;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

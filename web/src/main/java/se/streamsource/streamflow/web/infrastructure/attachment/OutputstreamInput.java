@@ -16,16 +16,17 @@
  */
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.io.Receiver;
-import org.qi4j.api.io.Sender;
-import se.streamsource.streamflow.util.Visitor;
-
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+
+import se.streamsource.streamflow.util.Visitor;
 
 /**
  * An Input that allows a Visitor to write to an OutputStream. The stream is a BufferedOutputStream, so when enough

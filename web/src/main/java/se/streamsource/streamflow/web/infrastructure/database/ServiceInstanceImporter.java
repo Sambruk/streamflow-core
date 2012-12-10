@@ -18,7 +18,6 @@ package se.streamsource.streamflow.web.infrastructure.database;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.service.ImportedServiceDescriptor;
-import org.qi4j.api.service.ServiceFinder;
 import org.qi4j.api.service.ServiceImporter;
 import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.service.ServiceReference;

@@ -16,7 +16,10 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.accesspoints;
 
+import java.util.List;
+
 import org.qi4j.api.constraint.Name;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.value.link.LinksValue;
@@ -29,8 +32,6 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-
-import java.util.List;
 
 /**
  * JAVADOC

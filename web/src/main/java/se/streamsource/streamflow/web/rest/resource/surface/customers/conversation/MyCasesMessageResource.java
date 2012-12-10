@@ -14,34 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface.endusers;
+package se.streamsource.streamflow.web.rest.resource.surface.customers.conversation;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.account.ContactableContext;
-import se.streamsource.streamflow.web.context.account.ProfileContext;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessageContext;
+import se.streamsource.streamflow.web.rest.resource.workspace.cases.AttachmentsResource;
 
 /**
- * JAVADOC
+ *
  */
-public class EndUserResource
+public class MyCasesMessageResource
       extends CommandQueryResource
 {
-   @SubResource
-   public void open()
+   public MyCasesMessageResource()
    {
-      subResource(OpenCasesResource.class);
+      super( MessageContext.class );
    }
 
    @SubResource
-   public void closed()
+   public void attachments()
    {
-      subResource(ClosedCasesResource.class);
+      subResource( AttachmentsResource.class );
    }
 
-   @SubResource
-   public void profile()
-   {
-      subResourceContexts(ProfileContext.class, ContactableContext.class);
-   }
 }

@@ -16,6 +16,17 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases;
 
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.CLOSED;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.ON_HOLD;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Service;
@@ -24,6 +35,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
@@ -69,14 +81,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.dci.api.RoleMap.*;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC

@@ -14,11 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.surface.endusers.forms;
+package se.streamsource.streamflow.web.context.surface.customers.forms;
+
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.Locale;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -27,14 +32,10 @@ import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplat
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 
-import java.util.Locale;
-
-import static se.streamsource.dci.api.RoleMap.*;
-
 /**
  * JAVADOC
  */
-public class MyPagesSubmittedFormContext
+public class MyCasesSubmittedFormContext
 {
    @Service
    PdfGeneratorService pdfGenerator;

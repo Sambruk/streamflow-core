@@ -16,9 +16,15 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
@@ -39,11 +45,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

@@ -22,6 +22,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.surface.api.AttachmentFieldDTO;
 import se.streamsource.streamflow.surface.api.AttachmentFieldSubmission;
 import se.streamsource.streamflow.surface.api.CaseFormDTO;
+import se.streamsource.streamflow.surface.api.CaseListItemDTO;
 import se.streamsource.streamflow.surface.api.ClosedCaseDTO;
 import se.streamsource.streamflow.surface.api.EndUserCaseDTO;
 import se.streamsource.streamflow.surface.api.FormSignatureDTO;
@@ -42,6 +43,7 @@ public class SurfaceAPIAssembler
               OpenCaseDTO.class,
               AttachmentFieldDTO.class,
               AttachmentFieldSubmission.class,
-              FormSignatureDTO.class);
+              FormSignatureDTO.class,
+              CaseListItemDTO.class);
    }
 }

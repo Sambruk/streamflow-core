@@ -16,6 +16,12 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -23,6 +29,7 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
@@ -41,11 +48,6 @@ import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC

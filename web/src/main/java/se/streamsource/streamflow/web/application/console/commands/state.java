@@ -16,13 +16,14 @@
  */
 package se.streamsource.streamflow.web.application.console.commands;
 
-import bsh.CallStack;
-import bsh.Interpreter;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.spi.Qi4jSPI;
+
+import bsh.CallStack;
+import bsh.Interpreter;
 
 /**
  * JAVADOC

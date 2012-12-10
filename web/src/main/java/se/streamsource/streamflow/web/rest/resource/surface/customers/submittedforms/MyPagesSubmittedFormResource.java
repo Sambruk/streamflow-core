@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.rest.resource.surface.endusers.submittedforms;
+package se.streamsource.streamflow.web.rest.resource.surface.customers.submittedforms;
 
 import static se.streamsource.dci.api.RoleMap.role;
 
@@ -30,7 +30,7 @@ import org.restlet.representation.OutputRepresentation;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
-import se.streamsource.streamflow.web.context.surface.endusers.forms.MyPagesSubmittedFormContext;
+import se.streamsource.streamflow.web.context.surface.customers.forms.MyCasesSubmittedFormContext;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 
@@ -47,7 +47,7 @@ public class MyPagesSubmittedFormResource
 
    public OutputRepresentation generateformaspdf() throws Throwable
    {      
-      final PDDocument pdf = context(MyPagesSubmittedFormContext.class).generateformaspdf();
+      final PDDocument pdf = context(MyCasesSubmittedFormContext.class).generateformaspdf();
 
       SubmittedFormValue submittedFormValue = role(SubmittedFormValue.class);
 

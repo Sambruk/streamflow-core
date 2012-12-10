@@ -16,6 +16,11 @@
  */
 package se.streamsource.streamflow.web.application.organization;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -25,6 +30,7 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
@@ -62,11 +68,6 @@ import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * Generates test data

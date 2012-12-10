@@ -16,16 +16,17 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
+import java.util.Date;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
-
-import java.util.Date;
 
 /**
  * JAVADOC

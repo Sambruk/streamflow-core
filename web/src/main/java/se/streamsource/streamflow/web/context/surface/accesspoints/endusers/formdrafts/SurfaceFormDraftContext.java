@@ -30,6 +30,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
@@ -83,20 +84,52 @@ public class SurfaceFormDraftContext
       formDraft.addFormSignatureValue( signature );
    }
 
-   /*public void addsecondsigneeinfo( SecondSigneeInfoValue secondSignee )
-   {
-      FormDraft formDraft = role( FormDraft.class );
-      formDraft.addSecondSigneeInfo( secondSignee );
-   }*/
-
-   public void updatesecondsigneeinfo( @Optional @Name("singlesignature") boolean singlesignature,
+   public void updatesecondsigneeinfo( @Optional @Name("singlesignature") Boolean singlesignature,
                                        @Optional @Name("name") String name,
                                        @Optional @Name("socialsecuritynumber") String socialsecuritynumber,
                                        @Optional @Name("phonenumber") String phonenumber,
                                        @Optional @Name("email") String email,
                                        @Optional @Name("secondformdraftreference") String secondformdraftreference )
    {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
 
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder;
+      SecondSigneeInfoValue secondSignee = formDraft.getFormDraftValue().secondsignee().get();
+
+      if( secondSignee == null )
+      {
+         secondSigneeBuilder = module.valueBuilderFactory().newValueBuilder( SecondSigneeInfoValue.class );
+      } else
+      {
+         secondSigneeBuilder = secondSignee.buildWith();
+      }
+
+      if( singlesignature != null )
+      {
+         secondSigneeBuilder.prototype().singlesignature().set( singlesignature );
+      }
+      if( name != null )
+      {
+         secondSigneeBuilder.prototype().name().set( name );
+      }
+      if( socialsecuritynumber != null )
+      {
+         secondSigneeBuilder.prototype().socialsecuritynumber().set( socialsecuritynumber );
+      }
+      if( phonenumber != null )
+      {
+         secondSigneeBuilder.prototype().phonenumber().set( phonenumber );
+      }
+      if( email != null )
+      {
+         secondSigneeBuilder.prototype().email().set( email );
+      }
+      if( secondformdraftreference != null )
+      {
+         secondSigneeBuilder.prototype().secondformdraftreference().set( secondformdraftreference );
+      }
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
    }
 
    public void removeSignatures()

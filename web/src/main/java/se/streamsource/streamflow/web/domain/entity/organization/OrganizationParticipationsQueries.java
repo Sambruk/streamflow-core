@@ -16,20 +16,23 @@
  */
 package se.streamsource.streamflow.web.domain.entity.organization;
 
+import static org.qi4j.api.query.QueryExpressions.contains;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OrganizationParticipationsQueries.Mixin.class)
 public interface OrganizationParticipationsQueries
