@@ -21,6 +21,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage;
+import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
@@ -36,6 +37,7 @@ public interface AccessPoint
       FormPdfTemplate,
       EndUserCases,
       MailSelectionMessage,
-      AccessPointSettings
+      AccessPointSettings,
+      RequiredSignatures
 {
 }

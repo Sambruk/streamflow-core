@@ -28,6 +28,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
@@ -79,6 +80,12 @@ public class SurfaceFormDraftContext
    {
       FormDraft formDraft = role( FormDraft.class );
       formDraft.addFormSignatureValue( signature );
+   }
+
+   public void addsecondsigneeinfo( SecondSigneeInfoValue secondSignee )
+   {
+      FormDraft formDraft = role( FormDraft.class );
+      formDraft.addSecondSigneeInfo( secondSignee );
    }
 
    public void removeSignatures()

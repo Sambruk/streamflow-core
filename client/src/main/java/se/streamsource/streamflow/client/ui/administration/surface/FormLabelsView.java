@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.workspace.cases.general;
+package se.streamsource.streamflow.client.ui.administration.surface;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StreamflowButton;
@@ -44,7 +45,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class CaseLabelsView
+public class FormLabelsView
         extends JPanel
         implements ListEventListener, TransactionListener
 {
@@ -54,17 +55,16 @@ public class CaseLabelsView
    @Structure
    Module module;
 
-   private CaseLabelsModel model;
+   private FormLabelsModel model;
    private StreamflowButton actionButton;
-
    private boolean textBold;
 
-   public CaseLabelsView(@Service ApplicationContext context, @Uses CaseLabelsModel model)
+   public FormLabelsView( @Service ApplicationContext context, @Uses FormLabelsModel model )
    {
       this.actionButton = actionButton;
       setActionMap( context.getActionMap(this ));
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
-            CaseLabelsView.class, this ) );
+            FormLabelsView.class, this ) );
       
       this.model = model;
       model.getLabels().addListEventListener( this );
@@ -74,7 +74,7 @@ public class CaseLabelsView
       new RefreshWhenShowing(this, model);
    }
 
-   public CaseLabelsModel getModel()
+   public FormLabelsModel getModel()
    {
       return model;
    }
@@ -95,23 +95,15 @@ public class CaseLabelsView
       for (int i = 0; i < model.getLabels().size(); i++)
       {
          LinkValue linkValue = model.getLabels().get(i);
-         LinkValue knowledgeBase = null;
-         try
-         {
-            knowledgeBase = model.getKnowledgeBaseLink(linkValue);
-         } catch (Exception e)
-         {
-            // Ignore
-         }
 
-         RemovableLabel label = new RemovableLabel(linkValue, knowledgeBase);
+         RemovableLabel label = new RemovableLabel(linkValue, null );
          if( textBold )
          {
             label.getLabel().setFont( label.getLabel().getFont().deriveFont( Font.BOLD ) );
          }
 
-         label.setToolTipText( linkValue.text().get() );
-         label.getButton().addActionListener( getActionMap().get( "remove" ) );
+         label.setToolTipText(linkValue.text().get());
+         label.getButton().addActionListener(getActionMap().get("remove"));
          label.setEnabled(isEnabled());
          add(label);
       }
@@ -121,9 +113,9 @@ public class CaseLabelsView
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task addLabel()
+   public Task addForm()
    {
-      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleLabels()).newInstance();
+      final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleForms()).newInstance();
       dialog.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
       dialogs.showOkCancelHelpDialog(actionButton == null ? this : actionButton, dialog);
 
@@ -134,7 +126,7 @@ public class CaseLabelsView
          {
             for (LinkValue listItemValue : dialog.getSelectedLinks())
             {
-               model.addLabel(listItemValue);
+               model.addForm( listItemValue );
             }
          }
       };
@@ -152,14 +144,14 @@ public class CaseLabelsView
          {
             Component component = ((Component) e.getSource());
             RemovableLabel label = (RemovableLabel) component.getParent();
-            model.removeLabel(label.getRemoveLink());
+            model.removeForm( label.getRemoveLink() );
          }
       };
    }
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (Events.matches( Events.withNames( "addedLabel", "removedLabel", "changedStatus" ), transactions ))
+      if (Events.matches( Events.withNames( "addedSelectedForm", "removedSelectedForm" ), transactions ))
       {
          model.refresh();
       }

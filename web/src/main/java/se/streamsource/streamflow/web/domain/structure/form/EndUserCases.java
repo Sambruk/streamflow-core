@@ -22,6 +22,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -87,6 +88,18 @@ public interface EndUserCases
             ContactBuilder builder = new ContactBuilder(module.valueBuilderFactory());
             builder.name(signature.signerName().get()).contactId(signature.signerId().get());
             caze.addContact(builder.newInstance());
+         }
+
+         if( formSubmission.getFormDraftValue().secondsignee().get() != null
+            &&!formSubmission.getFormDraftValue().secondsignee().get().singlesignature().get() )
+         {
+            SecondSigneeInfoValue secondSignee = formSubmission.getFormDraftValue().secondsignee().get();
+            ContactBuilder builder = new ContactBuilder( module.valueBuilderFactory() );
+            builder.name( secondSignee.name().get() );
+            builder.email( secondSignee.email().get() );
+            builder.phoneNumber( secondSignee.phonenumber().get() );
+            builder.contactId( secondSignee.socialsecuritynumber().get() );
+            caze.addContact( builder.newInstance() );
          }
 
          // Submit the form

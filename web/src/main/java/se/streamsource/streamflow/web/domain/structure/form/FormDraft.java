@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import java.util.Collections;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -26,8 +24,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
@@ -35,8 +32,11 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
+
+import java.util.Collections;
 
 /**
  * JAVADOC
@@ -64,6 +64,8 @@ public interface FormDraft
 
    void changeEmailsToBeNotified( StringValue message );
 
+   void addSecondSigneeInfo( SecondSigneeInfoValue secondSignee );
+
    interface Data
    {
       Property<FormDraftDTO> formDraftValue();
@@ -81,6 +83,8 @@ public interface FormDraft
       void changedNotifyByEmail( @Optional DomainEvent event, Boolean value );
 
       void changedEmailsToBeNotified( @Optional DomainEvent event, String emails );
+
+      void addedSecondSigneeInfo( @Optional DomainEvent event, SecondSigneeInfoValue secondSigneeValue);
    }
 
    abstract class Mixin
@@ -250,6 +254,19 @@ public interface FormDraft
       {
          ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
          builder.prototype().enteredEmails().set( emails );
+
+         formDraftValue().set( builder.newInstance() );
+      }
+
+      public void addSecondSigneeInfo( SecondSigneeInfoValue secondSignee )
+      {
+         addedSecondSigneeInfo( null, secondSignee );
+      }
+
+      public void addedSecondSigneeInfo( @Optional DomainEvent event, SecondSigneeInfoValue secondSignee )
+      {
+         ValueBuilder<FormDraftDTO> builder = formDraftValue().get().buildWith();
+         builder.prototype().secondsignee().set( secondSignee );
 
          formDraftValue().set( builder.newInstance() );
       }

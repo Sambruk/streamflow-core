@@ -14,42 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.administration.form;
+package se.streamsource.streamflow.api.workspace.cases.general;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Matches;
 
 /**
- * A required signature in a accesspoint definition.
+ * Contains identification, address and other necessary info to be able to
+ * send a link to a person/legal body for picking up a form draft.
  */
-public interface RequiredSignatureValue
-      extends ValueComposite
+public interface SecondSigneeInfoValue
+   extends ValueComposite
 {
    @UseDefaults
-   Property<Boolean> active();
+   Property<Boolean> singlesignature();
 
+   @Optional
    @UseDefaults
    Property<String> name();
 
+   @Optional
    @UseDefaults
-   Property<String> description();
+   @Matches("([\\d]{12})?")
+   Property<String> socialsecuritynumber();
 
    @Optional
    @UseDefaults
-   Property<String> formid();
+   Property<String> phonenumber();
+
+   @UseDefaults
+   @Matches("(.*@.*)?")
+   Property<String> email();
 
    @Optional
    @UseDefaults
-   Property<String> formdescription();
-
-   @Optional
-   @UseDefaults
-   Property<Boolean> mandatory();
-
-   @Optional
-   @UseDefaults
-   Property<String> question();
-
+   Property<String> secondformdraftreference();
 }
