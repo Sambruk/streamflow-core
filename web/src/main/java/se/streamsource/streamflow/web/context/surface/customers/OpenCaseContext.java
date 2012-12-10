@@ -14,12 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.surface.endusers;
+package se.streamsource.streamflow.web.context.surface.customers;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -33,52 +30,55 @@ import org.qi4j.api.value.ValueBuilderFactory;
 
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
-import se.streamsource.streamflow.surface.api.ClosedCaseDTO;
+import se.streamsource.streamflow.surface.api.OpenCaseDTO;
 import se.streamsource.streamflow.util.Translator;
+import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.HasConversation;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 /**
- * Context for closed case
+ * Context for open case
  */
-public class ClosedCaseContext
-        implements IndexContext<ClosedCaseDTO>
+public class OpenCaseContext
+        implements IndexContext<OpenCaseDTO>
 {
    @Structure
    Module module;
 
-   public ClosedCaseDTO index()
+   public OpenCaseDTO index()
    {
       ValueBuilderFactory vbf = module.valueBuilderFactory();
-      ValueBuilder<ClosedCaseDTO> builder = vbf.newValueBuilder(ClosedCaseDTO.class);
+      ValueBuilder<OpenCaseDTO> builder = vbf.newValueBuilder(OpenCaseDTO.class);
       CaseEntity aCase = RoleMap.role(CaseEntity.class);
       builder.prototype().description().set(aCase.description().get());
       builder.prototype().creationDate().set(aCase.createdOn().get());
-      builder.prototype().closeDate().set(aCase.closedOn().get());
-
-      if (aCase.resolution().get() != null)
-         builder.prototype().resolution().set(aCase.resolution().get().getDescription());
-
+      builder.prototype().createdBy().set( ((Describable)aCase.createdBy().get()).getDescription()  );
       builder.prototype().caseId().set(aCase.caseId().get());
+      builder.prototype().status().set(aCase.status().get().name());
 
       Owner owner = aCase.owner().get();
       builder.prototype().project().set(((Describable) owner).getDescription());
 
       return builder.newInstance();
    }
-   
 
-   public Iterable<CaseLogEntryDTO> caselog()
+   public LinksValue caselog()
    {
-      List<CaseLogEntryDTO> list = new ArrayList<CaseLogEntryDTO>();
-      ValueBuilder<CaseLogEntryDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryDTO.class );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      ValueBuilder<CaseLogEntryDTO> valueBuilder = module.valueBuilderFactory().newValueBuilder( CaseLogEntryDTO.class );
 
       CaseLoggable.Data caseLog = RoleMap.role( CaseLoggable.Data.class );
 
@@ -95,25 +95,37 @@ public class ClosedCaseContext
          {
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
             Describable user = uow.get( Describable.class, entry.createdBy().get().identity() );
-            builder.prototype().creationDate().set( entry.createdOn().get() );
-            builder.prototype().creator().set( user.getDescription() );
+            valueBuilder.prototype().creationDate().set( entry.createdOn().get() );
+            valueBuilder.prototype().creator().set( user.getDescription() );
             String translatedMessage = Translator.translate( entry.message().get(), translations ).replace( "\n", "<br/>" );
-            builder.prototype().message().set( translatedMessage );
+            valueBuilder.prototype().message().set( translatedMessage );
             String id = "";
             if (entry.entity().get() != null)
             {
                id = EntityReference.getEntityReference( entry.entity().get() ).identity();
             }
-            builder.prototype().href().set( id );
-            builder.prototype().id().set( id );
-            builder.prototype().myPagesVisibility().set( entry.availableOnMypages().get() );
-            builder.prototype().caseLogType().set( entry.entryType().get());
+            valueBuilder.prototype().href().set( id );
+            valueBuilder.prototype().id().set( id );
+            valueBuilder.prototype().myPagesVisibility().set( entry.availableOnMypages().get() );
+            valueBuilder.prototype().caseLogType().set( entry.entryType().get());
 
-            builder.prototype().text().set( translatedMessage );
+            valueBuilder.prototype().text().set( translatedMessage );
 
-            list.add( builder.newInstance() );
+            builder.addLink( valueBuilder.newInstance() );
          }
       }
-      return list;
+      return builder.newLinks();
    }
+   
+
+   //@HasConversation(false)
+   public void createconversation(String message) {
+      Conversations conversations = RoleMap.role( Conversations.class );
+      Conversation conversation = conversations.createConversation( "Fråga", RoleMap.role( Creator.class ) );
+      ConversationParticipant participant = RoleMap.role( ConversationParticipant.class );
+      ((ConversationEntity) conversation).addParticipant( participant );
+      conversation.createMessage( message, participant );
+      
+   }
+
 }

@@ -34,6 +34,8 @@ import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
+import se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity;
+import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldGroupEntity;
@@ -119,7 +121,7 @@ public class DomainAssembler
    private void users(ModuleAssembly module) throws AssemblyException
    {
       module.entities( UsersEntity.class, UserEntity.class, EmailUserEntity.class, ProxyUserEntity.class, EndUserEntity.class,
-            PerspectiveEntity.class ).visibleIn( application );
+            PerspectiveEntity.class, CustomersEntity.class, CustomerEntity.class ).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor("solrquery", "");

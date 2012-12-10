@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.assembler;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
@@ -30,6 +31,10 @@ import org.qi4j.library.rest.EntitiesResource;
 import org.qi4j.library.rest.EntityResource;
 import org.qi4j.library.rest.IndexResource;
 import org.qi4j.library.rest.SPARQLResource;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueries;
+import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.ResourceFinder;
@@ -37,6 +42,7 @@ import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.streamflow.util.ClassScanner;
 import se.streamsource.streamflow.web.application.defaults.AvailabilityFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
+import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.rest.StreamflowCaseResponseWriter;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
 import se.streamsource.streamflow.web.rest.StreamflowRestlet;
@@ -80,6 +86,15 @@ public class WebAssembler
 
       module.importedServices(ChallengeAuthenticator.class);
 
+      NamedQueries namedQueries = new NamedQueries();
+      NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor("solrquery", "");
+      namedQueries.addQuery(queryDescriptor);
+
+      module.importedServices(NamedEntityFinder.class).
+            importedBy( ServiceSelectorImporter.class ).
+            setMetaInfo( ServiceQualifier.withId( "solr" ) ).
+            setMetaInfo( namedQueries );
+      
       // Resources
       module.objects(
               APIRouter.class,

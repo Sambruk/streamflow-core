@@ -2,3 +2,4 @@
 .project
 .settings
 target
+streamflow-eclipse-formatter.xml

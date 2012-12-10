@@ -19,7 +19,8 @@ package se.streamsource.streamflow.web.rest.resource.surface;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.AccessPointsResource;
-import se.streamsource.streamflow.web.rest.resource.surface.endusers.EndUsersResource;
+import se.streamsource.streamflow.web.rest.resource.surface.customers.CustomersResource;
+import se.streamsource.streamflow.web.rest.resource.surface.tasks.DoubleSignatureTasksResource;
 
 /**
  * JAVADOC
@@ -34,8 +35,14 @@ public class SurfaceResource
    }
 
    @SubResource
-   public void endusers()
+   public void customers()
    {
-      subResource( EndUsersResource.class );
+      subResource( CustomersResource.class );
+   }
+
+   @SubResource
+   public void tasks()
+   {
+      subResource( DoubleSignatureTasksResource.class );
    }
 }

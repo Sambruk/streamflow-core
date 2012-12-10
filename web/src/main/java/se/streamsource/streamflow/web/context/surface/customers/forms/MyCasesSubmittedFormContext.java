@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.surface.endusers.forms;
+package se.streamsource.streamflow.web.context.surface.customers.forms;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.injection.scope.Service;
@@ -34,7 +34,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 /**
  * JAVADOC
  */
-public class MyPagesSubmittedFormContext
+public class MyCasesSubmittedFormContext
 {
    @Service
    PdfGeneratorService pdfGenerator;
