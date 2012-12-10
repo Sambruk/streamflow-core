@@ -16,10 +16,12 @@
  */
 package se.streamsource.streamflow.web.context.surface.customers;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.library.constraints.annotation.MaxLength;
 
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -27,10 +29,14 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 /**
  * JAVADOC
@@ -54,7 +60,7 @@ public class MyCasesConversationsContext
          builder.prototype().creator().set( ((Describable) conversation.createdBy().get()).getDescription() );
          builder.prototype().messages().set( ((Messages.Data) conversation).messages().count() );
          builder.prototype().participants().set( ((ConversationParticipants.Data) conversation).participants().count() );
-         builder.prototype().href().set( EntityReference.getEntityReference( conversation ).identity() );
+         builder.prototype().href().set( EntityReference.getEntityReference( conversation ).identity() + "/" );
          builder.prototype().text().set( conversation.getDescription() );
          builder.prototype().id().set( EntityReference.getEntityReference( conversation ).identity() );
 
@@ -62,4 +68,5 @@ public class MyCasesConversationsContext
       }
       return links.newLinks();
    }
+   
 }

@@ -39,10 +39,15 @@ import se.streamsource.streamflow.web.context.workspace.cases.conversation.HasCo
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 /**
  * Context for open case
@@ -113,8 +118,13 @@ public class OpenCaseContext
    }
    
 
-   @HasConversation(false)
-   public void createConversation(String message) {
+   //@HasConversation(false)
+   public void createconversation(String message) {
+      Conversations conversations = RoleMap.role( Conversations.class );
+      Conversation conversation = conversations.createConversation( "Fråga", RoleMap.role( Creator.class ) );
+      ConversationParticipant participant = RoleMap.role( ConversationParticipant.class );
+      ((ConversationEntity) conversation).addParticipant( participant );
+      conversation.createMessage( message, participant );
       
    }
 
