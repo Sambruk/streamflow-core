@@ -76,7 +76,7 @@ public class OpenCasesContext
          valueBuilder.prototype().caseId().set( ((CaseId.Data)caze).caseId().get() );
          valueBuilder.prototype().text().set( caze.getDescription() );
          valueBuilder.prototype().creationDate().set( caze.createdOn().get() );
-         valueBuilder.prototype().caseType().set( ((TypedCase.Data)caze).caseType().get().getDescription() );
+         valueBuilder.prototype().caseType().set( ((TypedCase.Data)caze).caseType().get() != null ? ((TypedCase.Data)caze).caseType().get().getDescription() : "" );
          valueBuilder.prototype().project().set( ((Describable)((Ownable.Data)caze).owner().get()).getDescription() );
          
          builder.addLink( valueBuilder.newInstance() );

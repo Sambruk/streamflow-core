@@ -90,6 +90,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.net.URISyntaxException;
@@ -146,6 +147,7 @@ public interface CaseEntity
       CaseLoggable.Data,
       CasePriority.Data,
       Origin,
+      DoubleSignatureTasks.Data,
 
       // Queries
       SubmittedFormsQueries,

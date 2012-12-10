@@ -41,12 +41,6 @@ public class SurfaceCaseResource
    }
 
    @SubResource
-   public void requiredforms()
-   {
-      subResourceContexts( SurfaceRequiredFormsContext.class );
-   }
-
-   @SubResource
    public void formdrafts()
    {
       subResource( SurfaceFormDraftsResource.class );
