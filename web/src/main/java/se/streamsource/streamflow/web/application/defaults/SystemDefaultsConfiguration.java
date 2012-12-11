@@ -78,5 +78,6 @@ public interface SystemDefaultsConfiguration
     * The base url for Surface Webforms
     * @return
     */
+   @UseDefaults
    Property<String> webFormsProxyUrl();
 }
