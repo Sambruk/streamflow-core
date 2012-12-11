@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -35,6 +36,7 @@ import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.surface.api.OpenCaseDTO;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.HasConversation;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -117,8 +119,8 @@ public class OpenCaseContext
    }
    
 
-   //@HasConversation(false)
-   public void createconversation(String message) {
+   @HasConversation(false)
+   public void createconversation( @Name("firstmessage") String message) {
       Conversations conversations = RoleMap.role( Conversations.class );
       Conversation conversation = conversations.createConversation( "Fråga", RoleMap.role( Creator.class ) );
       ConversationParticipant participant = RoleMap.role( ConversationParticipant.class );

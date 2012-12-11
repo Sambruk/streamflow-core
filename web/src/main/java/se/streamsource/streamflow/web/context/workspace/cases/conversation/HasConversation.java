@@ -42,7 +42,10 @@ public @interface HasConversation
       public boolean isValid( HasConversation hasConversation, RoleMap roleMap )
       {
          boolean hasConversations = RoleMap.role( CaseEntity.class ).hasConversations();
-         return hasConversation.value() && hasConversations;
+         if (hasConversation.value()) {
+            return hasConversations;
+         }
+         return !hasConversations;
       }
    }
 }
