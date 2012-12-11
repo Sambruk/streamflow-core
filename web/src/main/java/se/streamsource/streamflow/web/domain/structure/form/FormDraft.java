@@ -69,6 +69,7 @@ public interface FormDraft
 
    interface Data
    {
+      @Optional
       Property<FormDraftDTO> formDraftValue();
 
       void changedFormDraft( @Optional DomainEvent event, FormDraftDTO formDraftDTO);
