@@ -245,6 +245,9 @@ public interface SubmittedForms
       @This
       FormDrafts submissions;
 
+      @This
+      DoubleSignatureTasks signatureTasks;
+
 
       public SubmittedFormValue submitForm( FormDraft formSubmission, Submitter submitter )
       {
@@ -276,7 +279,6 @@ public interface SubmittedForms
             {
                if (submittedForm.secondsignee().get() != null && !submittedForm.secondsignee().get().singlesignature().get())
                {
-                  DoubleSignatureTasks signatureTasks = role( DoubleSignatureTasks.class );
                   DoubleSignatureTask task = signatureTasks.createTask( role( Case.class ), submittedForm, null );
 
                   Form secondForm = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, requiredSignatures.requiredSignatures().get().get( 1 ).formid().get() );
