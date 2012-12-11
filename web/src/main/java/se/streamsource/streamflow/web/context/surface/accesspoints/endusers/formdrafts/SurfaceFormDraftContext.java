@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -84,15 +82,63 @@ public class SurfaceFormDraftContext
       formDraft.addFormSignatureValue( signature );
    }
 
-   public void updatesecondsigneeinfo( @Optional @Name("singlesignature") Boolean singlesignature,
-                                       @Optional @Name("name") String name,
-                                       @Optional @Name("socialsecuritynumber") String socialsecuritynumber,
-                                       @Optional @Name("phonenumber") String phonenumber,
-                                       @Optional @Name("email") String email,
-                                       @Optional @Name("secondformdraftreference") String secondformdraftreference )
+   public void updatesinglesignature( StringValue singleSignature )
    {
       FormDraft formDraft = RoleMap.role( FormDraft.class );
 
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().singlesignature().set( new Boolean( "".equals( singleSignature.string().get() ) ? "false" : singleSignature.string().get() ) );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updatename( StringValue name )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().name().set( name.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updatesocialsecuritynumber( StringValue socialSecurityNumber )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().socialsecuritynumber().set( socialSecurityNumber.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updatephonenumber( StringValue phoneNumber )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().phonenumber().set( phoneNumber.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updateemail( StringValue email )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().email().set( email.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   private ValueBuilder<SecondSigneeInfoValue> getSecondSigneeInfoValueBuilder( FormDraft formDraft )
+   {
       ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder;
       SecondSigneeInfoValue secondSignee = formDraft.getFormDraftValue().secondsignee().get();
 
@@ -103,33 +149,7 @@ public class SurfaceFormDraftContext
       {
          secondSigneeBuilder = secondSignee.buildWith();
       }
-
-      if( singlesignature != null )
-      {
-         secondSigneeBuilder.prototype().singlesignature().set( singlesignature );
-      }
-      if( name != null )
-      {
-         secondSigneeBuilder.prototype().name().set( name );
-      }
-      if( socialsecuritynumber != null )
-      {
-         secondSigneeBuilder.prototype().socialsecuritynumber().set( socialsecuritynumber );
-      }
-      if( phonenumber != null )
-      {
-         secondSigneeBuilder.prototype().phonenumber().set( phonenumber );
-      }
-      if( email != null )
-      {
-         secondSigneeBuilder.prototype().email().set( email );
-      }
-      if( secondformdraftreference != null )
-      {
-         secondSigneeBuilder.prototype().secondformdraftreference().set( secondformdraftreference );
-      }
-
-      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+      return secondSigneeBuilder;
    }
 
    public void removeSignatures()

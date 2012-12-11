@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -74,6 +75,7 @@ public interface Case
       CaseAccessRestriction,
       History,
       CaseLoggable,
-      CasePriority
+      CasePriority,
+      RequiredSignatures
 {
 }
