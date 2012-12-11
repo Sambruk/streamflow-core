@@ -282,7 +282,7 @@ public interface SubmittedForms
                   Form secondForm = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, requiredSignatures.requiredSignatures().get().get( 1 ).formid().get() );
 
                   FormDraft draft = submissions.createFormDraft( secondForm );
-                  task.update( draft );
+                  task.updateFormDraft( draft );
 
                   ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), role( Locale.class ) );
 

@@ -64,9 +64,9 @@ public interface DoubleSignatureTasks
       public DoubleSignatureTask createTask( Case caze, SubmittedFormValue submittedFormValue, FormDraft formDraft )
       {
          DoubleSignatureTask task = createdTask( null, idGenerator.generate( DoubleSignatureTaskEntity.class ) );
-         task.update( caze );
-         task.update( submittedFormValue );
-         task.update( formDraft );
+         task.updateCase( caze );
+         task.updateSubmittedForm( submittedFormValue );
+         task.updateFormDraft( formDraft );
 
          return task;
       }

@@ -35,9 +35,9 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 public interface DoubleSignatureTask
 {
 
-   void update( @Optional Case caze );
-   void update( @Optional SubmittedFormValue submittedFormValue );
-   void update( @Optional FormDraft formDraft );
+   void updateCase( @Optional Case caze );
+   void updateSubmittedForm( @Optional SubmittedFormValue submittedFormValue );
+   void updateFormDraft( @Optional FormDraft formDraft );
 
    interface Data
    {
@@ -47,9 +47,9 @@ public interface DoubleSignatureTask
 
       Association<FormDraft> formDraft();
 
-      void updated( @Optional DomainEvent event, @Optional Case caze );
-      void updated( @Optional DomainEvent event, @Optional SubmittedFormValue submittedFormValue );
-      void updated( @Optional DomainEvent event, @Optional FormDraft formDraft);
+      void updatedCase( @Optional DomainEvent event, @Optional Case caze );
+      void updatedSubmittedForm( @Optional DomainEvent event, @Optional SubmittedFormValue submittedFormValue );
+      void updatedFormDraft( @Optional DomainEvent event, @Optional FormDraft formDraft);
 
    }
 
@@ -60,32 +60,32 @@ public interface DoubleSignatureTask
       @This
       Data data;
 
-      public void update( Case caze )
+      public void updateCase( Case caze )
       {
-         updated( null, caze );
+         updatedCase( null, caze );
       }
 
-      public void updated( DomainEvent event, Case caze )
+      public void updatedCase( DomainEvent event, Case caze )
       {
          data.caze().set( caze );
       }
 
-      public void update( SubmittedFormValue submittedFormValue )
+      public void updateSubmittedForm( SubmittedFormValue submittedFormValue )
       {
-         updated( null, submittedFormValue );
+         updatedSubmittedForm( null, submittedFormValue );
       }
 
-      public void updated( DomainEvent event, SubmittedFormValue submittedFormValue )
+      public void updatedSubmittedForm( DomainEvent event, SubmittedFormValue submittedFormValue )
       {
          data.submittedForm().set( submittedFormValue );
       }
 
-      public void update( FormDraft formDraft )
+      public void updateFormDraft( FormDraft formDraft )
       {
-         updated( null, formDraft );
+         updatedFormDraft( null, formDraft );
       }
 
-      public void updated( DomainEvent event, FormDraft formDraft )
+      public void updatedFormDraft( DomainEvent event, FormDraft formDraft )
       {
          data.formDraft().set( formDraft );
       }
