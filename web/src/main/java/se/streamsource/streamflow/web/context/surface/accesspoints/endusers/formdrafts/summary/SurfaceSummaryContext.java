@@ -16,17 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -42,7 +31,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -79,6 +67,17 @@ import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
@@ -87,7 +86,7 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 public interface SurfaceSummaryContext
       extends Context, IndexContext<FormDraftDTO>
 {
-   void submit();
+   //void submit();
 
    void submitandsend();
 
@@ -131,7 +130,7 @@ public interface SurfaceSummaryContext
          return RoleMap.role( FormDraftDTO.class );
       }
 
-      public void submit()
+      /*public void submit()
       {
          EndUserCases userCases = RoleMap.role( EndUserCases.class );
          EndUser user = RoleMap.role( EndUser.class );
@@ -139,7 +138,7 @@ public interface SurfaceSummaryContext
          Case aCase = RoleMap.role( Case.class );
 
          userCases.submitForm( aCase, formSubmission, user );
-      }
+      }*/
 
       public void submitandsend()
       {
@@ -201,22 +200,16 @@ public interface SurfaceSummaryContext
 
       public RequiredSignaturesValue signatures()
       {
-         //FormDraftDTO form = RoleMap.role( FormDraftDTO.class );
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         //RequiredSignatures.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, form.form().get().identity() );
          RequiredSignatures.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, ((Identity)accessPoint).identity( ).get());
 
 
          ValueBuilder<RequiredSignaturesValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( RequiredSignaturesValue.class );
          valueBuilder.prototype().signatures().get();
-         //ValueBuilder<RequiredSignatureValue> builder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
 
          for (RequiredSignatureValue signature : data.requiredSignatures().get())
          {
-            //builder.prototype().name().set( signature.name().get() );
-            //builder.prototype().description().set( signature.description().get() );
-
             valueBuilder.prototype().signatures().get().add( signature );
          }
          return valueBuilder.newInstance();

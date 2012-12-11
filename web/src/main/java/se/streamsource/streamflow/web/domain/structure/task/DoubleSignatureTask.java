@@ -16,10 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.structure.task;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
@@ -32,6 +35,10 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 public interface DoubleSignatureTask
 {
 
+   void update( @Optional Case caze );
+   void update( @Optional SubmittedFormValue submittedFormValue );
+   void update( @Optional FormDraft formDraft );
+
    interface Data
    {
       Association<Case> caze();
@@ -39,11 +46,49 @@ public interface DoubleSignatureTask
       Property<SubmittedFormValue> submittedForm();
 
       Association<FormDraft> formDraft();
+
+      void updated( @Optional DomainEvent event, @Optional Case caze );
+      void updated( @Optional DomainEvent event, @Optional SubmittedFormValue submittedFormValue );
+      void updated( @Optional DomainEvent event, @Optional FormDraft formDraft);
+
    }
 
-   abstract public class Mixin implements Data
+   abstract class Mixin
+         implements DoubleSignatureTask, Data
    {
 
+      @This
+      Data data;
+
+      public void update( Case caze )
+      {
+         updated( null, caze );
+      }
+
+      public void updated( DomainEvent event, Case caze )
+      {
+         data.caze().set( caze );
+      }
+
+      public void update( SubmittedFormValue submittedFormValue )
+      {
+         updated( null, submittedFormValue );
+      }
+
+      public void updated( DomainEvent event, SubmittedFormValue submittedFormValue )
+      {
+         data.submittedForm().set( submittedFormValue );
+      }
+
+      public void update( FormDraft formDraft )
+      {
+         updated( null, formDraft );
+      }
+
+      public void updated( DomainEvent event, FormDraft formDraft )
+      {
+         data.formDraft().set( formDraft );
+      }
    }
 
 }

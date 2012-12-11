@@ -73,4 +73,10 @@ public interface SystemDefaultsConfiguration
     */
    @UseDefaults
    Property<String> supportCaseTypeForIncomingEmailName();
+
+   /**
+    * The base url for Surface Webforms
+    * @return
+    */
+   Property<String> webFormsProxyUrl();
 }

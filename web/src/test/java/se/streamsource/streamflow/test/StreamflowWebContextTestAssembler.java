@@ -16,11 +16,6 @@
  */
 package se.streamsource.streamflow.test;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
-
-import java.util.Properties;
-
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
@@ -28,7 +23,6 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
@@ -38,6 +32,11 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
+
+import java.util.Properties;
+
+import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -93,6 +92,7 @@ public class StreamflowWebContextTestAssembler
       configurationModule.entities( KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class ).visibleIn( Visibility.application );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( Boolean.TRUE );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
+      configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface/proxy" );
    }
 
    @Override

@@ -16,17 +16,70 @@
  */
 package se.streamsource.streamflow.web.domain.structure.task;
 
-import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.task.DoubleSignatureTaskEntity;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 
+@Mixins(DoubleSignatureTasks.Mixin.class)
 public interface DoubleSignatureTasks
 {
 
+   DoubleSignatureTask createTask( Case caze, SubmittedFormValue submittedForm, @Optional FormDraft formDraft );
+
+
    interface Data {
       
-      @UseDefaults
+      @Aggregated
       @Queryable(false)
       ManyAssociation<DoubleSignatureTask> doubleSignatureTasks();
+
+      DoubleSignatureTask createdTask( DomainEvent event, String id );
+   }
+
+   abstract class Mixin
+      implements DoubleSignatureTasks, Data
+   {
+      @Structure
+      Module module;
+
+      @Service
+      IdentityGenerator idGenerator;
+
+      @This
+      Data data;
+
+      public DoubleSignatureTask createTask( Case caze, SubmittedFormValue submittedFormValue, FormDraft formDraft )
+      {
+         DoubleSignatureTask task = createdTask( null, idGenerator.generate( DoubleSignatureTaskEntity.class ) );
+         task.update( caze );
+         task.update( submittedFormValue );
+         task.update( formDraft );
+
+         return task;
+      }
+
+      public DoubleSignatureTask createdTask( DomainEvent event, String id )
+      {
+         EntityBuilder<DoubleSignatureTask> submissionEntityBuilder = module.unitOfWorkFactory().currentUnitOfWork()
+               .newEntityBuilder( DoubleSignatureTask.class, id );
+
+         DoubleSignatureTask task = submissionEntityBuilder.newInstance();
+         data.doubleSignatureTasks().add( task );
+
+         return task;
+      }
    }
 }
