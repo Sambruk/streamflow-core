@@ -26,7 +26,7 @@ import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
  */
 public class DoubleSignatureTaskResource extends CommandQueryResource
 {
-   
+
    @SubResource
    public void formdraft()
    {
@@ -37,5 +37,14 @@ public class DoubleSignatureTaskResource extends CommandQueryResource
       RoleMap.current().set( doubleSignatureTask.accessPoint().get() );
 
       subResource( TaskFormDraftResource.class );
+   }
+
+   @SubResource
+   public void submittedform()
+   {
+      DoubleSignatureTask.Data doubleSignatureTask = RoleMap.role( DoubleSignatureTask.Data.class );
+      RoleMap.current().set( doubleSignatureTask.submittedForm().get() );
+
+      subResource( TaskSubmittedFormResource.class );
    }
 }
