@@ -58,6 +58,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.PriorityEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
+import se.streamsource.streamflow.web.domain.entity.task.DoubleSignatureTaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.EndUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
@@ -98,6 +99,7 @@ public class DomainAssembler
       users( layer.module("Users") );
       attachments( layer.module("Attachments") );
       notes( layer.module( "Notes" ));
+      tasks( layer.module("Tasks") );
 
       // All values are public
       layer.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
@@ -105,6 +107,11 @@ public class DomainAssembler
       // All entities are public
       layer.entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
 
+   }
+
+   private void tasks( ModuleAssembly module )
+   {
+      module.entities( DoubleSignatureTaskEntity.class ).visibleIn( application );
    }
 
    private void notes( ModuleAssembly module )

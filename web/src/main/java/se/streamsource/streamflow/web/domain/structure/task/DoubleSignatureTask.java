@@ -41,10 +41,13 @@ public interface DoubleSignatureTask
 
    interface Data
    {
+      @Optional
       Association<Case> caze();
 
+      @Optional
       Property<SubmittedFormValue> submittedForm();
 
+      @Optional
       Association<FormDraft> formDraft();
 
       void updatedCase( @Optional DomainEvent event, @Optional Case caze );
