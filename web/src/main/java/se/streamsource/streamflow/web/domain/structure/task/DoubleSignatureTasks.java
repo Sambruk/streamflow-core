@@ -46,7 +46,7 @@ public interface DoubleSignatureTasks
       @Queryable(false)
       ManyAssociation<DoubleSignatureTask> doubleSignatureTasks();
 
-      DoubleSignatureTask createdTask( DomainEvent event, String id );
+      DoubleSignatureTask createdTask( @Optional DomainEvent event, String id );
    }
 
    abstract class Mixin

@@ -73,7 +73,7 @@ public class MyCasesMessagesContext
          builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
 
          builder.prototype().text().set( message.translateBody(translations));
-         builder.prototype().href().set( EntityReference.getEntityReference( message ).identity() );
+         builder.prototype().href().set( EntityReference.getEntityReference( message ).identity() + "/");
          builder.prototype().id().set( EntityReference.getEntityReference( message ).identity() );
          builder.prototype(  ).hasAttachments().set( message.hasAttachments() );
 
