@@ -238,7 +238,6 @@ public class AccessPointView
 
       builder.add( valueBinder.bind( "mailSelectionMessage", actionBinder.bind( "changeMailSelectionMessage", mailSelectionField ) ),
             new CellConstraints( 3, 11, 1,1 , CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 3,0,0,0 )));
-      //TODO implement Sign 1 and 2
 
       PanelBuilder signPanel = new PanelBuilder( new FormLayout( "150dlu, 5dlu, 150dlu", "default:grow" ) );
       CellConstraints signPanelCc = new CellConstraints( );
@@ -300,6 +299,7 @@ public class AccessPointView
                   return value != null ? value.active().get() : Boolean.FALSE;
                }
             } ), secondaryCc.xy( 1, 3 ) );
+      refreshComponents.enabledOn( "updatesecondarysignactive", signActive2 );
 
       secondarySignPanel.add( new JLabel( text( AdministrationResources.name_label ) ), secondaryCc.xy( 1, 5 )  );
 

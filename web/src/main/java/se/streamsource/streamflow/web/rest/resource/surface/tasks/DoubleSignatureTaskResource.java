@@ -20,7 +20,6 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
-import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask.Data;
 
 /**
  * JAVADOC
@@ -31,7 +30,7 @@ public class DoubleSignatureTaskResource extends CommandQueryResource
    @SubResource
    public void formdraft()
    {
-      Data doubleSignatureTask = RoleMap.role( DoubleSignatureTask.Data.class );
+      DoubleSignatureTask.Data doubleSignatureTask = RoleMap.role( DoubleSignatureTask.Data.class );
       RoleMap.current().set( doubleSignatureTask.formDraft().get() );
       RoleMap.current().set( doubleSignatureTask.formDraft().get().getFormDraftValue() );
       RoleMap.current().set( doubleSignatureTask.caze().get() );

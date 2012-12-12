@@ -16,11 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -38,7 +33,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
@@ -70,6 +64,11 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -108,6 +107,7 @@ public interface AccessPointAdministrationContext
                            @Optional @Name("name") String name,
                            @Optional @Name("description") String description );
 
+   @RequiresValid("primarySignActive")
    void updatesecondarysignactive( @Name("active") String active );
 
    @RequiresValid("secondarySignActive")
