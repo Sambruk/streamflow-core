@@ -21,11 +21,11 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
  * 
@@ -38,19 +38,26 @@ public interface DoubleSignatureTask
    void updateCase( @Optional Case caze );
    void updateSubmittedForm( @Optional SubmittedFormValue submittedFormValue );
    void updateFormDraft( @Optional FormDraft formDraft );
+   void updateAccessPoint( @Optional AccessPoint accessPoint );
 
    interface Data
    {
+      @Optional
       Association<Case> caze();
 
+      @Optional
       Property<SubmittedFormValue> submittedForm();
 
+      @Optional
       Association<FormDraft> formDraft();
+
+      @Optional
+      Association<AccessPoint> accessPoint();
 
       void updatedCase( @Optional DomainEvent event, @Optional Case caze );
       void updatedSubmittedForm( @Optional DomainEvent event, @Optional SubmittedFormValue submittedFormValue );
       void updatedFormDraft( @Optional DomainEvent event, @Optional FormDraft formDraft);
-
+      void updatedAccessPoint( @Optional DomainEvent event, @Optional AccessPoint accessPoint );
    }
 
    abstract class Mixin
@@ -89,6 +96,15 @@ public interface DoubleSignatureTask
       {
          data.formDraft().set( formDraft );
       }
-   }
 
+      public void updateAccessPoint( AccessPoint accessPoint )
+      {
+         updatedAccessPoint( null, accessPoint );
+      }
+
+      public void updatedAccessPoint( DomainEvent event, AccessPoint accessPoint )
+      {
+         data.accessPoint().set( accessPoint );
+      }
+   }
 }

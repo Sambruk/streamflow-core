@@ -249,7 +249,7 @@ public interface SurfaceSummaryContext
          }
          if (accessPoint != null)
          {
-            RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, ((Identity) accessPoint).identity().get() );
+            RequiredSignatures.Data requiredSignatures = ( RequiredSignatures.Data )accessPoint;
             Iterable<RequiredSignatureValue> activeSignatures = Iterables.filter( new Specification<RequiredSignatureValue>()
             {
                public boolean satisfiedBy( RequiredSignatureValue signature )
@@ -269,6 +269,7 @@ public interface SurfaceSummaryContext
 
                   FormDraft draft = ((FormDrafts)aCase).createFormDraft( secondForm );
                   task.updateFormDraft( draft );
+                  task.updateAccessPoint( accessPoint );
                }
             }
          }

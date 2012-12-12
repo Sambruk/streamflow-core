@@ -16,15 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.surface.tasks;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -38,33 +29,53 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
+import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -73,7 +84,6 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 public interface TaskFormDraftSummaryContext
       extends Context, IndexContext<FormDraftDTO>
 {
-   void submit();
 
    void submitandsend();
 
@@ -117,93 +127,84 @@ public interface TaskFormDraftSummaryContext
          return RoleMap.role( FormDraftDTO.class );
       }
 
-      public void submit()
-      {
-         throw new IllegalStateException("Not implemented yet...");
-//         EndUserCases userCases = RoleMap.role( EndUserCases.class );
-//         EndUser user = RoleMap.role( EndUser.class );
-//         FormDraft formSubmission = RoleMap.role( FormDraft.class );
-//         Case aCase = RoleMap.role( Case.class );
-//
-//         userCases.submitForm( aCase, formSubmission, user );
-      }
-
       public void submitandsend()
       {
-         throw new IllegalStateException("Not implemented yet...");
-//         EndUserCases userCases = RoleMap.role( EndUserCases.class );
-//         EndUser user = RoleMap.role( EndUser.class );
-//         FormDraft formSubmission = RoleMap.role( FormDraft.class );
-//         Case aCase = RoleMap.role( Case.class );
-//
-//         userCases.submitFormAndSendCase( aCase, formSubmission, user );
-//         FormDraftDTO form = role( FormDraftDTO.class );
-//
-//         if ( form.mailSelectionEnablement().get() != null && form.mailSelectionEnablement().get() )
-//         {
-//            try
-//            {
-//               SubmittedForms.Data data = RoleMap.role( SubmittedForms.Data.class );
-//
-//               SubmittedFormValue submittedFormValue = null;
-//               for (SubmittedFormValue value : data.submittedForms().get())
-//               {
-//
-//                  if (value.form().get().identity().equals( form.form().get().identity() ))
-//                  {
-//                     submittedFormValue = value;
-//                  }
-//               }
-//               if ( submittedFormValue != null )
-//               {
-//                  // find all form attachments and attach them to the email as well
-//                  List<AttachedFileValue> formAttachments = new ArrayList<AttachedFileValue>();
-//                  for (SubmittedFieldValue value : submittedFormValue.fields())
-//                  {
-//                     FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, value.field().get().identity() );
-//                     if ( field.fieldValue().get() instanceof AttachmentFieldValue )
-//                     {
-//                        if ( !Strings.empty( value.value().get() ) )
-//                        {
-//                           AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, value.value().get() );
-//                           AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
-//
-//                           ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory().newValueBuilder( AttachedFileValue.class );
-//                           formAttachment.prototype().mimeType().set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name().get() ) );
-//                           formAttachment.prototype().uri().set( attachment.uri().get() );
-//                           formAttachment.prototype().modificationDate().set( attachment.modificationDate().get() );
-//                           formAttachment.prototype().name().set( currentFormDraftAttachmentField.name().get() );
-//                           formAttachment.prototype().size().set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
-//                           formAttachments.add( formAttachment.newInstance() );
-//                        }
-//                     }
-//                  }
-//                  notifyByMail( submittedFormValue, form.enteredEmails().get(), formAttachments );
-//               }
-//            } catch (Throwable throwable)
-//            {
-//               logger.error( "Could not send mail", throwable );
-//            }
-//         }
+         EndUser user = RoleMap.role( EndUser.class );
+         FormDraft formSubmission = RoleMap.role( FormDraft.class );
+         Case aCase = RoleMap.role( Case.class );
+
+         // Add contact info for signatories
+         for (FormSignatureDTO signature : formSubmission.getFormDraftValue().signatures().get())
+         {
+            ContactBuilder builder = new ContactBuilder(module.valueBuilderFactory());
+            builder.name(signature.signerName().get()).contactId(signature.signerId().get());
+            aCase.addContact(builder.newInstance());
+         }
+         aCase.submitForm( formSubmission, user );
+
+         FormDraftDTO form = role( FormDraftDTO.class );
+
+         if ( form.mailSelectionEnablement().get() != null && form.mailSelectionEnablement().get() )
+         {
+            try
+            {
+               SubmittedForms.Data data = RoleMap.role( SubmittedForms.Data.class );
+
+               SubmittedFormValue submittedFormValue = null;
+               for (SubmittedFormValue value : data.submittedForms().get())
+               {
+
+                  if (value.form().get().identity().equals( form.form().get().identity() ))
+                  {
+                     submittedFormValue = value;
+                  }
+               }
+               if ( submittedFormValue != null )
+               {
+                  // find all form attachments and attach them to the email as well
+                  List<AttachedFileValue> formAttachments = new ArrayList<AttachedFileValue>();
+                  for (SubmittedFieldValue value : submittedFormValue.fields())
+                  {
+                     FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, value.field().get().identity() );
+                     if ( field.fieldValue().get() instanceof AttachmentFieldValue)
+                     {
+                        if ( !Strings.empty( value.value().get() ) )
+                        {
+                           AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, value.value().get() );
+                           AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+
+                           ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory().newValueBuilder( AttachedFileValue.class );
+                           formAttachment.prototype().mimeType().set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name().get() ) );
+                           formAttachment.prototype().uri().set( attachment.uri().get() );
+                           formAttachment.prototype().modificationDate().set( attachment.modificationDate().get() );
+                           formAttachment.prototype().name().set( currentFormDraftAttachmentField.name().get() );
+                           formAttachment.prototype().size().set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
+                           formAttachments.add( formAttachment.newInstance() );
+                        }
+                     }
+                  }
+                  notifyByMail( submittedFormValue, form.enteredEmails().get(), formAttachments );
+               }
+            } catch (Throwable throwable)
+            {
+               logger.error( "Could not send mail", throwable );
+            }
+         }
       }
 
       public RequiredSignaturesValue signatures()
       {
-         FormDraftDTO form = RoleMap.role( FormDraftDTO.class );
-
-         RequiredSignatures.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, form.form().get().identity() );
+         RequiredSignatures.Data data = role( RequiredSignatures.Data.class );
 
          ValueBuilder<RequiredSignaturesValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( RequiredSignaturesValue.class );
          valueBuilder.prototype().signatures().get();
          ValueBuilder<RequiredSignatureValue> builder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
 
-         for (RequiredSignatureValue signature : data.requiredSignatures().get())
-         {
-            builder.prototype().name().set( signature.name().get() );
-            builder.prototype().description().set( signature.description().get() );
+         builder.prototype().name().set( data.requiredSignatures().get().get( 1 ).name().get() );
+         builder.prototype().description().set( data.requiredSignatures().get().get( 1 ).description().get() );
 
-            valueBuilder.prototype().signatures().get().add( builder.newInstance() );
-         }
+         valueBuilder.prototype().signatures().get().add( builder.newInstance() );
+
          return valueBuilder.newInstance();
       }
 
