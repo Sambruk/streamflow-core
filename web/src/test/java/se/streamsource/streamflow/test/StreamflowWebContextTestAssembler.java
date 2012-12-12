@@ -92,7 +92,7 @@ public class StreamflowWebContextTestAssembler
       configurationModule.entities( KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class ).visibleIn( Visibility.application );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( Boolean.TRUE );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
-      configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface/proxy" );
+      configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface" );
    }
 
    @Override

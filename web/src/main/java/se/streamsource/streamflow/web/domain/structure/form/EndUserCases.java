@@ -44,9 +44,9 @@ public interface EndUserCases
 
    CaseEntity createCase( Drafts endUser );
 
-   void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter );
+   SubmittedFormValue submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter );
 
-   void submitForm( Case caze, FormDraft formSubmission, Submitter submitter );
+   SubmittedFormValue submitForm( Case caze, FormDraft formSubmission, Submitter submitter );
 
    void sendTo( Case caze );
 
@@ -74,7 +74,7 @@ public interface EndUserCases
          return caseEntity;
       }
 
-      public void submitForm( Case caze, FormDraft formSubmission, Submitter submitter )
+      public SubmittedFormValue submitForm( Case caze, FormDraft formSubmission, Submitter submitter )
       {
          // Transfer contact information from submitter
          // TODO Also add from typed form data
@@ -103,13 +103,14 @@ public interface EndUserCases
          }
 
          // Submit the form
-         caze.submitForm( formSubmission, submitter );
+         return caze.submitForm( formSubmission, submitter );
       }
 
-      public void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter )
+      public SubmittedFormValue submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter )
       {
-         submitForm( caze, formSubmission, submitter );
+         SubmittedFormValue submittedForm = submitForm( caze, formSubmission, submitter );
          sendTo( caze );
+         return submittedForm;
       }
 
       public CaseEntity createCase( Drafts endUser )
