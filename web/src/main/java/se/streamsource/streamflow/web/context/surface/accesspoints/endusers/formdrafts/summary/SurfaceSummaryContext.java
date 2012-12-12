@@ -16,6 +16,18 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLConnection;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -33,6 +45,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -73,18 +86,6 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLConnection;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -171,8 +172,7 @@ public interface SurfaceSummaryContext
 
                builder.prototype().subject().set( bundle.getString( "signature_notification_subject" ) );
                builder.prototype().content().set( MessageFormat.format( bundle.getString( "signature_notification_body" ),
-                     ((CaseId.Data)aCase).caseId().get(), defaults.config().configuration().webFormsProxyUrl().get() + "/cases/" + ((CaseId.Data)aCase).caseId().get()
-                     + "/formdrafts/" + ((Identity) ((DoubleSignatureTask.Data)task).formDraft().get()).identity().get() + "/index" ) );
+                     ((CaseId.Data)aCase).caseId().get(), defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity) ((DoubleSignatureTask.Data)task).formDraft().get()).identity().get()) );
                builder.prototype().contentType().set( "text/plain" );
                builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
 
