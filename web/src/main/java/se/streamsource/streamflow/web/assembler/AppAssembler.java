@@ -56,7 +56,6 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseCon
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
-import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.ReceiveMailConfiguration;
 import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.application.mail.SendMailConfiguration;
@@ -226,8 +225,7 @@ public class AppAssembler
       module.services( MailSenderService.class ).identifiedBy( "mailsender" )
             .visibleIn( application ).instantiateOnStartup();
 
-      module.values( EmailValue.class ).visibleIn(Visibility.application);
-      
+
       module.services( ReceiveMailService.class ).
             identifiedBy( "receivemail" ).
             instantiateOnStartup().

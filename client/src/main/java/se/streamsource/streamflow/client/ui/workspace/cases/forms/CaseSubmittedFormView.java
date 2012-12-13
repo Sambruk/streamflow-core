@@ -140,25 +140,25 @@ public class CaseSubmittedFormView
 
          if( !Strings.empty( secondSignee.name().get() ) )
          {
-            builder.append(secondSignee.name().get() );
+            builder.append(text( WorkspaceResources.name_label ) + ": " + secondSignee.name().get() );
             builder.nextLine();
          }
 
          if( !Strings.empty( secondSignee.phonenumber().get() ) )
          {
-            builder.append(secondSignee.phonenumber().get() );
+            builder.append( text( WorkspaceResources.phone_label ) + ": " + secondSignee.phonenumber().get() );
             builder.nextLine();
          }
 
          if( !Strings.empty( secondSignee.socialsecuritynumber().get() ) )
          {
-            builder.append(secondSignee.socialsecuritynumber().get() );
+            builder.append( text( WorkspaceResources.contact_id_label ) + ": " + secondSignee.socialsecuritynumber().get() );
             builder.nextLine();
          }
 
          if( !Strings.empty( secondSignee.email().get() ) )
          {
-            builder.append(secondSignee.email().get() );
+            builder.append( text( WorkspaceResources.email_label ) + ": " + secondSignee.email().get() );
             builder.nextLine();
          }
 
