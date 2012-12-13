@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
@@ -39,6 +40,7 @@ public interface DoubleSignatureTask
    void updateSubmittedForm( @Optional SubmittedFormValue submittedFormValue );
    void updateFormDraft( @Optional FormDraft formDraft );
    void updateAccessPoint( @Optional AccessPoint accessPoint );
+   void updateEmailValue( @Optional EmailValue email );
 
    interface Data
    {
@@ -54,10 +56,14 @@ public interface DoubleSignatureTask
       @Optional
       Association<AccessPoint> accessPoint();
 
+      @Optional
+      Property<EmailValue> email();
+
       void updatedCase( @Optional DomainEvent event, @Optional Case caze );
       void updatedSubmittedForm( @Optional DomainEvent event, @Optional SubmittedFormValue submittedFormValue );
       void updatedFormDraft( @Optional DomainEvent event, @Optional FormDraft formDraft);
       void updatedAccessPoint( @Optional DomainEvent event, @Optional AccessPoint accessPoint );
+      void updatedEmailValue( @Optional DomainEvent event, @Optional EmailValue email );
    }
 
    abstract class Mixin
@@ -105,6 +111,16 @@ public interface DoubleSignatureTask
       public void updatedAccessPoint( DomainEvent event, AccessPoint accessPoint )
       {
          data.accessPoint().set( accessPoint );
+      }
+
+      public void updateEmailValue( EmailValue email )
+      {
+         updatedEmailValue( null, email );
+      }
+
+      public void updatedEmailValue( DomainEvent event, EmailValue email )
+      {
+         data.email().set( email );
       }
    }
 }

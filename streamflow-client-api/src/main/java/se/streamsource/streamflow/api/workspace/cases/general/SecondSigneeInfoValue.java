@@ -51,5 +51,5 @@ public interface SecondSigneeInfoValue
 
    @Optional
    @UseDefaults
-   Property<String> secondformdraftreference();
+   Property<String> secondsigneetaskref();
 }

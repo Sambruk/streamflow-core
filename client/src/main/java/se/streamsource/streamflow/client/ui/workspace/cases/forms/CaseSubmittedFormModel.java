@@ -62,5 +62,12 @@ public class CaseSubmittedFormModel
       form.set("id", attachmentId);
       return client.query( "download", Representation.class, form );
    }
-   
+
+   public void resenddoublesignemail()
+   {
+      Form form = new Form( );
+      form.set( "secondsigntaskref", this.form.secondSignee().get().secondsigneetaskref().get() );
+
+      client.postCommand( "resenddoublesignemail", form.getWebRepresentation() );
+   }
 }

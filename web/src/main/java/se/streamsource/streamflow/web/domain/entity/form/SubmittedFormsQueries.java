@@ -16,32 +16,38 @@
  */
 package se.streamsource.streamflow.web.domain.entity.form;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
+import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -139,7 +145,26 @@ public interface SubmittedFormsQueries
 
          formDTO.signatures().get().addAll(form.signatures().get());
 
+         if( form.secondsignee().get() != null )
+         {
+            ValueBuilder<SecondSigneeInfoValue> secondSigneeInfoBuilder = form.secondsignee().get().buildWith();
+            secondSigneeInfoBuilder.prototype().secondsigneetaskref().set( findSecondSigneeTaskRef( form ) );
+            formDTO.secondSignee().set( secondSigneeInfoBuilder.newInstance() );
+         }
          return formBuilder.newInstance();
+      }
+
+      private String findSecondSigneeTaskRef( SubmittedFormValue form )
+      {
+         DoubleSignatureTask.Data doubleSignData = QueryExpressions.templateFor( DoubleSignatureTask.Data.class );
+         Query<DoubleSignatureTask> query = module.queryBuilderFactory().newQueryBuilder( DoubleSignatureTask.class )
+               .where( and( eq( doubleSignData.submittedForm().get().submissionDate(), form.submissionDate().get() ),
+                            eq( doubleSignData.submittedForm().get().form(), form.form().get() ),
+                            eq( doubleSignData.submittedForm().get().submitter(), form.submitter().get() )
+               ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+         DoubleSignatureTask task = query.find();
+         return task == null ? null : ((Identity)task).identity().get();
       }
 
       public Iterable<SubmittedFormValue> getLatestSubmittedForms()

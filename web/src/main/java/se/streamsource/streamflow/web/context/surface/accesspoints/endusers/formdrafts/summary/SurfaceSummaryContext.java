@@ -163,6 +163,7 @@ public interface SurfaceSummaryContext
          DoubleSignatureTask task = createDoubleSignatureTaskIfNeccessary( aCase, submittedForm );
          if( task != null )
          {
+            // set task reference back to subittedform - second signee info
             ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), role( Locale.class ) );
 
             try
@@ -175,7 +176,10 @@ public interface SurfaceSummaryContext
                builder.prototype().contentType().set( "text/plain" );
                builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
 
-               mailSender.sentEmail( builder.newInstance() );
+               EmailValue email = builder.newInstance();
+               task.updateEmailValue( email );
+
+               mailSender.sentEmail( email );
 
             } catch (Throwable throwable)
             {

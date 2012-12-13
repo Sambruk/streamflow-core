@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.specification.Specifications;
@@ -28,8 +26,8 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-
 import se.streamsource.streamflow.api.assembler.ClientAPIAssembler;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -75,6 +73,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.ParticipantR
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
+import static org.qi4j.api.common.Visibility.*;
+
 /**
  * JAVADOC
  */
@@ -112,6 +112,7 @@ public class DomainAssembler
    private void tasks( ModuleAssembly module )
    {
       module.entities( DoubleSignatureTaskEntity.class ).visibleIn( application );
+      module.values( EmailValue.class ).visibleIn( application );
    }
 
    private void notes( ModuleAssembly module )

@@ -172,5 +172,5 @@ public enum WorkspaceResources
    // Form on Close
    formondelete_confirmation,
 
-   change_password_prohibited, selected_labels, selected_case_types, selected_users, mail_selection_message
+   change_password_prohibited, selected_labels, selected_case_types, selected_users, second_signee, mail_selection_message
 }

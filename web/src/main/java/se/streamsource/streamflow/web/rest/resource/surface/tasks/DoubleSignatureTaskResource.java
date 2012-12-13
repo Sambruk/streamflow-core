@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.rest.resource.surface.tasks;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.workspace.cases.tasks.DoubleSignatureTaskContext;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 
 /**
@@ -26,6 +27,10 @@ import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
  */
 public class DoubleSignatureTaskResource extends CommandQueryResource
 {
+   public DoubleSignatureTaskResource()
+   {
+      super( DoubleSignatureTaskContext.class );
+   }
 
    @SubResource
    public void formdraft()

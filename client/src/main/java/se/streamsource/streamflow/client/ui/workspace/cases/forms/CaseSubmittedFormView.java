@@ -38,7 +38,9 @@ import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -131,6 +133,46 @@ public class CaseSubmittedFormView
          }
       }
 
+      if( form.secondSignee().get() != null )
+      {
+         SecondSigneeInfoValue secondSignee = form.secondSignee().get();
+         builder.appendSeparator(i18n.text(WorkspaceResources.second_signee));
+
+         if( !Strings.empty( secondSignee.name().get() ) )
+         {
+            builder.append(secondSignee.name().get() );
+            builder.nextLine();
+         }
+
+         if( !Strings.empty( secondSignee.phonenumber().get() ) )
+         {
+            builder.append(secondSignee.phonenumber().get() );
+            builder.nextLine();
+         }
+
+         if( !Strings.empty( secondSignee.socialsecuritynumber().get() ) )
+         {
+            builder.append(secondSignee.socialsecuritynumber().get() );
+            builder.nextLine();
+         }
+
+         if( !Strings.empty( secondSignee.email().get() ) )
+         {
+            builder.append(secondSignee.email().get() );
+            builder.nextLine();
+         }
+
+         if( !Strings.empty( secondSignee.secondsigneetaskref().get() ) )
+         {
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            StreamflowButton button = new StreamflowButton(context.getActionMap(this).get("resenddoublesignemail"));
+            panel.add( button );
+            builder.append( panel );
+            builder.nextLine();
+         }
+
+      }
+
       for (SubmittedPageDTO page : form.pages().get())
       {
          builder.appendSeparator(page.name().get());
@@ -155,6 +197,19 @@ public class CaseSubmittedFormView
    public Task open(ActionEvent event)
    {
       return openAttachment(event);
+   }
+
+   @Action
+   public Task resenddoublesignemail()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+           model.resenddoublesignemail();
+         }
+      };
    }
 
    public JComponent getComponent(String fieldValue, String fieldType)
