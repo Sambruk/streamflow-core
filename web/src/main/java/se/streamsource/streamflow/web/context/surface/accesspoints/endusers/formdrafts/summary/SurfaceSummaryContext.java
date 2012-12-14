@@ -19,6 +19,9 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Identity;
@@ -31,6 +34,8 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.Context;
@@ -76,8 +81,8 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URLConnection;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -134,6 +139,10 @@ public interface SurfaceSummaryContext
       @Service
       AttachmentStore attachmentStore;
 
+      @Optional
+      @Service
+      VelocityEngine velocity;
+
       final Logger logger = LoggerFactory.getLogger( SubmittedForms.class.getName() );
 
 
@@ -141,16 +150,6 @@ public interface SurfaceSummaryContext
       {
          return RoleMap.role( FormDraftDTO.class );
       }
-
-      /*public void submit()
-      {
-         EndUserCases userCases = RoleMap.role( EndUserCases.class );
-         EndUser user = RoleMap.role( EndUser.class );
-         FormDraft formSubmission = RoleMap.role( FormDraft.class );
-         Case aCase = RoleMap.role( Case.class );
-
-         userCases.submitForm( aCase, formSubmission, user );
-      }*/
 
       public void submitandsend()
       {
@@ -168,12 +167,20 @@ public interface SurfaceSummaryContext
 
             try
             {
+               Template textTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturetextmail_sv.html" );
+               Template htmlTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturehtmlmail_sv.html" );
+
+               String id = ((CaseId.Data)aCase).caseId().get();
+               String link = defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity)task ).identity().get();
+               String textMail = createFormatedMail( id, link, textTemplate );
+               String htmlMail = createFormatedMail( id, link, htmlTemplate );
+
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
 
                builder.prototype().subject().set( bundle.getString( "signature_notification_subject" ) );
-               builder.prototype().content().set( MessageFormat.format( bundle.getString( "signature_notification_body" ),
-                     ((CaseId.Data)aCase).caseId().get(), defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity)task ).identity().get()) );
+               builder.prototype().content().set( textMail );
                builder.prototype().contentType().set( "text/plain" );
+               builder.prototype().contentHtml().set( htmlMail );
                builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
 
                EmailValue email = builder.newInstance();
@@ -184,6 +191,7 @@ public interface SurfaceSummaryContext
             } catch (Throwable throwable)
             {
                logger.error( "Could not send mail", throwable );
+               throw new ResourceException( Status.SERVER_ERROR_INTERNAL, throwable );
             }
          }
 
@@ -277,6 +285,26 @@ public interface SurfaceSummaryContext
             }
          }
          return task;
+      }
+
+      private String createFormatedMail( String id, String link, Template template)
+      {
+         VelocityContext context = new VelocityContext();
+         //context.put( "user", notification.getRecipient().getContact().name().get() );
+         //context.put( "notification", notification );
+         //context.put( "today", Strings.capitalize( (new SimpleDateFormat( "d':e' MMMM", locale )).format( new Date() )));
+         context.put( "id", id );
+         context.put( "link", link );
+         StringWriter writer = new StringWriter();
+         try
+         {
+            template.merge( context, writer );
+
+            return writer.toString();
+         } catch (IOException e)
+         {
+            throw new IllegalArgumentException("Could not create html mail", e);
+         }
       }
 
       public RequiredSignaturesValue signatures()
