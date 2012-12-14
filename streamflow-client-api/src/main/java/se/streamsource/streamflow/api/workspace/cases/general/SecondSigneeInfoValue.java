@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.general;
 
+import org.joda.time.DateTime;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
@@ -52,4 +53,11 @@ public interface SecondSigneeInfoValue
    @Optional
    @UseDefaults
    Property<String> secondsigneetaskref();
+
+   @Optional
+   Property<DateTime> lastReminderSent();
+
+   @Optional
+   @UseDefaults
+   Property<String> secondDraftUrl();
 }

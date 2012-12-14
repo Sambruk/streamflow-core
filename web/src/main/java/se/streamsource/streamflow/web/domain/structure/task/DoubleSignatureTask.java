@@ -16,7 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.structure.task;
 
+import org.joda.time.DateTime;
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -41,6 +43,8 @@ public interface DoubleSignatureTask
    void updateFormDraft( @Optional FormDraft formDraft );
    void updateAccessPoint( @Optional AccessPoint accessPoint );
    void updateEmailValue( @Optional EmailValue email );
+   void updateLastReminderSent( @Optional DateTime lastReminder );
+   void updateSecondDraftUrl( @Optional String secondDraftUrl );
 
    interface Data
    {
@@ -59,11 +63,20 @@ public interface DoubleSignatureTask
       @Optional
       Property<EmailValue> email();
 
+      @Optional
+      Property<DateTime> lastReminderSent();
+
+      @Optional
+      @UseDefaults
+      Property<String> secondDraftUrl();
+
       void updatedCase( @Optional DomainEvent event, @Optional Case caze );
       void updatedSubmittedForm( @Optional DomainEvent event, @Optional SubmittedFormValue submittedFormValue );
       void updatedFormDraft( @Optional DomainEvent event, @Optional FormDraft formDraft);
       void updatedAccessPoint( @Optional DomainEvent event, @Optional AccessPoint accessPoint );
       void updatedEmailValue( @Optional DomainEvent event, @Optional EmailValue email );
+      void updatedLastReminderSent( @Optional DomainEvent event, @Optional DateTime lastReminder );
+      void updatedSecondDraftUrl( @Optional DomainEvent event, @Optional String secondDraftUrl );
    }
 
    abstract class Mixin
@@ -121,6 +134,26 @@ public interface DoubleSignatureTask
       public void updatedEmailValue( DomainEvent event, EmailValue email )
       {
          data.email().set( email );
+      }
+
+      public void updateLastReminderSent( @Optional DateTime lastReminder )
+      {
+         updatedLastReminderSent( null, lastReminder );
+      }
+
+      public void updateSecondDraftUrl( @Optional String secondDraftUrl )
+      {
+         updatedSecondDraftUrl( null, secondDraftUrl );
+      }
+
+      public void updatedLastReminderSent( @Optional DomainEvent event, @Optional DateTime lastReminder )
+      {
+         data.lastReminderSent().set( lastReminder );
+      }
+
+      public void updatedSecondDraftUrl( @Optional DomainEvent event, @Optional String secondDraftUrl )
+      {
+         data.secondDraftUrl().set( secondDraftUrl );
       }
    }
 }

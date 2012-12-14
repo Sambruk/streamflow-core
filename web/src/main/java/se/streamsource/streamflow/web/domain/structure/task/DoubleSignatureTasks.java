@@ -41,7 +41,7 @@ public interface DoubleSignatureTasks
 
 
    interface Data {
-      
+
       @Aggregated
       @Queryable(false)
       ManyAssociation<DoubleSignatureTask> doubleSignatureTasks();

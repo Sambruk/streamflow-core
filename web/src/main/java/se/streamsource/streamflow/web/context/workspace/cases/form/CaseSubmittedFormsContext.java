@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
@@ -113,9 +115,10 @@ public class CaseSubmittedFormsContext
 
    public void resenddoublesignemail( @Name("secondsigntaskref") String secondsigntaskref )
    {
-      mailSender.sentEmail(
-            module.unitOfWorkFactory().currentUnitOfWork()
-                  .get( DoubleSignatureTask.Data.class, secondsigntaskref ).email().get() );
+      DoubleSignatureTask task = module.unitOfWorkFactory().currentUnitOfWork()
+            .get( DoubleSignatureTask.class, secondsigntaskref );
+      mailSender.sentEmail( ((DoubleSignatureTask.Data)task).email().get() );
+      task.updateLastReminderSent(  new DateTime( DateTimeZone.UTC ) );
    }
 
 }

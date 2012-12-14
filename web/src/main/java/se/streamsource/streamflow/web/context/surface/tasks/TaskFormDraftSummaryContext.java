@@ -197,13 +197,8 @@ public interface TaskFormDraftSummaryContext
          RequiredSignatures.Data data = role( RequiredSignatures.Data.class );
 
          ValueBuilder<RequiredSignaturesValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( RequiredSignaturesValue.class );
-         valueBuilder.prototype().signatures().get();
-         ValueBuilder<RequiredSignatureValue> builder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
 
-         builder.prototype().name().set( data.requiredSignatures().get().get( 1 ).name().get() );
-         builder.prototype().description().set( data.requiredSignatures().get().get( 1 ).description().get() );
-
-         valueBuilder.prototype().signatures().get().add( builder.newInstance() );
+         valueBuilder.prototype().signatures().get().add( data.requiredSignatures().get().get( 1 ).<RequiredSignatureValue>buildWith().newInstance() );
 
          return valueBuilder.newInstance();
       }

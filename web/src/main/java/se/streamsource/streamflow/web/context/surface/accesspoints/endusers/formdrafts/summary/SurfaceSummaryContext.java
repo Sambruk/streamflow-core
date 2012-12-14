@@ -22,6 +22,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Identity;
@@ -185,6 +187,8 @@ public interface SurfaceSummaryContext
 
                EmailValue email = builder.newInstance();
                task.updateEmailValue( email );
+               task.updateSecondDraftUrl( link );
+               task.updateLastReminderSent(new DateTime( DateTimeZone.UTC ) );
 
                mailSender.sentEmail( email );
 

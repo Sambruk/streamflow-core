@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
-import java.io.IOException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +28,8 @@ import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.migration.assembly.MigrationOperation;
+
+import java.io.IOException;
 
 /**
  * This assembler contains all the migration rules for Streamflow
@@ -568,6 +568,66 @@ public class
                            submittedForm.put( "secondsignee", JSONObject.NULL );
                      }
                   }
+
+                  return true;
+               }
+
+               public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+               {
+                  return false;
+               }
+            } ).end()
+            .toVersion( "1.8.0.1" )
+            .forEntities( "se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity",
+                  "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity",
+                  "se.streamsource.streamflow.web.domain.entity.task.DoubleSignatureTaskEntity" )
+            .custom( new EntityMigrationOperation()
+            {
+               public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+               {
+                  String type = (String)state.get( "type" );
+                  if( "se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity".equals( type ) )
+                  {
+                     JSONObject formDraftValue = state.getJSONObject( "properties" ).getJSONObject( "formDraftValue" );
+                     if (formDraftValue.has( "secondsignee" ) && !JSONObject.NULL.equals( formDraftValue.get( "secondsignee" ) ) )
+                     {
+                        JSONObject secondSignee = formDraftValue.getJSONObject( "secondsignee" );
+                        if( !secondSignee.has( "lastReminderSent" ) )
+                           secondSignee.put( "lastReminderSent", JSONObject.NULL );
+                     }
+                  } else if( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity".equals( type ) )
+                  {
+                     JSONObject properties = state.getJSONObject( "properties" );
+                     JSONArray submittedForms = properties.getJSONArray( "submittedForms" );
+
+                     for (int i = 0; i < submittedForms.length(); i++)
+                     {
+                        JSONObject submittedForm = submittedForms.getJSONObject( i );
+                        if (submittedForm.has( "secondsignee" ) && !JSONObject.NULL.equals( submittedForm.get( "secondsignee" ) ) )
+                        {
+                           JSONObject secondSignee = submittedForm.getJSONObject( "secondsignee" );
+                           if( !secondSignee.has( "lastReminderSent" ) )
+                              secondSignee.put( "lastReminderSent", JSONObject.NULL );
+                        }
+                     }
+                  } else if( "se.streamsource.streamflow.web.domain.entity.task.DoubleSignatureTaskEntity".equals( type ) )
+                  {
+                     JSONObject properties = state.getJSONObject( "properties" );
+                     if( !properties.has( "lastReminderSent" ) )
+                     {
+                        properties.put( "lastReminderSent", JSONObject.NULL );
+                     }
+
+                     JSONObject submittedForm = properties.getJSONObject( "submittedForm" );
+                     if (submittedForm.has( "secondsignee" ) && !JSONObject.NULL.equals( submittedForm.get( "secondsignee" ) ) )
+                     {
+                        JSONObject secondSignee = submittedForm.getJSONObject( "secondsignee" );
+                        if( !secondSignee.has( "lastReminderSent" ) )
+                           secondSignee.put( "lastReminderSent", JSONObject.NULL );
+                     }
+
+                  }
+
 
                   return true;
                }

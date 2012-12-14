@@ -39,6 +39,7 @@ import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
+import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.OpenAttachmentTask;
@@ -52,11 +53,13 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -64,6 +67,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
@@ -166,7 +170,23 @@ public class CaseSubmittedFormView
          {
             JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             StreamflowButton button = new StreamflowButton(context.getActionMap(this).get("resenddoublesignemail"));
+            DateTime date = secondSignee.lastReminderSent().get();
+            JLabel lastReminderSent = new JLabel( text( WorkspaceResources.last_reminder_sent ) + ": " + date != null ? DateFormats.getProgressiveDateTimeValue( date, Locale.getDefault() ) : "" );
             panel.add( button );
+            panel.add( lastReminderSent );
+            builder.append( panel );
+            builder.nextLine();
+         }
+
+         if( !Strings.empty( secondSignee.secondDraftUrl().get() ))
+         {
+            JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEFT ));
+            panel.add( new JLabel( text( WorkspaceResources.second_draft_url ) + ": " ) );
+            JTextField link = new JTextField(  secondSignee.secondDraftUrl().get() );
+            link.setBorder( BorderFactory.createEmptyBorder() );
+            link.setOpaque( false );
+            link.setEditable( false );
+            panel.add( link );
             builder.append( panel );
             builder.nextLine();
          }
@@ -256,9 +276,9 @@ public class CaseSubmittedFormView
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (Events.matches(Events.withNames("submittedForm"), transactions))
+      if (Events.matches(Events.withNames("submittedForm", "updatedLastReminderSent"), transactions))
       {
-         model.refresh();
+         refresh();
       }
    }
 

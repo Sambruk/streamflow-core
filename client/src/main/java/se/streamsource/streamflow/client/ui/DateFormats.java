@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui;
 
+import org.joda.time.DateTime;
 import se.streamsource.streamflow.util.Dates;
 
 import java.text.SimpleDateFormat;
@@ -66,5 +67,10 @@ public class DateFormats
    private static ResourceBundle getBundle(Locale locale)
    {
       return ResourceBundle.getBundle(DateFormatsResources.class.getName(), locale);
+   }
+
+   public static String getProgressiveDateTimeValue( DateTime date, Locale locale )
+   {
+      return getProgressiveDateTimeValue( date.toDate(), locale );
    }
 }

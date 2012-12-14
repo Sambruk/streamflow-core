@@ -148,13 +148,16 @@ public interface SubmittedFormsQueries
          if( form.secondsignee().get() != null )
          {
             ValueBuilder<SecondSigneeInfoValue> secondSigneeInfoBuilder = form.secondsignee().get().buildWith();
-            secondSigneeInfoBuilder.prototype().secondsigneetaskref().set( findSecondSigneeTaskRef( form ) );
+            DoubleSignatureTask.Data task = (DoubleSignatureTask.Data)findSecondSigneeTaskRef( form );
+            secondSigneeInfoBuilder.prototype().secondsigneetaskref().set( task == null ? null : ((Identity)task).identity().get() );
+            secondSigneeInfoBuilder.prototype().lastReminderSent().set( task.lastReminderSent().get() );
+            secondSigneeInfoBuilder.prototype().secondDraftUrl().set( task.secondDraftUrl().get() );
             formDTO.secondSignee().set( secondSigneeInfoBuilder.newInstance() );
          }
          return formBuilder.newInstance();
       }
 
-      private String findSecondSigneeTaskRef( SubmittedFormValue form )
+      private DoubleSignatureTask findSecondSigneeTaskRef( SubmittedFormValue form )
       {
          DoubleSignatureTask.Data doubleSignData = QueryExpressions.templateFor( DoubleSignatureTask.Data.class );
          Query<DoubleSignatureTask> query = module.queryBuilderFactory().newQueryBuilder( DoubleSignatureTask.class )
@@ -164,7 +167,7 @@ public interface SubmittedFormsQueries
                ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
          DoubleSignatureTask task = query.find();
-         return task == null ? null : ((Identity)task).identity().get();
+         return task;
       }
 
       public Iterable<SubmittedFormValue> getLatestSubmittedForms()
