@@ -36,7 +36,6 @@ import se.streamsource.streamflow.web.domain.structure.user.Contactable;
  * This class represents customer to the system. A customer can be identified by
  * many different ways i.e. Id (Personnummer), emailadress.
  * 
- * @author Henrik Reinhold, henrik.reinhold@jayway.com
  */
 @Mixins(Customers.Mixin.class)
 public interface Customers

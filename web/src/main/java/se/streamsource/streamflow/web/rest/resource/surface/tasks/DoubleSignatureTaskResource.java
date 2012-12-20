@@ -31,7 +31,7 @@ public class DoubleSignatureTaskResource extends CommandQueryResource
    {
       super( DoubleSignatureTaskContext.class );
    }
-
+  
    @SubResource
    public void formdraft()
    {

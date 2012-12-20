@@ -16,14 +16,16 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.tasks;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
+
 import se.streamsource.dci.api.Context;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  *
@@ -35,6 +37,8 @@ public interface DoubleSignatureTaskContext
 
    void sendemail();
 
+   String caseid();
+   
    abstract class Mixin
       implements DoubleSignatureTaskContext
    {
@@ -46,5 +50,10 @@ public interface DoubleSignatureTaskContext
       {
          mailSender.sentEmail( role( DoubleSignatureTask.Data.class ).email().get() );
       }
+      
+      public String caseid() {
+         return ((CaseId.Data)role( DoubleSignatureTask.Data.class ).caze().get()).caseId().get();
+      }
+      
    }
 }

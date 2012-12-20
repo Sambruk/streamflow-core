@@ -17,11 +17,13 @@
 package se.streamsource.streamflow.web.domain.structure.customer;
 
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
  * JAVADOC
  */
 public interface Customer
    extends 
+      Submitter,
       Describable{
 }

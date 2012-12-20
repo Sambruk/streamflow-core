@@ -35,6 +35,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -58,6 +59,7 @@ import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -65,6 +67,8 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileVa
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.customer.Customer;
+import se.streamsource.streamflow.web.domain.structure.customer.Customers;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage;
@@ -72,7 +76,6 @@ import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
@@ -82,10 +85,9 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
  * JAVADOC
  */
 @Mixins(TaskFormDraftSummaryContext.Mixin.class)
-public interface TaskFormDraftSummaryContext
-      extends Context, IndexContext<FormDraftDTO>
+public interface TaskFormDraftSummaryContext extends Context, IndexContext<FormDraftDTO>
 {
-   
+
    void submitandsend();
 
    RequiredSignaturesValue signatures();
@@ -96,10 +98,9 @@ public interface TaskFormDraftSummaryContext
 
    void disablemailmessage();
 
-   void changeemailstobenotified( StringValue message );
+   void changeemailstobenotified(StringValue message);
 
-   abstract class Mixin
-         implements TaskFormDraftSummaryContext
+   abstract class Mixin implements TaskFormDraftSummaryContext
    {
       @Structure
       Module module;
@@ -122,30 +123,48 @@ public interface TaskFormDraftSummaryContext
 
       final Logger logger = LoggerFactory.getLogger( SubmittedForms.class.getName() );
 
-
       public FormDraftDTO index()
       {
          return RoleMap.role( FormDraftDTO.class );
       }
-      
+
       public void submitandsend()
       {
-         EndUser user = RoleMap.role( EndUser.class );
+
          FormDraft formSubmission = RoleMap.role( FormDraft.class );
          Case aCase = RoleMap.role( Case.class );
 
-         // Add contact info for signatories
-         for (FormSignatureDTO signature : formSubmission.getFormDraftValue().signatures().get())
+         // Get the signature
+         FormSignatureDTO signature = formSubmission.getFormDraftValue().signatures().get().get( 0 );
+
+         StringBuilder queryBuilder = new StringBuilder();
+         queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity" );
+         queryBuilder.append( " contactId:" + signature.signerId().get() );
+         Query<Customer> query = module.queryBuilderFactory()
+               .newNamedQuery( Customer.class, module.unitOfWorkFactory().currentUnitOfWork(), "solrquery" )
+               .setVariable( "query", queryBuilder.toString() );
+         Customer customer = null;
+         if (query.iterator().hasNext())
          {
-            ContactBuilder builder = new ContactBuilder(module.valueBuilderFactory());
-            builder.name(signature.signerName().get()).contactId(signature.signerId().get());
-            aCase.addContact(builder.newInstance());
+            customer = query.iterator().next();
+         } else
+         {
+            Customers customers = RoleMap.role( Customers.class );
+            customer = customers.createCustomerById( signature.signerId().get(), signature.name().get());
          }
-         aCase.submitForm( formSubmission, user );
+
+         RoleMap.current().set( customer , CustomerEntity.class );
+
+         // Add contact info for signatories
+         ContactBuilder builder = new ContactBuilder( module.valueBuilderFactory() );
+         builder.name( signature.signerName().get() ).contactId( signature.signerId().get() );
+         aCase.addContact( builder.newInstance() );
+
+         aCase.submitForm( formSubmission, customer );
 
          FormDraftDTO form = role( FormDraftDTO.class );
 
-         if ( form.mailSelectionEnablement().get() != null && form.mailSelectionEnablement().get() )
+         if (form.mailSelectionEnablement().get() != null && form.mailSelectionEnablement().get())
          {
             try
             {
@@ -160,26 +179,39 @@ public interface TaskFormDraftSummaryContext
                      submittedFormValue = value;
                   }
                }
-               if ( submittedFormValue != null )
+               if (submittedFormValue != null)
                {
-                  // find all form attachments and attach them to the email as well
+                  // find all form attachments and attach them to the email as
+                  // well
                   List<AttachedFileValue> formAttachments = new ArrayList<AttachedFileValue>();
                   for (SubmittedFieldValue value : submittedFormValue.fields())
                   {
-                     FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, value.field().get().identity() );
-                     if ( field.fieldValue().get() instanceof AttachmentFieldValue)
+                     FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork()
+                           .get( FieldValueDefinition.Data.class, value.field().get().identity() );
+                     if (field.fieldValue().get() instanceof AttachmentFieldValue)
                      {
-                        if ( !Strings.empty( value.value().get() ) )
+                        if (!Strings.empty( value.value().get() ))
                         {
-                           AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, value.value().get() );
-                           AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+                           AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory()
+                                 .newValueFromJSON( AttachmentFieldSubmission.class, value.value().get() );
+                           AttachmentEntity attachment = module
+                                 .unitOfWorkFactory()
+                                 .currentUnitOfWork()
+                                 .get( AttachmentEntity.class,
+                                       currentFormDraftAttachmentField.attachment().get().identity() );
 
-                           ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory().newValueBuilder( AttachedFileValue.class );
-                           formAttachment.prototype().mimeType().set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name().get() ) );
+                           ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory()
+                                 .newValueBuilder( AttachedFileValue.class );
+                           formAttachment
+                                 .prototype()
+                                 .mimeType()
+                                 .set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name()
+                                       .get() ) );
                            formAttachment.prototype().uri().set( attachment.uri().get() );
                            formAttachment.prototype().modificationDate().set( attachment.modificationDate().get() );
                            formAttachment.prototype().name().set( currentFormDraftAttachmentField.name().get() );
-                           formAttachment.prototype().size().set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
+                           formAttachment.prototype().size()
+                                 .set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
                            formAttachments.add( formAttachment.newInstance() );
                         }
                      }
@@ -197,9 +229,11 @@ public interface TaskFormDraftSummaryContext
       {
          RequiredSignatures.Data data = role( RequiredSignatures.Data.class );
 
-         ValueBuilder<RequiredSignaturesValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( RequiredSignaturesValue.class );
+         ValueBuilder<RequiredSignaturesValue> valueBuilder = module.valueBuilderFactory().newValueBuilder(
+               RequiredSignaturesValue.class );
 
-         valueBuilder.prototype().signatures().get().add( data.requiredSignatures().get().get( 1 ).<RequiredSignatureValue>buildWith().newInstance() );
+         valueBuilder.prototype().signatures().get()
+               .add( data.requiredSignatures().get().get( 1 ).<RequiredSignatureValue> buildWith().newInstance() );
 
          return valueBuilder.newInstance();
       }
@@ -208,13 +242,13 @@ public interface TaskFormDraftSummaryContext
       {
          String message = RoleMap.current().get( MailSelectionMessage.Data.class ).mailSelectionMessage().get();
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-         if ( message == null ) {
+         if (message == null)
+         {
             message = "";
          }
          builder.prototype().string().set( message );
          return builder.newInstance();
       }
-
 
       public void enablemailmessage()
       {
@@ -228,27 +262,29 @@ public interface TaskFormDraftSummaryContext
          formDraft.disableEmailMessage();
       }
 
-      public void changeemailstobenotified( StringValue message )
+      public void changeemailstobenotified(StringValue message)
       {
          FormDraft formDraft = role( FormDraft.class );
          formDraft.changeEmailsToBeNotified( message );
       }
 
-      private PDDocument generatePdf( SubmittedFormValue submittedFormValue ) throws Throwable
+      private PDDocument generatePdf(SubmittedFormValue submittedFormValue) throws Throwable
       {
          FormDraftDTO form = role( FormDraftDTO.class );
 
-         FormPdfTemplate.Data selectedTemplate = role( FormPdfTemplate.Data.class);
+         FormPdfTemplate.Data selectedTemplate = role( FormPdfTemplate.Data.class );
          AttachedFile.Data template = (AttachedFile.Data) selectedTemplate.formPdfTemplate().get();
 
          if (template == null)
          {
-            ProxyUser proxyUser = role(ProxyUser.class);
-            template = (AttachedFile.Data) ((FormPdfTemplate.Data) proxyUser.organization().get()).formPdfTemplate().get();
+            ProxyUser proxyUser = role( ProxyUser.class );
+            template = (AttachedFile.Data) ((FormPdfTemplate.Data) proxyUser.organization().get()).formPdfTemplate()
+                  .get();
 
-            if( template == null)
+            if (template == null)
             {
-               template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) proxyUser.organization().get()).defaultPdfTemplate().get();
+               template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) proxyUser.organization().get())
+                     .defaultPdfTemplate().get();
             }
          }
          String uri = null;
@@ -257,12 +293,13 @@ public interface TaskFormDraftSummaryContext
             uri = template.uri().get();
          }
 
-         CaseId.Data idData = role( CaseId.Data.class);
+         CaseId.Data idData = role( CaseId.Data.class );
 
          return pdfGenerator.generateSubmittedFormPdf( submittedFormValue, idData, uri, locale );
       }
 
-      private void notifyByMail( SubmittedFormValue form, String emails, List<AttachedFileValue> formAttachments ) throws Throwable
+      private void notifyByMail(SubmittedFormValue form, String emails, List<AttachedFileValue> formAttachments)
+            throws Throwable
       {
          String[] mails = emails.split( "," );
          PDDocument document = generatePdf( form );
@@ -274,7 +311,8 @@ public interface TaskFormDraftSummaryContext
          mailFormPDF( role.getDescription(), submittedOn, document, formAttachments, mails );
       }
 
-      private void mailFormPDF( String accessPointName, Date submittedOn, PDDocument document, List<AttachedFileValue> formAttachments, String... recipients )
+      private void mailFormPDF(String accessPointName, Date submittedOn, PDDocument document,
+            List<AttachedFileValue> formAttachments, String... recipients)
       {
          ResourceBundle bundle = ResourceBundle.getBundle( TaskFormDraftSummaryContext.class.getName(), locale );
 
@@ -283,25 +321,27 @@ public interface TaskFormDraftSummaryContext
             String id = addToAttachmentStore( document );
             for (String recipient : recipients)
             {
-               ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class);
+               ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class );
 
-               // leave from address and fromName empty to allow mail sender to pick up
+               // leave from address and fromName empty to allow mail sender to
+               // pick up
                // default values from mail sender configuration
                builder.prototype().subject().set( accessPointName );
                builder.prototype().content().set( bundle.getString( "mail_notification_body" ) );
-               builder.prototype().contentType().set("text/plain");
+               builder.prototype().contentType().set( "text/plain" );
                builder.prototype().to().set( recipient );
 
                List<AttachedFileValue> attachments = builder.prototype().attachments().get();
                ValueBuilder<AttachedFileValue> attachment = vbf.newValueBuilder( AttachedFileValue.class );
-               attachment.prototype().mimeType().set("application/pdf");
-               attachment.prototype().uri().set("store:" + id);
+               attachment.prototype().mimeType().set( "application/pdf" );
+               attachment.prototype().uri().set( "store:" + id );
                attachment.prototype().modificationDate().set( submittedOn );
-               attachment.prototype().name().set( accessPointName + ".pdf");
-               attachment.prototype().size().set(attachmentStore.getAttachmentSize(id));
-               attachments.add(attachment.newInstance());
+               attachment.prototype().name().set( accessPointName + ".pdf" );
+               attachment.prototype().size().set( attachmentStore.getAttachmentSize( id ) );
+               attachments.add( attachment.newInstance() );
 
-               if ( formAttachments.size() > 0 ) {
+               if (formAttachments.size() > 0)
+               {
                   for (AttachedFileValue formAttachment : formAttachments)
                   {
                      attachments.add( formAttachment );
@@ -315,30 +355,30 @@ public interface TaskFormDraftSummaryContext
          }
       }
 
-      private String addToAttachmentStore( final PDDocument pdf ) throws Throwable
+      private String addToAttachmentStore(final PDDocument pdf) throws Throwable
       {
 
          // Store case as PDF for attachment purposes
          ValueBuilder<CaseOutputConfigDTO> config = vbf.newValueBuilder( CaseOutputConfigDTO.class );
-         config.prototype().attachments().set(true);
-         config.prototype().contacts().set(true);
-         config.prototype().conversations().set(true);
-         config.prototype().submittedForms().set(true);
-         config.prototype().caselog().set(true);
-         RoleMap.current().set(new Locale( "SV", "se" ));
+         config.prototype().attachments().set( true );
+         config.prototype().contacts().set( true );
+         config.prototype().conversations().set( true );
+         config.prototype().submittedForms().set( true );
+         config.prototype().caselog().set( true );
+         RoleMap.current().set( new Locale( "SV", "se" ) );
 
-         String id = attachmentStore.storeAttachment(new OutputstreamInput(new Visitor<OutputStream, IOException>()
+         String id = attachmentStore.storeAttachment( new OutputstreamInput( new Visitor<OutputStream, IOException>()
          {
             public boolean visit(OutputStream out) throws IOException
             {
-               COSWriter writer = new COSWriter(out);
+               COSWriter writer = new COSWriter( out );
 
                try
                {
-                  writer.write(pdf);
+                  writer.write( pdf );
                } catch (COSVisitorException e)
                {
-                  throw new IOException(e);
+                  throw new IOException( e );
                } finally
                {
                   writer.close();
@@ -346,7 +386,7 @@ public interface TaskFormDraftSummaryContext
 
                return true;
             }
-         }, 4096));
+         }, 4096 ) );
          pdf.close();
 
          return id;
