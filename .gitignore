@@ -3,3 +3,11 @@
 .settings
 target
 streamflow-eclipse-formatter.xml
+**/.DS_Store
+nbproject
+*~
+.project
+.settings
+.idea/*
+.DS_Store
+.idea
