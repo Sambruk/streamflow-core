@@ -82,6 +82,18 @@ public class SurfaceFormDraftContext
       formDraft.addFormSignatureValue( signature );
    }
 
+   public SecondSigneeInfoValue secondsigneeinfo() {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+      
+      // If it doesn't exist we create a empty one
+      if (formDraft.getFormDraftValue().secondsignee().get() == null) 
+      {
+         ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+         formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+      }
+      return formDraft.getFormDraftValue().secondsignee().get();
+   }
+   
    public void updatesinglesignature( StringValue singleSignature )
    {
       FormDraft formDraft = RoleMap.role( FormDraft.class );
