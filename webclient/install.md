@@ -63,3 +63,18 @@ Windows 7
       PHANTOMJS_BIN = C:\Program Files\Phantomjs\phantomjs-1.7.0-windows\phantomjs.exe
 
     (Remember to restart your cmd prompt to reload the variables from the system.)
+
+###  Yeoman
+
+Yeoman is used to build the site.
+It can also be used for running a webserver and sync. a webbrowser, or
+running tests.
+
+   curl -L get.yeoman.io | bash
+
+Yeoman needs:
+* Ruby
+* NodeJs
+* Compass
+
+It will check the environment that everthing is installed.

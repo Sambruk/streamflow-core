@@ -1,0 +1,61 @@
+var express = require('express'),
+  path = require('path'),
+  fs = require('fs');
+
+
+var app = module.exports = express();
+
+// Configuration
+
+app.configure(function () {
+  app.set('port', process.env.PORT || 3501);
+  app.use(express['static'](path.join(__dirname, 'app')));
+});
+
+app.get(/\.json/, function (req, res) {
+  var file = path.join(__dirname, 'app', req.path);
+  console.log("--FILE: " + file);
+  sendJsonFile(req,res,file);
+});
+
+app.get(/api.*\/$/, function (req, res) {
+  var file = path.join(__dirname, 'app', req.path, '.json');
+  sendJsonFile(req,res,file);
+});
+
+function sendJsonFile(req, res, path) {
+  var self = this;
+  var file = fs.createReadStream(path);
+  res.writeHead(200, {
+    'Content-Type':'text/plain'
+  });
+
+  if (req.method === 'HEAD') {
+    res.end();
+  } else {
+    file.on('data', res.write.bind(res));
+    file.on('close', function () {
+      res.end();
+    });
+    file.on('error', function (error) {
+      sendJsonError(req, res, error);
+    });
+  }
+
+function sendJsonError(req, res, error) {
+    res.writeHead(500, {
+      'Content-Type': 'text/html'
+    });
+    res.write('<!doctype html>\n');
+    res.write('<title>Internal Server Error</title>\n');
+    res.write('<h1>Internal Server Error</h1>');
+    res.write('<pre>' + escapeHtml(util.inspect(error)) + '</pre>');
+    util.puts('500 Internal Server Error');
+    util.puts(util.inspect(error));
+  };
+
+};
+
+//app.get(/\.json/, function(req,res){
+//  res.send("HELLO WORLD" + req);
+//});
