@@ -18,7 +18,7 @@ see [install.md](readme.md)
 
    yeoman server
 
-Notice, yeoman uses Grunt, see the Gruntfile.js for configuration.
+Notice, yeoman uses the javascript build tool Grunt, see the Gruntfile.js for configuration.
 
 ## Build
 
@@ -27,5 +27,23 @@ Notice, yeoman uses Grunt, see the Gruntfile.js for configuration.
 ## Test
 
    yeoman test
+
+Or run it from WebStrom IDEA
+
+
+## Angular Debug
+
+Install the AngularJS Batarang chrome extension
+
+## Debug and Logging in WebStorm/IDEA
+
+* Install the the Jetbrains Chrome Extension
+* Click on "Edit configuration..."
+* Create a new JavaScript remote debug
+* Start the debugging session
+* Map the javascript file you have breakpoints to, e.g http://localhost:3501/modules/main/controllers.main.js
+
+You now get all the console.log output in the WebStorm IDE and can set break points
+
 
 
