@@ -187,10 +187,12 @@ public interface CaseCommandsContext
    @RequiresPermission(PermissionType.administrator)
    public void reinstate();
 
+   @RequiresStatus( OPEN )
    @RequiresUnrestricted()
    @RequiresRemoved(false)
    public void restrict();
 
+   @RequiresStatus( OPEN )
    @RequiresRestricted()
    @RequiresRemoved(false)
    public void unrestrict();
