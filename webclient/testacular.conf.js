@@ -13,7 +13,6 @@ files = [
   'test/lib/angular-mocks.js',
   'app/sfc-app.js',
   'app/modules/**/*.js',
-  'test/mock/**/*.js',
   'test/spec/**/*.js'
 ];
 
@@ -47,7 +46,7 @@ logLevel = LOG_INFO;
 
 
 // enable / disable watching file and executing tests whenever any file changes
-autoWatch = false;
+autoWatch = true;
 
 
 // Start these browsers, currently available:

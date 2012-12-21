@@ -30,7 +30,7 @@ Only used for development and returns the static JSON api in the app/api folder 
 
    yeoman test
 
-Or run it from WebStrom IDEA
+Or run it from WebStrom IDEA, see docs/testacular.png and http://vojtajina.github.com/testacular/
 
 
 ## Angular Debug
