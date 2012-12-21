@@ -1,7 +1,9 @@
 {
-  "author": "",
-  "name": "",
-  "version": "0.0.0",
+  "author": "Andreas Ronge",
+  "name": "sfc",
+  "version": "0.0.1",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+      "express": "3.x"
+  }
 }

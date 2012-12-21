@@ -174,4 +174,14 @@ module.exports = function( grunt ) {
       done(err);
     });
   });
+
+  grunt.registerTask('server', 'Start server', function() {
+    var done = this.async();
+    var app = require('./mock-server.js');
+    var http = require('http');
+    // Start server
+    http.createServer(app).listen(app.get('port'), function () {
+      console.log("Express server listening on port " + app.get('port'));
+    }).on('close', done);
+  });
 };
