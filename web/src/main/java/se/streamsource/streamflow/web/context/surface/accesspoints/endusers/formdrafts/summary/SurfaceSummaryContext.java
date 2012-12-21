@@ -16,6 +16,18 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -40,6 +52,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -56,6 +69,7 @@ import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -73,6 +87,8 @@ import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
@@ -80,18 +96,6 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -165,21 +169,24 @@ public interface SurfaceSummaryContext
          if( task != null )
          {
             // set task reference back to subittedform - second signee info
-            ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), role( Locale.class ) );
+            ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), new Locale("SV","se") );
 
             try
             {
                Template textTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturetextmail_sv.html" );
                Template htmlTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturehtmlmail_sv.html" );
 
+
+               Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
+               String organisation = organizations.organization().get().getDescription();
                String id = ((CaseId.Data)aCase).caseId().get();
                String link = defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity)task ).identity().get();
-               String textMail = createFormatedMail( id, link, textTemplate );
-               String htmlMail = createFormatedMail( id, link, htmlTemplate );
+               String textMail = createFormatedMail( id, link, organisation, textTemplate );
+               String htmlMail = createFormatedMail( id, link, organisation, htmlTemplate );
 
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
 
-               builder.prototype().subject().set( bundle.getString( "signature_notification_subject" ) );
+               builder.prototype().subject().set( organisation + " - " + bundle.getString( "signature_notification_subject" ) );
                builder.prototype().content().set( textMail );
                builder.prototype().contentType().set( "text/plain" );
                builder.prototype().contentHtml().set( htmlMail );
@@ -291,12 +298,11 @@ public interface SurfaceSummaryContext
          return task;
       }
 
-      private String createFormatedMail( String id, String link, Template template)
+      private String createFormatedMail( String id, String link, String organisation, Template template)
       {
          VelocityContext context = new VelocityContext();
-         //context.put( "user", notification.getRecipient().getContact().name().get() );
-         //context.put( "notification", notification );
-         //context.put( "today", Strings.capitalize( (new SimpleDateFormat( "d':e' MMMM", locale )).format( new Date() )));
+         
+         context.put( "organisation", organisation );
          context.put( "id", id );
          context.put( "link", link );
          StringWriter writer = new StringWriter();
