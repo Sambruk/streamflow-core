@@ -87,7 +87,6 @@ import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks;

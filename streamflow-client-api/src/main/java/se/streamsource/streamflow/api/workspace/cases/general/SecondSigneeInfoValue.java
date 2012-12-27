@@ -44,6 +44,7 @@ public interface SecondSigneeInfoValue
 
    @Optional
    @UseDefaults
+   @Matches("\\+?[\\d -]*")
    Property<String> phonenumber();
 
    @UseDefaults
