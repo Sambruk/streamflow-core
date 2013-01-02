@@ -3,6 +3,132 @@ window.mockBackend = window.mockBackend || (function () {
 
   var mockBackend = {};
 
+
+  mockBackend.root = {"commands":[], "index":null, "queries":[], "resources":[
+    {
+      "classes":"resource",
+      "href":"workspace/",
+      "id":"workspace",
+      "rel":"workspace",
+      "text":"Workspace"
+    },
+    {
+      "classes":"resource",
+      "href":"crystal/",
+      "id":"crystal",
+      "rel":"crystal",
+      "text":"Crystal"
+    },
+    {
+      "classes":"resource",
+      "href":"overview/",
+      "id":"overview",
+      "rel":"overview",
+      "text":"Overview"
+    },
+    {
+      "classes":"resource",
+      "href":"administration/",
+      "id":"administration",
+      "rel":"administration",
+      "text":"Administration"
+    },
+    {
+      "classes":"resource",
+      "href":"account/",
+      "id":"account",
+      "rel":"account",
+      "text":"Account"
+    }
+  ]};
+
+  mockBackend.workspace = {"commands":[], "index":{
+    "_type":"se.streamsource.dci.value.link.LinksValue",
+    "links":[
+      {
+        "classes":"drafts",
+        "href":"drafts/",
+        "id":"drafts",
+        "rel":"drafts",
+        "text":"Drafts"
+      },
+      {
+        "classes":"search",
+        "href":"search/",
+        "id":"search",
+        "rel":"search",
+        "text":"Search"
+      },
+      {
+        "classes":"inbox",
+        "href":"projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/",
+        "id":"b35873ba-4007-40ac-9936-975eab38395a-3f",
+        "rel":"inbox",
+        "text":"Streamflow"
+      },
+      {
+        "classes":"assignments",
+        "href":"projects/b35873ba-4007-40ac-9936-975eab38395a-3f/assignments/",
+        "id":"b35873ba-4007-40ac-9936-975eab38395a-3f",
+        "rel":"assignments",
+        "text":"Streamflow"
+      }
+    ]
+  }, "queries":[
+    {
+      "classes":"query",
+      "href":"casecounts",
+      "id":"casecounts",
+      "rel":"casecounts",
+      "text":"Casecounts"
+    },
+    {
+      "classes":"query",
+      "href":"index",
+      "id":"index",
+      "rel":"index",
+      "text":"Index"
+    }
+  ], "resources":[
+    {
+      "classes":"resource",
+      "href":"search/",
+      "id":"search",
+      "rel":"search",
+      "text":"Search"
+    },
+    {
+      "classes":"resource",
+      "href":"cases/",
+      "id":"cases",
+      "rel":"cases",
+      "text":"Cases"
+    },
+    {
+      "classes":"resource",
+      "href":"projects/",
+      "id":"projects",
+      "rel":"projects",
+      "text":"Projects"
+    },
+    {
+      "classes":"resource",
+      "href":"drafts/",
+      "id":"drafts",
+      "rel":"drafts",
+      "text":"Drafts"
+    },
+    {
+      "classes":"resource",
+      "href":"perspectives/",
+      "id":"perspectives",
+      "rel":"perspectives",
+      "text":"Perspectives"
+    }
+  ]};
+
+  mockBackend.projects = {"commands":[],"index":{"_type":"se.streamsource.dci.value.link.LinksValue","links":[{"classes":null,"href":"b35873ba-4007-40ac-9936-975eab38395a-3f/","id":"b35873ba-4007-40ac-9936-975eab38395a-3f","rel":"project","text":"Streamflow"}]},"queries":[{"classes":"query","href":"index","id":"index","rel":"index","text":"Index"}],"resources":[]}
+
   mockBackend.customer = {"commands":[], "index":null, "queries":[], "resources":[
     {
       "classes":"resource",

@@ -16,9 +16,8 @@ see [install.md](readme.md)
 
 ## Run
 
-   yeoman server
+   grunt --config Gruntfile.js server
 
-Notice, yeoman uses the javascript build tool Grunt, see the Gruntfile.js for configuration.
 The server tries to mimic the real server, see the node express file 'mock-server.js'
 Only used for development and returns the static JSON api in the app/api folder with the same URLs.
 

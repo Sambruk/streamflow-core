@@ -7,7 +7,7 @@
     var li = url.lastIndexOf($location.path());
     var index = url.substring(0, li);
     var baseUrl = index.substring(0, index.lastIndexOf("/"));
-    var apiUrl = baseUrl + "/api/proxy/";
+    var apiUrl = baseUrl + "/api/";
 
     var cache = $cacheFactory('sfHttpCache');
 

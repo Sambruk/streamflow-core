@@ -24,8 +24,7 @@
         <div class="well sidebar-nav">
             <ul class="nav nav-list">
                 <li class="nav-header">Funktioner</li>
-                <li class="active"><a href="#">Streamflo</a></li>
-                <li>Something</li>
+                <li ng-repeat="project in projects"><a href="#/project/{{project.href}}">{{project.text}}</a></li>
             </ul>
         </div>
     </div>

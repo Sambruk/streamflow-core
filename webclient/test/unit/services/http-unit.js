@@ -12,7 +12,7 @@ describe("sf.backend.services.http", function () {
     }));
 
     it("can get the entry point", inject(function (httpService) {
-        expect(httpService.apiUrl).toEqual("http://localhost:8000/app/api/proxy/");
+        expect(httpService.apiUrl).toEqual("http://localhost:8000/app/api/");
       }
     ));
 
