@@ -48,4 +48,11 @@ Install the AngularJS Batarang chrome extension
 You now get all the console.log output in the WebStorm IDE and can set break points
 
 
+## API
 
+Function Streamflow:
+
+My Cases:
+http://localhost:8082/streamflow/workspace/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/cases?tq=select+*
+Inbox:
+http://localhost:8082/streamflow/workspace/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/assignments/cases?tq=select+*
