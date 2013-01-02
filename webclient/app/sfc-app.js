@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
+(function() {
+  'use strict';
 
-var webclientApp = angular.module('webclientApp', [])
-  .config(['$routeProvider', function($routeProvider) {
-  $routeProvider
-    .when('/', {
-      templateUrl: 'modules/main/view/main.html',
-      controller: 'MainCtrl'
-    })
-    .otherwise({
-      redirectTo: '/'
-    });
-}]);
+  angular.module('sf', ['sf.main.controllers'])
+    .config(['$routeProvider', function($routeProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl: 'modules/main/view/main.html',
+        controller: 'MainCtrl'
+      })
+      .otherwise({
+        redirectTo: '/'
+      });
+  }]);
+
+})();
