@@ -45,9 +45,13 @@
         <!-- Add your site or application content here -->
         <div class="container" ng-view></div>
 
+        <!-- TODO use CDN in production -->
         <script src="vendor/angular.js"></script>
+        <script src="vendor/underscore-min.js"></script>
+        <script src="vendor/jquery.js"></script>
 
         <!-- build:js scripts/scripts.js -->
+        <script src="vendor/base64.js"></script>
         <script src="sfc-app.js"></script>
         <script src="modules/main/controllers/main.js"></script>
         <!-- endbuild -->
