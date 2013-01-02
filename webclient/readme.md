@@ -16,9 +16,8 @@ see [install.md](readme.md)
 
 ## Run
 
-   yeoman server
+   grunt --config Gruntfile.js server
 
-Notice, yeoman uses the javascript build tool Grunt, see the Gruntfile.js for configuration.
 The server tries to mimic the real server, see the node express file 'mock-server.js'
 Only used for development and returns the static JSON api in the app/api folder with the same URLs.
 
@@ -30,7 +29,7 @@ Only used for development and returns the static JSON api in the app/api folder 
 
    yeoman test
 
-Or run it from WebStrom IDEA
+Or run it from WebStrom IDEA, see docs/testacular.png and http://vojtajina.github.com/testacular/
 
 
 ## Angular Debug
@@ -48,4 +47,11 @@ Install the AngularJS Batarang chrome extension
 You now get all the console.log output in the WebStorm IDE and can set break points
 
 
+## API
 
+Function Streamflow:
+
+My Cases:
+http://localhost:8082/streamflow/workspace/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/cases?tq=select+*
+Inbox:
+http://localhost:8082/streamflow/workspace/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/assignments/cases?tq=select+*

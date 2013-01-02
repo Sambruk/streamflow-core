@@ -27,28 +27,37 @@
         <title></title>
         <meta name="description" content=""/>
         <meta name="viewport" content="width=device-width"/>
+        <link rel="stylesheet" href="styles/bootstrap.css"/>
         <link rel="stylesheet" href="styles/main.css"/>
 
     </head>
-    <body ng-app="webclientApp">
+    <body ng-app="sf">
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
         
         <!--[if lt IE 9]>
-            <script src="scripts/vendor/es5-shim.min.js"></script>
-            <script src="scripts/vendor/json3.min.js"></script>
+        <script src="vendor/es5-shim.min.js"></script>
+        <script src="vendor/json3.min.js"></script>
         <![endif]-->
 
         <!-- Add your site or application content here -->
         <div class="container" ng-view></div>
 
-        <script src="scripts/vendor/angular.js"></script>
+        <!-- TODO use CDN in production -->
+        <script src="vendor/angular.js"></script>
+        <script src="vendor/underscore-min.js"></script>
+        <script src="vendor/jquery.js"></script>
 
         <!-- build:js scripts/scripts.js -->
+        <script src="vendor/base64.js"></script>
         <script src="sfc-app.js"></script>
         <script src="modules/main/controllers/main.js"></script>
+        <script src="modules/backend/services/backend-service.js"></script>
+        <script src="modules/backend/services/error-handler-service.js"></script>
+        <script src="modules/backend/services/http-service.js"></script>
+        <script src="modules/backend/services/project-service.js"></script>
         <!-- endbuild -->
     </body>
 </html>

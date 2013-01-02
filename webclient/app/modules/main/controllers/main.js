@@ -14,16 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
 
-webclientApp.controller('MainCtrl', function($scope) {
-  console.log("HEJ HOPP");
-  $scope.click = function() {
-    console.log("CLICK IT");
-  }
-  $scope.awesomeThings = [
-    'HTML5 Boilerplate',
-    'AngularJS',
-    'Testacular'
-  ];
-});
+(function() {
+  'use strict';
+
+  var main = angular.module('sf.main.controllers', ['sf.backend.services.project']);
+
+  main.controller('MainCtrl', ['$scope', 'projectService', function($scope, projectService) {
+    $scope.click = function() {
+      console.log("d IT");
+    }
+    $scope.projects = projectService.getAll();
+    $scope.awesomeThings = [
+      'HTML5 Boilerplate',
+      'AngularJS',
+      'Testacular'
+    ];
+  }]);
+
+})()
