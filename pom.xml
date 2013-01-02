@@ -319,6 +319,10 @@
                         <exclude>**/webapp/resources/css/external/**</exclude>
                         <exclude>**/webapp/resources/js/external/**</exclude>
                         <exclude>**/StreamflowJXColorSelectionButton.java</exclude>
+                        <exclude>**/doublesignaturetextmail_sv.html</exclude>
+                        <exclude>**/doublesignaturehtmlmail_sv.html</exclude>
+						<exclude>**/webclient/app/scripts/vendor/**</exclude>
+						<exclude>**/webclient/test/lib/**</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
