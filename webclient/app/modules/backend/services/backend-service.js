@@ -54,7 +54,8 @@
           deferred.reject({msg: "Missing key in json " + id, data: resourceData});
           return deferred.promise;
         }
-        var abshref = this.basehref + w.href;
+        // handle absolute urls
+        var abshref = (w.href[0] === '/') ? w.href : this.basehref + w.href;
         return httpService.getRequest(abshref).then(function (response) {
           urls && urls.push(abshref);
           return new SfResource(abshref, response);

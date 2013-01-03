@@ -21,6 +21,7 @@
     .config(['$routeProvider', function($routeProvider) {
     $routeProvider
       .when('/:projectId/:caseType', {templateUrl:'modules/main/view/main.html', controller: 'CaseListCtrl'})
+      .when('/:projectId/:caseType/:caseId', {templateUrl:'modules/main/view/main.html', controller: 'CaseDetailCtrl'})
       .otherwise({
         redirectTo: '/'
       });

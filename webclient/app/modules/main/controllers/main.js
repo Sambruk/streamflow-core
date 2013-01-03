@@ -28,4 +28,10 @@
     $scope.cases = projectService.getSelected();
   }]);
 
+  main.controller('CaseDetailCtrl', ['$scope', 'projectService', function($scope, projectService){
+    // TODO
+    //$scope.cases = projectService.getSelected();
+  }]);
+
+
 })();

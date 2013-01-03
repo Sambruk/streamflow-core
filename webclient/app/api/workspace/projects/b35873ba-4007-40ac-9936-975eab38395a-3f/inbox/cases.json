@@ -2,7 +2,7 @@
     {
         "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
         "classes":null,
-        "href":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
+        "href":"/api/workspace/cases/0f90c758-cf19-4cce-abcd-94f0f3373fce-28/",
         "id":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0",
         "rel":"mycases/opencase",
         "text":"Testärende 2",
@@ -14,7 +14,7 @@
     {
         "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
         "classes":null,
-        "href":"b35873ba-4007-40ac-9936-975eab38395a-30/",
+        "href":"/api/workspace/cases/0f0008c2-4d6e-453a-b255-0d6ec86145f9-2/",
         "id":"b35873ba-4007-40ac-9936-975eab38395a-30",
         "rel":"mycases/opencase",
         "text":"En rubrik här skulle inte vara så dumt",

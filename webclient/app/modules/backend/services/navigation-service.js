@@ -12,6 +12,9 @@
       },
       caseType: function() {
         return $routeParams.caseType;
+      },
+      caseId: function() {
+        return $routeParams.caseId;
       }
     };
   }]);
