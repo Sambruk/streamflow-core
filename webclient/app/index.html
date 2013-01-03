@@ -43,7 +43,28 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <div class="container" ng-view></div>
+        <div class="row-fluid">
+
+          <div class="span3">
+
+            <div class="well sidebar-nav">
+              <ul class="nav nav-list" ng-controller="ProjectListCtrl">
+                <li class="nav-header">Funktioner</li>
+                <li ng-repeat="project in projects">
+                  {{project.text}}
+                  <ul>
+                    <li><a href="#/project/{{project.href}}">Inkorg</a></li>
+                    <li><a href="#/project/{{project.href}}">Mina Ärenden</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="span9" ng-view>
+          </div>
+
+
+        </div>
 
         <!-- TODO use CDN in production -->
         <script src="vendor/angular.js"></script>

@@ -20,16 +20,8 @@
 
   var main = angular.module('sf.main.controllers', ['sf.backend.services.project']);
 
-  main.controller('MainCtrl', ['$scope', 'projectService', function($scope, projectService) {
-    $scope.click = function() {
-      console.log("d IT");
-    }
+  main.controller('ProjectListCtrl', ['$scope', 'projectService', function($scope, projectService) {
     $scope.projects = projectService.getAll();
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Testacular'
-    ];
   }]);
 
 })()

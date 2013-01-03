@@ -20,10 +20,7 @@
   angular.module('sf', ['sf.main.controllers'])
     .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-      .when('/', {
-        templateUrl: 'modules/main/view/main.html',
-        controller: 'MainCtrl'
-      })
+      .when('/:projectId/:caseType', {templateUrl:'modules/main/view/main.html'})
       .otherwise({
         redirectTo: '/'
       });
