@@ -49,12 +49,10 @@
 
             <div class="well sidebar-nav">
               <ul class="nav nav-list" ng-controller="ProjectListCtrl">
-                <li class="nav-header">Funktioner</li>
-                <li ng-repeat="project in projects">
+                <li class="nav-header" ng-repeat="project in projects">
                   {{project.text}}
                   <ul>
-                    <li><a href="#/project/{{project.href}}">Inkorg</a></li>
-                    <li><a href="#/project/{{project.href}}">Mina Ärenden</a></li>
+                    <li ng-repeat="type in project.types" active-link><a href="#/{{type.href}}">{{type.name}}</a></li>
                   </ul>
                 </li>
               </ul>
@@ -75,6 +73,8 @@
         <script src="vendor/base64.js"></script>
         <script src="sfc-app.js"></script>
         <script src="modules/main/controllers/main.js"></script>
+        <script src="modules/main/directives/active-link.js"></script>
+        <script src="modules/backend/services/navigation-service.js"></script>
         <script src="modules/backend/services/backend-service.js"></script>
         <script src="modules/backend/services/error-handler-service.js"></script>
         <script src="modules/backend/services/http-service.js"></script>

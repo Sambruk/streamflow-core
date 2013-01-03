@@ -18,7 +18,7 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.backend.services.project', ['sf.backend.services.backend']);
+  var sfServices = angular.module('sf.backend.services.project', ['sf.backend.services.backend', 'sf.backend.services.navigation']);
 
   sfServices.factory('projectService', ['backendService', function (backendService) {
 
@@ -32,7 +32,7 @@
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){
               // TODO maybe filter rel='project'
-              result.push({text: item.text, href: item.href});
+              result.push({text: item.text, types: [{name: 'inbox', href: item.href + 'inbox'}, {name: 'assignments', href: item.href + 'assignments'}]});
             });
           }
         });

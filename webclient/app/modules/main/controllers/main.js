@@ -24,4 +24,8 @@
     $scope.projects = projectService.getAll();
   }]);
 
-})()
+  main.controller('CaseListCtrl', ['$scope', 'navigationService', function($scope){
+    $scope.text = "Project "; // '' + navigationService.projectId() + ", type " + navigationService.caseType();
+  }]);
+
+})();

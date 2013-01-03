@@ -17,10 +17,10 @@
 (function() {
   'use strict';
 
-  angular.module('sf', ['sf.main.controllers'])
+  angular.module('sf', ['sf.main.controllers', 'sf.main.directives'])
     .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-      .when('/:projectId/:caseType', {templateUrl:'modules/main/view/main.html'})
+      .when('/:projectId/:caseType', {templateUrl:'modules/main/view/main.html', controller: 'CaseListCtrl'})
       .otherwise({
         redirectTo: '/'
       });
