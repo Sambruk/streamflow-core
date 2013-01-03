@@ -37,7 +37,7 @@
           }
         });
       },
-
+      //http://localhost:3501/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0
       getSelected: function() {
         return backendService.get({
           specs:[
@@ -49,7 +49,8 @@
           ],
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){
-              result.push({id: item.caseId, text: item.text, href: item.href, project: item.project, creationDate: item.creationDate});
+              var href = navigationService.caseHref(item.id);
+              result.push({id: item.caseId, text: item.text, href: href, project: item.project, creationDate: item.creationDate});
             });
           }
         });
@@ -58,3 +59,4 @@
   }]);
 
 })();
+//http://localhost:3501/api/workspace/cases/0f90c758-cf19-4cce-abcd-94f0f3373fce-28/

@@ -7,6 +7,9 @@
   sfServices.factory('navigationService', ['$location', '$routeParams', function ($location, $routeParams) {
 
     return {
+      caseHref: function(caseId) {
+        return "#" + this.projectId() + '/' + this.caseType() + '/' + caseId;
+      },
       projectId: function() {
         return $routeParams.projectId;
       },

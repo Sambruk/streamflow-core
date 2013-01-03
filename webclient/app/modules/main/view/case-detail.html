@@ -16,22 +16,7 @@
     limitations under the License.
 
 -->
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>Id</th>
-    <th>Titel</th>
-    <th>Skapad</th>
-    <th>Ägare</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr ng-repeat='case in cases'>
-    <td>{{case.id}}</td>
-    <td>{{case.text}}</td>
-    <td>{{case.creationDate}}</td>
-    <td>{{case.project}}</td>
-  </tr>
-  </tbody>
+    <h2>{{case.index.text}}</h2>
 
-</table>
+    Created By: {{case.index.createdBy}}<br>
+    Owner: {{case.index.owner}}

@@ -11,7 +11,7 @@
         var path = "/" + scope.type.href;
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
-          if (path === newPath) {
+          if (newPath.match(path)) {
             element.addClass('active');
           } else {
             element.removeClass('active');
