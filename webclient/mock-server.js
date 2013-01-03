@@ -39,6 +39,13 @@ app.get(/api.*\/$/, function (req, res) {
   sendJsonFile(req,res,file);
 });
 
+app.get(/api.*[^\/]$/, function (req, res) {
+  var p = req.path.slice(0, req.path.length - 0) + '.json';
+  var file = path.join(__dirname, 'app', p);
+  sendJsonFile(req,res,file);
+});
+
+
 function sendJsonFile(req, res, path) {
   var self = this;
   var file = fs.createReadStream(path);

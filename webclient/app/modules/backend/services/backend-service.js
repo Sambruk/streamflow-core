@@ -104,22 +104,40 @@
       }
     }
 
-    // The Static API
+    // -----------------------------------------------------------------------------------------------------------------
+    // The Public API
+    //
     var api = {
-      get: function(dsl) {
-        var urls = [];
-        var result = [];
 
+      // Returns an Array which can be used as a Hash object as well
+      // The Array object has two extra methods, invalidate and resolve which allow you to
+      // perform the request again. This could be useful for example after a post request when we know that
+      // the server has changed. Example in a controller
+      //    $scope.foo = aService.getFoo(); // returns an array
+      //    $scope.onClick = function() {
+      //      $scope.foo.invalidate();
+      //      $scope.foo.resolve(); // will update the foo result again.
+      //    }
+      get: function(dsl) {
+        var urls = []; // stores which URL the given DSL will use, so that we can invalidate it later if necessarily
+        var result = []; // the return value, which can be used as a normal JavaScript object and has two extra methods
+
+        // invalidates the HTTP Cache
         result.invalidate = function() { httpService.invalidate(urls); };
+
+        // calls the Server (again)
         result.resolve =  function() {
+          // The dsl can provide a 'guard' condition preventing the calls to the server
           if (dsl.condition && !dsl.condition()) {
             var deferred = $q.defer();
             deferred.resolve(this);
             return deferred.promise;
           }
+
           clear(this); // clear the array
           urls.length = 0;
 
+          // always start from the root resource and then drill down by using the provided dsl object
           return httpService.getRequest("").
             then(function (response) {
               var resource = new SfResource("", response);
@@ -128,10 +146,13 @@
               dsl.onSuccess(resource, result, urls)
             });
         };
+
         result.resolve();
         return result;
       },
 
+
+      // Works in a similar way to get, but does a post instead
       postNested: function (specs, data, responseSelector) {
 
         function findInJson(spec, json) {
@@ -142,8 +163,6 @@
           var jsonArray = searchIds.reduce(function(prev, curr) { return prev[curr]}, json);
           return _.find(jsonArray, function (item) { return item[arrayId] === id });
         }
-
-//        var sleep = function (result) {return $timeout(function() {return result;}, 3000); };
 
         return httpService.getRequest("").then(function (response) {
           var resource = new SfResource("", response);

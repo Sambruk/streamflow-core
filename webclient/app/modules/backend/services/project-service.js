@@ -20,7 +20,7 @@
 
   var sfServices = angular.module('sf.backend.services.project', ['sf.backend.services.backend', 'sf.backend.services.navigation']);
 
-  sfServices.factory('projectService', ['backendService', function (backendService) {
+  sfServices.factory('projectService', ['backendService', 'navigationService', function (backendService, navigationService) {
 
     return {
       getAll:function () {
@@ -33,6 +33,23 @@
             resource.response.index.links.forEach(function(item){
               // TODO maybe filter rel='project'
               result.push({text: item.text, types: [{name: 'inbox', href: item.href + 'inbox'}, {name: 'assignments', href: item.href + 'assignments'}]});
+            });
+          }
+        });
+      },
+
+      getSelected: function() {
+        return backendService.get({
+          specs:[
+            {resources:'workspace'},
+            {resources: 'projects'},
+            {'index.links': navigationService.projectId},
+            {resources: navigationService.caseType },
+            {queries: 'cases'}
+          ],
+          onSuccess:function (resource, result) {
+            resource.response.links.forEach(function(item){
+              result.push({id: item.caseId, text: item.text, href: item.href, project: item.project, creationDate: item.creationDate});
             });
           }
         });

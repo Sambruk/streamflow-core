@@ -127,7 +127,67 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ]};
 
-  mockBackend.projects = {"commands":[],"index":{"_type":"se.streamsource.dci.value.link.LinksValue","links":[{"classes":null,"href":"b35873ba-4007-40ac-9936-975eab38395a-3f/","id":"b35873ba-4007-40ac-9936-975eab38395a-3f","rel":"project","text":"Streamflow"}]},"queries":[{"classes":"query","href":"index","id":"index","rel":"index","text":"Index"}],"resources":[]}
+  mockBackend.projects = {"commands":[], "index":{"_type":"se.streamsource.dci.value.link.LinksValue", "links":[
+    {"classes":null, "href":"b35873ba-4007-40ac-9936-975eab38395a-3f/", "id":"b35873ba-4007-40ac-9936-975eab38395a-3f", "rel":"project", "text":"Streamflow"}
+  ]}, "queries":[
+    {"classes":"query", "href":"index", "id":"index", "rel":"index", "text":"Index"}
+  ], "resources":[]}
+
+  mockBackend.project1 = {"commands":[], "index":null, "queries":[], "resources":[
+    {
+      "classes":"resource",
+      "href":"assignments/",
+      "id":"assignments",
+      "rel":"assignments",
+      "text":"Assignments"
+    },
+    {
+      "classes":"resource",
+      "href":"inbox/",
+      "id":"inbox",
+      "rel":"inbox",
+      "text":"Inbox"
+    }
+  ]};
+
+  mockBackend.project1Inbox = {"commands":[], "index":null, "queries":[
+    {
+      "classes":"query",
+      "href":"cases",
+      "id":"cases",
+      "rel":"cases",
+      "text":"Cases"
+    }
+  ], "resources":[
+
+  ]};
+
+  mockBackend.project1InboxCases = {"links":[
+    {
+      "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
+      "classes":null,
+      "href":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
+      "id":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0",
+      "rel":"mycases/opencase",
+      "text":"Test Test Test 2",
+      "caseId":"20121113-1",
+      "caseType":"formulärstest",
+      "creationDate":"2012-11-13T09:04:27.064Z",
+      "project":"Streamflow"
+    },
+    {
+      "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
+      "classes":null,
+      "href":"b35873ba-4007-40ac-9936-975eab38395a-30/",
+      "id":"b35873ba-4007-40ac-9936-975eab38395a-30",
+      "rel":"mycases/opencase",
+      "text":"Kontakt Center Thingy",
+      "caseId":"20121112-1",
+      "caseType":"formulärstest",
+      "creationDate":"2012-10-26T12:47:07.345Z",
+      "project":"Streamflow"
+    }
+  ]};
 
   mockBackend.customer = {"commands":[], "index":null, "queries":[], "resources":[
     {
