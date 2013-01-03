@@ -321,8 +321,12 @@
                         <exclude>**/StreamflowJXColorSelectionButton.java</exclude>
                         <exclude>**/doublesignaturetextmail_sv.html</exclude>
                         <exclude>**/doublesignaturehtmlmail_sv.html</exclude>
-						<exclude>**/webclient/app/scripts/vendor/**</exclude>
-						<exclude>**/webclient/test/lib/**</exclude>
+						<exclude>**/webclient/app/vendor/**</exclude>
+						<exclude>**/webclient/app/api/**</exclude>
+						<exclude>**/webclient/app/index.html</exclude>
+						<exclude>**/webclient/node_modules/**</exclude>
+						<exclude>**/webclient/test_server/**</exclude>
+						<exclude>**/webclient/test/**</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>

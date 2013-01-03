@@ -14,25 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
+(function () {
+  'use strict';
 
-describe('Controller: MainCtrl', function() {
+  var sfServices = angular.module('sf.backend.services.error-handler', []);
 
-  // load the controller's module
-  beforeEach(module('webclientApp'));
-
-  var MainCtrl,
-    scope;
-
-  // Initialize the controller and a mock scope
-  beforeEach(inject(function($controller) {
-    scope = {};
-    MainCtrl = $controller('MainCtrl', {
-      $scope: scope
-    });
-  }));
-
-  it('should attach a list of awesomeThings to the scope', function() {
-    expect(scope.awesomeThings.length).toBe(3);
-  });
-});
+  sfServices.factory('errorHandlerService', ['$window', '$q', function ($window, $q) {
+    return function(error) {
+      console.log("ERROR HANDLER ", error);
+      if (error.status == 403) {
+        $window.location.reload();
+      }
+      return $q.reject(error);
+    }
+  }]);
+})();

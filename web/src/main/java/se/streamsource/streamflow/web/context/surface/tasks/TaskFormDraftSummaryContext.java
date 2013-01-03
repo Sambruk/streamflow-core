@@ -60,6 +60,7 @@ import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity;
+import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -149,7 +150,7 @@ public interface TaskFormDraftSummaryContext extends Context, IndexContext<FormD
             customer = query.iterator().next();
          } else
          {
-            Customers customers = RoleMap.role( Customers.class );
+            Customers customers = module.unitOfWorkFactory().currentUnitOfWork().get( Customers.class, CustomersEntity.CUSTOMERS_ID );
             customer = customers.createCustomerById( signature.signerId().get(), signature.name().get());
          }
 

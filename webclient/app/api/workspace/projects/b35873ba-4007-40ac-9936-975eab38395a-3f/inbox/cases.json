@@ -1,0 +1,26 @@
+{"links":[
+    {
+        "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
+        "classes":null,
+        "href":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
+        "id":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0",
+        "rel":"mycases/opencase",
+        "text":"Testärende 2",
+        "caseId":"20121113-1",
+        "caseType":"formulärstest",
+        "creationDate":"2012-11-13T09:04:27.064Z",
+        "project":"Streamflow"
+    },
+    {
+        "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
+        "classes":null,
+        "href":"b35873ba-4007-40ac-9936-975eab38395a-30/",
+        "id":"b35873ba-4007-40ac-9936-975eab38395a-30",
+        "rel":"mycases/opencase",
+        "text":"En rubrik här skulle inte vara så dumt",
+        "caseId":"20121112-1",
+        "caseType":"formulärstest",
+        "creationDate":"2012-10-26T12:47:07.345Z",
+        "project":"Streamflow"
+    }
+]}
