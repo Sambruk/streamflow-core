@@ -27,6 +27,7 @@
 
     var cache = $cacheFactory('sfHttpCache');
 
+    // TODO Remove this, not needed ?
     function makeBaseAuth(user, password) {
       var tok = user + ':' + password;
       var hash = Base64.encode(tok);
@@ -61,7 +62,9 @@
 
       getRequest: function (href, skipCache) {
         var headers = {'Authorization':makeBaseAuth('administrator', 'administrator')};
-        var url = this.absApiUrl(href);
+
+        // handle absolute URLs
+        var url = (href[0] === '/') ? href : this.absApiUrl(href);
 
         var result = cache.get(href);
         if (!result || skipCache) {

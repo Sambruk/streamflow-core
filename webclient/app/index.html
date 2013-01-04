@@ -43,7 +43,26 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <div class="container" ng-view></div>
+        <div class="row-fluid">
+
+          <div class="span3">
+
+            <div class="well sidebar-nav">
+              <ul class="nav nav-list" ng-controller="ProjectListCtrl">
+                <li class="nav-header" ng-repeat="project in projects">
+                  {{project.text}}
+                  <ul>
+                    <li ng-repeat="type in project.types" active-link><a href="#/{{type.href}}">{{type.name}}</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="span9" ng-view>
+          </div>
+
+
+        </div>
 
         <!-- TODO use CDN in production -->
         <script src="vendor/angular.js"></script>
@@ -54,10 +73,13 @@
         <script src="vendor/base64.js"></script>
         <script src="sfc-app.js"></script>
         <script src="modules/main/controllers/main.js"></script>
+        <script src="modules/main/directives/active-link.js"></script>
+        <script src="modules/backend/services/navigation-service.js"></script>
         <script src="modules/backend/services/backend-service.js"></script>
         <script src="modules/backend/services/error-handler-service.js"></script>
         <script src="modules/backend/services/http-service.js"></script>
         <script src="modules/backend/services/project-service.js"></script>
+        <script src="modules/backend/services/case-service.js"></script>
         <!-- endbuild -->
     </body>
 </html>

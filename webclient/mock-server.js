@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #!/usr/bin/env node
 
 var express = require('express'),
@@ -40,6 +41,13 @@ app.get(/api.*\/$/, function (req, res) {
   var file = path.join(__dirname, 'app', req.path, '.json');
   sendJsonFile(req,res,file);
 });
+
+app.get(/api.*[^\/]$/, function (req, res) {
+  var p = req.path.slice(0, req.path.length - 0) + '.json';
+  var file = path.join(__dirname, 'app', p);
+  sendJsonFile(req,res,file);
+});
+
 
 function sendJsonFile(req, res, path) {
   var self = this;

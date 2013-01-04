@@ -143,7 +143,67 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ]};
 
-  mockBackend.projects = {"commands":[],"index":{"_type":"se.streamsource.dci.value.link.LinksValue","links":[{"classes":null,"href":"b35873ba-4007-40ac-9936-975eab38395a-3f/","id":"b35873ba-4007-40ac-9936-975eab38395a-3f","rel":"project","text":"Streamflow"}]},"queries":[{"classes":"query","href":"index","id":"index","rel":"index","text":"Index"}],"resources":[]}
+  mockBackend.projects = {"commands":[], "index":{"_type":"se.streamsource.dci.value.link.LinksValue", "links":[
+    {"classes":null, "href":"b35873ba-4007-40ac-9936-975eab38395a-3f/", "id":"b35873ba-4007-40ac-9936-975eab38395a-3f", "rel":"project", "text":"Streamflow"}
+  ]}, "queries":[
+    {"classes":"query", "href":"index", "id":"index", "rel":"index", "text":"Index"}
+  ], "resources":[]}
+
+  mockBackend.project1 = {"commands":[], "index":null, "queries":[], "resources":[
+    {
+      "classes":"resource",
+      "href":"assignments/",
+      "id":"assignments",
+      "rel":"assignments",
+      "text":"Assignments"
+    },
+    {
+      "classes":"resource",
+      "href":"inbox/",
+      "id":"inbox",
+      "rel":"inbox",
+      "text":"Inbox"
+    }
+  ]};
+
+  mockBackend.project1Inbox = {"commands":[], "index":null, "queries":[
+    {
+      "classes":"query",
+      "href":"cases",
+      "id":"cases",
+      "rel":"cases",
+      "text":"Cases"
+    }
+  ], "resources":[
+
+  ]};
+
+  mockBackend.project1InboxCases = {"links":[
+    {
+      "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
+      "classes":null,
+      "href":"/api/workspace/cases/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
+      "id":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0",
+      "rel":"mycases/opencase",
+      "text":"Test Test Test 2",
+      "caseId":"20121113-1",
+      "caseType":"formulärstest",
+      "creationDate":"2012-11-13T09:04:27.064Z",
+      "project":"Streamflow"
+    },
+    {
+      "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
+      "classes":null,
+      "href":"/api/workspace/cases/b35873ba-4007-40ac-9936-975eab38395a-30/",
+      "id":"b35873ba-4007-40ac-9936-975eab38395a-30",
+      "rel":"mycases/opencase",
+      "text":"Kontakt Center Thingy",
+      "caseId":"20121112-1",
+      "caseType":"formulärstest",
+      "creationDate":"2012-10-26T12:47:07.345Z",
+      "project":"Streamflow"
+    }
+  ]};
 
   mockBackend.customer = {"commands":[], "index":null, "queries":[], "resources":[
     {
@@ -332,6 +392,195 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ], "resources":[]};
 
+
+  mockBackend.case1 = {"commands":[
+    {
+      "classes":"command",
+      "href":"close",
+      "id":"close",
+      "rel":"close",
+      "text":"Close"
+    },
+    {
+      "classes":"command",
+      "href":"delete",
+      "id":"delete",
+      "rel":"delete",
+      "text":"Delete"
+    },
+    {
+      "classes":"command",
+      "href":"assign",
+      "id":"assign",
+      "rel":"assign",
+      "text":"Assign"
+    },
+    {
+      "classes":"command",
+      "href":"sendto",
+      "id":"sendto",
+      "rel":"sendto",
+      "text":"Sendto"
+    },
+    {
+      "classes":"command",
+      "href":"restrict",
+      "id":"restrict",
+      "rel":"restrict",
+      "text":"Restrict"
+    }
+  ], "index":{
+    "_type":"se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+    "classes":null,
+    "href":"/streamflow/workspace/cases/0f0008c2-4d6e-453a-b255-0d6ec86145f9-2/",
+    "id":"0f0008c2-4d6e-453a-b255-0d6ec86145f9-2",
+    "rel":"case",
+    "text":"formulärstest",
+    "assignedTo":null,
+    "caseId":"20121219-1",
+    "caseType":{
+      "classes":null,
+      "href":"",
+      "id":"b35873ba-4007-40ac-9936-975eab38395a-44",
+      "rel":null,
+      "text":"formulärstest"
+    },
+    "createdBy":"WebForms",
+    "creationDate":"2012-12-19T07:45:10.684Z",
+    "hasAttachments":false,
+    "hasContacts":false,
+    "hasConversations":true,
+    "hasSubmittedForms":true,
+    "labels":{
+      "links":[
+        {
+          "classes":null,
+          "href":"delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+          "id":"b35873ba-4007-40ac-9936-975eab38395a-62",
+          "rel":"delete",
+          "text":"information"
+        }
+      ]
+    },
+    "owner":"Streamflow",
+    "resolution":null,
+    "restricted":false,
+    "status":"OPEN"
+  }, "queries":[
+    {
+      "classes":"query",
+      "href":"permissions",
+      "id":"permissions",
+      "rel":"permissions",
+      "text":"Permissions"
+    },
+    {
+      "classes":"query",
+      "href":"index",
+      "id":"index",
+      "rel":"index",
+      "text":"Index"
+    },
+    {
+      "classes":"query",
+      "href":"exportpdf",
+      "id":"exportpdf",
+      "rel":"exportpdf",
+      "text":"Exportpdf"
+    },
+    {
+      "classes":"query",
+      "href":"possibleresolutions",
+      "id":"possibleresolutions",
+      "rel":"possibleresolutions",
+      "text":"Possibleresolutions"
+    },
+    {
+      "classes":"query",
+      "href":"possiblesendto",
+      "id":"possiblesendto",
+      "rel":"possiblesendto",
+      "text":"Possiblesendto"
+    }
+  ], "resources":[
+    {
+      "classes":"resource",
+      "href":"general/",
+      "id":"general",
+      "rel":"general",
+      "text":"General"
+    },
+    {
+      "classes":"resource",
+      "href":"submitformonclose/",
+      "id":"submitformonclose",
+      "rel":"submitformonclose",
+      "text":"Submitformonclose"
+    },
+    {
+      "classes":"resource",
+      "href":"submitformondelete/",
+      "id":"submitformondelete",
+      "rel":"submitformondelete",
+      "text":"Submitformondelete"
+    },
+    {
+      "classes":"resource",
+      "href":"note/",
+      "id":"note",
+      "rel":"note",
+      "text":"Note"
+    },
+    {
+      "classes":"resource",
+      "href":"submittedforms/",
+      "id":"submittedforms",
+      "rel":"submittedforms",
+      "text":"Submittedforms"
+    },
+    {
+      "classes":"resource",
+      "href":"formdrafts/",
+      "id":"formdrafts",
+      "rel":"formdrafts",
+      "text":"Formdrafts"
+    },
+    {
+      "classes":"resource",
+      "href":"possibleforms/",
+      "id":"possibleforms",
+      "rel":"possibleforms",
+      "text":"Possibleforms"
+    },
+    {
+      "classes":"resource",
+      "href":"conversations/",
+      "id":"conversations",
+      "rel":"conversations",
+      "text":"Conversations"
+    },
+    {
+      "classes":"resource",
+      "href":"contacts/",
+      "id":"contacts",
+      "rel":"contacts",
+      "text":"Contacts"
+    },
+    {
+      "classes":"resource",
+      "href":"caselog/",
+      "id":"caselog",
+      "rel":"caselog",
+      "text":"Caselog"
+    },
+    {
+      "classes":"resource",
+      "href":"attachments/",
+      "id":"attachments",
+      "rel":"attachments",
+      "text":"Attachments"
+    }
+  ]};
 
   return mockBackend;
 })();

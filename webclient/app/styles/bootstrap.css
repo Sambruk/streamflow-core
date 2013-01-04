@@ -8,7 +8,6 @@
  * Designed and built with all the love in the world @twitter by @mdo and @fat.
  */
 
-
 article,
 aside,
 details,
@@ -3801,8 +3800,8 @@ input[type="submit"].btn.btn-mini {
   padding: 3px 15px;
 }
 
-.nav-list > .active > a,
-.nav-list > .active > a:hover {
+.nav-list .active > a,
+.nav-list .active > a:hover {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
   background-color: #0088cc;
