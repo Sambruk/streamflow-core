@@ -1,3 +1,19 @@
+/*
+ *
+ * Copyright 2009-2012 Jayway Products AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 window.mockBackend = window.mockBackend || (function () {
   'use strict';
 
@@ -172,7 +188,7 @@ window.mockBackend = window.mockBackend || (function () {
     "_type":"se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO",
     "addresses":[
       {
-        "address":"Tussilagovägen 1",
+        "address":"Tussilagov??gen 1",
         "city":"Holm",
         "contactType":"HOME",
         "country":"Sweden",
@@ -233,9 +249,9 @@ window.mockBackend = window.mockBackend || (function () {
       "href":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
       "id":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0",
       "rel":"mycases/opencase",
-      "text":"Testärende 2",
+      "text":"Test??rende 2",
       "caseId":"20121113-1",
-      "caseType":"formulärstest",
+      "caseType":"formul??rstest",
       "creationDate":"2012-11-13T09:04:27.064Z",
       "project":"Streamflow"
     },
@@ -245,9 +261,9 @@ window.mockBackend = window.mockBackend || (function () {
       "href":"b35873ba-4007-40ac-9936-975eab38395a-30/",
       "id":"b35873ba-4007-40ac-9936-975eab38395a-30",
       "rel":"mycases/opencase",
-      "text":"En rubrik här skulle inte vara så dumt",
+      "text":"En rubrik h??r skulle inte vara s?? dumt",
       "caseId":"20121112-1",
-      "caseType":"formulärstest",
+      "caseType":"formul??rstest",
       "creationDate":"2012-10-26T12:47:07.345Z",
       "project":"Streamflow"
     }
@@ -278,7 +294,7 @@ window.mockBackend = window.mockBackend || (function () {
         "href":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-17/",
         "id":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-17",
         "rel":null,
-        "text":"Ett första meddelande...",
+        "text":"Ett f??rsta meddelande...",
         "createdOn":"2012-11-13T09:06:29.333Z",
         "hasAttachments":false,
         "sender":"MyName"
@@ -300,7 +316,7 @@ window.mockBackend = window.mockBackend || (function () {
         "href":"975febee-9bac-405e-bdf2-105d84b3d22f-5/",
         "id":"975febee-9bac-405e-bdf2-105d84b3d22f-5",
         "rel":null,
-        "text":"Vad händer om jag skriver något här?",
+        "text":"Vad h??nder om jag skriver n??got h??r?",
         "createdOn":"2012-11-14T08:33:57.263Z",
         "hasAttachments":false,
         "sender":"MyName"

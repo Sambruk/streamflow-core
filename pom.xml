@@ -323,6 +323,9 @@
                         <exclude>**/doublesignaturehtmlmail_sv.html</exclude>
 						<exclude>**/webclient/app/scripts/vendor/**</exclude>
 						<exclude>**/webclient/test/lib/**</exclude>
+						<exclude>**/webclient/app/vendor/**</exclude>
+						<exclude>**/webclient/app/styles/bootstrap.css</exclude>
+						<exclude>**/webclient/mock-server.js</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>

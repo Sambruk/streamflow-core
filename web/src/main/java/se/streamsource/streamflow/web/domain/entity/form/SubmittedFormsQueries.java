@@ -149,9 +149,11 @@ public interface SubmittedFormsQueries
          {
             ValueBuilder<SecondSigneeInfoValue> secondSigneeInfoBuilder = form.secondsignee().get().buildWith();
             DoubleSignatureTask.Data task = (DoubleSignatureTask.Data)findSecondSigneeTaskRef( form );
-            secondSigneeInfoBuilder.prototype().secondsigneetaskref().set( task == null ? null : ((Identity)task).identity().get() );
-            secondSigneeInfoBuilder.prototype().lastReminderSent().set( task.lastReminderSent().get() );
-            secondSigneeInfoBuilder.prototype().secondDraftUrl().set( task.secondDraftUrl().get() );
+            if (task != null) {
+               secondSigneeInfoBuilder.prototype().secondsigneetaskref().set( ((Identity)task).identity().get() );
+               secondSigneeInfoBuilder.prototype().lastReminderSent().set( task.lastReminderSent().get() );
+               secondSigneeInfoBuilder.prototype().secondDraftUrl().set( task.secondDraftUrl().get() );
+            }
             formDTO.secondSignee().set( secondSigneeInfoBuilder.newInstance() );
          }
          return formBuilder.newInstance();
