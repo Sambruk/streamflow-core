@@ -37,7 +37,27 @@
             result.index = resource.response.index;
           }
         });
+      },
+
+      getSelectedContacts: function() {
+        return backendService.get({
+          specs:[
+            {resources:'workspace'},
+            {resources: 'projects'},
+            {'index.links': navigationService.projectId},
+            {resources: navigationService.caseType },
+            {queries: 'cases'},
+            {links: navigationService.caseId},
+            {resources: 'contacts'}
+          ],
+          onSuccess:function (resource, result) {
+            //
+            resource.response.index.contacts.forEach(function(item){result.push(item)});
+          }
+        });
+
       }
+
     }
   }]);
 

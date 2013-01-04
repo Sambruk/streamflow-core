@@ -62,7 +62,8 @@
         var headers = {'Authorization':makeBaseAuth('administrator', 'administrator')};
 
         // handle absolute URLs
-        var url = (href[0] === '/') ? href : this.absApiUrl(href);
+        var url = (href[0] === '/') ? this.baseUrl + href : this.absApiUrl(href);
+        //var url = this.absApiUrl(href);
 
         var result = cache.get(href);
         if (!result || skipCache) {
