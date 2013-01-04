@@ -326,7 +326,7 @@
 						<exclude>**/webclient/test/lib/**</exclude>
 						<exclude>**/webclient/app/vendor/**</exclude>
 						<exclude>**/webclient/app/styles/bootstrap.css</exclude>
-						<exclude>**/webclient/mock-server.js</exclude>
+						<exclude>**/webclient/web-server.js</exclude>
 						<exclude>**/webclient/app/api/**</exclude>
 						<exclude>**/webclient/app/index.html</exclude>
 						<exclude>**/webclient/node_modules/**</exclude>
