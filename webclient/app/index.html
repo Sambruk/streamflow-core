@@ -49,10 +49,10 @@
 
             <div class="well sidebar-nav">
               <ul class="nav nav-list" ng-controller="ProjectListCtrl">
-                <li class="nav-header" ng-repeat="project in projects">
+                <li class="nav-header projects" ng-repeat="project in projects">
                   {{project.text}}
                   <ul>
-                    <li ng-repeat="type in project.types" active-link><a href="#/{{type.href}}">{{type.name}}</a></li>
+                    <li class='project-type' ng-repeat="type in project.types" active-link><a href="#/{{type.href}}">{{type.name}}</a></li>
                   </ul>
                 </li>
               </ul>

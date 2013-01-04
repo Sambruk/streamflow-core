@@ -42,8 +42,6 @@
       //"apiUrl": 'http://localhost:8082/streamflow/surface/customers/197606030001/',
       apiUrl:apiUrl,
 
-      timeout: 120000,
-
       info: function() {
         return cache.info();
       },
@@ -68,7 +66,7 @@
 
         var result = cache.get(href);
         if (!result || skipCache) {
-          return $http({method:'GET', url:url, cache:false, headers:headers, timeout: this.timeout}).then(function(response) {
+          return $http({method:'GET', url:url, cache:false, headers:headers}).then(function(response) {
             cache.put(href, response);
             return response;
           }, errorHandlerService)
