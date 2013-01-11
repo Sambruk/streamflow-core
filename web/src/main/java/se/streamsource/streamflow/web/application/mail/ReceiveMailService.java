@@ -435,6 +435,23 @@ public interface ReceiveMailService
                      continue;
                   }
 
+                  if( builder.prototype().to().get().equals( "n/a" ) )
+                  {
+                     // This is a mail has no to address - create support case.
+
+                     String subj = "No TO address: " + builder.prototype().subject().get();
+
+                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                     copyToArchive.add( message );
+                     if( expunge )
+                        message.setFlag( Flags.Flag.DELETED, true );
+
+                     uow.discard();
+                     logger.error("Received a mail without TO address: " + body );
+                     continue;
+                  }
+
                   mailReceiver.receivedEmail(null, builder.newInstance());
 
                   uow.complete();
@@ -572,6 +589,9 @@ public interface ReceiveMailService
       private String toaddress( final Address[] recipients, String references )
       {
          String result = "";
+         // No recipients found return n/a
+         if( recipients == null )
+            return "n/a";
 
          if (references == null)
          {
@@ -586,7 +606,7 @@ public interface ReceiveMailService
                   {
                      public boolean satisfiedBy( Address address )
                      {
-                        return ((InternetAddress) address).getAddress().equals( accessPoint.getDescription() );
+                        return ((InternetAddress) address).getAddress().equalsIgnoreCase( accessPoint.getDescription() );
                      }
                   }, Arrays.asList( recipients ) );
                }
@@ -602,7 +622,7 @@ public interface ReceiveMailService
             result = ((InternetAddress) recipients[0]).getAddress();
          }
 
-         return result;
+         return Strings.empty( result ) ? "n/a" : result.toLowerCase();
       }
    }
 }
