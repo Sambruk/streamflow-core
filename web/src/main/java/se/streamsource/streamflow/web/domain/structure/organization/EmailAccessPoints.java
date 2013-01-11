@@ -113,7 +113,7 @@ public interface EmailAccessPoints
       {
          for (EmailAccessPoint emailAccessPoint : data.emailAccessPoints())
          {
-            if (emailAccessPoint.getDescription().equals(email))
+            if (emailAccessPoint.getDescription().equalsIgnoreCase(email))
                return emailAccessPoint;
          }
 
