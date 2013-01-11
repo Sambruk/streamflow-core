@@ -73,7 +73,7 @@ public class SearchContext
    public Iterable<Case> cases(TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
-      Query<Case> caseQuery = caseQueries.search(tableQuery.where());
+      Query<Case> caseQuery = caseQueries.search(tableQuery.where(), systemConfig.config().configuration().includeNotesInSearch().get() );
 
       caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( caseQuery )
             .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );

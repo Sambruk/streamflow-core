@@ -73,4 +73,12 @@ public interface SystemDefaultsConfiguration
     */
    @UseDefaults
    Property<String> supportCaseTypeForIncomingEmailName();
+
+
+   /**
+    * Tells whether to search in notes time line or not.
+    * @return a boolean
+    */
+   @UseDefaults
+   Property<Boolean> includeNotesInSearch();
 }
