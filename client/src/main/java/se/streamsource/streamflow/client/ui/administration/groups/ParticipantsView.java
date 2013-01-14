@@ -27,7 +27,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -35,7 +34,7 @@ import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
@@ -49,7 +48,6 @@ import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.util.Set;
 
-import static org.qi4j.api.specification.Specifications.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -90,18 +88,9 @@ public class ParticipantsView
       toolbar.add( new StreamflowButton( am.get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      new RefreshWhenShowing(this, model);
-      new ResourceActionEnabler(
-            am.get( "add" ),
-            am.get( "remove" ))
-      {
-         @Override
-         protected ResourceValue getResource()
-         {
-            return model.getResourceValue();
-         }
-      }.refresh();
+      participantList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
+      new RefreshWhenShowing(this, model);
    }
 
    @Action
@@ -144,7 +133,10 @@ public class ParticipantsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if( matches( not( withNames( "removedGroup", "changedRemoved") ), transactions ) )
-         model.notifyTransactions( transactions );
+      if( matches( withNames( "addedParticipant", "removedParticipant"), transactions )
+         && !matches( withNames( "removedGroup" ),transactions) )
+      {
+        model.notifyTransactions( transactions );
+      }
    }
 }
