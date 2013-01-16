@@ -186,7 +186,10 @@ public interface NotificationService
                      builder.prototype().fromName().set( sender );
 
                      if (emailAccessPoint != null)
+                     {
                         builder.prototype().from().set(emailAccessPoint.getDescription() );
+                        builder.prototype().headers().get().put( "Auto-Submitted", "auto-replied" );
+                     }
 
       //               builder.prototype().replyTo();
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );

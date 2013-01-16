@@ -99,5 +99,7 @@ public interface SendMailConfiguration
    @UseDefaults
    Property<Boolean> authentication();
 
+   @UseDefaults
+   Property<String> replyTo();
 
 }

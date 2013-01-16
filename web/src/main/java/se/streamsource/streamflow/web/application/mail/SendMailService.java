@@ -191,6 +191,9 @@ public interface SendMailService
                {
                   msg.setHeader( header.getKey(), header.getValue() );
                }
+               // set Reply-To header
+               if(!Strings.empty( config.configuration().replyTo().get() ))
+                  msg.setHeader( "Reply-To", config.configuration().replyTo().get() );
 
                // MimeBodyPart wrap
                MimeBodyPart wrap = new MimeBodyPart(  );
