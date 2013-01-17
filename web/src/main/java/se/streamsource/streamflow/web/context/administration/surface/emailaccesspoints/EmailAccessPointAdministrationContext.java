@@ -16,14 +16,7 @@
  */
 package se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints;
 
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -32,7 +25,6 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
-
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -48,6 +40,13 @@ import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessP
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * TODO
@@ -125,7 +124,7 @@ public class EmailAccessPointAdministrationContext
       role(EmailTemplates.class).changeSubject(subject);
    }
 
-   public void changetemplate(@Name("key") String key, @Name("template") String template)
+   public void changetemplate(@Name("key") String key, @Optional @Name("template") String template)
    {
       role(EmailTemplates.class).changeTemplate(key, template);
    }
