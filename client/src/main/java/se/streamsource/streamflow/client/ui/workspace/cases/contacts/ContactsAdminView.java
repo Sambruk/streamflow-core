@@ -16,18 +16,16 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import java.awt.BorderLayout;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.client.util.RefreshComponents;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.streamflow.client.util.RefreshComponents;
+import java.awt.BorderLayout;
 
 
 /**

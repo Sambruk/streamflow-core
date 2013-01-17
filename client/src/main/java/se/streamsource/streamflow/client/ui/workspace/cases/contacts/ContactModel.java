@@ -35,8 +35,6 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 
-import java.util.List;
-
 /**
  * Model for a contact of a case
  */
@@ -54,6 +52,11 @@ public class ContactModel
    public ContactDTO getContact()
    {
       return contact;
+   }
+
+   public void setContact( ContactDTO contact )
+   {
+      this.contact = contact;
    }
 
    public ContactPhoneDTO getPhoneNumber()
