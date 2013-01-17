@@ -43,6 +43,7 @@ import javax.swing.ActionMap;
 import java.awt.Component;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -155,5 +156,11 @@ public class GroupsView
       model.notifyTransactions( transactions );
 
       super.notifyTransactions( transactions );
+
+      if( matches( withNames("removedParticipant"), transactions )
+            && matches( withNames( "removedGroup" ),transactions) )
+      {
+         list.clearSelection();
+      }
    }
 }
