@@ -32,6 +32,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -650,7 +651,8 @@ public interface CaseEntity
       
       public void open()
       {
-         if (origin.accesspoint().get() != null)
+         if (origin.accesspoint().get() != null &&
+               !Strings.empty( origin.accesspoint().get().emailTemplates().get().get( "received" ) ) )
          {
             // Switch to administrator user and send confirmation message
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
@@ -669,7 +671,8 @@ public interface CaseEntity
 
       public void close()
       {
-         if (origin.accesspoint().get() != null)
+         if (origin.accesspoint().get() != null&&
+               !Strings.empty( origin.accesspoint().get().emailTemplates().get().get( "closed" ) ) )
          {
             // Switch to administrator user and send close message
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();

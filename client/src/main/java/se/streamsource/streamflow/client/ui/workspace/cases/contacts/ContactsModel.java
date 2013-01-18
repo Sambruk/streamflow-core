@@ -47,6 +47,8 @@ public class ContactsModel
    @Uses
    private CommandQueryClient client;
 
+   ContactModel currentContact;
+
    TransactionList<ContactDTO> eventList = new TransactionList<ContactDTO>(new BasicEventList<ContactDTO>( ));
 
    public void refresh()
@@ -76,7 +78,14 @@ public class ContactsModel
    public ContactModel newContactModel(int idx)
    {
       ContactDTO contact = eventList.get(idx);
-      
+
+      createInitialValues( contact );
+
+      return  currentContact = module.objectBuilderFactory().newObjectBuilder(ContactModel.class).use( eventList.get(idx), client.getSubClient( ""+idx ) ).newInstance();
+   }
+
+   public ContactDTO createInitialValues( ContactDTO contact )
+   {
       // Set empty initial values for phoneNumber, email and address.
       if (contact.phoneNumbers().get().isEmpty())
       {
@@ -96,7 +105,11 @@ public class ContactsModel
          ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class).<ContactEmailDTO>buildWith().prototype();
          contact.emailAddresses().get().add( email );
       }
-      
-      return  module.objectBuilderFactory().newObjectBuilder(ContactModel.class).use( eventList.get(idx), client.getSubClient( ""+idx ) ).newInstance();
+      return contact;
+   }
+
+   public ContactModel getCurrentContact()
+   {
+      return currentContact;
    }
 }

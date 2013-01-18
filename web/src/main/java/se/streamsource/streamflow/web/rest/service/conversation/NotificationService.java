@@ -16,12 +16,6 @@
  */
 package se.streamsource.streamflow.web.rest.service.conversation;
 
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -37,7 +31,6 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
@@ -66,6 +59,12 @@ import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessP
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Send and receive notifications. This service
@@ -192,7 +191,10 @@ public interface NotificationService
                      builder.prototype().fromName().set( sender );
 
                      if (emailAccessPoint != null)
+                     {
                         builder.prototype().from().set(emailAccessPoint.getDescription() );
+                        builder.prototype().headers().get().put( "Auto-Submitted", "auto-replied" );
+                     }
 
       //               builder.prototype().replyTo();
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );

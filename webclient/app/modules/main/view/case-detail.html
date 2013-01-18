@@ -16,7 +16,24 @@
     limitations under the License.
 
 -->
-    <h2>{{case.index.text}}</h2>
+<div>
 
-    Created By: {{case.index.createdBy}}<br>
-    Owner: {{case.index.owner}}
+  <h2>{{case.index.text}}</h2>
+
+  Created By: {{case.index.createdBy}}<br>
+  Owner: {{case.index.owner}}
+</div>
+
+<div>
+  <h2>Kontakter</h2>
+
+  <table class="table table-striped">
+    <tr ng-repeat='contact in contacts'>
+      <td><a href="{{contact.view-href}}">{{contact.name}}</a></td>
+      <td><a href="{{contact.change-href}}">Ändra</a></td>
+    </tr>
+  </table>
+
+  <button>Ny</button>
+
+</div>

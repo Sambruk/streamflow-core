@@ -33,7 +33,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins(EmailTemplates.Mixin.class)
 public interface EmailTemplates
 {
-   void changeTemplate(String key, String value);
+   void changeTemplate(String key, @Optional String value);
    void changeSubject( String subject);
    void synchronizeTemplates();
 
@@ -48,7 +48,7 @@ public interface EmailTemplates
    interface Events
    {
       void changedSubject(@Optional DomainEvent event, String newSubjectTemplate);
-      void changedTemplate(@Optional DomainEvent event, String key, String template);
+      void changedTemplate(@Optional DomainEvent event, String key, @Optional String template);
    }
 
    class Mixin
@@ -72,10 +72,10 @@ public interface EmailTemplates
          changedTemplate(null, key, value);
       }
 
-      public void changedTemplate(@Optional DomainEvent event, String key, String template)
+      public void changedTemplate(@Optional DomainEvent event, String key, @Optional String template)
       {
          Map<String, String> templates = data.emailTemplates().get();
-         templates.put(key, template);
+         templates.put(key, template != null ? template : "" );
          data.emailTemplates().set(templates);
       }
 

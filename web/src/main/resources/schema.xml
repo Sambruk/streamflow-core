@@ -471,6 +471,7 @@ any data added to them will be ignored outright.  -->
         <field name="description_for_sort" type="string"/>
 
         <field name="note" type="text" indexed="true" stored="true" multiValued="true"/>
+        <field name="notes" type="json" indexed="true" stored="true" multiValued="true"/>
         <field name="caseId" type="string" indexed="true" stored="true"/>
 
         <field name="contacts" type="json" indexed="false" stored="false"/>
@@ -492,13 +493,13 @@ any data added to them will be ignored outright.  -->
 
         <field name="caseType" type="string" indexed="true" stored="true"/>
 
-        <field name="createdOn" type="date" indexed="true" stored="true"/>
+        <field name="createdOn" type="date" indexed="true" stored="true" multiValued="true"/>
 
         <field name="dueOn" type="date" indexed="true" stored="true"/>
 
         <field name="status" type="string" indexed="true" stored="true"/>
 
-        <field name="createdBy" type="string" indexed="true" stored="true"/>
+        <field name="createdBy" type="string" indexed="true" stored="true" multiValued="true"/>
 
         <field name="searchableFormValues" type="json" indexed="true" stored="true" multiValued="true"/>
 
@@ -616,7 +617,6 @@ or to add multiple fields to the same field for easier/faster searching.  -->
     <copyField source="description" dest="text"/>
     <copyField source="description" dest="description_for_sort"/>
     <copyField source="description" dest="ntext"/>
-    <copyField source="note" dest="text"/>
     <copyField source="caseId" dest="text"/>
     <copyField source="searchableFormValues" dest="text"/>
 

@@ -30,9 +30,7 @@
 
   main.controller('CaseDetailCtrl', ['$scope', 'caseService', function($scope, caseService){
     $scope.case = caseService.getSelected();
-    $scope.foo = "FOO BAR";
-    // TODO
-    //$scope.cases = projectService.getSelected();
+    $scope.contacts = caseService.getSelectedContacts();
   }]);
 
 

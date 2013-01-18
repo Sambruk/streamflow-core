@@ -582,5 +582,61 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ]};
 
+  mockBackend.contact1 = {"commands":[
+    {
+      "classes":"command",
+      "href":"add",
+      "id":"add",
+      "rel":"add",
+      "text":"Add"
+    }
+  ], "index":{
+    "_type":"se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO",
+    "contacts":[
+      {
+        "addresses":[],
+        "company":"",
+        "contactId":"197705232382",
+        "contactPreference":null,
+        "emailAddresses":[],
+        "isCompany":false,
+        "name":"Frida Kranstege",
+        "note":"",
+        "phoneNumbers":[],
+        "picture":""
+      },
+      {
+        "addresses":[],
+        "company":"",
+        "contactId":"197606030001",
+        "contactPreference":null,
+        "emailAddresses":[
+          {
+            "contactType":"HOME",
+            "emailAddress":"henrik.reinhold@jayway.com"
+          }
+        ],
+        "isCompany":false,
+        "name":"Henrik Reinhold",
+        "note":"",
+        "phoneNumbers":[
+          {
+            "contactType":"HOME",
+            "phoneNumber":"2469026890"
+          }
+        ],
+        "picture":""
+      }
+    ]
+  }, "queries":[
+    {
+      "classes":"query",
+      "href":"index",
+      "id":"index",
+      "rel":"index",
+      "text":"Index"
+    }
+  ], "resources":[]};
+
   return mockBackend;
 })();

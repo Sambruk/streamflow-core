@@ -331,25 +331,12 @@ public class ContactView
       return label;
    }
 
-   public void setModel(ContactModel model)
+   public void setModel(ContactModel model )
    {
       this.model = model;
       if (model != null)
       {
-         handleContactPreference();
-
-         suggestModel.setContactModel( model );
-         contactBinder.updateWith(model.getContact());
-         phoneNumberBinder.updateWith(model.getPhoneNumber());
-         addressBinder.updateWith(model.getAddress());
-         suggestAddress.getTextField().setText( model.getAddress().address() != null ? model.getAddress().address().get() : "" );
-         emailBinder.updateWith(model.getEmailAddress());
-
-         viewBinder.update( model.getContact() );
-         phoneViewBinder.update(model.getPhoneNumber());
-         addressViewBinder.update(model.getAddress());
-         emailViewBinder.update(model.getEmailAddress());
-
+         updateFromModel( model );
 
          javax.swing.Action action = getActionMap().get("lookupContact");
          action.setEnabled(model.isContactLookupEnabled());
@@ -357,14 +344,34 @@ public class ContactView
 
          // TODO do a better way of checking if the contact is empty
          if (model.getContact().toJSON().equals("{\"addresses\":[{\"address\":\"\",\"city\":\"\",\"contactType\":\"HOME\",\"country\":\"\",\"region\":\"\",\"zipCode\":\"\"}],\"company\":\"\",\"contactId\":\"\",\"contactPreference\":\"none\",\"emailAddresses\":[{\"contactType\":\"HOME\",\"emailAddress\":\"\"}],\"isCompany\":false,\"name\":\"\",\"note\":\"\",\"phoneNumbers\":[{\"contactType\":\"HOME\",\"phoneNumber\":\"\"}],\"picture\":\"\"}"))
+         {
             layout.show(this, "EDIT");
-         else
+         } else
+         {
             layout.show(this, "VIEW");
+         }
 
       } else
       {
          layout.show(this, "EMPTY");
       }
+   }
+
+   public void updateFromModel( ContactModel model )
+   {
+      handleContactPreference();
+
+      suggestModel.setContactModel( model );
+      contactBinder.updateWith(model.getContact());
+      phoneNumberBinder.updateWith(model.getPhoneNumber());
+      addressBinder.updateWith(model.getAddress());
+      suggestAddress.getTextField().setText( model.getAddress().address() != null ? model.getAddress().address().get() : "" );
+      emailBinder.updateWith(model.getEmailAddress());
+
+      viewBinder.update( model.getContact() );
+      phoneViewBinder.update(model.getPhoneNumber());
+      addressViewBinder.update(model.getAddress());
+      emailViewBinder.update(model.getEmailAddress());
    }
 
 
