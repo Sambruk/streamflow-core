@@ -25,6 +25,7 @@ import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -59,6 +60,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -239,10 +241,10 @@ public class AccessPointView
       builder.add( valueBinder.bind( "mailSelectionMessage", actionBinder.bind( "changeMailSelectionMessage", mailSelectionField ) ),
             new CellConstraints( 3, 11, 1,1 , CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 3,0,0,0 )));
 
-      PanelBuilder signPanel = new PanelBuilder( new FormLayout( "150dlu, 5dlu, 150dlu", "default:grow" ) );
+      PanelBuilder signPanel = new PanelBuilder( new FormLayout( "180dlu, 15dlu, 180dlu", "default:grow" ) );
       CellConstraints signPanelCc = new CellConstraints( );
 
-      PanelBuilder primarySignPanel = new PanelBuilder( new FormLayout( "150dlu",
+      PanelBuilder primarySignPanel = new PanelBuilder( new FormLayout( "180dlu",
             "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" ) );
       CellConstraints primaryCc = new CellConstraints();
 
@@ -284,22 +286,35 @@ public class AccessPointView
       signPanel.add( primarySignPanel.getPanel(), signPanelCc.xy( 1, 1, CellConstraints.LEFT, CellConstraints.TOP ));
 
 
-      PanelBuilder secondarySignPanel = new PanelBuilder( new FormLayout( "150dlu",
+      PanelBuilder secondarySignPanel = new PanelBuilder( new FormLayout( "180dlu",
             "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 12dlu, pref, 2dlu, pref, 2dlu, default:grow" ) );
 
       CellConstraints secondaryCc = new CellConstraints();
 
       secondarySignPanel.addSeparator( text( AdministrationResources.signature_2), secondaryCc.xy( 1, 1) );
 
-      secondarySignPanel.add( valueBinder.bind( "secondarysign", actionBinder.bind( "setSignActive2", signActive2 = new JCheckBox( text( AdministrationResources.active )) ),
+      PanelBuilder secondaryOptionsPanel = new PanelBuilder(  new FormLayout( "70dlu,5dlu,70dlu,pref:grow","pref" ) );
+      secondaryOptionsPanel.add( valueBinder.bind( "secondarysign", actionBinder.bind( "setSignActive2", signActive2 = new JCheckBox( text( AdministrationResources.active )) ),
             new ValueBinder.Converter<RequiredSignatureValue, Boolean>()
             {
                public Boolean toComponent( RequiredSignatureValue value )
                {
                   return value != null ? value.active().get() : Boolean.FALSE;
                }
-            } ), secondaryCc.xy( 1, 3 ) );
+            } ), secondaryCc.xy( 1, 1 ) );
       refreshComponents.enabledOn( "updatesecondarysignactive", signActive2 );
+
+      secondaryOptionsPanel.add( valueBinder.bind( "secondarysign", actionBinder.bind(  "setSecondMandatory", mandatory2 = new JCheckBox( text( AdministrationResources.mandatory ) ) ),
+            new ValueBinder.Converter<RequiredSignatureValue, Boolean>()
+            {
+               public Boolean toComponent( RequiredSignatureValue value )
+               {
+                  return value != null ? value.mandatory().get() : Boolean.FALSE;
+               }
+            } ), secondaryCc.xy( 3, 1 ) );
+      refreshComponents.enabledOn( "updatesecondarysign", mandatory2 );
+
+      secondarySignPanel.add( secondaryOptionsPanel.getPanel(), secondaryCc.xy( 1, 3 ) );
 
       secondarySignPanel.add( new JLabel( text( AdministrationResources.name_label ) ), secondaryCc.xy( 1, 5 )  );
 
@@ -336,7 +351,7 @@ public class AccessPointView
       form2Button.setHorizontalAlignment( SwingConstants.LEFT );
       refreshComponents.enabledOn( "updatesecondarysign", form2Button );
 
-      PanelBuilder form2ButtonPanel = new PanelBuilder( new FormLayout( "90dlu, 5dlu, 150dlu:grow", "pref" ) );
+      PanelBuilder form2ButtonPanel = new PanelBuilder( new FormLayout( "70dlu, 5dlu, 150dlu:grow", "pref" ) );
       CellConstraints form2ButtonPanelCc = new CellConstraints( );
 
       form2ButtonPanel.add( form2Button, form2ButtonPanelCc.xy( 1, 1, CellConstraints.FILL, CellConstraints.TOP ) );
@@ -351,15 +366,6 @@ public class AccessPointView
 
       secondarySignPanel.add( form2ButtonPanel.getPanel(), secondaryCc.xy( 1, 13 ) );
 
-      secondarySignPanel.add( valueBinder.bind( "secondarysign", actionBinder.bind(  "setSecondMandatory", mandatory2 = new JCheckBox( text( AdministrationResources.mandatory ) ) ),
-            new ValueBinder.Converter<RequiredSignatureValue, Boolean>()
-            {
-               public Boolean toComponent( RequiredSignatureValue value )
-               {
-                  return value != null ? value.mandatory().get() : Boolean.FALSE;
-               }
-            } ), secondaryCc.xy( 1, 15 ) );
-      refreshComponents.enabledOn( "updatesecondarysign", mandatory2 );
 
       secondarySignPanel.add( new JLabel( text( AdministrationResources.question_label ) ), secondaryCc.xy( 1, 17 ) );
 
@@ -430,6 +436,11 @@ public class AccessPointView
    @Action
    public Task form()
    {
+      // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+      Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+      if (focusOwner != null)
+         focusOwner.transferFocus();
+
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleForms() ).newInstance();
       dialogs.showOkCancelHelpDialog( formButton, dialog,
@@ -582,6 +593,11 @@ public class AccessPointView
    @Action
    public Task setSecondForm()
    {
+      // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+      Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+      if (focusOwner != null)
+         focusOwner.transferFocus();
+
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleSecondForms() ).newInstance();
       dialogs.showOkCancelHelpDialog( form2Button, dialog,
