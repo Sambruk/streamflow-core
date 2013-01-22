@@ -16,6 +16,25 @@
  */
 package se.streamsource.streamflow.web.management;
 
+import static org.qi4j.api.util.Iterables.count;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.zip.GZIPOutputStream;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Duration;
@@ -49,6 +68,7 @@ import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactory;
@@ -68,23 +88,8 @@ import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.zip.GZIPOutputStream;
-
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 /**
  * Implementation of Manager interface. All general JMX management methods
@@ -164,6 +169,9 @@ public interface ManagerComposite
 
       @Service
       DueOnNotificationService dueOnNotificationService;
+
+      @Service
+      LdapImporterService ldapImporterService;
       
       @Structure
       ModuleSPI module;
@@ -603,6 +611,34 @@ public interface ManagerComposite
          } catch (UnitOfWorkCompletionException e)
          {
             logger.warn("Could not send dueOn notifications", e);
+         }
+      }
+
+      public String importUserAndGroupsFromLdap()
+      {
+         try
+         {
+            if( ldapImporterService.getConfiguration().configuration().enabled().get() )
+            {
+               logger.info("Start to import users and groups");
+               TransientBuilder<? extends LdapImportJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder( LdapImportJob.class )
+                     .use( ldapImporterService.getConfiguration() );
+               LdapImportJob ldapImportJob = newJobBuilder.newInstance();
+               ldapImportJob.importUsers();
+               logger.info("Finished importing users");
+               ldapImportJob.importGroups();
+               logger.info("Finished importing groups.");
+
+               return "Import done successfully.";
+            } else
+            {
+               logger.warn( "LdapImporterService is not available." );
+               return "Service not available. Check LdapImporterService configuration!";
+            }
+         } catch (Exception e)
+         {
+            logger.warn("Could not complete import", e);
+            return e.getMessage();
          }
       }
       

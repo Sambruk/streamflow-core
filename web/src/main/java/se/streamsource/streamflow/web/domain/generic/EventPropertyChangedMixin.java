@@ -16,17 +16,18 @@
  */
 package se.streamsource.streamflow.web.domain.generic;
 
-import org.qi4j.api.common.AppliesTo;
-import org.qi4j.api.common.AppliesToFilter;
-import org.qi4j.api.injection.scope.State;
-import org.qi4j.api.property.StateHolder;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-
 import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.common.AppliesToFilter;
+import org.qi4j.api.injection.scope.State;
+import org.qi4j.api.property.StateHolder;
+
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Generic mixin for simple event methods that update a property. They have to follow this pattern:

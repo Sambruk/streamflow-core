@@ -16,21 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import static org.jdesktop.application.Task.BlockingScope.COMPONENT;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.IOException;
-
-import javax.swing.ActionMap;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
@@ -38,7 +25,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -49,15 +35,26 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.io.IOException;
+
+import static org.jdesktop.application.Task.BlockingScope.*;
 
 /**
  * JAVADOC
@@ -209,6 +206,9 @@ public class ContactsView
 
          if (Events.matches( Events.withNames("addedContact" ), transactions ))
             contacts.setSelectedIndex( contacts.getModel().getSize()-1 );
+         if (Events.matches( Events.withNames("updatedContact" ), transactions ))
+            model.getCurrentContact().setContact( model.createInitialValues(model.getEventList().get( contacts.getSelectedIndex() ) ) );
+
       }
 
    }

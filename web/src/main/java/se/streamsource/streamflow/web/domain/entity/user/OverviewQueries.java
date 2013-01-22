@@ -16,6 +16,17 @@
  */
 package se.streamsource.streamflow.web.domain.entity.user;
 
+import static org.qi4j.api.query.QueryExpressions.and;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.isNotNull;
+import static org.qi4j.api.query.QueryExpressions.isNull;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
@@ -33,6 +44,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -42,13 +54,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OverviewQueries.Mixin.class)
 public interface OverviewQueries

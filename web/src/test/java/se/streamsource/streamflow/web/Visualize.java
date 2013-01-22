@@ -20,6 +20,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.envisage.Envisage;
 import org.qi4j.spi.structure.ApplicationModelSPI;
+
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 
 /**

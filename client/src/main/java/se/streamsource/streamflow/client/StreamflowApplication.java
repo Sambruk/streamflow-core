@@ -356,6 +356,7 @@ public class StreamflowApplication
       dialogs.showOkDialog(getMainFrame(), profile, text(AccountResources.profile_title));
    }
 
+   // Proxy actions for perspective
    @Action
    public void savePerspective(ActionEvent e)
    {
@@ -366,6 +367,25 @@ public class StreamflowApplication
    public void managePerspectives(ActionEvent e)
    {
       ((ApplicationAction) getContext().getActionMap().get("managePerspectives").getValue("proxy")).actionPerformed(e);
+   }
+
+   // Proxy actions for message view
+   @Action
+   public void closeMessageDetails(ActionEvent e)
+   {
+      ((ApplicationAction) getContext().getActionMap().get("closeMessageDetails").getValue("proxy")).actionPerformed(e);
+   }
+
+   @Action
+   public void createMessage(ActionEvent e)
+   {
+      ((ApplicationAction) getContext().getActionMap().get("createMessage").getValue("proxy")).actionPerformed(e);
+   }
+
+   @Action
+   public void cancelNewMessage(ActionEvent e)
+   {
+      ((ApplicationAction) getContext().getActionMap().get("cancelNewMessage").getValue("proxy")).actionPerformed(e);
    }
 
    public EventStream getSource()

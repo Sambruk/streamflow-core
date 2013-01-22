@@ -71,8 +71,6 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Fiel
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldValueObserver;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormEditView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignatureView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsView;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
@@ -96,6 +94,7 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsV
 import se.streamsource.streamflow.client.ui.administration.surface.CreateProxyUserDialog;
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointView;
 import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
+import se.streamsource.streamflow.client.ui.administration.surface.FormLabelsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
@@ -134,7 +133,12 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.CreateExternalMailUserDialog;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageAttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageDraftAttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageDraftView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessageView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
@@ -290,6 +294,11 @@ public class UIAssembler
             ConversationsView.class,
             ConversationView.class,
             ConversationParticipantsView.class,
+            MessagesView.class,
+            MessageView.class,
+            MessageAttachmentsView.class,
+            MessageDraftView.class,
+            MessageDraftAttachmentsView.class,
             AttachmentsView.class,
             PerspectiveView.class,
             CaseNoteView.class
@@ -351,8 +360,8 @@ public class UIAssembler
             LabelsView.class,
             MembersView.class,
             FormElementsView.class,
-            FormSignatureView.class,
-            FormSignaturesView.class,
+            //FormSignatureView.class,
+            //FormSignaturesView.class,
             SelectionElementsView.class,
             PageEditView.class,
             OrganizationUsersView.class,
@@ -386,7 +395,8 @@ public class UIAssembler
             LabelRuleView.class,
             PrioritiesView.class,
             PriorityView.class,
-            PriorityOnCaseView.class);
+            PriorityOnCaseView.class,
+            FormLabelsView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,

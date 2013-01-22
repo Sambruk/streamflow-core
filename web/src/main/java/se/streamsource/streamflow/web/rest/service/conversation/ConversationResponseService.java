@@ -16,6 +16,14 @@
  */
 package se.streamsource.streamflow.web.rest.service.conversation;
 
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -32,6 +40,7 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
@@ -49,17 +58,12 @@ import se.streamsource.streamflow.web.application.mail.MailReceiver;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
-
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
 /**
  * Receive emails and create responses in conversations
@@ -193,7 +197,23 @@ public interface ConversationResponseService
                         RoleMap.current().set( from, ConversationParticipant.class );
                         RoleMap.current().set( caze, CaseLoggable.Data.class );
 
-                        conversation.createMessage( content, from );
+                        Message message = conversation.createMessage( content, from );
+
+                        // Create attachments
+                        for (AttachedFileValue attachedFileValue : email.attachments().get())
+                        {
+                           if (! (attachedFileValue.mimeType().get().contains("text/x-vcard")
+                                 || attachedFileValue.mimeType().get().contains("text/directory")) )
+                           {
+                              Attachment attachment = message.createAttachment(attachedFileValue.uri().get());
+                              attachment.changeDescription( "New Attachment" );
+                              attachment.changeName(attachedFileValue.name().get());
+                              attachment.changeMimeType(attachedFileValue.mimeType().get());
+                              attachment.changeModificationDate(attachedFileValue.modificationDate().get());
+                              attachment.changeSize(attachedFileValue.size().get());
+                              attachment.changeUri(attachedFileValue.uri().get());
+                           }
+                        }
 
                         try
                         {

@@ -20,6 +20,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
@@ -37,7 +38,7 @@ public class ContactLookupContext
    @Service
    StreamflowContactLookupService contactLookup;
 
-   @ServiceAvailable(StreamflowContactLookupService.class)
+   @ServiceAvailable( service = StreamflowContactLookupService.class, availability = true )
    public ContactList contactlookup( ContactValue template )
    {
       if (contactLookup != null)

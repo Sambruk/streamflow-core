@@ -19,11 +19,13 @@ package se.streamsource.streamflow.web.context.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
@@ -43,7 +45,7 @@ public class ResolutionContext
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ); // TODO What to use for path here?
       for (SelectedResolutions selectedResolutions : usageQuery)
       {
-         builder.addDescribable( (Describable) selectedResolutions );
+         builder.addDescribable( (Describable) selectedResolutions, ((Describable)((Ownable.Data)selectedResolutions).owner().get()).getDescription() );
       }
 
       return builder.newLinks();

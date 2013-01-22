@@ -52,6 +52,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileVa
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
@@ -178,7 +179,7 @@ public interface CreateCaseFromEmailService
 
                   // Create conversation
                   Conversation conversation = caze.createConversation(email.subject().get(), (Creator) user);
-                  conversation.createMessage(email.content().get(), participant);
+                  Message message = conversation.createMessage(email.content().get(), participant);
 
                   // Create attachments
                   for (AttachedFileValue attachedFileValue : email.attachments().get())
@@ -189,12 +190,13 @@ public interface CreateCaseFromEmailService
                         addVCardAsContact((Contactable.Data) user, attachedFileValue);
                      } else
                      {
-                        Attachment attachment = caze.createAttachment(attachedFileValue.uri().get());
+                        Attachment attachment = conversation.createAttachment(attachedFileValue.uri().get());
                         attachment.changeName(attachedFileValue.name().get());
                         attachment.changeMimeType(attachedFileValue.mimeType().get());
                         attachment.changeModificationDate(attachedFileValue.modificationDate().get());
                         attachment.changeSize(attachedFileValue.size().get());
                         attachment.changeUri(attachedFileValue.uri().get());
+                        message.addAttachment( attachment );
                      }
                   }
 

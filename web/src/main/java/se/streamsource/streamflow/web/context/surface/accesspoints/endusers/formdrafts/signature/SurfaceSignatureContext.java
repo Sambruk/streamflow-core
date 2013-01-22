@@ -23,7 +23,6 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -34,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -44,11 +43,9 @@ import static se.streamsource.dci.api.RoleMap.role;
 public interface SurfaceSignatureContext
    extends Context, IndexContext<FormDraftDTO>
 {
-   void submit();
+   //void submit();
    
    void submitandsend();
-
-   LinksValue providers();
 
    abstract class Mixin
       implements SurfaceSignatureContext
@@ -61,7 +58,7 @@ public interface SurfaceSignatureContext
          return role( FormDraftDTO.class );
       }
 
-      public void submit()
+      /*public void submit()
       {
          EndUserCases userCases = role( EndUserCases.class );
          EndUser user = role( EndUser.class );
@@ -69,7 +66,7 @@ public interface SurfaceSignatureContext
          Case aCase = role( Case.class );
 
          userCases.submitForm( aCase, formSubmission , user );
-      }
+      }*/
 
       public void submitandsend()
       {
@@ -101,10 +98,5 @@ public interface SurfaceSignatureContext
          return valueBuilder.newInstance();
       }
 
-      public LinksValue providers()
-      {
-         //var url = "https://175.145.48.194:8443/eid/sign/";
-         return null;  //To change body of implemented methods use File | Settings | File Templates.
-      }
    }
 }

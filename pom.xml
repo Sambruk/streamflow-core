@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.8.0-SNAPSHOT</version>
+    <version>1.9.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -319,6 +319,20 @@
                         <exclude>**/webapp/resources/css/external/**</exclude>
                         <exclude>**/webapp/resources/js/external/**</exclude>
                         <exclude>**/StreamflowJXColorSelectionButton.java</exclude>
+                        <exclude>**/doublesignaturetextmail_sv.html</exclude>
+                        <exclude>**/doublesignaturehtmlmail_sv.html</exclude>
+
+						<exclude>**/webclient/app/scripts/vendor/**</exclude>
+						<exclude>**/webclient/test/lib/**</exclude>
+						<exclude>**/webclient/app/vendor/**</exclude>
+						<exclude>**/webclient/app/styles/bootstrap.css</exclude>
+						<exclude>**/webclient/web-server.js</exclude>
+						<exclude>**/webclient/app/api/**</exclude>
+						<exclude>**/webclient/app/index.html</exclude>
+						<exclude>**/webclient/node_modules/**</exclude>
+						<exclude>**/webclient/test_server/**</exclude>
+						<exclude>**/webclient/test/**</exclude>
+
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
@@ -700,6 +714,12 @@
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>2.1.5</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.markdownj</groupId>
+                <artifactId>markdownj</artifactId>
+                <version>0.3.0-1.0.2b4</version>
             </dependency>
 
             <!-- Test -->

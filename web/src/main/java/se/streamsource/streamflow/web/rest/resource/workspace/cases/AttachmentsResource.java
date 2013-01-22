@@ -16,6 +16,15 @@
  */
 package se.streamsource.streamflow.web.rest.resource.workspace.cases;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -29,6 +38,8 @@ import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
+
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.link.LinksValue;
@@ -38,15 +49,10 @@ import se.streamsource.streamflow.web.context.workspace.cases.attachment.Attachm
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import static se.streamsource.dci.api.RoleMap.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 
 /**
  * JAVADOC
@@ -68,7 +74,7 @@ public class AttachmentsResource
 
    public LinksValue index()
    {
-      LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() ).rel( "attachment" );
+      LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
       ValueBuilder<AttachmentDTO> builder = module.valueBuilderFactory().newValueBuilder( AttachmentDTO.class );
       for (Attachment attachment : context(AttachmentsContext.class).index())
       {
@@ -79,8 +85,43 @@ public class AttachmentsResource
          builder.prototype().size().set( data.size().get() );
          builder.prototype().modificationDate().set( data.modificationDate().get() );
          builder.prototype().mimeType().set( data.mimeType().get() );
+         builder.prototype().rel().set( "attachment" );
 
          links.addLink( builder.newInstance() );
+      }
+
+      Attachments attachments = RoleMap.role( Attachments.class );
+
+
+      try
+      {
+        for( Conversation conversation : ((Conversations.Data)attachments).conversations() )
+        {
+           for( Message message : ((Messages.Data)conversation).messages() )
+           {
+              for( Attachment attachment : ((Attachments.Data)message).attachments() )
+              {
+                 AttachedFile.Data data = (AttachedFile.Data) attachment;
+                 builder.prototype().text().set( data.name().get() );
+                 builder.prototype().href().set( "../conversations/"
+                       + ((Identity) conversation).identity().get()
+                       + "/messages/"+ ((Identity) message).identity().get()
+                       + "/attachments/" + ((Identity) attachment).identity().get() + "/" );
+                 builder.prototype().id().set( ((Identity) attachment).identity().get() );
+                 builder.prototype().size().set( data.size().get() );
+                 builder.prototype().modificationDate().set( data.modificationDate().get() );
+                 builder.prototype().mimeType().set( data.mimeType().get() );
+                 builder.prototype().rel().set( "conversation" );
+
+                 links.addLink( builder.newInstance() );
+              }
+           }
+        }
+
+      } catch ( ClassCastException cce )
+      {
+         // do nothing
+         //System.out.println( "We are on conversation attachments already - This classcast exception was expected." );
       }
 
       return links.newLinks();

@@ -16,11 +16,14 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import javax.swing.JTextField;
-
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.SuggestTextField;
 import se.streamsource.streamflow.client.util.ValueBinder;
+
+import javax.swing.JTextField;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Specific Class to handle the live search for Street Names. It should also
@@ -28,9 +31,10 @@ import se.streamsource.streamflow.client.util.ValueBinder;
  * 
  * @author henrikreinhold
  * 
- * @param <T>
+ * @param
  */
 public class StreetAddressSuggestTextField extends SuggestTextField<StreetSearchDTO>
+   implements Observer
 {
 
    private static final long serialVersionUID = -1952912369783423979L;
@@ -45,6 +49,7 @@ public class StreetAddressSuggestTextField extends SuggestTextField<StreetSearch
       this.model = model;
       this.cityField = cityField;
       this.addressViewBinder = addressViewBinder;
+      model.addObserver( this );
 
    }
 
@@ -58,12 +63,24 @@ public class StreetAddressSuggestTextField extends SuggestTextField<StreetSearch
       model.getContactModel().changeAddressAndCity( selectedItem.address().get(), selectedItem.area().get() );
    }
 
-   public void handleSaveAction(String text)
+   public void handleSaveAction(final String text)
    {
       if (text != null && !text.equals( model.getContactModel().getAddress().address().get() ))
       {
-         model.getContactModel().changeAddress( text );
+         new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               model.getContactModel().changeAddress( text );
+            }
+         }.execute();
+
       }
    }
 
+   public void update( Observable o, Object arg )
+   {
+      addressViewBinder.update( model.getContactModel().getAddress() );
+   }
 }

@@ -16,20 +16,21 @@
  */
 package se.streamsource.streamflow.web.context.overview;
 
+import java.io.IOException;
+import java.util.Locale;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Function;
+
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
-
-import java.io.IOException;
-import java.util.Locale;
 
 /**
  * JAVADOC

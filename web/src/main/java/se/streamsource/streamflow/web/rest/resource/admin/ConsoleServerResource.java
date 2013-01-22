@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.web.rest.resource.admin;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -29,16 +36,10 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+
 import se.streamsource.streamflow.web.application.console.Console;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
 
 /**
  * JAVADOC

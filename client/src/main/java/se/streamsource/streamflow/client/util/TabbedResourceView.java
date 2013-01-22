@@ -24,7 +24,6 @@ import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
@@ -32,11 +31,11 @@ import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormEditView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsView;
-import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesView;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
+import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
 import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
@@ -99,7 +98,7 @@ public class TabbedResourceView
 
       addTab( "forminfo", AdministrationResources.forminfo_tab, FormEditView.class );
       addTab( "pages", AdministrationResources.formpages_tab, FormElementsView.class );
-      addTab( "signatures", AdministrationResources.formsignatures_tab, FormSignaturesView.class );
+      //addTab( "signatures", AdministrationResources.formsignatures_tab, FormSignaturesView.class );
 
       addTab( "administrators", AdministrationResources.administrators_tab, AdministratorsView.class );
    }

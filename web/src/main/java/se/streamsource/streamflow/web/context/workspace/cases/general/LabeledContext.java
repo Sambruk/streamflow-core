@@ -16,10 +16,13 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.ServiceAvailable;
@@ -28,8 +31,6 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -49,7 +50,7 @@ public class LabeledContext
    }
 
 
-   @ServiceAvailable(KnowledgebaseService.class)
+   @ServiceAvailable( service = KnowledgebaseService.class, availability = true)
    public LinkValue knowledgeBase()
    {
       LabelEntity label = RoleMap.role(LabelEntity.class);

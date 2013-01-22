@@ -16,21 +16,22 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.accesspoints.endusers.submittedforms;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * TODO

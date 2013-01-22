@@ -17,18 +17,17 @@
 package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.constraint.Name;
-import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.Role;
-import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 /**
  * JAVADOC
@@ -45,43 +44,17 @@ public interface GroupsContext
       @Structure
       Module module;
 
-      GroupsAdmin groups;
-
-      void bind(@Uses Groups.Events groups)
-      {
-         this.groups = new GroupsAdmin(groups);
-      }
-
       public Iterable<Group> index()
       {
-         return groups.index();
+         Groups.Data groups = RoleMap.role( Groups.Data.class );
+         return groups.groups();
       }
 
+      @ServiceAvailable( service = LdapImporterService.class, availability = false )
       public Group create( String name )
       {
-         return groups.create(name);
-      }
-
-      class GroupsAdmin
-         extends Role<Groups.Events>
-      {
-         GroupsAdmin(Groups.Events self)
-         {
-            super(self);
-         }
-
-         public Iterable<Group> index()
-         {
-            return ((Groups.Data) self).groups();
-         }
-
-         Group create(String name)
-         {
-            Group group = self.createdGroup(null, module.serviceFinder().<IdentityGenerator>findService(IdentityGenerator.class).get().generate(GroupEntity.class));
-            group.changeDescription(name);
-            self.addedGroup(null, group);
-            return group;
-         }
+         Groups groups = RoleMap.role( Groups.class );
+         return groups.createGroup( name );
       }
    }
 }

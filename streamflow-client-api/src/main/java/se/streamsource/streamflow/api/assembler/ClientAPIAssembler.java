@@ -19,6 +19,7 @@ package se.streamsource.streamflow.api.assembler;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
 import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
@@ -96,6 +97,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PermissionsDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 
 /**
  * Assembler for the Streamflow Client API.
@@ -141,7 +143,8 @@ public class ClientAPIAssembler
               FieldValueDTO.class,
               AttachmentFieldSubmission.class,
               AttachmentFieldDTO.class,
-              FormSignatureDTO.class
+              FormSignatureDTO.class,
+              SecondSigneeInfoValue.class
       );
 
       workspace.values(ContactAddressDTO.class,

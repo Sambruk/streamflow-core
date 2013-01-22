@@ -16,15 +16,6 @@
  */
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.util.Visitor;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +25,16 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.Random;
+
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.util.Visitor;
 
 /**
  * JAVADOC

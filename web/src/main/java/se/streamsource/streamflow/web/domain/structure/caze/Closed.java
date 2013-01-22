@@ -16,12 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.structure.caze;
 
+import java.util.Date;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 
-import java.util.Date;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 
 /**
  * Information about when a case has been closed

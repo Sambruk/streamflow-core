@@ -16,15 +16,16 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetSearchDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.client.util.SuggestModel;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
 
-public class StreetAddressSuggestModel implements SuggestModel<StreetSearchDTO>
+
+public class StreetAddressSuggestModel extends Observable implements SuggestModel<StreetSearchDTO>
 {
    private ContactModel contactModel;
    private StreetsDTO streets;
@@ -54,6 +55,8 @@ public class StreetAddressSuggestModel implements SuggestModel<StreetSearchDTO>
    public void setContactModel(ContactModel contactModel)
    {
       this.contactModel = contactModel;
+      setChanged();
+      notifyObservers();
    }
 
    public StreetSearchDTO valueAt(int index)

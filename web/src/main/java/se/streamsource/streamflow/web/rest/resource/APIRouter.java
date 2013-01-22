@@ -32,6 +32,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
+
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
 import se.streamsource.dci.restlet.server.ResourceFinder;

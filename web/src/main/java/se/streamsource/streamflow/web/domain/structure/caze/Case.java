@@ -39,6 +39,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks;
 
 /**
  * Case entity.
@@ -74,6 +75,7 @@ public interface Case
       CaseAccessRestriction,
       History,
       CaseLoggable,
-      CasePriority
+      CasePriority,
+      DoubleSignatureTasks
 {
 }

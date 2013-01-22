@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.context.account;
 
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 
 /**

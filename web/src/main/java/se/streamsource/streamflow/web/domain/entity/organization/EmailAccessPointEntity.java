@@ -16,9 +16,12 @@
  */
 package se.streamsource.streamflow.web.domain.entity.organization;
 
+import java.util.List;
+
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.This;
+
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
@@ -30,8 +33,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-
-import java.util.List;
 
 /**
  * An Email Access Point

@@ -16,10 +16,8 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.qi4j.api.constraint.ConstraintViolationException;
@@ -52,9 +50,7 @@ import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValu
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
-import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroup;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;

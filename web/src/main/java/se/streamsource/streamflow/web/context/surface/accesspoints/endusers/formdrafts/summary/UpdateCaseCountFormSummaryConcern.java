@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;

@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -123,7 +124,7 @@ public class EmailAccessPointAdministrationContext
       role(EmailTemplates.class).changeSubject(subject);
    }
 
-   public void changetemplate(@Name("key") String key, @Name("template") String template)
+   public void changetemplate(@Name("key") String key, @Optional @Name("template") String template)
    {
       role(EmailTemplates.class).changeTemplate(key, template);
    }

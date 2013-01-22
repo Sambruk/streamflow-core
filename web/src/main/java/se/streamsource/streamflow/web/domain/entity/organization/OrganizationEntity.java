@@ -20,6 +20,7 @@ import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
@@ -32,10 +33,10 @@ import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplat
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
-import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
@@ -45,6 +46,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
@@ -90,6 +92,8 @@ public interface OrganizationEntity
       CasePdfTemplate.Data,
       Priorities.Data,
       CaseAccessDefaults.Data,
+      Groups.Data,
+      Groups.Events,
            
       //Queries
       OrganizationParticipationsQueries,

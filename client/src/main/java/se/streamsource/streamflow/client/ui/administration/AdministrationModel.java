@@ -40,8 +40,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import java.util.Comparator;
 import java.util.List;
 
-import static java.util.Arrays.*;
-import static org.qi4j.api.util.Iterables.*;
+import static java.util.Arrays.asList;
+import static org.qi4j.api.util.Iterables.matchesAny;
 
 /**
  * JAVADOC
@@ -90,7 +90,7 @@ public class AdministrationModel
    public void createOrganizationalUnit( LinkValue node, String name )
    {
       Form form = new Form();
-      form.set("name", name);
+      form.set( "name", name );
       client.getClient(node).postCommand( "create", form );
    }
 
@@ -195,7 +195,7 @@ public class AdministrationModel
                {
                   return item.equals( link.id().get() );
                }
-            }, asList( classes.split( " " ) )))
+            }, asList( classes.split( " " ) ) ))
                return true;
          }
          return false;

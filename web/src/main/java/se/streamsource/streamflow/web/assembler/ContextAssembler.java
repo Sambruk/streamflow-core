@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
@@ -31,6 +32,7 @@ import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
@@ -42,6 +44,11 @@ import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.HasJoined;
 import se.streamsource.streamflow.web.context.workspace.cases.HasFormOnDelete;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+
+import java.util.Properties;
+
+import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 /**
  * JAVADOC
@@ -76,6 +83,22 @@ public class ContextAssembler
               importedBy(ServiceSelectorImporter.class).
               setMetaInfo(ServiceQualifier.withId("solr")).
               setMetaInfo(namedQueries);
+
+      // Velocity Engine for context layer
+      Properties props = new Properties();
+      try
+      {
+         props.load(getClass().getResourceAsStream("/velocity.properties"));
+
+         VelocityEngine velocity = new VelocityEngine(props);
+
+         module.importedServices(VelocityEngine.class)
+               .importedBy(INSTANCE).setMetaInfo(velocity).visibleIn( layer );
+
+      } catch (Exception e)
+      {
+         throw new AssemblyException("Could not load velocity properties", e);
+      }
 
       // Register all contexts
       for (Class aClass : Iterables.filter(ClassScanner.matches(".*Context"), ClassScanner.getClasses(LinksBuilder.class)))

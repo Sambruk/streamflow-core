@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import com.petebevin.markdown.MarkdownProcessor;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -30,9 +31,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-
-import com.petebevin.markdown.MarkdownProcessor;
-
 import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
@@ -75,7 +73,7 @@ public interface FormDrafts
       @Queryable(false)
       ManyAssociation<FormDraft> formDrafts();
 
-      FormDraft createdFormDraft(@Optional DomainEvent event, FormDraftDTO formDraftDTO, String id);
+      FormDraft createdFormDraft(@Optional DomainEvent event, String id);
 
       void discardedFormDraft(@Optional DomainEvent event, FormDraft formDraft);
    }
@@ -209,7 +207,10 @@ public interface FormDrafts
          builder.prototype().pages().get().remove( pages - 1 );
          builder.prototype().pages().get().add( pageBuilder.newInstance() );
 
-         return createdFormDraft( null, builder.newInstance(), idgen.generate( FormDraftEntity.class ) );
+         FormDraft draft = createdFormDraft( null, idgen.generate( FormDraftEntity.class ) );
+         draft.changeFormDraftValue(  builder.newInstance() );
+
+         return draft;
       }
 
       private FieldSubmissionDTO createFieldSubmission(Field field, FieldValue fieldValue,
@@ -262,12 +263,10 @@ public interface FormDrafts
          return fieldBuilder;
       }
       
-      public FormDraft createdFormDraft(@Optional DomainEvent event, FormDraftDTO formDraftDTO, String id)
+      public FormDraft createdFormDraft(@Optional DomainEvent event, String id)
       {
          EntityBuilder<FormDraft> submissionEntityBuilder = module.unitOfWorkFactory().currentUnitOfWork()
                .newEntityBuilder( FormDraft.class, id );
-
-         submissionEntityBuilder.instance().changeFormDraftValue( formDraftDTO );
 
          FormDraft formSubmission = submissionEntityBuilder.newInstance();
          formDrafts().add( formSubmission );

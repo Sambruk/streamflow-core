@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.context.workspace;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;

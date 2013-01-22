@@ -23,6 +23,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.spi.service.ServiceDescriptor;
+
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.AbstractEnabledCircuitBreakerAvailability;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;

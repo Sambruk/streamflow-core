@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -32,7 +35,9 @@ import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -50,6 +55,10 @@ public class CaseSubmittedFormsContext
 
    @Structure
    Module module;
+
+   @Optional
+   @Service
+   MailSenderService mailSender;
 
    public SubmittedFormsListDTO index()
    {
@@ -104,5 +113,12 @@ public class CaseSubmittedFormsContext
       return null;
    }
 
+   public void resenddoublesignemail( @Name("secondsigntaskref") String secondsigntaskref )
+   {
+      DoubleSignatureTask task = module.unitOfWorkFactory().currentUnitOfWork()
+            .get( DoubleSignatureTask.class, secondsigntaskref );
+      mailSender.sentEmail( ((DoubleSignatureTask.Data)task).email().get() );
+      task.updateLastReminderSent(  new DateTime( DateTimeZone.UTC ) );
+   }
 
 }

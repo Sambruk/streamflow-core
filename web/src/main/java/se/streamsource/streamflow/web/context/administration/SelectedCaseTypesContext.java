@@ -16,10 +16,13 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -27,8 +30,6 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

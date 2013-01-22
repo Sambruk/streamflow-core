@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -43,12 +44,17 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.ActionMap;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -100,10 +106,13 @@ public class AttachmentsView
             KeyboardFocusManager.getCurrentKeyboardFocusManager()
                   .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
 
-      attachments.getColumn(1).setPreferredWidth(100);
-      attachments.getColumn(1).setMaxWidth(100);
+      attachments.getColumn( 0 ).setPreferredWidth( 20 );
+      attachments.getColumn( 0 ).setMaxWidth( 20 );
+      attachments.getColumn( 0 ).setResizable( false );
       attachments.getColumn(2).setPreferredWidth(100);
       attachments.getColumn(2).setMaxWidth(100);
+      attachments.getColumn(3).setPreferredWidth(100);
+      attachments.getColumn(3).setMaxWidth(100);
 
       attachments.setAutoCreateColumnsFromModel(false);
 
@@ -140,6 +149,22 @@ public class AttachmentsView
             }
          }
       });
+
+      attachments.getColumn( 0 ).setCellRenderer( new DefaultTableCellRenderer()
+      {
+         @Override
+         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
+         {
+
+            ImageIcon icon = i18n.icon( Icons.conversations, 11 );
+            JLabel iconLabel = (Boolean) value ? new JLabel( icon ) : new JLabel( " " );
+            iconLabel.setOpaque( true );
+
+            if (isSelected)
+               iconLabel.setBackground( attachments.getSelectionBackground() );
+            return iconLabel;
+         }
+      } );
 
       JScrollPane attachmentsScrollPane = new JScrollPane(attachments);
 

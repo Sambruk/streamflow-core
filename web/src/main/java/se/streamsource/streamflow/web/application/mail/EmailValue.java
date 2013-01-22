@@ -16,14 +16,15 @@
  */
 package se.streamsource.streamflow.web.application.mail;
 
+import java.util.List;
+import java.util.Map;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 
-import java.util.List;
-import java.util.Map;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 
 /**
  * Represents an email

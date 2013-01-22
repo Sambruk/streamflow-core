@@ -16,6 +16,12 @@
  */
 package se.streamsource.streamflow.web.rest.resource.workspace.cases.form;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.io.Input;
@@ -25,16 +31,11 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormsContext;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 
 /**
  * TODO

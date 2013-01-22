@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.rest.resource.organizations.filters;
 
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;

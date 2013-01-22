@@ -149,6 +149,14 @@ public interface OrganizationQueries
             return;
 
          // Visit items on Organization
+
+         if (typeSpecification.satisfiedBy( Groups.class ))
+            for (Group group : ((Groups.Data) org).groups())
+            {
+               if (!visitor.visitGroup( group ))
+                  return;
+            }
+
          if (typeSpecification.satisfiedBy( Labels.class ))
             for (Label label : ((Labels.Data) org).labels())
             {

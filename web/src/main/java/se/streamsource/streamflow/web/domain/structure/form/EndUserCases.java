@@ -22,6 +22,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -31,7 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPointS
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
-import static se.streamsource.streamflow.util.Strings.empty;
+import static se.streamsource.streamflow.util.Strings.*;
 
 /**
  * JAVADOC
@@ -43,9 +44,9 @@ public interface EndUserCases
 
    CaseEntity createCase( Drafts endUser );
 
-   void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter );
+   SubmittedFormValue submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter );
 
-   void submitForm( Case caze, FormDraft formSubmission, Submitter submitter );
+   SubmittedFormValue submitForm( Case caze, FormDraft formSubmission, Submitter submitter );
 
    void sendTo( Case caze );
 
@@ -73,7 +74,7 @@ public interface EndUserCases
          return caseEntity;
       }
 
-      public void submitForm( Case caze, FormDraft formSubmission, Submitter submitter )
+      public SubmittedFormValue submitForm( Case caze, FormDraft formSubmission, Submitter submitter )
       {
          // Transfer contact information from submitter
          // TODO Also add from typed form data
@@ -89,14 +90,27 @@ public interface EndUserCases
             caze.addContact(builder.newInstance());
          }
 
+         if( formSubmission.getFormDraftValue().secondsignee().get() != null
+            &&!formSubmission.getFormDraftValue().secondsignee().get().singlesignature().get() )
+         {
+            SecondSigneeInfoValue secondSignee = formSubmission.getFormDraftValue().secondsignee().get();
+            ContactBuilder builder = new ContactBuilder( module.valueBuilderFactory() );
+            builder.name( secondSignee.name().get() );
+            builder.email( secondSignee.email().get() );
+            builder.phoneNumber( secondSignee.phonenumber().get() );
+            builder.contactId( secondSignee.socialsecuritynumber().get() );
+            caze.addContact( builder.newInstance() );
+         }
+
          // Submit the form
-         caze.submitForm( formSubmission, submitter );
+         return caze.submitForm( formSubmission, submitter );
       }
 
-      public void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter )
+      public SubmittedFormValue submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter )
       {
-         submitForm( caze, formSubmission, submitter );
+         SubmittedFormValue submittedForm = submitForm( caze, formSubmission, submitter );
          sendTo( caze );
+         return submittedForm;
       }
 
       public CaseEntity createCase( Drafts endUser )

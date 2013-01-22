@@ -61,17 +61,25 @@ public class MessagesModel
    {
       return messages;
    }
-
-   public void createMessage( String message )
+   
+   public void createMessageFromDraft()
    {
-      ValueBuilder<StringValue> stringBuilder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
-      stringBuilder.prototype().string().set( message );
-      client.postCommand( "createmessage", stringBuilder.newInstance() );
+      client.postCommand( "createmessagefromdraft" );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (Events.matches( Events.onEntities( client.getReference().getParentRef().getLastSegment() ), transactions ))
          refresh();
+   }
+
+   public MessageModel newMessageModel( String href )
+   {
+      return module.objectBuilderFactory().newObjectBuilder( MessageModel.class ).use( client.getSubClient( href ) ).newInstance();
+   }
+
+   public MessageDraftModel newMessageDraftModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder( MessageDraftModel.class ).use( client.getSubClient( "messagedraft" ) ).newInstance();
    }
 }

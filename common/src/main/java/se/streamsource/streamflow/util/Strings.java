@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.util;
 
+import org.qi4j.api.property.Property;
+import sun.misc.BASE64Encoder;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Utility methods for strings
  */
@@ -96,4 +103,35 @@ public class Strings
 
        return Character.toUpperCase(string.charAt(0)) + string.substring(1);
     }
+
+    public static String hashString( String string )
+    {
+       try
+       {
+          MessageDigest md = MessageDigest.getInstance( "SHA" );
+          md.update( string.getBytes( "UTF-8" ) );
+          byte raw[] = md.digest();
+          String hash = (new BASE64Encoder()).encode( raw );
+          return hash;
+       }
+       catch (NoSuchAlgorithmException e)
+       {
+          throw new IllegalStateException( "No SHA algorithm founde", e );
+       }
+       catch (UnsupportedEncodingException e)
+       {
+          throw new IllegalStateException( e.getMessage(), e );
+       }
+    }
+
+   /**
+    * Test if the contents of a Property equals the new value regardless if the property is optional, empty or has value.
+    * @param stringProperty The property to test
+    * @param newValue The new value
+    * @return A boolean
+    */
+   public static boolean propertyEquals( Property<String> stringProperty, String newValue )
+   {
+      return stringProperty.get() == null ? newValue == null : stringProperty.get().equals( newValue );
+   }
 }

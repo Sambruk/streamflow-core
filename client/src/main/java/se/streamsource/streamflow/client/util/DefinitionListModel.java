@@ -24,6 +24,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 /**
  * Management of owned entities
@@ -74,10 +75,10 @@ public class DefinitionListModel
    }
 
 
-   public EventList<LinkValue> usages(LinkValue link)
+   public EventList<TitledLinkValue> usages(LinkValue link)
    {
       LinksValue usages = client.getClient( link ).query( "usages", LinksValue.class );
-      EventList<LinkValue> eventList = new BasicEventList<LinkValue>();
+      EventList<TitledLinkValue> eventList = new BasicEventList<TitledLinkValue>();
       EventListSynch.synchronize( usages.links().get(), eventList );
 
       return eventList;

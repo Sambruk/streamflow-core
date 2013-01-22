@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.context;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,6 +44,7 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.qi4j.spi.structure.ModuleSPI;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.StringValue;
@@ -50,10 +55,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.test.StreamflowWebContextTestAssembler;
 import se.streamsource.streamflow.web.domain.Describable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Base class for roleMap tests. RoleMap tests should subclass this test and use the fluent API provided

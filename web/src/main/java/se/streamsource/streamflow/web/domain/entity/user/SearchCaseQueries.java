@@ -16,24 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +28,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Iterables;
+
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
 /**
  * JAVADOC
  */
@@ -53,7 +55,7 @@ import java.util.regex.PatternSyntaxException;
 public interface
       SearchCaseQueries
 {
-   Query<Case> search( String query );
+   Query<Case> search( String query, boolean includeNotesInSearch );
 
    abstract class Mixin
          implements SearchCaseQueries
@@ -64,7 +66,7 @@ public interface
       @This
       UserAuthentication.Data user;
 
-      public Query<Case> search( String query )
+      public Query<Case> search( String query, boolean includeNotesInSearch )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
@@ -227,6 +229,42 @@ public interface
                      // dismiss search - no project/s for given name exists. Return empty search
                      return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
                   }
+               } else if (search.hasName( "notes" ))
+               {
+                  List<NotesTimeLineEntity> notes = new ArrayList<NotesTimeLineEntity>();
+                  for (String note : search.getValue().split(","))
+                  {
+
+                        StringBuilder projectQueryBuilder = new StringBuilder(
+                              "type:se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity" );
+                        projectQueryBuilder.append( " ( note:" ).append( note ).append( ")" );
+
+                        Iterables.addAll( notes,
+                              module.queryBuilderFactory().newNamedQuery( NotesTimeLineEntity.class, uow, "solrquery" )
+                                    .setVariable( "query", projectQueryBuilder.toString() ) );
+                  }
+                  if (notes.iterator().hasNext())
+                  {
+                     queryBuilder.append( " notes:(" );
+                     int count = 0;
+                     for (NotesTimeLineEntity note : notes)
+                     {
+                        if (count == 0)
+                        {
+                           queryBuilder.append( note.identity().get() );
+                        } else
+                        {
+                           queryBuilder.append( " OR " ).append( note.identity().get() );
+                        }
+
+                        count++;
+                     }
+                     queryBuilder.append( ")" );
+                  } else
+                  {
+                     // dismiss search - no notes for given name exists. Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
+                  }
                } else if (search.hasName( "createdBy" ))
                {
                   List<UserEntity> users = new ArrayList<UserEntity>();
@@ -323,8 +361,50 @@ public interface
                } else
                {
                   if (queryBuilder.length() > 0)
+                  {
                      queryBuilder.append( " " );
-                  queryBuilder.append( search.getValue() );
+                  }
+
+                  if( includeNotesInSearch )
+                  {
+                     List<NotesTimeLineEntity> notes = new ArrayList<NotesTimeLineEntity>();
+
+
+                     StringBuilder notesQueryBuilder = new StringBuilder(
+                           "type:se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity" );
+                     notesQueryBuilder.append( " ( note:" ).append( search.getValue() ).append( ")" );
+
+                     Iterables.addAll( notes,
+                           module.queryBuilderFactory().newNamedQuery( NotesTimeLineEntity.class, uow, "solrquery" )
+                                 .setVariable( "query", notesQueryBuilder.toString() ) );
+
+                     if (notes.iterator().hasNext())
+                     {
+                        queryBuilder.append( " ( notes:(" );
+                        int count = 0;
+                        for (NotesTimeLineEntity note : notes)
+                        {
+                           if (count == 0)
+                           {
+                              queryBuilder.append( note.identity().get() );
+                           } else
+                           {
+                              queryBuilder.append( " OR " ).append( note.identity().get() );
+                           }
+
+                           count++;
+                        }
+                        queryBuilder.append( ") OR text:(" + search.getValue() + ") )" );
+                     } else
+                     {
+
+                        queryBuilder.append( search.getValue() );
+                     }
+                  } else
+                  {
+
+                     queryBuilder.append( search.getValue() );
+                  }
                }
             }
 

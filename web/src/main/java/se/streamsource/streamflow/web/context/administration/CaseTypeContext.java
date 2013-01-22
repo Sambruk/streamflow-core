@@ -19,7 +19,10 @@ package se.streamsource.streamflow.web.context.administration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
@@ -30,10 +33,16 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+
+import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -53,7 +62,8 @@ public class CaseTypeContext
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
       for (SelectedCaseTypes selectedCaseTypes : usageQuery)
       {
-         builder.addDescribable( (Describable) selectedCaseTypes );
+         if( !(((Removable.Data)((Ownable.Data)selectedCaseTypes).owner().get()).removed().get()) )
+            builder.addDescribable( (Describable) selectedCaseTypes, ((Describable)((Ownable.Data)selectedCaseTypes).owner().get()).getDescription() );
       }
 
       return builder.newLinks();
@@ -70,7 +80,22 @@ public class CaseTypeContext
 
    public Iterable<CaseTypes> possiblemoveto()
    {
-      return module.queryBuilderFactory().newQueryBuilder( CaseTypes.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+      final CaseTypes thisCaseTypes = role(CaseTypes.class);
+
+      return Iterables.filter( new Specification<CaseTypes>()
+      {
+         public boolean satisfiedBy( CaseTypes item )
+         {
+            Owner owner = ((Ownable.Data) item).owner().get();
+
+            return !item.equals( thisCaseTypes ) && !((Removable.Data) owner).removed().get();
+         }
+      }, module.queryBuilderFactory().newQueryBuilder( CaseTypes.class )
+            .where( and(
+                  eq( templateFor( Removable.Data.class ).removed(), false ),
+                  QueryExpressions.isNotNull( templateFor( Ownable.Data.class ).owner() )
+            ) )
+            .newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
    }
 
    public void move( EntityValue to )
@@ -80,7 +105,7 @@ public class CaseTypeContext
       RoleMap.role( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
    }
 
-   @ServiceAvailable(KnowledgebaseService.class)
+   @ServiceAvailable(service = KnowledgebaseService.class, availability = true)
    public LinkValue knowledgeBase()
    {
       CaseTypeEntity caseType = RoleMap.role(CaseTypeEntity.class);

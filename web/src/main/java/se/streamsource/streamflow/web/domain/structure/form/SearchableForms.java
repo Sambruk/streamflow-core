@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.Structure;
@@ -25,6 +28,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.structure.Module;
 import org.qi4j.spi.Qi4jSPI;
+
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
@@ -32,9 +36,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * TODO

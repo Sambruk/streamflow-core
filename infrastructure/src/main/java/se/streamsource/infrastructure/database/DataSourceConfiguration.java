@@ -18,16 +18,15 @@ package se.streamsource.infrastructure.database;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
 
 /**
  * Configuration for the DataSource pool
  */
 public interface DataSourceConfiguration
-      extends ConfigurationComposite
+      extends ConfigurationComposite, Enabled
 {
-   @UseDefaults
-   Property<Boolean> enabled();
 
    Property<String> driver();
 

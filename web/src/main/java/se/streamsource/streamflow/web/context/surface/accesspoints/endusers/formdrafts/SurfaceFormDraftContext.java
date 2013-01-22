@@ -28,12 +28,13 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -79,6 +80,88 @@ public class SurfaceFormDraftContext
    {
       FormDraft formDraft = role( FormDraft.class );
       formDraft.addFormSignatureValue( signature );
+   }
+
+   public SecondSigneeInfoValue secondsigneeinfo() {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+      
+      // If it doesn't exist we create a empty one
+      if (formDraft.getFormDraftValue().secondsignee().get() == null) 
+      {
+         ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+         formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+      }
+      return formDraft.getFormDraftValue().secondsignee().get();
+   }
+   
+   public void updatesinglesignature( StringValue singleSignature )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().singlesignature().set( new Boolean( "".equals( singleSignature.string().get() ) ? "false" : singleSignature.string().get() ) );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updatename( StringValue name )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().name().set( name.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updatesocialsecuritynumber( StringValue socialSecurityNumber )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().socialsecuritynumber().set( socialSecurityNumber.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updatephonenumber( StringValue phoneNumber )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().phonenumber().set( phoneNumber.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   public void updateemail( StringValue email )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder = getSecondSigneeInfoValueBuilder( formDraft );
+
+      secondSigneeBuilder.prototype().email().set( email.string().get() );
+
+      formDraft.addSecondSigneeInfo( secondSigneeBuilder.newInstance() );
+   }
+
+   private ValueBuilder<SecondSigneeInfoValue> getSecondSigneeInfoValueBuilder( FormDraft formDraft )
+   {
+      ValueBuilder<SecondSigneeInfoValue> secondSigneeBuilder;
+      SecondSigneeInfoValue secondSignee = formDraft.getFormDraftValue().secondsignee().get();
+
+      if( secondSignee == null )
+      {
+         secondSigneeBuilder = module.valueBuilderFactory().newValueBuilder( SecondSigneeInfoValue.class );
+      } else
+      {
+         secondSigneeBuilder = secondSignee.buildWith();
+      }
+      return secondSigneeBuilder;
    }
 
    public void removeSignatures()

@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.UserEntityDTO;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -30,9 +31,12 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JFileChooser;
@@ -59,11 +63,18 @@ public class UsersAdministrationListView
    {
       this.model = model;
 
-      // TODO create property files
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("createUser"), new javax.swing.Action[]{am.get( "importUserList" ) }, new DetailFactory()
+
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("createuser"), new SelectionActionEnabler( new Action[]{am.get( "importusers" )} ){
+               @Override
+               public boolean isSelectedValueValid( Action action )
+               {
+                  return action.isEnabled();
+               }
+            },
+          new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {
@@ -93,11 +104,25 @@ public class UsersAdministrationListView
          }
       });
 
-      new RefreshWhenShowing(this, model);
+      //new RefreshWhenShowing(this, model);
+
+      ResourceActionEnabler resourceActionEnabler = new ResourceActionEnabler(
+            am.get( "createuser" ),
+            am.get( "importusers" )
+      )
+      {
+         @Override
+         protected ResourceValue getResource()
+         {
+            model.refresh();
+            return model.getResourceValue();
+         }
+      };
+      new RefreshWhenShowing( this, resourceActionEnabler );
    }
 
    @org.jdesktop.application.Action
-   public Task createUser()
+   public Task createuser()
    {
       final CreateUserDialog dialog = module.objectBuilderFactory().newObject(CreateUserDialog.class);
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
@@ -119,9 +144,8 @@ public class UsersAdministrationListView
       }
    }
 
-
    @org.jdesktop.application.Action
-   public Task importUserList()
+   public Task importusers()
    {
 
       // Ask the user for a file to import user/pwd pairs from

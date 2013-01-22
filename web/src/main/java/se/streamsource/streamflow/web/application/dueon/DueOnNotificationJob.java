@@ -22,7 +22,6 @@ import static org.qi4j.api.query.QueryExpressions.gt;
 import static org.qi4j.api.query.QueryExpressions.le;
 import static org.qi4j.api.query.QueryExpressions.lt;
 import static org.qi4j.api.query.QueryExpressions.notEq;
-import static org.qi4j.api.query.QueryExpressions.or;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 import java.io.BufferedReader;
@@ -331,7 +330,6 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       }
 
 
-      @Override
       public void execute(JobExecutionContext context) throws JobExecutionException
       {
          try

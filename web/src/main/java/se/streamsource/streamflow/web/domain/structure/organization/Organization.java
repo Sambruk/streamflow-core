@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
@@ -61,6 +62,7 @@ public interface Organization
       DatatypeDefinitions,
       FieldGroups,
       Priorities,
-      CaseAccessDefaults
+      CaseAccessDefaults,
+      Groups
 {
 }

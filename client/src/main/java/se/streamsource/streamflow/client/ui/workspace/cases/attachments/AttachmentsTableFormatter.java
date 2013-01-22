@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -33,6 +33,7 @@ public class AttachmentsTableFormatter
       implements AdvancedTableFormat<AttachmentDTO>
 {
    protected String[] columnNames = new String[]{
+         "",
          text( attachment_name ),
          text( attachment_size ),
          text( created_column_header )
@@ -42,6 +43,7 @@ public class AttachmentsTableFormatter
    public AttachmentsTableFormatter()
    {
       columnClasses = new Class[] {
+            Boolean.class,
             String.class,
             String.class,
             Date.class
@@ -73,11 +75,14 @@ public class AttachmentsTableFormatter
       switch (i)
       {
          case 0:
+            return attachmentDTO.rel().get().equals( "conversation" );
+
+         case 1:
          {
             return attachmentDTO.text().get();
          }
 
-         case 1:
+         case 2:
             try
             {
                long size = attachmentDTO.size().get();
@@ -95,7 +100,7 @@ public class AttachmentsTableFormatter
                return "";
             }
 
-         case 2:
+         case 3:
             return attachmentDTO.modificationDate().get() == null ? "" : DateFormat.getDateInstance( DateFormat.MEDIUM ).format( attachmentDTO.modificationDate().get());
       }
 

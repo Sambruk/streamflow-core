@@ -16,16 +16,22 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.accesspoints;
 
+import java.util.List;
+
+import org.qi4j.api.constraint.Name;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-
-import java.util.List;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
@@ -40,33 +46,53 @@ public class AccessPointAdministrationResource
 
    public LinksValue possibleprojects() throws Throwable
    {
-      return new LinksBuilder(module.valueBuilderFactory()).
-            command( "changeproject" ).
-            addDescribables( context(AccessPointAdministrationContext.class).possibleprojects() ).
-            newLinks();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "changeproject" );
+      for( Project project : context(AccessPointAdministrationContext.class).possibleprojects() )
+      {
+         builder.addDescribable( project, ((Describable)((Ownable.Data)project).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
    }
 
    public LinksValue possiblecasetypes() throws Throwable
    {
-      return new LinksBuilder(module.valueBuilderFactory()).
-            command( "changecasetype" ).
-            addDescribables( context(AccessPointAdministrationContext.class).possiblecasetypes() ).
-            newLinks();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "changecasetype" );
+      for(CaseType caseType : context(AccessPointAdministrationContext.class).possiblecasetypes() )
+      {
+         builder.addDescribable( caseType, ((Describable)((Ownable.Data)caseType).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
    }
 
    public LinksValue possibleforms() throws Throwable
    {
-      return new LinksBuilder(module.valueBuilderFactory()).
-            command( "setform" ).
-            addDescribables( context(AccessPointAdministrationContext.class).possibleforms() ).
-            newLinks();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "setform" );
+      for(Form form : context(AccessPointAdministrationContext.class).possibleforms() )
+      {
+         builder.addDescribable( form, ((Describable)((Ownable.Data)form).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
    }
 
-   public LinksValue possibleformtemplates(StringValue extensionFilter) throws Throwable
+   public LinksValue possiblesecondforms() throws Throwable
+   {
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "setsecondform" );
+      for(Form form : context(AccessPointAdministrationContext.class).possiblesecondforms() )
+      {
+         builder.addDescribable( form, ((Describable)((Ownable.Data)form).owner().get()).getDescription() );
+      }
+      return builder.newLinks();
+   }
+
+   public LinksValue possibleformtemplates( @Name("filteron") String filteron) throws Throwable
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setformtemplate" );
 
-      List<Attachment> attachments = context(AccessPointAdministrationContext.class).possibleformtemplates(extensionFilter);
+      List<Attachment> attachments = context(AccessPointAdministrationContext.class).possibleformtemplates( filteron );
 
       for (Attachment attachment : attachments)
       {

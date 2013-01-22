@@ -16,11 +16,12 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import static se.streamsource.dci.api.RoleMap.role;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
-
-import static se.streamsource.dci.api.RoleMap.role;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 /**
  * JAVADOC
@@ -28,6 +29,7 @@ import static se.streamsource.dci.api.RoleMap.role;
 public class ParticipantContext
    implements DeleteContext
 {
+   @ServiceAvailable( service = LdapImporterService.class, availability = false )
    public void delete()
    {
       Participant participant = role( Participant.class );

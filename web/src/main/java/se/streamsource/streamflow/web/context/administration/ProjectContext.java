@@ -16,11 +16,10 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import static se.streamsource.dci.api.RoleMap.role;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

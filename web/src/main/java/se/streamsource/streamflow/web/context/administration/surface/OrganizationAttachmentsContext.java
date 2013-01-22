@@ -16,19 +16,20 @@
  */
 package se.streamsource.streamflow.web.context.administration.surface;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 
 /**
  * Attachments on the organization. These have differing permission requirements compared to the one on cases

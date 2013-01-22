@@ -16,12 +16,12 @@
  */
 package se.streamsource.streamflow.web.domain.structure.created;
 
+import java.util.Date;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
-
-import java.util.Date;
 
 /**
  * Role for recording the date of creation and creator of the entity. These should be

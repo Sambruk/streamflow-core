@@ -16,15 +16,16 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.Map;
-import java.util.ResourceBundle;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Templates for emails sent out by email Access Points.
@@ -32,7 +33,7 @@ import java.util.ResourceBundle;
 @Mixins(EmailTemplates.Mixin.class)
 public interface EmailTemplates
 {
-   void changeTemplate(String key, String value);
+   void changeTemplate(String key, @Optional String value);
    void changeSubject( String subject);
    void synchronizeTemplates();
 
@@ -47,7 +48,7 @@ public interface EmailTemplates
    interface Events
    {
       void changedSubject(@Optional DomainEvent event, String newSubjectTemplate);
-      void changedTemplate(@Optional DomainEvent event, String key, String template);
+      void changedTemplate(@Optional DomainEvent event, String key, @Optional String template);
    }
 
    class Mixin
@@ -71,10 +72,10 @@ public interface EmailTemplates
          changedTemplate(null, key, value);
       }
 
-      public void changedTemplate(@Optional DomainEvent event, String key, String template)
+      public void changedTemplate(@Optional DomainEvent event, String key, @Optional String template)
       {
          Map<String, String> templates = data.emailTemplates().get();
-         templates.put(key, template);
+         templates.put(key, template != null ? template : "" );
          data.emailTemplates().set(templates);
       }
 

@@ -16,13 +16,13 @@
  */
 package se.streamsource.streamflow.web.application.statistics;
 
+import java.util.Date;
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Statistics for a single closed case

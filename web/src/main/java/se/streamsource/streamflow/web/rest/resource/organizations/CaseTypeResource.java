@@ -16,7 +16,6 @@
  */
 package se.streamsource.streamflow.web.rest.resource.organizations;
 
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.value.link.LinksValue;
@@ -24,13 +23,14 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.ArchivalSettingsContext;
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
 import se.streamsource.streamflow.web.context.administration.CaseDefaultDaysToCompleteContext;
-import se.streamsource.streamflow.web.context.administration.PriorityOnCaseContext;
 import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
 import se.streamsource.streamflow.web.context.administration.FormOnCloseContext;
+import se.streamsource.streamflow.web.context.administration.PriorityOnCaseContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.SelectedFormsResource;
 
@@ -47,12 +47,20 @@ public class CaseTypeResource
 
    public LinksValue possiblemoveto() throws Throwable
    {
-      Iterable caseTypes = context(CaseTypeContext.class).possiblemoveto();
+      Iterable<CaseTypes> caseTypesList = context(CaseTypeContext.class).possiblemoveto();
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       builder.command( "move" );
 
-      builder.addDescribables( caseTypes );
-
+      for( CaseTypes caseTypes : caseTypesList )
+      {
+         if(caseTypes instanceof OrganizationEntity )
+         {
+            builder.addDescribable( ((Describable)caseTypes), "" );
+         } else
+         {
+            builder.addDescribable( ((Describable)caseTypes), ((Describable)((Ownable.Data)caseTypes).owner().get()).getDescription() );
+         }
+      }
       return builder.newLinks();
    }
 

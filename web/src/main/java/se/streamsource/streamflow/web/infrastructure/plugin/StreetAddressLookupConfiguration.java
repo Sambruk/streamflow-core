@@ -17,18 +17,14 @@
 package se.streamsource.streamflow.web.infrastructure.plugin;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
 
 /**
  * Configuration
  */
 public interface StreetAddressLookupConfiguration
-   extends ConfigurationComposite, Enabled
+   extends PluginConfiguration
 {
-   @UseDefaults
-   Property<String> url();
 
    @UseDefaults
    Property<Long> lastLoaded();

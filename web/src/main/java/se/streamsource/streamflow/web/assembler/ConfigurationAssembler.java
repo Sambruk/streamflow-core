@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import java.util.prefs.Preferences;
+
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
@@ -26,18 +28,17 @@ import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.index.reindexer.ReindexerConfiguration;
+
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorConfiguration;
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.ContactLookupServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.KartagoPluginConfiguration;
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupConfiguration;
 import se.streamsource.streamflow.web.rest.service.conversation.ConversationResponseConfiguration;
 import se.streamsource.streamflow.web.rest.service.conversation.NotificationConfiguration;
-
-import java.util.prefs.Preferences;
 
 /**
  * JAVADOC
@@ -67,10 +68,8 @@ public class ConfigurationAssembler
 
       // Plugin configurations
       module.entities(
-            PluginConfiguration.class,
+            ContactLookupServiceConfiguration.class,
             KartagoPluginConfiguration.class ).visibleIn( Visibility.application );
-      module.forMixin( PluginConfiguration.class ).declareDefaults().enabled().set( false );
-      module.forMixin( KartagoPluginConfiguration.class ).declareDefaults().enabled().set( false );
    }
 
    private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException
@@ -88,14 +87,7 @@ public class ConfigurationAssembler
 
       module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");
 
-      module.forMixin( NotificationConfiguration.class ).declareDefaults().enabled().set( true );
-
-      module.forMixin( ConversationResponseConfiguration.class ).declareDefaults().enabled().set( true );
-
-      module.forMixin( RemoveAttachmentsConfiguration.class ).declareDefaults().enabled().set( true );
-
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().loadFrequence().set( 604800000L );
-      module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().enabled().set( false );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().minkeywordlength().set( 3 );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().limit().set( 10 );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().url().set( "http://localhost:8086/streets/street" );

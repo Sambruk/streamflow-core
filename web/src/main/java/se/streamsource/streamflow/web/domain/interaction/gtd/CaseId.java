@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.Matches;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**

@@ -16,6 +16,14 @@
  */
 package se.streamsource.streamflow.web.context.workspace;
 
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -26,38 +34,35 @@ import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -73,7 +78,7 @@ public class SearchContext
    public Iterable<Case> cases(TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
-      Query<Case> caseQuery = caseQueries.search(tableQuery.where());
+      Query<Case> caseQuery = caseQueries.search(tableQuery.where(), systemConfig.config().configuration().includeNotesInSearch().get() );
 
       caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( caseQuery )
             .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );
@@ -114,22 +119,42 @@ public class SearchContext
       return caseQuery;
    }
 
-   public Query<LabelEntity> possibleLabels()
+   public LinksValue possibleLabels()
    {
-      QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class);
-      queryBuilder = queryBuilder.where(
-              eq(templateFor(Removable.Data.class).removed(), false));
-      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
-              orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+      Query<Labels> labelsList = module.queryBuilderFactory().newQueryBuilder( Labels.class )
+            .where( QueryExpressions.eq( QueryExpressions.templateFor( Removable.Data.class ).removed(), false ) )
+            .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+
+      for( Labels labels : labelsList )
+      {
+         for( Label label : ((Labels.Data)labels).labels() )
+         {
+            builder.addDescribable( (Describable) label, ((Describable) labels).getDescription() );
+         }
+      }
+      return builder.newLinks();
    }
 
-   public Query<CaseTypeEntity> possibleCaseTypes()
+   public LinksValue possibleCaseTypes()
    {
       QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class);
       queryBuilder = queryBuilder.where(
               eq(templateFor(Removable.Data.class).removed(), false));
-      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+      Query<CaseTypeEntity> query = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
               orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+      for( CaseTypeEntity caseTypeEntity : query )
+      {
+         Owner owner = ((Ownable.Data)caseTypeEntity).owner().get();
+
+         String title = owner != null ? ((Describable)owner).getDescription() : "";
+         linksBuilder.addLink( caseTypeEntity.getDescription(), caseTypeEntity.identity().get(),"","","", title );
+      }
+      return linksBuilder.newLinks();
    }
 
    public Query<UserEntity> possibleAssignees()

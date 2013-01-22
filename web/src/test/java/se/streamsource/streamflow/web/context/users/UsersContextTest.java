@@ -16,10 +16,13 @@
  */
 package se.streamsource.streamflow.web.context.users;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.NewUserDTO;
 import se.streamsource.streamflow.web.context.ContextTest;
@@ -30,8 +33,6 @@ import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-
-import static org.hamcrest.CoreMatchers.*;
 
 /**
  * JAVADOC

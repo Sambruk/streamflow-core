@@ -35,7 +35,7 @@ import se.streamsource.dci.restlet.client.NullResponseHandler;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.ContactLookupServiceConfiguration;
 
 /**
  * Service that looks up contacts in a REST plugin
@@ -48,7 +48,7 @@ public interface ContactLookupService
          implements ContactLookup, Activatable
    {
       @This
-      Configuration<PluginConfiguration> config;
+      Configuration<ContactLookupServiceConfiguration> config;
 
       @Structure
       Module module;

@@ -333,7 +333,7 @@ public abstract class StatisticService
                "order by closed_on";
       } else
       {
-         sql = "select unix_timestamp(closed_on)*1000, truncate(duration/60000,0) " +
+         sql = "select unix_timestamp(closed_on)*1000, truncate(duration/3600000,0) " +
             "from cases " +
             "where closed_on >= ? " +
             "and closed_on <= ? " +

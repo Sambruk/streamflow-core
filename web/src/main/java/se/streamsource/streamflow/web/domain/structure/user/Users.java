@@ -25,11 +25,13 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.api.Username;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
 
@@ -85,16 +87,18 @@ public interface Users
             // Ok!
          }
 
-         User user = createdUser( null, username, password );
+         User user = createdUser( null, username, "#" + Strings.hashString( password ) );
          return user;
       }
 
       public User createdUser( DomainEvent event, String username, String password )
       {
+         // check if the password is already hashed or not
+         boolean isHashed = password.startsWith( "#" );
          EntityBuilder<User> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( User.class, username );
          UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
          userEntity.userName().set( username );
-         userEntity.hashedPassword().set( userEntity.hashPassword( password ) );
+         userEntity.hashedPassword().set( isHashed ? password.replace( "#", "" ) : Strings.hashString( password ) );
          Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
          contacts.contact().set(module.valueBuilderFactory().newValue(ContactDTO.class));
          return builder.newInstance();

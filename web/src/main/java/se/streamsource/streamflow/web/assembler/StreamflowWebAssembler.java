@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
+
 import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
 
 /**
@@ -56,7 +57,7 @@ public class StreamflowWebAssembler
       assembly.setMetaInfo(new RoleInjectionProviderFactory());
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion("1.6.0.0");
+      assembly.setVersion("1.8.0.1");
 
       LayerAssembly configurationLayer = assembly.layer("Configuration");
       LayerAssembly domainInfrastructureLayer = assembly.layer("Domain infrastructure");

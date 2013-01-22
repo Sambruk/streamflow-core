@@ -16,9 +16,15 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.contact;
 
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
@@ -26,10 +32,6 @@ import se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
-
-import java.util.List;
-
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC

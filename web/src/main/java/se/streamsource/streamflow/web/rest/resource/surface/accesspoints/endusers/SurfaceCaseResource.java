@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.rest.resource.surface.accesspoints.enduse
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.SurfaceCaseContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.SurfaceRequiredFormsContext;
 import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftsResource;
 import se.streamsource.streamflow.web.rest.resource.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsResource;
 
@@ -38,12 +37,6 @@ public class SurfaceCaseResource
    public void submittedforms( )
    {
       subResource( SurfaceSubmittedFormsResource.class );
-   }
-
-   @SubResource
-   public void requiredforms()
-   {
-      subResourceContexts( SurfaceRequiredFormsContext.class );
    }
 
    @SubResource

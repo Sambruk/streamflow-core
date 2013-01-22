@@ -18,8 +18,10 @@ package se.streamsource.streamflow.web.context.administration;
 
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
 /**
  * JAVADOC
@@ -27,6 +29,7 @@ import se.streamsource.streamflow.web.domain.structure.group.Groups;
 public class GroupContext
    implements DeleteContext
 {
+   @ServiceAvailable( service = LdapImporterService.class, availability = false )
    public void delete()
    {
       Groups groups = RoleMap.role(Groups.class);

@@ -27,4 +27,6 @@ public interface MessageDTO
    Property<String> sender();
 
    Property<Date> createdOn();
+
+   Property<Boolean> hasAttachments();
 }

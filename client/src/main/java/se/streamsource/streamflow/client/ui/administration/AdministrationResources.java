@@ -134,6 +134,7 @@ public enum AdministrationResources
    casesettings_tab,
    caseaccessdefaults_separator,
    choose_move_casetype_to,
+   choose_move_label_to,
    choose_accesspoint_title,
    emailaccesspoints_tab,
    accesspoint,
@@ -189,5 +190,5 @@ public enum AdministrationResources
    choose_form_on_remove,
    fieldgroup_field_type,
    changeMailSelectionMessage,
-   changeMailSelectionMessageHint, remove_user_or_group, remove_user_or_group_title,
+   changeMailSelectionMessageHint, remove_user_or_group, remove_user_or_group_title, required_signatures, signature_1, signature_2, active, question_label,
 }

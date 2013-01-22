@@ -16,11 +16,14 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
@@ -31,8 +34,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

@@ -20,16 +20,19 @@ import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
-import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
+import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
@@ -39,9 +42,12 @@ import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 import java.util.Date;
 import java.util.List;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * Maintains list of submitted forms on a case
@@ -49,7 +55,7 @@ import java.util.List;
 @Mixins(SubmittedForms.Mixin.class)
 public interface SubmittedForms
 {
-   void submitForm( FormDraft formSubmission, Submitter submitter );
+   SubmittedFormValue submitForm( FormDraft formSubmission, Submitter submitter );
 
    /**
     * Check if there are any submitted forms at all
@@ -58,17 +64,25 @@ public interface SubmittedForms
     */
    boolean hasSubmittedForms();
 
+   /**
+    * Find a given submitted form
+    */
+
    interface Data
    {
       @UseDefaults
       @Queryable(false)
       Property<List<SubmittedFormValue>> submittedForms();
 
+   }
+
+   interface Events
+   {
       void submittedForm( @Optional DomainEvent event, SubmittedFormValue form );
    }
 
    abstract class Mixin
-         implements SubmittedForms, Data
+         implements SubmittedForms, Events
    {
       @Structure
       Module module;
@@ -82,7 +96,7 @@ public interface SubmittedForms
       @This
       FormAttachments formAttachments;
 
-      public void submitForm( FormDraft formSubmission, Submitter submitter )
+      public SubmittedFormValue submitForm( FormDraft formSubmission, Submitter submitter )
       {
          FormDraftDTO DTO = formSubmission.getFormDraftValue();
          
@@ -92,16 +106,6 @@ public interface SubmittedForms
          formBuilder.prototype().form().set( DTO.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
-         // Check for signatures
-         RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, DTO.form().get().identity() );
-         if (!requiredSignatures.requiredSignatures().get().isEmpty())
-         {
-            if (requiredSignatures.requiredSignatures().get().size() != DTO.signatures().get().size())
-            {
-               throw new IllegalArgumentException( "signatures_missing" );
-            }
-         }
-         
          ValueBuilder<SubmittedFieldValue> fieldBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFieldValue.class);
          for (PageSubmissionDTO pageDTO : DTO.pages().get())
          {
@@ -149,27 +153,55 @@ public interface SubmittedForms
             formBuilder.prototype().pages().get().add(pageBuilder.newInstance());
          }
 
-         // Transfer signatures
-         formBuilder.prototype().signatures().get().addAll(DTO.signatures().get());
+         // Check for active signatures, catch and ignore IllegalArgumentException if we do not have a role AccessPoint
+         // in that case we are coming from the clients form wizard!!
+         AccessPoint accessPoint = null;
+         try
+         {
+            accessPoint= role( AccessPoint.class );
+         } catch( IllegalArgumentException ia )
+         {
+            // do nothing - this approach is used to determine if we are coming from Surface Webforms or from client form wizard.
+         }
+         if( accessPoint != null )
+         {
+            RequiredSignatures.Data requiredSignatures = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, ((Identity) accessPoint).identity().get() );
+            Iterable<RequiredSignatureValue> activeSignatures = Iterables.filter( new Specification<RequiredSignatureValue>()
+            {
+               public boolean satisfiedBy( RequiredSignatureValue signature )
+               {
+                  return signature.active().get();
+               }
+            }, requiredSignatures.requiredSignatures().get() );
 
-         submittedForm( null, formBuilder.newInstance() );
+            // set second signee if we expect one
+            if ( Iterables.count( activeSignatures ) > 1 )
+            {
+               formBuilder.prototype().secondsignee().set( DTO.secondsignee().get() );
+            }
 
+            // Transfer signatures
+            formBuilder.prototype().signatures().get().addAll(DTO.signatures().get());
+         }
+
+         SubmittedFormValue submittedForm = formBuilder.newInstance();
+         submittedForm( null, submittedForm );
          // Now discard it
          submissions.discardFormDraft( formSubmission );
-      }
 
+         return submittedForm;
+      }
 
       public void submittedForm( @Optional DomainEvent event, SubmittedFormValue form )
       {
-         List<SubmittedFormValue> forms = submittedForms().get();
+         List<SubmittedFormValue> forms = state.submittedForms().get();
          forms.add( form );
-         submittedForms().set( forms );
+         state.submittedForms().set( forms );
       }
 
       public boolean hasSubmittedForms()
       {
          return !state.submittedForms().get().isEmpty();
       }
-
    }
 }

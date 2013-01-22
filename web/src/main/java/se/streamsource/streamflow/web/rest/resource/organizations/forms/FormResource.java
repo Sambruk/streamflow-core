@@ -24,6 +24,10 @@ import se.streamsource.streamflow.web.context.administration.forms.FormContext;
 import se.streamsource.streamflow.web.context.administration.forms.definition.FormInfoContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
+import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 
 /**
  * JAVADOC
@@ -41,7 +45,16 @@ public class FormResource
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       builder.command( "move" );
 
-      builder.addDescribables( (Iterable) context(FormContext.class).possiblemoveto() );
+      for( Forms forms : context(FormContext.class).possiblemoveto() )
+      {
+         if(forms instanceof OrganizationEntity)
+         {
+            builder.addDescribable( ((Describable)forms), "" );
+         } else
+         {
+            builder.addDescribable( (Describable) forms, ((Describable)((Ownable.Data)forms).owner().get()).getDescription() );
+         }
+      }
 
       return builder.newLinks();
    }

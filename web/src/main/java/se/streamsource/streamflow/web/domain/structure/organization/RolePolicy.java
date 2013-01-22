@@ -16,8 +16,18 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -27,24 +37,17 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
-
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.qi4j.api.entity.EntityReference.*;
-
 /**
- * Policy for managging Roles assigned to Participants. Participants
+ * Policy for managing Roles assigned to Participants. Participants
  * can have a list of Roles assigned to them, which can be granted and revoked.
  */
+@Concerns( RolePolicy.GrantRoleConcern.class)
 @Mixins(RolePolicy.Mixin.class)
 public interface RolePolicy
 {
@@ -244,7 +247,7 @@ public interface RolePolicy
             }
 
             if ( !participantRolesValue.participant().get().equals( participantRef ) &&
-                  possibleGroup instanceof Participants )
+                  possibleGroup instanceof Participants)
             {
                if( ((Participants)possibleGroup).isParticipant( participant ) )
                {
@@ -290,6 +293,34 @@ public interface RolePolicy
       {
          ParticipantRolesValue value = getRoles( participant );
          return value != null && !value.roles().get().isEmpty();
+      }
+   }
+
+   abstract class GrantRoleConcern
+      extends ConcernOf<RolePolicy>
+      implements RolePolicy
+   {
+      @This
+      OrganizationalUnits.Data orgUnits;
+
+      public void grantRole( Participant participant, Role role )
+      {
+         next.grantRole( participant, role );
+
+         for( OrganizationalUnits ou : orgUnits.organizationalUnits() )
+         {
+            ((RolePolicy)ou).grantRole( participant, role );
+         }
+      }
+
+      public void revokeRole( Participant participant, Role role )
+      {
+         next.revokeRole( participant, role );
+
+         for( OrganizationalUnits ou : orgUnits.organizationalUnits() )
+         {
+            ((RolePolicy)ou).revokeRole( participant, role );
+         }
       }
    }
 }

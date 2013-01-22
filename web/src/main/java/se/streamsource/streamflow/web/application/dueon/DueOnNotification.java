@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.application.dueon;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
 public class DueOnNotification

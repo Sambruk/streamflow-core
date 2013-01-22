@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.rest.resource.admin;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -29,9 +32,6 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.slf4j.MDC;
-
-import java.io.IOException;
-import java.io.Writer;
 
 /**
  * This resource allows the user to follow log messages in realtime. Various filtering can be applied.

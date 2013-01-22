@@ -16,17 +16,18 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.io.Inputs;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 
 /**
  * JAVADOC

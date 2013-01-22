@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.management;
 
+import static org.qi4j.api.query.QueryExpressions.and;
+import static org.qi4j.api.query.QueryExpressions.isNotNull;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+
 import org.qi4j.api.cache.CacheOptions;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
@@ -25,11 +29,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * Handles cleanup after update migration of history to case log.

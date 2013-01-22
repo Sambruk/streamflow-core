@@ -16,19 +16,20 @@
  */
 package se.streamsource.streamflow.web.application.mail;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.mixin.NoopMixin;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreator;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Factory for receiving emails. The events will be created by the ReceiveMailService, and services

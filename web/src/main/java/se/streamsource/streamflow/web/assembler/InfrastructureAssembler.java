@@ -128,7 +128,7 @@ public class InfrastructureAssembler
                ContactEmailValue.class,
                ContactPhoneValue.class,
                StreetValue.class,
-               StreetList.class).visibleIn( Visibility.application );
+               StreetList.class ).visibleIn( Visibility.application );
       }
 
    }
@@ -233,20 +233,20 @@ public class InfrastructureAssembler
 
    private void database( ModuleAssembly module ) throws AssemblyException
    {
-      module.services( DataSourceService.class ).identifiedBy( "datasource" ).visibleIn( Visibility.application );
+      module.services( DataSourceService.class ).identifiedBy( "datasource" ).instantiateOnStartup().visibleIn( Visibility.application );
       module.importedServices( DataSource.class ).
             importedBy( ServiceInstanceImporter.class ).
             setMetaInfo( "datasource" ).
             identifiedBy( "streamflowds" ).visibleIn( Visibility.application );
 
+
       Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.production ))
       {
          // Liquibase migration
-         module.services( LiquibaseService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+         module.services( LiquibaseService.class ).identifiedBy( "liquibase" ).instantiateOnStartup().visibleIn( Visibility.application );
          ModuleAssembly config = module.layer().application().layer( "Configuration" ).module( "DefaultConfiguration" );
          config.entities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
-         config.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);
          config.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
       }
    }

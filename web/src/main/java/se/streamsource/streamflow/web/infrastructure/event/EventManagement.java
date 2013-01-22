@@ -16,10 +16,10 @@
  */
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.qi4j.api.io.Output;
-
 import java.io.IOException;
 import java.util.Date;
+
+import org.qi4j.api.io.Output;
 
 /**
  * Interface for performing management operations on the EventStore.

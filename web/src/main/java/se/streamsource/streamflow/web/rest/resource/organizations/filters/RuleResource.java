@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.rest.resource.organizations.filters;
 
 import org.restlet.data.Form;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
 import se.streamsource.streamflow.api.administration.filter.RuleValue;

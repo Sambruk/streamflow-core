@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.rest.resource.organizations.filters;
 
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
+
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.api.administration.filter.FilterValue;

@@ -16,28 +16,35 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -118,6 +125,36 @@ public class SelectedFormsContext
             CaseType.class,
             Forms.class ) );
 
+      return builder.newLinks();
+   }
+
+   public LinksValue possibleformsforcasetype()
+   {
+      AccessPointSettings.Data accessPoint = RoleMap.role( AccessPointSettings.Data.class );
+      SelectedForms.Data selected = RoleMap.role( SelectedForms.Data.class );
+      CaseType caseType = accessPoint.caseType().get();
+
+      List<Form> possibleForms = new ArrayList<Form>();
+
+      if (caseType != null)
+      {
+
+         List<Form> forms = ((SelectedForms.Data) caseType).selectedForms().toList();
+         for (Form f : forms)
+         {
+            if (!selected.selectedForms().contains( f ))
+            {
+               possibleForms.add( f );
+            }
+         }
+      }
+
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).
+            command( "addform" );
+      for(Form form : possibleForms )
+      {
+         builder.addDescribable( form, ((Describable)((Ownable.Data)form).owner().get()).getDescription() );
+      }
       return builder.newLinks();
    }
 

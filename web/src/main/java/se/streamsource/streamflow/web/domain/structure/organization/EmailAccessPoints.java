@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 
@@ -113,7 +114,7 @@ public interface EmailAccessPoints
       {
          for (EmailAccessPoint emailAccessPoint : data.emailAccessPoints())
          {
-            if (emailAccessPoint.getDescription().equals(email))
+            if (emailAccessPoint.getDescription().equalsIgnoreCase(email))
                return emailAccessPoint;
          }
 

@@ -16,12 +16,13 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.form;
 
-import java.util.List;
-
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
+
+import java.util.List;
 
 /**
  * JAVADOC
@@ -34,4 +35,7 @@ public interface SubmittedFormDTO
 
    @UseDefaults
    Property<List<FormSignatureDTO>> signatures();
+
+   @Optional
+   Property<SecondSigneeInfoValue> secondSignee();
 }

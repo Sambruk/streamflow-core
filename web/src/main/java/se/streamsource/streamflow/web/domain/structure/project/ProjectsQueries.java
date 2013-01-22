@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.domain.structure.project;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+
 import se.streamsource.streamflow.web.domain.Describable;
 
 /**

@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.rest.resource;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -24,9 +27,6 @@ import org.restlet.data.Method;
 import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.DateFormat;
-import java.util.Date;
 
 /**
 * Log command and query performance

@@ -28,9 +28,14 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -143,9 +148,13 @@ public interface CaseTypes
       public Query<SelectedCaseTypes> usages( CaseType caseType )
       {
          SelectedCaseTypes.Data selectedCaseTypes = QueryExpressions.templateFor( SelectedCaseTypes.Data.class );
-         Query<SelectedCaseTypes> caseTypeUsages = module.queryBuilderFactory().newQueryBuilder(SelectedCaseTypes.class).
-               where(QueryExpressions.contains(selectedCaseTypes.selectedCaseTypes(), caseType)).
-               newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+         Query<SelectedCaseTypes> caseTypeUsages = module.queryBuilderFactory().newQueryBuilder( SelectedCaseTypes.class ).
+               where( and(
+                     eq( templateFor( Removable.Data.class ).removed(), false ),
+                     isNotNull( templateFor( Ownable.Data.class ).owner() ),
+                     contains( selectedCaseTypes.selectedCaseTypes(), caseType ) )
+                     ).
+                     newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
          return caseTypeUsages;
       }

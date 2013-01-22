@@ -16,6 +16,11 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
+import java.util.Collections;
+import java.util.List;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
@@ -23,11 +28,6 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-
-import java.util.Collections;
-import java.util.List;
-
-import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC

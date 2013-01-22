@@ -16,16 +16,17 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.security;
 
+import static java.util.Arrays.binarySearch;
+import static se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType.values;
+
+import java.util.Map;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-
-import java.util.Map;
-
-import static java.util.Arrays.binarySearch;
-import static se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType.values;
 
 /**
  * Management of case access rules.

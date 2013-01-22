@@ -16,19 +16,20 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.InteractionConstraint;
 import se.streamsource.dci.api.InteractionConstraintDeclaration;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 @InteractionConstraintDeclaration(HasJoined.HasJoinedConstraint.class)
 @Retention(RetentionPolicy.RUNTIME)

@@ -16,13 +16,13 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
+import java.util.UUID;
+
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
-
-import java.util.UUID;
 
 /**
  * JAVADOC

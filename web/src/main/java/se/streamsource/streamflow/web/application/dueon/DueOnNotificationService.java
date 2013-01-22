@@ -22,21 +22,15 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.Usecase;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
 /**
@@ -78,7 +72,11 @@ public interface DueOnNotificationService extends ServiceComposite, Configuratio
 
       public void passivate() throws Exception
       {
-         scheduler.deleteJob( job.getKey() );
+         if( scheduler != null && job != null )
+         {
+            scheduler.deleteJob( job.getKey() );
+         }
+         logger.info( "Passivated" );
       }
 
    }

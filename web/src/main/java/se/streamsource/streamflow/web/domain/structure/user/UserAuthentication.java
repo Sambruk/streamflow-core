@@ -21,13 +21,10 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.api.Password;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import sun.misc.BASE64Encoder;
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import se.streamsource.streamflow.util.Strings;
 
 /**
  * JAVADOC
@@ -52,9 +49,9 @@ public interface UserAuthentication
 
       boolean isCorrectPassword( String password );
 
-      String hashPassword( String password );
-
       boolean isAdministrator();
+
+      boolean isDisabled();
 
       void changedPassword( @Optional DomainEvent event, String hashedPassword );
 
@@ -83,12 +80,12 @@ public interface UserAuthentication
             throw new WrongPasswordException();
          }
 
-         changedPassword( null, hashPassword( newPassword ) );
+         changedPassword( null, Strings.hashString( newPassword ) );
       }
 
       public void resetPassword( String password )
       {
-         changedPassword( null, hashPassword( password ) );
+         changedPassword( null, Strings.hashString( password ) );
       }
 
       public void changedPassword( @Optional DomainEvent event, String hashedPassword )
@@ -103,32 +100,18 @@ public interface UserAuthentication
 
       public boolean isCorrectPassword( String password )
       {
-         return hashedPassword().get().equals( hashPassword( password ) );
-      }
-
-      public String hashPassword( String password )
-      {
-         try
-         {
-            MessageDigest md = MessageDigest.getInstance( "SHA" );
-            md.update( password.getBytes( "UTF-8" ) );
-            byte raw[] = md.digest();
-            String hash = (new BASE64Encoder()).encode( raw );
-            return hash;
-         }
-         catch (NoSuchAlgorithmException e)
-         {
-            throw new IllegalStateException( "No SHA algorithm founde", e );
-         }
-         catch (UnsupportedEncodingException e)
-         {
-            throw new IllegalStateException( e.getMessage(), e );
-         }
+         boolean alreadyHashed = password.startsWith( "#" );
+         return hashedPassword().get().equals( alreadyHashed ? password.replace( "#", "" ) : Strings.hashString( password ) );
       }
 
       public boolean isAdministrator()
       {
          return userName().get().equals( "administrator" );
+      }
+
+      public boolean isDisabled()
+      {
+         return disabled().get();
       }
    }
 }

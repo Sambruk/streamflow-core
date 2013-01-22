@@ -18,47 +18,44 @@ package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
+import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
+import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
 import java.util.Date;
@@ -71,18 +68,21 @@ public class MessagesView extends JPanel implements TransactionListener
 {
    private static final long serialVersionUID = -4508473068931275932L;
 
+   @Structure
+   Module module;
+
    private MessagesModel model;
 
    private JXTable messageTable;
    private JPanel detailMessagePanel;
-   private JPanel sendPanel;
-   private JPanel showPanel;
-   private JTextPane newMessage;
-   private JTextPane showMessage;
-   private JXLabel authorLabelValue;
-   private JXLabel createdOnLabelValue;
+   private JPanel sendPanel = new JPanel( new BorderLayout(  ) );
+   //private JTextPane newMessage;
 
-   public MessagesView(@Service ApplicationContext context, @Uses MessagesModel model)
+   private JPanel messageViewPanel = new JPanel( new BorderLayout(  ) );
+   private MessageView messageView;
+   private MessageDraftView messageDraftView;
+
+   public MessagesView(@Service ApplicationContext context, @Uses MessagesModel model )
    {
       setActionMap(context.getActionMap(this));
       MacOsUIWrapper.convertAccelerators(getActionMap());
@@ -91,10 +91,23 @@ public class MessagesView extends JPanel implements TransactionListener
 
       this.model = model;
 
+      // Add proxy actions
+      ApplicationAction closeMessageDetailsAction = (ApplicationAction)getActionMap().get("closeMessageDetails");
+      javax.swing.Action closeMessageDetails = context.getActionMap().get("closeMessageDetails");
+      closeMessageDetails.putValue("proxy", closeMessageDetailsAction);
+
+      ApplicationAction createMessageAction = (ApplicationAction)getActionMap().get("createMessage");
+      javax.swing.Action createMessage = context.getActionMap().get("createMessage");
+      createMessage.putValue("proxy", createMessageAction);
+
+      ApplicationAction cancelNewMessageAction = (ApplicationAction)getActionMap().get("cancelNewMessage");
+      javax.swing.Action cancelNewMessage = context.getActionMap().get("cancelNewMessage");
+      cancelNewMessage.putValue("proxy", cancelNewMessageAction);
+
       messageTable = new JXTable(new EventJXTableModel<MessageDTO>(model.messages(), new TableFormat<MessageDTO>()
       {
          String[] columnNames = new String[]
-         { text(sender_column_header), text(message_column_header), text(created_column_header) };
+         { "", text(sender_column_header), text(message_column_header), text(created_column_header), "" };
 
          public int getColumnCount()
          {
@@ -111,18 +124,24 @@ public class MessagesView extends JPanel implements TransactionListener
             switch (i)
             {
             case 0:
-               return o.sender().get();
+               return o.hasAttachments().get();
             case 1:
-               return o.text().get();
+               return o.sender().get();
             case 2:
+               return o.text().get();
+            case 3:
                return o.createdOn().get();
+            case 4:
+               return o.id().get();
             }
 
             return null;
          }
       }));
 
-      messageTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      messageTable.getColumnExt( messageTable.getColumnCount()-1 ).setVisible( false );
+
+      messageTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       messageTable
             .setFocusTraversalKeys(
                   KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
@@ -132,7 +151,7 @@ public class MessagesView extends JPanel implements TransactionListener
             .getCurrentKeyboardFocusManager()
             .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
 
-      messageTable.getColumn(2).setCellRenderer(new DefaultTableRenderer(new StringValue()
+      messageTable.getColumn(3).setCellRenderer(new DefaultTableRenderer(new StringValue()
       {
          private static final long serialVersionUID = -6677363096055906298L;
 
@@ -141,16 +160,36 @@ public class MessagesView extends JPanel implements TransactionListener
             return DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault());
          }
       }));
+      messageTable.getColumn(0).setCellRenderer( new DefaultTableCellRenderer()
+      {
+         @Override
+         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
+         {
+
+            ImageIcon icon = i18n.icon( Icons.attachments, 11 );
+            JLabel iconLabel = (Boolean) value ? new JLabel( icon ) : new JLabel( " " );
+            iconLabel.setOpaque( true );
+
+            if (isSelected)
+               iconLabel.setBackground( messageTable.getSelectionBackground() );
+            return iconLabel;
+         }
+      } );
 
       ListSelectionModel selectionModel = messageTable.getSelectionModel();
       selectionModel.addListSelectionListener(new MessageListSelectionHandler());
 
       messageTable.addHighlighter(HighlighterFactory.createAlternateStriping());
 
-      messageTable.getColumn(0).setPreferredWidth(100);
-      messageTable.getColumn(1).setPreferredWidth(300);
-      messageTable.getColumn(2).setPreferredWidth(60);
-      messageTable.getColumn(2).setMaxWidth(100);
+      messageTable.getColumn(0).setPreferredWidth( 20 );
+      messageTable.getColumn( 0 ).setWidth( 20 );
+      messageTable.getColumn(0).setMaxWidth( 20 );
+      messageTable.getColumn(0).setResizable( false );
+      messageTable.getColumn( 1 ).setPreferredWidth(250);
+      messageTable.getColumn( 1 ).setMaxWidth( 250 );
+      messageTable.getColumn(2).setPreferredWidth(300);
+      messageTable.getColumn(3).setPreferredWidth(60);
+      messageTable.getColumn(3).setMaxWidth(100);
 
       initDetailMessage();
 
@@ -176,118 +215,38 @@ public class MessagesView extends JPanel implements TransactionListener
             JComponent.WHEN_IN_FOCUSED_WINDOW);
       createPanel.add(writeMessage);
 
-      // NEWMESSAGE
-      sendPanel = new JPanel(new BorderLayout());
-      sendPanel.setPreferredSize(new Dimension(100, 250));
-      JScrollPane messageScroll = new JScrollPane();
 
-      newMessage = new JTextPane();
-      newMessage.setContentType("text/plain");
-      newMessage.setEditable(true);
-      messageScroll.getViewport().add(newMessage);
-
-      JPanel sendMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      javax.swing.Action sendMessageAction = getActionMap().get("sendMessage");
-      StreamflowButton sendMessage = new StreamflowButton(sendMessageAction);
-      sendMessage.registerKeyboardAction(sendMessageAction,
-            (KeyStroke) sendMessageAction.getValue(javax.swing.Action.ACCELERATOR_KEY),
-            JComponent.WHEN_IN_FOCUSED_WINDOW);
-      model.addObserver( new RefreshComponents().enabledOn( "createmessage", sendMessage ));
-
-      javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
-      StreamflowButton cancel = new StreamflowButton(cancelAction);
-
-      sendMessagePanel.add(sendMessage);
-      sendMessagePanel.add(cancel);
-
-      sendPanel.add(messageScroll, BorderLayout.CENTER);
-      sendPanel.add(sendMessagePanel, BorderLayout.SOUTH);
-
-      // SHOWMESSAGE
-      showPanel = new JPanel(new BorderLayout());
-      showPanel.setPreferredSize(new Dimension(100, 250));
-      showPanel.setBorder(BorderFactory.createEmptyBorder(5,0,0,0));
-      JScrollPane messageShowScroll = new JScrollPane();
-
-      JPanel messageDetailButtonPanel = new JPanel(new BorderLayout());
-      messageDetailButtonPanel.setBorder(BorderFactory.createEmptyBorder(0,0,3,0));
-      javax.swing.Action closeAction = getActionMap().get("closeMessageDetails");
-      StreamflowButton closeButton = new StreamflowButton(closeAction);
-      JPanel closeButtonPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
-      closeButtonPanel.setBorder( BorderFactory.createEmptyBorder( 7, 0, 0, 0 ) );
-      closeButtonPanel.add( closeButton );
-      
-      FormLayout detailHeaderLayout = new FormLayout("35dlu, 2dlu, pref:grow", "pref, pref");
-      JPanel messageDetailsLabelPanel = new JPanel();
-      DefaultFormBuilder formBuilder = new DefaultFormBuilder(detailHeaderLayout, messageDetailsLabelPanel);
-      
-      JXLabel authorLabel = new JXLabel(text(sender_column_header));
-      JXLabel createdOnLabel = new JXLabel(text(created_column_header));
-      authorLabel.setForeground(Color.GRAY);
-      createdOnLabel.setForeground(Color.GRAY);
-      
-      authorLabelValue = new JXLabel();
-      createdOnLabelValue = new JXLabel();
-      
-      formBuilder.setExtent(1, 1);
-      formBuilder.add(authorLabel);
-      formBuilder.nextColumn(2);
-      formBuilder.add(authorLabelValue);
-      formBuilder.nextLine();
-      formBuilder.add(createdOnLabel);
-      formBuilder.nextColumn(2);
-      formBuilder.add(createdOnLabelValue);
-      
-      messageDetailButtonPanel.add(closeButtonPanel, BorderLayout.EAST);
-      messageDetailButtonPanel.add(messageDetailsLabelPanel, BorderLayout.WEST);
-
-      showMessage = new JTextPane();
-      showMessage.setContentType("text/plain");
-      showMessage.setEditable(false);
-      messageShowScroll.getViewport().add(showMessage);
-
-      StyledDocument doc = showMessage.getStyledDocument();
-      Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-
-      Style regular = doc.addStyle("regular", def);
-      StyleConstants.setFontFamily(def, "SansSerif");
-
-      Style s = doc.addStyle("italic", regular);
-      StyleConstants.setItalic(s, true);
-
-      s = doc.addStyle("bold", regular);
-      StyleConstants.setBold(s, true);
-
-      showPanel.add(messageShowScroll, BorderLayout.CENTER);
-      showPanel.add(messageDetailButtonPanel, BorderLayout.NORTH);
 
       detailMessagePanel.add(createPanel, "INITIAL");
+      detailMessagePanel.add( sendPanel, "NEW_MESSAGE" );
+      detailMessagePanel.add( messageViewPanel, "SHOW_MESSAGE" );
 
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
    }
 
    @Action
    public void writeMessage()
    {
-      detailMessagePanel.add(sendPanel, "NEW_MESSAGE");
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "NEW_MESSAGE");
+      sendPanel.removeAll();
+      messageDraftView = module.objectBuilderFactory().newObjectBuilder( MessageDraftView.class ).use( model.newMessageDraftModel() ).newInstance();
+      sendPanel.add( messageDraftView, BorderLayout.CENTER );
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "NEW_MESSAGE" );
 
-      newMessage.requestFocusInWindow();
+      messageDraftView.requestFocusInWindow();
    }
 
+
    @Action
-   public Task sendMessage()
+   public Task createMessage()
    {
-      final String messageText = newMessage.getText();
-      detailMessagePanel.remove(sendPanel);
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
-      newMessage.setText(null);
+      sendPanel.removeAll();
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
       return new CommandTask()
       {
          @Override
          public void command() throws Exception
          {
-            model.createMessage(messageText);
+            model.createMessageFromDraft();
          }
       };
    }
@@ -295,23 +254,20 @@ public class MessagesView extends JPanel implements TransactionListener
    @Action
    public void cancelNewMessage()
    {
-      detailMessagePanel.remove(sendPanel);
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
-      newMessage.setText(null);
+      sendPanel.removeAll();
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
    }
 
    @Action
    public void closeMessageDetails()
    {
       messageTable.getSelectionModel().clearSelection();
-      detailMessagePanel.remove(showPanel);
-      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
-      showMessage.setText(null);
+      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
    }
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (Events.matches(Events.withNames("createdMessage"), transactions))
+      if (Events.matches(Events.withNames("createdMessage", "createdMessageFromDraft"), transactions))
       {
          model.refresh();
       }
@@ -327,21 +283,13 @@ public class MessagesView extends JPanel implements TransactionListener
             int index = messageTable.getSelectedRow();
             if (index >= 0)
             {
-               showMessage.setText(null);
-               StyledDocument doc = showMessage.getStyledDocument();
-               try
-               {
-                  authorLabelValue.setText(model.messages().get(index).sender().get());
-                  createdOnLabelValue.setText(DateFormats.getFullDateTimeValue(
-                        model.messages().get(index).createdOn().get(), Locale.getDefault()));
+               Object selectedValue = messageTable.getModel().getValueAt( messageTable.convertRowIndexToModel( index ), messageTable.getColumnCount() );
+               String href = (String) selectedValue;
 
-                  doc.insertString(0, model.messages().get(index).text().get(), doc.getStyle("regular"));
-               } catch (BadLocationException e1)
-               {
-                  e1.printStackTrace();
-               }
-
-               detailMessagePanel.add(showPanel, "SHOW_MESSAGE");
+               ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
+               messageViewPanel.removeAll();
+               messageView = module.objectBuilderFactory().newObjectBuilder( MessageView.class ).use( model.newMessageModel( href ) ).newInstance();
+               messageViewPanel.add( messageView, BorderLayout.CENTER );
                ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "SHOW_MESSAGE");
             }
          }
