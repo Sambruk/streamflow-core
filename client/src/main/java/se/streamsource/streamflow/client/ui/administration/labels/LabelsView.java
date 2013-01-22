@@ -177,7 +177,7 @@ public class LabelsView
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_label_to ) );
 
       if (dialog.getSelectedLink() != null)
       {

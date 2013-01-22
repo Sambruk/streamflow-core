@@ -30,7 +30,11 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -119,9 +123,13 @@ public interface Labels
       public Query<SelectedLabels> usages( Label label )
       {
          SelectedLabels.Data selectedLabels = QueryExpressions.templateFor( SelectedLabels.Data.class );
-         Query<SelectedLabels> labelUsages = module.queryBuilderFactory().newQueryBuilder(SelectedLabels.class).
-               where( QueryExpressions.contains( selectedLabels.selectedLabels(), label ) ).
-               newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         Query<SelectedLabels> labelUsages = module.queryBuilderFactory().newQueryBuilder( SelectedLabels.class ).
+               where( and(
+                     eq( templateFor( Removable.Data.class ).removed(), false ),
+                     isNotNull( templateFor( Ownable.Data.class ).owner() ),
+                     contains( selectedLabels.selectedLabels(), label ) )
+                     ).
+                     newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
          return labelUsages;
       }

@@ -134,6 +134,7 @@ public enum AdministrationResources
    casesettings_tab,
    caseaccessdefaults_separator,
    choose_move_casetype_to,
+   choose_move_label_to,
    choose_accesspoint_title,
    emailaccesspoints_tab,
    accesspoint,
