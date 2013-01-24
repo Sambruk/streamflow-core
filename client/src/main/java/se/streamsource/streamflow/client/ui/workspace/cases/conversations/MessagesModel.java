@@ -21,22 +21,18 @@ import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
+import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import java.util.Observable;
-
 public class MessagesModel
-   extends Observable
+   extends ResourceModel<LinksValue>
    implements Refreshable, TransactionListener
 {
    @Uses
@@ -49,12 +45,10 @@ public class MessagesModel
 
    public void refresh()
    {
-      ResourceValue resource = client.query();
-      final LinksValue messagesLinks = ( LinksValue )resource.index().get();
-      EventListSynch.synchronize( messagesLinks.links().get(), messages );
 
-      setChanged();
-      notifyObservers( resource );
+      super.refresh();
+      EventListSynch.synchronize( getIndex().links().get(), messages );
+
    }
 
    public EventList<MessageDTO> messages()
