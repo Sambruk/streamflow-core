@@ -16,22 +16,27 @@
     limitations under the License.
 
 -->
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>Id</th>
-    <th>Titel</th>
-    <th>Skapad</th>
-    <th>Ägare</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr class="case-item" ng-repeat='case in cases'>
-    <td><a href="{{case.href}}">{{case.id}}</a></td>
-    <td><a href="{{case.href}}">{{case.text}}</a></td>
-    <td><a href="{{case.href}}">{{case.creationDate}}</a></td>
-    <td><a href="{{case.href}}">{{case.project}}</a></td>
-  </tr>
-  </tbody>
-
-</table>
+<div class="issues-overview">
+  <h2>Ärenden med förfallodatum passerat</h2>
+  <h3 class="due-date-heading"><span>Förfallodatum</span></h3>
+  <ul class="issue-list" ng-repeat='case in cases'>
+    <li class="issue-item overdue" >
+    <a href="#" class="block-link">
+      <div class="due-date">
+        <span>5</span> dagar
+      </div>
+      <div class="issue-description">
+        <span class="meta">{{case.caseId}}</span>
+        <h3>{{case.text}}</h3>
+        <span class="creator">Lars Back</span>
+      </div>
+      <div class="issue-actions">
+        <div>
+          <span class="action-status updated">Ändrad {{case.creationDate | date:'MM/dd' }}</span>
+          <span class="created-on">Skapad {{case.creationDate | date:'MM/dd'}}</span>
+        </div>
+      </div>
+    </a>
+    </li>
+  </ul> <!-- issue-list -->
+</div>
