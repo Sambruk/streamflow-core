@@ -23,7 +23,7 @@
     <li class="issue-item overdue" ng-repeat='case in cases'>
     <a href="{{case.href}}" class="block-link">
         <div class="due-date">
-          <span>5</span> dagar
+          <span>{{case.overdueDays()}}</span> dagar
         </div>
         <div class="issue-description">
           <span class="meta">{{case.caseId}} - {{case.project}}</span>

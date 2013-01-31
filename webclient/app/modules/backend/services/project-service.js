@@ -58,14 +58,16 @@
 
       createCase: function(model) {
         var href = navigationService.caseHref(model.id);
-        return _.extend(model, {href: href}, this.caseMixin);
+        var o = _.extend(model, {href: href}, this.caseMixin);
+        return o;
       },
 
       caseMixin: {
         overdueDays: function() {
           var oneDay = 24*60*60*1000;
           var now = new Date();
-          var diff = Math.round((now.getTime() - this.dueDate.getTime())/(oneDay));
+          var dueDate = new Date(this.dueDate);
+          var diff = Math.round((now.getTime() - dueDate.getTime())/(oneDay));
           return diff > 0 ? diff : 0;
         }
       }

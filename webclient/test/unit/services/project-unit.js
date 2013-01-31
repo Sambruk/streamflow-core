@@ -93,15 +93,22 @@ describe("sf.backend.services.project", function () {
     describe('overdueDays', function() {
       it('is overdue by 1 if dueDate is yesterday', inject(function(projectService) {
         var object = _.extend({}, projectService.caseMixin);
-        object.dueDate = yesterday;
+        object.dueDate = yesterday.toString();
         expect(object.overdueDays()).toEqual(1);
       }));
 
       it('is not overdue (0) if dueDate is tomorrow', inject(function(projectService) {
         var object = _.extend({}, projectService.caseMixin);
-        object.dueDate = tomorrow;
+        object.dueDate = tomorrow.toString();
         expect(object.overdueDays()).toEqual(0);
       }));
+
+      it('is not overdue (0) if dueDate is tomorrow', inject(function(projectService) {
+        var object = _.extend({}, projectService.caseMixin);
+        object.dueDate = '2013-01-24T12:04:34.220Z';
+        expect(object.overdueDays()).toBeGreaterThan(6);
+      }));
+
     });
   });
 });
