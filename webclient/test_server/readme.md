@@ -1,10 +1,12 @@
 
+To setup Jetty run the script `setup_server`, it will download jetty and setup
+symbolic links to the proper files.
 
-wget http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar
+./setup_server.sh
 
-ln -s ../../web/target/streamflow-web-1.8.0-SNAPSHOT.war streamflow-web.war
-ln -s jetty-runner-8.1.8.v20121106.jar jetty-runner.jar
+After that you run the script `run.sh` to start the server.
 
+./run.sh
 
 
 ### If you get a ClassCastException when running the server

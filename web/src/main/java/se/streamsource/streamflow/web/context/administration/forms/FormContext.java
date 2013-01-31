@@ -16,18 +16,13 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -39,10 +34,17 @@ import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -77,9 +79,15 @@ public class FormContext
       {
          public boolean satisfiedBy( Forms item )
          {
-            return !item.equals(thisForms) && !((Removable.Data)item).removed().get();
+            Owner owner =  ((Ownable.Data)item).owner().get();
+            return !item.equals(thisForms) && !((Removable.Data)owner).removed().get();
          }
-      }, module.queryBuilderFactory().newQueryBuilder( Forms.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
+      }, module.queryBuilderFactory().newQueryBuilder( Forms.class )
+            .where( and(
+                  eq( templateFor( Removable.Data.class ).removed(), false ),
+                  QueryExpressions.isNotNull( templateFor( Ownable.Data.class ).owner() )
+            ) )
+            .newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
    }
 
    public void move( EntityValue to )
@@ -104,7 +112,8 @@ public class FormContext
 
          } else
          {
-            builder.addDescribable( (Describable) forms, ((Describable)((Ownable.Data)forms).owner().get()).getDescription() );
+            if( !(((Removable.Data)((Ownable.Data)forms).owner().get()).removed().get()) )
+               builder.addDescribable( (Describable) forms, ((Describable)((Ownable.Data)forms).owner().get()).getDescription() );
          }
       }
       return builder.newLinks();

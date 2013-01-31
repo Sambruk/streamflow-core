@@ -31,8 +31,12 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
 
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -137,9 +141,13 @@ public interface Forms
       public Query<SelectedForms> usages( Form form )
       {
          SelectedForms.Data selectedForms = QueryExpressions.templateFor( SelectedForms.Data.class );
-         Query<SelectedForms> formUsages = module.queryBuilderFactory().newQueryBuilder(SelectedForms.class).
-               where( QueryExpressions.contains( selectedForms.selectedForms(), form ) ).
-               newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         Query<SelectedForms> formUsages = module.queryBuilderFactory().newQueryBuilder( SelectedForms.class ).
+               where( and(
+                     eq( templateFor( Removable.Data.class ).removed(), false ),
+                     isNotNull( templateFor( Ownable.Data.class ).owner() ),
+                     contains( selectedForms.selectedForms(), form ) )
+                     ).
+                     newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
          return formUsages;
       }

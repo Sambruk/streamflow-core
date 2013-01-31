@@ -35,6 +35,7 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.i18n;
@@ -63,6 +64,7 @@ import java.util.Locale;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class MessagesView extends JPanel implements TransactionListener
 {
@@ -81,6 +83,8 @@ public class MessagesView extends JPanel implements TransactionListener
    private JPanel messageViewPanel = new JPanel( new BorderLayout(  ) );
    private MessageView messageView;
    private MessageDraftView messageDraftView;
+
+   private StreamflowButton writeMessage;
 
    public MessagesView(@Service ApplicationContext context, @Uses MessagesModel model )
    {
@@ -191,37 +195,31 @@ public class MessagesView extends JPanel implements TransactionListener
       messageTable.getColumn(3).setPreferredWidth(60);
       messageTable.getColumn(3).setMaxWidth(100);
 
-      initDetailMessage();
-
-      JScrollPane scrollMessages = new JScrollPane(messageTable);
-
-      add(scrollMessages, BorderLayout.CENTER);
-      add(detailMessagePanel, BorderLayout.SOUTH);
-
-      new RefreshWhenShowing(this, model);
-   }
-   
-
-   private void initDetailMessage()
-   {
       detailMessagePanel = new JPanel(new CardLayout());
 
-      // INITIAL
+
       JPanel createPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       javax.swing.Action writeMessageAction = getActionMap().get("writeMessage");
-      StreamflowButton writeMessage = new StreamflowButton(writeMessageAction);
+      writeMessage = new StreamflowButton(writeMessageAction);
       writeMessage.registerKeyboardAction(writeMessageAction,
             (KeyStroke) writeMessageAction.getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
       createPanel.add(writeMessage);
-
-
 
       detailMessagePanel.add(createPanel, "INITIAL");
       detailMessagePanel.add( sendPanel, "NEW_MESSAGE" );
       detailMessagePanel.add( messageViewPanel, "SHOW_MESSAGE" );
 
       ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
+
+      JScrollPane scrollMessages = new JScrollPane(messageTable);
+
+      add(scrollMessages, BorderLayout.CENTER);
+      add(detailMessagePanel, BorderLayout.SOUTH);
+
+      model.addObserver( new RefreshComponents().visibleOn( "createmessagefromdraft", writeMessage ) );
+
+      new RefreshWhenShowing(this, model);
    }
 
    @Action
@@ -267,7 +265,8 @@ public class MessagesView extends JPanel implements TransactionListener
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (Events.matches(Events.withNames("createdMessage", "createdMessageFromDraft"), transactions))
+      if ( matches(Events.withNames("createdMessage", "createdMessageFromDraft"), transactions)
+            || matches( withUsecases( "resolve", "reopen" ),transactions ))
       {
          model.refresh();
       }

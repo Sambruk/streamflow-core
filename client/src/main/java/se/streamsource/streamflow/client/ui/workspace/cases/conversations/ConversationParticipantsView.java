@@ -64,6 +64,8 @@ public class ConversationParticipantsView
    ConversationParticipantsModel model;
    private JPanel participants;
 
+   private RefreshComponents removableLabelRefresher;
+
    public ConversationParticipantsView(@Service ApplicationContext context, @Uses ConversationParticipantsModel model)
    {
       super(new BorderLayout());
@@ -100,13 +102,17 @@ public class ConversationParticipantsView
       add( addParticipantButtons, BorderLayout.EAST );
 
       model.addObserver( new RefreshComponents().enabledOn( "addparticipant", addParticipants )
-         .enabledOn( "addexternalparticipant", addExternalParticipant ));
+         .enabledOn( "addexternalparticipant", addExternalParticipant ) );
+
+      model.addObserver( removableLabelRefresher = new RefreshComponents()
+            .enabledOn( "addparticipant", participants.getComponents() ) );
 
       new RefreshWhenShowing(this, model);
    }
 
    private void initComponents()
    {
+      model.deleteObserver( removableLabelRefresher );
       participants.removeAll();
 
       for (int i = 0; i < model.participants().size(); i++)
@@ -119,6 +125,9 @@ public class ConversationParticipantsView
 
       participants.revalidate();
       participants.repaint();
+
+      model.addObserver( removableLabelRefresher = new RefreshComponents()
+            .enabledOn( "addparticipant",participants.getComponents() ) );
 
    }
 
@@ -188,7 +197,8 @@ public class ConversationParticipantsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withNames("addedParticipant", "removedParticipant"  ), transactions ))
+      if (matches( withNames("addedParticipant", "removedParticipant"  ), transactions )
+            || matches( withUsecases( "resolve", "reopen" ),transactions ) )
       {
          model.refresh();
       }
