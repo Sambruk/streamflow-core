@@ -50,7 +50,8 @@
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){
               var href = navigationService.caseHref(item.id);
-              result.push({id: item.caseId, text: item.text, href: href, project: item.project, creationDate: item.creationDate});
+              console.log(item)
+              result.push({id: item.caseId, caseType: item.caseType, text: item.text, href: href, project: item.project, creationDate: item.creationDate});
             });
           }
         });
