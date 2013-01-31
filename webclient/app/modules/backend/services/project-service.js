@@ -39,6 +39,7 @@
       },
       //http://localhost:3501/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0
       getSelected: function() {
+        var self = this;
         return backendService.get({
           specs:[
             {resources:'workspace'},
@@ -49,13 +50,26 @@
           ],
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){
-              var href = navigationService.caseHref(item.id);
-              console.log(item)
-              result.push({id: item.caseId, caseType: item.caseType, text: item.text, href: href, project: item.project, creationDate: item.creationDate});
+              result.push(self.createCase(item));
             });
           }
         });
+      },
+
+      createCase: function(model) {
+        var href = navigationService.caseHref(model.id);
+        return _.extend(model, {href: href}, this.caseMixin);
+      },
+
+      caseMixin: {
+        overdueDays: function() {
+          var oneDay = 24*60*60*1000;
+          var now = new Date();
+          var diff = Math.round((now.getTime() - this.dueDate.getTime())/(oneDay));
+          return diff > 0 ? diff : 0;
+        }
       }
+
     }
   }]);
 

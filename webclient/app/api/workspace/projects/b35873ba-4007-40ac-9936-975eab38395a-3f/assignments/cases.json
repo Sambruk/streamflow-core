@@ -9,6 +9,8 @@
         "caseId":"20121114-2",
         "caseType":"formulärstest",
         "creationDate":"2012-11-14T12:04:34.220Z",
+        "lastModifiedDate":"2013-01-14T12:04:34.220Z",
+        "dueDate":"2013-11-14T12:04:34.220Z",
         "project":"Streamflow"
     },
     {
@@ -21,6 +23,8 @@
         "caseId":"20121114-1",
         "caseType":"formulärstest",
         "creationDate":"2012-11-14T12:04:10.465Z",
+        "lastModifiedDate":"2013-01-14T12:04:34.220Z",
+        "dueDate":"2013-01-24T12:04:34.220Z",
         "project":"Streamflow"
     }
 ]}
