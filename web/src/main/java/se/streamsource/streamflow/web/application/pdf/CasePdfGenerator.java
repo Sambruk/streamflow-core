@@ -62,6 +62,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -443,9 +444,16 @@ public class CasePdfGenerator implements CaseOutput
                valueFont, tabStop );
          document.printLabelAndTextWithTabStop( bundle.getString( "lastSubmittedBy" ) + ":", valueFontBold,
                module.unitOfWorkFactory().currentUnitOfWork().get( Describable.class, formValue.submitter().get().identity() ).getDescription(), valueFont,
+               tabStop );
+
+         if (formValue.signatures().get() != null && !formValue.signatures().get().isEmpty())
+         {
+            FormSignatureDTO signature = formValue.signatures().get().get( 0 );
+            document.printLabelAndTextWithTabStop( bundle.getString( "signedBy" ) + ":", valueFontBold,
+                  signature.signerName().get() + " (" + signature.signerId().get() + ")", valueFont,
                tabStop )  ;
-
-
+         }
+         
          for (SubmittedPageValue submittedPageValue : formValue.pages().get())
          {
             if (!submittedPageValue.fields().get().isEmpty())
