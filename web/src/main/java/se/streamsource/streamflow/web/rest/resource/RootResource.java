@@ -54,6 +54,13 @@ public class RootResource
 
    @Requires(OrganizationParticipations.class)
    @SubResource
+   public void workspacev2()
+   {
+      subResource( WorkspaceResource.class );
+   }
+   
+   @Requires(OrganizationParticipations.class)
+   @SubResource
    public void overview()
    {
       subResource( OverviewResource.class );

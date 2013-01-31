@@ -93,21 +93,29 @@ public class StreamflowResultConverter
          return result;
       } else if (result instanceof Case)
       {
+         if (request.getResourceRef().getPath().contains( "workspacev2" ))
+         {
+            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath(), true);
+         }
          if (arguments.length > 0 && arguments[0] instanceof TableQuery)
             return caseTable(Collections.singleton((CaseEntity) result), module, request, arguments);
          else
             //needs to be relative path in case there is a proxy in front of streamflow server
-            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath());
+            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath(), false);
       } else if (result instanceof Query)
       {
          Query query = (Query) result;
          if (query.resultType().equals(Case.class))
          {
-            if (arguments.length > 0 && arguments[0] instanceof TableQuery)
+            if (request.getResourceRef().getPath().contains( "workspacev2" ))
+            {
+               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), true);
+            }
+            else if (arguments.length > 0 && arguments[0] instanceof TableQuery)
                return caseTable(query, module, request, arguments);
             else
                //same here relative path needed
-               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath());
+               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), false);
          }
       } 
 
@@ -120,14 +128,14 @@ public class StreamflowResultConverter
       return result;
    }
 
-   private LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath)
+   private LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath, boolean v2)
    {
       LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path(basePath);
       for (Case aCase : query)
       {
          try
          {
-            linksBuilder.addLink(caseDTO((CaseEntity) aCase, module, basePath));
+            linksBuilder.addLink(caseDTO((CaseEntity) aCase, module, basePath, v2));
          } catch (Exception e)
          {
             LoggerFactory.getLogger(getClass()).error("Could not create link for case:" + ((Identity) aCase).identity().get(), e);
@@ -136,7 +144,7 @@ public class StreamflowResultConverter
       return linksBuilder.newLinks();
    }
 
-   private CaseDTO caseDTO(CaseEntity aCase, Module module, String basePath)
+   private CaseDTO caseDTO(CaseEntity aCase, Module module, String basePath, boolean v2)
    {
       ValueBuilder<CaseDTO> builder = module.valueBuilderFactory().newValueBuilder(CaseDTO.class);
 
@@ -148,7 +156,16 @@ public class StreamflowResultConverter
          prototype.createdBy().set(((Describable) aCase.createdBy().get()).getDescription());
       if (aCase.caseId().get() != null)
          prototype.caseId().set(aCase.caseId().get());
-      prototype.href().set(basePath + "/workspace/cases/" + aCase.identity().get() + "/");
+      
+      // Not so fancy solution to the v2 problem...
+      if (v2)
+      {
+         prototype.href().set(basePath + "/workspacev2/cases/" + aCase.identity().get() + "/");
+      }
+      else 
+      {
+         prototype.href().set(basePath + "/workspace/cases/" + aCase.identity().get() + "/");
+      }
       prototype.rel().set("case");
       try
       {
