@@ -103,10 +103,31 @@ describe("sf.backend.services.project", function () {
         expect(object.overdueDays()).toEqual(0);
       }));
 
-      it('is not overdue (0) if dueDate is tomorrow', inject(function(projectService) {
+      it('is overdue for an old string date', inject(function(projectService) {
         var object = _.extend({}, projectService.caseMixin);
         object.dueDate = '2013-01-24T12:04:34.220Z';
         expect(object.overdueDays()).toBeGreaterThan(6);
+      }));
+
+    });
+
+    describe('overdueStatus', function() {
+      it('is unset if dueDate is unset', inject(function(projectService) {
+        var object = _.extend({}, projectService.caseMixin);
+        object.dueDate = null;
+        expect(object.overdueStatus()).toEqual('unset');
+      }));
+
+      it('is overdue if overdue:)', inject(function(projectService) {
+        var object = _.extend({}, projectService.caseMixin);
+        object.dueDate = yesterday;
+        expect(object.overdueStatus()).toEqual('overdue');
+      }));
+
+      it('is set if dueDate is set but not overdue', inject(function(projectService) {
+        var object = _.extend({}, projectService.caseMixin);
+        object.dueDate = tomorrow;
+        expect(object.overdueStatus()).toEqual('set');
       }));
 
     });

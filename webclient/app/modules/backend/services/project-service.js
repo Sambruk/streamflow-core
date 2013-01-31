@@ -69,10 +69,15 @@
           var dueDate = new Date(this.dueDate);
           var diff = Math.round((now.getTime() - dueDate.getTime())/(oneDay));
           return diff > 0 ? diff : 0;
+        },
+
+        overdueStatus: function() {
+          if (!this.dueDate) return 'unset';
+          return this.overdueDays() > 0 ? 'overdue' : 'set';
         }
       }
 
-    }
+    };
   }]);
 
 })();
