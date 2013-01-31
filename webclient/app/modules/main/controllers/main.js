@@ -18,7 +18,13 @@
 (function() {
   'use strict';
 
-  var main = angular.module('sf.main.controllers', ['sf.backend.services.project', 'sf.backend.services.case']);
+  angular.module('sf.main.filters', []).filter('positive', function() {
+    return function(input) {
+      return input > 0 ? input : '';
+    };
+  });
+
+  var main = angular.module('sf.main.controllers', ['sf.main.filters', 'sf.backend.services.project', 'sf.backend.services.case']);
 
   main.controller('ProjectListCtrl', ['$scope', 'projectService', function($scope, projectService) {
     $scope.projects = projectService.getAll();
