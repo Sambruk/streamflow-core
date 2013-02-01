@@ -18,11 +18,6 @@
 (function() {
   'use strict';
 
-  angular.module('sf.main.filters', []).filter('positive', function() {
-    return function(input) {
-      return input > 0 ? input : '';
-    };
-  });
 
   var main = angular.module('sf.main.controllers', ['sf.main.filters', 'sf.backend.services.project', 'sf.backend.services.case']);
 
