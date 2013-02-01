@@ -19,7 +19,7 @@
 
   // see http://jsfiddle.net/p3ZMR/3/ for another example of doing this
 
-  var main = angular.module('sf.main.directives', []);
+  var main = angular.module('sf.directives', []);
   main.directive('activeLink', ['$location', function (location) {
     return {
       restrict:'A',

@@ -17,11 +17,11 @@
 (function() {
   'use strict';
 
-  angular.module('sf', ['sf.filters', 'sf.main.controllers', 'sf.main.directives'])
+  angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
     .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-      .when('/:projectId/:caseType', {templateUrl:'modules/main/view/case-list.html', controller: 'CaseListCtrl'})
-      .when('/:projectId/:caseType/:caseId', {templateUrl:'modules/main/view/case-detail.html', controller: 'CaseDetailCtrl'})
+      .when('/:projectId/:caseType', {templateUrl:'modules/view/case-list.html', controller: 'CaseListCtrl'})
+      .when('/:projectId/:caseType/:caseId', {templateUrl:'modules/view/case-detail.html', controller: 'CaseDetailCtrl'})
       .otherwise({
         redirectTo: '/'
       });
