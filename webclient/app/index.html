@@ -31,7 +31,7 @@
         <link rel="stylesheet" href="design/gui/css/global.css">
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
     </head>
-    <body class='layout-2' ng-app="sf">
+    <body class='layout-1' ng-app="sf">
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -45,12 +45,12 @@
         <!-- Add your site or application content here -->
         <div class='body'>
 
-          <div class='header'>
+          <div class='header' role='banner'>
             <div class='header-body cf'>
               <div class='header-primary'>
                 <h1>Malmö Kommun Kontaktcenter</h1>
 
-                <form action="#" method="get" class="main-search">
+                <form action="#" method="get" class="main-search" role='search'>
                   <div>
                     <label for="main-searchtext"></label>
                     <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
@@ -68,7 +68,7 @@
           </div> <!-- header -->
 
           <div class="main">
-            <div class="sidebar">
+            <div class="sidebar" role='navigation'>
 
               <a href="#" class="add-new-issue">Lägg till nytt ärende</a>
 
@@ -91,8 +91,10 @@
 
             </div> <!-- sidebar -->
             <div class="main-body cf">
-              <div ng-view></div>
-            </div>
+              <div class="content-primary" role="main">
+                <div ng-view></div>
+              </div>
+            </div> <!-- main-body -->
           </div> <!-- main -->
         </div> <!-- body -->
 
