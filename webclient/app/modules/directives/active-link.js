@@ -28,9 +28,9 @@
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
           if (newPath.match(path)) {
-            element.addClass('active');
+            element.addClass('sel');
           } else {
-            element.removeClass('active');
+            element.removeClass('sel');
           }
         });
 

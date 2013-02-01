@@ -82,8 +82,8 @@
                 <div class="sub-category" ng-repeat="project in projects">
                   <h3>{{project.text}}</h3>
                   <ul>
-                    <li ng-repeat="type in project.types" active-link>
-                    <a href="#/{{type.href}}">
+                    <li ng-repeat="type in project.types">
+                    <a href="#/{{type.href}}" active-link>
                       <span>12</span><span class="struct">meddelanden i din</span> {{type.name}}
                     </a>
                     </li>
