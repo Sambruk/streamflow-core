@@ -17,7 +17,7 @@
 (function() {
   'use strict';
 
-  angular.module('sf', ['sf.main.controllers', 'sf.main.directives'])
+  angular.module('sf', ['sf.filters', 'sf.main.controllers', 'sf.main.directives'])
     .config(['$routeProvider', function($routeProvider) {
     $routeProvider
       .when('/:projectId/:caseType', {templateUrl:'modules/main/view/case-list.html', controller: 'CaseListCtrl'})
@@ -28,3 +28,4 @@
   }]);
 
 })();
+

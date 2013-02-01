@@ -14,11 +14,13 @@
     limitations under the License.
 
 */
-angular.module('sf.main.filters', []).filter('positive', function() {
-    'use strict';
+(function() {
+  'use strict';
 
+  angular.module('sf.filters', []).filter('positive', function() {
     return function(input) {
-        return input > 0 ? input : '';
+      return input > 0 ? input : '';
     };
-});
+  });
+}());
 

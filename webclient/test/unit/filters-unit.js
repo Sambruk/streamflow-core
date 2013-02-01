@@ -18,7 +18,7 @@ describe("sf.main.filters", function () {
   'use strict';
 
   beforeEach(function() {
-    module('sf.main.filters');
+    module('sf.filters');
   });
 
   describe('positive', function() {
