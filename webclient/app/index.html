@@ -68,18 +68,28 @@
           </div> <!-- header -->
 
           <div class="main">
-            <div class="sidebar-nav">
-              <ul class="nav nav-list" ng-controller="ProjectListCtrl">
-                <li class="nav-header projects" ng-repeat="project in projects">
-                  {{project.text}}
+            <div class="sidebar">
+
+              <a href="#" class="add-new-issue">Lägg till nytt ärende</a>
+
+              <div class="functions-menu" ng-controller="ProjectListCtrl">
+                <div class="functions-header cf">
+                  <h2>Funktioner</h2>
+                  <a href="#" class="open-toolbar">Öppna funktionsmeny</a>
+                </div>
+                <div class="sub-category" ng-repeat="project in projects">
+                  <h3>{{project.text}}</h3>
                   <ul>
-                    <li class='project-type' ng-repeat="type in project.types" active-link>
-                      <a href="#/{{type.href}}">{{type.name}}</a>
+                    <li ng-repeat="type in project.types" active-link>
+                    <a href="#/{{type.href}}">
+                      <span>12</span><span class="struct">meddelanden i din</span> {{type.name}}
+                    </a>
                     </li>
                   </ul>
-                </li>
-              </ul>
-            </div>
+                </div>
+              </div>
+
+            </div> <!-- sidebar -->
             <div class="main-body cf">
               <div ng-view></div>
             </div>
