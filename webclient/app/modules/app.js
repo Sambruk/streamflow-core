@@ -20,8 +20,14 @@
   angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
     .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-      .when('/:projectId/:caseType', {templateUrl:'modules/views/case-list.html', controller: 'CaseListCtrl'})
-      .when('/:projectId/:caseType/:caseId', {templateUrl:'modules/views/case-detail.html', controller: 'CaseDetailCtrl'})
+      .when('/:projectId/:caseType', {
+        templateUrl: 'modules/views/case-list.html',
+        controller: 'CaseListCtrl'
+      })
+      .when('/:projectId/:caseType/:caseId', {
+        templateUrl:'modules/views/case-detail.html',
+        controller: 'CaseDetailCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
