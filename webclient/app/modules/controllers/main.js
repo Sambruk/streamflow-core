@@ -25,7 +25,8 @@
   var slideMenu = $(".functions-menu");
   slideMenu.css("left", "-"+slideLength+"px");
 
-  function toggleToolbar() {
+  function toggleToolbar($event) {
+    $event.preventDefault();
     if (slideMenu.css("left") === "-"+slideLength+"px" )
       slideMenu.animate({ "left" : 0 }, 200);
     else
