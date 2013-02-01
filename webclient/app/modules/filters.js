@@ -17,10 +17,16 @@
 (function() {
   'use strict';
 
-  angular.module('sf.filters', []).filter('positive', function() {
-    return function(input) {
-      return input > 0 ? input : '';
-    };
-  });
+  angular.module('sf.filters', [])
+    .filter('positive', function() {
+      return function(input) {
+        return input > 0 ? input : '';
+      };
+    })
+    .filter('shortDate', ['$filter', function($filter) {
+      return function(input) {
+        return $filter('date')(input, 'MM/dd');
+      };
+    }]);
 }());
 

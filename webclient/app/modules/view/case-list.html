@@ -26,7 +26,7 @@
           <span>{{case.overdueDays() | positive}}</span>
          <ng-pluralize
           count="case.overdueDays()"
-          when="{'0': '{{case.dueDate | date}}', '1': 'dag', 'other': 'dagar '}">
+          when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
           </ng-pluralize>
         </div>
         <div class="issue-description">
@@ -36,8 +36,8 @@
         </div>
         <div class="issue-actions">
           <div>
-            <span class="action-status updated">Ändrad {{case.modificationDate() | date:'MM/dd' }}</span>
-            <span class="created-on">Skapad {{case.creationDate | date:'MM/dd'}}</span>
+            <span class="action-status updated">Ändrad {{case.modificationDate() | shortDate}}</span>
+            <span class="created-on">Skapad {{case.creationDate | shortDate}}</span>
           </div>
         </div>
       </a>

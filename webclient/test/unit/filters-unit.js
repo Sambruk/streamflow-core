@@ -35,6 +35,18 @@ describe("sf.main.filters", function () {
     });
   });
 
+  describe('shortDate', function() {
+    var filter;
+    beforeEach(inject(function($filter) {
+      filter = $filter('shortDate');
+    }));
+
+    it('returns the number for positive numbers', function() {
+      var date = new Date(2012, 9, 4);
+      expect(filter(date)).toEqual('10/04');
+    });
+  });
+
 });
 
 
