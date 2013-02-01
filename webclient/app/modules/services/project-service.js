@@ -32,7 +32,7 @@
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){
               // TODO maybe filter rel='project'
-              result.push({text: item.text, types: [{name: 'inbox', href: item.href + 'inbox'}, {name: 'assignments', href: item.href + 'assignments'}]});
+              result.push({text: item.text, types: [{name: 'Inbox', href: item.href + 'inbox'}, {name: 'Ärenden', href: item.href + 'assignments'}]});
             });
           }
         });
