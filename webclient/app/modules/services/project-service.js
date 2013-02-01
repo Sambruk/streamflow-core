@@ -74,6 +74,10 @@
         overdueStatus: function() {
           if (!this.dueDate) return 'unset';
           return this.overdueDays() > 0 ? 'overdue' : 'set';
+        },
+
+        modificationDate: function() {
+          return this.lastModifiedDate || this.creationDate;
         }
       }
 

@@ -124,7 +124,19 @@ describe("sf.services.project", function () {
         object.dueDate = tomorrow;
         expect(object.overdueStatus()).toEqual('set');
       });
+    });
 
+    describe('modificationDate', function() {
+      it('is lastModifiedDate if it exists', function() {
+        object.lastModifiedDate = 'lmd';
+        object.creationDate = 'cd';
+        expect(object.modificationDate()).toEqual('lmd');
+      });
+      it('is creationDate if lastModifiedDate is missing', function() {
+        object.lastModifiedDate = null;
+        object.creationDate = 'cd';
+        expect(object.modificationDate()).toEqual('cd');
+      });
     });
   });
 });
