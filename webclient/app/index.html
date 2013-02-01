@@ -75,7 +75,9 @@
               <div class="functions-menu" ng-controller="ProjectListCtrl">
                 <div class="functions-header cf">
                   <h2>Funktioner</h2>
-                  <a href="#" class="open-toolbar">Öppna funktionsmeny</a>
+                  <a href="#" class="open-toolbar" ng-click='toggleToolbar()'>
+                    Öppna funktionsmeny
+                  </a>
                 </div>
                 <div class="sub-category" ng-repeat="project in projects">
                   <h3>{{project.text}}</h3>
