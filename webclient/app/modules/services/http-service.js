@@ -17,7 +17,7 @@
 (function() {
   'use strict';
 
-  var sfServices = angular.module('sf.backend.services.http', ['sf.backend.services.error-handler']);
+  var sfServices = angular.module('sf.services.http', ['sf.services.error-handler']);
 
   sfServices.factory("httpService", ['$q', '$cacheFactory', '$location', '$http', 'errorHandlerService', function ($q, $cacheFactory, $location, $http, errorHandlerService) {
 

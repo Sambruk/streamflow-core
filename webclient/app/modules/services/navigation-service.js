@@ -17,16 +17,26 @@
 (function () {
   'use strict';
 
-  var sfServices = angular.module('sf.backend.services.error-handler', []);
 
-  sfServices.factory('errorHandlerService', ['$window', '$q', function ($window, $q) {
-    return function(error) {
-      console.log("ERROR -------------", error);
-      // TODO - this works for the mycases web application, should it work the same in this application
-      if (error.status == 403) {
-        $window.location.reload();
+  var sfServices = angular.module('sf.services.navigation', []);
+
+  sfServices.factory('navigationService', ['$location', '$routeParams', function ($location, $routeParams) {
+
+    return {
+      caseHref: function(caseId) {
+        return "#" + this.projectId() + '/' + this.caseType() + '/' + caseId;
+      },
+      projectId: function() {
+        return $routeParams.projectId;
+      },
+      caseType: function() {
+        return $routeParams.caseType;
+      },
+      caseId: function() {
+        return $routeParams.caseId;
       }
-      return $q.reject(error);
-    }
+    };
   }]);
+
+
 })();

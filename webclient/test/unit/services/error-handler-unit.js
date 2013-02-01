@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-describe("sf.backend.services.error-handler", function () {
+describe("sf.services.error-handler", function () {
   'use strict';
 
-  beforeEach(module('sf.backend.services.error-handler'));
+  beforeEach(module('sf.services.error-handler'));
 
   it("does nothing on a 404 request", inject(function (errorHandlerService, $window) {
     $window.spyOn($window.location, 'reload');

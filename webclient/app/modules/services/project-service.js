@@ -18,7 +18,7 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.backend.services.project', ['sf.backend.services.backend', 'sf.backend.services.navigation']);
+  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation']);
 
   sfServices.factory('projectService', ['backendService', 'navigationService', function (backendService, navigationService) {
 

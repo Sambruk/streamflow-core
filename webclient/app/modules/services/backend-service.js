@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  var sfServices = angular.module('sf.backend.services.backend', ['sf.backend.services.http']);
+  var sfServices = angular.module('sf.services.backend', ['sf.services.http']);
 
   sfServices.factory("backendService", ['$http', '$q', 'httpService', function ($http, $q, httpService) {
     function SfResource(href, response) {

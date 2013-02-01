@@ -1,9 +1,9 @@
-describe("sf.backend.services.case", function () {
+describe("sf.services.case", function () {
   'use strict';
 
   var backend = window.mockBackend;
 
-  beforeEach(module('sf.backend.services.case'));
+  beforeEach(module('sf.services.case'));
 
   beforeEach(inject(function (httpService, navigationService) {
     httpService.baseUrl = '';

@@ -19,7 +19,7 @@
   'use strict';
 
 
-  var main = angular.module('sf.main.controllers', ['sf.backend.services.project', 'sf.backend.services.case']);
+  var main = angular.module('sf.main.controllers', ['sf.services.project', 'sf.services.case']);
 
   main.controller('ProjectListCtrl', ['$scope', 'projectService', function($scope, projectService) {
     $scope.projects = projectService.getAll();
