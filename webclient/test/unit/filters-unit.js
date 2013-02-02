@@ -14,7 +14,7 @@
     limitations under the License.
 
 */
-describe("sf.main.filters", function () {
+describe("sf.filters", function () {
   'use strict';
 
   beforeEach(function() {
@@ -37,11 +37,11 @@ describe("sf.main.filters", function () {
 
   describe('shortDate', function() {
     var filter;
-    beforeEach(inject(function($filter) {
-      filter = $filter('shortDate');
+    beforeEach(inject(function(shortDate) {
+      filter = shortDate;
     }));
 
-    it('returns the number for positive numbers', function() {
+    it('returns the short format of the date', function() {
       var date = new Date(2012, 9, 4);
       expect(filter(date)).toEqual('10/04');
     });
