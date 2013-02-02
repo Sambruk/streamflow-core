@@ -37,8 +37,8 @@ describe("sf.filters", function () {
 
   describe('shortDate', function() {
     var filter;
-    beforeEach(inject(function(shortDate) {
-      filter = shortDate;
+    beforeEach(inject(function($filter) {
+      filter = $filter('shortDate');
     }));
 
     it('returns the short format of the date', function() {

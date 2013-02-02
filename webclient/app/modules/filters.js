@@ -17,16 +17,19 @@
 (function() {
   'use strict';
 
-  angular.module('sf.filters', [])
-    .filter('positive', function() {
-      return function(input) {
-        return input > 0 ? input : '';
-      };
-    })
-    .filter('shortDate', ['$filter', function($filter) {
-      return function(input) {
-        return $filter('date')(input, 'MM/dd');
-      };
-    }]);
+  var module = angular.module('sf.filters', []);
+
+  module.filter('positive', function() {
+    return function(input) {
+      return input > 0 ? input : '';
+    };
+  });
+
+  module.filter('shortDate', ['$filter', function($filter) {
+    return function(input) {
+      return $filter('date')(input, 'MM/dd');
+    };
+  }]);
+
 }());
 
