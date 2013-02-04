@@ -27,10 +27,14 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.streamflow.api.ContactId;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 
 /**
  * This class represents customer to the system. A customer can be identified by
@@ -55,6 +59,9 @@ public interface Customers
       @Service
       IdentityGenerator idGen;
 
+      @Service
+      ContactLookupService contactLookup;
+
       public Customer createCustomerById(String contactId, String name) throws IllegalArgumentException
       {
          // Check if customer already exist
@@ -70,6 +77,28 @@ public interface Customers
          }
 
          Customer customer = createdCustomerById( null, idGen.generate( CustomerEntity.class ) );
+         if( contactLookup != null )
+         {
+            ValueBuilder<ContactValue> contactValueBuilder = module.valueBuilderFactory().newValueBuilder( ContactValue.class );
+            contactValueBuilder.prototype().contactId().set( contactId );
+
+            ContactList contactList = contactLookup.lookup( contactValueBuilder.newInstance() );
+            if( !contactList.contacts().get().isEmpty() )
+            {
+               ContactValue contactValue = contactList.contacts().get().get( 0 );
+               customer.changeDescription( contactValue.name().get() );
+
+               ContactBuilder contactBuilder = new ContactBuilder(((Contactable) customer).getContact(), module.valueBuilderFactory() );
+               contactBuilder.contactId( contactValue.contactId().get() );
+               contactBuilder.name( contactValue.name().get() );
+               contactBuilder.address( contactValue.addresses().get().get( 0 ).address().get() );
+               contactBuilder.zipCode( contactValue.addresses().get().get( 0 ).zipCode().get() );
+               contactBuilder.city( contactValue.addresses().get().get( 0 ).city().get() );
+
+               ((Contactable) customer).updateContact( contactBuilder.newInstance() );
+               return customer;
+            }
+         }
          customer.changeDescription( name );
          ValueBuilder<ContactDTO> valueBuilder = module.valueBuilderFactory().newValueBuilder( ContactDTO.class ).withPrototype( ((Contactable) customer).getContact() );
          valueBuilder.prototype().contactId().set( contactId );

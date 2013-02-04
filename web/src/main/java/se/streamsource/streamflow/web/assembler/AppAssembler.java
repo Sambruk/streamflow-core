@@ -41,9 +41,6 @@ import se.streamsource.streamflow.server.plugin.ldapimport.UserListValue;
 import se.streamsource.streamflow.web.application.archival.ArchivalConfiguration;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsService;
-import se.streamsource.streamflow.web.application.channel.ChannelMessageValue;
-import se.streamsource.streamflow.web.application.channel.SendChannelService;
-import se.streamsource.streamflow.web.application.channel.SendChannelServiceConfiguration;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
@@ -85,7 +82,6 @@ import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
-import se.streamsource.streamflow.web.rest.service.channel.ChannelSenderService;
 import se.streamsource.streamflow.web.rest.service.conversation.EmailTemplatesUpdateService;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
@@ -130,7 +126,6 @@ public class AppAssembler
       if (layer.application().mode().equals( Application.Mode.production ))
       {
          mail( layer.module( "Mail" ) );
-         channel( layer.module( "Channel" ));
       }
 
       velocity( layer.module( "Velocity" ));
@@ -139,7 +134,7 @@ public class AppAssembler
 
       dueOnNotifiation(layer.module("DueOn Notification"));
 
-      knowledgebase( layer.module( "Knowledgebase" ) );
+      knowledgebase(layer.module("Knowledgebase"));
 
       ldapimport( layer.module( "Ldapimport" ) );
 
@@ -189,7 +184,7 @@ public class AppAssembler
       // default schedule - 08:00 every day
       configuration().forMixin( DueOnNotificationConfiguration.class ).declareDefaults().schedule().set( "0 0 8 * * ?" );
 
-      module.transients( DueOnNotificationJob.class ).visibleIn( application );
+      module.transients( DueOnNotificationJob.class).visibleIn( application );
    }
 
    private void replay( ModuleAssembly module ) throws AssemblyException
@@ -200,7 +195,7 @@ public class AppAssembler
    private void attachment( ModuleAssembly module ) throws AssemblyException
    {
       module.services( RemoveAttachmentsService.class )
-            .identifiedBy( "removeattachments" ).visibleIn( application ).instantiateOnStartup();
+            .identifiedBy( "removeattachments" ).visibleIn(application).instantiateOnStartup();
    }
 
    private void pdf( ModuleAssembly module ) throws AssemblyException
@@ -212,7 +207,7 @@ public class AppAssembler
 
    private void contactLookup( ModuleAssembly module ) throws AssemblyException
    {
-      module.services( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
+      module.services(StreamflowContactLookupService.class).visibleIn( Visibility.application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
@@ -220,8 +215,8 @@ public class AppAssembler
 
       module.importedServices( NamedEntityFinder.class ).
             importedBy( ServiceSelectorImporter.class ).
-            setMetaInfo( ServiceQualifier.withId( "solr" ) ).
-            setMetaInfo( namedQueries );
+            setMetaInfo(ServiceQualifier.withId("solr")).
+            setMetaInfo(namedQueries);
    }
 
    private void mail( ModuleAssembly module ) throws AssemblyException
@@ -235,7 +230,7 @@ public class AppAssembler
             identifiedBy( "receivemail" ).
             instantiateOnStartup().
             visibleIn( Visibility.application ).
-            setMetaInfo( new CircuitBreaker( 3, 1000 * 60 * 5 ) );
+            setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
       
       module.services( SendMailService.class ).
             identifiedBy( "sendmail" ).
@@ -264,23 +259,8 @@ public class AppAssembler
               setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService")).visibleIn( layer );
 
       module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
-      configuration().entities( CreateCaseFromEmailConfiguration.class ).visibleIn( Visibility.application );
+      configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
    }
-
-   private void channel( ModuleAssembly module )
-   {
-      module.services( ChannelSenderService.class ).identifiedBy( "channelsender" )
-            .visibleIn( Visibility.application ).instantiateOnStartup();
-
-      module.values( ChannelMessageValue.class ).visibleIn( Visibility.application );
-
-      module.services( SendChannelService.class ).identifiedBy( "sendchannel" )
-            .visibleIn( Visibility.application ).instantiateOnStartup().
-            setMetaInfo( new CircuitBreaker( 3, 1000 * 60 * 5 ) );
-
-      configuration().entities( SendChannelServiceConfiguration.class ).visibleIn( Visibility.application );
-     }
-
 
    private void statistics( ModuleAssembly module ) throws AssemblyException
    {
@@ -302,7 +282,7 @@ public class AppAssembler
                visibleIn( Visibility.module );
       }
 
-      module.values( RelatedStatisticsValue.class, FormFieldStatisticsValue.class, OrganizationalStructureValue.class, OrganizationalUnitValue.class, CaseStatisticsValue.class ).visibleIn(layer);
+      module.values(RelatedStatisticsValue.class, FormFieldStatisticsValue.class, OrganizationalStructureValue.class, OrganizationalUnitValue.class, CaseStatisticsValue.class).visibleIn(layer);
    }
 
    private void security( ModuleAssembly module ) throws AssemblyException
