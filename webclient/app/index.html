@@ -27,42 +27,78 @@
         <title></title>
         <meta name="description" content=""/>
         <meta name="viewport" content="width=device-width"/>
-        <link rel="stylesheet" href="styles/bootstrap.css"/>
-        <link rel="stylesheet" href="styles/main.css"/>
-
+        <link rel="shortcut icon" href="design/gui/i/favicon.ico">
+        <link rel="stylesheet" href="design/gui/css/global.css">
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
     </head>
-    <body ng-app="sf">
+    <body class='layout-1' ng-app="sf">
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
-        
+
         <!--[if lt IE 9]>
         <script src="vendor/es5-shim.min.js"></script>
         <script src="vendor/json3.min.js"></script>
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <div class="row-fluid">
+        <div class='body'>
 
-          <div class="span3">
+          <div class='header' role='banner'>
+            <div class='header-body cf'>
+              <div class='header-primary'>
+                <h1>Malmö Kommun Kontaktcenter</h1>
 
-            <div class="well sidebar-nav">
-              <ul class="nav nav-list" ng-controller="ProjectListCtrl">
-                <li class="nav-header projects" ng-repeat="project in projects">
-                  {{project.text}}
+                <form action="#" method="get" class="main-search" role='search'>
+                  <div>
+                    <label for="main-searchtext"></label>
+                    <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
+                    <button type="submit"><span>Sök</span></button>
+                  </div>
+                </form>
+              </div> <!-- header-primary -->
+
+              <div class="header-secondary">
+                <a href="#" class="user-logged">Solveig Grankvist</a>
+              </div> <!-- header-secondary -->
+
+            </div> <!-- header-body -->
+
+          </div> <!-- header -->
+
+          <div class="main">
+            <div class="sidebar" role='navigation'>
+
+              <a href="#" class="add-new-issue">Lägg till nytt ärende</a>
+
+              <div class="functions-menu" ng-controller="ProjectListCtrl">
+                <div class="functions-header cf">
+                  <h2>Funktioner</h2>
+                  <a href="#" class="open-toolbar" ng-click='toggleToolbar($event)'>
+                    Öppna funktionsmeny
+                  </a>
+                </div>
+                <div class="sub-category" ng-repeat="project in projects">
+                  <h3>{{project.text}}</h3>
                   <ul>
-                    <li class='project-type' ng-repeat="type in project.types" active-link><a href="#/{{type.href}}">{{type.name}}</a></li>
+                    <li ng-repeat="type in project.types">
+                    <a href="#/{{type.href}}" active-link>
+                      <span>12</span><span class="struct">meddelanden i din</span> {{type.name}}
+                    </a>
+                    </li>
                   </ul>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="span9" ng-view>
-          </div>
+                </div>
+              </div>
 
-
-        </div>
+            </div> <!-- sidebar -->
+            <div class="main-body cf">
+              <div class="content-primary" role="main">
+                <div ng-view></div>
+              </div>
+            </div> <!-- main-body -->
+          </div> <!-- main -->
+        </div> <!-- body -->
 
         <!-- TODO use CDN in production -->
         <script src="vendor/angular.js"></script>
@@ -71,15 +107,16 @@
 
         <!-- build:js scripts/scripts.js -->
         <script src="vendor/base64.js"></script>
-        <script src="sfc-app.js"></script>
-        <script src="modules/main/controllers/main.js"></script>
-        <script src="modules/main/directives/active-link.js"></script>
-        <script src="modules/backend/services/navigation-service.js"></script>
-        <script src="modules/backend/services/backend-service.js"></script>
-        <script src="modules/backend/services/error-handler-service.js"></script>
-        <script src="modules/backend/services/http-service.js"></script>
-        <script src="modules/backend/services/project-service.js"></script>
-        <script src="modules/backend/services/case-service.js"></script>
+        <script src="modules/app.js"></script>
+        <script src="modules/filters.js"></script>
+        <script src="modules/controllers/main.js"></script>
+        <script src="modules/directives/active-link.js"></script>
+        <script src="modules/services/navigation-service.js"></script>
+        <script src="modules/services/backend-service.js"></script>
+        <script src="modules/services/error-handler-service.js"></script>
+        <script src="modules/services/http-service.js"></script>
+        <script src="modules/services/project-service.js"></script>
+        <script src="modules/services/case-service.js"></script>
         <!-- endbuild -->
     </body>
 </html>

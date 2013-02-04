@@ -18,10 +18,24 @@
 (function() {
   'use strict';
 
-  var main = angular.module('sf.main.controllers', ['sf.backend.services.project', 'sf.backend.services.case']);
+
+  var main = angular.module('sf.controllers', ['sf.services.project', 'sf.services.case']);
+
+  var slideLength = $(".sub-category").outerWidth();
+  var slideMenu = $(".functions-menu");
+  slideMenu.css("left", "-"+slideLength+"px");
+
+  function toggleToolbar($event) {
+    $event.preventDefault();
+    if (slideMenu.css("left") === "-"+slideLength+"px" )
+      slideMenu.animate({ "left" : 0 }, 200);
+    else
+      slideMenu.animate({ "left" : "-200" }, 200);
+  }
 
   main.controller('ProjectListCtrl', ['$scope', 'projectService', function($scope, projectService) {
     $scope.projects = projectService.getAll();
+    $scope.toggleToolbar = toggleToolbar;
   }]);
 
   main.controller('CaseListCtrl', ['$scope', 'projectService', function($scope, projectService){

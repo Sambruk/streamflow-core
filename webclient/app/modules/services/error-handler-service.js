@@ -14,17 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function() {
+(function () {
   'use strict';
 
-  angular.module('sf', ['sf.main.controllers', 'sf.main.directives'])
-    .config(['$routeProvider', function($routeProvider) {
-    $routeProvider
-      .when('/:projectId/:caseType', {templateUrl:'modules/main/view/case-list.html', controller: 'CaseListCtrl'})
-      .when('/:projectId/:caseType/:caseId', {templateUrl:'modules/main/view/case-detail.html', controller: 'CaseDetailCtrl'})
-      .otherwise({
-        redirectTo: '/'
-      });
-  }]);
+  var sfServices = angular.module('sf.services.error-handler', []);
 
+  sfServices.factory('errorHandlerService', ['$window', '$q', function ($window, $q) {
+    return function(error) {
+      console.log("ERROR -------------", error);
+      // TODO - this works for the mycases web application, should it work the same in this application
+      if (error.status == 403) {
+        $window.location.reload();
+      }
+      return $q.reject(error);
+    }
+  }]);
 })();

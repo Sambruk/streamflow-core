@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function () {
+(function() {
   'use strict';
 
-  var sfServices = angular.module('sf.backend.services.error-handler', []);
-
-  sfServices.factory('errorHandlerService', ['$window', '$q', function ($window, $q) {
-    return function(error) {
-      console.log("ERROR -------------", error);
-      // TODO - this works for the mycases web application, should it work the same in this application
-      if (error.status == 403) {
-        $window.location.reload();
-      }
-      return $q.reject(error);
-    }
+  angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
+    .config(['$routeProvider', function($routeProvider) {
+    $routeProvider
+      .when('/:projectId/:caseType', {
+        templateUrl: 'modules/views/case-list.html',
+        controller: 'CaseListCtrl'
+      })
+      .when('/:projectId/:caseType/:caseId', {
+        templateUrl:'modules/views/case-detail.html',
+        controller: 'CaseDetailCtrl'
+      })
+      .otherwise({
+        redirectTo: '/'
+      });
   }]);
+
 })();
+

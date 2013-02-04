@@ -1,5 +1,15 @@
 ## Streamflow Client
 
+## Using the real Streamflow backend
+
+If you are using the real streamflow backend (see config below) you need to
+disable the web security since we are accessing the backend at a different
+port:
+
+Mac OSX:
+  alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+  alias chromex="chrome --disable-web-security"
+
 
 ## Learning AngularJs
 

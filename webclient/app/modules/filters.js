@@ -1,6 +1,4 @@
-<!--
-
-
+/*
     Copyright 2009-2012 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,23 +13,23 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
--->
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>Id</th>
-    <th>Titel</th>
-    <th>Skapad</th>
-    <th>Ägare</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr class="case-item" ng-repeat='case in cases'>
-    <td><a href="{{case.href}}">{{case.id}}</a></td>
-    <td><a href="{{case.href}}">{{case.text}}</a></td>
-    <td><a href="{{case.href}}">{{case.creationDate}}</a></td>
-    <td><a href="{{case.href}}">{{case.project}}</a></td>
-  </tr>
-  </tbody>
+*/
+(function() {
+  'use strict';
 
-</table>
+  var module = angular.module('sf.filters', []);
+
+  module.filter('positive', function() {
+    return function(input) {
+      return input > 0 ? input : '';
+    };
+  });
+
+  module.filter('shortDate', ['$filter', function($filter) {
+    return function(input) {
+      return $filter('date')(input, 'MM/dd');
+    };
+  }]);
+
+}());
+

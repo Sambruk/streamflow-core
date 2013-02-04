@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-describe("sf.backend.services.http", function () {
+describe("sf.services.http", function () {
   'use strict';
 
   var backend = window.mockBackend;
 
-  beforeEach(module('sf.backend.services.http'));
+  beforeEach(module('sf.services.http'));
 
   describe('httpService', function () {
     beforeEach(inject(function ($location) {

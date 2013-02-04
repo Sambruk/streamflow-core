@@ -18,7 +18,7 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.backend.services.project', ['sf.backend.services.backend', 'sf.backend.services.navigation']);
+  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation']);
 
   sfServices.factory('projectService', ['backendService', 'navigationService', function (backendService, navigationService) {
 
@@ -32,13 +32,14 @@
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){
               // TODO maybe filter rel='project'
-              result.push({text: item.text, types: [{name: 'inbox', href: item.href + 'inbox'}, {name: 'assignments', href: item.href + 'assignments'}]});
+              result.push({text: item.text, types: [{name: 'Inbox', href: item.href + 'inbox'}, {name: 'Ärenden', href: item.href + 'assignments'}]});
             });
           }
         });
       },
       //http://localhost:3501/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0
       getSelected: function() {
+        var self = this;
         return backendService.get({
           specs:[
             {resources:'workspace'},
@@ -49,13 +50,38 @@
           ],
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){
-              var href = navigationService.caseHref(item.id);
-              result.push({id: item.caseId, text: item.text, href: href, project: item.project, creationDate: item.creationDate});
+              result.push(self.createCase(item));
             });
           }
         });
+      },
+
+      createCase: function(model) {
+        var href = navigationService.caseHref(model.id);
+        var o = _.extend(model, {href: href}, this.caseMixin);
+        return o;
+      },
+
+      caseMixin: {
+        overdueDays: function() {
+          var oneDay = 24*60*60*1000;
+          var now = new Date();
+          var dueDate = new Date(this.dueDate);
+          var diff = Math.round((now.getTime() - dueDate.getTime())/(oneDay));
+          return diff > 0 ? diff : 0;
+        },
+
+        overdueStatus: function() {
+          if (!this.dueDate) return 'unset';
+          return this.overdueDays() > 0 ? 'overdue' : 'set';
+        },
+
+        modificationDate: function() {
+          return this.lastModifiedDate || this.creationDate;
+        }
       }
-    }
+
+    };
   }]);
 
 })();

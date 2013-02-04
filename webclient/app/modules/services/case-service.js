@@ -18,7 +18,7 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.backend.services.case', ['sf.backend.services.backend', 'sf.backend.services.navigation']);
+  var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation']);
 
   sfServices.factory('caseService', ['backendService', 'navigationService', function (backendService, navigationService) {
 

@@ -17,26 +17,24 @@
 (function () {
   'use strict';
 
+  // see http://jsfiddle.net/p3ZMR/3/ for another example of doing this
 
-  var sfServices = angular.module('sf.backend.services.navigation', []);
-
-  sfServices.factory('navigationService', ['$location', '$routeParams', function ($location, $routeParams) {
-
+  var main = angular.module('sf.directives', []);
+  main.directive('activeLink', ['$location', function (location) {
     return {
-      caseHref: function(caseId) {
-        return "#" + this.projectId() + '/' + this.caseType() + '/' + caseId;
-      },
-      projectId: function() {
-        return $routeParams.projectId;
-      },
-      caseType: function() {
-        return $routeParams.caseType;
-      },
-      caseId: function() {
-        return $routeParams.caseId;
+      restrict:'A',
+      link:function (scope, element, attrs, controller) {
+        var path = "/" + scope.type.href;
+        scope.location = location;
+        scope.$watch('location.path()', function (newPath) {
+          if (newPath.match(path)) {
+            element.addClass('sel');
+          } else {
+            element.removeClass('sel');
+          }
+        });
+
       }
-    };
+    }
   }]);
-
-
 })();

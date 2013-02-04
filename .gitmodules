@@ -1,0 +1,3 @@
+[submodule "webclient/app/design"]
+	path = webclient/app/design
+	url = git@github.com:jayway/streamflow-webclient-gui.git

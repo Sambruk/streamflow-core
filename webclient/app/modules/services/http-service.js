@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 (function() {
+  'use strict';
 
-  var sfServices = angular.module('sf.backend.services.http', ['sf.backend.services.error-handler']);
+  var sfServices = angular.module('sf.services.http', ['sf.services.error-handler']);
 
   sfServices.factory("httpService", ['$q', '$cacheFactory', '$location', '$http', 'errorHandlerService', function ($q, $cacheFactory, $location, $http, errorHandlerService) {
-    var url = $location.absUrl();
-    var li = url.lastIndexOf($location.path());
-    var index = url.substring(0, li);
-    var baseUrl = index.substring(0, index.lastIndexOf("/"));
-    var apiUrl = baseUrl + "/api/";
 
-    var cache = $cacheFactory('sfHttpCache');
+    function prepareBaseUrl() {
+      var url = $location.absUrl();
+      var li = url.lastIndexOf($location.path());
+      var index = url.substring(0, li);
+      var baseUrl = index.substring(0, index.lastIndexOf("/"));
+      return baseUrl;
+    }
+
+    function prepareApiUrl(baseUrl) {
+      var apiUrl = baseUrl + "/api/";
+      return apiUrl;
+    }
 
     // TODO Remove this, not needed ?
     function makeBaseAuth(user, password) {
@@ -33,6 +40,11 @@
       var hash = Base64.encode(tok);
       return "Basic " + hash;
     }
+
+    var baseUrl = prepareBaseUrl();
+    var apiUrl = prepareApiUrl(baseUrl);
+    var cache = $cacheFactory('sfHttpCache');
+
 
     return {
 
@@ -55,27 +67,42 @@
       },
 
       invalidate: function(hrefs) {
-        hrefs.forEach(function(href) { cache.remove(href)});
+        hrefs.forEach(function(href) { cache.remove(href);});
+      },
+
+      headers: function() {
+        var headers = {'Authorization':makeBaseAuth('administrator', 'administrator')};
       },
 
       getRequest: function (href, skipCache) {
-        var headers = {'Authorization':makeBaseAuth('administrator', 'administrator')};
-
-        // handle absolute URLs
-        var url = (href[0] === '/') ? this.baseUrl + href : this.absApiUrl(href);
-        //var url = this.absApiUrl(href);
-
         var result = cache.get(href);
-        if (!result || skipCache) {
-          return $http({method:'GET', url:url, cache:false, headers:headers}).then(function(response) {
-            cache.put(href, response);
-            return response;
-          }, errorHandlerService)
-        } else {
-          var deferred = $q.defer();
-          deferred.resolve(result);
-          return deferred.promise;
-        }
+        if (result && !skipCache)
+          return this.wrapInPromise(result);
+        return this.makeRequest(href);
+      },
+
+      wrapInPromise: function(result) {
+        var deferred = $q.defer();
+        deferred.resolve(result);
+        return deferred.promise;
+      },
+
+      makeRequest: function(href) {
+        var url = this.prepareUrl(href);
+        var request = $http({ method:'GET', url: url, cache: false });
+        // Bind href parameter to cacheResponse.
+        var cacheResponse = _.bind(this.cacheResponse, null, href);
+        return request.then(cacheResponse, errorHandlerService);
+      },
+
+      prepareUrl: function(href) {
+        var url = (href[0] === '/') ? this.baseUrl + href : this.absApiUrl(href);
+        return url;
+      },
+
+      cacheResponse: function(href, response) {
+        cache.put(href, response);
+        return response;
       },
 
       postRequest: function (href, data) {
@@ -90,7 +117,7 @@
       }
 
 
-    }
+    };
 
-  }])
+  }]);
 })();
