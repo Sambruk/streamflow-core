@@ -59,7 +59,7 @@ public interface Customers
       @Service
       IdentityGenerator idGen;
 
-      @Service
+      @Optional @Service
       ContactLookupService contactLookup;
 
       public Customer createCustomerById(String contactId, String name) throws IllegalArgumentException
