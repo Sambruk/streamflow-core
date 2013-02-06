@@ -72,7 +72,6 @@ HttpServer.prototype.handleRequest_ = function(req, res) {
     handler.call(this, req, res);
   }
 };
-
 /**
  * Handles POST requests.
  */
@@ -115,6 +114,8 @@ StaticServlet.prototype.handleRequest = function(req, res) {
     return String.fromCharCode(parseInt(hex, 16));
   });
 
+  if (req.url.search)
+    path += req.url.search;
   var parts = path.split('/');
 //  if (parts[parts.length-1].charAt(0) === '.')
 //    return self.sendForbidden_(req, res, path);
