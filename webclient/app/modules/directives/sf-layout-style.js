@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 (function () {
-  'use strict';
+  "use strict";
 
-  // see http://jsfiddle.net/p3ZMR/3/ for another example of doing this
-  sf.directives.directive('activeLink', ['$location', function (location) {
+  sf.directives.directive('sfLayoutStyle', ['$location', function (location) {
     return {
       restrict:'A',
       link:function (scope, element, attrs, controller) {
-        var path = "/" + scope.type.href;
+        console.log('hello', Object.keys(attrs), Object.keys(scope));
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
-          if (newPath.match(path)) {
-            element.addClass('sel');
-          } else {
-            element.removeClass('sel');
-          }
+          if (location.path().split('/').length < 3)
+            element.addClass('layout-1');
+          else
+            element.addClass('layout-2');
         });
+
       }
     };
   }]);
 })();
+

@@ -17,6 +17,12 @@
 (function() {
   'use strict';
 
+  window.sf = {
+    directives: angular.module('sf.directives', []),
+    filters: angular.module('sf.filters', []),
+    controllers: angular.module('sf.controllers', []),
+  };
+
   angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
     .config(['$routeProvider', function($routeProvider) {
     $routeProvider
