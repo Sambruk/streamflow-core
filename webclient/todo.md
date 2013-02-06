@@ -1,6 +1,5 @@
-# Todo fow Webclient
+# Todo for Webclient
 
-* Split view into templates with ng-include
 * Better backend support
 * Get the number of cases in each project
 * Implement details view

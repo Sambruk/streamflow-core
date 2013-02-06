@@ -80,30 +80,7 @@
           </div> <!-- header -->
 
           <div class="main">
-            <div class="navigation" role='navigation'>
-
-              <a href="#" class="add-new-issue">Lägg till nytt ärende</a>
-
-              <div class="functions-menu" ng-controller="ProjectListCtrl">
-                <div class="functions-header cf">
-                  <h2>Funktioner</h2>
-                  <a href="#" class="open-toolbar" ng-click='toggleToolbar($event)'>
-                    Öppna funktionsmeny
-                  </a>
-                </div>
-                <div class="sub-category" ng-repeat="project in projects">
-                  <h3>{{project.text}}</h3>
-                  <ul>
-                    <li ng-repeat="type in project.types">
-                    <a href="#/{{type.href}}" sf-active-link>
-                      <span>12</span><span class="struct">meddelanden i din</span> {{type.name}}
-                    </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-            </div> <!-- navigation -->
+            <ng-include src="'modules/views/navigation.html'"></ng-include>
             <div class="main-body cf">
               <div class="content-primary" role="main">
                 <div ng-view></div>
