@@ -51,7 +51,7 @@
       baseUrl: baseUrl,
 
       // When using the real streamflow server in the test_folder:
-      //"apiUrl": 'http://localhost:8082/streamflow/surface/customers/197606030001/',
+      // apiUrl: 'http://localhost:8082/streamflow/',
       apiUrl:apiUrl,
 
       info: function() {
