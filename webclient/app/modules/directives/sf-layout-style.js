@@ -18,12 +18,18 @@
   "use strict";
 
   sf.directives.directive('sfLayoutStyle', ['$location', function (location) {
+    function clearLayoutClasses(element) {
+      _.each(['layout-1', 'layout-2'], function(c) {
+        element.removeClass(c);
+      });
+    }
+
     return {
       restrict:'A',
       link:function (scope, element, attrs, controller) {
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
-          console.log(location.path());
+          clearLayoutClasses(element);
           if (location.path().split('/').length <= 3)
             element.addClass('layout-1');
           else
