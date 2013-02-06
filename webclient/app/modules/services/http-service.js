@@ -51,15 +51,23 @@
       baseUrl: baseUrl,
 
       // When using the real streamflow server in the test_folder:
-      // apiUrl: 'http://localhost:8082/streamflow/',
-      apiUrl:apiUrl,
+      apiUrl: function() {
+        switch (sf.env) {
+        case 'production':
+          return 'http://localhost:8082/streamflow/';
+        case 'test':
+          return apiUrl;
+        default:
+          return apiUrl;
+        }
+      },
 
       info: function() {
         return cache.info();
       },
 
       absApiUrl: function(href) {
-        return this.apiUrl + href;
+        return this.apiUrl() + href;
       },
 
       isCached: function(href) {

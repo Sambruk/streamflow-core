@@ -23,6 +23,8 @@
     controllers: angular.module('sf.controllers', []),
   };
 
+  sf.env = sf.env || 'development';
+
   angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
