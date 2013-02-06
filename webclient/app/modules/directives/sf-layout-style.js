@@ -23,7 +23,8 @@
       link:function (scope, element, attrs, controller) {
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
-          if (location.path().split('/').length < 3)
+          console.log(location.path());
+          if (location.path().split('/').length <= 3)
             element.addClass('layout-1');
           else
             element.addClass('layout-2');

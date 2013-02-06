@@ -30,7 +30,7 @@ describe("sf.directives.sf-layout-style", function () {
   }));
 
   it('sets style to layout-1 for root path', inject(function($location) {
-    $location.path('/');
+    $location.path('/a/b');
     scope.$digest();
     var klass = el.attr('class');
     expect(klass).toMatch(/layout-1/);
