@@ -30,7 +30,19 @@
         <link rel="shortcut icon" href="design/gui/i/favicon.ico">
         <link rel="stylesheet" href="design/gui/css/global.css">
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
-    </head>
+        <!--[if lte IE 8]>
+          <script>
+            document.createElement('ng-include');
+            document.createElement('ng-pluralize');
+            document.createElement('ng-view');
+
+            // Optionally these for CSS
+            document.createElement('ng:include');
+            document.createElement('ng:pluralize');
+            document.createElement('ng:view');
+          </script>
+        <![endif]-->
+        </head>
     <body ng-app="sf" sf-layout-style>
 
         <!--[if lt IE 7]>
