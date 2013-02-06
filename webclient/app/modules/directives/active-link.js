@@ -18,7 +18,7 @@
   'use strict';
 
   // see http://jsfiddle.net/p3ZMR/3/ for another example of doing this
-  sf.directives.directive('activeLink', ['$location', function (location) {
+  sf.directives.directive('sfActiveLink', ['$location', function (location) {
     return {
       restrict:'A',
       link:function (scope, element, attrs, controller) {

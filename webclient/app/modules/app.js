@@ -24,8 +24,9 @@
   };
 
   angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
-    .config(['$routeProvider', function($routeProvider) {
-    $routeProvider
+    .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+      // $locationProvider.html5Mode(true);
+      $routeProvider
       .when('/:projectId/:caseType', {
         templateUrl: 'modules/views/case-list.html',
         controller: 'CaseListCtrl'

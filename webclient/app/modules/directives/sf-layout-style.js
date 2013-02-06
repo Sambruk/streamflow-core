@@ -21,7 +21,6 @@
     return {
       restrict:'A',
       link:function (scope, element, attrs, controller) {
-        console.log('hello', Object.keys(attrs), Object.keys(scope));
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
           if (location.path().split('/').length < 3)
