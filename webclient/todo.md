@@ -5,4 +5,6 @@
 * Implement details view
 * Authentication
 * Extract Models into their own modules
-
+* Add jshint verification
+* Add minification
+* Setup CI
