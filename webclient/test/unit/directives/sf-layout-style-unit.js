@@ -42,5 +42,13 @@ describe("sf.directives.sf-layout-style", function () {
     var klass = el.attr('class');
     expect(klass).toMatch(/layout-2/);
   }));
+
+  it('removes old classes', inject(function($location) {
+    el.addClass('layout-1');
+    $location.path('/a/b/c/');
+    scope.$digest();
+    var klass = el.attr('class');
+    expect(klass).toNotMatch(/layout-1/);
+  }));
 });
 
