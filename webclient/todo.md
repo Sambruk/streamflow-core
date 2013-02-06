@@ -8,3 +8,4 @@
 * Add jshint verification
 * Add minification
 * Setup CI
+* Setup environments configuration (development, test, production)
