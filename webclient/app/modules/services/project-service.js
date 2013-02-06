@@ -46,7 +46,7 @@
             {resources: 'projects'},
             {'index.links': navigationService.projectId},
             {resources: navigationService.caseType },
-            {queries: 'cases'}
+            {queries: 'cases?tq=select+*'}
           ],
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){

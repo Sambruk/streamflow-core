@@ -45,8 +45,12 @@
       },
 
       createById:function (resourceData, id, urls) {
+        var values = id.split('?');
+        var trimmedId = values[0];
+        var query = values[1];
+
         var w = _.find(resourceData, function (item) {
-          return item.id === id
+          return item.id === trimmedId;
         });
 
         if (!w) {
@@ -56,6 +60,8 @@
         }
         // handle absolute urls
         var abshref = (w.href[0] === '/') ? w.href : this.basehref + w.href;
+        if (query)
+          abshref += '?' + query;
         return httpService.getRequest(abshref).then(function (response) {
           urls && urls.push(abshref);
           return new SfResource(abshref, response);
