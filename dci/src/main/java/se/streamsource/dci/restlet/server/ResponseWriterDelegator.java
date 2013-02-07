@@ -83,7 +83,9 @@ public class ResponseWriterDelegator
       for (ResponseWriter responseWriter : responseWriters)
       {
          if (responseWriter.write(result, response))
+         {
             return true;
+         }
       }
       return false;
    }

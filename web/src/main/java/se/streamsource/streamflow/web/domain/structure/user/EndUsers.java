@@ -33,6 +33,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
  */
 @Mixins(EndUsers.Mixin.class)
 public interface EndUsers
+   extends EndUsersQueries
 {
    EndUser createEndUser(String id );
 

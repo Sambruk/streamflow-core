@@ -52,6 +52,8 @@ import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationConfiguration;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
+import se.streamsource.streamflow.web.application.external.IntegrationConfiguration;
+import se.streamsource.streamflow.web.application.external.IntegrationService;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseConfiguration;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
@@ -138,8 +140,17 @@ public class AppAssembler
 
       ldapimport( layer.module( "Ldapimport" ) );
 
+      external( layer.module( "External" ) );
+
       // All configurations must be visible in the Application scope
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
+   }
+
+   private void external( ModuleAssembly external )
+   {
+      external.services( IntegrationService.class )
+            .identifiedBy( "integration" ).instantiateOnStartup().visibleIn( Visibility.application );
+      configuration().entities( IntegrationConfiguration.class );
    }
 
    private void system( ModuleAssembly system )

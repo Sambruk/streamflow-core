@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.rest.resource.surface.customers;
 import org.qi4j.api.query.Query;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;

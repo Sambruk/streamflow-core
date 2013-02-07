@@ -16,10 +16,15 @@
  */
 package se.streamsource.streamflow.web.rest.resource;
 
+import org.qi4j.api.entity.Identity;
 import se.streamsource.dci.api.Requires;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.application.external.IntegrationService;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
@@ -28,9 +33,11 @@ import se.streamsource.streamflow.web.rest.resource.account.AccountResource;
 import se.streamsource.streamflow.web.rest.resource.administration.AdministrationResource;
 import se.streamsource.streamflow.web.rest.resource.contactlookup.ContactLookupResource;
 import se.streamsource.streamflow.web.rest.resource.crystal.CrystalResource;
+import se.streamsource.streamflow.web.rest.resource.external.integrationpoints.IntegrationPointsResource;
 import se.streamsource.streamflow.web.rest.resource.overview.OverviewResource;
 import se.streamsource.streamflow.web.rest.resource.surface.SurfaceResource;
 import se.streamsource.streamflow.web.rest.resource.workspace.WorkspaceResource;
+
 
 /**
  * Root of Streamflow REST API
@@ -93,6 +100,16 @@ public class RootResource
    @SubResource
    public void contactlookup()
    {
-      subResource(  ContactLookupResource.class );
+      subResource( ContactLookupResource.class );
+   }
+
+   @Requires(ProxyUser.class)
+   @ServiceAvailable( service = IntegrationService.class, availability = true )
+   @SubResource
+   public void integration()
+   {
+      setRole( OrganizationEntity.class,
+            ((Identity)setRole( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID ).organization().get()).identity().get() );
+      subResource( IntegrationPointsResource.class );
    }
 }

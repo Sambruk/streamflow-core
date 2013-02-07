@@ -34,5 +34,7 @@ public enum ErrorResources
    password_violation,
    priority_remove_failed_default_exist,
    form_without_pages,
-   form_page_without_fields
+   form_page_without_fields,
+   accesspoint_already_exists,
+   integrationpoint_already_exists
 }
