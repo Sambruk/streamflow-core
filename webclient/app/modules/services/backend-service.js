@@ -45,8 +45,12 @@
       },
 
       createById:function (resourceData, id, urls) {
+        var values = id.split('?');
+        var trimmedId = values[0];
+        var query = values[1];
+
         var w = _.find(resourceData, function (item) {
-          return item.id === id
+          return item.id === trimmedId;
         });
 
         if (!w) {
@@ -56,6 +60,8 @@
         }
         // handle absolute urls
         var abshref = (w.href[0] === '/') ? w.href : this.basehref + w.href;
+        if (query)
+          abshref += '?' + query;
         return httpService.getRequest(abshref).then(function (response) {
           urls && urls.push(abshref);
           return new SfResource(abshref, response);
@@ -76,7 +82,7 @@
 
         // select the data we want to find the id in:
         var keys = key.split('.');
-        var data = keys.reduce(function(prev, curr) { return prev[curr]}, this.response);
+        var data = keys.reduce(function(prev, curr) { return prev[curr]; }, this.response);
         var resource = this.createById(data, id, urls);
         return resource.then(function (nextResource) {
           return nextResource.getNested(specs, urls);

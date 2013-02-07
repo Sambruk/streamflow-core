@@ -17,9 +17,18 @@
 (function() {
   'use strict';
 
+  window.sf = {
+    directives: angular.module('sf.directives', []),
+    filters: angular.module('sf.filters', []),
+    controllers: angular.module('sf.controllers', []),
+  };
+
+  sf.env = sf.env || 'development';
+
   angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
-    .config(['$routeProvider', function($routeProvider) {
-    $routeProvider
+    .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+      // $locationProvider.html5Mode(true);
+      $routeProvider
       .when('/:projectId/:caseType', {
         templateUrl: 'modules/views/case-list.html',
         controller: 'CaseListCtrl'
@@ -32,6 +41,7 @@
         redirectTo: '/'
       });
   }]);
+
 
 })();
 

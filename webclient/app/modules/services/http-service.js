@@ -30,8 +30,12 @@
     }
 
     function prepareApiUrl(baseUrl) {
-      var apiUrl = baseUrl + "/api/";
-      return apiUrl;
+      switch (sf.env) {
+        case 'production':
+          return 'http://localhost:8082/streamflow/';
+        default:
+          return baseUrl + "/api/";
+      }
     }
 
     // TODO Remove this, not needed ?
@@ -49,10 +53,8 @@
     return {
 
       baseUrl: baseUrl,
+      apiUrl: apiUrl,
 
-      // When using the real streamflow server in the test_folder:
-      //"apiUrl": 'http://localhost:8082/streamflow/surface/customers/197606030001/',
-      apiUrl:apiUrl,
 
       info: function() {
         return cache.info();

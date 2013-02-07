@@ -1,37 +1,49 @@
-{"commands":[], "index":null, "queries":[], "resources":[
+{
+  "commands": [],
+  "index": null,
+  "queries": [],
+  "resources": [
     {
-        "classes":"resource",
-        "href":"workspace/",
-        "id":"workspace",
-        "rel":"workspace",
-        "text":"Workspace"
+      "classes": "resource",
+      "href": "workspace/",
+      "id": "workspace",
+      "rel": "workspace",
+      "text": "Workspace"
     },
     {
-        "classes":"resource",
-        "href":"crystal/",
-        "id":"crystal",
-        "rel":"crystal",
-        "text":"Crystal"
+      "classes": "resource",
+      "href": "workspacev2/",
+      "id": "workspacev2",
+      "rel": "workspacev2",
+      "text": "Workspacev 2"
     },
     {
-        "classes":"resource",
-        "href":"overview/",
-        "id":"overview",
-        "rel":"overview",
-        "text":"Overview"
+      "classes": "resource",
+      "href": "account/",
+      "id": "account",
+      "rel": "account",
+      "text": "Account"
     },
     {
-        "classes":"resource",
-        "href":"administration/",
-        "id":"administration",
-        "rel":"administration",
-        "text":"Administration"
+      "classes": "resource",
+      "href": "overview/",
+      "id": "overview",
+      "rel": "overview",
+      "text": "Overview"
     },
     {
-        "classes":"resource",
-        "href":"account/",
-        "id":"account",
-        "rel":"account",
-        "text":"Account"
+      "classes": "resource",
+      "href": "administration/",
+      "id": "administration",
+      "rel": "administration",
+      "text": "Administration"
+    },
+    {
+      "classes": "resource",
+      "href": "crystal/",
+      "id": "crystal",
+      "rel": "crystal",
+      "text": "Crystal"
     }
-]}
+  ]
+}

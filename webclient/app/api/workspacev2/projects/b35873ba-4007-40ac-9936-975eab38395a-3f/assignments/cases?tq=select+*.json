@@ -1,0 +1,28 @@
+{
+  "links": [
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/77e34f5f-f84c-4f05-92d6-86996ea80e84-0/",
+      "id": "77e34f5f-f84c-4f05-92d6-86996ea80e84-0",
+      "rel": "case",
+      "text": "Testärende",
+      "assignedTo": "Admin - Henrik",
+      "caseId": "20121210-1",
+      "caseType": null,
+      "createdBy": "Admin - Henrik",
+      "creationDate": "2012-12-10T10:07:33.826Z",
+      "hasAttachments": false,
+      "hasContacts": true,
+      "hasConversations": false,
+      "hasSubmittedForms": false,
+      "labels": {
+        "links": []
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    }
+  ]
+}

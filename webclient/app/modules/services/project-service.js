@@ -26,7 +26,7 @@
       getAll:function () {
         return backendService.get({
           specs:[
-            {resources:'workspace'},
+            {resources:'workspacev2'},
             {resources: 'projects'}
           ],
           onSuccess:function (resource, result) {
@@ -42,11 +42,11 @@
         var self = this;
         return backendService.get({
           specs:[
-            {resources:'workspace'},
+            {resources:'workspacev2'},
             {resources: 'projects'},
             {'index.links': navigationService.projectId},
             {resources: navigationService.caseType },
-            {queries: 'cases'}
+            {queries: 'cases?tq=select+*'}
           ],
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){
@@ -85,4 +85,3 @@
   }]);
 
 })();
-//http://localhost:3501/api/workspace/cases/0f90c758-cf19-4cce-abcd-94f0f3373fce-28/
