@@ -28,7 +28,7 @@ describe("sf.services.http", function () {
     }));
 
     it("can get the entry point", inject(function (httpService) {
-        expect(httpService.apiUrl()).toEqual("http://localhost:8000/app/api/");
+        expect(httpService.apiUrl).toEqual("http://localhost:8000/app/api/");
       }
     ));
 
