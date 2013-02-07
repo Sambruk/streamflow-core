@@ -23,10 +23,10 @@ window.mockBackend = window.mockBackend || (function () {
   mockBackend.root = {"commands":[], "index":null, "queries":[], "resources":[
     {
       "classes":"resource",
-      "href":"workspace/",
-      "id":"workspace",
-      "rel":"workspace",
-      "text":"Workspace"
+      "href":"workspacev2/",
+      "id":"workspacev2",
+      "rel":"workspacev2",
+      "text":"Workspacev2"
     },
     {
       "classes":"resource",
@@ -58,7 +58,7 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ]};
 
-  mockBackend.workspace = {"commands":[], "index":{
+  mockBackend.workspacev2 = {"commands":[], "index":{
     "_type":"se.streamsource.dci.value.link.LinksValue",
     "links":[
       {
@@ -182,7 +182,7 @@ window.mockBackend = window.mockBackend || (function () {
     {
       "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
       "classes":null,
-      "href":"/api/workspace/cases/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
+      "href":"/api/workspacev2/cases/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
       "id":"f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0",
       "rel":"mycases/opencase",
       "text":"Test Test Test 2",
@@ -194,7 +194,7 @@ window.mockBackend = window.mockBackend || (function () {
     {
       "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
       "classes":null,
-      "href":"/api/workspace/cases/b35873ba-4007-40ac-9936-975eab38395a-30/",
+      "href":"/api/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/",
       "id":"b35873ba-4007-40ac-9936-975eab38395a-30",
       "rel":"mycases/opencase",
       "text":"Kontakt Center Thingy",
@@ -360,7 +360,7 @@ window.mockBackend = window.mockBackend || (function () {
         "sender":"MyName"
       },
       {
-        "_type":"se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO",
+        "_type":"se.streamsource.streamflow.api.workspacevcases.conversation.MessageDTO",
         "classes":null,
         "href":"975febee-9bac-405e-bdf2-105d84b3d22f-1/",
         "id":"975febee-9bac-405e-bdf2-105d84b3d22f-1",
@@ -432,7 +432,7 @@ window.mockBackend = window.mockBackend || (function () {
   ], "index":{
     "_type":"se.streamsource.streamflow.api.workspace.cases.CaseDTO",
     "classes":null,
-    "href":"/streamflow/workspace/cases/0f0008c2-4d6e-453a-b255-0d6ec86145f9-2/",
+    "href":"/streamflow/workspacev2/cases/0f0008c2-4d6e-453a-b255-0d6ec86145f9-2/",
     "id":"0f0008c2-4d6e-453a-b255-0d6ec86145f9-2",
     "rel":"case",
     "text":"formulärstest",

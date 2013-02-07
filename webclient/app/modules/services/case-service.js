@@ -26,7 +26,7 @@
       getSelected: function() {
         return backendService.get({
           specs:[
-            {resources:'workspace'},
+            {resources:'workspacev2'},
             {resources: 'projects'},
             {'index.links': navigationService.projectId},
             {resources: navigationService.caseType },
@@ -42,7 +42,7 @@
       getSelectedContacts: function() {
         return backendService.get({
           specs:[
-            {resources:'workspace'},
+            {resources:'workspacev2'},
             {resources: 'projects'},
             {'index.links': navigationService.projectId},
             {resources: navigationService.caseType },

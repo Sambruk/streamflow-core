@@ -2,7 +2,7 @@
     {
         "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
         "classes":null,
-        "href":"/api/workspace/cases/0f0008c2-4d6e-453a-b255-0d6ec86145f9-2/",
+        "href":"/api/workspacev2/cases/0f0008c2-4d6e-453a-b255-0d6ec86145f9-2/",
         "id":"cd1a59c5-dfa3-41c2-8287-80dc7834ca7e-14",
         "rel":"mycases/closedcase",
         "text":"Ett öppet ärende",
@@ -16,7 +16,7 @@
     {
         "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
         "classes":null,
-        "href":"/api/workspace/cases/0f90c758-cf19-4cce-abcd-94f0f3373fce-6b/",
+        "href":"/api/workspacev2/cases/0f90c758-cf19-4cce-abcd-94f0f3373fce-6b/",
         "id":"cd1a59c5-dfa3-41c2-8287-80dc7834ca7e-0",
         "rel":"mycases/closedcase",
         "text":"Ett stängt ärende",
