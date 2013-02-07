@@ -16,28 +16,9 @@
  */
 package se.streamsource.dci.restlet.server;
 
-import static org.qi4j.api.util.Annotations.isType;
-import static org.qi4j.api.util.Iterables.filter;
-import static org.qi4j.api.util.Iterables.first;
-import static org.qi4j.api.util.Iterables.iterable;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.constraint.ConstraintViolation;
-import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -64,10 +45,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SkipResourceValidityCheck;
@@ -76,6 +54,21 @@ import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.qi4j.api.util.Annotations.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * JAVADOC
@@ -328,7 +321,7 @@ public class CommandQueryResource
             method.invoke(this);
          } catch (Throwable e)
          {
-            handleException(Response.getCurrent(), e);
+            ResourceExceptionHelper.handleException( getClass(), Response.getCurrent(), e);
          }
       }
    }
@@ -465,7 +458,7 @@ public class CommandQueryResource
             resultWriter.write(builder.newInstance(), Response.getCurrent());
          } catch (Throwable e)
          {
-            handleException(Response.getCurrent(), e);
+            ResourceExceptionHelper.handleException( getClass(), Response.getCurrent(), e);
          }
       } else
       {
@@ -684,7 +677,7 @@ public class CommandQueryResource
             result(formForMethod(contextMethod));
          } catch (Exception e)
          {
-            handleException(Response.getCurrent(), e);
+            ResourceExceptionHelper.handleException( getClass(), Response.getCurrent(), e);
          }
       } else
       {
@@ -713,7 +706,7 @@ public class CommandQueryResource
             }
          } catch (Throwable e)
          {
-            handleException(Response.getCurrent(), e);
+            ResourceExceptionHelper.handleException( getClass(), Response.getCurrent(), e);
          }
       }
    }
@@ -758,7 +751,7 @@ public class CommandQueryResource
             result(formForMethod(contextMethod));
          } catch (Exception e)
          {
-            handleException(Response.getCurrent(), e);
+            ResourceExceptionHelper.handleException( getClass(), Response.getCurrent(), e);
          }
       } else
       {
@@ -792,7 +785,7 @@ public class CommandQueryResource
 
          } catch (Throwable e)
          {
-            handleException(Response.getCurrent(), e);
+            ResourceExceptionHelper.handleException( getClass(), Response.getCurrent(), e);
          }
       }
    }
@@ -803,72 +796,6 @@ public class CommandQueryResource
          result = converter.convert(result, Request.getCurrent(), (Object[]) Request.getCurrent().getAttributes().get(ARGUMENTS));
 
       return result;
-   }
-
-   private void handleException(Response response, Throwable ex)
-   {
-      while (ex instanceof InvocationTargetException)
-      {
-         ex = ex.getCause();
-      }
-
-      try
-      {
-         throw ex;
-      } catch (ResourceException e)
-      {
-         // IAE (or subclasses) are considered client faults
-         response.setEntity(new StringRepresentation(e.getMessage()));
-         response.setStatus(e.getStatus());
-      } catch (ConstraintViolationException e)
-      {
-         try
-         {
-            ConstraintViolationMessages cvm = new ConstraintViolationMessages();
-
-            // CVE are considered client faults
-            String messages = "";
-            Locale locale = RoleMap.role(Locale.class);
-            for (ConstraintViolation constraintViolation : e.constraintViolations())
-            {
-               if (!messages.equals(""))
-                  messages += "\n";
-               messages += cvm.getMessage(constraintViolation, locale);
-            }
-
-            response.setEntity(new StringRepresentation(messages));
-            response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-         } catch (Exception e1)
-         {
-            response.setEntity(new StringRepresentation(e.getMessage()));
-            response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-         }
-      } catch (IllegalArgumentException e)
-      {
-         // IAE (or subclasses) are considered client faults
-         response.setEntity(new StringRepresentation(e.getMessage()));
-         response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-      } catch (RuntimeException e)
-      {
-         // RuntimeExceptions are considered server faults
-         LoggerFactory.getLogger(getClass()).warn("Exception thrown during processing", e);
-         response.setEntity(new StringRepresentation(e.getMessage()));
-         response.setStatus(Status.SERVER_ERROR_INTERNAL);
-      } catch (Exception e)
-      {
-         // Checked exceptions are considered client faults
-         String s = e.getMessage();
-         if (s == null)
-            s = e.getClass().getSimpleName();
-         response.setEntity(new StringRepresentation(s));
-         response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-      } catch (Throwable e)
-      {
-         // Anything else are considered server faults
-         LoggerFactory.getLogger(getClass()).error("Exception thrown during processing", e);
-         response.setEntity(new StringRepresentation(e.getMessage()));
-         response.setStatus(Status.SERVER_ERROR_INTERNAL);
-      }
    }
 
    private Form formForMethod(Method contextMethod)

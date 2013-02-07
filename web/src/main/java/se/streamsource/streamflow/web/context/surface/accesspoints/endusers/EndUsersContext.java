@@ -16,11 +16,17 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
+import se.streamsource.streamflow.web.domain.structure.user.EndUsersQueries;
 
 import java.util.UUID;
 
@@ -28,8 +34,11 @@ import java.util.UUID;
  * JAVADOC
  */
 public class EndUsersContext
-   implements CreateContext<StringValue, EndUser>
+   implements CreateContext<StringValue, EndUser>, IndexContext<LinksValue>
 {
+   @Structure
+   Module module;
+
    public EndUser create(StringValue userId)
    {
       String id = userId.string().get();
@@ -54,5 +63,17 @@ public class EndUsersContext
 
       user.changeDescription( description );
       return user;
+   }
+
+   public LinksValue index()
+   {
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      EndUsersQueries endUsers = RoleMap.role( EndUsersQueries.class );
+
+      for( EndUser user : endUsers.endusers() )
+      {
+         linksBuilder.addDescribable( user );
+      }
+      return linksBuilder.newLinks();  //To change body of implemented methods use File | Settings | File Templates.
    }
 }

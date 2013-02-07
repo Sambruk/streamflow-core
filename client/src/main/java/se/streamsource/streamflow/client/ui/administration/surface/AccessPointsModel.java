@@ -20,12 +20,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.restlet.data.Form;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.client.util.Refreshable;
 
@@ -47,19 +43,9 @@ public class AccessPointsModel
 
    public void createAccessPoint( String accessPointName )
    {
-      try
-      {
-         Form form = new Form();
-         form.set( "name", accessPointName );
-         client.postCommand( "createaccesspoint", form.getWebRepresentation() );
-      } catch (ResourceException e)
-      {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
-         {
-            throw new OperationException( AdministrationResources.could_not_create_accesspoint_name_already_exists, e );
-         }
-         throw new OperationException( AdministrationResources.could_not_create_accesspoint, e );
-      }
+      Form form = new Form();
+      form.set( "name", accessPointName );
+      client.postCommand( "createaccesspoint", form.getWebRepresentation() );
    }
 
    public void changeDescription( LinkValue link, String newName )
@@ -67,15 +53,6 @@ public class AccessPointsModel
       Form form = new Form( );
       form.set( "name", newName );
 
-      try
-      {
-         client.getSubClient( link.id().get() ).putCommand( "changedescription", form.getWebRepresentation() );
-      } catch (ResourceException e)
-      {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
-         {
-            throw new OperationException( AdministrationResources.could_not_rename_accesspoint_name_already_exists, e );
-         }
-      }
+      client.getSubClient( link.id().get() ).putCommand( "changedescription", form.getWebRepresentation() );
    }
 }

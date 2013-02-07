@@ -45,6 +45,8 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCl
 import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointView;
+import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsView;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsView;
 import se.streamsource.streamflow.client.ui.administration.filters.FilterView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
@@ -396,7 +398,9 @@ public class UIAssembler
             PrioritiesView.class,
             PriorityView.class,
             PriorityOnCaseView.class,
-            FormLabelsView.class);
+            FormLabelsView.class,
+            IntegrationPointsView.class,
+            IntegrationPointView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,

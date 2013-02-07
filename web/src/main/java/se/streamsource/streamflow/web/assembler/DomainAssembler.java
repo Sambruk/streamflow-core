@@ -37,6 +37,7 @@ import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEnt
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
+import se.streamsource.streamflow.web.domain.entity.external.ShadowCaseEntity;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldGroupEntity;
@@ -49,6 +50,7 @@ import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.IntegrationPointEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -100,6 +102,7 @@ public class DomainAssembler
       attachments( layer.module("Attachments") );
       notes( layer.module( "Notes" ));
       tasks( layer.module("Tasks") );
+      external( layer.module( "External" ) );
 
       // All values are public
       layer.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
@@ -107,6 +110,11 @@ public class DomainAssembler
       // All entities are public
       layer.entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
 
+   }
+
+   private void external( ModuleAssembly module )
+   {
+      module.entities( ShadowCaseEntity.class ).visibleIn( application );
    }
 
    private void tasks( ModuleAssembly module )
@@ -177,7 +185,8 @@ public class DomainAssembler
    private void organizations(ModuleAssembly module) throws AssemblyException
    {
       module.entities(OrganizationsEntity.class, OrganizationEntity.class,
-              OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class, PriorityEntity.class).visibleIn( application );
+              OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class,
+            PriorityEntity.class, IntegrationPointEntity.class).visibleIn( application );
       module.values(ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 
