@@ -26,6 +26,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.external.ShadowCaseDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -33,6 +34,8 @@ import se.streamsource.streamflow.web.domain.entity.external.ShadowCaseEntity;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import java.util.Date;
+
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Role of ShadowCases.
@@ -70,8 +73,21 @@ public interface ShadowCases
       @Structure
       Module module;
 
-      public ShadowCase createCase( ShadowCaseDTO shadowCaseIn )
+      public ShadowCase createCase( final ShadowCaseDTO shadowCaseIn )
       {
+         // make sure we dont create same case again - key systemName-externalId
+         if( count( filter( new Specification<ShadowCase>()
+         {
+            public boolean satisfiedBy( ShadowCase item )
+            {
+               return ((ShadowCase.Data) item).systemName().get().equalsIgnoreCase( shadowCaseIn.systemName().get() )
+                     && ((ShadowCase.Data) item).externalId().get().equals( shadowCaseIn.externalId().get() );
+            }
+         }, data.cases() ) ) > 0 )
+         {
+            throw new IllegalArgumentException( "Case with identifier " + shadowCaseIn.systemName().get() + "-" + shadowCaseIn.externalId().get() + " already exists." );
+         }
+
          String id = idgen.generate( Identity.class );
 
          ShadowCase caze = createdCase( null, id, shadowCaseIn.systemName().get().toLowerCase(), shadowCaseIn.externalId().get(), shadowCaseIn.contactId().get(), shadowCaseIn.creationDate().get() );

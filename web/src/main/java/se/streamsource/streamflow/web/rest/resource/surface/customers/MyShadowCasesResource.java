@@ -25,7 +25,8 @@ import se.streamsource.streamflow.web.context.surface.customers.MyShadowCasesCon
 import se.streamsource.streamflow.web.domain.entity.external.ShadowCaseEntity;
 
 public class MyShadowCasesResource
-      extends CommandQueryResource implements SubResources
+      extends CommandQueryResource
+      implements SubResources
 {
    public MyShadowCasesResource()
    {

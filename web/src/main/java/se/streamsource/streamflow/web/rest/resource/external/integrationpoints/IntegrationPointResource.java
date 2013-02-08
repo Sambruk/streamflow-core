@@ -16,14 +16,41 @@
  */
 package se.streamsource.streamflow.web.rest.resource.external.integrationpoints;
 
+import org.qi4j.api.entity.Identity;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.streamflow.web.context.external.IntegrationPointContext;
+import se.streamsource.dci.restlet.server.api.SubResources;
+import se.streamsource.streamflow.web.context.external.integrationpoints.IntegrationPointContext;
+import se.streamsource.streamflow.web.domain.structure.external.ShadowCase;
+import se.streamsource.streamflow.web.domain.structure.external.ShadowCasesQueries;
+import se.streamsource.streamflow.web.domain.structure.organization.IntegrationPoint;
+import se.streamsource.streamflow.web.rest.resource.external.ShadowCaseResource;
 
 public class IntegrationPointResource
    extends CommandQueryResource
+   implements SubResources
 {
    public IntegrationPointResource()
    {
       super( IntegrationPointContext.class );
+   }
+
+   public void resource( String segment ) throws ResourceException
+   {
+      IntegrationPoint integrationPoint = RoleMap.role( IntegrationPoint.class );
+
+      ShadowCasesQueries query = RoleMap.role( ShadowCasesQueries.class );
+      ShadowCase caze = query.findExternalCase( integrationPoint.getDescription().toLowerCase(), segment );
+
+      if( caze == null )
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+      } else
+      {
+         setRole( ShadowCase.class, ((Identity)caze).identity().get() );
+         subResource( ShadowCaseResource.class );
+      }
    }
 }

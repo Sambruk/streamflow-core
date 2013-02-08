@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.external;
+package se.streamsource.streamflow.web.context.external.integrationpoints;
 
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.UpdateContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.external.ShadowCaseDTO;
+import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.external.ShadowCase;
 import se.streamsource.streamflow.web.domain.structure.external.ShadowCases;
-import se.streamsource.streamflow.web.domain.structure.external.ShadowCasesQueries;
 import se.streamsource.streamflow.web.domain.structure.organization.IntegrationPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
@@ -31,35 +34,33 @@ import static se.streamsource.dci.api.RoleMap.*;
 
 @Mixins( IntegrationPointContext.Mixin.class )
 public interface IntegrationPointContext
-   extends Context, UpdateContext<ShadowCaseDTO>
+   extends Context, IndexContext<LinksValue>
 {
    public void create( ShadowCaseDTO shadowCase );
-
-   public void remove( String externalId );
 
    abstract class Mixin
       implements IntegrationPointContext
    {
+      @Structure
+      Module module;
+
       public void create( ShadowCaseDTO shadowCase )
       {
          role( Organization.class ).createCase( shadowCase );
       }
 
-      public void remove( String externalId )
+      /**
+       *  This index has to return externalId as link id, not UUID!!
+       * @return externalId - the id given of the external system.
+       */
+      public LinksValue index()
       {
-         ShadowCasesQueries queries = role( ShadowCasesQueries.class );
-
-         ShadowCase caze = queries.findExternalCase( role( IntegrationPoint.class ).getDescription().toLowerCase(), externalId );
-         ((ShadowCases)queries).removeCase( caze );
-      }
-
-      public void update( ShadowCaseDTO updateCase )
-      {
-         ShadowCasesQueries queries = role( ShadowCasesQueries.class );
-
-         ShadowCase caze = queries.findExternalCase( role( IntegrationPoint.class ).getDescription().toLowerCase(), updateCase.externalId().get() );
-         caze.updateContent( updateCase.content().get() );
-         caze.updateLog( updateCase.log().get() );
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         for( ShadowCase caze : role( ShadowCases.class ).findExternalCases( role( IntegrationPoint.class ).getDescription().toLowerCase() ) )
+         {
+            linksBuilder.addLink( ((ShadowCase.Data)caze).externalId().get(), ((ShadowCase.Data)caze).externalId().get() );
+         }
+         return linksBuilder.newLinks();
       }
    }
 }

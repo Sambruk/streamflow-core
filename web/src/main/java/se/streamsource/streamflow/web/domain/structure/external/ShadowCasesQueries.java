@@ -34,6 +34,8 @@ public interface ShadowCasesQueries
 
    ShadowCase findExternalCase( String systemName, String externalId );
 
+   Query<ShadowCase> findExternalCases( String externalSystem );
+
    abstract class Mixin
       implements ShadowCasesQueries
    {
@@ -58,6 +60,15 @@ public interface ShadowCasesQueries
                      eq( templateFor( ShadowCase.Data.class ).externalId(), externalId )))
                .newQuery( module.unitOfWorkFactory().currentUnitOfWork() )
                .find();
+      }
+
+      public Query<ShadowCase> findExternalCases( String systemName )
+      {
+         return module.queryBuilderFactory().newQueryBuilder( ShadowCase.class )
+               .where( and(
+                     eq( templateFor( Removable.Data.class ).removed(), false ),
+                     eq( templateFor( ShadowCase.Data.class ).systemName(), systemName )))
+               .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
       }
    }
 }

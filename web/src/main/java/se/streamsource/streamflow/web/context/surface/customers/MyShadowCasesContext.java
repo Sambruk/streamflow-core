@@ -20,9 +20,11 @@ package se.streamsource.streamflow.web.context.surface.customers;
 import org.joda.time.DateTime;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.external.ShadowCaseLinkValue;
@@ -33,40 +35,45 @@ import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
-public class MyShadowCasesContext
-   implements IndexContext<LinksValue>
+@Mixins( MyShadowCasesContext.Mixin.class )
+public interface MyShadowCasesContext
+   extends Context, IndexContext<LinksValue>
 
 {
 
-   @Structure
-   Module module;
-
-   public LinksValue index()
+   abstract class Mixin
+      implements MyShadowCasesContext
    {
-      ShadowCasesQueries shadowCasesQueries = role( ShadowCasesQueries.class );
-      String contactId = role( Contactable.Data.class ).contact().get().contactId().get();
+      @Structure
+      Module module;
 
-      Query<ShadowCase> myShadowCases = shadowCasesQueries.findCases( contactId );
-
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-      ValueBuilder<ShadowCaseLinkValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( ShadowCaseLinkValue.class );
-      for( ShadowCase caze : myShadowCases )
+      public LinksValue index()
       {
-         valueBuilder.prototype().contactId().set( ((Contactable.Data)caze).contact().get().contactId().get() );
-         valueBuilder.prototype().content().set( ((ShadowCase.Data)caze).content().get() );
-         valueBuilder.prototype().createdOn().set( caze.createdOn().get() != null ? new DateTime( caze.createdOn().get()) : null );
-         valueBuilder.prototype().creationDate().set( ((ShadowCase.Data)caze).creationDate().get() );
-         valueBuilder.prototype().description().set( caze.getDescription() );
-         valueBuilder.prototype().externalId().set( ((ShadowCase.Data)caze).externalId().get() );
-         valueBuilder.prototype().log().set( ((ShadowCase.Data)caze).log().get() );
-         valueBuilder.prototype().systemName().set( ((ShadowCase.Data) caze).systemName().get() );
-         valueBuilder.prototype().href().set( ((Identity)caze).identity().get() );
-         valueBuilder.prototype().id().set( ((Identity)caze).identity().get() );
-         valueBuilder.prototype().text().set( caze.getDescription() );
+         ShadowCasesQueries shadowCasesQueries = role( ShadowCasesQueries.class );
+         String contactId = role( Contactable.Data.class ).contact().get().contactId().get();
 
-         linksBuilder.addLink( valueBuilder.newInstance() );
+         Query<ShadowCase> myShadowCases = shadowCasesQueries.findCases( contactId );
+
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         ValueBuilder<ShadowCaseLinkValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( ShadowCaseLinkValue.class );
+         for( ShadowCase caze : myShadowCases )
+         {
+            valueBuilder.prototype().contactId().set( ((ShadowCase.Data)caze).contactId().get() );
+            valueBuilder.prototype().content().set( ((ShadowCase.Data)caze).content().get() );
+            valueBuilder.prototype().createdOn().set( caze.createdOn().get() != null ? new DateTime( caze.createdOn().get()) : null );
+            valueBuilder.prototype().creationDate().set( ((ShadowCase.Data)caze).creationDate().get() );
+            valueBuilder.prototype().description().set( caze.getDescription() );
+            valueBuilder.prototype().externalId().set( ((ShadowCase.Data)caze).externalId().get() );
+            valueBuilder.prototype().log().set( ((ShadowCase.Data)caze).log().get() );
+            valueBuilder.prototype().systemName().set( ((ShadowCase.Data) caze).systemName().get() );
+            valueBuilder.prototype().href().set( ((Identity)caze).identity().get() + "/" );
+            valueBuilder.prototype().id().set( ((Identity)caze).identity().get() );
+            valueBuilder.prototype().text().set( caze.getDescription() );
+
+            linksBuilder.addLink( valueBuilder.newInstance() );
+         }
+
+         return linksBuilder.newLinks();
       }
-
-      return linksBuilder.newLinks();
    }
 }

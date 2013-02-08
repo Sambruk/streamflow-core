@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.external;
+package se.streamsource.streamflow.web.context.external.integrationpoints;
 
 
 import org.qi4j.api.injection.scope.Structure;
