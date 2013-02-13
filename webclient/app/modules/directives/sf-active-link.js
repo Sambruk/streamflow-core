@@ -21,15 +21,15 @@
   sf.directives.directive('sfActiveLink', ['$location', function (location) {
     return {
       restrict:'A',
-      link:function (scope, element, attrs, controller) {
-        var path = "/" + scope.type.href;
-        scope.location = location;
+      link: function (scope, element, attrs, controller) {
         scope.$watch('location.path()', function (newPath) {
-          if (newPath.match(path)) {
+          scope.location = location;
+          var href = attrs.href.substring(1);
+          if (!newPath) return;
+          if (newPath.match(href))
             element.addClass('sel');
-          } else {
+          else
             element.removeClass('sel');
-          }
         });
       }
     };
