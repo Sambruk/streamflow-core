@@ -1,0 +1,84 @@
+{
+  "commands": [
+    {
+      "classes": "command",
+      "href": "add",
+      "id": "add",
+      "rel": "add",
+      "text": "Add"
+    }
+  ],
+  "index": {
+    "_type": "se.streamsource.streamflow.api.workspace.cases.contact.ContactsDTO",
+    "contacts": [
+      {
+        "addresses": [],
+        "company": "",
+        "contactId": "",
+        "contactPreference": null,
+        "emailAddresses": [],
+        "isCompany": false,
+        "name": "",
+        "note": "",
+        "phoneNumbers": [],
+        "picture": ""
+      },
+      {
+        "addresses": [],
+        "company": "",
+        "contactId": "197309069289",
+        "contactPreference": null,
+        "emailAddresses": [],
+        "isCompany": false,
+        "name": "Nina Greger",
+        "note": "",
+        "phoneNumbers": [],
+        "picture": ""
+      },
+      {
+        "addresses": [],
+        "company": "",
+        "contactId": "190101010101",
+        "contactPreference": null,
+        "emailAddresses": [
+          {
+            "contactType": "HOME",
+            "emailAddress": "henrik.reinhold@gmail.com"
+          }
+        ],
+        "isCompany": false,
+        "name": "asdg",
+        "note": "",
+        "phoneNumbers": [
+          {
+            "contactType": "HOME",
+            "phoneNumber": "37895"
+          }
+        ],
+        "picture": ""
+      },
+      {
+        "addresses": [],
+        "company": "",
+        "contactId": "197705232382",
+        "contactPreference": null,
+        "emailAddresses": [],
+        "isCompany": false,
+        "name": "Frida Kranstege",
+        "note": "",
+        "phoneNumbers": [],
+        "picture": ""
+      }
+    ]
+  },
+  "queries": [
+    {
+      "classes": "query",
+      "href": "index",
+      "id": "index",
+      "rel": "index",
+      "text": "Index"
+    }
+  ],
+  "resources": []
+}

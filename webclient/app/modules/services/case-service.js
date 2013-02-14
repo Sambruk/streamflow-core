@@ -30,7 +30,7 @@
             {resources: 'projects'},
             {'index.links': projectId},
             {resources: caseType },
-            {queries: 'cases'},
+            {queries: 'cases?tq=select+*'},
             {links: caseId}
           ],
           onSuccess:function (resource, result) {
@@ -46,7 +46,7 @@
             {resources: 'projects'},
             {'index.links': projectId},
             {resources: caseType },
-            {queries: 'cases'},
+            {queries: 'cases?tq=select+*'},
             {links: caseId},
             {resources: 'contacts'}
           ],

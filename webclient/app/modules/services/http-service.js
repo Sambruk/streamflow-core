@@ -98,7 +98,7 @@
       },
 
       prepareUrl: function(href) {
-        var url = (href[0] === '/') ? this.baseUrl + href : this.absApiUrl(href);
+        var url = (href[0] === '/') ? this.absApiUrl(href.substring(11)) : this.absApiUrl(href);
         return url;
       },
 
