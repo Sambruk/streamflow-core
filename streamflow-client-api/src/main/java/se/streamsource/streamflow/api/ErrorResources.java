@@ -24,6 +24,7 @@ public enum ErrorResources
    username_password_violation,
    unauthorized_access,
    concurrent_change,
+   Conflict,
    communication_error,
 
    search_string_malformed,

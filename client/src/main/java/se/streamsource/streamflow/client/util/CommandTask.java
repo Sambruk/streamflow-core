@@ -87,7 +87,11 @@ public abstract class CommandTask
          command();
 
          return transactionDomains;
-      } finally
+      } catch ( Throwable t)
+      {
+         failed( t );
+         return transactionDomains;
+      }finally
       {
          stream.unregisterListener( this );
       }
@@ -118,7 +122,9 @@ public abstract class CommandTask
       {
          ResourceException re = (ResourceException) throwable;
          if (re.getStatus().equals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY) ||
-               re.getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
+               re.getStatus().equals( Status.SERVER_ERROR_INTERNAL ) ||
+               re.getStatus().equals( Status.CLIENT_ERROR_CONFLICT ) ||
+               re.getStatus().equals( Status.REDIRECTION_NOT_MODIFIED ))
          {
             String exceptionMessage = re.getStatus().getDescription();
             if( valueOf( exceptionMessage ) != null )
