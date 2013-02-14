@@ -16,24 +16,292 @@
     limitations under the License.
 
 -->
-<div>
+<div class="content-primary" role="main">
+  <!-- Single issue -->
+  <div class="single-issue">
 
-  <h2>{{case.index.text}}</h2>
+    <!-- Issue header -->
+    <div class="issue-header cf">
+      <div class="id">{{case.index.caseId}}</div>
+      <div class="choose-type">
+        <label class="struct" for="issue-type">Ärendetyp</label>
+        <input type="text" name="issue-type" id="issue-type" placeholder="Välj ärendetyp">
+      </div>
+      <div class="wiki-link">
+        <a href="#">Namn på ärendetyp</a>
+      </div>
+    </div>
+    <!-- /Issue header -->
 
-  Created By: {{case.index.createdBy}}<br>
-  Owner: {{case.index.owner}}
+    <!-- Issue body -->
+    <div class="issue-body">
+      <div class="due-date set">
+        <span>{{case.overdueDays() | positive}}</span>
+      </div>
+      <div class="issue-description">
+        <h2>{{case.index.text}}</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      </div>
+    </div>
+    <!-- /Issue body -->
+
+  </div>
+  <!-- /Single issue -->
+
+  <!-- Module: Check list -->
+  <div class="m m-check-list">
+    <div class="m-h">
+      <h2>Checklista</h2>
+      <a href="#" class="add-item">Lägg till</a>
+    </div>
+    <div class="mc">
+      <form action="#" method="get">
+        <ul class="check-list zebra-list">
+          <li class="odd">
+          <div class="checkbox">
+            <input type="checkbox" name="check1-1" id="check1-1" />
+            <label for="check1-1">Skolplats ansökningsformulär ifyllt</label>
+          </div>
+          </li>
+          <li>
+          <div class="checkbox">
+            <input type="checkbox" name="check1-2" id="check1-2" />
+            <label for="check1-2">Skolplats ansökningsformulär ifyllt</label>
+          </div>
+          </li>
+          <li class="odd">
+          <div class="checkbox">
+            <input type="checkbox" name="check1-3" id="check1-3" />
+            <label for="check1-3">Skolplats ansökningsformulär ifyllt</label>
+          </div>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>
+  <!-- /Check list -->
+
+  <!-- Issue forms -->
+  <div class="m m-issue-forms">
+    <div class="m-h">
+      <h2>Formulär</h2>
+      <ul class="form-tabs cf">
+        <li class="has-versions">
+        <a href="#" class="sel">Skolplats ansökning</a>
+        <a href="#" class="versions-drop">Visa tidigare versioner</a>
+        </li>
+        <li class="has-versions">
+        <a href="#">Signatur</a>
+        <a href="#" class="versions-drop">Visa tidigare versioner</a>
+        </li>
+        <li>
+        <a href="#">Formulär 1</a>
+        </li>
+        <li>
+        <a href="#">Formulär 2</a>
+        </li>
+      </ul>
+    </div>
+    <div class="m-c">
+
+      <form action="#" method="get">
+
+        <div class="row cols-1 cf">
+          <div class="text col full col-1">
+            <label for="field-1">Namn ( Elev ) <em>Samtliga förnamn samt efternamn ska anges</em></label>
+            <input type="text" name="field-1" id="field-1">
+          </div>
+        </div>
+        <div class="row cols-1 cf">
+          <div class="text col full col-1">
+            <label for="field-2">Personnummer <em>ååååmmdd-xxxx</em></label>
+            <input type="text" name="field-2" id="field-2">
+          </div>
+        </div>
+        <div class="row cols-1 cf">
+          <div class="text col full col-1">
+            <label for="field-3">Namn <em>Vårdnadshavare</em></label>
+            <input type="text" name="field-3" id="field-3">
+          </div>
+        </div>
+        <div class="row cols-1 cf">
+          <div class="text col full col-1">
+            <label for="field-4">Gatuadress</label>
+            <input type="text" name="field-4" id="field-4">
+          </div>
+        </div>
+        <div class="row cols-2 cf">
+          <div class="text col small col-1">
+            <label for="field-5">Postnummer</label>
+            <input type="text" name="field-5" id="field-5" />
+          </div>
+          <div class="text col large col-2">
+            <label for="field-6">Postort</label>
+            <input type="text" name="field-6" id="field-6" />
+          </div>
+        </div>
+        <div class="row cols-1 cf">
+          <div class="text col full col-1">
+            <label for="field-7">Telefon</label>
+            <input type="text" name="field-7" id="field-7">
+          </div>
+        </div>
+        <div class="row cols-1 cf">
+          <div class="text col full col-1">
+            <label for="field-8">E-post</label>
+            <input type="text" name="field-8" id="field-8">
+          </div>
+        </div>
+      </form>
+
+      <a href="#" class="btn inactive inline">Tillbaka</a> <a href="#" class="btn inline">Nästa</a>
+
+    </div>
+  </div>
+  <!-- /Issue forms -->
+
 </div>
+<!-- /Content primary -->
 
-<div>
-  <h2>Kontakter</h2>
+<!-- Content secondary -->
+<div class="content-secondary" role="complementary">
 
-  <table class="table table-striped">
-    <tr ng-repeat='contact in contacts'>
-      <td><a href="{{contact.view-href}}">{{contact.name}}</a></td>
-      <td><a href="{{contact.change-href}}">Ändra</a></td>
-    </tr>
-  </table>
+  <h2 class="struct">Verktyg och annan information</h2>
 
-  <button>Ny</button>
+  <!-- Issue toolbar -->
+  <div class="toolbar">
+    <a href="#" class="btn">Byt ägare</a>
+    <a href="#" class="btn">Tilldela</a>
+    <a href="#" class="btn">Stäng</a>
+    <a href="#" class="btn dropdown">Mer</a>
+  </div>
+  <!-- /Issue toolbar -->
+
+  <!-- Module: Allmänt -->
+  <div class="m m-general">
+    <div class="m-h">
+      <h2>Allmänt</h2>
+    </div>
+    <div class="m-c">
+      <div class="m-box">
+        <ul>
+          <li><strong>Ägare:</strong> Kontaktcenter</li>
+          <li><strong>Handläggare:</strong> Solveig Grankvist</li>
+          <li><strong>Kund:</strong> Henrik Reinhold 19760901-4046</li>
+          <li><strong>Förfallodatum:</strong> 2013-03-10</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- /Module: Allmänt -->
+
+  <!-- Module: Konversationer -->
+  <div class="m m-convos">
+    <div class="m-h">
+      <h2>Konversationer</h2>
+    </div>
+    <div class="m-c">
+      <ul>
+        <li>
+        <a href="#" class="block-link">
+          <h3>Detaljer om ansökan</h3>
+          <span class="date">2013-01-21, 13:45</span>
+          <ul class="convo-status">
+            <li class="icon users" title="2 användare i konversationen">2 <span class="struct">användare i konversationen</span></li>
+            <li class="icon msgs" title="3 meddelanden i konversationen">3 <span class="struct">meddelanden i konversationen</span></li>
+          </ul>
+        </a>
+        </li>
+        <li>
+        <a href="#" class="block-link">
+          <h3>Detaljer om ansökan</h3>
+          <span class="date">2013-01-21, 13:45</span>
+          <ul class="convo-status">
+            <li class="icon users" title="2 användare i konversationen">2 <span class="struct">användare i konversationen</span></li>
+            <li class="icon msgs" title="3 meddelanden i konversationen">3 <span class="struct">meddelanden i konversationen</span></li>
+          </ul>
+        </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Konversationer -->
+
+  <!-- Module: Kontakter -->
+  <div class="m m-contacts">
+    <div class="m-h">
+      <h2>Kontakter</h2>
+    </div>
+    <div class="m-c">
+      <ul class="zebra-list">
+        <li ng-repeat='contact in contacts'>
+        <a href="{{contact.view-href}}">{{contact.name}}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Kontakter -->
+
+  <!-- Module: Bifogade filer -->
+  <div class="m m-attachments">
+    <div class="m-h">
+      <h2>Bifogade filer</h2>
+    </div>
+    <div class="m-c">
+      <ul class="zebra-list">
+        <li class="odd">
+        <a href="xlink-">Karta</a>
+        <a href="#" class="delete" title="Radera fil">Radera fil</a>
+        </li>
+        <li>
+        <a href="xlink-">Foto på gräsmattan</a>
+        <a href="#" class="delete" title="Radera fil">Radera fil</a>
+        </li>
+        <li class="odd">
+        <a href="xlink-">Ett foto till på gräsmattan</a>
+        <a href="#" class="delete" title="Radera fil">Radera fil</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Bifogade filer -->
+
+  <!-- Module: Ärendelogg -->
+  <div class="m m-issuelog">
+    <div class="m-h">
+      <h2>Ärendelogg</h2>
+    </div>
+    <div class="m-c">
+      <table class="log-table">
+        <caption class="struct">Historik för detta ärende</caption>
+        <thead class="struct">
+          <tr>
+            <th>Datum</th>
+            <th>Titel</th>
+            <th>Användare</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>1 juli</td>
+          <td>Öppna ärende</td>
+          <td>Henrik Reinhold</td>
+        </tr>
+        <tr class="even">
+          <td>15 juni</td>
+          <td>Tilldela ärende</td>
+          <td>Solveig Grankvist</td>
+        </tr>
+        <tr>
+          <td>13 juni</td>
+          <td>Tilldela ärende</td>
+          <td>Henrik Reinhold</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- /Module: Ärendelogg -->
 
 </div>
+<!-- /Content secondary -->
