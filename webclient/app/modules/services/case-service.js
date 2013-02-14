@@ -23,15 +23,15 @@
   sfServices.factory('caseService', ['backendService', 'navigationService', function (backendService, navigationService) {
 
     return {
-      getSelected: function() {
+      getSelected: function(projectId, caseType, caseId) {
         return backendService.get({
           specs:[
             {resources:'workspacev2'},
             {resources: 'projects'},
-            {'index.links': navigationService.projectId},
-            {resources: navigationService.caseType },
+            {'index.links': projectId},
+            {resources: caseType },
             {queries: 'cases'},
-            {links: navigationService.caseId}
+            {links: caseId}
           ],
           onSuccess:function (resource, result) {
             result.index = resource.response.index;
@@ -39,15 +39,15 @@
         });
       },
 
-      getSelectedContacts: function() {
+      getSelectedContacts: function(projectId, caseType, caseId) {
         return backendService.get({
           specs:[
             {resources:'workspacev2'},
             {resources: 'projects'},
-            {'index.links': navigationService.projectId},
-            {resources: navigationService.caseType },
+            {'index.links': projectId},
+            {resources: caseType },
             {queries: 'cases'},
-            {links: navigationService.caseId},
+            {links: caseId},
             {resources: 'contacts'}
           ],
           onSuccess:function (resource, result) {
