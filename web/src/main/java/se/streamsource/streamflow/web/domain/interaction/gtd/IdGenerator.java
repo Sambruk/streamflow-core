@@ -16,16 +16,17 @@
  */
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Generator for id sequences. Format is: yyyyMMdd-nnnn.
@@ -54,6 +55,8 @@ public interface IdGenerator
       @This
       Data state;
 
+      @Structure
+      Module module;
       // Commands
 
       public void assignId( CaseId aCase )
@@ -83,7 +86,7 @@ public interface IdGenerator
          String date = format.format( now.getTime() );
 
          String caseId = date + "-" + current;
-
+         System.out.println( "new generated case id " + caseId );
          aCase.assignId( caseId );
       }
 
@@ -96,6 +99,7 @@ public interface IdGenerator
 
       public void setCounter( @Optional DomainEvent event, long counter )
       {
+         System.out.println( "Uow: " + module.unitOfWorkFactory().currentUnitOfWork().toString() );
          state.current().set( counter );
       }
    }
