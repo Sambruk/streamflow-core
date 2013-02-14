@@ -23,10 +23,8 @@ describe("sf.directives.sf-active-link", function () {
 
   var scope, el;
   beforeEach(inject(function($rootScope, $compile) {
-    var html = '<a href="/tapir" sf-active-link>Hello</a>';
-    scope = $rootScope.$new();
-    // TODO, this should not be needed, the value should come from <a href
-    scope.type = { href: 'tapir'};
+    var html = '<a href="#/tapir" sf-active-link>Hello</a>';
+    scope = $rootScope;
     el = angular.element(html);
     $compile(el)(scope);
   }));
@@ -34,7 +32,6 @@ describe("sf.directives.sf-active-link", function () {
   it('sets the sel class for matching path', inject(function($location) {
     $location.path('/tapir');
     scope.$digest();
-    console.log('type', scope.type);
     var klass = el.attr('class');
     expect(klass).toMatch(/sel/);
   }));
