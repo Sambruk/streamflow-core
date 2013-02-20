@@ -65,7 +65,7 @@ describe("sf.services.project", function () {
         $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/cases?tq=select+*').respond(backend.project1InboxCases);
 
         // When
-        var response = projectService.getSelected();
+        var response = projectService.getSelected('b35873ba-4007-40ac-9936-975eab38395a-3f', 'inbox');
 
         // Then
         expect(response.length).toEqual(0);

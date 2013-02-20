@@ -98,8 +98,10 @@
       },
 
       prepareUrl: function(href) {
-        var url = (href[0] === '/') ? this.baseUrl + href : this.absApiUrl(href);
-        return url;
+        if (href[0] === '/')
+          return (/\/streamflow/).test(href) ?  this.absApiUrl(href.substring(11)) : href;
+        else
+          return this.absApiUrl(href);
       },
 
       cacheResponse: function(href, response) {

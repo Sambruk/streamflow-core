@@ -38,14 +38,14 @@
         });
       },
       //http://localhost:3501/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0
-      getSelected: function() {
+      getSelected: function(projectId, caseType) {
         var self = this;
         return backendService.get({
           specs:[
             {resources:'workspacev2'},
             {resources: 'projects'},
-            {'index.links': navigationService.projectId},
-            {resources: navigationService.caseType },
+            {'index.links': projectId},
+            {resources: caseType},
             {queries: 'cases?tq=select+*'}
           ],
           onSuccess:function (resource, result) {
