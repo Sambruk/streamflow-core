@@ -16,12 +16,6 @@
  */
 package se.streamsource.streamflow.web.rest;
 
-import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
-import static se.streamsource.dci.value.table.TableValue.DATETIME;
-import static se.streamsource.dci.value.table.TableValue.STRING;
-
-import java.util.Collections;
-
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -37,7 +31,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -66,6 +59,10 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
+
+import java.util.Collections;
+
+import static se.streamsource.dci.value.table.TableValue.*;
 
 /**
  * JAVADOC
@@ -211,6 +208,9 @@ public class StreamflowResultConverter
       prototype.hasConversations().set(aCase.hasConversations());
       prototype.hasSubmittedForms().set(aCase.hasSubmittedForms());
       prototype.hasAttachments().set(aCase.hasAttachments());
+      prototype.hasUnreadConversation().set( aCase.hasUnreadConversation() );
+      prototype.hasUnreadForm().set( aCase.hasUnreadForm() );
+      prototype.unread().set( aCase.unread().get() );
 
       // Labels
       LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).command("delete");
@@ -254,27 +254,27 @@ public class StreamflowResultConverter
             return caseEntity.getDescription();
          }
       }).
-            column("created", "Created", DATETIME, new Function<CaseEntity, Object>()
+            column( "created", "Created", DATETIME, new Function<CaseEntity, Object>()
             {
-               public Object map(CaseEntity caseEntity)
+               public Object map( CaseEntity caseEntity )
                {
                   return caseEntity.createdOn().get();
                }
-            }).
-            column("creator", "Creator", STRING, new Function<CaseEntity, Object>()
+            } ).
+            column( "creator", "Creator", STRING, new Function<CaseEntity, Object>()
             {
-               public Object map(CaseEntity caseEntity)
+               public Object map( CaseEntity caseEntity )
                {
                   return ((Describable) caseEntity.createdBy().get()).getDescription();
                }
-            }).
-            column("due", "Due on", DATETIME, new Function<CaseEntity, Object>()
+            } ).
+            column( "due", "Due on", DATETIME, new Function<CaseEntity, Object>()
             {
-               public Object map(CaseEntity caseEntity)
+               public Object map( CaseEntity caseEntity )
                {
                   return caseEntity.dueOn().get();
                }
-            }).
+            } ).
             column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()
             {
                public Object map(CaseEntity caseEntity)
@@ -356,6 +356,13 @@ public class StreamflowResultConverter
                   return caseEntity.hasConversations();
                }
             }).
+            column("hasunreadconversation", "Has unread conversations", BOOLEAN, new Function<CaseEntity, Object>()
+            {
+               public Object map(CaseEntity caseEntity)
+               {
+                  return caseEntity.hasUnreadConversation();
+               }
+            }).
             column("hasattachments", "Has attachments", BOOLEAN, new Function<CaseEntity, Object>()
             {
                public Object map(CaseEntity caseEntity)
@@ -368,6 +375,13 @@ public class StreamflowResultConverter
                public Object map(CaseEntity caseEntity)
                {
                   return caseEntity.hasSubmittedForms();
+               }
+            }).
+            column("hasunreadform", "Has unread submitted form", BOOLEAN, new Function<CaseEntity, Object>()
+            {
+               public Object map(CaseEntity caseEntity)
+               {
+                  return caseEntity.hasUnreadForm();
                }
             }).
             column("labels", "Labels", STRING, new Function<CaseEntity, Object>()
@@ -445,7 +459,14 @@ public class StreamflowResultConverter
                   }
                   return null;
                }
-            } );
+            } ).
+            column("unread", "Is unread", BOOLEAN, new Function<CaseEntity, Object>()
+            {
+               public Object map(CaseEntity caseEntity)
+               {
+                  return caseEntity.isUnread();
+               }
+            });
       
       if (!"*".equals( query.select() ))
       {

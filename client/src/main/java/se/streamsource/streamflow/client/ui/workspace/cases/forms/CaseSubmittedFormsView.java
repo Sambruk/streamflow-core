@@ -16,36 +16,13 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.ActionMap;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
-
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.util.Iterables;
-
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
@@ -53,7 +30,31 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.font.TextAttribute;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -109,7 +110,16 @@ public class CaseSubmittedFormsView
 
                if (listDTO == lastSubmitted)
                {
-                  return super.getTreeCellRendererComponent( tree, listDTO.form().get(), sel, expanded, leaf, row, hasFocus );
+                  Component c = super.getTreeCellRendererComponent( tree, listDTO.form().get(), sel, expanded, leaf, row, hasFocus );
+
+                  Map attributes = c.getFont().getAttributes();
+                  if ( listDTO.unread().get() )
+                  {
+                     attributes.put( TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD );
+                  }
+                  c.setFont( new Font(attributes) );
+
+                  return c;
                }
 
                String dateString = new SimpleDateFormat( text( WorkspaceResources.date_time_format ) ).format( listDTO.submissionDate().get() );
@@ -141,9 +151,33 @@ public class CaseSubmittedFormsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withNames("submittedForm" ), transactions ))
+      if (matches( withNames("submittedForm", "setUnread" ), transactions ))
       {
+        TreePath path = submittedForms.getSelectionPath();
+
         refresh();
+        if( path != null )
+        {
+
+           String form = ((SubmittedFormListDTO)((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject()).form().get();
+
+           Enumeration<DefaultMutableTreeNode> e = ((DefaultMutableTreeNode)submittedForms.getModel().getRoot()).children();
+
+           TreePath newPath = null;
+
+           while (e.hasMoreElements()) {
+              DefaultMutableTreeNode node = e.nextElement();
+              if ( ((SubmittedFormListDTO)node.getUserObject()).form().get().equalsIgnoreCase(form)) {
+                 newPath = new TreePath(node.getPath());
+                 break;
+              }
+           }
+
+           if( newPath != null )
+           {
+              submittedForms.setSelectionPath( newPath );
+           }
+        }
       }
    }
 

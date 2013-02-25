@@ -95,6 +95,7 @@ public interface SubmittedFormsQueries
             formDTO.form().set( formName.description().get() );
             formDTO.href().set(form.form().get().identity());
             formDTO.id().set(form.form().get().identity());
+            formDTO.unread().set( form.unread().get() );
             list.forms().get().add( formBuilder.newInstance() );
          }
 

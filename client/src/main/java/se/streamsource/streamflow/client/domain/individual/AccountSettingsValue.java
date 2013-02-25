@@ -40,4 +40,7 @@ public interface AccountSettingsValue
 
 
    Property<String> password();
+
+   @UseDefaults
+   Property<Long> millisUtilMarkedRead();
 }

@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.domain.entity.conversation;
 
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
@@ -28,6 +29,7 @@ public interface MessageEntity
    extends Message,
       Message.Data,
       Attachments.Data,
+      Unread.Data,
       Removable.Data,
       DomainEntity
 {

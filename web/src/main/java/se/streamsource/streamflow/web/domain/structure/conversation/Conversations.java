@@ -28,8 +28,9 @@ import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
-
+import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
@@ -45,6 +46,8 @@ public interface Conversations
    public boolean hasConversations();
 
    void removeConversation( Conversation conversation );
+
+   boolean hasUnreadConversation();
 
    interface Data
    {
@@ -110,6 +113,18 @@ public interface Conversations
       public boolean hasConversations()
       {
          return !conversations.toList().isEmpty();
+      }
+
+      public boolean hasUnreadConversation()
+      {
+         return Iterables.matchesAny( new Specification<Conversation>()
+         {
+            public boolean satisfiedBy( final Conversation conversation )
+            {
+               return conversation.hasUnreadMessage();
+            }
+         }, conversations
+         );
       }
    }
 }

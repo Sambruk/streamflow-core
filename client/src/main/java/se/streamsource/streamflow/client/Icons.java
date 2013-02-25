@@ -49,7 +49,9 @@ public enum Icons
    // Tabs
    general,
    conversations,
+   unreadconversations,
    forms,
+   unreadforms,
    attachments,
    history,
    system,

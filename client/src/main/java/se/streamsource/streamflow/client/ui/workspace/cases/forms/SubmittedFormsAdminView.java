@@ -16,18 +16,17 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
+
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 
 
 /**
@@ -55,6 +54,10 @@ public class SubmittedFormsAdminView
 
                CaseSubmittedFormView submittedFormView = module.objectBuilderFactory().newObjectBuilder(CaseSubmittedFormView.class).
                      use(model.newSubmittedFormModel(idx)).newInstance();
+               if( form.unread().get() )
+               {
+                  submittedFormView.read();
+               }
                setRightComponent( submittedFormView );
             } else
             {

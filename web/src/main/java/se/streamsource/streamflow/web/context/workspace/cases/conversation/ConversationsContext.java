@@ -68,6 +68,7 @@ public class ConversationsContext
          builder.prototype().href().set( EntityReference.getEntityReference( conversation ).identity() );
          builder.prototype().text().set( conversation.getDescription() );
          builder.prototype().id().set( EntityReference.getEntityReference( conversation ).identity() );
+         builder.prototype().unread().set( conversation.hasUnreadMessage() );
 
          links.addLink( builder.newInstance() );
       }

@@ -51,7 +51,13 @@ public class MessageContext
       builder.prototype().href().set( builder.prototype().id().get() );
       builder.prototype().text().set( messageData.body().get() );
       builder.prototype().hasAttachments().set( ((Message)messageData).hasAttachments() );
+      builder.prototype().unread().set( ((Message) messageData).isUnread() );
 
       return builder.newInstance();
+   }
+
+   public void read()
+   {
+      RoleMap.role( Message.class ).setUnread( false );
    }
 }

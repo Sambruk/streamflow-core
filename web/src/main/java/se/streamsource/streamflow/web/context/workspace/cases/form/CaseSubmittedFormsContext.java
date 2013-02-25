@@ -35,6 +35,7 @@ import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
@@ -120,5 +121,11 @@ public class CaseSubmittedFormsContext
       mailSender.sentEmail( ((DoubleSignatureTask.Data)task).email().get() );
       task.updateLastReminderSent(  new DateTime( DateTimeZone.UTC ) );
    }
+
+   public void read( @Name("index") int index )
+   {
+      RoleMap.role( SubmittedForms.class ).read( index );
+   }
+
 
 }

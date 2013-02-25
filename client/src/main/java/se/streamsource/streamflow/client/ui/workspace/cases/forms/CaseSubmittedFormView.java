@@ -292,4 +292,16 @@ public class CaseSubmittedFormView
       FormLayout formLayout = new FormLayout("150dlu:grow", "");
       return new DefaultFormBuilder(formLayout, aPanel);
    }
+
+   public void read()
+   {
+      new CommandTask(){
+
+         @Override
+         protected void command() throws Exception
+         {
+            model.read();
+         }
+      }.execute();
+   }
 }
