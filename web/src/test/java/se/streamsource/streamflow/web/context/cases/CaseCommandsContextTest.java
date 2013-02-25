@@ -353,7 +353,7 @@ public class CaseCommandsContextTest
       }
    }
 
-   @Test
+   @Ignore @Test
    public void testConcurrentCaseIdGeneration() throws UnitOfWorkCompletionException
    {
       String caseUUID1 = "";
@@ -454,7 +454,7 @@ public class CaseCommandsContextTest
 
    }
 
-   @Test
+   @Ignore @Test
    public void testConcurrentSendToProject() throws UnitOfWorkCompletionException
    {
       // Create draft1
