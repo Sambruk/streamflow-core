@@ -524,4 +524,9 @@ public class StreamflowApplication
    {
       return accountSelector.getSelectedAccount().settings().userName().get();
    }
+
+   public long markReadTimeout()
+   {
+      return new Long( accountSelector.getSelectedAccount().settings().markReadTimeout().get()).longValue() * 1000;
+   }
 }

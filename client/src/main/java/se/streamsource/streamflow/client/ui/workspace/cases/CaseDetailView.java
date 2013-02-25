@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
@@ -27,6 +28,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdm
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -41,6 +43,8 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -128,5 +132,26 @@ public class CaseDetailView
    {
       tabs.setIconAt( 2, model.getIndex().hasUnreadForm().get() ? icon( Icons.unreadforms )  : icon( Icons.forms ) );
       tabs.setIconAt( 3, model.getIndex().hasUnreadConversation().get() ? icon( Icons.unreadconversations )  : icon( Icons.conversations ) );
+
+      if( model.getIndex().unread().get() )
+      {
+
+         new Timer().schedule(
+            new TimerTask(){
+
+            @Override
+            public void run()
+            {
+               new CommandTask()
+               {
+                  @Override
+                  protected void command() throws Exception
+                  {
+                     model.read();
+                  }
+               }.execute();
+            }
+         }, ((StreamflowApplication)StreamflowApplication.getInstance()).markReadTimeout() );
+      }
    }
 }
