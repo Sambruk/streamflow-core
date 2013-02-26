@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
+import ca.odell.glazedlists.swing.EventTableModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
@@ -54,13 +55,17 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.KeyboardFocusManager;
+import java.awt.font.TextAttribute;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -141,7 +146,28 @@ public class MessagesView extends JPanel implements TransactionListener
 
             return null;
          }
-      }));
+      })){
+         public Component prepareRenderer(
+               TableCellRenderer renderer, int row, int column)
+         {
+            Component c = super.prepareRenderer(renderer, row, column);
+
+            //  add custom rendering here
+            EventTableModel model = (EventTableModel) getModel();
+            if( model.getElementAt( row ) instanceof MessageDTO)
+            {
+
+               Map attributes = c.getFont().getAttributes();
+               if ( ((MessageDTO) model.getElementAt( row )).unread().get() )
+               {
+                  attributes.put( TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD );
+               }
+               c.setFont( new Font(attributes) );
+            }
+
+            return c;
+         }
+      };
 
       messageTable.getColumnExt( messageTable.getColumnCount()-1 ).setVisible( false );
 
@@ -265,7 +291,7 @@ public class MessagesView extends JPanel implements TransactionListener
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if ( matches(Events.withNames("createdMessage", "createdMessageFromDraft"), transactions)
+      if ( matches(Events.withNames("createdMessage", "createdMessageFromDraft", "setUnread"), transactions)
             || matches( withUsecases( "resolve", "reopen" ),transactions ))
       {
          model.refresh();
@@ -288,6 +314,14 @@ public class MessagesView extends JPanel implements TransactionListener
                ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
                messageViewPanel.removeAll();
                messageView = module.objectBuilderFactory().newObjectBuilder( MessageView.class ).use( model.newMessageModel( href ) ).newInstance();
+               EventTableModel model = (EventTableModel) messageTable.getModel();
+               MessageDTO messageDTO = (MessageDTO)model.getElementAt( index );
+
+               if( messageDTO.unread().get() )
+               {
+                  messageView.read();
+               }
+
                messageViewPanel.add( messageView, BorderLayout.CENTER );
                ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "SHOW_MESSAGE");
             }

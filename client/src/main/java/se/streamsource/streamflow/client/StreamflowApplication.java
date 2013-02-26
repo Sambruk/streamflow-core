@@ -61,6 +61,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.jnlp.ServiceManager;
 import javax.jnlp.SingleInstanceListener;
@@ -523,5 +524,11 @@ public class StreamflowApplication
    public String currentUserId()
    {
       return accountSelector.getSelectedAccount().settings().userName().get();
+   }
+
+   public long markReadTimeout()
+   {
+      String markReadTimeout = accountSelector.getSelectedAccount().settings().markReadTimeout().get();
+      return Strings.empty( markReadTimeout ) ? 0L : new Long( markReadTimeout ).longValue() * 1000;
    }
 }

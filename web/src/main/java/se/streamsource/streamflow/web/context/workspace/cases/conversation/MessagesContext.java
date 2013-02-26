@@ -77,6 +77,7 @@ public class MessagesContext
          builder.prototype().href().set( EntityReference.getEntityReference( message ).identity() );
          builder.prototype().id().set( EntityReference.getEntityReference( message ).identity() );
          builder.prototype(  ).hasAttachments().set( message.hasAttachments() );
+         builder.prototype().unread().set( message.isUnread() );
 
          links.addLink( builder.newInstance() );
       }

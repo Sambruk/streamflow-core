@@ -67,6 +67,9 @@ public interface SubmittedForms
    /**
     * Find a given submitted form
     */
+   boolean hasUnreadForm();
+
+   void read( int index );
 
    interface Data
    {
@@ -79,6 +82,8 @@ public interface SubmittedForms
    interface Events
    {
       void submittedForm( @Optional DomainEvent event, SubmittedFormValue form );
+
+      void setUnread( @Optional DomainEvent event, int index );
    }
 
    abstract class Mixin
@@ -184,6 +189,8 @@ public interface SubmittedForms
             formBuilder.prototype().signatures().get().addAll(DTO.signatures().get());
          }
 
+         formBuilder.prototype().unread().set( true );
+
          SubmittedFormValue submittedForm = formBuilder.newInstance();
          submittedForm( null, submittedForm );
          // Now discard it
@@ -202,6 +209,42 @@ public interface SubmittedForms
       public boolean hasSubmittedForms()
       {
          return !state.submittedForms().get().isEmpty();
+      }
+
+      public boolean hasUnreadForm()
+      {
+         return Iterables.matchesAny( new Specification<SubmittedFormValue>()
+         {
+            public boolean satisfiedBy( SubmittedFormValue submittedForm )
+            {
+               return submittedForm.unread().get();
+            }
+         }, state.submittedForms().get() );
+      }
+
+      public void read( int index )
+      {
+         setUnread( null, index );
+      }
+
+      public void setUnread( DomainEvent event, int index )
+      {
+         List<SubmittedFormValue> forms = state.submittedForms().get();
+
+         SubmittedFormValue form = forms.get( index );
+
+         int count = 0;
+         for( SubmittedFormValue value : state.submittedForms().get() )
+         {
+            if( form.form().equals( value.form() ))
+            {
+               ValueBuilder<SubmittedFormValue> builder = module.valueBuilderFactory().newValueBuilder( SubmittedFormValue.class );
+               builder.withPrototype( forms.get( count ) ).prototype().unread().set( false );
+               forms.set( count, builder.newInstance() );
+            }
+            count++;
+         }
+         state.submittedForms().set( forms );
       }
    }
 }

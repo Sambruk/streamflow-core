@@ -190,11 +190,17 @@ public class CasesTableView
 
             //  add custom rendering here
             EventTableModel model = (EventTableModel) getModel();
-            if( model.getElementAt( row ) instanceof CaseTableValue &&  ((CaseTableValue) model.getElementAt( row )).removed().get() )
+            if( model.getElementAt( row ) instanceof CaseTableValue )
             {
 
                Map attributes = c.getFont().getAttributes();
-               attributes.put( TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+               if( ((CaseTableValue) model.getElementAt( row )).removed().get() )
+               {
+                  attributes.put( TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+               } else if ( ((CaseTableValue) model.getElementAt( row )).unread().get() )
+               {
+                  attributes.put( TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD );
+               }
                c.setFont( new Font(attributes) );
             }
             
@@ -621,7 +627,7 @@ public class CasesTableView
             "changedOwner", "assignedTo", "unassigned", "changedRemoved","deletedEntity",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "changedDueOn", "submittedForm", "createdAttachment",
-            "removedAttachment", "changedPriority" ), transactions ))
+            "removedAttachment", "changedPriority", "setUnread", "createdMessageFromDraft" ), transactions ))
       {
          context.getTaskService().execute( new CommandTask()
          {

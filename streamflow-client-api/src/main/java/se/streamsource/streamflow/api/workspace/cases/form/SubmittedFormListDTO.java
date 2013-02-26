@@ -16,11 +16,11 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.form;
 
-import java.util.Date;
-
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-
 import se.streamsource.dci.value.link.LinkValue;
+
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -33,4 +33,7 @@ public interface SubmittedFormListDTO
    Property<String> submitter();
 
    Property<String> form();
+
+   @UseDefaults
+   Property<Boolean> unread();
 }

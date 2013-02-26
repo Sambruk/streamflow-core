@@ -16,17 +16,14 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
@@ -41,8 +38,10 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Model for the info and actions on a case.
@@ -209,5 +208,10 @@ public class CaseModel
    public ConversationModel newHistoryModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(ConversationModel.class).use(client.getSubClient("history" )).newInstance();
+   }
+
+   public void read()
+   {
+      client.postCommand( "read" );
    }
 }

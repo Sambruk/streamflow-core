@@ -173,8 +173,12 @@ public class CasesTableModel extends Observable
                prototype.hasContacts().set((Boolean) cell.v().get());
             else if (columnValue.id().get().equals("hasconversations"))
                prototype.hasConversations().set((Boolean) cell.v().get());
+            else if (columnValue.id().get().equals("hasunreadconversation"))
+               prototype.hasUnreadConversation().set((Boolean) cell.v().get());
             else if (columnValue.id().get().equals("hassubmittedforms"))
                prototype.hasSubmittedForms().set((Boolean) cell.v().get());
+            else if (columnValue.id().get().equals("hasunreadform"))
+               prototype.hasUnreadForm().set((Boolean) cell.v().get());
             else if (columnValue.id().get().equals("labels"))
             {
                String json = cell.v().get().toString();
@@ -196,6 +200,8 @@ public class CasesTableModel extends Observable
                prototype.removed().set( (Boolean)cell.v().get() );
             else if( columnValue.id().get().equals( "priority" ) && cell.v().get() != null )
                prototype.priority().set( module.valueBuilderFactory().newValueFromJSON(PriorityValue.class, cell.v().get().toString()) );
+            else if (columnValue.id().get().equals("unread"))
+               prototype.unread().set((Boolean) cell.v().get());
          }
          caseTableValues.add(caseBuilder.newInstance());
       }

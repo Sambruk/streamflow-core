@@ -54,7 +54,7 @@ public class ConversationsListCellRenderer implements ListCellRenderer
          ((JXList) list).addHighlighter(HighlighterFactory.createAlternateStriping());
       }
 
-      ConversationDTO conversations = (ConversationDTO) value;
+      ConversationDTO conversation = (ConversationDTO) value;
 
       JPanel renderer = new JPanel(new BorderLayout());
       renderer.setLayout(new BorderLayout());
@@ -67,20 +67,20 @@ public class ConversationsListCellRenderer implements ListCellRenderer
       DefaultFormBuilder headerBuilder = new DefaultFormBuilder(headerLayout, headerPanel);
 
       // Title
-      JLabel title = new JLabel(conversations.text().get());
-      title.setFont(title.getFont().deriveFont(Font.BOLD));
-      headerBuilder.add(title);
+      JLabel title = new JLabel(conversation.text().get());
+      title.setFont( title.getFont().deriveFont( Font.BOLD ) );
+      headerBuilder.add( title );
       headerBuilder.nextColumn();
 
       // Participants
-      JLabel participants = new JLabel(String.valueOf(conversations.participants().get()), i18n.icon(
+      JLabel participants = new JLabel(String.valueOf(conversation.participants().get()), i18n.icon(
             Icons.participants, 16), JLabel.LEADING);
       headerBuilder.add(participants);
       headerBuilder.nextColumn(2);
 
       // Conversations
-      JLabel conversationsLabel = new JLabel(String.valueOf(conversations.messages().get()), i18n.icon(
-            Icons.conversations, 16), JLabel.LEADING);
+      JLabel conversationsLabel = new JLabel(String.valueOf(conversation.messages().get()), i18n.icon(
+            conversation.unread().get() ? Icons.unreadconversations : Icons.conversations, 16), JLabel.LEADING);
       headerBuilder.add(conversationsLabel);
       renderer.add(headerPanel, BorderLayout.NORTH);
 
@@ -93,13 +93,13 @@ public class ConversationsListCellRenderer implements ListCellRenderer
          JPanel ingressPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
          // Conversation creation date
-         JLabel labelDate = new JLabel(DateFormats.getFullDateTimeValue(conversations.creationDate().get(),
-                 Locale.getDefault()));
+         JLabel labelDate = new JLabel(DateFormats.getFullDateTimeValue( conversation.creationDate().get(),
+               Locale.getDefault() ));
          labelDate.setFont(labelDate.getFont().deriveFont(Font.ITALIC));
-         ingressPanel.add(labelDate);
+         ingressPanel.add( labelDate );
 
          // Creator
-         JLabel labelCreator = new JLabel(conversations.creator().get());
+         JLabel labelCreator = new JLabel(conversation.creator().get());
          ingressPanel.add(labelCreator);
          contentPanel.add(ingressPanel, BorderLayout.NORTH);
          renderer.add(contentPanel, BorderLayout.CENTER);

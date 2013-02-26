@@ -47,6 +47,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
@@ -110,7 +111,9 @@ import java.util.Map;
       CaseEntity.TypedCaseDefaultDueOnConcern.class, CaseEntity.OwnableCaseAccessConcern.class,
       CaseEntity.CaseLogContactConcern.class, CaseEntity.CaseLogConversationConcern.class,
       CaseEntity.CaseLogAttachmentConcern.class, CaseEntity.CaseLogSubmittedFormsConcern.class,
-      CaseEntity.AssignableConcern.class, CaseEntity.TypedCaseDefaultObligatoryPriorityConcern.class})
+      CaseEntity.AssignableConcern.class, CaseEntity.TypedCaseDefaultObligatoryPriorityConcern.class,
+      CaseEntity.UnreadConcern.class, CaseEntity.OwnableUnreadConcern.class,
+      CaseEntity.StatusConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -129,6 +132,7 @@ public interface CaseEntity
       Conversations.Data,
       CaseAccess.Data,
       CaseAccessRestriction.Data,
+      Unread.Data,
 
       // Structure
       Closed,
@@ -366,6 +370,9 @@ public interface CaseEntity
       @This
       Case caze;
 
+      @This
+      Unread unread;
+
       @Structure
       Qi4j api;
 
@@ -424,6 +431,8 @@ public interface CaseEntity
          {
             notes.notes().get().reinstate();
          }
+
+         unread.setUnread( true );
          return next.reinstate();
       }
 
@@ -457,7 +466,6 @@ public interface CaseEntity
          {
             notes.notes().get().deleteEntity();
          }
-
          next.deleteEntity();
       }
    }
@@ -702,6 +710,9 @@ public interface CaseEntity
       
       @This
       Conversations.Data conversationsData;
+
+      @This
+      Unread unread;
       
       public void assignTo( Assignee assignee )
       {
@@ -712,6 +723,56 @@ public interface CaseEntity
             Conversation conversation = conversationsData.conversations().get( 0 );
             conversation.addParticipant( (ConversationParticipant)assignee );
          }
+      }
+
+      public void unassign()
+      {
+         next.unassign();
+         unread.setUnread( true );
+      }
+   }
+
+   abstract class UnreadConcern
+      extends ConcernOf<Unread>
+      implements Unread
+   {
+      @This
+      SubmittedForms submittedForms;
+
+      @This
+      Conversations conversations;
+
+      public boolean isUnread()
+      {
+         return conversations.hasUnreadConversation() | submittedForms.hasUnreadForm() | next.isUnread() ;
+      }
+   }
+
+   abstract class OwnableUnreadConcern
+      extends ConcernOf<Ownable>
+      implements Ownable
+   {
+      @This
+      Unread unread;
+
+      public void changeOwner( Owner owner )
+      {
+         next.changeOwner( owner );
+         unread.setUnread( true );
+      }
+   }
+
+   abstract class StatusConcern
+      extends ConcernOf<Status>
+      implements Status
+   {
+      @This
+      Unread unread;
+
+      public void reopen()
+      {
+         next.reopen();
+         unread.setUnread( true );
       }
    }
 }

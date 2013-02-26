@@ -25,9 +25,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 
+import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 
@@ -42,6 +45,8 @@ public interface Messages
    Message getLastMessage();
 
    void createMessageFromDraft( ConversationParticipant participant );
+
+   boolean hasUnreadMessage();
 
    interface Data
    {
@@ -134,11 +139,23 @@ public interface Messages
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
          builder.instanceFor( Message.Data.class ).conversation().set( conversation );
+         builder.instanceFor( Unread.Data.class ).unread().set( true );
 
          Message message = builder.newInstance();
          messages().add( message );
 
          return message;
+      }
+
+      public boolean hasUnreadMessage()
+      {
+         return Iterables.matchesAny( new Specification<Message>()
+         {
+            public boolean satisfiedBy( Message msg )
+            {
+               return ((Unread.Data) msg).unread().get();
+            }
+         }, messages() );
       }
    }
 }

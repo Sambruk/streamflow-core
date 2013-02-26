@@ -69,7 +69,13 @@ public interface CaseTableValue
    Property<Boolean> hasConversations();
 
    @UseDefaults
+   Property<Boolean> hasUnreadConversation();
+
+   @UseDefaults
    Property<Boolean> hasSubmittedForms();
+
+   @UseDefaults
+   Property<Boolean> hasUnreadForm();
 
    @UseDefaults
    Property<Boolean> hasAttachments();
@@ -86,4 +92,7 @@ public interface CaseTableValue
 
    @Optional
    Property<PriorityValue> priority();
+
+   @UseDefaults
+   Property<Boolean> unread();
 }
