@@ -152,11 +152,14 @@ public interface CaseCommandsContext
 
    /**
     * Mark the case as on-hold
+    * Removed as of SF-773
     */
+   /*
    @RequiresAssigned
    @RequiresStatus(OPEN)
    @RequiresRemoved(false)
    public void onhold();
+   */
 
    @RequiresStatus({DRAFT,OPEN})
    @RequiresRemoved(false)
