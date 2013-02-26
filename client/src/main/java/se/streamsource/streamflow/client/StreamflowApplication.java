@@ -528,7 +528,7 @@ public class StreamflowApplication
 
    public long markReadTimeout()
    {
-      String markREadTimeout = accountSelector.getSelectedAccount().settings().markReadTimeout().get();
-      return Strings.empty( markREadTimeout ) ? 0L : new Long( markREadTimeout ).longValue() * 1000;
+      String markReadTimeout = accountSelector.getSelectedAccount().settings().markReadTimeout().get();
+      return Strings.empty( markReadTimeout ) ? 0L : new Long( markReadTimeout ).longValue() * 1000;
    }
 }
