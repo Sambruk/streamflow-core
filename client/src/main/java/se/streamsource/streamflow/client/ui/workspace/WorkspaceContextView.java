@@ -16,24 +16,18 @@
  */
 package se.streamsource.streamflow.client.ui.workspace;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.swing.EventListModel;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-
-import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
@@ -42,13 +36,16 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.TextFilterator;
-import ca.odell.glazedlists.swing.EventListModel;
-import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -131,7 +128,9 @@ public class WorkspaceContextView
       if (contextList.getSelectedValue() != null &&
             ((ContextItem) contextList.getSelectedValue()).getRelation().equals("search"))
          return result;
-      CaseDTO caze = caseModel.getIndex();
+
+      // SF-757 no more context switch on sendTo, assign and unassign
+      /*CaseDTO caze = caseModel.getIndex();
       for (ContextItem contextItem : workspaceModel.getItems())
       {
          if (!Strings.empty(caze.assignedTo().get()))
@@ -151,7 +150,7 @@ public class WorkspaceContextView
                break;
             }
          }
-      }
+      }*/
 
       return result;
    }
