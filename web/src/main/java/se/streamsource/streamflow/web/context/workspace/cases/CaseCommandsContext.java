@@ -48,6 +48,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresUnread;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
@@ -201,6 +202,11 @@ public interface CaseCommandsContext
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
    public void read();
+
+   @RequiresStatus({OPEN, DRAFT})
+   @RequiresUnread(false)
+   @RequiresRemoved(false)
+   public void markunread();
 
    abstract class Mixin
          implements CaseCommandsContext
@@ -475,6 +481,11 @@ public interface CaseCommandsContext
       public void read()
       {
          RoleMap.role( Case.class ).setUnread( false );
+      }
+
+      public void markunread()
+      {
+         RoleMap.role( Case.class ).setUnread( true );
       }
    }
 }

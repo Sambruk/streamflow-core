@@ -214,4 +214,9 @@ public class CaseModel
    {
       client.postCommand( "read" );
    }
+
+   public void markUnread()
+   {
+      client.command( "markunread" );
+   }
 }
