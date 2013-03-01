@@ -19,11 +19,8 @@ package se.streamsource.streamflow.web.context.cases;
 import org.apache.commons.collections.ArrayStack;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
@@ -53,6 +50,7 @@ import se.streamsource.streamflow.web.context.workspace.WorkspaceProjectsContext
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
@@ -150,7 +148,6 @@ public class CaseCommandsContextTest
       constraints = serviceLocator.<InteractionConstraints>findService( InteractionConstraints.class ).get();
    }
 
-   @Ignore
    @Test
    public void testCaseActions() throws UnitOfWorkCompletionException
    {
@@ -196,7 +193,7 @@ public class CaseCommandsContextTest
 
       // Check actions for new draft
       {
-         checkActions( caze, "delete", "sendto" );
+         checkActions( caze, "delete", "read", "sendto", "markunread" );
       }
 
       // Send to project
@@ -215,7 +212,7 @@ public class CaseCommandsContextTest
 
       // Check actions for draft sent to project
       {
-         checkActions( caze, "delete", "open", "sendto", "restrict" );
+         checkActions( caze, "delete", "read", "open", "sendto" );
       }
 
       // Select casetype
@@ -264,7 +261,7 @@ public class CaseCommandsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "delete", "resolve", "sendto", "restrict", "assign" );
+         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "assign" );
       }
 
       // Assign case
@@ -286,7 +283,7 @@ public class CaseCommandsContextTest
 
       // Check assigned actions
       {
-         checkActions( caze, "delete", "resolve", "sendto", "restrict", "unassign", "onhold" );
+         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "unassign" );
       }
 
       // Resolve case
@@ -311,7 +308,7 @@ public class CaseCommandsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "restrict", "reopen" );
+         checkActions( caze, "read", "reopen" );
       }
 
       // Reopen case
@@ -330,7 +327,7 @@ public class CaseCommandsContextTest
 
       // Check reopened actions
       {
-         checkActions( caze, "delete", "resolve", "sendto", "restrict", "unassign", "onhold" );
+         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "unassign" );
       }
 
       // Close
@@ -349,114 +346,14 @@ public class CaseCommandsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "restrict", "reopen" );
+         checkActions( caze, "read", "reopen" );
       }
    }
 
-   @Ignore @Test
-   public void testConcurrentCaseIdGeneration() throws UnitOfWorkCompletionException
-   {
-      String caseUUID1 = "";
-      String caseUUID2 = "";
-      // Create draft1
-      {
-         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "15" ));
-         RoleMap.newCurrentRoleMap();
-         playRole( User.class, "testing" );
-         RoleMap.current().set( new UserPrincipal( "testing" ) );
-         DraftsContext drafts = context( DraftsContext.class );
-         drafts.createcase();
-         uow.complete();
-         eventsOccurred( "createdCase", "addedContact" );
-      }
-
-      // Check that draft exists
-      Case caze1;
-      {
-         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "16" ));
-         RoleMap.newCurrentRoleMap();
-         playRole( User.class, "testing" );
-         RoleMap.current().set( new UserPrincipal( "testing" ) );
-
-         DraftsContext drafts = context( DraftsContext.class );
-         Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
-         assertThat( Iterables.count( caseList ), equalTo( 1L ) );
-         caze1 = last( caseList );
-         caseUUID1 = ((Identity)caze1).toString();
-         uow.discard();
-      }
-
-      // Create draft2
-      {
-         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "17" ));
-         RoleMap.newCurrentRoleMap();
-         playRole( User.class, "testing" );
-         RoleMap.current().set( new UserPrincipal( "testing" ) );
-         DraftsContext drafts = context( DraftsContext.class );
-         drafts.createcase();
-         uow.complete();
-         eventsOccurred( "createdCase", "addedContact" );
-      }
-
-      // Check that draft exists
-      Case caze2;
-      {
-         UnitOfWork uow  = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "18" ));
-
-         RoleMap.newCurrentRoleMap();
-         playRole( User.class, "testing" );
-         RoleMap.current().set( new UserPrincipal( "testing" ) );
-
-         DraftsContext drafts = context( DraftsContext.class );
-         Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
-         assertThat( Iterables.count( caseList ), equalTo( 2L ) );
-         caze2 = last( caseList );
-         caseUUID2 = ((Identity)caze2).toString();
-         uow.discard();
-      }
-
-      {
-         UnitOfWork uow1 = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "19" ));
-         UnitOfWork uow2 = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "20" ));
-         RoleMap.newCurrentRoleMap();
-         playRole( User.class, "testing" );
-         RoleMap.current().set( new UserPrincipal( "testing" ) );
-
-         CaseCommandsContext commands = context( CaseCommandsContext.class );
-         Organization org1 = uow1.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID ).organization().get();
-         caze1 = uow1.get( Case.class, caseUUID1 );
-         Organization org2 = uow2.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID ).organization().get();
-         caze2 = uow2.get( Case.class, caseUUID2 );
-
-         try
-         {
-            ((IdGenerator) org1).assignId( caze1 );
-            uow1.complete();
-            ((IdGenerator) org2).assignId( caze2 );
-            uow2.complete();
-
-            fail( "Should have thrown ConcurrentEntityModificationException!" );
-         } catch (ConcurrentEntityModificationException cem)
-         {
-            SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMdd" );
-            String date = sdf.format( new Date() );
-
-            UnitOfWork readUow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "21" ));
-            assertTrue( ((CaseId.Data) readUow.get( Case.class, caseUUID1 )).caseId().get().equals( date + "-" + 1 ) );
-            assertTrue( ((CaseId.Data) readUow.get( Case.class, caseUUID2 )).caseId().get().equals( date + "-" + 1 ) );
-            readUow.discard();
-         } finally
-         {
-            uow1 = null;
-            uow2 = null;
-         }
-      }
-
-   }
-
-   @Ignore @Test
+   @Test
    public void testConcurrentSendToProject() throws UnitOfWorkCompletionException
    {
+      long currentId = 0;
       // Create draft1
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "21" ));
@@ -465,6 +362,10 @@ public class CaseCommandsContextTest
          RoleMap.current().set( new UserPrincipal( "testing" ) );
          DraftsContext drafts = context( DraftsContext.class );
          drafts.createcase();
+
+         Organizations.Data organizations = uow.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         currentId = ((IdGenerator.Data)((OrganizationEntity)organizations.organization().get())).current().get();
+
          uow.complete();
          eventsOccurred( "createdCase", "addedContact" );
       }
@@ -479,8 +380,8 @@ public class CaseCommandsContextTest
 
          DraftsContext drafts = context( DraftsContext.class );
          Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
-         assertThat( Iterables.count( caseList ), equalTo( 3L ) );
-         caze1 = last( caseList );
+         //assertThat( Iterables.count( caseList ), equalTo( 1L ) );
+         caze1 = first( caseList );
       }
 
       // Create draft2
@@ -505,8 +406,8 @@ public class CaseCommandsContextTest
 
          DraftsContext drafts = context( DraftsContext.class );
          Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
-         assertThat( Iterables.count( caseList ), equalTo( 4L ) );
-         caze2 = last( caseList );
+         //assertThat( Iterables.count( caseList ), equalTo( 2L ) );
+         caze2 = first( caseList );
       }
 
       // Send to project
@@ -546,9 +447,15 @@ public class CaseCommandsContextTest
       String date = sdf.format( new Date() );
 
       UnitOfWork readUow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "27" ));
-      assertTrue( ((CaseId.Data) readUow.get( Case.class, caseUUID1 )).caseId().get().equals( date + "-" + 3 ) );
-      // TODO still failing!!
-      assertTrue( ((CaseId.Data) readUow.get( Case.class, caseUUID2 )).caseId().get().equals( date + "-" + 2 ) );
+      RoleMap.newCurrentRoleMap();
+      playRole( User.class, "testing" );
+      RoleMap.current().set( new UserPrincipal( "testing" ) );
+      DraftsContext drafts = context( DraftsContext.class );
+      Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
+      long caseCount = currentId + Iterables.count( caseList );
+
+      assertTrue( "expected " + date +"-" + (caseCount - 1) ,  ((CaseId.Data) readUow.get( Case.class, caseUUID1 )).caseId().get().equals( date + "-" + (caseCount - 1) ) );
+      assertTrue( "expected " + date +"-" + (caseCount), ((CaseId.Data) readUow.get( Case.class, caseUUID2 )).caseId().get().equals( date + "-" + (caseCount) ) );
 
       readUow.discard();
    }

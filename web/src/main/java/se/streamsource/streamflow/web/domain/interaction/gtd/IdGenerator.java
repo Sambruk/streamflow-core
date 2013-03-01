@@ -86,7 +86,6 @@ public interface IdGenerator
          String date = format.format( now.getTime() );
 
          String caseId = date + "-" + current;
-         System.out.println( "new generated case id " + caseId );
          aCase.assignId( caseId );
       }
 
@@ -99,7 +98,6 @@ public interface IdGenerator
 
       public void setCounter( @Optional DomainEvent event, long counter )
       {
-         System.out.println( "Uow: " + module.unitOfWorkFactory().currentUnitOfWork().toString() );
          state.current().set( counter );
       }
    }
