@@ -332,6 +332,7 @@
 						<exclude>**/webclient/node_modules/**</exclude>
 						<exclude>**/webclient/test_server/**</exclude>
 						<exclude>**/webclient/test/**</exclude>
+						<exclude>**/webclient/app/design/**</exclude>
 
                     </excludes>
                     <mapping>
