@@ -37,9 +37,13 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.BorderLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
@@ -53,12 +57,15 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  */
 public class CaseDetailView
       extends JPanel
-   implements Observer, TransactionListener
+   implements Observer, TransactionListener, HierarchyListener
 {
    private JTabbedPane tabs = new JTabbedPane( JTabbedPane.BOTTOM );
    private CaseModel model;
    private CaseInfoView caseInfo;
    private CaseActionsView caseActions;
+
+   private Timer timer;
+   private TimerTask timerTask;
 
    public CaseDetailView( @Uses CaseModel model,
                           @Structure Module module)
@@ -103,10 +110,36 @@ public class CaseDetailView
          }
       } );
 
+      addAncestorListener ( new AncestorListener()
+      {
+         public void ancestorAdded ( AncestorEvent event )
+         {
+            // Component added somewhere
+         }
+
+         public void ancestorRemoved ( AncestorEvent event )
+         {
+            if(timerTask != null )
+            {
+               timerTask.cancel();
+               timer.cancel();
+               timerTask = null;
+               timer = null;
+            }
+         }
+
+         public void ancestorMoved ( AncestorEvent event )
+         {
+            // Component container moved
+         }
+      } );
 
       add( tabs, BorderLayout.CENTER );
 
       new RefreshWhenShowing( this, model );
+
+      addHierarchyListener( this );
+
    }
 
    public void setSelectedTab( int index )
@@ -132,26 +165,38 @@ public class CaseDetailView
    {
       tabs.setIconAt( 2, model.getIndex().hasUnreadForm().get() ? icon( Icons.unreadforms )  : icon( Icons.forms ) );
       tabs.setIconAt( 3, model.getIndex().hasUnreadConversation().get() ? icon( Icons.unreadconversations )  : icon( Icons.conversations ) );
+   }
 
-      if( model.getIndex().unread().get() )
+   public void hierarchyChanged( HierarchyEvent e )
+   {
+      if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) > 0 && CaseDetailView.this.isShowing())
       {
+         if( model.getIndex() == null )
+         {
+            model.refresh();
+         }
+         if (model.getIndex().unread().get())
+         {
 
-         new Timer().schedule(
-            new TimerTask(){
-
-            @Override
-            public void run()
-            {
-               new CommandTask()
+            timer = new Timer();
+            timer.schedule(
+               timerTask = new TimerTask()
                {
+
                   @Override
-                  protected void command() throws Exception
+                  public void run()
                   {
-                     model.read();
+                     new CommandTask()
+                     {
+                        @Override
+                        protected void command() throws Exception
+                        {
+                           model.read();
+                        }
+                     }.execute();
                   }
-               }.execute();
-            }
-         }, ((StreamflowApplication)StreamflowApplication.getInstance()).markReadTimeout() );
+               }, ((StreamflowApplication) StreamflowApplication.getInstance()).markReadTimeout() );
+         }
       }
    }
 }
