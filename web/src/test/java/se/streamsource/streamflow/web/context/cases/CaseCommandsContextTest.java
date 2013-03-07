@@ -17,12 +17,9 @@
 package se.streamsource.streamflow.web.context.cases;
 
 import org.apache.commons.collections.ArrayStack;
-import org.hamcrest.Matcher;
-import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.internal.matchers.IsCollectionContaining;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -66,11 +63,9 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static java.util.Arrays.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
 import static org.junit.Assert.*;
@@ -198,7 +193,7 @@ public class CaseCommandsContextTest
 
       // Check actions for new draft
       {
-         checkActions( caze, "delete", "read", "sendto", "markunread" );
+         checkActions( caze, "delete", "read", "sendto" );
       }
 
       // Send to project
