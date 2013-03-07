@@ -93,6 +93,7 @@ public class StreamflowWebContextTestAssembler
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( Boolean.TRUE );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface" );
+      configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().defaultMarkReadTimeout().set( 15L );
    }
 
    @Override

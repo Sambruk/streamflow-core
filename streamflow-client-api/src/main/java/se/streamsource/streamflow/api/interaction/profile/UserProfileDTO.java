@@ -14,30 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.domain.individual;
+package se.streamsource.streamflow.api.interaction.profile;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.library.constraints.annotation.Matches;
-import se.streamsource.streamflow.api.Username;
+import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 
 /**
- * JAVADOC
+ *
  */
-public interface AccountSettingsValue
-      extends ValueComposite
+public interface UserProfileDTO
+   extends ContactDTO
 {
+   /**
+    * Mark as read timeout in seconds.
+    * @return The amount of seconds that have to pass until unread flag is set to false.
+    */
    @UseDefaults
-   Property<String> name();
+   Property<Long> markReadTimeout();
 
+   /**
+    * The preferred message delivery type for the user.
+    * @return A message delivery type.
+    */
    @UseDefaults
-   @Matches("[\\w:/\\.\\-]*")
-   Property<String> server();
-
-   @Username
-   Property<String> userName();
-
-
-   Property<String> password();
+   Property<String> messageDeliveryType();
 }

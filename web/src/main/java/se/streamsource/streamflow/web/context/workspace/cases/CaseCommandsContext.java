@@ -201,6 +201,10 @@ public interface CaseCommandsContext
    @RequiresRemoved(false)
    public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable;
 
+   @RequiresStatus( OPEN )
+   @RequiresUnread(false)
+   public void markunread();
+
    public void read();
 
    @RequiresStatus({OPEN, DRAFT})

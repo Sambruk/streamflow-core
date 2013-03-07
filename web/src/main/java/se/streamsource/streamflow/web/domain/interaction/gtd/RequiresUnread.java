@@ -23,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Check that an assignable is assigned or not
+ * Check that an Unread is unread or not
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)

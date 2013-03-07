@@ -29,6 +29,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
+import se.streamsource.streamflow.web.domain.interaction.profile.MarkReadTimeout;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
@@ -54,6 +55,7 @@ public interface UserEntity
       Authentication,
       MessageRecipient,
       Perspectives,
+      MarkReadTimeout,
 
       // Structure
       User,
@@ -79,7 +81,8 @@ public interface UserEntity
       UserAuthentication.Data,
       MessageRecipient.Data,
       MessageReceiver.Data,
-      Perspectives.Data
+      Perspectives.Data,
+      MarkReadTimeout.Data
 {
    public static final String ADMINISTRATOR_USERNAME = "administrator";
 

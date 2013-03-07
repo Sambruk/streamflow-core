@@ -91,7 +91,7 @@ public class AccountView extends JScrollPane
       accountForm = new JPanel();
       panel.add(accountForm, BorderLayout.NORTH);
       FormLayout accountLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
-            "pref, pref, pref, pref, pref, pref");
+            "pref, pref, pref, pref, pref");
 
       DefaultFormBuilder accountBuilder = new DefaultFormBuilder(accountLayout,
             accountForm);
@@ -132,11 +132,6 @@ public class AccountView extends JScrollPane
       accountBuilder.nextColumn( 2 );
       accountBuilder.add(accountBinder.bind(PASSWORD.newField(),
             accountTemplate.password()));
-      accountBuilder.nextLine();
-
-      accountBuilder.add( new JLabel( i18n.text( AccountResources.mark_read_timeout )));
-      accountBuilder.nextColumn( 2 );
-      accountBuilder.add( accountBinder.bind( TEXTFIELD.newField(), accountTemplate.markReadTimeout() ));
       accountBuilder.nextLine();
 
       accountEditor = new FormEditor(accountForm);

@@ -54,5 +54,5 @@ public enum CaseResources
    regular_expression_does_not_validate,
    invalidinteger,
    could_not_upload_file, parent, caze, subcases, choose_external_participant,
-   invalidfloat
+   could_not_change_mark_read_timeout, invalidfloat
 }

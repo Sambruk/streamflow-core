@@ -35,5 +35,5 @@ public enum AccountResources
    version_missmatch,
    resource_failure,
    cannot_read_stream,
-   mark_read_timeout, contact_info_for_user_separator
+   contact_info_for_user_separator
 }
