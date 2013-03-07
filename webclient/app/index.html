@@ -24,11 +24,23 @@
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-        <title></title>
+        <title>Streamflow</title>
         <meta name="description" content=""/>
-        <meta name="viewport" content="width=device-width"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <link rel="apple-touch-icon" sizes="57x57" href="design/gui/i/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="design/gui/i/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="design/gui/i/apple-touch-icon-114x114.png">
+
         <link rel="shortcut icon" href="design/gui/i/favicon.ico">
-        <link rel="stylesheet" href="design/gui/css/global.css">
+
+        <link rel="stylesheet" href="design/gui/css/basic.css">
+        <link rel="stylesheet" href="design/gui/css/print.css">
+        <link rel="stylesheet" href="design/gui/css/fonts.css">
+        <link rel="stylesheet" href="design/gui/css/main.css">
+        <link rel="stylesheet" href="design/gui/css/retina.css">
+
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
         <!--[if lte IE 8]>
           <script>
@@ -66,13 +78,13 @@
                   <div>
                     <label for="main-searchtext"></label>
                     <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
-                    <button type="submit"><span>Sök</span></button>
+                    <button type="submit"><i class="glyph icon-search"><span>Sök</span></i></button>
                   </div>
                 </form>
               </div> <!-- header-primary -->
 
               <div class="header-secondary">
-                <a href="#" class="user-logged">Solveig Grankvist</a>
+                <a href="xlink-" class="glyph icon-user logged-in">Solveig Grankvist</a>
               </div> <!-- header-secondary -->
 
             </div> <!-- header-body -->

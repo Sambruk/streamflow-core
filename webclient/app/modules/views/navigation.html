@@ -18,13 +18,13 @@
 -->
 <div class="navigation" role='navigation'>
 
-  <a href="#" class="add-new-issue">Lägg till nytt ärende</a>
+  <a href="new-issue-html" class="add-new-issue"><i class="icon-plus"></i><span class="struct">Lägg till nytt ärende</span></a>
 
   <div class="functions-menu" ng-controller="ProjectListCtrl">
     <div class="functions-header cf">
-      <h2>Funktioner</h2>
-      <a href="#" class="open-toolbar" ng-click='toggleToolbar($event)'>
-        Öppna funktionsmeny
+      <h2><a href="overview.html">Funktioner</a></h2>
+      <a href="#" class="icon-menu open-toolbar" ng-click='toggleToolbar($event)'>
+        <span class="struct">Visa/dölj funktionsmeny</span>
       </a>
     </div>
     <div class="sub-category" ng-repeat="project in projects">
