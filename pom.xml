@@ -677,7 +677,7 @@
                 <groupId>org.qi4j.extension</groupId>
                 <artifactId>org.qi4j.extension.entitystore-jdbm</artifactId>
                 <!-- <version>${version.qi4j-ext}</version> -->
-                <version>1.3-sf600</version>
+                <version>1.3-sf774</version>
             </dependency>
             <dependency>
                 <groupId>org.qi4j.extension</groupId>
