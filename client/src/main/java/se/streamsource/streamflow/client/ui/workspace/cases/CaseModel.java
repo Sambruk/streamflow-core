@@ -175,6 +175,16 @@ public class CaseModel
       client.command( "reinstate" );
    }
 
+   public void read()
+   {
+      client.postCommand( "read" );
+   }
+
+   public void markunread()
+   {
+      client.postCommand( "markunread" );
+   }
+
    public CaseGeneralModel newGeneralModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();
@@ -208,10 +218,5 @@ public class CaseModel
    public ConversationModel newHistoryModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(ConversationModel.class).use(client.getSubClient("history" )).newInstance();
-   }
-
-   public void read()
-   {
-      client.postCommand( "read" );
    }
 }

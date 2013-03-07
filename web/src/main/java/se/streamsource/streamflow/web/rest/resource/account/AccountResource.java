@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.rest.resource.account;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.account.AccountContext;
-import se.streamsource.streamflow.web.context.account.ContactableContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;
 
 /**
@@ -36,6 +35,6 @@ public class AccountResource
    @SubResource
    public void profile()
    {
-      subResourceContexts( ProfileContext.class, ContactableContext.class );
+      subResourceContexts( ProfileContext.class );
    }
 }

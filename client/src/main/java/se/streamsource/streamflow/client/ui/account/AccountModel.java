@@ -54,6 +54,8 @@ public class AccountModel extends Observable
    @Uses
    Account account;
 
+   private ProfileModel profileModel;
+
    public AccountSettingsValue settings()
    {
       UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
@@ -89,9 +91,14 @@ public class AccountModel extends Observable
       }
    }
 
-   public ProfileModel newProfileModel()
+   public ProfileModel getProfileModel()
    {
-      return module.objectBuilderFactory().newObjectBuilder(ProfileModel.class).use(serverResource().getSubClient("account").getSubClient("profile")).newInstance();
+      if( profileModel == null )
+      {
+         profileModel =  module.objectBuilderFactory().newObjectBuilder(ProfileModel.class).use(serverResource().getSubClient("account").getSubClient("profile")).newInstance();
+         profileModel.refresh();
+      }
+      return profileModel;
    }
 
    public OverviewModel newOverviewModel()

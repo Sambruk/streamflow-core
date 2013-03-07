@@ -21,7 +21,6 @@ import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.application.external.IntegrationService;
-import se.streamsource.streamflow.web.context.account.ContactableContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -47,7 +46,7 @@ public class CustomerResource
    @SubResource
    public void profile()
    {
-      subResourceContexts( ProfileContext.class, ContactableContext.class );
+      subResourceContexts( ProfileContext.class );
    }
 
    @ServiceAvailable( service = IntegrationService.class, availability = true )

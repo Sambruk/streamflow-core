@@ -27,7 +27,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
-
 import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
@@ -93,6 +92,8 @@ public interface Messages
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
          builder.instanceFor( Message.Data.class ).conversation().set( conversation );
+         // Set Message unread when it comes from an email
+         builder.instanceFor( Unread.Data.class ).unread().set( true );
 
          Message message = builder.newInstance();
          messages().add( message );
@@ -139,7 +140,6 @@ public interface Messages
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
          builder.instanceFor( Message.Data.class ).conversation().set( conversation );
-         builder.instanceFor( Unread.Data.class ).unread().set( true );
 
          Message message = builder.newInstance();
          messages().add( message );

@@ -22,8 +22,7 @@ import org.qi4j.api.structure.Module;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -43,7 +42,7 @@ public class ProfileModel
    @Uses
    private CommandQueryClient client;
 
-   private ContactDTO contact;
+   private UserProfileDTO profile;
 
    public void changeMessageDeliveryType( String newDeliveryType )
          throws ResourceException
@@ -55,44 +54,43 @@ public class ProfileModel
 
    public String getMessageDeliveryType()
    {
-      return client.query( "messagedeliverytype", StringValue.class )
-            .string().get();
+      return profile.messageDeliveryType().get();
    }
 
    // Contact Details
 
    public void refresh()
    {
-      contact = client.query("index", ContactDTO.class ).<ContactDTO>buildWith().prototype();
+      profile = client.query("index", UserProfileDTO.class ).<UserProfileDTO>buildWith().prototype();
       setChanged();
       notifyObservers();
    }
 
-   public ContactDTO getContact()
+   public UserProfileDTO getProfile()
    {
-      return contact;
+      return profile;
    }
 
    public ContactPhoneDTO getPhoneNumber()
    {
-      if (contact.phoneNumbers().get().isEmpty())
+      if (profile.phoneNumbers().get().isEmpty())
       {
          ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class)
                .<ContactPhoneDTO>buildWith().prototype();
-         contact.phoneNumbers().get().add( phone );
+         profile.phoneNumbers().get().add( phone );
       }
-      return contact.phoneNumbers().get().get( 0 );
+      return profile.phoneNumbers().get().get( 0 );
    }
 
    public ContactEmailDTO getEmailAddress()
    {
-      if (contact.emailAddresses().get().isEmpty())
+      if (profile.emailAddresses().get().isEmpty())
       {
          ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class)
                .<ContactEmailDTO>buildWith().prototype();
-         contact.emailAddresses().get().add( email );
+         profile.emailAddresses().get().add( email );
       }
-      return contact.emailAddresses().get().get( 0 );
+      return profile.emailAddresses().get().get( 0 );
    }
 
    public void changeName( String newName )
@@ -114,5 +112,12 @@ public class ProfileModel
       Form form = new Form();
       form.set("email", newEmailAddress);
       client.putCommand( "update", form.getWebRepresentation() );
+   }
+
+   public void changeMarkReadTimeout( String newMarkReadTimeout )
+   {
+      Form form = new Form();
+      form.set("markreadtimeoutsec", newMarkReadTimeout);
+      client.putCommand( "changemarkreadtimeout", form.getWebRepresentation() );
    }
 }

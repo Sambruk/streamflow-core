@@ -30,6 +30,7 @@ import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
@@ -43,6 +44,8 @@ import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.util.Date;
 import java.util.List;
@@ -189,7 +192,12 @@ public interface SubmittedForms
             formBuilder.prototype().signatures().get().addAll(DTO.signatures().get());
          }
 
-         formBuilder.prototype().unread().set( true );
+         // Mark form submission as unread if it comes from WebForms
+         UserAuthentication user = RoleMap.role( UserAuthentication.class );
+         if( user instanceof ProxyUser )
+         {
+            formBuilder.prototype().unread().set( true );
+         }
 
          SubmittedFormValue submittedForm = formBuilder.newInstance();
          submittedForm( null, submittedForm );

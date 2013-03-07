@@ -87,4 +87,7 @@ public interface SystemDefaultsConfiguration
     */
    @UseDefaults
    Property<Boolean> includeNotesInSearch();
+
+   @UseDefaults
+   Property<Long> defaultMarkReadTimeout();
 }

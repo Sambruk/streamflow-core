@@ -68,6 +68,7 @@ import se.streamsource.streamflow.api.external.IntegrationPointDTO;
 import se.streamsource.streamflow.api.external.LogValue;
 import se.streamsource.streamflow.api.external.ShadowCaseDTO;
 import se.streamsource.streamflow.api.external.ShadowCaseLinkValue;
+import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
@@ -167,7 +168,8 @@ public class ClientAPIAssembler
               ContactPhoneDTO.class,
               ContactDTO.class,
               StreetsDTO.class,
-              StreetSearchDTO.class);
+              StreetSearchDTO.class,
+              UserProfileDTO.class);
    }
 
    private void overview(ModuleAssembly overview)
