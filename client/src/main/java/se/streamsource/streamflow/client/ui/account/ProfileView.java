@@ -83,7 +83,7 @@ public class ProfileView
       profileForm = new JPanel();
       panel.add( profileForm, BorderLayout.CENTER);
       FormLayout profileLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
-            "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
+            "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
       profileBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       profileBinder.setResourceMap( context.getResourceMap( getClass() ) );
@@ -150,6 +150,12 @@ public class ProfileView
       profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mark_read_timeout )));
       profileBuilder.nextColumn( 2 );
       profileBuilder.add( profileBinder.bind( TEXTFIELD.newField(),profileTemplate.markReadTimeout() ));
+
+      profileBuilder.nextLine( 2 );
+
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mail_footer )));
+      profileBuilder.nextColumn( 2 );
+      profileBuilder.add( profileBinder.bind( TEXTAREA.newField(),profileTemplate.mailFooter() ));
       profileBuilder.nextLine();
 
       profileBinder.addObserver( this );
@@ -236,6 +242,16 @@ public class ProfileView
             try
             {
                model.changeMarkReadTimeout((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException(
+                     CaseResources.could_not_change_mark_read_timeout, e);
+            }
+         } else if (property.qualifiedName().name().equals("mailFooter"))
+         {
+            try
+            {
+               model.changeMailFooter((String) property.get());
             } catch (ResourceException e)
             {
                throw new OperationException(

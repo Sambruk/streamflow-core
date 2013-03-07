@@ -180,5 +180,5 @@ public enum WorkspaceResources
    last_reminder_sent,
    second_draft_url,
    mail_selection_message,
-   mark_read_timeout, mark_read_failed
+   mark_read_timeout, mail_footer, mark_read_failed
 }

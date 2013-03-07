@@ -39,4 +39,11 @@ public interface UserProfileDTO
     */
    @UseDefaults
    Property<String> messageDeliveryType();
+
+   /**
+    * A mail footer to be attached to mails sent by the user.
+    * @return A string representing a mail footer.
+    */
+   @UseDefaults
+   Property<String> mailFooter();
 }

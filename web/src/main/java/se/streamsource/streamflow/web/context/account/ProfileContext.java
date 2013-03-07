@@ -35,6 +35,7 @@ import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.domain.interaction.profile.MailFooter;
 import se.streamsource.streamflow.web.domain.interaction.profile.MarkReadTimeout;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
@@ -56,6 +57,7 @@ public class ProfileContext
 
    @Uses MessageRecipient recipient;
    @Uses MessageRecipient.Data recipientData;
+
    @Uses
    MarkReadTimeout markReadTimeout;
 
@@ -69,12 +71,19 @@ public class ProfileContext
       markReadTimeout.changeTimeout( new Long( timeoutsec ) );
    }
 
+   public void changemailfooter( @Name("mailfooter") String mailfooter )
+   {
+      RoleMap.role( MailFooter.class ).changeMailFooter( mailfooter );
+   }
+
    public UserProfileDTO index()
    {
       Contactable contactable = RoleMap.role( Contactable.class );
       final ContactDTO contact = contactable.getContact();
 
       MarkReadTimeout.Data markReadTimeoutData = RoleMap.role( MarkReadTimeout.Data.class );
+
+      MailFooter.Data mailFooter = RoleMap.role( MailFooter.Data.class );
 
 
       ValueBuilder<UserProfileDTO> builder = module.valueBuilderFactory().newValueBuilder( UserProfileDTO.class );
@@ -111,6 +120,8 @@ public class ProfileContext
 
       builder.prototype().markReadTimeout().set( timeout );
       builder.prototype().messageDeliveryType().set( recipientData.delivery().get().name() );
+
+      builder.prototype().mailFooter().set( mailFooter.footer().get() );
 
       return builder.newInstance();
    }

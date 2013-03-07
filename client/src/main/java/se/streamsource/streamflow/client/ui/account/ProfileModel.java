@@ -120,4 +120,11 @@ public class ProfileModel
       form.set("markreadtimeoutsec", newMarkReadTimeout);
       client.putCommand( "changemarkreadtimeout", form.getWebRepresentation() );
    }
+
+   public void changeMailFooter( String newMailFooter )
+   {
+      Form form = new Form();
+      form.set("mailfooter", newMailFooter);
+      client.putCommand( "changemailfooter", form.getWebRepresentation() );
+   }
 }
