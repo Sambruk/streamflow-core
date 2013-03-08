@@ -22,6 +22,19 @@
 
   sfServices.factory('caseService', ['backendService', 'navigationService', function (backendService, navigationService) {
 
+    function overdueDays() {
+      var oneDay = 24*60*60*1000;
+      var now = new Date();
+      var dueDate = new Date(this.dueDate);
+      var diff = Math.round((now.getTime() - dueDate.getTime())/(oneDay));
+      return diff > 0 ? diff : 0;
+    }
+
+    function overdueStatus() {
+      if (!this.dueDate) return 'unset';
+      return this.overdueDays() > 0 ? 'overdue' : 'set';
+    }
+
     return {
       getSelected: function(projectId, caseType, caseId) {
         return backendService.get({
@@ -35,6 +48,8 @@
           ],
           onSuccess:function (resource, result) {
             result.index = resource.response.index;
+            result.index.overdueDays = overdueDays;
+            result.index.overdueStatus = overdueStatus;
           }
         });
       },
