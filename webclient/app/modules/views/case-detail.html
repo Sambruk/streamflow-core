@@ -39,8 +39,8 @@
 
     <!-- Issue body -->
     <div class="issue-body">
-      <div class="due-date set">
-        <span>{{case.overdueDays() | positive}}</span>
+      <div class="due-date {{case.index.overdueStatus()}}">
+        <span>{{case.index.overdueDays() | positive}}</span>
       </div>
       <div class="issue-description">
         <h2>{{case.index.text}}</h2>
