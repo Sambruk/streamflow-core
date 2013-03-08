@@ -16,22 +16,31 @@
  */
 package se.streamsource.streamflow.web.context.administration;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
-
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyDescriptor;
+import org.qi4j.spi.value.ValueDescriptor;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.InteractionValidation;
 import se.streamsource.dci.api.RequiresValid;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactBuilder;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.interaction.profile.MailFooter;
+import se.streamsource.streamflow.web.domain.interaction.profile.MarkReadTimeout;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
@@ -39,14 +48,22 @@ import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
 public class OrganizationUserContext
       implements IndexContext<LinksValue>, InteractionValidation
 {
+   @Service
+   SystemDefaultsService systemDefaults;
+
    @Structure
    Module module;
+
+   @Structure
+   private Qi4jSPI spi;
 
    public LinksValue index()
    {
@@ -117,10 +134,66 @@ public class OrganizationUserContext
       return recipient.delivery().get().name();
    }
 
-   public ContactDTO contact()
+   public void changemarkreadtimeout( @Name("markreadtimeoutsec") String timeoutsec )
+   {
+      RoleMap.role( MarkReadTimeout.class ).changeTimeout( new Long( timeoutsec ) );
+   }
+
+   public void changemailfooter( @Name("mailfooter") String mailfooter )
+   {
+      RoleMap.role( MailFooter.class ).changeMailFooter( mailfooter );
+   }
+
+   public UserProfileDTO profile()
    {
       Contactable contactable = RoleMap.role( Contactable.class );
-      return contactable.getContact();
+      final ContactDTO contact = contactable.getContact();
+
+      MessageRecipient.Data recipientData = RoleMap.role( MessageRecipient.Data.class );
+
+      MarkReadTimeout.Data markReadTimeoutData = RoleMap.role( MarkReadTimeout.Data.class );
+
+      MailFooter.Data mailFooter = RoleMap.role( MailFooter.Data.class );
+
+
+      ValueBuilder<UserProfileDTO> builder = module.valueBuilderFactory().newValueBuilder( UserProfileDTO.class );
+      final ValueDescriptor descriptor = spi.getValueDescriptor( builder.newInstance() );
+      builder.withState( new StateHolder()
+      {
+
+         public <T> Property<T> getProperty( QualifiedName name )
+         {
+            return null;
+         }
+
+         public <T> Property<T> getProperty( java.lang.reflect.Method propertyMethod )
+         {
+            return null;
+         }
+
+         public <ThrowableType extends Throwable> void visitProperties( StateVisitor<ThrowableType> visitor )
+               throws ThrowableType
+         {
+            for (PropertyDescriptor propertyDescriptor : descriptor.state().properties())
+            {
+               Property property = contact.state().getProperty( propertyDescriptor.qualifiedName() );
+               if( property != null )
+                  visitor.visitProperty( propertyDescriptor.qualifiedName(), property.get() );
+            }
+         }
+      } );
+
+
+
+      Long systemDefault = systemDefaults.config().configuration().defaultMarkReadTimeout().get();
+      Long timeout = systemDefault.compareTo( markReadTimeoutData.timeout().get() ) > 0 ? systemDefault : markReadTimeoutData.timeout().get();
+
+      builder.prototype().markReadTimeout().set( timeout );
+      builder.prototype().messageDeliveryType().set( recipientData.delivery().get().name() );
+
+      builder.prototype().mailFooter().set( mailFooter.footer().get() );
+
+      return builder.newInstance();
    }
 
    @RequiresValid("LdapOffAdminAlways")

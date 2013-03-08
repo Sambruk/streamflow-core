@@ -18,7 +18,8 @@ package se.streamsource.streamflow.client.ui.administration.users;
 
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
@@ -29,7 +30,7 @@ public class UserAdministrationDetailModel
 {
 
 
-   private ContactDTO contact;
+   private UserProfileDTO profile;
 
    public void setdisabled()
    {
@@ -75,37 +76,37 @@ public class UserAdministrationDetailModel
 
    public void refresh()
    {
-      contact = client.query("contact", ContactDTO.class ).<ContactDTO>buildWith().prototype();
+      profile = client.query("profile", UserProfileDTO.class ).<UserProfileDTO>buildWith().prototype();
       super.refresh();
       setChanged();
       notifyObservers();
    }
 
-   public ContactDTO getContact()
+   public ContactDTO getProfile()
    {
-      return contact;
+      return profile;
    }
 
    public ContactPhoneDTO getPhoneNumber()
    {
-      if (contact.phoneNumbers().get().isEmpty())
+      if (profile.phoneNumbers().get().isEmpty())
       {
          ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class)
                .<ContactPhoneDTO>buildWith().prototype();
-         contact.phoneNumbers().get().add( phone );
+         profile.phoneNumbers().get().add( phone );
       }
-      return contact.phoneNumbers().get().get( 0 );
+      return profile.phoneNumbers().get().get( 0 );
    }
 
    public ContactEmailDTO getEmailAddress()
    {
-      if (contact.emailAddresses().get().isEmpty())
+      if (profile.emailAddresses().get().isEmpty())
       {
          ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class)
                .<ContactEmailDTO>buildWith().prototype();
-         contact.emailAddresses().get().add( email );
+         profile.emailAddresses().get().add( email );
       }
-      return contact.emailAddresses().get().get( 0 );
+      return profile.emailAddresses().get().get( 0 );
    }
 
    public void changeName( String newName )
@@ -127,6 +128,20 @@ public class UserAdministrationDetailModel
       Form form = new Form();
       form.set("email", newEmailAddress);
       client.putCommand( "update", form.getWebRepresentation() );
+   }
+
+   public void changeMarkReadTimeout( String newMarkReadTimeout )
+   {
+      Form form = new Form();
+      form.set("markreadtimeoutsec", newMarkReadTimeout);
+      client.putCommand( "changemarkreadtimeout", form.getWebRepresentation() );
+   }
+
+   public void changeMailFooter( String newMailFooter )
+   {
+      Form form = new Form();
+      form.set("mailfooter", newMailFooter);
+      client.putCommand( "changemailfooter", form.getWebRepresentation() );
    }
 
 }

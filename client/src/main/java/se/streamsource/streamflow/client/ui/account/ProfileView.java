@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.account;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
@@ -155,7 +156,8 @@ public class ProfileView
 
       profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mail_footer )));
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( profileBinder.bind( TEXTAREA.newField(),profileTemplate.mailFooter() ));
+      profileBuilder.add( profileBinder.bind( TEXTAREA.newField(),profileTemplate.mailFooter() ),
+            new CellConstraints( 3, 11, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 4, 0, 4  ) ));
       profileBuilder.nextLine();
 
       profileBinder.addObserver( this );
@@ -251,7 +253,7 @@ public class ProfileView
          {
             try
             {
-               model.changeMailFooter((String) property.get());
+               model.changeMailFooter( (String) property.get() );
             } catch (ResourceException e)
             {
                throw new OperationException(

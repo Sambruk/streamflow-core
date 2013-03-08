@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.administration.users;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -29,7 +30,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
 import se.streamsource.streamflow.client.OperationException;
@@ -83,11 +84,11 @@ public class UserAdministrationDetailView
    @Service
    StreamflowApplication main;
 
-   private StateBinder contactBinder;
+   private StateBinder profileBinder;
    private StateBinder phoneNumberBinder;
    private StateBinder emailBinder;
 
-   public JPanel contactForm;
+   public JPanel profileForm;
    public JRadioButton noneButton;
    public JRadioButton emailButton;
 
@@ -134,14 +135,14 @@ public class UserAdministrationDetailView
       profilePanel = new JPanel(new BorderLayout());
       profilePanel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
 
-      contactForm = new JPanel();
-      profilePanel.add(contactForm, BorderLayout.CENTER);
-      FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
-            "pref, pref, pref, pref, pref, pref, pref, pref");
+      profileForm = new JPanel();
+      profilePanel.add( profileForm, BorderLayout.CENTER);
+      FormLayout profileLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
+            "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
-      contactBinder = module.objectBuilderFactory().newObject(StateBinder.class);
-      contactBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactDTO template = contactBinder.bindingTemplate(ContactDTO.class);
+      profileBinder = module.objectBuilderFactory().newObject(StateBinder.class);
+      profileBinder.setResourceMap( context.getResourceMap( getClass() ) );
+      UserProfileDTO template = profileBinder.bindingTemplate(UserProfileDTO.class);
 
       phoneNumberBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
@@ -154,60 +155,74 @@ public class UserAdministrationDetailView
             .bindingTemplate(ContactEmailDTO.class);
 
 
-      DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout, contactForm);
+      DefaultFormBuilder profileBuilder = new DefaultFormBuilder(profileLayout, profileForm );
 
       JLabel title = new JLabel(i18n
             .text( AccountResources.contact_info_for_user_separator));
       title.setFont(title.getFont().deriveFont(Font.BOLD));
-      contactBuilder.append(title, 3);
-      contactBuilder.nextLine();
+      profileBuilder.append( title, 3 );
+      profileBuilder.nextLine();
 
       JTextField nameTextField;
-      contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
-      contactBuilder.nextColumn(2);
-      contactBuilder.add( contactBinder.bind(nameTextField = (JTextField)TEXTFIELD.newField(),
-            template.name()));
-      contactBuilder.nextLine();
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
+      profileBuilder.nextColumn( 2 );
+      profileBuilder.add( profileBinder.bind( nameTextField = (JTextField) TEXTFIELD.newField(),
+            template.name() ) );
+      profileBuilder.nextLine();
       refreshComponents.enabledOn( "update", nameTextField );
 
       JTextField emailTextField;
-      contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(emailBinder.bind( emailTextField = (JTextField)TEXTFIELD.newField(), emailTemplate.emailAddress() ));
-      contactBuilder.nextLine();
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.email_label ) ) );
+      profileBuilder.nextColumn( 2 );
+      profileBuilder.add( emailBinder.bind( emailTextField = (JTextField) TEXTFIELD.newField(), emailTemplate.emailAddress() ) );
+      profileBuilder.nextLine();
       refreshComponents.enabledOn( "update", emailTextField );
 
       JTextField phoneNumberTextField;
-      contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(phoneNumberBinder.bind( phoneNumberTextField = (JTextField) TEXTFIELD.newField(),
-            phoneTemplate.phoneNumber()));
-      contactBuilder.nextLine(2);
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.phone_label ) ) );
+      profileBuilder.nextColumn( 2 );
+      profileBuilder.add( phoneNumberBinder.bind( phoneNumberTextField = (JTextField) TEXTFIELD.newField(),
+            phoneTemplate.phoneNumber() ) );
+      profileBuilder.nextLine( 2 );
       refreshComponents.enabledOn( "update", phoneNumberTextField );
 
-      contactBuilder.add(new JLabel( i18n
-            .text(WorkspaceResources.choose_message_delivery_type)));
+      profileBuilder.add( new JLabel( i18n
+            .text( WorkspaceResources.choose_message_delivery_type ) ) );
       noneButton = (JRadioButton) RADIOBUTTON.newField();
-      noneButton.setAction(am.get("messageDeliveryTypeNone"));
+      noneButton.setAction( am.get( "messageDeliveryTypeNone" ) );
       noneButton.setSelected(true);
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(noneButton);
-      contactBuilder.nextLine();
-      contactBuilder.nextColumn(2);
+      profileBuilder.nextColumn( 2 );
+      profileBuilder.add( noneButton );
+      profileBuilder.nextLine();
+      profileBuilder.nextColumn( 2 );
       emailButton = (JRadioButton) RADIOBUTTON.newField();
-      emailButton.setAction(am.get("messageDeliveryTypeEmail"));
-      contactBuilder.add(emailButton);
+      emailButton.setAction( am.get( "messageDeliveryTypeEmail" ) );
+      profileBuilder.add( emailButton );
       refreshComponents.enabledOn( "update", noneButton );
       refreshComponents.enabledOn( "update", emailButton );
 
       // Group the radio buttons.
       ButtonGroup group = new ButtonGroup();
       group.add(noneButton);
-      group.add(emailButton);
+      group.add( emailButton );
 
-      contactBuilder.nextLine(2);
+      profileBuilder.nextLine( 2 );
 
-      contactBinder.addObserver(this);
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mark_read_timeout )));
+      profileBuilder.nextColumn( 2 );
+      profileBuilder.add( profileBinder.bind( TEXTFIELD.newField(),template.markReadTimeout() ));
+
+      profileBuilder.nextLine( 2 );
+
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mail_footer )));
+      profileBuilder.nextColumn( 2 );
+
+      profileBuilder.add( profileBinder.bind( TEXTAREA.newField(),template.mailFooter() )
+            , new CellConstraints( 3, 11, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 4, 0, 4  ) ));
+
+      profileBuilder.nextLine();
+
+      profileBinder.addObserver( this );
       phoneNumberBinder.addObserver(this);
       emailBinder.addObserver( this );
 
@@ -356,7 +371,7 @@ public class UserAdministrationDetailView
 
       if (o == model)
       {
-         contactBinder.updateWith( model.getContact() );
+         profileBinder.updateWith( model.getProfile() );
          phoneNumberBinder.updateWith(model.getPhoneNumber());
          emailBinder.updateWith(model.getEmailAddress());
 
@@ -399,6 +414,26 @@ public class UserAdministrationDetailView
             {
                throw new OperationException(
                      CaseResources.could_not_change_email_address, e);
+            }
+         } else if (property.qualifiedName().name().equals("markReadTimeout"))
+         {
+            try
+            {
+               model.changeMarkReadTimeout((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException(
+                     CaseResources.could_not_change_mark_read_timeout, e);
+            }
+         } else if (property.qualifiedName().name().equals("mailFooter"))
+         {
+            try
+            {
+               model.changeMailFooter((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException(
+                     CaseResources.could_not_change_mark_read_timeout, e);
             }
          }
       }
