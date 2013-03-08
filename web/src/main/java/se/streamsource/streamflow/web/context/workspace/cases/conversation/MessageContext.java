@@ -28,6 +28,11 @@ import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
 /**
  *
  */
@@ -39,7 +44,16 @@ public class MessageContext
 
    public MessageDTO index()
    {
+      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
+      Map<String, String> translations = new HashMap<String, String>();
+      for (String key : bundle.keySet())
+      {
+         translations.put(key, bundle.getString(key));
+      }
+
       Message.Data messageData = RoleMap.current().get( Message.Data.class );
+      Message message = RoleMap.role( Message.class );
+
       ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
       Contactable contact = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, EntityReference.getEntityReference( messageData.sender().get() ).identity() );
       String sender = contact.getContact().name().get();
@@ -49,7 +63,7 @@ public class MessageContext
       builder.prototype().createdOn().set( messageData.createdOn().get() );
       builder.prototype().id().set( ((Identity)messageData).identity().get() );
       builder.prototype().href().set( builder.prototype().id().get() );
-      builder.prototype().text().set( messageData.body().get() );
+      builder.prototype().text().set( message.translateBody(translations) );
       builder.prototype().hasAttachments().set( ((Message)messageData).hasAttachments() );
       builder.prototype().unread().set( ((Message) messageData).isUnread() );
 
