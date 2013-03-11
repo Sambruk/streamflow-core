@@ -672,7 +672,7 @@ public interface CaseEntity
             {
                if (conversation.isParticipant( (ConversationParticipant) caze.createdBy().get() ))
                   conversation.createMessage( "{received,caseid=" + ((CaseId.Data) caze).caseId().get() + "}",
-                        administrator );
+                        administrator, false );
             }
          }
       }
@@ -692,7 +692,7 @@ public interface CaseEntity
             {
                if (conversation.isParticipant( (ConversationParticipant) caze.createdBy().get() ))
                   conversation.createMessage( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + "}",
-                        administrator );
+                        administrator, false );
             }
          }
       }

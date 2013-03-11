@@ -41,6 +41,8 @@ public interface Messages
 {
    Message createMessage(String body, ConversationParticipant participant);
 
+   Message createMessage(String body, ConversationParticipant participant, boolean unread );
+
    Message getLastMessage();
 
    void createMessageFromDraft( ConversationParticipant participant );
@@ -51,7 +53,7 @@ public interface Messages
    {
       ManyAssociation<Message> messages();
 
-      Message createdMessage( @Optional DomainEvent create, String id, String body, ConversationParticipant participant );
+      Message createdMessage( @Optional DomainEvent create, String id, String body, ConversationParticipant participant, boolean unread );
 
       Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant );
    }
@@ -73,27 +75,35 @@ public interface Messages
 
       public Message createMessage( String body, ConversationParticipant participant ) throws IllegalArgumentException
       {
+         return createMessage( body, participant, true );
+      }
+
+      public Message createMessage( String body, ConversationParticipant participant, boolean unread ) throws IllegalArgumentException
+      {
          if (!participants.isParticipant(participant))
          {
             participants.addParticipant( participant );
          }
 
-         Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant );
+         Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant, unread );
 
          participants.receiveMessage(message);
 
          return message;
       }
 
-      public Message createdMessage( DomainEvent event, String id, String body, ConversationParticipant participant )
+      public Message createdMessage( DomainEvent event, String id, String body, ConversationParticipant participant, boolean unread )
       {
          EntityBuilder<Message> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Message.class, id );
          builder.instanceFor( Message.Data.class ).body().set( body );
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
          builder.instanceFor( Message.Data.class ).conversation().set( conversation );
-         // Set Message unread when it comes from an email
-         builder.instanceFor( Unread.Data.class ).unread().set( true );
+
+         if( unread )
+         {
+            builder.instanceFor( Unread.Data.class ).unread().set( true );
+         }
 
          Message message = builder.newInstance();
          messages().add( message );

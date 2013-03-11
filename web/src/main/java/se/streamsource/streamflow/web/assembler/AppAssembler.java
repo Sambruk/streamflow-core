@@ -173,6 +173,7 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportProjectName().set( bundle.getString( "supportProjectName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForIncomingEmailName().set( bundle.getString( "supportCaseTypeForIncomingEmailName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface" );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().defaultMarkReadTimeout().set( 15L );
 
       // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
       system.services( AvailabilityService.class ).identifiedBy( "availability" ).
