@@ -106,7 +106,7 @@ public interface EmailAccessPoints
             return false;
 
          removedEmailAccessPoint( null, accessPoint );
-         accessPoint.deleteEntity();
+         accessPoint.removeEntity();
          return true;
       }
 
