@@ -17,7 +17,6 @@
 package se.streamsource.streamflow.client.ui.account;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
@@ -83,7 +82,7 @@ public class ProfileView
 
       profileForm = new JPanel();
       panel.add( profileForm, BorderLayout.CENTER);
-      FormLayout profileLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
+      FormLayout profileLayout = new FormLayout("85dlu, 5dlu, 120dlu:grow",
             "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
       profileBinder = module.objectBuilderFactory().newObject(StateBinder.class);
@@ -156,8 +155,7 @@ public class ProfileView
 
       profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mail_footer )));
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( profileBinder.bind( TEXTAREA.newField(),profileTemplate.mailFooter() ),
-            new CellConstraints( 3, 11, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 4, 0, 4  ) ));
+      profileBuilder.add( profileBinder.bind( TEXTAREA.newField(),profileTemplate.mailFooter() ));
       profileBuilder.nextLine();
 
       profileBinder.addObserver( this );
