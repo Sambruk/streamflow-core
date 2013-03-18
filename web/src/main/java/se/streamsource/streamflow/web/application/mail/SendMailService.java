@@ -170,6 +170,12 @@ public interface SendMailService
          {
             try
             {
+               //TODO needs a better solution but right now we don't try to send any email with no TO address
+               if( Strings.empty( email.to().get() ) )
+               {
+                  logger.error( "Cannot send mail without valid TO address! Subject: " + email.subject().get() );
+                  return;
+               }
                // Make sure mail.jar and activation.jar are loaded by the same class loader.
                // http://stackoverflow.com/questions/1969667/send-a-mail-from-java5-and-java6
                Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
