@@ -529,4 +529,12 @@ public class StreamflowApplication
    {
       return accountSelector.getSelectedAccount().getProfileModel().getProfile().markReadTimeout().get() * 1000;
    }
+
+   public void callRefresh()
+   {
+      if( workspaceWindow.getCurrentWorkspace().isVisible() && workspaceWindow.getCurrentWorkspace().isShowing() )
+      {
+         workspaceWindow.getCurrentWorkspace().refresh();
+      }
+   }
 }
