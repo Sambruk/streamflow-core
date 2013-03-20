@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
@@ -57,11 +58,15 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
+import se.streamsource.streamflow.web.context.services.ApplyFilterContext;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomerEntity;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
@@ -77,6 +82,7 @@ import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
@@ -86,7 +92,7 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
  * JAVADOC
  */
 @Mixins(TaskFormDraftSummaryContext.Mixin.class)
-public interface TaskFormDraftSummaryContext extends Context, IndexContext<FormDraftDTO>
+public interface TaskFormDraftSummaryContext extends Context, MailSender, IndexContext<FormDraftDTO>
 {
 
    void submitandsend();
@@ -103,6 +109,13 @@ public interface TaskFormDraftSummaryContext extends Context, IndexContext<FormD
 
    abstract class Mixin implements TaskFormDraftSummaryContext
    {
+      protected ApplyFilterContext applyFilterContext;
+
+      public Mixin(@Structure Module module, @This MailSender mailSender, @Service AttachmentStore attachmentStore)
+      {
+         applyFilterContext = new ApplyFilterContext(module, mailSender, attachmentStore);
+      }
+      
       @Structure
       Module module;
 
@@ -223,6 +236,13 @@ public interface TaskFormDraftSummaryContext extends Context, IndexContext<FormD
             {
                logger.error( "Could not send mail", throwable );
             }
+         }
+
+         // Apply filter if they exist.
+         Owner owner = ((CaseEntity)aCase).owner().get();
+         if (owner instanceof Filters.Data)
+         {
+            applyFilterContext.rebind((Filters.Data) owner, (CaseEntity)aCase).applyFilters();
          }
       }
 

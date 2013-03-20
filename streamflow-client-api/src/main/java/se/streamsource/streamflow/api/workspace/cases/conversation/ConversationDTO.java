@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.conversation;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.link.LinkValue;
 
@@ -31,4 +32,7 @@ public interface ConversationDTO
    Property<Integer> messages();
 
    Property<Integer> participants();
+
+   @UseDefaults
+   Property<Boolean> unread();
 }

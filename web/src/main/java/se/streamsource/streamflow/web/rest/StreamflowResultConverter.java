@@ -16,12 +16,6 @@
  */
 package se.streamsource.streamflow.web.rest;
 
-import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
-import static se.streamsource.dci.value.table.TableValue.DATETIME;
-import static se.streamsource.dci.value.table.TableValue.STRING;
-
-import java.util.Collections;
-
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -37,7 +31,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -67,6 +60,10 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 
+import java.util.Collections;
+
+import static se.streamsource.dci.value.table.TableValue.*;
+
 /**
  * JAVADOC
  */
@@ -93,21 +90,29 @@ public class StreamflowResultConverter
          return result;
       } else if (result instanceof Case)
       {
+         if (request.getResourceRef().getPath().contains( "workspacev2" ))
+         {
+            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath(), true);
+         }
          if (arguments.length > 0 && arguments[0] instanceof TableQuery)
             return caseTable(Collections.singleton((CaseEntity) result), module, request, arguments);
          else
             //needs to be relative path in case there is a proxy in front of streamflow server
-            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath());
+            return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath(), false);
       } else if (result instanceof Query)
       {
          Query query = (Query) result;
          if (query.resultType().equals(Case.class))
          {
-            if (arguments.length > 0 && arguments[0] instanceof TableQuery)
+            if (request.getResourceRef().getPath().contains( "workspacev2" ))
+            {
+               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), true);
+            }
+            else if (arguments.length > 0 && arguments[0] instanceof TableQuery)
                return caseTable(query, module, request, arguments);
             else
                //same here relative path needed
-               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath());
+               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), false);
          }
       } 
 
@@ -120,14 +125,14 @@ public class StreamflowResultConverter
       return result;
    }
 
-   private LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath)
+   private LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath, boolean v2)
    {
       LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path(basePath);
       for (Case aCase : query)
       {
          try
          {
-            linksBuilder.addLink(caseDTO((CaseEntity) aCase, module, basePath));
+            linksBuilder.addLink(caseDTO((CaseEntity) aCase, module, basePath, v2));
          } catch (Exception e)
          {
             LoggerFactory.getLogger(getClass()).error("Could not create link for case:" + ((Identity) aCase).identity().get(), e);
@@ -136,7 +141,7 @@ public class StreamflowResultConverter
       return linksBuilder.newLinks();
    }
 
-   private CaseDTO caseDTO(CaseEntity aCase, Module module, String basePath)
+   private CaseDTO caseDTO(CaseEntity aCase, Module module, String basePath, boolean v2)
    {
       ValueBuilder<CaseDTO> builder = module.valueBuilderFactory().newValueBuilder(CaseDTO.class);
 
@@ -148,7 +153,16 @@ public class StreamflowResultConverter
          prototype.createdBy().set(((Describable) aCase.createdBy().get()).getDescription());
       if (aCase.caseId().get() != null)
          prototype.caseId().set(aCase.caseId().get());
-      prototype.href().set(basePath + "/workspace/cases/" + aCase.identity().get() + "/");
+      
+      // Not so fancy solution to the v2 problem...
+      if (v2)
+      {
+         prototype.href().set(basePath + "/workspacev2/cases/" + aCase.identity().get() + "/");
+      }
+      else 
+      {
+         prototype.href().set(basePath + "/workspace/cases/" + aCase.identity().get() + "/");
+      }
       prototype.rel().set("case");
       try
       {
@@ -194,6 +208,9 @@ public class StreamflowResultConverter
       prototype.hasConversations().set(aCase.hasConversations());
       prototype.hasSubmittedForms().set(aCase.hasSubmittedForms());
       prototype.hasAttachments().set(aCase.hasAttachments());
+      prototype.hasUnreadConversation().set( aCase.hasUnreadConversation() );
+      prototype.hasUnreadForm().set( aCase.hasUnreadForm() );
+      prototype.unread().set( aCase.unread().get() );
 
       // Labels
       LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).command("delete");
@@ -237,27 +254,27 @@ public class StreamflowResultConverter
             return caseEntity.getDescription();
          }
       }).
-            column("created", "Created", DATETIME, new Function<CaseEntity, Object>()
+            column( "created", "Created", DATETIME, new Function<CaseEntity, Object>()
             {
-               public Object map(CaseEntity caseEntity)
+               public Object map( CaseEntity caseEntity )
                {
                   return caseEntity.createdOn().get();
                }
-            }).
-            column("creator", "Creator", STRING, new Function<CaseEntity, Object>()
+            } ).
+            column( "creator", "Creator", STRING, new Function<CaseEntity, Object>()
             {
-               public Object map(CaseEntity caseEntity)
+               public Object map( CaseEntity caseEntity )
                {
                   return ((Describable) caseEntity.createdBy().get()).getDescription();
                }
-            }).
-            column("due", "Due on", DATETIME, new Function<CaseEntity, Object>()
+            } ).
+            column( "due", "Due on", DATETIME, new Function<CaseEntity, Object>()
             {
-               public Object map(CaseEntity caseEntity)
+               public Object map( CaseEntity caseEntity )
                {
                   return caseEntity.dueOn().get();
                }
-            }).
+            } ).
             column("caseid", "Case id", STRING, new Function<CaseEntity, Object>()
             {
                public Object map(CaseEntity caseEntity)
@@ -339,6 +356,13 @@ public class StreamflowResultConverter
                   return caseEntity.hasConversations();
                }
             }).
+            column("hasunreadconversation", "Has unread conversations", BOOLEAN, new Function<CaseEntity, Object>()
+            {
+               public Object map(CaseEntity caseEntity)
+               {
+                  return caseEntity.hasUnreadConversation();
+               }
+            }).
             column("hasattachments", "Has attachments", BOOLEAN, new Function<CaseEntity, Object>()
             {
                public Object map(CaseEntity caseEntity)
@@ -351,6 +375,13 @@ public class StreamflowResultConverter
                public Object map(CaseEntity caseEntity)
                {
                   return caseEntity.hasSubmittedForms();
+               }
+            }).
+            column("hasunreadform", "Has unread submitted form", BOOLEAN, new Function<CaseEntity, Object>()
+            {
+               public Object map(CaseEntity caseEntity)
+               {
+                  return caseEntity.hasUnreadForm();
                }
             }).
             column("labels", "Labels", STRING, new Function<CaseEntity, Object>()
@@ -428,7 +459,14 @@ public class StreamflowResultConverter
                   }
                   return null;
                }
-            } );
+            } ).
+            column("unread", "Is unread", BOOLEAN, new Function<CaseEntity, Object>()
+            {
+               public Object map(CaseEntity caseEntity)
+               {
+                  return caseEntity.isUnread();
+               }
+            });
       
       if (!"*".equals( query.select() ))
       {

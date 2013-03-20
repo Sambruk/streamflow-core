@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
@@ -50,6 +51,7 @@ public class OrganizationModel
       relationModelMapping("priorities", PrioritiesModel.class);
       relationModelMapping("accesspoints", AccessPointsModel.class);
       relationModelMapping("emailaccesspoints", EmailAccessPointsModel.class);
+      relationModelMapping( "integrationpoints", IntegrationPointsModel.class );
       relationModelMapping("proxyusers", ProxyUsersModel.class);
       relationModelMapping("templates", SelectedTemplatesModel.class);
       relationModelMapping( "restrictions", CaseAccessDefaultsModel.class );

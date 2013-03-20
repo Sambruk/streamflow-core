@@ -34,6 +34,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.ClientCache;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
 import se.streamsource.dci.restlet.client.ResponseHandler;
@@ -79,7 +80,7 @@ public interface AccountEntity
 
       public void updateSettings( AccountSettingsValue newAccountSettings )
       {
-         state.settings().set(newAccountSettings);
+         state.settings().set( newAccountSettings );
       }
 
       public void changePassword( Uniform client, String oldPassword, String newPassword ) throws ResourceException
@@ -104,7 +105,7 @@ public interface AccountEntity
 
          AuthenticationFilter filter = new AuthenticationFilter( module.unitOfWorkFactory(), account, client );
 
-         return module.objectBuilderFactory().newObjectBuilder(CommandQueryClientFactory.class).use( filter, handler ).newInstance().newClient( serverRef );
+         return module.objectBuilderFactory().newObjectBuilder( CommandQueryClientFactory.class ).use( filter, handler, new ClientCache() ).newInstance().newClient( serverRef );
       }
 
       public CommandQueryClient user( Uniform client )
@@ -115,7 +116,7 @@ public interface AccountEntity
       public String version(Uniform client) throws ResourceException, IOException
       {
          CommandQueryClient server = server( client );
-         Representation in = server.getClient( "/streamflow/static/" ).query("version.html", Representation.class);
+         Representation in = server.getClient( "/streamflow/static/" ).query( "version.html", Representation.class );
 
          String version = in.getText();
          return version;

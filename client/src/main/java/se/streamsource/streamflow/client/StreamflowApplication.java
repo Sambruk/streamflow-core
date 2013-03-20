@@ -352,7 +352,7 @@ public class StreamflowApplication
    @Action
    public void myProfile()
    {
-      ProfileView profile = module.objectBuilderFactory().newObjectBuilder(ProfileView.class).use(accountSelector.getSelectedAccount().newProfileModel()).newInstance();
+      ProfileView profile = module.objectBuilderFactory().newObjectBuilder(ProfileView.class).use(accountSelector.getSelectedAccount().getProfileModel()).newInstance();
       dialogs.showOkDialog(getMainFrame(), profile, text(AccountResources.profile_title));
    }
 
@@ -360,20 +360,20 @@ public class StreamflowApplication
    @Action
    public void savePerspective(ActionEvent e)
    {
-      ((ApplicationAction) getContext().getActionMap().get("savePerspective").getValue("proxy")).actionPerformed(e);
+      ((ApplicationAction) getContext().getActionMap().get("savePerspective").getValue("proxy")).actionPerformed( e );
    }
 
    @Action
    public void managePerspectives(ActionEvent e)
    {
-      ((ApplicationAction) getContext().getActionMap().get("managePerspectives").getValue("proxy")).actionPerformed(e);
+      ((ApplicationAction) getContext().getActionMap().get("managePerspectives").getValue("proxy")).actionPerformed( e );
    }
 
    // Proxy actions for message view
    @Action
    public void closeMessageDetails(ActionEvent e)
    {
-      ((ApplicationAction) getContext().getActionMap().get("closeMessageDetails").getValue("proxy")).actionPerformed(e);
+      ((ApplicationAction) getContext().getActionMap().get("closeMessageDetails").getValue("proxy")).actionPerformed( e );
    }
 
    @Action
@@ -464,7 +464,7 @@ public class StreamflowApplication
    @Action
    public void close(ActionEvent e)
    {
-      WindowUtils.findWindow((Component) e.getSource()).dispose();
+      WindowUtils.findWindow( (Component) e.getSource() ).dispose();
    }
 
    @Action
@@ -476,7 +476,7 @@ public class StreamflowApplication
    @Action
    public void showAbout()
    {
-      dialogs.showOkDialog(getMainFrame(), new AboutDialog(getContext()));
+      dialogs.showOkDialog( getMainFrame(), new AboutDialog( getContext() ) );
    }
 
    @Action
@@ -523,5 +523,18 @@ public class StreamflowApplication
    public String currentUserId()
    {
       return accountSelector.getSelectedAccount().settings().userName().get();
+   }
+
+   public long markReadTimeout()
+   {
+      return accountSelector.getSelectedAccount().getProfileModel().getProfile().markReadTimeout().get() * 1000;
+   }
+
+   public void callRefresh()
+   {
+      if( workspaceWindow.getCurrentWorkspace().isVisible() && workspaceWindow.getCurrentWorkspace().isShowing() )
+      {
+         workspaceWindow.getCurrentWorkspace().refresh();
+      }
    }
 }

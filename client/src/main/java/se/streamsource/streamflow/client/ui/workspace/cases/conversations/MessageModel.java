@@ -61,4 +61,9 @@ public class MessageModel
    {
       return message;
    }
+
+   public void read()
+   {
+      client.postCommand( "read" );
+   }
 }

@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-describe("sf.backend.services.backend", function () {
+describe("sf.services.backend", function () {
   'use strict';
 
   var backend = window.mockBackend;
 
-  beforeEach(module('sf.backend.services.backend'));
+  beforeEach(module('sf.services.backend'));
 
   // mock the error handler
   var error;

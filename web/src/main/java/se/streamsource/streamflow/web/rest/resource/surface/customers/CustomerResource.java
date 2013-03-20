@@ -16,9 +16,14 @@
  */
 package se.streamsource.streamflow.web.rest.resource.surface.customers;
 
+import org.qi4j.api.entity.Identity;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.account.ContactableContext;
+import se.streamsource.streamflow.web.application.external.IntegrationService;
+import se.streamsource.streamflow.web.context.account.ProfileContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 
 /**
  * JAVADOC
@@ -35,12 +40,21 @@ public class CustomerResource
    @SubResource
    public void closed()
    {
-      subResource(ClosedCasesResource.class);
+      subResource( ClosedCasesResource.class );
    }
 
    @SubResource
    public void profile()
    {
-      subResourceContexts(ContactableContext.class);
+      subResourceContexts( ProfileContext.class );
+   }
+
+   @ServiceAvailable( service = IntegrationService.class, availability = true )
+   @SubResource
+   public void shadowcases()
+   {
+      setRole( OrganizationEntity.class,
+            ((Identity)setRole( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID ).organization().get()).identity().get() );
+      subResource( MyShadowCasesResource.class );
    }
 }

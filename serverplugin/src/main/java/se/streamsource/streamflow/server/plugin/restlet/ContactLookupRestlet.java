@@ -85,8 +85,17 @@ public class ContactLookupRestlet
                // Parse request
                ContactValue contactTemplate;
 
-               contactTemplate = (ContactValue) getValueFromForm( ContactValue.class, request.getResourceRef().getQueryAsForm() );
+               // check if the call comes from REST API
+               Form queryAsForm = request.getResourceRef().getQueryAsForm();
+               Parameter template = queryAsForm.getFirst( "template" );
 
+               if( template == null )
+               {
+                  contactTemplate = (ContactValue) getValueFromForm( ContactValue.class, queryAsForm );
+               } else
+               {
+                  contactTemplate = module.valueBuilderFactory().newValueFromJSON( ContactValue.class, template.getValue() );
+               }
                // Call plugin
                ContactList lookups = contactLookup.lookup( contactTemplate );
 

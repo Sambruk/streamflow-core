@@ -63,6 +63,12 @@ import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.SelectedTemplatesDTO;
+import se.streamsource.streamflow.api.external.ContentValue;
+import se.streamsource.streamflow.api.external.IntegrationPointDTO;
+import se.streamsource.streamflow.api.external.LogValue;
+import se.streamsource.streamflow.api.external.ShadowCaseDTO;
+import se.streamsource.streamflow.api.external.ShadowCaseLinkValue;
+import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
@@ -110,6 +116,16 @@ public class ClientAPIAssembler
       workspace(module);
       overview(module);
       administration(module);
+      external(module);
+   }
+
+   private void external( ModuleAssembly external )
+   {
+      external.values( ShadowCaseLinkValue.class,
+            ShadowCaseDTO.class,
+            ContentValue.class,
+            LogValue.class,
+            IntegrationPointDTO.class );
    }
 
    private void workspace(ModuleAssembly workspace)
@@ -152,7 +168,8 @@ public class ClientAPIAssembler
               ContactPhoneDTO.class,
               ContactDTO.class,
               StreetsDTO.class,
-              StreetSearchDTO.class);
+              StreetSearchDTO.class,
+              UserProfileDTO.class);
    }
 
    private void overview(ModuleAssembly overview)

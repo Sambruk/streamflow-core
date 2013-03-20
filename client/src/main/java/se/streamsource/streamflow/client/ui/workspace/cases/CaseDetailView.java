@@ -16,23 +16,11 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import static se.streamsource.streamflow.client.util.i18n.icon;
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.caselog.CaseLogView;
@@ -40,28 +28,51 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdm
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import java.awt.BorderLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyEvent;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
  */
 public class CaseDetailView
       extends JPanel
-   implements TransactionListener
+   implements Observer, TransactionListener, HierarchyListener
 {
    private JTabbedPane tabs = new JTabbedPane( JTabbedPane.BOTTOM );
    private CaseModel model;
    private CaseInfoView caseInfo;
    private CaseActionsView caseActions;
 
+   private Timer timer;
+   private TimerTask timerTask;
+
    public CaseDetailView( @Uses CaseModel model,
                           @Structure Module module)
    {
       super( new BorderLayout() );
       this.model = model;
+      model.addObserver( this );
       this.setBorder( BorderFactory.createEtchedBorder() );
       tabs.setFocusable( true );
 
@@ -99,10 +110,36 @@ public class CaseDetailView
          }
       } );
 
+      addAncestorListener ( new AncestorListener()
+      {
+         public void ancestorAdded ( AncestorEvent event )
+         {
+            // Component added somewhere
+         }
+
+         public void ancestorRemoved ( AncestorEvent event )
+         {
+            if(timerTask != null )
+            {
+               timerTask.cancel();
+               timer.cancel();
+               timerTask = null;
+               timer = null;
+            }
+         }
+
+         public void ancestorMoved ( AncestorEvent event )
+         {
+            // Component container moved
+         }
+      } );
 
       add( tabs, BorderLayout.CENTER );
 
       new RefreshWhenShowing( this, model );
+
+      addHierarchyListener( this );
+
    }
 
    public void setSelectedTab( int index )
@@ -118,9 +155,48 @@ public class CaseDetailView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( Events.withNames( "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus" ), transactions ))
+      if (Events.matches( Events.withNames( "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus", "createdMessageFromDraft", "submittedForm", "setUnread" ), transactions ))
       {
          model.refresh();
+      }
+   }
+
+   public void update( Observable o, Object arg )
+   {
+      tabs.setIconAt( 2, model.getIndex().hasUnreadForm().get() ? icon( Icons.unreadforms )  : icon( Icons.forms ) );
+      tabs.setIconAt( 3, model.getIndex().hasUnreadConversation().get() ? icon( Icons.unreadconversations )  : icon( Icons.conversations ) );
+   }
+
+   public void hierarchyChanged( HierarchyEvent e )
+   {
+      if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) > 0 && CaseDetailView.this.isShowing())
+      {
+         if( model.getIndex() == null )
+         {
+            model.refresh();
+         }
+         if (model.getIndex().unread().get())
+         {
+
+            timer = new Timer();
+            timer.schedule(
+               timerTask = new TimerTask()
+               {
+
+                  @Override
+                  public void run()
+                  {
+                     new CommandTask()
+                     {
+                        @Override
+                        protected void command() throws Exception
+                        {
+                           model.read();
+                        }
+                     }.execute();
+                  }
+               }, ((StreamflowApplication) StreamflowApplication.getInstance()).markReadTimeout() );
+         }
       }
    }
 }

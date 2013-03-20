@@ -37,6 +37,8 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.Priority
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointModel;
+import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsModel;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsModel;
 import se.streamsource.streamflow.client.ui.administration.filters.FilterModel;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersModel;
@@ -258,5 +260,9 @@ public class ModelAssembler
             EmailAccessPointsModel.class,
             ProxyUsersModel.class);
 
+      // External
+      addModels( module,
+            IntegrationPointsModel.class,
+            IntegrationPointModel.class);
    }
 }

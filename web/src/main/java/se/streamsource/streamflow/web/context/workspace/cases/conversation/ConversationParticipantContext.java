@@ -19,8 +19,11 @@ package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
+
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -29,6 +32,7 @@ public class ConversationParticipantContext
    implements DeleteContext
 {
    @RequiresRemoved(false)
+   @RequiresStatus(OPEN)
    public void delete()
    {
       ConversationParticipant participant = RoleMap.role( ConversationParticipant.class );

@@ -16,16 +16,10 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
@@ -35,10 +29,18 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -75,6 +77,7 @@ public class MessagesContext
          builder.prototype().href().set( EntityReference.getEntityReference( message ).identity() );
          builder.prototype().id().set( EntityReference.getEntityReference( message ).identity() );
          builder.prototype(  ).hasAttachments().set( message.hasAttachments() );
+         builder.prototype().unread().set( message.isUnread() );
 
          links.addLink( builder.newInstance() );
       }
@@ -82,12 +85,15 @@ public class MessagesContext
    }
 
    @RequiresRemoved(false)
+   @RequiresStatus( OPEN )
    public void createmessage( StringValue message )
    {
       Messages messages = RoleMap.role( Messages.class );
       messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
    }
 
+   @RequiresRemoved(false)
+   @RequiresStatus( OPEN )
    public void createmessagefromdraft()
    {
       RoleMap.role( Messages.class ).createMessageFromDraft( RoleMap.role(ConversationParticipant.class) );

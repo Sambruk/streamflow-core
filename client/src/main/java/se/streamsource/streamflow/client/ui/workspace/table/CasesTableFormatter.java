@@ -131,8 +131,8 @@ public class CasesTableFormatter
                ArrayList<String> icons = new ArrayList<String>();
 
                icons.add( caseValue.hasContacts().get() ? Icons.projects.toString() : "empty" );
-               icons.add( caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
-               icons.add( caseValue.hasSubmittedForms().get() ? Icons.forms.toString() : "empty" );
+               icons.add( caseValue.hasUnreadConversation().get() ? Icons.unreadconversations.toString() : caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
+               icons.add( caseValue.hasUnreadForm().get() ? Icons.unreadforms.toString() : caseValue.hasSubmittedForms().get() ? Icons.forms.toString() : "empty" );
                icons.add( caseValue.hasAttachments().get() ? Icons.attachments.toString() : "empty" );
 
                return icons;

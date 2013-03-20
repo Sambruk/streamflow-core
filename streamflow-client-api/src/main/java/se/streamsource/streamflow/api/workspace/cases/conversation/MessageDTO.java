@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.conversation;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.link.LinkValue;
 
@@ -29,4 +30,7 @@ public interface MessageDTO
    Property<Date> createdOn();
 
    Property<Boolean> hasAttachments();
+
+   @UseDefaults
+   Property<Boolean> unread();
 }

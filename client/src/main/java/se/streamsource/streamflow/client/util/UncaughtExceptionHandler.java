@@ -29,6 +29,7 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -101,7 +102,11 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                      } else if (re.getStatus().equals(Status.CLIENT_ERROR_CONFLICT)
                            || re.getStatus().equals(Status.CLIENT_ERROR_PRECONDITION_FAILED))
                      {
-                        showErrorDialog(ex, frame, text(ErrorResources.concurrent_change));
+                        //showErrorDialog(ex, frame, text(ErrorResources.concurrent_change));
+                        if( showOptionDialog( ex, frame, text( ErrorResources.concurrent_change )) == 0 )
+                        {
+                           main.callRefresh();
+                        }
                         return;
                      } else if (re.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
                      {
@@ -168,10 +173,16 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
       });
    }
 
+   private int showOptionDialog( Throwable ex, Frame frame, String text )
+   {
+      Object[] options = {"OK"};
+      return JOptionPane.showOptionDialog( frame, text, text( ErrorResources.error ), JOptionPane.PLAIN_MESSAGE, JOptionPane.ERROR_MESSAGE, null, options, options[0] );
+   }
+
    private void showErrorDialog(Throwable ex, Frame frame, String errorMsg)
    {
       JXErrorPane pane = new JXErrorPane();
-      pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), errorMsg, null, "Error", ex, Level.SEVERE,
+      pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), errorMsg, null, text( ErrorResources.error ), ex, Level.SEVERE,
             Collections.<String, String> emptyMap()));
       pane.setPreferredSize(new Dimension(700, 400));
       JXErrorPane.showDialog(frame, pane);
@@ -180,7 +191,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
    private void showErrorDialog(Throwable ex, Frame frame, String errorMsg, String detailedErrorMsg)
    {
       JXErrorPane pane = new JXErrorPane();
-      pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), errorMsg, detailedErrorMsg, "Error", ex, Level.SEVERE,
+      pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), errorMsg, detailedErrorMsg,text( ErrorResources.error ), ex, Level.SEVERE,
             Collections.<String, String> emptyMap()));
       pane.setPreferredSize(new Dimension(700, 400));
       JXErrorPane.showDialog(frame, pane);
@@ -189,7 +200,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
    private void showErrorDialog(Throwable ex, Frame frame)
    {
       JXErrorPane pane = new JXErrorPane();
-      pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), ex.getMessage(), null, "Error", ex, Level.SEVERE,
+      pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), ex.getMessage(), null, text( ErrorResources.error ), ex, Level.SEVERE,
             Collections.<String, String> emptyMap()));
       pane.setPreferredSize(new Dimension(700, 400));
       JXErrorPane.showDialog(frame, pane);

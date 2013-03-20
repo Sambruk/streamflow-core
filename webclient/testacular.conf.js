@@ -27,7 +27,7 @@ files = [
   JASMINE_ADAPTER,
   'app/vendor/*.js',
   'test/lib/angular-mocks.js',
-  'app/sfc-app.js',
+  'app/modules/app.js',
   'app/modules/**/*.js',
   'test/fixture/*.js',
   'test/unit/**/*.js'
@@ -36,13 +36,13 @@ files = [
 
 // list of files to exclude
 exclude = [
-  
+
 ];
 
 
 // test results reporter to use
 // possible values: dots || progress
-reporter = 'progress';
+reporter = ['progress', 'growl'];
 
 
 // web server port

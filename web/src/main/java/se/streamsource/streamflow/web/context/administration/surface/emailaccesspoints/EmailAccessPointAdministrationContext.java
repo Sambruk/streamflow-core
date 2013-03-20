@@ -65,7 +65,7 @@ public class EmailAccessPointAdministrationContext
       List<EmailAccessPoint> accessPointsList = accessPoints.emailAccessPoints().toList();
       for (EmailAccessPoint accessPoint : accessPointsList)
       {
-         if (accessPoint.getDescription().equals( name ))
+         if (accessPoint.getDescription().equalsIgnoreCase( name ))
          {
             throw new IllegalArgumentException( "accesspoint_already_exists" );
          }

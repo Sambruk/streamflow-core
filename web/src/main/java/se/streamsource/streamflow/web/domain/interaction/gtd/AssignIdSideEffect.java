@@ -42,7 +42,6 @@ public class AssignIdSideEffect
    public void changeOwner( Owner owner )
    {
       result.changeOwner( owner );
-
       if (owner instanceof IdGenerator)
       {
          IdGenerator idgen = (IdGenerator) owner;

@@ -70,4 +70,11 @@ public class CaseSubmittedFormModel
 
       client.postCommand( "resenddoublesignemail", form.getWebRepresentation() );
    }
+
+   public void read()
+   {
+      Form form = new Form();
+      form.set("index", index.toString());
+      client.postCommand( "read", form );
+   }
 }

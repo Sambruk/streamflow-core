@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.rest.resource.organizations;
 import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.application.external.IntegrationService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.FormOnRemoveContext;
@@ -28,11 +29,13 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.OrganizationAttachmentsResource;
 import se.streamsource.streamflow.web.rest.resource.administration.surface.ProxyUsersResource;
+import se.streamsource.streamflow.web.rest.resource.external.administration.integrationpoints.IntegrationPointsAdministrationResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.DatatypeDefinitionsResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FieldGroupsResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.rest.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
+
 
 /**
  * JAVADOC
@@ -105,6 +108,12 @@ public class OrganizationResource
    public void emailaccesspoints()
    {
       subResource(EmailAccessPointsAdministrationResource.class);
+   }
+
+   @SubResource @ServiceAvailable( service = IntegrationService.class, availability = true )
+   public void integrationpoints()
+   {
+      subResource( IntegrationPointsAdministrationResource.class );
    }
 
    @SubResource

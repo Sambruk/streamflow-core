@@ -25,6 +25,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.client.ui.DateFormats;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
@@ -171,5 +172,17 @@ public class MessageView extends JPanel
       {
          model.refresh();
       }
+   }
+
+   public void read()
+   {
+      new CommandTask(){
+
+         @Override
+         protected void command() throws Exception
+         {
+            model.read();
+         }
+      }.execute();
    }
 }

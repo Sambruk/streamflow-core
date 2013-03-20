@@ -68,6 +68,20 @@ public interface ConversationEntity
          return next.createMessage( body, participant );
       }
 
+      public Message createMessage( String body, ConversationParticipant participant, boolean unread )
+      {
+         CaseLoggable.Data caseLoggable = RoleMap.role( CaseLoggable.Data.class );
+         caseLoggable.caselog().get().addTypedEntry( "{createMessage,topic=" + conversation.getDescription() + "}" , CaseLogEntryTypes.conversation);
+         return next.createMessage( body, participant, unread );
+      }
+
+      public void createMessageFromDraft( ConversationParticipant participant )
+      {
+         CaseLoggable.Data caseLoggable = RoleMap.role( CaseLoggable.Data.class );
+         caseLoggable.caselog().get().addTypedEntry( "{createMessage,topic=" + conversation.getDescription() + "}" , CaseLogEntryTypes.conversation);
+         next.createMessageFromDraft( participant );
+      }
+
    }
 
    abstract class RemovableConcern

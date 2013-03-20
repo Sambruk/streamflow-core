@@ -1,0 +1,1444 @@
+{
+  "links": [
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/b8c63107-818e-469b-a3fa-9de256e11f66-5/",
+      "id": "b8c63107-818e-469b-a3fa-9de256e11f66-5",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130127-3",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-27T18:18:00.132Z",
+      "dueDate": "2013-02-27T18:18:00.132Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/b607d1ec-5695-4112-887c-98ace810b34a-4c/",
+      "id": "b607d1ec-5695-4112-887c-98ace810b34a-4c",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130127-2",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-27T17:57:41.681Z",
+      "dueDate": "2013-03-27T18:18:00.132Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/b607d1ec-5695-4112-887c-98ace810b34a-0/",
+      "id": "b607d1ec-5695-4112-887c-98ace810b34a-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130127-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-27T17:52:41.451Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/d971c8f0-38e5-4e9f-a8b7-7e4d61f273e0-67/",
+      "id": "d971c8f0-38e5-4e9f-a8b7-7e4d61f273e0-67",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130125-6",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-25T13:34:06.317Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": []
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/d971c8f0-38e5-4e9f-a8b7-7e4d61f273e0-0/",
+      "id": "d971c8f0-38e5-4e9f-a8b7-7e4d61f273e0-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130125-4",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-25T13:29:47.961Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/2b8efc61-66cb-4172-bfd4-78c3d5da76ad-ba/",
+      "id": "2b8efc61-66cb-4172-bfd4-78c3d5da76ad-ba",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130125-5",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-25T13:04:14.392Z",
+      "dueDate": "2013-03-17T18:18:00.132Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": []
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/2b8efc61-66cb-4172-bfd4-78c3d5da76ad-6e/",
+      "id": "2b8efc61-66cb-4172-bfd4-78c3d5da76ad-6e",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130125-3",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-25T13:00:10.841Z",
+      "dueDate": "2013-03-07T18:18:00.132Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/2b8efc61-66cb-4172-bfd4-78c3d5da76ad-39/",
+      "id": "2b8efc61-66cb-4172-bfd4-78c3d5da76ad-39",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130125-2",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-25T12:52:59.211Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/2b8efc61-66cb-4172-bfd4-78c3d5da76ad-0/",
+      "id": "2b8efc61-66cb-4172-bfd4-78c3d5da76ad-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130125-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-25T12:41:54.611Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/678a91d0-bd65-4634-be06-491a7f6d6f90-3/",
+      "id": "678a91d0-bd65-4634-be06-491a7f6d6f90-3",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130117-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-17T14:12:06.835Z",
+      "dueDate": "2013-03-12T18:18:00.132Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/9e0b4bed-cbfd-4ca3-b1c7-1e3be37ba6c0-0/",
+      "id": "9e0b4bed-cbfd-4ca3-b1c7-1e3be37ba6c0-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130104-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2013-01-04T08:18:25.263Z",
+      "dueDate": "2013-03-08T18:18:00.132Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/16e7c6df-1697-4ded-b07f-5210338bde23-0/",
+      "id": "16e7c6df-1697-4ded-b07f-5210338bde23-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20130102-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-27T08:53:36.068Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/85d9236e-5ce5-4653-baaa-21f2fb670795-2/",
+      "id": "85d9236e-5ce5-4653-baaa-21f2fb670795-2",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121227-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-27T07:14:30.823Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/02b1dd32-52b9-4935-a5af-841140160748-0/",
+      "id": "02b1dd32-52b9-4935-a5af-841140160748-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121221-6",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-21T14:34:22.527Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/a92e32bd-c0d2-4752-a180-82e1f498832e-77/",
+      "id": "a92e32bd-c0d2-4752-a180-82e1f498832e-77",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121221-5",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-21T14:30:37.745Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/a92e32bd-c0d2-4752-a180-82e1f498832e-3d/",
+      "id": "a92e32bd-c0d2-4752-a180-82e1f498832e-3d",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121221-4",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-21T14:15:11.272Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/bdd99bf9-fbbc-4520-90cb-130853c10416-0/",
+      "id": "bdd99bf9-fbbc-4520-90cb-130853c10416-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121221-3",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-21T14:04:05.249Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/0b7af973-87ae-4a13-96e1-0577ead0caf1-1/",
+      "id": "0b7af973-87ae-4a13-96e1-0577ead0caf1-1",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121221-2",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-21T13:20:25.936Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/6a0be749-b883-4ef6-bb71-3cc6015804be-5/",
+      "id": "6a0be749-b883-4ef6-bb71-3cc6015804be-5",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121221-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-21T07:41:59.969Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/4ae90964-b67f-4307-b145-425cea192b0c-4d/",
+      "id": "4ae90964-b67f-4307-b145-425cea192b0c-4d",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121219-3",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-19T14:05:09.069Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/4ae90964-b67f-4307-b145-425cea192b0c-7/",
+      "id": "4ae90964-b67f-4307-b145-425cea192b0c-7",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121219-2",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-19T13:55:37.183Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/0f0008c2-4d6e-453a-b255-0d6ec86145f9-2/",
+      "id": "0f0008c2-4d6e-453a-b255-0d6ec86145f9-2",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121219-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-19T07:45:10.684Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/0f90c758-cf19-4cce-abcd-94f0f3373fce-6b/",
+      "id": "0f90c758-cf19-4cce-abcd-94f0f3373fce-6b",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121218-4",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-18T20:14:37.936Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/0f90c758-cf19-4cce-abcd-94f0f3373fce-5/",
+      "id": "0f90c758-cf19-4cce-abcd-94f0f3373fce-5",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121218-2",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-18T20:08:28.104Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": []
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/2dfad9cd-05f2-4125-9438-13d5039e50f9-0/",
+      "id": "2dfad9cd-05f2-4125-9438-13d5039e50f9-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121218-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-14T07:17:49.492Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": true,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/ba283d5d-c7e0-458b-af43-363d7e840f99-1b/",
+      "id": "ba283d5d-c7e0-458b-af43-363d7e840f99-1b",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121212-5",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-12T10:29:25.307Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/63186563-b803-44f0-83f6-56737a4885d7-0/",
+      "id": "63186563-b803-44f0-83f6-56737a4885d7-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121212-4",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-12T09:05:36.470Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/90c6581e-4081-4af7-b69f-3cbc53a90106-0/",
+      "id": "90c6581e-4081-4af7-b69f-3cbc53a90106-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121212-3",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-12T08:33:55.079Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/63941a0e-d4b4-4e13-a143-d435aa24a8b5-15/",
+      "id": "63941a0e-d4b4-4e13-a143-d435aa24a8b5-15",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121212-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-12T07:37:42.737Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/7b027772-96b1-4de4-b82d-912e1851ac3d-29/",
+      "id": "7b027772-96b1-4de4-b82d-912e1851ac3d-29",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121211-5",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-11T14:40:22.536Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/31b754f0-a18d-4f46-a5c2-d47c9b8f9829-28/",
+      "id": "31b754f0-a18d-4f46-a5c2-d47c9b8f9829-28",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121211-4",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-11T12:57:09.686Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/31b754f0-a18d-4f46-a5c2-d47c9b8f9829-0/",
+      "id": "31b754f0-a18d-4f46-a5c2-d47c9b8f9829-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121211-3",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-11T12:53:29.998Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/761ae88c-b312-44ad-91d3-0481d9e28035-1e/",
+      "id": "761ae88c-b312-44ad-91d3-0481d9e28035-1e",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121211-2",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-11T11:55:21.963Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/761ae88c-b312-44ad-91d3-0481d9e28035-0/",
+      "id": "761ae88c-b312-44ad-91d3-0481d9e28035-0",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121211-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-11T11:51:00.853Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/ae1eece9-5954-458e-a3d9-9ddbce55fb77-81/",
+      "id": "ae1eece9-5954-458e-a3d9-9ddbce55fb77-81",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121204-4",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-04T14:57:39.857Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": []
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/ae1eece9-5954-458e-a3d9-9ddbce55fb77-3a/",
+      "id": "ae1eece9-5954-458e-a3d9-9ddbce55fb77-3a",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121204-5",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-04T10:34:42.517Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-62",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-62",
+            "rel": "delete",
+            "text": "information"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/ae1eece9-5954-458e-a3d9-9ddbce55fb77-1e/",
+      "id": "ae1eece9-5954-458e-a3d9-9ddbce55fb77-1e",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121204-2",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-04T10:34:33.304Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": []
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/ae1eece9-5954-458e-a3d9-9ddbce55fb77-2/",
+      "id": "ae1eece9-5954-458e-a3d9-9ddbce55fb77-2",
+      "rel": "case",
+      "text": "formulärstest",
+      "assignedTo": null,
+      "caseId": "20121204-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "WebForms",
+      "creationDate": "2012-12-04T10:16:17.099Z",
+      "hasAttachments": false,
+      "hasContacts": false,
+      "hasConversations": false,
+      "hasSubmittedForms": true,
+      "labels": {
+        "links": []
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    },
+    {
+      "_type": "se.streamsource.streamflow.api.workspace.cases.CaseDTO",
+      "classes": null,
+      "href": "/streamflow/workspacev2/cases/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0/",
+      "id": "f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0",
+      "rel": "case",
+      "text": "Testärende 2",
+      "assignedTo": null,
+      "caseId": "20121113-1",
+      "caseType": {
+        "classes": null,
+        "href": "",
+        "id": "b35873ba-4007-40ac-9936-975eab38395a-44",
+        "rel": null,
+        "text": "formulärstest"
+      },
+      "createdBy": "Admin - Henrik",
+      "creationDate": "2012-11-13T09:04:27.064Z",
+      "hasAttachments": false,
+      "hasContacts": true,
+      "hasConversations": true,
+      "hasSubmittedForms": false,
+      "labels": {
+        "links": [
+          {
+            "classes": null,
+            "href": "delete?entity=b35873ba-4007-40ac-9936-975eab38395a-86",
+            "id": "b35873ba-4007-40ac-9936-975eab38395a-86",
+            "rel": "delete",
+            "text": "etikett"
+          }
+        ]
+      },
+      "owner": "Streamflow",
+      "resolution": null,
+      "restricted": false,
+      "status": "OPEN"
+    }
+  ]
+}

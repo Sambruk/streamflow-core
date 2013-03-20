@@ -1,0 +1,48 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main">
+  <div class="issues-overview">
+    <h2>Ärenden med förfallodatum passerat</h2>
+    <h3 class="due-date-heading"><span>Förfallodatum</span></h3>
+    <ul class="issue-list">
+      <li class="issue-item {{case.overdueStatus()}}" ng-repeat='case in cases'>
+      <a href="{{case.href}}" class="block-link">
+        <div class="due-date">
+          <span>{{case.overdueDays() | positive}}</span>
+          <ng-pluralize
+          count="case.overdueDays()"
+          when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
+          </ng-pluralize>
+        </div>
+        <div class="issue-description">
+          <span class="meta">{{case.caseId}} - {{case.project}}</span>
+          <h3>{{case.text}}</h3>
+          <span class="creator">{{case.createdBy}}</span>
+        </div>
+        <div class="issue-actions">
+          <div>
+            <span class="action-status updated">Ändrad {{case.modificationDate() | shortDate}}</span>
+            <span class="created-on">Skapad {{case.creationDate | shortDate}}</span>
+          </div>
+        </div>
+      </a>
+      </li>
+    </ul> <!-- issue-list -->
+  </div>
+</div> <!-- content-primary -->

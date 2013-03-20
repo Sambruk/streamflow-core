@@ -44,6 +44,7 @@ import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.profile.MailFooter;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
@@ -149,9 +150,11 @@ public interface NotificationService
                // check if sender is administrator and in that case dont set fromName - this will be picked up by
                // MailSender and replaced with the configurated default fromName
                String sender = null;
+               String footer ="";
                if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
                {
                   sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+                  footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
                }
 
                String caseId = "n/a";
@@ -189,6 +192,7 @@ public interface NotificationService
                   {
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
                      builder.prototype().fromName().set( sender );
+                     builder.prototype().footer().set( footer );
 
                      if (emailAccessPoint != null)
                      {

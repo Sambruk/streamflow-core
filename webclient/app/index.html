@@ -24,45 +24,79 @@
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-        <title></title>
+        <title>Streamflow</title>
         <meta name="description" content=""/>
-        <meta name="viewport" content="width=device-width"/>
-        <link rel="stylesheet" href="styles/bootstrap.css"/>
-        <link rel="stylesheet" href="styles/main.css"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <link rel="apple-touch-icon" sizes="57x57" href="design/gui/i/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="design/gui/i/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="design/gui/i/apple-touch-icon-114x114.png">
 
-    </head>
-    <body ng-app="sf">
+        <link rel="shortcut icon" href="design/gui/i/favicon.ico">
+
+        <link rel="stylesheet" href="design/gui/css/basic.css">
+        <link rel="stylesheet" href="design/gui/css/print.css">
+        <link rel="stylesheet" href="design/gui/css/fonts.css">
+        <link rel="stylesheet" href="design/gui/css/main.css">
+        <link rel="stylesheet" href="design/gui/css/retina.css">
+
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
+        <!--[if lte IE 8]>
+          <script>
+            document.createElement('ng-include');
+            document.createElement('ng-pluralize');
+            document.createElement('ng-view');
+
+            // Optionally these for CSS
+            document.createElement('ng:include');
+            document.createElement('ng:pluralize');
+            document.createElement('ng:view');
+          </script>
+        <![endif]-->
+        </head>
+    <body ng-app="sf" sf-layout-style>
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
-        
+
         <!--[if lt IE 9]>
         <script src="vendor/es5-shim.min.js"></script>
         <script src="vendor/json3.min.js"></script>
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <div class="row-fluid">
+        <div class='body'>
 
-          <div class="span3">
+          <div class='header' role='banner'>
+            <div class='header-body cf'>
+              <div class='header-primary'>
+                <h1>Malmö Kommun Kontaktcenter</h1>
 
-            <div class="well sidebar-nav">
-              <ul class="nav nav-list" ng-controller="ProjectListCtrl">
-                <li class="nav-header projects" ng-repeat="project in projects">
-                  {{project.text}}
-                  <ul>
-                    <li class='project-type' ng-repeat="type in project.types" active-link><a href="#/{{type.href}}">{{type.name}}</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="span9" ng-view>
-          </div>
+                <form action="#" method="get" class="main-search" role='search'>
+                  <div>
+                    <label for="main-searchtext"></label>
+                    <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
+                    <button type="submit"><i class="glyph icon-search"><span>Sök</span></i></button>
+                  </div>
+                </form>
+              </div> <!-- header-primary -->
 
+              <div class="header-secondary">
+                <a href="xlink-" class="glyph icon-user logged-in">Solveig Grankvist</a>
+              </div> <!-- header-secondary -->
 
-        </div>
+            </div> <!-- header-body -->
+
+          </div> <!-- header -->
+
+          <div class="main">
+            <ng-include src="'modules/views/navigation.html'"></ng-include>
+            <div class="main-body cf" ng-view>
+            </div> <!-- main-body -->
+          </div> <!-- main -->
+        </div> <!-- body -->
 
         <!-- TODO use CDN in production -->
         <script src="vendor/angular.js"></script>
@@ -71,15 +105,17 @@
 
         <!-- build:js scripts/scripts.js -->
         <script src="vendor/base64.js"></script>
-        <script src="sfc-app.js"></script>
-        <script src="modules/main/controllers/main.js"></script>
-        <script src="modules/main/directives/active-link.js"></script>
-        <script src="modules/backend/services/navigation-service.js"></script>
-        <script src="modules/backend/services/backend-service.js"></script>
-        <script src="modules/backend/services/error-handler-service.js"></script>
-        <script src="modules/backend/services/http-service.js"></script>
-        <script src="modules/backend/services/project-service.js"></script>
-        <script src="modules/backend/services/case-service.js"></script>
+        <script src="modules/app.js"></script>
+        <script src="modules/filters.js"></script>
+        <script src="modules/controllers/main.js"></script>
+        <script src="modules/directives/sf-active-link.js"></script>
+        <script src="modules/directives/sf-layout-style.js"></script>
+        <script src="modules/services/navigation-service.js"></script>
+        <script src="modules/services/backend-service.js"></script>
+        <script src="modules/services/error-handler-service.js"></script>
+        <script src="modules/services/http-service.js"></script>
+        <script src="modules/services/project-service.js"></script>
+        <script src="modules/services/case-service.js"></script>
         <!-- endbuild -->
     </body>
 </html>

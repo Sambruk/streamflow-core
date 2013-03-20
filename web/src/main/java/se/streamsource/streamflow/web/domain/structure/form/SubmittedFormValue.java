@@ -54,6 +54,9 @@ public interface SubmittedFormValue
    Property<SecondSigneeInfoValue> secondsignee();
    
    Iterable<SubmittedFieldValue> fields();
+
+   @UseDefaults
+   Property<Boolean> unread();
    
    abstract class Mixin implements SubmittedFormValue
    {

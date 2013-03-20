@@ -22,7 +22,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
-
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -32,12 +31,15 @@ import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
+
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * JAVADOC
@@ -66,6 +68,7 @@ public class ConversationsContext
          builder.prototype().href().set( EntityReference.getEntityReference( conversation ).identity() );
          builder.prototype().text().set( conversation.getDescription() );
          builder.prototype().id().set( EntityReference.getEntityReference( conversation ).identity() );
+         builder.prototype().unread().set( conversation.hasUnreadMessage() );
 
          links.addLink( builder.newInstance() );
       }
@@ -73,6 +76,7 @@ public class ConversationsContext
    }
 
    @RequiresRemoved(false)
+   @RequiresStatus( OPEN )
    public Conversation create( @MaxLength(50) @Name("topic") String topic )
    {
       Conversations conversations = RoleMap.role( Conversations.class );

@@ -68,4 +68,13 @@ public interface CaseDTO
 
    @UseDefaults
    Property<Boolean> restricted();
+
+   @UseDefaults
+   Property<Boolean> unread();
+
+   @UseDefaults
+   Property<Boolean> hasUnreadConversation();
+
+   @UseDefaults
+   Property<Boolean> hasUnreadForm();
 }

@@ -75,6 +75,9 @@ public interface StreamflowContactLookupPlugin
 
             // Parse response
             String json = result.getText();
+            if( !json.startsWith( "{\"contacts\":[" ))
+               json = "{\"contacts\":[" + json + "]}";
+
             return module.valueBuilderFactory().newValueFromJSON(ContactList.class, json);
          } catch (Exception e)
          {

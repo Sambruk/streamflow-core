@@ -16,17 +16,15 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
-
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 public class ConversationView extends JPanel
 {
