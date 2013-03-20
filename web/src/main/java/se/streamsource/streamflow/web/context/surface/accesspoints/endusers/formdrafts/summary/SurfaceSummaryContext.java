@@ -16,18 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -52,7 +40,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -95,6 +82,18 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -168,7 +167,7 @@ public interface SurfaceSummaryContext
          if( task != null )
          {
             // set task reference back to subittedform - second signee info
-            ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), new Locale("SV","se") );
+            ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), new Locale("sv","SE") );
 
             try
             {
@@ -454,7 +453,7 @@ public interface SurfaceSummaryContext
          config.prototype().conversations().set(true);
          config.prototype().submittedForms().set(true);
          config.prototype().caselog().set(true);
-         RoleMap.current().set(new Locale( "SV", "se" ));
+         RoleMap.current().set(new Locale( "sv", "SE" ));
 
          String id = attachmentStore.storeAttachment(new OutputstreamInput(new Visitor<OutputStream, IOException>()
          {
