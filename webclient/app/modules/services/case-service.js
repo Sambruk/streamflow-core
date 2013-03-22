@@ -36,13 +36,13 @@
     }
 
     return {
-      getSelected: function(projectId, caseType, caseId) {
+      getSelected: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:[
             {resources:'workspacev2'},
             {resources: 'projects'},
             {'index.links': projectId},
-            {resources: caseType },
+            {resources: projectType },
             {queries: 'cases?tq=select+*'},
             {links: caseId}
           ],
@@ -54,13 +54,13 @@
         });
       },
 
-      getSelectedContacts: function(projectId, caseType, caseId) {
+      getSelectedContacts: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:[
             {resources:'workspacev2'},
             {resources: 'projects'},
             {'index.links': projectId},
-            {resources: caseType },
+            {resources: projectType },
             {queries: 'cases?tq=select+*'},
             {links: caseId},
             {resources: 'contacts'}

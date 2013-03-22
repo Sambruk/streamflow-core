@@ -29,11 +29,11 @@
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
       $routeProvider
-      .when('/:projectId/:caseType', {
+      .when('/:projectId/:projectType', {
         templateUrl: 'modules/views/case-list.html',
         controller: 'CaseListCtrl'
       })
-      .when('/:projectId/:caseType/:caseId', {
+      .when('/:projectId/:projectType/:caseId', {
         templateUrl:'modules/views/case-detail.html',
         controller: 'CaseDetailCtrl'
       })
