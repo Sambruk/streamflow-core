@@ -18,9 +18,12 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation']);
+  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation', 'sf.models']);
 
-  sfServices.factory('projectService', ['backendService', 'navigationService', function (backendService, navigationService) {
+  sfServices.factory(
+    'projectService',
+    ['backendService', 'navigationService', 'SfCase',
+      function (backendService, navigationService, SfCase) {
 
     return {
       getAll:function () {
@@ -58,28 +61,10 @@
 
       createCase: function(model) {
         var href = navigationService.caseHref(model.id);
-        var o = _.extend(model, {href: href}, this.caseMixin);
+        var o = new SfCase(model, href);
         return o;
-      },
-
-      caseMixin: {
-        overdueDays: function() {
-          var oneDay = 24*60*60*1000;
-          var now = new Date();
-          var dueDate = new Date(this.dueDate);
-          var diff = Math.round((now.getTime() - dueDate.getTime())/(oneDay));
-          return diff > 0 ? diff : 0;
-        },
-
-        overdueStatus: function() {
-          if (!this.dueDate) return 'unset';
-          return this.overdueDays() > 0 ? 'overdue' : 'set';
-        },
-
-        modificationDate: function() {
-          return this.lastModifiedDate || this.creationDate;
-        }
       }
+
 
     };
   }]);
