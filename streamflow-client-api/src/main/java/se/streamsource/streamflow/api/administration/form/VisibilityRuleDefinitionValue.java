@@ -14,21 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.form;
+package se.streamsource.streamflow.api.administration.form;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Notable;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
- * JAVADOC
+ * Contains visibility rule definition.
  */
-public interface Field
-      extends Describable,
-      Notable,
-      FieldValueDefinition,
-      Mandatory,
-      FieldId,
-      Datatype,
-      VisibilityRule
+public interface VisibilityRuleDefinitionValue
+   extends ValueComposite
 {
+   @UseDefaults
+   Property<String> field();
+
+   @UseDefaults
+   Property<VisibilityRuleCondition> condition();
+
+   @UseDefaults
+   Property<List<String>> values();
+
+   @UseDefaults
+   Property<Boolean> visibleWhen();
+
 }

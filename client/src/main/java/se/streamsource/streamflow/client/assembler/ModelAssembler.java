@@ -54,6 +54,7 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Form
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.VisibilityRuleValuesModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsModel;
@@ -246,7 +247,8 @@ public class ModelAssembler
             PrioritiesModel.class,
             PriorityModel.class,
             PriorityOnCaseModel.class,
-            FormLabelsModel.class);
+            FormLabelsModel.class,
+            VisibilityRuleValuesModel.class);
 
 
       addModels(module, LinksListModel.class,

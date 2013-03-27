@@ -20,36 +20,29 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
 /**
  * JAVADOC
  */
 public class FieldValueEditModel
+   extends ResourceModel<FieldDefinitionAdminValue>
       implements Refreshable
 {
    public static final String DATATYPE_NONE = "none";
 
-   private FieldDefinitionAdminValue value;
-   
    private EventList<LinkValue> possibleDatatypes = new TransactionList<LinkValue>( new BasicEventList<LinkValue>());
    private final LinkValue noneLink;
-   
-   
-   @Uses
-   private CommandQueryClient client;
-
-   private Module module;
 
    public FieldValueEditModel(@Structure Module module)
    {
@@ -61,9 +54,10 @@ public class FieldValueEditModel
       noneLink = valueBuilder.newInstance();
       
    }
+
    public FieldDefinitionAdminValue getFieldDefinition()
    {
-      return value;
+      return getIndex().<FieldDefinitionAdminValue>buildWith().prototype();
    }
    
    public EventList<LinkValue> getPossibleDatatypes()
@@ -171,11 +165,11 @@ public class FieldValueEditModel
    
    public LinkValue getSelectedDatatype()
    {
-      if (value.datatype().get() != null)
+      if (getIndex().datatype().get() != null)
       {
          for (LinkValue linkValue : possibleDatatypes)
          {
-            if (linkValue.id().get().equals( value.datatype().get().id().get() ))
+            if (linkValue.id().get().equals( getIndex().datatype().get().id().get() ))
             {
                return linkValue;
             }
@@ -183,11 +177,42 @@ public class FieldValueEditModel
       } 
       return noneLink;  
    }
-   
+
+   public void changeRuleFieldId( LinkValue fieldId )
+   {
+      if( fieldId != null && !fieldId.id().get().equals( getIndex().rule().get().field().get() ) )
+      {
+         Form form = new Form( );
+         form.set( "fieldid", fieldId.id().get() );
+         client.putCommand( "changerulefieldid", form.getWebRepresentation() );
+      }
+   }
+
+   public void changeRuleCondition( LinkValue condition )
+   {
+      if( condition != null && !condition.text().get().equals( getIndex().rule().get().condition().get().name() ))
+      {
+         Form form = new Form();
+         form.set( "condition", condition.text().get() );
+         client.putCommand( "changerulecondition", form.getWebRepresentation() );
+      }
+   }
+
+   public void changeRuleVisibleWhen( boolean visibleWhen )
+   {
+      if( visibleWhen != getIndex().rule().get().visibleWhen().get() )
+      {
+         Form form = new Form();
+         form.set( "visiblewhen", "" + visibleWhen );
+         client.putCommand( "changerulevisiblewhen", form.getWebRepresentation() );
+      }
+   }
+
+   @Override
    public void refresh()
    {
-      value = (FieldDefinitionAdminValue) client.query( "field", FieldDefinitionAdminValue.class ).buildWith().prototype();
-      
+      super.refresh();
+
       possibleDatatypes.clear();
       
       possibleDatatypes.add( noneLink );
@@ -203,5 +228,20 @@ public class FieldValueEditModel
    public SelectionElementsModel newSelectionElementsModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(SelectionElementsModel.class).use(client).newInstance();
+   }
+
+   public EventList<LinkValue> possibleRuleFields()
+   {
+      return EventListSynch.synchronize( client.query( "possiblerulefields", LinksValue.class ).links().get(), new BasicEventList<LinkValue>() );
+   }
+
+   public EventList<LinkValue> possibleRuleConditions()
+   {
+      return EventListSynch.synchronize( client.query( "possibleruleconditions", LinksValue.class ).links().get(), new BasicEventList<LinkValue>() );
+   }
+
+   public VisibilityRuleValuesModel newVisibilityRuleValuesModel()
+   {
+      return module.objectBuilderFactory().newObjectBuilder(VisibilityRuleValuesModel.class).use(client).newInstance();
    }
 }

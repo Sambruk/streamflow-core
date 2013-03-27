@@ -43,4 +43,7 @@ public interface FieldDefinitionValue
 
    @UseDefaults
    Property<Boolean> mandatory();
+
+   @Optional
+   Property<VisibilityRuleDefinitionValue> rule();
 }

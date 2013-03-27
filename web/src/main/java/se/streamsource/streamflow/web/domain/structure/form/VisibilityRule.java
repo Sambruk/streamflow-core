@@ -17,48 +17,45 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.library.constraints.annotation.NotEmpty;
-
+import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
- * Technical id for a field. May not be empty
+ * This interface holds information about visibility rules regarding form fields
+ * May be null.
  */
-@Mixins(FieldId.Mixin.class)
-public interface FieldId
+@Mixins(VisibilityRule.Mixin.class)
+public interface VisibilityRule
 {
-   String getFieldId();
+   VisibilityRuleDefinitionValue getRule();
 
-   void changeFieldId( @NotEmpty String id );
+   void changeRule( VisibilityRuleDefinitionValue rule );
 
    interface Data
    {
-      @UseDefaults
-      Property<String> fieldId();
+      @Optional
+      Property<VisibilityRuleDefinitionValue> rule();
 
-      void changedFieldId( @Optional DomainEvent event, String newId );
+      void changedRule( @Optional DomainEvent event, VisibilityRuleDefinitionValue rule );
    }
 
    class Mixin
-      implements FieldId
+      implements VisibilityRule
    {
       @This
       Data data;
 
-      public void changeFieldId( String id)
+      public VisibilityRuleDefinitionValue getRule()
       {
-         data.changedFieldId( null, id );
+         return data.rule().get();
       }
 
-      public String getFieldId()
+      public void changeRule( VisibilityRuleDefinitionValue rule )
       {
-         return data.fieldId().get();
+         data.changedRule( null, rule );
       }
-
    }
-
 }

@@ -162,6 +162,7 @@ public interface FormDrafts
             pageBuilder.prototype().title().set( page.getDescription() );
             pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ) );
             pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionDTO>() );
+            pageBuilder.prototype().rule().set( page.getRule() );
 
 
             Fields.Data fieldEntities = (Fields.Data) page;
@@ -255,10 +256,12 @@ public interface FormDrafts
          }
          valueBuilder.prototype().mandatory().set( field.isMandatory() );
          valueBuilder.prototype().fieldValue().set( fieldValue );
+         valueBuilder.prototype().rule().set( field.getRule() );
 
          fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
          fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
          fieldBuilder.prototype().enabled().set( true );
+
 
          return fieldBuilder;
       }

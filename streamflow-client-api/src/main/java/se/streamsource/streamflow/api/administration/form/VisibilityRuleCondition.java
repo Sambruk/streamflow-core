@@ -14,21 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.form;
-
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Notable;
+package se.streamsource.streamflow.api.administration.form;
 
 /**
- * JAVADOC
+ *
  */
-public interface Field
-      extends Describable,
-      Notable,
-      FieldValueDefinition,
-      Mandatory,
-      FieldId,
-      Datatype,
-      VisibilityRule
+public enum VisibilityRuleCondition
 {
+   anyof,
+   noneof,
+   morethan,
+   lessthan
 }

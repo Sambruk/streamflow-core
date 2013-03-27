@@ -202,5 +202,6 @@ public enum AdministrationResources
    could_not_create_integrationpoint,
    could_not_rename_integrationpoint_name_already_exists,
    change_integrationpoint_title,
-   integrationpoints_tab, add_integrationpoint_title,
+   integrationpoints_tab, add_integrationpoint_title, rule_field_id, rule_condition, rule_values, rule_visible_when, visibility_rule;
+
 }

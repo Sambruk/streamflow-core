@@ -29,4 +29,6 @@ public interface PageDefinitionValue
    Property<EntityReference> page();
 
    Property<String> description();
+
+   Property<VisibilityRuleDefinitionValue> rule();
 }
