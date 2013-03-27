@@ -16,20 +16,18 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
@@ -50,13 +48,21 @@ import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValu
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroup;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroupValue;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroups;
+import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * JAVADOC
@@ -74,10 +80,18 @@ public class FormPageContext
    {
       Describable describable = RoleMap.role( Describable.class );
       Identity identity = RoleMap.role( Identity.class );
+      Page page = RoleMap.role(Page.class);
 
       ValueBuilder<PageDefinitionValue> builder = module.valueBuilderFactory().newValueBuilder( PageDefinitionValue.class );
       builder.prototype().description().set( describable.getDescription() );
       builder.prototype().page().set( EntityReference.parseEntityReference( identity.identity().get() ) );
+      if( page.getRule() == null )
+      {
+         builder.prototype().rule().set( module.valueBuilderFactory().newValue( VisibilityRuleDefinitionValue.class ) );
+      } else
+      {
+         builder.prototype().rule().set( page.getRule() );
+      }
       return builder.newInstance();
    }
 
@@ -196,6 +210,49 @@ public class FormPageContext
       for (FieldGroup fieldGroup : fieldGroups)
       {
          builder.addLink( fieldGroup.getDescription(), EntityReference.getEntityReference( fieldGroup).identity(), "createfieldgroup", "createfieldgroup", "fieldgroup", bundle.getString( fieldgroup_group ) );
+      }
+
+      return builder.newLinks();
+   }
+
+   @FirstPage(false)
+   public LinksValue possiblerulefields()
+   {
+      final Pages.Data pages = RoleMap.role( Pages.Data.class );
+      Page page = RoleMap.role( Page.class );
+
+      final int index = pages.pages().toList().indexOf( page );
+
+      Iterable<Field> possiblefields = Iterables.filter( new Specification<Field>()
+      {
+         public boolean satisfiedBy( Field field )
+         {
+            FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
+            boolean filter = fieldValue instanceof FieldGroupValue
+                  || fieldValue instanceof CommentFieldValue
+                  || fieldValue instanceof TextAreaFieldValue
+                  || fieldValue instanceof AttachmentFieldValue;
+            return !filter;
+         }
+      }, Iterables.flatten( Iterables.map( new Function<Page, Iterable<Field>>()
+      {
+         public Iterable<Field> map( Page page )
+         {
+            return ((Fields.Data) page).fields().toList();
+         }
+      }, Iterables.filter( new Specification<Page>()
+      {
+         public boolean satisfiedBy( Page page )
+         {
+            return pages.pages().toList().indexOf( page ) < index;
+         }
+      }, pages.pages() ) ) ) );
+
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      builder.addLink( " ", "" );
+      for( Field field : possiblefields )
+      {
+         builder.addLink( field.getDescription() + "-" + field.getFieldId(), ((Identity)field).identity().get() );
       }
 
       return builder.newLinks();

@@ -22,6 +22,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.administration.forms.definition.FormFieldContext;
+import se.streamsource.streamflow.web.context.administration.forms.definition.VisibilityRuleContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
@@ -36,7 +37,7 @@ public class FormFieldResource
 {
    public FormFieldResource( )
    {
-      super( FormFieldContext.class, NotableContext.class );
+      super( FormFieldContext.class, NotableContext.class, VisibilityRuleContext.class );
    }
 
    public void resource( String segment ) throws ResourceException

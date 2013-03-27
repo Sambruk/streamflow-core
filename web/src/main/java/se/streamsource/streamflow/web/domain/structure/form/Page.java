@@ -27,6 +27,7 @@ public interface Page
       Fields,
       FieldGroupFieldsInstance,
       Describable,
-      Notable
+      Notable,
+      VisibilityRule
 {
 }

@@ -16,33 +16,38 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.Requires;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
@@ -52,20 +57,21 @@ import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.DatatypeDefinitions;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldGroup;
+import se.streamsource.streamflow.web.domain.structure.form.FieldGroupValue;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
 @Mixins(FormFieldContext.Mixin.class)
 public interface FormFieldContext
-      extends DeleteContext, Context
+      extends DeleteContext, IndexContext<FieldDefinitionAdminValue>, Context
 {
-   public FieldDefinitionAdminValue field();
-
    public LinksValue possibledatatypes();
    
    public void changedescription( @Optional @MaxLength(100) @Name("description") String description );
@@ -110,13 +116,16 @@ public interface FormFieldContext
 
    public void move( @Name("direction") String direction );
 
+   @FirstFieldInFirstPage(false)
+   public LinksValue possiblerulefields();
+
    abstract class Mixin
          implements FormFieldContext
    {
       @Structure
       Module module;
 
-      public FieldDefinitionAdminValue field()
+      public FieldDefinitionAdminValue index()
       {
          FieldEntity fieldEntity = RoleMap.role( FieldEntity.class );
 
@@ -146,6 +155,14 @@ public interface FormFieldContext
          }
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
+
+         if( fieldEntity.rule().get() == null )
+         {
+            builder.prototype().rule().set( module.valueBuilderFactory().newValue( VisibilityRuleDefinitionValue.class ) );
+         } else
+         {
+            builder.prototype().rule().set( fieldEntity.getRule() );
+         }
 
          return builder.newInstance();
       }
@@ -354,6 +371,76 @@ public interface FormFieldContext
          Fields fields = RoleMap.role( Fields.class );
 
          fields.removeField( field );
+      }
+
+      public LinksValue possiblerulefields()
+      {
+         final Fields.Data fields = RoleMap.role( Fields.Data.class );
+         Field field = RoleMap.role( Field.class );
+
+         /*final Pages.Data pages = RoleMap.role( Pages.Data.class );
+         Page page = RoleMap.role( Page.class );
+
+         final int pageIndex = pages.pages().toList().indexOf( page );
+
+         Iterable<Field> possiblePagefields = Iterables.filter( new Specification<Field>()
+         {
+            public boolean satisfiedBy( Field field )
+            {
+               FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
+               boolean filter = fieldValue instanceof FieldGroupValue
+                     || fieldValue instanceof CommentFieldValue
+                     || fieldValue instanceof TextAreaFieldValue
+                     || fieldValue instanceof AttachmentFieldValue;
+               return !filter;
+            }
+         }, Iterables.flatten( Iterables.map( new Function<Page, Iterable<Field>>()
+         {
+            public Iterable<Field> map( Page page )
+            {
+               return ((Fields.Data) page).fields().toList();
+            }
+         }, Iterables.filter( new Specification<Page>()
+         {
+            public boolean satisfiedBy( Page page )
+            {
+               return pages.pages().toList().indexOf( page ) < pageIndex;
+            }
+         }, pages.pages() ) ) ) );
+         */
+
+         final int index = fields.fields().toList().indexOf( field );
+
+         Iterable<Field> possiblefields = Iterables.filter( new Specification<Field>()
+         {
+            public boolean satisfiedBy( Field field )
+            {
+               FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
+               boolean filter = fieldValue instanceof FieldGroupValue
+                     || fieldValue instanceof CommentFieldValue
+                     || fieldValue instanceof TextAreaFieldValue
+                     || fieldValue instanceof AttachmentFieldValue;
+               return fields.fields().toList().indexOf( field ) < index && !filter ;
+            }
+         },fields.fields() );
+
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         builder.addLink( " ", "" );
+
+         /*
+         for( Field f : possiblePagefields )
+         {
+            builder.addLink( f.getDescription() + "-" + f.getFieldId(), ((Identity) f).identity().get() );
+         }
+         */
+
+         for( Field f : possiblefields )
+         {
+            builder.addLink( f.getDescription() + "-" + f.getFieldId(), ((Identity) f).identity().get() );
+         }
+
+         return builder.newLinks();
       }
    }
 }

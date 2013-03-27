@@ -59,6 +59,7 @@ import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValu
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
@@ -207,6 +208,7 @@ public class ClientAPIAssembler
               FieldDefinitionAdminValue.class,
               RequiredSignaturesValue.class,
               RequiredSignatureValue.class,
+              VisibilityRuleDefinitionValue.class,
 
               // Field types
               AttachmentFieldValue.class,
