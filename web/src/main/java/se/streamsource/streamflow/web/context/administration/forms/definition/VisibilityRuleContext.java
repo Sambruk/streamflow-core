@@ -27,6 +27,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
+import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleCondition;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.util.Strings;
@@ -142,6 +143,32 @@ public class VisibilityRuleContext
          {
             linksBuilder.addLink( VisibilityRuleCondition.lessthan.name(), VisibilityRuleCondition.lessthan.name() );
             linksBuilder.addLink( VisibilityRuleCondition.morethan.name(), VisibilityRuleCondition.morethan.name() );
+         }
+      }
+      return linksBuilder.newLinks();
+   }
+
+   /**
+    * Delivers a list of possible rule values if the rule target is a SelectionFieldValue.
+    *
+    * @return A LinksValue of possible rule values, empty if the rule target is not a SelectionFieldValue.
+    */
+   public LinksValue possiblerulevalues()
+   {
+      VisibilityRule visibilityRule = RoleMap.role( VisibilityRule.class );
+
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+      if( visibilityRule.getRule() != null && !Strings.empty( visibilityRule.getRule().field().get() ) )
+      {
+         FieldValue fieldValue = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, visibilityRule.getRule().field().get() ).fieldValue().get();
+
+         if( fieldValue instanceof SelectionFieldValue )
+         {
+            for( String value : ((SelectionFieldValue)fieldValue).values().get() )
+            {
+               linksBuilder.addLink( value, value );
+            }
          }
       }
       return linksBuilder.newLinks();

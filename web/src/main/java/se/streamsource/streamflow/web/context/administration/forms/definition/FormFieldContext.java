@@ -17,7 +17,6 @@
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -353,12 +352,7 @@ public interface FormFieldContext
          int index = fieldsData.fields().toList().indexOf( field );
          if (direction.equalsIgnoreCase( "up" ))
          {
-            try
-            {
-               fields.moveField( field, index - 1 );
-            } catch (ConstraintViolationException e)
-            {
-            }
+            fields.moveField( field, index - 1 );
          } else
          {
             fields.moveField( field, index + 1 );
