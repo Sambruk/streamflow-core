@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -28,6 +31,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
@@ -47,6 +54,7 @@ import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.form.DatatypeDefinitionEntity;
@@ -62,6 +70,10 @@ import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -117,6 +129,9 @@ public interface FormFieldContext
 
    @FirstFieldInFirstPage(false)
    public LinksValue possiblerulefields();
+
+   @Requires(SelectionFieldValue.class)
+   public void importvalues( Representation representation );
 
    abstract class Mixin
          implements FormFieldContext
@@ -435,6 +450,64 @@ public interface FormFieldContext
          }
 
          return builder.newLinks();
+      }
+
+      public void importvalues(Representation representation)
+      {
+         boolean hasChanged = false;
+
+         FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
+         SelectionFieldValue value = RoleMap.role( SelectionFieldValue.class );
+
+         ValueBuilder<SelectionFieldValue> builder = value.buildWith();
+         try
+         {
+            List<String> values = new ArrayList<String>();
+
+            if (representation.getMediaType().equals( MediaType.APPLICATION_EXCEL ))
+            {
+               HSSFWorkbook workbook = new HSSFWorkbook( representation.getStream() );
+
+               //extract a user list
+               Sheet sheet1 = workbook.getSheetAt( 0 );
+               for (Row row : sheet1)
+               {
+                  values.add( row.getCell( 0 ).getStringCellValue() );
+               }
+
+            } else if (representation.getMediaType().equals( MediaType.TEXT_CSV ))
+            {
+               StringReader reader = new StringReader( representation.getText() );
+               BufferedReader bufReader = new BufferedReader( reader );
+               String line;
+               while ((line = bufReader.readLine()) != null)
+               {
+                  if( !Strings.empty( line ))
+                     values.add( line );
+               }
+            } else
+            {
+               throw new ResourceException( Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE );
+            }
+
+            for( String string : values )
+            {
+               if( !builder.prototype().values().get().contains( string ) )
+               {
+                  builder.prototype().values().get().add( string );
+                  hasChanged = true;
+               }
+            }
+
+            if( hasChanged )
+            {
+               fieldValueDefinition.changeFieldValue( builder.newInstance() );
+            }
+
+         } catch (IOException ioe)
+         {
+            throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+         }
       }
    }
 }

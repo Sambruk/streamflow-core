@@ -16,20 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.ActionMap;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
@@ -37,23 +25,36 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -94,6 +95,7 @@ public class SelectionElementsView
       upButton.setEnabled( false );
       downButton.setEnabled( false );
       toolbar.add( new StreamflowButton( am.get( "rename" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "importvalues" ) ) );
 
       model.refresh();
       elementList = new JXList( new EventListModel<String>(model.getEventList()) );
@@ -257,6 +259,35 @@ public class SelectionElementsView
          };
       } else
          return null;
+   }
+
+   @org.jdesktop.application.Action
+   public Task importvalues()
+   {
+
+      // Ask the user for a file to import values from
+      // Can be either Excels or CVS format
+      final JFileChooser fileChooser = new JFileChooser();
+      fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES );
+      fileChooser.setMultiSelectionEnabled( false );
+      fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
+            text( AdministrationResources.import_files ), true, "xls", "csv", "txt" ) );
+      fileChooser.setDialogTitle( text( AdministrationResources.import_values ) );
+      int returnVal = fileChooser.showOpenDialog( this );
+      if (returnVal != JFileChooser.APPROVE_OPTION)
+      {
+         return null;
+      }
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            model.importValues( fileChooser.getSelectedFile().getAbsoluteFile() );
+         }
+      };
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
