@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
@@ -25,6 +26,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -34,6 +36,7 @@ import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -113,30 +116,55 @@ public class VisibilityRuleValuesView
    @org.jdesktop.application.Action
    public Task add()
    {
-      final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
-
-      dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
-
-      if ( !Strings.empty( dialog.name() ) )
+      EventList<LinkValue> linkValues = model.possiblePredefinedRuleValues();
+      if( linkValues.isEmpty() )
       {
-         if ( dialog.name().contains( "[" ) || dialog.name().contains( "]" ))
+         final NameDialog dialog = module.objectBuilderFactory().newObject(NameDialog.class);
+
+         dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
+
+         if ( !Strings.empty( dialog.name() ) )
          {
-            dialogs.showOkDialog( this, new JLabel( i18n.text( AdministrationResources.no_such_character )), i18n.text( AdministrationResources.illegal_name ) );
-            return null;
-         } else
-         {
-            return new CommandTask()
+            if ( dialog.name().contains( "[" ) || dialog.name().contains( "]" ))
             {
-               @Override
-               public void command()
-                     throws Exception
+               dialogs.showOkDialog( this, new JLabel( i18n.text( AdministrationResources.no_such_character )), i18n.text( AdministrationResources.illegal_name ) );
+               return null;
+            } else
+            {
+               return new CommandTask()
                {
-                  model.addElement( dialog.name() );
-               }
-            };
+                  @Override
+                  public void command()
+                        throws Exception
+                  {
+                     model.addElement( dialog.name() );
+                  }
+               };
+            }
          }
+         else return null;
+      } else
+      {
+         final SelectLinksDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinksDialog.class)
+               .use(linkValues).newInstance();
+
+         dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
+
+         if ( dialog.getSelectedLinks() != null )
+         {
+
+               return new CommandTask()
+               {
+                  @Override
+                  public void command()
+                        throws Exception
+                  {
+                     model.addElements( dialog.getSelectedLinks() );
+                  }
+               };
+         }
+         else return null;
       }
-      else return null;
    }
 
 

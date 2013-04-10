@@ -18,12 +18,21 @@ package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import org.apache.commons.collections.CollectionUtils;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.specification.Specification;
 import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  *
@@ -56,6 +65,16 @@ public class VisibilityRuleValuesModel
       client.postCommand( "addrulevalue", form.getWebRepresentation() );
    }
 
+   public void addElements( LinksValue selectedLinks )
+   {
+      for( LinkValue link : selectedLinks.links().get() )
+      {
+         Form form = new Form();
+         form.set("value", link.text().get());
+         client.postCommand( "addrulevalue", form.getWebRepresentation() );
+      }
+   }
+
    public void removeElement( int index )
    {
       Form form = new Form();
@@ -66,10 +85,35 @@ public class VisibilityRuleValuesModel
    public void changeElementName( String newName, int index )
    {
       Form form = new Form();
-      form.set("name", newName);
+      form.set("value", newName);
       form.set("index", Integer.toString(index));
 
       client.postCommand( "changerulevaluename", form.getWebRepresentation() );
+   }
+
+   /**
+    * Fetches any possible rule values, especially if the target rule is a SelectionField.
+    * The result is filtered by already set values. If the target rule is not a SelectionField
+    * the EventList will be empty.
+    * @return An EventList containing possible rule values.
+    */
+   public EventList<LinkValue> possiblePredefinedRuleValues()
+   {
+      EventList<LinkValue> possibleRuleValues = new BasicEventList<LinkValue>(  );
+      LinksValue available = client.query( "possiblerulevalues", LinksValue.class );
+
+      List<LinkValue> linkValues = new ArrayList<LinkValue>();
+      CollectionUtils.addAll( linkValues, filter( new Specification<LinkValue>()
+      {
+         public boolean satisfiedBy( LinkValue link )
+         {
+            return !elements.contains( link.text().get() );
+         }
+      }, available.links().get() ).iterator() );
+
+      EventListSynch.synchronize( linkValues, possibleRuleValues );
+
+      return possibleRuleValues;
    }
 
 }
