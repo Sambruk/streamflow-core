@@ -39,5 +39,6 @@ public enum ErrorResources
    accesspoint_already_exists,
    integrationpoint_already_exists,
    form_move_field_rule_violation,
-   invalid_value;
+   form_move_page_rule_violation,
+   invalid_value
 }

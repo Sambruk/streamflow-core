@@ -171,19 +171,26 @@ public interface Fields
       /**
        * Check if a move would result in a rule violation.
        * A field with a rule may not be moved to a location before the target field of the rule!
+       * A field that is a target field may not switch place with a field that has the target field as rule!
        * @param field The field to be moved
        * @param toIdx The index to move to
        * @return Whether the move will result in a rule violation or not.
        */
       private boolean ruleViolation(Field field, Integer toIdx )
       {
-         if(field.getRule() == null || Strings.empty( field.getRule().field().get() ) )
+         Field moveTo = fields.fields().get( toIdx.intValue() );
+         boolean returnValue = false;
+
+         if( (field.getRule() != null && !Strings.empty( field.getRule().field().get() ) )&&
+               ((Identity)moveTo ).identity().get().equals( field.getRule().field().get() ) )
          {
-            return false;
-         } else
+            returnValue = true;
+         } else if( (moveTo.getRule() != null && !Strings.empty( moveTo.getRule().field().get() ) )
+               && moveTo.getRule().field().get().equals( ((Identity)field).identity().get() ) )
          {
-            return ((Identity)fields.fields().get( toIdx.intValue() ) ).identity().get().equals( field.getRule().field().get() );
+            returnValue = true;
          }
+         return returnValue;
       }
    }
 }

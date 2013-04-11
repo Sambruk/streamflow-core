@@ -20,6 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -367,7 +368,12 @@ public interface FormFieldContext
          int index = fieldsData.fields().toList().indexOf( field );
          if (direction.equalsIgnoreCase( "up" ))
          {
-            fields.moveField( field, index - 1 );
+            try
+            {
+               fields.moveField( field, index - 1 );
+            } catch (ConstraintViolationException e)
+            {
+            }
          } else
          {
             fields.moveField( field, index + 1 );
