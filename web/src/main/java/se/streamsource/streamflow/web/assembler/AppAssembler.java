@@ -66,6 +66,7 @@ import se.streamsource.streamflow.web.application.migration.StartupMigrationConf
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
+import se.streamsource.streamflow.web.application.pdf.FormVisibilityRuleValidator;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterServiceConfiguration;
@@ -212,7 +213,8 @@ public class AppAssembler
 
    private void pdf( ModuleAssembly module ) throws AssemblyException
    {
-      module.objects( CasePdfGenerator.class ).visibleIn( application );
+      module.objects( CasePdfGenerator.class,
+            FormVisibilityRuleValidator.class ).visibleIn( application );
       module.services( PdfGeneratorService.class ).identifiedBy( "generatepdf" )
             .visibleIn( application ).instantiateOnStartup();
    }

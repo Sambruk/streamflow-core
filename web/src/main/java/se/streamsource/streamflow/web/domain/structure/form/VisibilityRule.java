@@ -22,6 +22,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 
 /**
  * This interface holds information about visibility rules regarding form fields
@@ -33,6 +34,8 @@ public interface VisibilityRule
    VisibilityRuleDefinitionValue getRule();
 
    void changeRule( VisibilityRuleDefinitionValue rule );
+
+   boolean validate ( String value );
 
    interface Data
    {
@@ -56,6 +59,43 @@ public interface VisibilityRule
       public void changeRule( VisibilityRuleDefinitionValue rule )
       {
          data.changedRule( null, rule );
+      }
+
+      public boolean validate( String value )
+      {
+         boolean result = false;
+
+         VisibilityRuleDefinitionValue rule = getRule();
+
+         // rule not defined return true
+         if( rule == null || Strings.empty( rule.field().get() ) )
+            return true;
+
+         switch( rule.condition().get() )
+         {
+            case anyof:
+               result = rule.values().get().contains( value );
+               break;
+
+            case noneof:
+               result = !rule.values().get().contains( value );
+               break;
+
+            case lessthan:
+               break;
+
+            case morethan:
+               break;
+         }
+
+         if( rule.visibleWhen().get() )
+         {
+            return result ? true : false;
+         } else
+         {
+            return result ? false : true;
+         }
+
       }
    }
 }
