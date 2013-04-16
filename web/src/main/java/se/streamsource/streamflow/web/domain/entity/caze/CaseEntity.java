@@ -33,6 +33,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -47,8 +48,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
@@ -98,6 +99,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.net.URISyntaxException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -671,8 +673,12 @@ public interface CaseEntity
             for (Conversation conversation : conversationsData.conversations())
             {
                if (conversation.isParticipant( (ConversationParticipant) caze.createdBy().get() ))
-                  conversation.createMessage( "{received,caseid=" + ((CaseId.Data) caze).caseId().get() + "}",
+               {
+                  Map<String,String> variables = new HashMap<String, String>(  );
+                  variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
+                  conversation.createMessage( Translator.translate("{received,caseid=" + ((CaseId.Data) caze).caseId().get() + "}", origin.accesspoint().get().emailTemplates().get(), variables  ),
                         administrator, false );
+               }
             }
          }
       }
@@ -691,8 +697,12 @@ public interface CaseEntity
             for (Conversation conversation : conversationsData.conversations())
             {
                if (conversation.isParticipant( (ConversationParticipant) caze.createdBy().get() ))
-                  conversation.createMessage( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + "}",
+               {
+                  Map<String,String> variables = new HashMap<String, String>(  );
+                  variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
+                  conversation.createMessage( Translator.translate( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + "}", origin.accesspoint().get().emailTemplates().get(), variables ),
                         administrator, false );
+               }
             }
          }
       }
