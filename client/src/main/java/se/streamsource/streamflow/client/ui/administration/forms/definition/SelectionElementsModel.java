@@ -116,4 +116,9 @@ public class SelectionElementsModel
 
       client.postCommand( "importvalues", representation );
    }
+
+   public void removeAll()
+   {
+      client.postCommand( "removeallselectionelements" );
+   }
 }

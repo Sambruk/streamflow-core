@@ -48,7 +48,6 @@ import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValu
 import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
-import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
@@ -85,13 +84,9 @@ public class FormPageContext
       ValueBuilder<PageDefinitionValue> builder = module.valueBuilderFactory().newValueBuilder( PageDefinitionValue.class );
       builder.prototype().description().set( describable.getDescription() );
       builder.prototype().page().set( EntityReference.parseEntityReference( identity.identity().get() ) );
-      if( page.getRule() == null )
-      {
-         builder.prototype().rule().set( module.valueBuilderFactory().newValue( VisibilityRuleDefinitionValue.class ) );
-      } else
-      {
-         builder.prototype().rule().set( page.getRule() );
-      }
+
+      builder.prototype().rule().set( page.getRule() );
+
       return builder.newInstance();
    }
 

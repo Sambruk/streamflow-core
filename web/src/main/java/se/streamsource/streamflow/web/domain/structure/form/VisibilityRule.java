@@ -17,9 +17,12 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
@@ -48,11 +51,20 @@ public interface VisibilityRule
    class Mixin
       implements VisibilityRule
    {
+      @Structure
+      Module module;
+
       @This
       Data data;
 
       public VisibilityRuleDefinitionValue getRule()
       {
+         if( data.rule().get() == null )
+         {
+            ValueBuilder<VisibilityRuleDefinitionValue> builder = module.valueBuilderFactory().newValueBuilder( VisibilityRuleDefinitionValue.class );
+            builder.prototype().visibleWhen().set( true );
+            changeRule( builder.newInstance() );
+         }
          return data.rule().get();
       }
 
