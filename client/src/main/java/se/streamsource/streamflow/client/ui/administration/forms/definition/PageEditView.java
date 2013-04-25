@@ -264,15 +264,15 @@ public class PageEditView
          ruleConditionCombo.setModel( new EventComboBoxModel<LinkValue>( eventList2 ) );
          ruleConditionCombo.setSelectedItem( findLinkValueWithId( eventList2, model.getIndex().rule().get().condition().get().name() ) );
 
-
          if( model.getIndex().rule().get().visibleWhen().get())
          {
+            visibleWhenFalse.setSelected( false );
             visibleWhenTrue.setSelected( true );
          } else
          {
             visibleWhenFalse.setSelected( true );
+            visibleWhenTrue.setSelected( false );
          }
-
       }
 
       refreshComponents.refresh( model.getResourceValue() );

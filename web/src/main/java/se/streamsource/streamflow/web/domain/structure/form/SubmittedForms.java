@@ -40,6 +40,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.domain.util.FormVisibilityRuleValidator;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -107,7 +108,10 @@ public interface SubmittedForms
       public SubmittedFormValue submitForm( FormDraft formSubmission, Submitter submitter )
       {
          FormDraftDTO DTO = formSubmission.getFormDraftValue();
-         
+
+         FormVisibilityRuleValidator visibilityValidator = module.objectBuilderFactory()
+               .newObjectBuilder( FormVisibilityRuleValidator.class ).use( DTO ).newInstance();
+
          ValueBuilder<SubmittedFormValue> formBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedFormValue.class);
 
          formBuilder.prototype().submitter().set( EntityReference.getEntityReference(submitter) );
@@ -126,8 +130,11 @@ public interface SubmittedForms
                if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
                {
                   // Is mandatory field missing?
-                  if (field.field().get().mandatory().get() && Strings.empty( field.value().get() ))
-                     throw new IllegalArgumentException( "mandatory_value_missing" );
+                  if (field.field().get().mandatory().get() )
+                  {
+                     if( visibilityValidator.visible( field ) && Strings.empty( field.value().get() ) )
+                       throw new IllegalArgumentException( "mandatory_value_missing" );
+                  }
                   // Validate
                   if (field.field().get() != null && field.value().get() != null && !field.field().get().fieldValue().get().validate( field.value().get() ))
                      throw new IllegalArgumentException( "invalid_value" );

@@ -14,13 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.application.pdf;
+package se.streamsource.streamflow.web.domain.util;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
@@ -39,10 +44,12 @@ public class FormVisibilityRuleValidator
    Module module;
 
    private SubmittedFormValue submittedForm;
+   private FormDraftDTO formDraft;
 
-   public FormVisibilityRuleValidator( @Uses SubmittedFormValue submittedForm )
+   public FormVisibilityRuleValidator( @Optional @Uses SubmittedFormValue submittedForm, @Optional @Uses FormDraftDTO formDraft )
    {
       this.submittedForm = submittedForm;
+      this.formDraft = formDraft;
    }
 
    public boolean visible( SubmittedFieldValue submittedFieldValue )
@@ -104,6 +111,87 @@ public class FormVisibilityRuleValidator
          {
            // validate
            visible = pageRule.validate( fieldValue.value().get() );
+
+         } else
+         {
+            visible = false;
+         }
+      }
+
+      return visible;
+   }
+
+   public boolean visible( FieldSubmissionDTO fieldSubmission )
+   {
+      boolean visible;
+
+      final VisibilityRule fieldRule = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, fieldSubmission.field().get().field().get().identity() );
+
+      if( fieldRule.getRule() == null || Strings.empty( fieldRule.getRule().field().get() ))
+      {
+         visible = true;
+      } else
+      {
+         // find form draft submission field matching rule field and fetch value - check if submitted field is visible - yes - validate
+         // this call will be recursive if several fields are chained by visibility rules.
+         FieldSubmissionDTO submissionValue = Iterables.first( Iterables.filter( new Specification<FieldSubmissionDTO>()
+         {
+            public boolean satisfiedBy( FieldSubmissionDTO field )
+            {
+               return field.field().get().field().get().identity().equals( fieldRule.getRule().field().get() );
+            }
+         }, Iterables.flatten( Iterables.map( new Function<PageSubmissionDTO, Iterable<FieldSubmissionDTO>>()
+         {
+            public Iterable<FieldSubmissionDTO> map( PageSubmissionDTO page )
+            {
+               return page.fields().get();
+            }
+         } , formDraft.pages().get() ) ) ) );
+
+         if( visible( submissionValue ) )
+         {
+            // validate
+            visible = fieldRule.validate( submissionValue.value().get() );
+
+         } else
+         {
+            visible = false;
+         }
+      }
+
+      return visible;
+   }
+
+   public boolean visible( PageSubmissionDTO pageSubmissionDTO )
+   {
+      boolean visible;
+
+      final VisibilityRule pageRule = module.unitOfWorkFactory().currentUnitOfWork().get( PageEntity.class, pageSubmissionDTO.page().get().identity() );
+
+      if( pageRule.getRule() == null || Strings.empty( pageRule.getRule().field().get() ))
+      {
+         visible = true;
+      } else
+      {
+         //find submitted field matching rule field and fetch value - check if submitted field is visible - yes - validate
+         FieldSubmissionDTO submissionValue = Iterables.first( Iterables.filter( new Specification<FieldSubmissionDTO>()
+         {
+            public boolean satisfiedBy( FieldSubmissionDTO field )
+            {
+               return field.field().get().field().get().identity().equals( pageRule.getRule().field().get() );
+            }
+         }, Iterables.flatten( Iterables.map( new Function<PageSubmissionDTO, Iterable<FieldSubmissionDTO>>()
+         {
+            public Iterable<FieldSubmissionDTO> map( PageSubmissionDTO page )
+            {
+               return page.fields().get();
+            }
+         }, formDraft.pages().get() ) ) ) );
+
+         if( visible( submissionValue ) )
+         {
+            // validate
+            visible = pageRule.validate( submissionValue.value().get() );
 
          } else
          {

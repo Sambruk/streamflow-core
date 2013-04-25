@@ -19,6 +19,8 @@ package se.streamsource.streamflow.web.context.administration.forms.definition;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.txt.UniversalEncodingDetector;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
@@ -54,7 +56,6 @@ import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValu
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
-import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -71,9 +72,11 @@ import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +129,9 @@ public interface FormFieldContext
    @Requires(OpenSelectionFieldValue.class)
    public void changeopenselectionname( @Name("name") String name );
 
+   @Requires(SelectionFieldValue.class)
+   public void removeallselectionelements();
+
    public void move( @Name("direction") String direction );
 
    @FirstFieldInFirstPage(false)
@@ -171,13 +177,7 @@ public interface FormFieldContext
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
 
-         if( fieldEntity.rule().get() == null )
-         {
-            builder.prototype().rule().set( module.valueBuilderFactory().newValue( VisibilityRuleDefinitionValue.class ) );
-         } else
-         {
-            builder.prototype().rule().set( fieldEntity.getRule() );
-         }
+         builder.prototype().rule().set( fieldEntity.getRule() );
 
          return builder.newInstance();
       }
@@ -318,6 +318,18 @@ public interface FormFieldContext
             builder.prototype().values().get().remove( index );
             fieldValueDefinition.changeFieldValue( builder.newInstance() );
          }
+      }
+
+      public void removeallselectionelements()
+      {
+         FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
+         SelectionFieldValue value = RoleMap.role( SelectionFieldValue.class );
+
+         ValueBuilder<SelectionFieldValue> builder = value.buildWith();
+
+         builder.prototype().values().get().clear();
+         fieldValueDefinition.changeFieldValue( builder.newInstance() );
+
       }
 
       public void moveselectionelement( String name, int index )
@@ -483,8 +495,10 @@ public interface FormFieldContext
 
             } else if (representation.getMediaType().equals( MediaType.TEXT_CSV ))
             {
-               StringReader reader = new StringReader( representation.getText() );
-               BufferedReader bufReader = new BufferedReader( reader );
+               UniversalEncodingDetector encodingDetector = new UniversalEncodingDetector();
+               BufferedInputStream input = new BufferedInputStream( representation.getStream() );
+               Charset detect = encodingDetector.detect( input, new Metadata() );
+               BufferedReader bufReader = new BufferedReader( new InputStreamReader( input, detect.name() ) );
                String line;
                while ((line = bufReader.readLine()) != null)
                {
