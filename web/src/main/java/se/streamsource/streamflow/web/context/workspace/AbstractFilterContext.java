@@ -16,26 +16,23 @@
  */
 package se.streamsource.streamflow.web.context.workspace;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-
 import org.qi4j.api.entity.Entity;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -46,6 +43,11 @@ import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 
 
 /**
@@ -71,7 +73,7 @@ public interface AbstractFilterContext extends Context
       public LinksValue possibleLabels()
       {
          // Fetch all labels from CaseType's ---> Organization
-         HashSet<Object> labels = new HashSet<Object>();
+         HashSet<Label> labels = new HashSet<Label>();
 
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
          Project project = RoleMap.role(Project.class);
@@ -97,24 +99,28 @@ public interface AbstractFilterContext extends Context
          // Organization's selected labels
          labels.addAll(((SelectedLabels.Data) entity).selectedLabels().toSet());
 
-         for (Object label : labels)
+         for (Label label : labels)
          {
-            builder.addDescribable((Label) label);
+            builder.addDescribable( (Describable) label, "" );
          }
          return builder.newLinks();
       }
 
       public LinksValue possibleCaseTypes()
       {
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
          Project project = RoleMap.role(Project.class);
          SelectedCaseTypes.Data selectedCaseTypes = (SelectedCaseTypes.Data) project;
 
-         for (CaseType caseType : selectedCaseTypes.selectedCaseTypes())
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+         for( CaseType caseType : selectedCaseTypes.selectedCaseTypes() )
          {
-            builder.addDescribable(caseType);
+            Owner owner = ((Ownable.Data)caseType).owner().get();
+
+            String title = owner != null ? ((Describable)owner).getDescription() : "";
+            linksBuilder.addLink( caseType.getDescription(), ((Identity)caseType).identity().get(),"","","", title );
          }
-         return builder.newLinks();
+         return linksBuilder.newLinks();
       }
 
       public LinksValue priorities()
