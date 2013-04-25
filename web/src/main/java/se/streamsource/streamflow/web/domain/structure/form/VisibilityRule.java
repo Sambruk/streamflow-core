@@ -38,7 +38,12 @@ public interface VisibilityRule
 
    void changeRule( VisibilityRuleDefinitionValue rule );
 
-   boolean validate ( String value );
+   /**
+    * Validate the rule.
+    * @param value The value to test the rule against - might be null for invisible fields
+    * @return A boolean whether the rule is valid or not.
+    */
+   boolean validate ( @Optional String value );
 
    interface Data
    {
