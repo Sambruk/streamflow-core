@@ -199,7 +199,7 @@ public class CaseSubmittedFormView
 
          for (FieldDTO field : page.fields().get())
          {
-            JLabel label = new JLabel(field.field().get() + ":", SwingConstants.LEFT);
+            JLabel label = new JLabel(field.field().get() + ( field.field().get().trim().endsWith( ":" ) ? "" : ":" ), SwingConstants.LEFT);
             label.setForeground(Color.gray);
             JComponent component = getComponent(field.value().get(), field.fieldType().get());
 
