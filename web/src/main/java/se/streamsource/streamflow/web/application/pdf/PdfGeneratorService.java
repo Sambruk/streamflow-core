@@ -51,6 +51,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import se.streamsource.streamflow.web.domain.util.FormVisibilityRuleValidator;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
