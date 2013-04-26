@@ -61,7 +61,6 @@ public class CaseLabelsView
 
    public CaseLabelsView(@Service ApplicationContext context, @Uses CaseLabelsModel model)
    {
-      this.actionButton = actionButton;
       setActionMap( context.getActionMap(this ));
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseLabelsView.class, this ) );
@@ -162,6 +161,8 @@ public class CaseLabelsView
       if (Events.matches( Events.withNames( "addedLabel", "removedLabel", "changedStatus" ), transactions ))
       {
          model.refresh();
+         if( actionButton != null )
+            actionButton.requestFocusInWindow();
       }
    }
 
