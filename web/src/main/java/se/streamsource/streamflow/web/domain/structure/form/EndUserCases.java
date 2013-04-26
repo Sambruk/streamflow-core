@@ -116,7 +116,6 @@ public interface EndUserCases
       public CaseEntity createCase( Drafts endUser )
       {
          CaseEntity caseEntity = endUser.createDraft();
-         caseEntity.changeDescription( accesspoint.caseType().get().getDescription() );
          caseEntity.changeCaseType( accesspoint.caseType().get() );
 
          for (Label label : labelable.labels())
