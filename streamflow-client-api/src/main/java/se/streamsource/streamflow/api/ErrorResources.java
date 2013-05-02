@@ -40,5 +40,7 @@ public enum ErrorResources
    integrationpoint_already_exists,
    form_move_field_rule_violation,
    form_move_page_rule_violation,
-   invalid_value
+   invalid_value,
+   prohibited_by_visibility_rule,
+   information
 }

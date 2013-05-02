@@ -34,6 +34,8 @@ import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
@@ -59,6 +61,9 @@ public class PossibleFormsView extends JPanel
    private
    @Service
    StreamflowApplication main;
+
+   @Service
+   private DialogService dialogs;
 
    private PossibleFormsModel modelForms;
    private Wizard wizard;
@@ -113,6 +118,11 @@ public class PossibleFormsView extends JPanel
          final FormDraftModel formDraftModel = modelForms.getFormDraftModel(form.form().id().get());
          FormDraftDTO formDraftDTO = (FormDraftDTO) ((FormDraftModel) formDraftModel).getFormDraftDTO().buildWith().prototype();
 
+         if( formDraftDTO.visibilityrules().get() )
+         {
+            dialogs.showMessageDialog( this, i18n.text( ErrorResources.prohibited_by_visibility_rule ), i18n.text( ErrorResources.information  ) );
+            return;
+         }
          final WizardPage[] wizardPages = new WizardPage[ formDraftDTO.pages().get().size() ];
          for (int i = 0; i < formDraftDTO.pages().get().size(); i++)
          {
