@@ -124,6 +124,10 @@ public interface SubmittedForms
             ValueBuilder<SubmittedPageValue> pageBuilder = module.valueBuilderFactory().newValueBuilder(SubmittedPageValue.class);
             pageBuilder.prototype().page().set(pageDTO.page().get());
 
+            // omit invisible pages.
+            if( !visibilityValidator.visible( pageDTO ) )
+               continue;
+
             for (FieldSubmissionDTO field : pageDTO.fields().get())
             {
                // ignore comment fields when submitting

@@ -16,11 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.io.IOException;
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,7 +23,6 @@ import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ServiceAvailable;
@@ -45,6 +39,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -52,6 +47,11 @@ import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.infrastructure.plugin.KartagoPluginConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
+
+import java.io.IOException;
+import java.util.List;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -77,15 +77,25 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
       FormDraftDTO draft = formDraft.getFormDraftValue();
       ValueBuilder<FormDraftDTO> draftBuilder = module.valueBuilderFactory().newValueBuilder( FormDraftDTO.class ).withPrototype( draft );
 
+      boolean visibilityrule = false;
+
       int pageIndex = -1;
       for (PageSubmissionDTO pageSubmissionDTO : draft.pages().get())
       {
          pageIndex++;
+         if ( pageSubmissionDTO.rule().get() != null && !Strings.empty( pageSubmissionDTO.rule().get().field().get() ) )
+         {
+            visibilityrule = true;
+         }
          
          int fieldIndex = -1;
          for (FieldSubmissionDTO field : pageSubmissionDTO.fields().get())
          {
             fieldIndex++;
+            if ( field.field().get().rule().get() != null && !Strings.empty( field.field().get().rule().get().field().get() ) )
+            {
+               visibilityrule = true;
+            }
             if (KnownDatatypeDefinitionUrls.GEO_LOCATION.equals( field.field().get().datatypeUrl().get())
                   && ((KartagoPluginConfiguration) kartagoMapService.configuration()).enabled().get())
             {
@@ -108,6 +118,8 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
             }
          }
       }
+
+      draftBuilder.prototype().visibilityrules().set( visibilityrule );
       return draftBuilder.newInstance();
    }
 
