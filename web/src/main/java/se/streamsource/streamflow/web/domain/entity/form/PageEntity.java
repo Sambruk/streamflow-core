@@ -21,6 +21,7 @@ import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.VisibilityRule;
 
 /**
  * JAVADOC
@@ -31,6 +32,7 @@ public interface PageEntity
       Fields.Data,
       Describable.Data,
       Notable.Data,
+      VisibilityRule.Data,
       DomainEntity
 {
 }

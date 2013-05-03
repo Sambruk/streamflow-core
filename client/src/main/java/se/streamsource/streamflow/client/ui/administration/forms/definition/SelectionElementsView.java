@@ -16,20 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.ActionMap;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
@@ -37,23 +25,35 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -67,6 +67,7 @@ public class SelectionElementsView
    private StreamflowButton upButton;
    private StreamflowButton downButton;
    private SelectionElementsModel model;
+   private ActionMap am;
 
    @Service
    DialogService dialogs;
@@ -82,7 +83,7 @@ public class SelectionElementsView
       setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
 
       JScrollPane scrollPanel = new JScrollPane();
-      ActionMap am = context.getActionMap( this );
+      am = context.getActionMap( this );
 
       JPanel toolbar = new JPanel();
       toolbar.add( new StreamflowButton( am.get( "add" ) ) );
@@ -94,6 +95,8 @@ public class SelectionElementsView
       upButton.setEnabled( false );
       downButton.setEnabled( false );
       toolbar.add( new StreamflowButton( am.get( "rename" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "importvalues" ) ) );
+      toolbar.add( new StreamflowButton( am.get( "removeall" ) ) );
 
       model.refresh();
       elementList = new JXList( new EventListModel<String>(model.getEventList()) );
@@ -117,29 +120,36 @@ public class SelectionElementsView
       add( scrollPanel, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
-      elementList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
-      elementList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "rename" ) ) );
-      elementList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      elementList.getSelectionModel().addListSelectionListener(
+            new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "up" ), am.get( "down" ) ){
 
-      elementList.getSelectionModel().addListSelectionListener( new ListSelectionListener()
-      {
-
-         public void valueChanged( ListSelectionEvent e )
-         {
-            if (!e.getValueIsAdjusting())
-            {
-               int idx = elementList.getSelectedIndex();
-
-               upButton.setEnabled( idx != 0 );
-               downButton.setEnabled( idx != elementList.getModel().getSize() - 1 );
-               if (idx == -1)
+               @Override
+               public boolean isSelectedValueValid( Action action )
                {
-                  upButton.setEnabled( false );
-                  downButton.setEnabled( false );
+                  boolean result = true;
+                  try
+                  {
+                     int selectedIndex = elementList.getSelectedIndex();
+                     if( selectedIndex == -1 )
+                     {
+                        result = false;
+                     } else if (action.equals( am.get( "up" ) ))
+                     {
+                        if (selectedIndex == 0)
+                           result = false;
+                     }else if (action.equals( am.get( "down" ) ))
+                     {
+                        if (selectedIndex == elementList.getModel().getSize() - 1)
+                           result = false;
+                     }
+                  } catch( IndexOutOfBoundsException e )
+                  {
+                     result = false;
+                  }
+                  return result;
                }
-            }
-         }
-      } );
+            });
+      elementList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
    }
 
    @org.jdesktop.application.Action
@@ -183,6 +193,7 @@ public class SelectionElementsView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (index != -1 && dialog.isConfirmed() )
       {
+         elementList.clearSelection();
          return new CommandTask()
          {
             @Override
@@ -253,6 +264,57 @@ public class SelectionElementsView
                throws Exception
             {
                model.changeElementName( dialog.name(), elementList.getSelectedIndex() );
+            }
+         };
+      } else
+         return null;
+   }
+
+   @org.jdesktop.application.Action
+   public Task importvalues()
+   {
+
+      // Ask the user for a file to import values from
+      // Can be either Excels or CVS format
+      final JFileChooser fileChooser = new JFileChooser();
+      fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES );
+      fileChooser.setMultiSelectionEnabled( false );
+      fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
+            text( AdministrationResources.import_files ), true, "xls", "csv", "txt" ) );
+      fileChooser.setDialogTitle( text( AdministrationResources.import_values ) );
+      int returnVal = fileChooser.showOpenDialog( this );
+      if (returnVal != JFileChooser.APPROVE_OPTION)
+      {
+         return null;
+      }
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            model.importValues( fileChooser.getSelectedFile().getAbsoluteFile() );
+         }
+      };
+   }
+
+   @org.jdesktop.application.Action
+   public Task removeall()
+   {
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+      dialog.setRemovalMessage( i18n.text( StreamflowResources.all ));
+
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed() )
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               model.removeAll();
             }
          };
       } else

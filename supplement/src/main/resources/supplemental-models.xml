@@ -103,6 +103,46 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>com.adobe.xmp</groupId>
+            <artifactId>xmpcore</artifactId>
+            <organization>
+                <name>Adobe Systems, Inc.</name>
+                <url>http://www.adobe.com</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>com.drewnoakes</groupId>
+            <artifactId>metadata-extractor</artifactId>
+            <organization>
+                <name>Drew Noakes</name>
+                <url>http://code.google.com/p/metadata-extractor/</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>com.googlecode.juniversalchardet</groupId>
+            <artifactId>juniversalchardet</artifactId>
+            <organization>
+                <name>juniversalchardet</name>
+                <url>http://juniversalchardet.googlecode.com/</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>com.googlecode.mp4parser</groupId>
+            <artifactId>isoparser</artifactId>
+            <organization>
+                <name>ISO Parser by Sebastian Annies</name>
+                <url>http://code.google.com/p/mp4parser/</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>com.jgoodies</groupId>
             <artifactId>forms</artifactId>
             <name>JGoodies Forms</name>
@@ -283,6 +323,22 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>de.l3s.boilerpipe</groupId>
+            <artifactId>boilerpipe</artifactId>
+            <organization>
+                <name>Christian Kohlschütter</name>
+                <url>http://code.google.com/p/boilerpipe/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <name>dom4j</name>
@@ -296,6 +352,16 @@
                     <url>http://dom4j.sourceforge.net/dom4j-1.6.1/license.html</url>
                 </license>
             </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>edu.ucar</groupId>
+            <artifactId>netcdf</artifactId>
+            <organization>
+                <name>Unidata</name>
+                <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+            </organization>
         </project>
     </supplement>
     <supplement>
@@ -541,6 +607,23 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <name>JDOM</name>
+            <organization>
+                <name>JDOM Project</name>
+                <url>http://www.jdom.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>JDOM BSD-style license (Packaged inside the library)</name>
+                    <url>META-INF/LICENSE.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>jivesoftware</groupId>
             <artifactId>smack</artifactId>
             <name>Smack</name>
@@ -681,6 +764,36 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <organization>
+                <name>Aspectj</name>
+                <url>http://www.eclipse.org/aspectj/</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcmail-jdk15</artifactId>
+            <organization>
+                <name>The Legion of the Bouncy Castle</name>
+                <url>http://www.bouncycastle.org/java.html</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+            <organization>
+                <name>The Legion of the Bouncy Castle</name>
+                <url>http://www.bouncycastle.org/java.html</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>org.ccil.cowan.tagsoup</groupId>
             <artifactId>tagsoup</artifactId>
             <name>Tagsoup</name>
@@ -753,6 +866,26 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>org.gagravarr</groupId>
+            <artifactId>vorbis-java-core</artifactId>
+            <organization>
+                <name>VorbisJava</name>
+                <url>https://github.com/Gagravarr/VorbisJava</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.gagravarr</groupId>
+            <artifactId>vorbis-java-tika</artifactId>
+            <organization>
+                <name>VorbisJava</name>
+                <url>https://github.com/Gagravarr/VorbisJava</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>org.igniterealtime.smack</groupId>
             <artifactId>smackx</artifactId>
             <organization>
@@ -787,6 +920,22 @@
                 <name>LiquiBase Community</name>
                 <url>http://www.liquibase.org</url>
             </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.markdownj</groupId>
+            <artifactId>markdownj</artifactId>
+            <organization>
+                <name>markdownj</name>
+                <url>https://github.com/myabc/markdownj</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>BSD Style license</name>
+                    <url>https://github.com/myabc/markdownj</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -1454,6 +1603,22 @@
                 <license>
                     <name>CDDL 1.0</name>
                     <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.tukaani</groupId>
+            <artifactId>xz</artifactId>
+            <organization>
+                <name>Tukaani Org</name>
+                <url>http://tukaani.org/xz/java.html</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>Public Domain</name>
+                    <url>>http://tukaani.org/xz/java.html</url>
                 </license>
             </licenses>
         </project>

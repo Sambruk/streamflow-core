@@ -31,6 +31,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins(FieldId.Mixin.class)
 public interface FieldId
 {
+   String getFieldId();
+
    void changeFieldId( @NotEmpty String id );
 
    interface Data
@@ -51,6 +53,12 @@ public interface FieldId
       {
          data.changedFieldId( null, id );
       }
+
+      public String getFieldId()
+      {
+         return data.fieldId().get();
+      }
+
    }
 
 }

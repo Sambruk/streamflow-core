@@ -24,6 +24,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
+import se.streamsource.streamflow.web.domain.structure.form.VisibilityRule;
 
 /**
  * JAVADOC
@@ -37,6 +38,7 @@ public interface FieldEntity
       Notable.Data,
       FieldValueDefinition.Data,
       Mandatory.Data,
+      VisibilityRule.Data,
       DomainEntity
 {
 }

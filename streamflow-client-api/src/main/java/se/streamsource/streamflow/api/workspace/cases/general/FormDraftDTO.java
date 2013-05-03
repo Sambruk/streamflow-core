@@ -47,4 +47,7 @@ public interface FormDraftDTO
 
    @Optional
    Property<SecondSigneeInfoValue> secondsignee();
+
+   @Optional
+   Property<Boolean> visibilityrules();
 }

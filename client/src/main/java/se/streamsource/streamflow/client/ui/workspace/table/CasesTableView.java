@@ -449,7 +449,7 @@ public class CasesTableView
                   value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() : text( WorkspaceResources.no_assignee );
                   break;
                case project:
-                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() );
+                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).owner().get() );
                   value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).owner().get() : text( WorkspaceResources.no_project );
                   break;
                case dueOn:

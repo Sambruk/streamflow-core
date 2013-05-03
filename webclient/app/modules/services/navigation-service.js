@@ -24,13 +24,13 @@
 
     return {
       caseHref: function(caseId) {
-        return "#" + this.projectId() + '/' + this.caseType() + '/' + caseId;
+        return "#" + this.projectId() + '/' + this.projectType() + '/' + caseId;
       },
       projectId: function() {
         return $routeParams.projectId;
       },
-      caseType: function() {
-        return $routeParams.caseType;
+      projectType: function() {
+        return $routeParams.projectType;
       },
       caseId: function() {
         return $routeParams.caseId;

@@ -34,7 +34,7 @@ public interface OptionButtonsFieldValue
 
       public Boolean validate( String value )
       {
-         return definition.values().get().contains( value );
+         return "".equals( value) ? true : definition.values().get().contains( value );
       }
    }
 }

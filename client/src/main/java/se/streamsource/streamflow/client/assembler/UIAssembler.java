@@ -75,6 +75,7 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Form
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.PageEditView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.VisibilityRuleValuesView;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsView;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
@@ -365,6 +366,7 @@ public class UIAssembler
             //FormSignatureView.class,
             //FormSignaturesView.class,
             SelectionElementsView.class,
+            VisibilityRuleValuesView.class,
             PageEditView.class,
             OrganizationUsersView.class,
             FieldEditView.class,

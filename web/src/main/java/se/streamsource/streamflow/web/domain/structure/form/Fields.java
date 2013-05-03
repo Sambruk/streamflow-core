@@ -17,6 +17,8 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -29,16 +31,18 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Classes;
 import org.qi4j.library.constraints.annotation.GreaterThan;
-
+import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.Describable;
 
 /**
  * JAVADOC
  */
 @Mixins(Fields.Mixin.class)
+@Concerns(Fields.MoveFieldConcern.class)
 public interface Fields
 {
    Field createField( String name, FieldValue fieldValue );
@@ -144,6 +148,49 @@ public interface Fields
       public void removedField( DomainEvent event, Field field )
       {
          data.fields().remove( field );
+      }
+   }
+
+   abstract class MoveFieldConcern
+      extends ConcernOf<Fields>
+      implements Fields
+   {
+      @This Fields.Data fields;
+
+      public void moveField( Field field, @GreaterThan(-1) Integer toIdx )
+      {
+         if( ruleViolation( field, toIdx ) )
+         {
+            throw new IllegalArgumentException( ErrorResources.form_move_field_rule_violation.name() );
+         } else
+         {
+            next.moveField( field, toIdx );
+         }
+      }
+
+      /**
+       * Check if a move would result in a rule violation.
+       * A field with a rule may not be moved to a location before the target field of the rule!
+       * A field that is a target field may not switch place with a field that has the target field as rule!
+       * @param field The field to be moved
+       * @param toIdx The index to move to
+       * @return Whether the move will result in a rule violation or not.
+       */
+      private boolean ruleViolation(Field field, Integer toIdx )
+      {
+         Field moveTo = fields.fields().get( toIdx.intValue() );
+         boolean returnValue = false;
+
+         if( (field.getRule() != null && !Strings.empty( field.getRule().field().get() ) )&&
+               ((Identity)moveTo ).identity().get().equals( field.getRule().field().get() ) )
+         {
+            returnValue = true;
+         } else if( (moveTo.getRule() != null && !Strings.empty( moveTo.getRule().field().get() ) )
+               && moveTo.getRule().field().get().equals( ((Identity)field).identity().get() ) )
+         {
+            returnValue = true;
+         }
+         return returnValue;
       }
    }
 }

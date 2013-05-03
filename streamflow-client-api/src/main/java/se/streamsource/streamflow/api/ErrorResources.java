@@ -37,5 +37,10 @@ public enum ErrorResources
    form_without_pages,
    form_page_without_fields,
    accesspoint_already_exists,
-   integrationpoint_already_exists
+   integrationpoint_already_exists,
+   form_move_field_rule_violation,
+   form_move_page_rule_violation,
+   invalid_value,
+   prohibited_by_visibility_rule,
+   information
 }

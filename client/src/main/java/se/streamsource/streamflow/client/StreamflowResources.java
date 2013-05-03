@@ -36,5 +36,6 @@ public enum StreamflowResources
    general_info,
    third_party_border,
    invalid_input,
-   max_length
+   max_length,
+   all
 }

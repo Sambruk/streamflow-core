@@ -33,14 +33,14 @@
 
   main.controller('CaseListCtrl', ['$scope', 'projectService', '$routeParams',
                   function($scope, projectService, $params) {
-    $scope.cases = projectService.getSelected($params.projectId, $params.caseType);
+    $scope.cases = projectService.getSelected($params.projectId, $params.projectType);
   }]);
 
   main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
                   function($scope, caseService, $params){
     console.log('params', $params);
-    $scope.case = caseService.getSelected($params.projectId, $params.caseType, $params.caseId);
-    $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.caseType, $params.caseId);
+    $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
   }]);
 
 

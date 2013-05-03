@@ -20,22 +20,28 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.representation.FileRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
+import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
+import java.io.File;
 import java.util.List;
 
 /**
  * JAVADOC
  */
 public class SelectionElementsModel
+   extends ResourceModel<FieldDefinitionAdminValue>
    implements Refreshable
 {
    @Uses
@@ -52,9 +58,10 @@ public class SelectionElementsModel
    {
       try
       {
-         FieldDefinitionValue fieldDefinitionValue = client.query( "field", FieldDefinitionValue.class );
+         //FieldDefinitionValue fieldDefinitionValue = client.query( "field", FieldDefinitionValue.class );
+         super.refresh();
 
-         FieldValue field = fieldDefinitionValue.fieldValue().get();
+         FieldValue field = getIndex().fieldValue().get();
          if (field instanceof SelectionFieldValue)
          {
             SelectionFieldValue selectionField = (SelectionFieldValue) field;
@@ -97,5 +104,21 @@ public class SelectionElementsModel
       form.set("index", Integer.toString(index));
 
       client.postCommand( "changeselectionelementname", form.getWebRepresentation() );
+   }
+
+   public void importValues( File file )
+   {
+      MediaType type = file.getName().endsWith( ".xls" )
+            ? MediaType.APPLICATION_EXCEL
+            : MediaType.TEXT_CSV;
+
+      Representation representation = new FileRepresentation( file, type );
+
+      client.postCommand( "importvalues", representation );
+   }
+
+   public void removeAll()
+   {
+      client.postCommand( "removeallselectionelements" );
    }
 }

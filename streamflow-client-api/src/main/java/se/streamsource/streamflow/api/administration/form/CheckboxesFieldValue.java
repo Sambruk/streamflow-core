@@ -18,7 +18,6 @@ package se.streamsource.streamflow.api.administration.form;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-
 import se.streamsource.streamflow.util.MultiFieldHelper;
 
 /**

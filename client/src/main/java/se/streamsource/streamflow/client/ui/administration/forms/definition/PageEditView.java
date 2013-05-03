@@ -16,42 +16,70 @@
  */
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.TEXTFIELD;
-
-import java.awt.BorderLayout;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXRadioGroup;
+import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
-
-import se.streamsource.streamflow.api.administration.form.PageDefinitionValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.administration.form.VisibilityRuleCondition;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.ActionMap;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.Component;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
  */
 public class PageEditView
       extends JScrollPane
-      implements Observer
+      implements Refreshable, TransactionListener
 {
-   StateBinder nameBinder;
+
+   private ValueBinder valueBinder;
+   private ActionBinder actionBinder;
+   private RefreshComponents refreshComponents;
+
    private PageEditModel model;
+
+   private JTextField descriptionField = new JTextField( );
+   private JComboBox ruleFieldIdCombo = new JComboBox(  );
+   private JComboBox ruleConditionCombo = new JComboBox( );
+   private JXRadioGroup buttonGroup;
+   private JRadioButton visibleWhenTrue;
+   private JRadioButton visibleWhenFalse;
+
 
    public PageEditView( @Service ApplicationContext context,
                         @Uses PageEditModel model,
@@ -59,53 +87,213 @@ public class PageEditView
    {
       this.model = model;
       JPanel panel = new JPanel( new BorderLayout() );
+      refreshComponents = new RefreshComponents();
 
+      ActionMap am = context.getActionMap( this );
+
+      valueBinder = module.objectBuilderFactory().newObject( ValueBinder.class );
+      actionBinder = module.objectBuilderFactory().newObjectBuilder( ActionBinder.class ).use( context.getActionMap( this ) ).newInstance();
+      actionBinder.setResourceMap( context.getResourceMap( getClass() ) );
+
+      JPanel topPanel = new JPanel( new BorderLayout( ) );
       JPanel fieldPanel = new JPanel();
-      FormLayout formLayout = new FormLayout(
+      FormLayout fieldFormLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
             "pref, pref" );
 
-      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
-      formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
-      
-      nameBinder = module.objectBuilderFactory().newObject(StateBinder.class);
-      nameBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      PageDefinitionValue definitionValue = nameBinder.bindingTemplate( PageDefinitionValue.class );
+      DefaultFormBuilder fieldFormBuilder = new DefaultFormBuilder( fieldFormLayout, fieldPanel );
+      fieldFormBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
-      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.page_break_field_type ) ) );
-      formBuilder.nextLine();
+      fieldFormBuilder.append( text( AdministrationResources.type_label ), new JLabel( text( AdministrationResources.page_break_field_type ) ) );
+      fieldFormBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(nameBinder.bind( TEXTFIELD.newField(), definitionValue.description() ) );
-      
-//      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.page_break_field_type ) ) );
-//
-//      bb.appendLine( AdministrationResources.name_label, TEXTFIELD, definitionValue.description() );
+      fieldFormBuilder.add( new JLabel( text( AdministrationResources.name_label ) ) );
+      fieldFormBuilder.nextColumn( 2 );
+      fieldFormBuilder.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField ) ) );
 
-      nameBinder.addObserver( this );
-      model.refresh();
-      nameBinder.updateWith( model.getPageDefinition() );
+      topPanel.add( fieldPanel, BorderLayout.NORTH );
 
-      panel.add( fieldPanel, BorderLayout.CENTER );
+      JPanel rulePanel = new JPanel( );
+      FormLayout ruleFormLayout = new FormLayout(
+            "45dlu, 5dlu, 150dlu, 5dlu, 45dlu, 5dlu, 150dlu:grow",
+            "pref, pref, pref, pref:grow" );
+
+      DefaultFormBuilder ruleFormBuilder = new DefaultFormBuilder( ruleFormLayout, rulePanel );
+      ruleFormBuilder.addSeparator( text( AdministrationResources.visibility_rule ) );
+      ruleFormBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ));
+
+      ruleFormBuilder.nextLine();
+
+      ruleFormBuilder.add( new JLabel( text( AdministrationResources.rule_field_id ) ) );
+      ruleFormBuilder.nextColumn( 2 );
+      ruleFormBuilder.add( valueBinder.bind( "fieldId", actionBinder.bind( "changeRuleFieldId", ruleFieldIdCombo ) ) );
+      ruleFieldIdCombo.setRenderer( new LinkListCellRenderer() );
+
+      ruleFormBuilder.nextColumn( 2 );
+
+      ruleFormBuilder.add( new JLabel( text( AdministrationResources.rule_values ) ) );
+
+      VisibilityRuleValuesView visibilityRuleValuesView = module.objectBuilderFactory().newObjectBuilder( VisibilityRuleValuesView.class ).use( model.newVisibilityRuleValuesModel() ).newInstance();
+      //visibilityRuleValuesView.setMaximumSize( new Dimension(150, 75 ) );
+      ruleFormBuilder.add( visibilityRuleValuesView,
+            new CellConstraints( 7, 2, 1, 3, CellConstraints.FILL, CellConstraints.FILL ) );
+
+      ruleFormBuilder.nextLine();
+
+      ruleFormBuilder.add( new JLabel( text( AdministrationResources.rule_condition ) ) );
+      ruleFormBuilder.nextColumn( 2 );
+      ruleFormBuilder.add( valueBinder.bind( "condition", actionBinder.bind( "changeRuleCondition", ruleConditionCombo ) ) );
+      ruleConditionCombo.setRenderer( new DefaultListRenderer()
+      {
+         public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
+         {
+            if (value instanceof LinkValue)
+            {
+               LinkValue itemValue = (LinkValue) value;
+               String val = itemValue == null ? "" : text( VisibilityRuleCondition.valueOf( itemValue.text().get() ) );
+
+               return super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
+            } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+         }
+      } );
+
+      ruleFormBuilder.add( new JLabel( text( AdministrationResources.rule_visible_when ) ),
+            new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP ) );
+
+      javax.swing.Action visibilityWhenToTrueAction = am.get( "changeVisibleWhenToTrue" );
+      javax.swing.Action visibilityWhenToFalseAction = am.get( "changeVisibleWhenToFalse" );
+
+      buttonGroup = new JXRadioGroup(  );
+      buttonGroup.setLayoutAxis( BoxLayout.LINE_AXIS );
+      visibleWhenTrue = new JRadioButton( visibilityWhenToTrueAction );
+      visibleWhenFalse = new JRadioButton( visibilityWhenToFalseAction );
+      buttonGroup.add( visibleWhenTrue );
+      buttonGroup.add( visibleWhenFalse );
+
+      ruleFormBuilder.add( buttonGroup, new CellConstraints(3, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP ) );
+
+      topPanel.add( rulePanel, BorderLayout.CENTER );
+      panel.add( topPanel, BorderLayout.NORTH );
+      panel.add(  new JPanel( ), BorderLayout.CENTER );
+
+      refreshComponents.visibleOn( "possiblerulefields", rulePanel );
 
       setViewportView( panel );
+
+      new RefreshWhenShowing( this, this );
    }
 
-   public void update( Observable observable, Object arg )
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task changeDescription()
    {
-      final Property property = (Property) arg;
-      if (property.qualifiedName().name().equals( "description" ))
+      return new CommandTask()
       {
-         new CommandTask()
-         {
-            @Override
-            public void command()
+         @Override
+         public void command()
                throws Exception
-            {
-               model.changeDescription( (String) property.get() );
-            }
-         }.execute();
+         {
+            model.changeDescription( descriptionField.getText() );
+         }
+      };
+   }
+
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task changeRuleFieldId()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeRuleFieldId( (LinkValue)ruleFieldIdCombo.getSelectedItem() );
+         }
+      };
+   }
+
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task changeRuleCondition( )
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeRuleCondition( (LinkValue)ruleConditionCombo.getSelectedItem() );
+         }
+      };
+   }
+
+   @Action
+   public Task changeVisibleWhenToTrue()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeRuleVisibleWhen( true );
+
+         }
+      };
+   }
+
+   @Action
+   public Task changeVisibleWhenToFalse()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeRuleVisibleWhen( false );
+         }
+      };
+   }
+   public void refresh()
+   {
+      model.refresh();
+      valueBinder.update( model.getIndex() );
+      valueBinder.update( model.getIndex().rule().get() );
+      if(model.query("possiblerulefields") != null )
+      {
+         EventList<LinkValue> eventList = model.possibleRuleFields() ;
+         ruleFieldIdCombo.setModel( new EventComboBoxModel<LinkValue>( eventList ) );
+         ruleFieldIdCombo.setSelectedItem( findLinkValueWithId( eventList, model.getIndex().rule().get().field().get() ) );
+
+         EventList<LinkValue> eventList2 = model.possibleRuleConditions();
+         ruleConditionCombo.setModel( new EventComboBoxModel<LinkValue>( eventList2 ) );
+         ruleConditionCombo.setSelectedItem( findLinkValueWithId( eventList2, model.getIndex().rule().get().condition().get().name() ) );
+
+         if( model.getIndex().rule().get().visibleWhen().get())
+         {
+            visibleWhenFalse.setSelected( false );
+            visibleWhenTrue.setSelected( true );
+         } else
+         {
+            visibleWhenFalse.setSelected( true );
+            visibleWhenTrue.setSelected( false );
+         }
+      }
+
+      refreshComponents.refresh( model.getResourceValue() );
+   }
+
+   private LinkValue findLinkValueWithId( EventList<LinkValue> list, String id )
+   {
+      for( LinkValue link : list )
+      {
+         if( link.id().get().equals( id ) )
+            return link;
+      }
+      return null;
+   }
+
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   {
+      if(Events.matches(Events.withNames( "changedRule" ), transactions ))
+      {
+         refresh();
+         this.revalidate();
       }
    }
 }

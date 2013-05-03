@@ -48,4 +48,7 @@ public interface FieldDefinitionAdminValue
 
    @UseDefaults
    Property<Boolean> mandatory();
+
+   @Optional
+   Property<VisibilityRuleDefinitionValue> rule();
 }

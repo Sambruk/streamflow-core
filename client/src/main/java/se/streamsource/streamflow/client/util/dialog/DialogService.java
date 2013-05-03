@@ -24,6 +24,7 @@ import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -241,7 +242,9 @@ public class DialogService
    {
       private MessageLabel(String text)
       {
-         super(text);
+         super( text );
+         setBorder( BorderFactory.createEmptyBorder( 5, 15, 5, 15 ) );
+
       }
 
       @org.jdesktop.application.Action

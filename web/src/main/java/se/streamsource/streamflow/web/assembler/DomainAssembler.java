@@ -73,6 +73,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
+import se.streamsource.streamflow.web.domain.util.FormVisibilityRuleValidator;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 import static org.qi4j.api.common.Visibility.*;
@@ -103,6 +104,7 @@ public class DomainAssembler
       notes( layer.module( "Notes" ));
       tasks( layer.module("Tasks") );
       external( layer.module( "External" ) );
+      util( layer.module(  "Util" ) );
 
       // All values are public
       layer.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
@@ -110,6 +112,11 @@ public class DomainAssembler
       // All entities are public
       layer.entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
 
+   }
+
+   private void util( ModuleAssembly module )
+   {
+      module.objects( FormVisibilityRuleValidator.class ).visibleIn( Visibility.application );
    }
 
    private void external( ModuleAssembly module )
