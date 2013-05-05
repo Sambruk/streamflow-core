@@ -17,47 +17,44 @@
 package org.streamsource.streamflow.statistic.dto;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/20/12
- * Time: 12:46 PM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: arvidhuss Date: 2/20/12 Time: 12:46 PM To
+ * change this template use File | Settings | File Templates.
  */
 public class CaseCountSummary
 {
    private int total;
-   private int withCasetype;
+   private int withCaseType;
 
    public int getTotal()
    {
       return total;
    }
 
-   public void setTotal( int total )
+   public void setTotal(int total)
    {
       this.total = total;
    }
 
-   public int getWithoutCasetype()
+   public int getWithoutCaseType()
    {
-      return withoutCasetype;
+      return withoutCaseType;
    }
 
-   public void setWithoutCasetype( int withoutCasetype )
+   public void setWithoutCaseType(int withoutCaseType)
    {
-      this.withoutCasetype = withoutCasetype;
+      this.withoutCaseType = withoutCaseType;
    }
 
-   public int getWithCasetype()
+   public int getWithCaseType()
    {
-      return withCasetype;
+      return withCaseType;
    }
 
-   public void setWithCasetype( int withCasetype )
+   public void setWithCaseType(int withCaseType)
    {
-      this.withCasetype = withCasetype;
+      this.withCaseType = withCaseType;
    }
 
-   private int withoutCasetype;
+   private int withoutCaseType;
 
 }
