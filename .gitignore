@@ -11,3 +11,5 @@ nbproject
 .idea/*
 .DS_Store
 .idea
+webclient/dist/
+webclient/temp/
