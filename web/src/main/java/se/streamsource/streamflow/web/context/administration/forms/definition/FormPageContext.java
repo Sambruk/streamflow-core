@@ -41,6 +41,7 @@ import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldTypes;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
@@ -190,6 +191,9 @@ public class FormPageContext
             ValueBuilder<TextFieldValue> textBuilder = vbf.newValueBuilder( TextFieldValue.class );
             textBuilder.prototype().width().set( 30 );
             value = textBuilder.newInstance();
+            break;
+         case geolocation:
+            value = vbf.newValue( GeoLocationFieldValue.class );
             break;
       }
       return value;

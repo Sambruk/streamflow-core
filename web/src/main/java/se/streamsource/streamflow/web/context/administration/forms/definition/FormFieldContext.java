@@ -49,6 +49,7 @@ import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldDefinitionAdminValue;
 import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
@@ -134,6 +135,15 @@ public interface FormFieldContext
    @Requires(SelectionFieldValue.class)
    public void importvalues( Representation representation );
 
+   @Requires(GeoLocationFieldValue.class)
+   public void changepoint( @Name("point") boolean point);
+   
+   @Requires(GeoLocationFieldValue.class)
+   public void changepolyline( @Name("polyline") boolean polyline);
+   
+   @Requires(GeoLocationFieldValue.class)
+   public void changepolygon( @Name("polygon") boolean polygon);
+   
    abstract class Mixin
          implements FormFieldContext
    {
@@ -458,6 +468,37 @@ public interface FormFieldContext
          return builder.newLinks();
       }
 
+
+      public void changepoint( boolean point){
+         FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
+         GeoLocationFieldValue value = RoleMap.role( GeoLocationFieldValue.class );
+
+         ValueBuilder<GeoLocationFieldValue> builder = value.buildWith();
+         builder.prototype().point().set( point );
+
+         fieldValueDefinition.changeFieldValue( builder.newInstance() );
+      }
+      
+      public void changepolyline( boolean polyline){
+         FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
+         GeoLocationFieldValue value = RoleMap.role( GeoLocationFieldValue.class );
+
+         ValueBuilder<GeoLocationFieldValue> builder = value.buildWith();
+         builder.prototype().polyline().set( polyline );
+
+         fieldValueDefinition.changeFieldValue( builder.newInstance() );
+      }
+      
+      public void changepolygon( boolean polygon){
+         FieldValueDefinition fieldValueDefinition = RoleMap.role( FieldValueDefinition.class );
+         GeoLocationFieldValue value = RoleMap.role( GeoLocationFieldValue.class );
+
+         ValueBuilder<GeoLocationFieldValue> builder = value.buildWith();
+         builder.prototype().polygon().set( polygon );
+
+         fieldValueDefinition.changeFieldValue( builder.newInstance() );
+      }
+      
       public void importvalues(Representation representation)
       {
          boolean hasChanged = false;
