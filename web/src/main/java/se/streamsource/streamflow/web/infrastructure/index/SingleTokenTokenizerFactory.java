@@ -16,18 +16,25 @@
  */
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import java.io.Reader;
+import org.apache.lucene.analysis.util.TokenizerFactory;
 
-import org.apache.solr.analysis.BaseTokenizerFactory;
+import java.io.Reader;
+import java.util.Map;
 
 /**
  * JAVADOC
  */
 public class SingleTokenTokenizerFactory
-      extends BaseTokenizerFactory
+      extends TokenizerFactory
 {
-   public SingleTokenTokenizer create( Reader input )
-   {
-      return new SingleTokenTokenizer( input );
+   @Override
+   public void init(Map<String,String> args) {
+      super.init(args);
+      assureMatchVersion();
+   }
+
+   @Override
+   public SingleTokenTokenizer create(Reader input) {
+      return new SingleTokenTokenizer(luceneMatchVersion,input);
    }
 }

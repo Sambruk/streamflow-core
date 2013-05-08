@@ -16,34 +16,36 @@
  */
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import java.io.Reader;
-
-import org.apache.lucene.analysis.WhitespaceTokenizer;
+import org.apache.lucene.util.Version;
+import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.util.AttributeSource;
+
+import java.io.Reader;
 
 /**
  * JAVADOC
  */
 public class SingleTokenTokenizer
-      extends WhitespaceTokenizer
+      extends CharTokenizer
 {
-   public SingleTokenTokenizer( Reader in )
+   public SingleTokenTokenizer( Version matchVersion, Reader in )
    {
-      super( in );
+      super( matchVersion, in );
    }
 
-   public SingleTokenTokenizer( AttributeSource source, Reader in )
+   public SingleTokenTokenizer( Version matchVersion, AttributeSource source, Reader in )
    {
-      super( source, in );
+      super( matchVersion, source, in );
    }
 
-   public SingleTokenTokenizer( AttributeFactory factory, Reader in )
+   public SingleTokenTokenizer( Version matchVersion, AttributeSource.AttributeFactory factory, Reader in )
    {
-      super( factory, in );
+      super( matchVersion, factory, in );
    }
+
 
    @Override
-   protected boolean isTokenChar( char c )
+   protected boolean isTokenChar( int c )
    {
       return true;
    }
