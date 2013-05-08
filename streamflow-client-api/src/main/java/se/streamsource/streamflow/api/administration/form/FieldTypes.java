@@ -28,5 +28,6 @@ public enum FieldTypes
    optionbuttons,
    openselection,
    textarea,
-   text
+   text,
+   geolocation
 }

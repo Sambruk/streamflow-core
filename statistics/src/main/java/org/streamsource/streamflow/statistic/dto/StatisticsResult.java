@@ -17,25 +17,27 @@
 package org.streamsource.streamflow.statistic.dto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Statistic results.
  */
 public class StatisticsResult
 {
-   private List<CaseCount> casecountSummary;
+   private List<CaseCount> caseCountSummary;
    private List<CaseCount> caseCountByOuOwner;
-   private List<CaseCount> caseCountByCasetype;
+   private List<CaseCount> caseCountByCaseType;
    private List<CaseCount> caseCountByTopOuOwner;
+   private Map<String, List<CaseCount>> caseCountByLabelPerCaseType;
 
-   public List<CaseCount> getCasecountSummary()
+   public List<CaseCount> getCaseCountSummary()
    {
-      return casecountSummary;
+      return caseCountSummary;
    }
 
-   public void setCasecountSummary( List<CaseCount> casecountSummary )
+   public void setCaseCountSummary(List<CaseCount> caseCountSummary)
    {
-      this.casecountSummary = casecountSummary;
+      this.caseCountSummary = caseCountSummary;
    }
 
    public List<CaseCount> getCaseCountByTopOuOwner()
@@ -43,7 +45,7 @@ public class StatisticsResult
       return caseCountByTopOuOwner;
    }
 
-   public void setCaseCountByTopOuOwner( List<CaseCount> caseCountByTopOuOwner )
+   public void setCaseCountByTopOuOwner(List<CaseCount> caseCountByTopOuOwner)
    {
       this.caseCountByTopOuOwner = caseCountByTopOuOwner;
    }
@@ -53,18 +55,28 @@ public class StatisticsResult
       return caseCountByOuOwner;
    }
 
-   public void setCaseCountByOuOwner( List<CaseCount> caseCountByOuOwner )
+   public void setCaseCountByOuOwner(List<CaseCount> caseCountByOuOwner)
    {
       this.caseCountByOuOwner = caseCountByOuOwner;
    }
 
-   public List<CaseCount> getCaseCountByCasetype()
+   public List<CaseCount> getCaseCountByCaseType()
    {
-      return caseCountByCasetype;
+      return caseCountByCaseType;
    }
 
-   public void setCaseCountByCasetype( List<CaseCount> caseCountByCasetype )
+   public void setCaseCountByCaseType(List<CaseCount> caseCountByCaseType)
    {
-      this.caseCountByCasetype = caseCountByCasetype;
+      this.caseCountByCaseType = caseCountByCaseType;
+   }
+
+   public Map<String, List<CaseCount>> getCaseCountByLabelPerCaseType()
+   {
+      return caseCountByLabelPerCaseType;
+   }
+
+   public void setCaseCountByLabelPerCaseType(Map<String, List<CaseCount>> caseCountByLabelPerCaseType)
+   {
+      this.caseCountByLabelPerCaseType = caseCountByLabelPerCaseType;
    }
 }

@@ -17,30 +17,27 @@
 package org.streamsource.streamflow.statistic.dto;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/20/12
- * Time: 3:26 PM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: arvidhuss Date: 2/20/12 Time: 3:26 PM To
+ * change this template use File | Settings | File Templates.
  */
-public class Period implements Comparable
+public class Period implements Comparable<Period>
 {
-   public Period( String period )
+   private String period;
+   private String periodLabel;
+   private Integer count = new Integer( 0 );
+
+   public Period(String period)
    {
       this.period = period;
       this.periodLabel = period;
    }
-
-   private String period;
-   private String periodLabel;
-   private Integer count = new Integer( 0 );
 
    public String getPeriod()
    {
       return period;
    }
 
-   public void setPeriod( String period )
+   public void setPeriod(String period)
    {
       this.period = period;
    }
@@ -50,7 +47,7 @@ public class Period implements Comparable
       return periodLabel;
    }
 
-   public void setPeriodLabel( String periodLabel )
+   public void setPeriodLabel(String periodLabel)
    {
       this.periodLabel = periodLabel;
    }
@@ -60,13 +57,13 @@ public class Period implements Comparable
       return count;
    }
 
-   public void setCount( Integer count )
+   public void setCount(Integer count)
    {
       this.count = count;
    }
 
-   public int compareTo( Object o )
+   public int compareTo(Period o)
    {
-      return this.period.compareTo( ((Period) o).period);
+      return this.period.compareTo( ((Period) o).period );
    }
 }
