@@ -235,7 +235,7 @@ public class AttachmentsView
       {
          AttachmentDTO attachment = attachmentsModel.getEventList().get(attachments.convertRowIndexToModel(i));
 
-         return new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), this, attachmentsModel );
+         return new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), this, attachmentsModel, dialogs );
       }
 
       return null;

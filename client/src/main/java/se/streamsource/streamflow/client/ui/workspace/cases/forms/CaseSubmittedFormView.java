@@ -271,7 +271,7 @@ public class CaseSubmittedFormView
    public Task openAttachment(ActionEvent event)
    {
       AttachmentFieldSubmission selectedDocument = buttons.get(event.getSource());
-      return new OpenAttachmentTask(selectedDocument.name().get(), selectedDocument.attachment().get().identity(), this, model );
+      return new OpenAttachmentTask(selectedDocument.name().get(), selectedDocument.attachment().get().identity(), this, model, dialogs );
    }
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
