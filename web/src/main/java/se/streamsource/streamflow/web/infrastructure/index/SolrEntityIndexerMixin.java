@@ -16,13 +16,6 @@
  */
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
@@ -50,6 +43,13 @@ import org.qi4j.spi.entity.EntityStatus;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JAVADOC Add JavaDoc
@@ -95,8 +95,8 @@ public class SolrEntityIndexerMixin
    {
       try
       {
-         try
-         {
+         /*try
+         {*/
             // Figure out what to update
             List<String> deleted = null;
             List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
@@ -124,14 +124,15 @@ public class SolrEntityIndexerMixin
                server.deleteById( deleted );
             if (!added.isEmpty())
                server.add( added );
-         }
+         /*}
+         // let EmbeddedSolrServer take care of commits with auto commit!!
          finally
          {
             if (server != null)
             {
                server.commit( false, false );
             }
-         }
+         }*/
       }
       catch (Throwable e)
       {
