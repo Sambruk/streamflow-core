@@ -204,6 +204,7 @@ public interface NotificationService
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );
                      builder.prototype().subject().set( subject );
                      builder.prototype().content().set( formattedMsg );
+                     builder.prototype().contentHtml().set( "<pre>" + formattedMsg + "</pre>" );
                      builder.prototype().contentType().set( "text/plain" );
 
                      // add message attachments if any
