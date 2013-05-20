@@ -198,7 +198,7 @@ public class CaseStatisticsServiceTest
 
       CaseEntity case1 = user.createDraft();
       case1.changeDescription("Case description");
-      case1.addNote( "Case note" );
+      case1.addNote( "Case note", "text/plain" );
       case1.addLabel(label1);
       case1.changeCaseType(caseType1);
       case1.changeOwner(project1);

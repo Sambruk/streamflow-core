@@ -32,6 +32,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -677,7 +678,7 @@ public interface CaseEntity
                   Map<String,String> variables = new HashMap<String, String>(  );
                   variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
                   conversation.createMessage( Translator.translate("{received,caseid=" + ((CaseId.Data) caze).caseId().get() + "}", origin.accesspoint().get().emailTemplates().get(), variables  ),
-                        administrator, false );
+                        MessageType.SYSTEM, administrator, false );
                }
             }
          }
@@ -701,7 +702,7 @@ public interface CaseEntity
                   Map<String,String> variables = new HashMap<String, String>(  );
                   variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
                   conversation.createMessage( Translator.translate( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + "}", origin.accesspoint().get().emailTemplates().get(), variables ),
-                        administrator, false );
+                        MessageType.SYSTEM, administrator, false );
                }
             }
          }

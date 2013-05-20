@@ -43,6 +43,7 @@ import org.qi4j.spi.entity.EntityStatus;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.util.Translator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -224,7 +225,20 @@ public class SolrEntityIndexerMixin
                SchemaField field = indexedFields.get( name.toString() );
                if (field != null)
                {
-                  input.addField( name.toString(), jsonObject.get( name.toString() ) );
+                  // if note is html formatted - remove html tags
+                  if( "note".equals( name.toString() )  )
+                  {
+                     if( Translator.HTML.equals( jsonObject.get( "contentType" ) ) )
+                     {
+                        input.addField( name.toString(), Translator.htmlToText( (String)jsonObject.get( name.toString() ) ) );
+                     } else
+                     {
+                        input.addField( name.toString(), jsonObject.get( name.toString() ) );
+                     }
+                  } else
+                  {
+                     input.addField( name.toString(), jsonObject.get( name.toString() ) );
+                  }
                }
             }
          }

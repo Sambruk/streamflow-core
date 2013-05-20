@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -27,10 +25,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
+
+import java.util.List;
 
 /**
  * Maintain a note. A note is a longer multi-line string.
@@ -39,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
 @Mixins(Notes.Mixin.class)
 public interface Notes
 {
-   void addNote( String newNote );
+   void addNote( String newNote, @Optional String contentType );
 
    NoteValue getLastNote();
 
@@ -68,9 +67,9 @@ public interface Notes
       @This
       Data state;
 
-      public void addNote( String newNote )
+      public void addNote( String newNote, String contentType )
       {
-         state.notes().get().addNote( newNote );
+         state.notes().get().addNote( newNote, contentType );
       }
 
 

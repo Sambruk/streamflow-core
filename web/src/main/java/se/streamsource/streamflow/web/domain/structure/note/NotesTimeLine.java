@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.structure.note;
 
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
@@ -28,11 +26,13 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
+
+import java.util.List;
 
 /**
  * Marker interface for notes.
@@ -42,7 +42,7 @@ public interface NotesTimeLine
    extends Removable
 {
 
-   void addNote( String note );
+   void addNote( String note, @Optional String contentType );
 
    NoteValue getLastNote();
 
@@ -51,7 +51,7 @@ public interface NotesTimeLine
       @UseDefaults
       Property<List<NoteValue>> notes();
 
-      void addedNote( @Optional DomainEvent event, String note );
+      void addedNote( @Optional DomainEvent event, String note, @Optional String contentType );
    }
 
    abstract class Mixin
@@ -64,19 +64,20 @@ public interface NotesTimeLine
       @This
       Data state;
 
-      public void addNote(String note )
+      public void addNote(String note, String contentType )
       {
          if( getLastNote() == null || !note.equals( getLastNote().note().get() ))
-            addedNote( null, note );
+            addedNote( null, note, contentType );
       }
 
-      public void addedNote( DomainEvent event, String note )
+      public void addedNote( DomainEvent event, String note, String contentType )
       {
 
          ValueBuilder<NoteValue> noteBuilder = module.valueBuilderFactory().newValueBuilder( NoteValue.class );
          noteBuilder.prototype().note().set( note );
          noteBuilder.prototype().createdOn().set( event.on().get() );
          noteBuilder.prototype().createdBy().set( EntityReference.getEntityReference( RoleMap.role( Creator.class ) ) );
+         noteBuilder.prototype().contentType().set( Strings.empty( contentType ) ? "text/plain" : contentType );
 
          List<NoteValue> newNotesList = state.notes().get();
          newNotesList.add( noteBuilder.newInstance() );

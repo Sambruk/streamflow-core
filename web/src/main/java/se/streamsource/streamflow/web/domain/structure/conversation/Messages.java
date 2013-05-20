@@ -28,6 +28,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -39,9 +40,9 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 @Mixins(Messages.Mixin.class)
 public interface Messages
 {
-   Message createMessage(String body, ConversationParticipant participant);
+   Message createMessage(String body, MessageType messageType, ConversationParticipant participant);
 
-   Message createMessage(String body, ConversationParticipant participant, boolean unread );
+   Message createMessage(String body, MessageType messageType, ConversationParticipant participant, boolean unread );
 
    Message getLastMessage();
 
@@ -53,7 +54,7 @@ public interface Messages
    {
       ManyAssociation<Message> messages();
 
-      Message createdMessage( @Optional DomainEvent create, String id, String body, ConversationParticipant participant, boolean unread );
+      Message createdMessage( @Optional DomainEvent event, String id, String body, MessageType messageType, ConversationParticipant participant, boolean unread );
 
       Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant );
    }
@@ -73,32 +74,33 @@ public interface Messages
       @This
       Conversation conversation;
 
-      public Message createMessage( String body, ConversationParticipant participant ) throws IllegalArgumentException
+      public Message createMessage( String body, MessageType messageType, ConversationParticipant participant ) throws IllegalArgumentException
       {
-         return createMessage( body, participant, true );
+         return createMessage( body, messageType, participant, true );
       }
 
-      public Message createMessage( String body, ConversationParticipant participant, boolean unread ) throws IllegalArgumentException
+      public Message createMessage( String body, MessageType messageType, ConversationParticipant participant, boolean unread ) throws IllegalArgumentException
       {
          if (!participants.isParticipant(participant))
          {
             participants.addParticipant( participant );
          }
 
-         Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant, unread );
+         Message message = createdMessage( null, idGen.generate( Identity.class ), body, messageType, participant, unread );
 
          participants.receiveMessage(message);
 
          return message;
       }
 
-      public Message createdMessage( DomainEvent event, String id, String body, ConversationParticipant participant, boolean unread )
+      public Message createdMessage( DomainEvent event, String id, String body, MessageType messageType, ConversationParticipant participant, boolean unread )
       {
          EntityBuilder<Message> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Message.class, id );
          builder.instanceFor( Message.Data.class ).body().set( body );
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
          builder.instanceFor( Message.Data.class ).conversation().set( conversation );
+         builder.instanceFor( Message.Data.class ).messageType().set( messageType );
 
          if( unread )
          {
@@ -150,6 +152,7 @@ public interface Messages
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
          builder.instanceFor( Message.Data.class ).conversation().set( conversation );
+         builder.instanceFor( Message.Data.class ).messageType().set( MessageType.PLAIN );
 
          Message message = builder.newInstance();
          messages().add( message );
