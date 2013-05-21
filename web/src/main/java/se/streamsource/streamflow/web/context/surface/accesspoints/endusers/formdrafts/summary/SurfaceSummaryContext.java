@@ -404,6 +404,7 @@ public interface SurfaceSummaryContext
 
       private void mailFormPDF( String accessPointName, Date submittedOn, PDDocument document, List<AttachedFileValue> formAttachments, String... recipients )
       {
+         //TODO Create conversation for this message so we acctually are able to receive responses to this mail
          ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), locale );
 
          try
