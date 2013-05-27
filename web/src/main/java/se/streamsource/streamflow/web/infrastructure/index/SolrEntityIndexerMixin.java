@@ -96,44 +96,34 @@ public class SolrEntityIndexerMixin
    {
       try
       {
-         /*try
-         {*/
-            // Figure out what to update
-            List<String> deleted = null;
-            List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
-            for (EntityState entityState : entityStates)
+
+         // Figure out what to update
+         List<String> deleted = null;
+         List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
+         for (EntityState entityState : entityStates)
+         {
+            if (entityState.entityDescriptor().entityType().queryable())
             {
-               if (entityState.entityDescriptor().entityType().queryable())
+               if (entityState.status().equals( EntityStatus.REMOVED ))
                {
-                  if (entityState.status().equals( EntityStatus.REMOVED ))
-                  {
-                     if (deleted == null)
-                        deleted = new ArrayList<String>();
-                     deleted.add( entityState.identity().identity() );
-                  } else if (entityState.status().equals( EntityStatus.UPDATED ))
-                  {
-                     added.add( indexEntityState( entityState, server ) );
-                  } else if (entityState.status().equals( EntityStatus.NEW ))
-                  {
-                     added.add( indexEntityState( entityState, server ) );
-                  }
+                  if (deleted == null)
+                     deleted = new ArrayList<String>();
+                  deleted.add( entityState.identity().identity() );
+               } else if (entityState.status().equals( EntityStatus.UPDATED ))
+               {
+                  added.add( indexEntityState( entityState, server ) );
+               } else if (entityState.status().equals( EntityStatus.NEW ))
+               {
+                  added.add( indexEntityState( entityState, server ) );
                }
             }
+         }
 
-            // Send changes to Solr
-            if (deleted != null)
-               server.deleteById( deleted );
-            if (!added.isEmpty())
-               server.add( added );
-         /*}
-         // let EmbeddedSolrServer take care of commits with auto commit!!
-         finally
-         {
-            if (server != null)
-            {
-               server.commit( false, false );
-            }
-         }*/
+         // Send changes to Solr
+         if (deleted != null)
+            server.deleteById( deleted );
+         if (!added.isEmpty())
+            server.add( added );
       }
       catch (Throwable e)
       {
@@ -228,7 +218,15 @@ public class SolrEntityIndexerMixin
                   // if note is html formatted - remove html tags
                   if( "note".equals( name.toString() )  )
                   {
-                     if( Translator.HTML.equals( jsonObject.get( "contentType" ) ) )
+                     String contentType = "";
+                     try
+                     {
+                        contentType = (String)jsonObject.get( "contentType" );
+                     }catch (JSONException je )
+                     {
+                        //do nothing
+                     }
+                     if( Translator.HTML.equals( contentType ) )
                      {
                         input.addField( name.toString(), Translator.htmlToText( (String)jsonObject.get( name.toString() ) ) );
                      } else

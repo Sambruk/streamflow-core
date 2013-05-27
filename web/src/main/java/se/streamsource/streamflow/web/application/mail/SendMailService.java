@@ -35,6 +35,7 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
@@ -206,26 +207,16 @@ public interface SendMailService
 
                // alternative text/html content
                Multipart bodyText = new MimeMultipart("alternative");
-               MimeBodyPart messageBodyPart = new MimeBodyPart();
-               // Regular content
-               String mailBody = email.content().get() + (Strings.empty( email.footer().get() ) ? "" : "\r\n" + email.footer().get() );
-               if (email.contentType().get().equals("text/plain"))
-               {
-                  messageBodyPart.setText( mailBody, "UTF-8" );
-               } else
-               {
-                  messageBodyPart.setContent( mailBody, email.contentType().get());
-               }
-               bodyText.addBodyPart( messageBodyPart );
-               
-               // HTML content
-               if (!Strings.empty( email.contentHtml().get() ))
-               {
-                  //TODO add footer
-                  MimeBodyPart htmlMimeBodyPart = new MimeBodyPart();
-                  htmlMimeBodyPart.setContent( email.contentHtml().get(), "text/html; charset=UTF-8" );
-                  bodyText.addBodyPart( htmlMimeBodyPart );
-               }
+
+               //PLAIN Content
+               MimeBodyPart plainMimeBodyPart = new MimeBodyPart();
+               plainMimeBodyPart.setContent( Translator.htmlToText( email.content().get() ), "text/plain; charset=UTF-8" );
+               bodyText.addBodyPart( plainMimeBodyPart );
+
+               // HTML Content
+               MimeBodyPart htmlMimeBodyPart = new MimeBodyPart();
+               htmlMimeBodyPart.setContent( email.content().get(), "text/html; charset=UTF-8" );
+               bodyText.addBodyPart( htmlMimeBodyPart );
 
                wrap.setContent( bodyText );
 

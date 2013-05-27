@@ -195,7 +195,7 @@ public interface CreateCaseFromEmailService
                      Message message = null;
                      if (Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
                      {
-                        message = conversation.createMessage( email.contentHtml().get(), MessageType.HTML, participant );
+                        message = conversation.createMessage( email.content().get(), MessageType.HTML, participant );
                      } else
                      {
                         message = conversation.createMessage( email.content().get(), MessageType.PLAIN, participant );
@@ -337,17 +337,6 @@ public interface CreateCaseFromEmailService
 
             attachments.deleteAttachment(attachedFileValue.uri().get().substring("store:".length()));
          }
-
-         /*private AccessPoint getAccessPoint(AccessPoints.Data organization)
-         {
-            AccessPoints.Data aps = organization;
-            if (aps.accessPoints().count() > 0)
-            {
-               // TODO make this configurable
-               return aps.accessPoints().get(0);
-            }
-            return null;
-         }*/
       }
    }
 }

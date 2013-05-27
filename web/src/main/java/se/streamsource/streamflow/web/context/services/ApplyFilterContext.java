@@ -41,8 +41,10 @@ import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
 import se.streamsource.streamflow.api.administration.filter.RuleValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.Describable;
@@ -81,6 +83,7 @@ public class ApplyFilterContext
    private MailSender mailSender;
    private AttachmentStore attachmentStore;
    private ResourceBundle bundle;
+   private HtmlMailGenerator htmlGenerator;
 
    public ApplyFilterContext(@Structure Module module, @Uses MailSender mailSender, @Service AttachmentStore attachmentStore)
    {
@@ -89,6 +92,7 @@ public class ApplyFilterContext
       this.attachmentStore = attachmentStore;
       this.filterCheck = new FilterCheck();
       this.filterable = new Filterable();
+      this.htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
       this.bundle = ResourceBundle.getBundle( ApplyFilterContext.class.getName(), new Locale("SV","se") ); // TODO These texts need to use the locale for the user
    }
 
@@ -287,8 +291,8 @@ public class ApplyFilterContext
                // the default mail address from mail sender configuration
                builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
                builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
-               builder.prototype().content().set(bundle.getString( "message" ));
-               builder.prototype().contentType().set("text/plain");
+               builder.prototype().content().set( htmlGenerator.createMailContent( bundle.getString( "message" ), "" ) );
+               builder.prototype().contentType().set( Translator.HTML );
                builder.prototype().to().set(email.emailAddress().get());
 
                try
@@ -399,8 +403,7 @@ public class ApplyFilterContext
                // the default mail address from mail sender configuration
                builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
                builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
-               builder.prototype().content().set(bundle.getString( "message" ));
-               builder.prototype().contentType().set("text/plain");
+               builder.prototype().contentType().set( Translator.HTML );
                builder.prototype().to().set(email.emailAddress().get());
                StringBuffer notification = new StringBuffer();
                SimpleDateFormat dateFormat = new SimpleDateFormat( bundle.getString( "date_format" ) );
@@ -431,7 +434,7 @@ public class ApplyFilterContext
                   first = false;
                }
                                              
-               builder.prototype().content().set(notification.toString());
+               builder.prototype().content().set( htmlGenerator.createMailContent( notification.toString(), "" ) );
 
                try {
                   mailSender.sentEmail(null, builder.newInstance());

@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
@@ -51,9 +50,11 @@ import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -85,7 +86,6 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -171,23 +171,25 @@ public interface SurfaceSummaryContext
 
             try
             {
-               Template textTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturetextmail_sv.html" );
-               Template htmlTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturehtmlmail_sv.html" );
 
 
                Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
                String organisation = organizations.organization().get().getDescription();
                String id = ((CaseId.Data)aCase).caseId().get();
                String link = defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity)task ).identity().get();
-               String textMail = createFormatedMail( id, link, organisation, textTemplate );
-               String htmlMail = createFormatedMail( id, link, organisation, htmlTemplate );
+
+               VelocityContext context = new VelocityContext();
+               context.put( "organisation", organisation );
+               context.put( "id", id );
+               context.put( "link", link );
+
+               String htmlMail = module.objectBuilderFactory().newObject( HtmlMailGenerator.class ).createDoubleSignatureMail( context );
 
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
 
                builder.prototype().subject().set( organisation + " - " + bundle.getString( "signature_notification_subject" ) );
-               builder.prototype().content().set( textMail );
-               builder.prototype().contentType().set( "text/plain" );
-               builder.prototype().contentHtml().set( htmlMail );
+               builder.prototype().contentType().set( Translator.HTML );
+               builder.prototype().content().set( htmlMail );
                builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
 
                EmailValue email = builder.newInstance();
@@ -296,25 +298,6 @@ public interface SurfaceSummaryContext
          return task;
       }
 
-      private String createFormatedMail( String id, String link, String organisation, Template template)
-      {
-         VelocityContext context = new VelocityContext();
-         
-         context.put( "organisation", organisation );
-         context.put( "id", id );
-         context.put( "link", link );
-         StringWriter writer = new StringWriter();
-         try
-         {
-            template.merge( context, writer );
-
-            return writer.toString();
-         } catch (IOException e)
-         {
-            throw new IllegalArgumentException("Could not create html mail", e);
-         }
-      }
-
       public RequiredSignaturesValue signatures()
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
@@ -410,6 +393,7 @@ public interface SurfaceSummaryContext
          try
          {
             String id = addToAttachmentStore( document );
+            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
             for (String recipient : recipients)
             {
                ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class);
@@ -417,8 +401,8 @@ public interface SurfaceSummaryContext
                // leave from address and fromName empty to allow mail sender to pick up
                // default values from mail sender configuration
                builder.prototype().subject().set( accessPointName );
-               builder.prototype().content().set( bundle.getString( "mail_notification_body" ) );
-               builder.prototype().contentType().set("text/plain");
+               builder.prototype().content().set( htmlGenerator.createMailContent( bundle.getString( "mail_notification_body" ), "" ) );
+               builder.prototype().contentType().set( Translator.HTML);
                builder.prototype().to().set( recipient );
 
                List<AttachedFileValue> attachments = builder.prototype().attachments().get();
