@@ -206,6 +206,9 @@ public interface CaseCommandsContext
    @RequiresRemoved(false)
    public void markunread();
 
+   @RequiresStatus( OPEN )
+   @RequiresUnread(true)
+   @RequiresRemoved(false)
    public void read();
 
    abstract class Mixin
