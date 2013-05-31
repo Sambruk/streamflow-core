@@ -48,6 +48,8 @@ public interface Messages
 
    void createMessageFromDraft( ConversationParticipant participant );
 
+   void createMessageFromDraft( ConversationParticipant participant, MessageType messageType );
+
    boolean hasUnreadMessage();
 
    interface Data
@@ -56,7 +58,7 @@ public interface Messages
 
       Message createdMessage( @Optional DomainEvent event, String id, String body, MessageType messageType, ConversationParticipant participant, boolean unread );
 
-      Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant );
+      Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant, MessageType messageType );
    }
 
    abstract class Mixin
@@ -123,12 +125,17 @@ public interface Messages
 
       public void createMessageFromDraft( ConversationParticipant participant )
       {
+         createMessageFromDraft( participant, MessageType.PLAIN );
+      }
+
+      public void createMessageFromDraft( ConversationParticipant participant, MessageType messageType )
+      {
          if (!participants.isParticipant(participant))
          {
             participants.addParticipant( participant );
          }
 
-         Message message = createdMessageFromDraft( null, idGen.generate( Identity.class ), ((MessageDraft)conversation), participant );
+         Message message = createdMessageFromDraft( null, idGen.generate( Identity.class ), ((MessageDraft)conversation), participant, messageType );
          for( Attachment attachment : ((Attachments.Data)conversation).attachments().toList() )
          {
             message.addAttachment( attachment );
@@ -145,14 +152,14 @@ public interface Messages
 
       }
 
-      public Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant )
+      public Message createdMessageFromDraft( @Optional DomainEvent event, String id, MessageDraft draft, ConversationParticipant participant, MessageType messageType )
       {
          EntityBuilder<Message> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( Message.class, id );
          builder.instanceFor( Message.Data.class ).body().set( ((MessageDraft.Data)draft).draftmessage().get() );
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
          builder.instanceFor( Message.Data.class ).conversation().set( conversation );
-         builder.instanceFor( Message.Data.class ).messageType().set( MessageType.PLAIN );
+         builder.instanceFor( Message.Data.class ).messageType().set( messageType );
 
          Message message = builder.newInstance();
          messages().add( message );

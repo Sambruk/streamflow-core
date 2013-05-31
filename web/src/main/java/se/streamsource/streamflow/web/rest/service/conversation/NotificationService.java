@@ -156,7 +156,10 @@ public interface NotificationService
                if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
                {
                   sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
-                  footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
+                  if( messageData.sender().get() instanceof MailFooter )
+                  {
+                     footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
+                  }
                }
 
                String caseId = "n/a";

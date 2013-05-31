@@ -193,7 +193,7 @@ public class CaseCommandsContextTest
 
       // Check actions for new draft
       {
-         checkActions( caze, "delete", "read", "sendto" );
+         checkActions( caze, "delete", "sendto" );
       }
 
       // Send to project
@@ -212,7 +212,7 @@ public class CaseCommandsContextTest
 
       // Check actions for draft sent to project
       {
-         checkActions( caze, "delete", "read", "open", "sendto" );
+         checkActions( caze, "delete", "open", "sendto" );
       }
 
       // Select casetype
@@ -308,7 +308,7 @@ public class CaseCommandsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "read", "reopen" );
+         checkActions( caze, "reopen" );
       }
 
       // Reopen case
@@ -346,7 +346,7 @@ public class CaseCommandsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "read", "reopen" );
+         checkActions( caze, "reopen" );
       }
    }
 
