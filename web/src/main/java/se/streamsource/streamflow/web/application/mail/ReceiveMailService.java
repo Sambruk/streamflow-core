@@ -588,6 +588,7 @@ public interface ReceiveMailService
          // if contentHtml is not empty set the content type to text/html
          if( !Strings.empty( builder.prototype().contentHtml().get() ) )
          {
+            builder.prototype().content().set( builder.prototype().contentHtml().get() );
             builder.prototype().contentType().set( Translator.HTML );
          }
       }

@@ -182,7 +182,7 @@ public interface CreateCaseFromEmailService
 
                      if (Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
                      {
-                        caze.addNote( email.contentHtml().get(), email.contentType().get().toLowerCase() );
+                        caze.addNote( email.content().get(), email.contentType().get().toLowerCase() );
 
                      } else
                      {
