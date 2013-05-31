@@ -16,17 +16,18 @@
  */
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import java.util.Date;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+
+import java.util.Date;
 
 /**
  * Settings for where an attached file reside
  */
+@Mixins( AttachedFile.Mixin.class )
 public interface AttachedFile
 {
    /**
@@ -65,6 +66,8 @@ public interface AttachedFile
     */
    void changeSize(long size);
 
+   void deleteFile();
+
    interface Data
    {
       @UseDefaults
@@ -87,5 +90,22 @@ public interface AttachedFile
       void changedUri( @Optional DomainEvent event, String newMimeType);
       void changedModificationDate( @Optional DomainEvent event, Date newModificationDate);
       void changedSize(@Optional DomainEvent event, long size);
+
+      void deletedFile( @Optional DomainEvent event, String uri );
+   }
+
+   abstract class Mixin
+      implements AttachedFile, Data
+   {
+
+      public void deleteFile()
+      {
+         deletedFile( null, uri().get() );
+      }
+
+      public void deletedFile( @Optional DomainEvent event, String uri )
+      {
+
+      }
    }
 }
