@@ -261,7 +261,7 @@ public class CaseCommandsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "assign" );
+         checkActions( caze, "delete", "resolve", "read", "markread", "sendto", "restrict", "assign" );
       }
 
       // Assign case
@@ -283,7 +283,7 @@ public class CaseCommandsContextTest
 
       // Check assigned actions
       {
-         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "unassign" );
+         checkActions( caze, "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
       }
 
       // Resolve case
@@ -327,7 +327,7 @@ public class CaseCommandsContextTest
 
       // Check reopened actions
       {
-         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "unassign" );
+         checkActions( caze, "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
       }
 
       // Close
