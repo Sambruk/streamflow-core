@@ -522,7 +522,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (matches( withNames( "addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus", "changedPriority" ),
+      if (matches( withNames( "addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus", "changedPriority", "setUnread" ),
             transactions ))
       {
          refresh();

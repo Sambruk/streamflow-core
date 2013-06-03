@@ -52,6 +52,8 @@ public interface Messages
 
    boolean hasUnreadMessage();
 
+   void markRead();
+
    interface Data
    {
       ManyAssociation<Message> messages();
@@ -176,6 +178,14 @@ public interface Messages
                return ((Unread.Data) msg).unread().get();
             }
          }, messages() );
+      }
+
+      public void markRead()
+      {
+         for( Message message : messages() )
+         {
+            message.setUnread( false );
+         }
       }
    }
 }

@@ -115,7 +115,7 @@ public class CaseActionsView extends JPanel
       restrict,
       unrestrict,
       markunread,
-      read
+      markread
    }
 
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
@@ -461,7 +461,7 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task read( ActionEvent event )
+   public Task markread( ActionEvent event )
    {
       return new CommandTask()
       {
@@ -469,13 +469,13 @@ public class CaseActionsView extends JPanel
          public void command()
                throws Exception
          {
-            model.read();
+            model.markread();
          }
       };
    }
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formondelete", "reinstate", "restrict", "unrestrict", "markunread"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formondelete", "reinstate", "restrict", "unrestrict", "read" ), transactions ))
       {
          model.refresh();
       }
