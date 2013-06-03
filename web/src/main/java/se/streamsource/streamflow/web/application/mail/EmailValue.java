@@ -38,7 +38,7 @@ public interface EmailValue
    @Optional Property<String> subject();
    Property<String> content();
    Property<String> contentType();
-   @Optional Property<String> contentHtml();
+   @Deprecated @Optional Property<String> contentHtml();
    @Optional Property<String> messageId();
 
    @UseDefaults
@@ -47,6 +47,6 @@ public interface EmailValue
    @UseDefaults
    Property<Map<String,String>> headers();
 
-   @Optional @UseDefaults
+   @Deprecated @Optional @UseDefaults
    Property<String> footer();
 }

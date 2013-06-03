@@ -16,28 +16,6 @@
  */
 package se.streamsource.streamflow.web.application.dueon;
 
-import static org.qi4j.api.query.QueryExpressions.and;
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.gt;
-import static org.qi4j.api.query.QueryExpressions.le;
-import static org.qi4j.api.query.QueryExpressions.lt;
-import static org.qi4j.api.query.QueryExpressions.notEq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
@@ -63,12 +41,13 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -85,6 +64,17 @@ import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(DueOnNotificationJob.Mixin.class)
 public interface DueOnNotificationJob extends MailSender, Job, TransientComposite
@@ -203,8 +193,14 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       private void sendNotifications(List<DueOnNotification> notifications)
       {
          UserEntity administrator = module.unitOfWorkFactory().currentUnitOfWork().get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
+         HtmlMailGenerator mailGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
          for (DueOnNotification notification : notifications)
-         {                  
+         {
+            VelocityContext context = new VelocityContext();
+            context.put( "user", notification.getRecipient().getContact().name().get() );
+            context.put( "notification", notification );
+            context.put( "today", Strings.capitalize( (new SimpleDateFormat( "d':e' MMMM", locale )).format( new Date() )));
+
             ContactEmailDTO recipientEmail = notification.getRecipient().getContact().defaultEmail();
             if (recipientEmail != null)
             {
@@ -220,46 +216,14 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
 
                builder.prototype().to().set( recipientEmail.emailAddress().get() );
                builder.prototype().subject().set( bundle.getString( "mail.title" ));
-               builder.prototype().content().set( createFormatedReport(notification,"dueonnotificationtextmail_sv.html") );
-               builder.prototype().contentType().set( "text/plain" );
-               builder.prototype().contentHtml().set( createFormatedReport(notification,"dueonnotificationhtmlmail_sv.html") );
+               builder.prototype().contentType().set( Translator.HTML );
+               builder.prototype().content().set( mailGenerator.createDueOnNotificationMail( context ) );
 
                mailSender.sentEmail( null, builder.newInstance() );
             }
          }
       }
-      
-      private String createFormatedReport(DueOnNotification notification, String template)
-      {
-         VelocityContext context = new VelocityContext();
-         context.put( "user", notification.getRecipient().getContact().name().get() );
-         context.put( "notification", notification );
-         context.put( "today", Strings.capitalize( (new SimpleDateFormat( "d':e' MMMM", locale )).format( new Date() )));
-         StringWriter writer = new StringWriter();
-         try
-         {
-            velocity.evaluate(context, writer, "dueonnotificationmail", getTemplate( template, getClass() ));
 
-            return writer.toString();
-         } catch (IOException e)
-         {
-            throw new IllegalArgumentException("Could not create html mail", e);
-         }
-      }
-      
-      public static String getTemplate(String resourceName, Class resourceClass) throws IOException
-      {
-         StringBuilder template = new StringBuilder( "" );
-         InputStream in = resourceClass.getResourceAsStream( resourceName );
-         BufferedReader reader = new BufferedReader( new InputStreamReader( in, "UTF-8") );
-         String line;
-         while ((line = reader.readLine()) != null)
-            template.append( line + "\n" );
-         reader.close();
-
-         return template.toString();
-      }
-      
       private List<Contactable> resolveFunctionRecipients(List<Member> members)
       {
          List<Contactable> contacts = new ArrayList<Contactable>();

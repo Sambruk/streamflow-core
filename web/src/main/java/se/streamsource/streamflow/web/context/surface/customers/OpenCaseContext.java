@@ -16,11 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.surface.customers;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,11 +23,11 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.surface.api.OpenCaseDTO;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
@@ -49,6 +44,11 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Context for open case
@@ -125,7 +125,7 @@ public class OpenCaseContext
       Conversation conversation = conversations.createConversation( "Fråga", RoleMap.role( Creator.class ) );
       ConversationParticipant participant = RoleMap.role( ConversationParticipant.class );
       ((ConversationEntity) conversation).addParticipant( participant );
-      conversation.createMessage( message, participant );
+      conversation.createMessage( message, MessageType.PLAIN, participant );
       
    }
 

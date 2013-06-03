@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.util;
 
+import org.apache.tika.io.IOUtils;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.ContentHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +33,9 @@ import java.util.Map;
  */
 public class Translator
 {
+   public static String HTML = "text/html";
+   public static String PLAIN = "text/plain";
+
    public static String translate(String text, Map<String, String> translations)
    {
       return translate(text, translations, null);
@@ -58,6 +68,23 @@ public class Translator
          return MessageTemplate.text(translation, variables);
       } else
          return text;
+   }
+
+   public static String htmlToText( String html )
+   {
+      String result = html;
+
+         ContentHandler handler = new BodyContentHandler();
+         Metadata metadata = new Metadata();
+         try
+         {
+            new HtmlParser().parse( IOUtils.toInputStream( result ), handler, metadata, new ParseContext());
+            result = handler.toString();
+         } catch (Exception e)
+         {
+            //do nothing
+         }
+      return result;
    }
    
 }

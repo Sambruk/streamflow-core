@@ -27,12 +27,15 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
+import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormListDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.SecondSigneeInfoValue;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
@@ -65,6 +68,8 @@ public interface SubmittedFormsQueries
     * @return
     */
    Iterable<SubmittedFormValue> getLatestSubmittedForms();
+
+   AttachmentFieldSubmission getAttachmentFieldValue(String id);
 
    class Mixin
          implements SubmittedFormsQueries
@@ -195,6 +200,29 @@ public interface SubmittedFormsQueries
                return true;
             }
          }, forms);
+      }
+
+      public AttachmentFieldSubmission getAttachmentFieldValue(String id)
+      {
+
+         for (int i = 0; i < this.getSubmittedForms().forms().get().size(); i++)
+         {
+            for (SubmittedPageDTO submittedPageDTO : this.getSubmittedForm(i).pages().get())
+            {
+               for (FieldDTO fieldDTO : submittedPageDTO.fields().get())
+               {
+                  if (fieldDTO.fieldType().get().equals(AttachmentFieldValue.class.getName()))
+                  {
+                     if (!Strings.empty( fieldDTO.value().get() ))
+                     {
+                        AttachmentFieldSubmission submission = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldDTO.value().get());
+                        if (submission.attachment().get().identity().equals(id)) return submission;
+                     }
+                  }
+               }
+            }
+         }
+         return null;
       }
    }
 }

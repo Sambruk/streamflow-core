@@ -16,21 +16,16 @@
  */
 package se.streamsource.streamflow.web.context.surface.customers.conversation;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
@@ -40,6 +35,11 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * JAVADOC
@@ -86,7 +86,7 @@ public class MyCasesMessagesContext
    public void createmessage( StringValue message )
    {
       Messages messages = RoleMap.role( Messages.class );
-      messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
+      messages.createMessage( message.string().get(), MessageType.PLAIN, RoleMap.role( ConversationParticipant.class ) );
    }
 
 }

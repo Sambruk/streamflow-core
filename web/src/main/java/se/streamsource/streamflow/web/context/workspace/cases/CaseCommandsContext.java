@@ -63,6 +63,8 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -206,6 +208,15 @@ public interface CaseCommandsContext
    @RequiresRemoved(false)
    public void markunread();
 
+   @RequiresStatus( OPEN )
+   @RequiresUnread(true)
+   @RequiresRemoved(false)
+   public void markread();
+
+
+   @RequiresStatus( OPEN )
+   @RequiresUnread(true)
+   @RequiresRemoved(false)
    public void read();
 
    abstract class Mixin
@@ -486,6 +497,31 @@ public interface CaseCommandsContext
       public void markunread()
       {
          RoleMap.role( Case.class ).setUnread( true );
+      }
+
+      public void markread()
+      {
+         RoleMap.role( Case.class ).setUnread( false );
+
+         for ( Conversation conversation : RoleMap.role( Conversations.Data.class ).conversations() )
+         {
+            if( conversation.hasUnreadMessage() )
+            {
+               conversation.markRead();
+            }
+         }
+
+         int index = 0;
+         SubmittedForms submittedForms = RoleMap.role( SubmittedForms.class );
+         SubmittedForms.Data submittedFormsData = RoleMap.role( SubmittedForms.Data.class );
+         for( SubmittedFormValue submittedForm : submittedFormsData.submittedForms().get() )
+         {
+            if( submittedForm.unread().get() )
+            {
+               submittedForms.read( index );
+            }
+            index++;
+         }
       }
    }
 }

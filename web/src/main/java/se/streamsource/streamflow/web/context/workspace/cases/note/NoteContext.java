@@ -16,17 +16,11 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.note;
 
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
-
-import java.util.Date;
-
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -40,6 +34,10 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
+
+import java.util.Date;
+
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * The context for a note.
@@ -71,6 +69,7 @@ public interface NoteContext
          builder.prototype().creator().set( notes.getLastNote() != null ?
                module.unitOfWorkFactory().currentUnitOfWork()
                      .get( Describable.class, notes.getLastNote().createdBy().get().toString() ).getDescription() : "");
+         builder.prototype().contentType().set( notes.getLastNote() != null ? notes.getLastNote().contentType().get() : "text/plain" );
 
          builder.prototype().id().set( "n/a" );
          builder.prototype().href().set( "addnote" );
@@ -91,6 +90,8 @@ public interface NoteContext
             linkBuilder.prototype().creator().set( module.unitOfWorkFactory().currentUnitOfWork()
                      .get( Describable.class, note.createdBy().get().toString() ).getDescription() );
 
+            linkBuilder.prototype().contentType().set( notes.getLastNote() != null ? notes.getLastNote().contentType().get() : "text/plain" );
+
             linkBuilder.prototype().id().set( "n/a" );
             linkBuilder.prototype().href().set( "addnote" );
 
@@ -103,7 +104,7 @@ public interface NoteContext
       public void addnote( NoteDTO newNote )
       {
          Notes notes = RoleMap.role( Notes.class );
-         notes.addNote( newNote.note().get() );
+         notes.addNote( newNote.note().get(), newNote.contentType().get() );
       }
    }
 }

@@ -22,9 +22,10 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
@@ -73,7 +74,14 @@ public class MessagesContext
                : EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
          builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
 
-         builder.prototype().text().set( message.translateBody(translations));
+         String text = message.translateBody( translations );
+
+         if( MessageType.HTML.equals( ((MessageEntity) message).messageType().get() ))
+         {
+            text = Translator.htmlToText( text );
+         }
+
+         builder.prototype().text().set( text );
          builder.prototype().href().set( EntityReference.getEntityReference( message ).identity() );
          builder.prototype().id().set( EntityReference.getEntityReference( message ).identity() );
          builder.prototype(  ).hasAttachments().set( message.hasAttachments() );
@@ -84,13 +92,13 @@ public class MessagesContext
       return links.newLinks();
    }
 
-   @RequiresRemoved(false)
+   /*@RequiresRemoved(false)
    @RequiresStatus( OPEN )
    public void createmessage( StringValue message )
    {
       Messages messages = RoleMap.role( Messages.class );
       messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
-   }
+   }*/
 
    @RequiresRemoved(false)
    @RequiresStatus( OPEN )

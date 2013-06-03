@@ -527,7 +527,7 @@ public class StreamflowApplication
 
    public long markReadTimeout()
    {
-      return accountSelector.getSelectedAccount().getProfileModel().getProfile().markReadTimeout().get() * 1000;
+      return accountSelector.getSelectedAccount().getProfileModel().getIndex().markReadTimeout().get() * 1000;
    }
 
    public void callRefresh()

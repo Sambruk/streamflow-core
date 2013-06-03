@@ -16,11 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -55,6 +57,10 @@ public interface Message
 
       @Immutable
       Property<String> body();
+
+      @UseDefaults
+      @Immutable
+      Property<MessageType> messageType();
    }
 
    abstract class Mixin

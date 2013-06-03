@@ -16,15 +16,6 @@
  */
 package se.streamsource.streamflow.web.rest.resource.workspace.cases;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -38,7 +29,6 @@ import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
@@ -46,6 +36,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.workspace.cases.attachment.AttachmentsContext;
+import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -53,6 +44,15 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -111,7 +111,13 @@ public class AttachmentsResource
                  builder.prototype().size().set( data.size().get() );
                  builder.prototype().modificationDate().set( data.modificationDate().get() );
                  builder.prototype().mimeType().set( data.mimeType().get() );
-                 builder.prototype().rel().set( "conversation" );
+                 if( partOfFormSubmission( attachments, attachment ) )
+                 {
+                     builder.prototype().rel().set( "submittedform" );
+                 } else
+                 {
+                    builder.prototype().rel().set( "conversation" );
+                 }
 
                  links.addLink( builder.newInstance() );
               }
@@ -125,6 +131,19 @@ public class AttachmentsResource
       }
 
       return links.newLinks();
+   }
+
+   private boolean partOfFormSubmission( Attachments attachments, Attachment attachment )
+   {
+      try
+      {
+        return ((SubmittedFormsQueries)attachments).getAttachmentFieldValue( ((Identity)attachment).identity().get() ) != null;
+      } catch( ClassCastException cce )
+      {
+         // do nothing
+         // we are on the wrong resource level - probably organization attachments like pdf templates
+      }
+      return false;
    }
 
    public void createattachment() throws IOException, URISyntaxException

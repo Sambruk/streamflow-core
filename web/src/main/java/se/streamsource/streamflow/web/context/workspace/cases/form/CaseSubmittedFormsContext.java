@@ -26,13 +26,9 @@ import org.qi4j.api.io.Input;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.SubmittedFormsListDTO;
-import se.streamsource.streamflow.api.workspace.cases.form.SubmittedPageDTO;
-import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -76,7 +72,8 @@ public class CaseSubmittedFormsContext
 
    public Input<ByteBuffer, IOException> download( @Name("id") String id ) throws IOException, URISyntaxException
    {
-      AttachmentFieldSubmission value = getAttachmentFieldValue( id );
+      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
+      AttachmentFieldSubmission value = forms.getAttachmentFieldValue( id );
       if ( value != null )
       {
          AttachedFile.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( AttachedFile.Data.class, id );
@@ -88,30 +85,6 @@ public class CaseSubmittedFormsContext
          // 404
          throw new IllegalArgumentException("No such attached file:"+id);
       }
-   }
-
-   // find the attachment in all fields every submitted form on this case
-   private AttachmentFieldSubmission getAttachmentFieldValue(String id)
-   {
-      SubmittedFormsQueries forms = RoleMap.role(SubmittedFormsQueries.class);
-      for (int i = 0; i < forms.getSubmittedForms().forms().get().size(); i++)
-      {
-         for (SubmittedPageDTO submittedPageDTO : forms.getSubmittedForm(i).pages().get())
-         {
-            for (FieldDTO fieldDTO : submittedPageDTO.fields().get())
-            {
-               if (fieldDTO.fieldType().get().equals(AttachmentFieldValue.class.getName()))
-               {
-                  if (!Strings.empty(fieldDTO.value().get()))
-                  {
-                     AttachmentFieldSubmission submission = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldDTO.value().get());
-                     if (submission.attachment().get().identity().equals(id)) return submission;
-                  }
-               }
-            }
-         }
-      }
-      return null;
    }
 
    public void resenddoublesignemail( @Name("secondsigntaskref") String secondsigntaskref )

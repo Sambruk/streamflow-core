@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
+import se.streamsource.streamflow.client.Icons;
 
 import java.text.DateFormat;
 import java.util.Comparator;
@@ -43,7 +44,7 @@ public class AttachmentsTableFormatter
    public AttachmentsTableFormatter()
    {
       columnClasses = new Class[] {
-            Boolean.class,
+            Icons.class,
             String.class,
             String.class,
             Date.class
@@ -75,7 +76,14 @@ public class AttachmentsTableFormatter
       switch (i)
       {
          case 0:
-            return attachmentDTO.rel().get().equals( "conversation" );
+            String rel = attachmentDTO.rel().get();
+            if( "attachment".equals( rel ) )
+               return Icons.attachments;
+            else if( "conversation".equals( rel ) )
+               return Icons.conversations;
+            else if( "submittedform".equals( rel ) )
+               return Icons.formSubmitted;
+            break;
 
          case 1:
          {

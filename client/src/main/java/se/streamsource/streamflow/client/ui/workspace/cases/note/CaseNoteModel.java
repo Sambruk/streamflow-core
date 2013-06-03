@@ -72,6 +72,7 @@ public class CaseNoteModel extends Observable
 
       ValueBuilder<NoteDTO> builder = module.valueBuilderFactory()
             .newValueBuilder( NoteDTO.class ).withPrototype( note );
+      builder.prototype().contentType().set( note.contentType().get() );
       client.postCommand( "addnote", builder.newInstance() );
    }
 

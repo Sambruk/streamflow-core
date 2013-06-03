@@ -14,31 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.workspace.cases.general;
-
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import se.streamsource.dci.value.link.LinkValue;
-
-import java.util.Date;
+package se.streamsource.streamflow.api.workspace.cases.conversation;
 
 /**
- * Contains all data related to a note.
+ *
  */
-public interface NoteDTO
-   extends LinkValue
+public enum MessageType
 {
-
-
-   Property<String> note();
-
-   Property<Date> createdOn();
-
-   Property<String> creator();
-
-   @Optional
-   @UseDefaults
-   Property<String> contentType();
-
+   PLAIN, HTML, SYSTEM
 }

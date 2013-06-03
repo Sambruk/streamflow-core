@@ -40,7 +40,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.util.MessageTemplate;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
@@ -138,7 +140,7 @@ public interface NotificationService
          public void receivedMessage( DomainEvent event, Message message )
          {
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
+            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
             try
             {
                Message.Data messageData = (Message.Data) message;
@@ -154,7 +156,10 @@ public interface NotificationService
                if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
                {
                   sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
-                  footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
+                  if( messageData.sender().get() instanceof MailFooter )
+                  {
+                     footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
+                  }
                }
 
                String caseId = "n/a";
@@ -192,7 +197,6 @@ public interface NotificationService
                   {
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
                      builder.prototype().fromName().set( sender );
-                     builder.prototype().footer().set( footer );
 
                      if (emailAccessPoint != null)
                      {
@@ -203,8 +207,8 @@ public interface NotificationService
       //               builder.prototype().replyTo();
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );
                      builder.prototype().subject().set( subject );
-                     builder.prototype().content().set( formattedMsg );
-                     builder.prototype().contentType().set( "text/plain" );
+                     builder.prototype().content().set( htmlGenerator.createMailContent( formattedMsg, footer ) );
+                     builder.prototype().contentType().set( Translator.HTML );
 
                      // add message attachments if any
                      if ( message.hasAttachments()) {

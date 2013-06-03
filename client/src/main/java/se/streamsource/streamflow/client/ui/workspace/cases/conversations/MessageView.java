@@ -24,6 +24,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
@@ -38,11 +39,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -70,7 +66,7 @@ public class MessageView extends JPanel
    private ValueBinder valueBinder;
    private MessageModel model;
 
-   private StyledDocument doc;
+   //private StyledDocument doc;
 
    public MessageView( @Service final ApplicationContext context,
                             @Structure Module module,
@@ -127,11 +123,12 @@ public class MessageView extends JPanel
       messageDetailButtonPanel.add(messageDetailsLabelPanel, BorderLayout.WEST);
 
       showMessage = new JTextPane();
-      showMessage.setContentType("text/plain");
+      //showMessage.setContentType("text/plain");
+      valueBinder.bind( "text", showMessage );
       showMessage.setEditable(false);
       messageShowScroll.getViewport().add(showMessage);
 
-      doc = showMessage.getStyledDocument();
+     /* doc = showMessage.getStyledDocument();
       Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
       Style regular = doc.addStyle("regular", def);
@@ -142,6 +139,7 @@ public class MessageView extends JPanel
 
       s = doc.addStyle("bold", regular);
       StyleConstants.setBold(s, true);
+      */
 
       add( messageShowScroll, BorderLayout.CENTER );
       add( messageDetailButtonPanel, BorderLayout.NORTH );
@@ -151,16 +149,23 @@ public class MessageView extends JPanel
 
    public void refresh()
    {
-      showMessage.setText( null );
+      //showMessage.setText( null );
       model.refresh();
+      if(MessageType.HTML.equals( model.getMessageDTO().messageType().get() ) )
+      {
+         showMessage.setContentType( "text/html" );
+      } else
+      {
+         showMessage.setContentType( "text/plain" );
+      }
       valueBinder.update( model.getMessageDTO() );
-      try
+      /*try
       {
          doc.insertString(0, model.getMessageDTO().text().get(), doc.getStyle("regular"));
       } catch (BadLocationException e)
       {
          e.printStackTrace();
-      }
+      }*/
       createdOnLabelValue.setText( DateFormats.getFullDateTimeValue(
             model.getMessageDTO().createdOn().get(), Locale.getDefault() ) );
 
