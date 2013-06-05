@@ -187,9 +187,10 @@ public class FormPageContext
             textBuilder.prototype().width().set( 30 );
             value = textBuilder.newInstance();
             break;
-         case geolocation:
-            value = vbf.newValue( GeoLocationFieldValue.class );
-            break;
+// Postpone to 1.12           
+//         case geolocation:
+//            value = vbf.newValue( GeoLocationFieldValue.class );
+//            break;
       }
       return value;
    }

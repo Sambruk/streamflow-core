@@ -240,6 +240,7 @@
 							<tr>
 								<th class="stats-label"><span class="expand-all-labels"
 									title="Visa alla etiketter">+</span></th>
+								<th>Ärendetyp</th>
 								<th>Totalt</th>
 								<c:forEach var="period" items="${periods}">
 									<th><c:out value="${period}" /></th>
@@ -249,31 +250,46 @@
 						<tbody>
 							<c:forEach var="caseCount" items="${result.caseCountByCaseType}"
 								varStatus="status">
-
-								<tr
-									class="casetype-stats<c:if test="${status.last}"> stats-summary</c:if>">
-									<td class="stats-label" title="Ärendetyp"><c:if
-											test="${!empty result.caseCountByLabelPerCaseType.get(caseCount.name)}">
-											<span class="expand-labels" title="Visa etiketter">+</span>
-										</c:if> <c:out value="${caseCount.name}" /></td>
-									<td><c:out value="${caseCount.total}" /></td>
-									<c:forEach var="period" items="${caseCount.values}">
+								
+								<c:choose>
+      								<c:when test="${status.last}">
+									<tr class="casetype-stats stats-summary">
+										<td></td>
+										<td class="stats-label" title="Ärendetyp"><c:out value="${caseCount.name}" /></td>
+										<td><c:out value="${caseCount.total}" /></td>
+										<c:forEach var="period" items="${caseCount.values}">
 										<td><c:out value="${period.count}" /></td>
-									</c:forEach>
-								</tr>
-
-								<c:forEach var="labelCaseCount"
-									items="${result.caseCountByLabelPerCaseType.get(caseCount.name)}">
-
-									<tr class="label-stats" style="display: none;">
-										<td class="stats-label" title="Etikett"><c:out
-												value="${labelCaseCount.name}" /></td>
-										<td><c:out value="${labelCaseCount.total}" /></td>
-										<c:forEach var="period" items="${labelCaseCount.values}">
-											<td><c:out value="${period.count}" /></td>
 										</c:forEach>
 									</tr>
-								</c:forEach>
+									</c:when>
+									<c:otherwise>
+										<tr class="casetype-stats">
+											<td>
+												<c:if test="${not empty result.caseCountByLabelPerCaseType[caseCount.name]}">
+													<span class="expand-labels" title="Visa etiketter">+</span>
+												</c:if>
+											</td>
+											<tdclass="stats-label" title="Ärendetyp"><c:out value="${caseCount.name}" /></td>
+											<td><c:out value="${caseCount.total}" /></td>
+											<c:forEach var="period" items="${caseCount.values}">
+											<td><c:out value="${period.count}" /></td>
+											</c:forEach>
+										</tr>
+										<c:forEach var="labelCaseCount"
+											items="${result.caseCountByLabelPerCaseType[caseCount.name]}">
+		
+											<tr class="label-stats" style="display: none;">
+												<td></td>
+												<td class="stats-label" title="Etikett"><c:out
+														value="${labelCaseCount.name}" /></td>
+												<td><c:out value="${labelCaseCount.total}" /></td>
+												<c:forEach var="period" items="${labelCaseCount.values}">
+													<td><c:out value="${period.count}" /></td>
+												</c:forEach>
+											</tr>
+										</c:forEach>
+									</c:otherwise>
+								</c:choose>
 							</c:forEach>
 						</tbody>
 					</table>
