@@ -95,13 +95,64 @@ public class StatisticController
 
             createWorkbookSheet( workbook, "Ägare", criteria.getPeriods(), statistics.getCaseCountByOuOwner() );
 
-            createWorkbookSheet( workbook, "Ärendetypen", criteria.getPeriods(), statistics.getCaseCountByCaseType() );
+            createWorkbookSheet( workbook, "Ärendetyp", criteria.getPeriods(), statistics.getCaseCountByCaseType() );
+            
+            createWorkbookSheet( workbook, "Ärendetyp med etiketter", criteria.getPeriods(), statistics.getCaseCountByCaseType(), statistics.getCaseCountByLabelPerCaseType());
 
             response.setHeader( "Content-Disposition",
                   "attachment; filename=\"" + "StreamflowStatistics_" + criteria.getFormattedFromDate() + "_"
                         + criteria.getFormattedToDate() + ".xls\"" );
          }
 
+         private void createWorkbookSheet(HSSFWorkbook workbook, String name, String[] periods,
+               List<CaseCount> caseCounts, Map<String, List<CaseCount>> caseCountsByLabel)
+         {
+            // create a sheet
+            HSSFSheet summary = workbook.createSheet( name );
+
+            HSSFRow header = summary.createRow( 0 );
+            int count = 0;
+            header.createCell( count++ ).setCellValue( "Ärendetyp" );
+            header.createCell( count++ ).setCellValue( "Etikett" );
+            header.createCell( count++ ).setCellValue( "Total" );
+
+            for (String period : periods)
+            {
+               header.createCell( count++ ).setCellValue( period );
+            }
+
+            int rowNum = 1;
+            
+            for (CaseCount caseCount : caseCounts)
+            {
+               count = 0;
+               HSSFRow row = summary.createRow( rowNum++ );
+               row.createCell( count++ ).setCellValue( caseCount.getName() );
+               row.createCell( count++ ).setCellValue( "" );
+               row.createCell( count++ ).setCellValue( caseCount.getTotal() );
+
+               for (Period period : caseCount.getValues())
+               {
+                  row.createCell( count++ ).setCellValue( period.getCount() );
+               }
+               
+               if (caseCountsByLabel.get( caseCount.getName() ) != null) {
+                  for (CaseCount labelCaseCount : caseCountsByLabel.get( caseCount.getName() )) {
+                     count = 0;
+                     HSSFRow newRow = summary.createRow( rowNum++ );
+                     newRow.createCell( count++ ).setCellValue( "" );
+                     newRow.createCell( count++ ).setCellValue( labelCaseCount.getName() );
+                     newRow.createCell( count++ ).setCellValue( labelCaseCount.getTotal() );
+   
+                     for (Period period : labelCaseCount.getValues())
+                     {
+                        newRow.createCell( count++ ).setCellValue( period.getCount() );
+                     }
+                  }
+               }
+            }
+         }
+         
          private void createWorkbookSheet(HSSFWorkbook workbook, String name, String[] periods,
                List<CaseCount> caseCounts)
          {
