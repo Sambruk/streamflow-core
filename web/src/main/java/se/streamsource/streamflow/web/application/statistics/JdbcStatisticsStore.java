@@ -107,7 +107,7 @@ public interface JdbcStatisticsStore
                }
             } );
 
-            databases.update( "INSERT INTO cases VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Databases.StatementVisitor()
+            databases.update( "INSERT INTO cases VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Databases.StatementVisitor()
             {
                public void visit( PreparedStatement statement ) throws SQLException
                {
@@ -115,7 +115,6 @@ public interface JdbcStatisticsStore
                   statement.setString( idx++, caseStatistics.identity().get() );
                   statement.setString( idx++, caseStatistics.caseId().get() );
                   statement.setString( idx++, caseStatistics.description().get() );
-                  statement.setString( idx++, caseStatistics.note().get() );
                   statement.setString( idx++, caseStatistics.resolutionId().get() );
                   statement.setTimestamp(  idx++, new java.sql.Timestamp( caseStatistics.createdOn().get().getTime() ) );
                   statement.setTimestamp( idx++, new java.sql.Timestamp( caseStatistics.closedOn().get().getTime() ) );
@@ -126,7 +125,10 @@ public interface JdbcStatisticsStore
                   statement.setString( idx++, caseStatistics.caseTypeOwnerId().get() );
                   statement.setString( idx++, caseStatistics.projectId().get() );
                   statement.setString( idx++, caseStatistics.organizationalUnitId().get() );
-                  statement.setString( idx, caseStatistics.groupId().get() );
+                  statement.setString( idx++, caseStatistics.groupId().get() );
+                  statement.setTimestamp(  idx++, caseStatistics.dueOn().get() != null ? new java.sql.Timestamp( caseStatistics.dueOn().get().getTime() ) : null );
+                  statement.setString( idx, caseStatistics.priority().get() );
+                  
                }
             } );
 

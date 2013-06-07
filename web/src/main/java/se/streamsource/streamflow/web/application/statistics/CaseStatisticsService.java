@@ -80,6 +80,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -529,8 +530,6 @@ public interface CaseStatisticsService
 
          prototype.identity().set(aCase.identity().get());
          prototype.description().set(aCase.getDescription() == null ? "" : aCase.getDescription() );
-         NotesTimeLine latestNote = (NotesTimeLine)aCase.notes().get();
-         prototype.note().set( (latestNote == null || latestNote.getLastNote() == null) ? "" : latestNote.getLastNote().note().get() );
          Assignee assignee = aCase.assignedTo().get();
          prototype.assigneeId().set(((Identity) assignee).identity().get());
          prototype.caseId().set(aCase.caseId().get());
@@ -538,6 +537,11 @@ public interface CaseStatisticsService
          Date closeDate = aCase.closedOn().get();
          prototype.closedOn().set(new Date(closeDate.getTime()));
          prototype.duration().set(closeDate.getTime() - aCase.createdOn().get().getTime());
+         prototype.dueOn().set(aCase.dueOn().get());
+         if (aCase.priority().get() != null)
+         {
+            prototype.priority().set(aCase.priority().get().getDescription());
+         }
 
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
