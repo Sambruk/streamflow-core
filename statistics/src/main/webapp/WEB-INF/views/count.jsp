@@ -240,7 +240,7 @@
 							<tr>
 								<th class="stats-label"><span class="expand-all-labels"
 									title="Visa alla etiketter">+</span></th>
-								<th>Ärendetyp</th>
+								<th class="stats-label">Ärendetyp</th>
 								<th>Totalt</th>
 								<c:forEach var="period" items="${periods}">
 									<th><c:out value="${period}" /></th>
@@ -264,12 +264,12 @@
 									</c:when>
 									<c:otherwise>
 										<tr class="casetype-stats">
-											<td>
+											<td class="table-stats-plus">
 												<c:if test="${not empty result.caseCountByLabelPerCaseType[caseCount.name]}">
 													<span class="expand-labels" title="Visa etiketter">+</span>
 												</c:if>
 											</td>
-											<tdclass="stats-label" title="Ärendetyp"><c:out value="${caseCount.name}" /></td>
+											<td class="stats-label" title="Ärendetyp"><c:out value="${caseCount.name}" /></td>
 											<td><c:out value="${caseCount.total}" /></td>
 											<c:forEach var="period" items="${caseCount.values}">
 											<td><c:out value="${period.count}" /></td>

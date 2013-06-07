@@ -184,6 +184,10 @@ select.span2.caseTypeId {
 	text-align: right;
 }
 
+td.table-stats-plus {
+	text-align: left;
+}
+
 .table-stats td.stats-label,.table-stats th.stats-label {
 	text-align: left;
 }
@@ -193,7 +197,7 @@ tr.stats-summary {
 }
 
 tr.label-stats {
-	font-size: 10px;
+	font-style: italic;
 }
 
 tr.label-stats td.stats-label {
