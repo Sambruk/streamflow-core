@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.application.defaults;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
-
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,9 +26,10 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
@@ -53,6 +52,8 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
+
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * A service holding system default configuration properties.
@@ -127,11 +128,20 @@ public interface SystemDefaultsService
             caze.caselog().get().addTypedEntry( "{receivererror,description=Could not parse email.}", CaseLogEntryTypes.system );
 
             caze.changeDescription( email.subject().get() );
-            caze.addNote( email.content().get() );
 
             // Create conversation
             Conversation conversation = caze.createConversation( email.subject().get(), (Creator) user );
-            conversation.createMessage( email.content().get(), participant );
+
+            if( Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
+            {
+               caze.addNote( email.contentHtml().get(), Translator.HTML );
+               conversation.createMessage( email.content().get(), MessageType.HTML, participant );
+            } else
+            {
+               caze.addNote( email.content().get(), Translator.PLAIN );
+               conversation.createMessage( email.content().get(), MessageType.PLAIN, participant );
+            }
+
 
             // Create attachments
             for (AttachedFileValue attachedFileValue : email.attachments().get())

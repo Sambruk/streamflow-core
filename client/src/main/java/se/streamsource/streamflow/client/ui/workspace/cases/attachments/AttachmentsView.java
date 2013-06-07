@@ -44,7 +44,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -127,7 +126,16 @@ public class AttachmentsView
       StreamflowButton removeButton = new StreamflowButton(am.get("remove"));
       toolbar.add(removeButton);
       toolbar.add(new StreamflowButton(am.get("open")));
-      attachments.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove"), am.get("open")));
+      attachments.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "open" ) ) );
+      attachments.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")){
+
+         @Override
+         public boolean isSelectedValueValid( javax.swing.Action action )
+         {
+            return !attachments.getValueAt( attachments.convertRowIndexToModel( attachments.getSelectedRow() ), 0 ).equals( Icons.formSubmitted );
+         }
+      });
+
       attachmentsModel.addObserver(new RefreshComponents().visibleOn("createattachment", addButton, removeButton));
 
       attachments.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "open");
@@ -156,8 +164,22 @@ public class AttachmentsView
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
 
-            ImageIcon icon = i18n.icon( Icons.conversations, 11 );
-            JLabel iconLabel = (Boolean) value ? new JLabel( icon ) : new JLabel( " " );
+            JLabel iconLabel = new JLabel( " " );
+            switch ( (Icons)value )
+            {
+               case attachments:
+                  iconLabel = new JLabel( i18n.icon( (Icons)value, 11 ) );
+                  break;
+
+               case conversations:
+                  iconLabel = new JLabel( i18n.icon( (Icons)value, 11 ) );
+                  break;
+
+               case formSubmitted:
+                  iconLabel = new JLabel( i18n.icon( (Icons)value, 11 ) );
+                  break;
+            }
+
             iconLabel.setOpaque( true );
 
             if (isSelected)
@@ -235,7 +257,7 @@ public class AttachmentsView
       {
          AttachmentDTO attachment = attachmentsModel.getEventList().get(attachments.convertRowIndexToModel(i));
 
-         return new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), this, attachmentsModel );
+         return new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), this, attachmentsModel, dialogs );
       }
 
       return null;

@@ -28,6 +28,7 @@ import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.BorderFactory;
@@ -44,6 +45,9 @@ public class MessageAttachmentsView
 {
    @Structure
    Module module;
+
+   @Service
+   DialogService dialogs;
 
    private AttachmentsModel model;
 
@@ -69,7 +73,7 @@ public class MessageAttachmentsView
          {
             public void actionPerformed( ActionEvent e )
             {
-               new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageAttachmentsView.this, model ).execute();
+               new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageAttachmentsView.this, model, dialogs ).execute();
             }
          } );
          add( attachmentButton );

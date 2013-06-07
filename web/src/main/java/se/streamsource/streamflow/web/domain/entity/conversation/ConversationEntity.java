@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.This;
 
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
@@ -61,18 +62,18 @@ public interface ConversationEntity
       @This
       Conversation conversation;
       
-      public Message createMessage(String body, ConversationParticipant participant)
+      public Message createMessage(String body, MessageType messageType, ConversationParticipant participant)
       {
          CaseLoggable.Data caseLoggable = RoleMap.role( CaseLoggable.Data.class );
          caseLoggable.caselog().get().addTypedEntry( "{createMessage,topic=" + conversation.getDescription() + "}" , CaseLogEntryTypes.conversation);
-         return next.createMessage( body, participant );
+         return next.createMessage( body, messageType, participant );
       }
 
-      public Message createMessage( String body, ConversationParticipant participant, boolean unread )
+      public Message createMessage( String body, MessageType messageType, ConversationParticipant participant, boolean unread )
       {
          CaseLoggable.Data caseLoggable = RoleMap.role( CaseLoggable.Data.class );
          caseLoggable.caselog().get().addTypedEntry( "{createMessage,topic=" + conversation.getDescription() + "}" , CaseLogEntryTypes.conversation);
-         return next.createMessage( body, participant, unread );
+         return next.createMessage( body, messageType, participant, unread );
       }
 
       public void createMessageFromDraft( ConversationParticipant participant )

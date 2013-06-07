@@ -24,7 +24,7 @@ import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
- * This interface is used to determine if an implementor has been read( acknowledged ) or not.
+ * This interface is used to determine if an implementer has been read( acknowledged ) or not.
  */
 @Mixins(Unread.Mixin.class)
 public interface Unread
@@ -49,7 +49,8 @@ public interface Unread
 
       public void setUnread( boolean unread )
       {
-         setUnread( null, unread );
+         if( new Boolean( unread ).compareTo( data.unread().get() ) != 0 )
+            setUnread( null, unread );
       }
 
       public boolean isUnread()

@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -54,7 +55,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -87,7 +88,7 @@ public class CaseNoteView
    private ActionBinder actionBinder;
 
    private CaseNoteModel model;
-   private JTextArea note;
+   private JTextPane note;
 
    private JDialog popup;
 
@@ -136,11 +137,11 @@ public class CaseNoteView
       formBuilder.append( allNotesBtn );
 
       JScrollPane textScroll = null;
-      formBuilder.add( textScroll = new JScrollPane( valueBinder.bind( "note", actionBinder.bind( "addNote",  note = new JTextArea() ) ) ),
+      formBuilder.add( textScroll = new JScrollPane( valueBinder.bind( "note", actionBinder.bind( "addNote",  note = new JTextPane() ) ) ),
             new CellConstraints( 1, 2, 5, 1, CellConstraints.FILL, CellConstraints.FILL ) );
       textScroll.setPreferredSize( new Dimension( 210, 120 ) );
-      note.setLineWrap( true );
-      note.setWrapStyleWord( true );
+      //note.setLineWrap( true );
+      //note.setWrapStyleWord( true );
 
       textScroll.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
       textScroll.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
@@ -163,7 +164,7 @@ public class CaseNoteView
          public void command()
                throws Exception
          {
-            model.addNote( ((JTextArea) event.getSource()).getText() );
+            model.addNote( ((JTextPane) event.getSource()).getText() );
          }
       };
    }
@@ -178,6 +179,7 @@ public class CaseNoteView
    public void refresh()
    {
       model.refresh();
+      note.setContentType( Strings.empty( model.getNote().contentType().get() ) ? "text/plain" : "text/html" );
       valueBinder.update( model.getNote() );
    }
 

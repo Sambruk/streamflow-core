@@ -18,7 +18,6 @@ package se.streamsource.streamflow.client.util;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
 import org.restlet.representation.Representation;
@@ -35,7 +34,6 @@ import java.io.IOException;
  */
 public class OpenAttachmentTask extends Task<File, Void>
 {
-   @Service
    DialogService dialogs;
    
    private final String relativePath;
@@ -43,13 +41,14 @@ public class OpenAttachmentTask extends Task<File, Void>
    private Downloadable download;
    private String fileName;
 
-   public OpenAttachmentTask(String fileName, String relativePath, Component view, Downloadable download )
+   public OpenAttachmentTask(String fileName, String relativePath, Component view, Downloadable download, DialogService dialogs )
    {
       super( Application.getInstance());
       this.fileName = fileName;
       this.relativePath = relativePath;
       this.view = view;
       this.download = download;
+      this.dialogs = dialogs;
 
       setUserCanCancel(false);
    }
@@ -59,10 +58,12 @@ public class OpenAttachmentTask extends Task<File, Void>
    {
       setMessage(getResourceMap().getString("description"));
 
-      String[] fileNameParts = fileName.split("\\.");
+      String name = fileName.substring( 0, fileName.lastIndexOf( '.' ) );
+      String type = fileName.substring( fileName.lastIndexOf( '.' ) );
+
       Representation representation = download.download(relativePath);
 
-      File file = File.createTempFile(fileNameParts[0] + "_", "." + fileNameParts[1]);
+      File file = File.createTempFile( name + "_", type );
 
       Inputs.byteBuffer( representation.getStream(), 8192 ).transferTo( Outputs.byteBuffer( file ));
 
@@ -84,7 +85,7 @@ public class OpenAttachmentTask extends Task<File, Void>
             desktop.open(file);
          } catch (IOException e1)
          {
-            dialogs.showMessageDialog(view, i18n.text( WorkspaceResources.could_not_open_attachment), "");
+            dialogs.showMessageDialog(view, i18n.text( WorkspaceResources.could_not_open_attachment)+ " " + file.getName(), "");
          }
       }
    }

@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.application.attachment;
 
-import java.io.IOException;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
@@ -31,7 +29,6 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.EventReplayException;
@@ -40,10 +37,12 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventRouter;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
-import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * Takes care of Attachement and AttachedFile removal.
@@ -54,7 +53,7 @@ public interface RemoveAttachmentsService
 {
 
    abstract class Mixin
-         implements Activatable, Removable.Data
+         implements Activatable, AttachedFile.Data//Removable.Data
    {
       final Logger logger = LoggerFactory.getLogger( RemoveAttachmentsService.class.getName() );
 
@@ -81,7 +80,7 @@ public interface RemoveAttachmentsService
       public void activate() throws Exception
       {
          EventRouter router = new EventRouter();
-         router.route( Specifications.and( Events.onEntityTypes( AttachmentEntity.class.getName() ), Events.withNames( Removable.Data.class ) ), Events.playEvents( player, this, module.unitOfWorkFactory(), UsecaseBuilder.newUsecase( "Delete attachments and attachment files" ) ) );
+         router.route( Specifications.and( Events.onEntityTypes( AttachmentEntity.class.getName() ), /*Events.withNames( Removable.Data.class ),*/ Events.withNames( "deletedFile" ) ), Events.playEvents( player, this, module.unitOfWorkFactory(), UsecaseBuilder.newUsecase( "Delete attachment files" ) ) );
 
          tracker = new TransactionTracker( stream, eventSource, config, Events.adapter( router ) );
          tracker.start();
@@ -92,31 +91,20 @@ public interface RemoveAttachmentsService
          tracker.stop();
       }
 
-      public void changedRemoved( @Optional DomainEvent event, boolean isRemoved )
+      public void deletedFile( @Optional DomainEvent event, String uri )
       {
-      }
-
-      public void deletedEntity( @Optional DomainEvent event)
-      {
-         AttachedFile.Data attachment = module.unitOfWorkFactory().currentUnitOfWork().get(AttachedFile.Data.class, event.entity().get() );
-
-         // remove attachment from attachment store
-         String uri = attachment.uri().get();
          try
          {
             if (uri.startsWith( "store:" ))
             {
                String id = uri.substring( "store:".length() );
                store.deleteAttachment( id );
-               logger.info( "Removed attachment: " + uri );
+               logger.info( "Removed file: " + uri );
 
             } else
             {
                // Handle external storage of file
             }
-
-            // remove attachment from entity store
-            ((Removable)attachment).deleteEntity();
 
          } catch (IOException ioe)
          {
@@ -124,5 +112,10 @@ public interface RemoveAttachmentsService
             throw new EventReplayException( event, ioe );
          }
       }
+      public void changedName( @Optional DomainEvent event, String newName){}
+      public void changedMimeType( @Optional DomainEvent event, String newMimeType){}
+      public void changedUri( @Optional DomainEvent event, String newMimeType){}
+      public void changedModificationDate( @Optional DomainEvent event, Date newModificationDate){}
+      public void changedSize(@Optional DomainEvent event, long size){}
    }
 }

@@ -446,7 +446,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    public Task changeCaseType()
    {
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder( SelectLinkDialog.class )
-            .use( model.getPossibleCaseTypes() ).newInstance();
+            .use( model.getPossibleCaseTypes(), new Integer(1) ).newInstance();
       dialog.setPreferredSize( new Dimension( 400, 200 ) );
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.choose_casetype ) );
 
@@ -522,7 +522,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
    public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (matches( withNames( "addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus", "changedPriority" ),
+      if (matches( withNames( "addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus", "changedPriority", "setUnread" ),
             transactions ))
       {
          refresh();

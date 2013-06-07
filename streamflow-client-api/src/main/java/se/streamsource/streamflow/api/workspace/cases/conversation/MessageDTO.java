@@ -33,4 +33,7 @@ public interface MessageDTO
 
    @UseDefaults
    Property<Boolean> unread();
+
+   @UseDefaults
+   Property<MessageType> messageType();
 }

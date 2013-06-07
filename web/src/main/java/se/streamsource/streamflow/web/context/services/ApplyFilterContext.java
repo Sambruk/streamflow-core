@@ -16,16 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.services;
 
-import static se.streamsource.streamflow.util.ForEach.forEach;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -40,7 +30,6 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.Role;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.filter.ActionValue;
@@ -51,25 +40,36 @@ import se.streamsource.streamflow.api.administration.filter.FilterValue;
 import se.streamsource.streamflow.api.administration.filter.LabelRuleValue;
 import se.streamsource.streamflow.api.administration.filter.RuleValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.util.Visitor;
-import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.conversation.MessageDraft;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
-import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static se.streamsource.streamflow.util.ForEach.*;
 
 /**
  * TODO
@@ -82,6 +82,7 @@ public class ApplyFilterContext
    private MailSender mailSender;
    private AttachmentStore attachmentStore;
    private ResourceBundle bundle;
+   private HtmlMailGenerator htmlGenerator;
 
    public ApplyFilterContext(@Structure Module module, @Uses MailSender mailSender, @Service AttachmentStore attachmentStore)
    {
@@ -90,6 +91,7 @@ public class ApplyFilterContext
       this.attachmentStore = attachmentStore;
       this.filterCheck = new FilterCheck();
       this.filterable = new Filterable();
+      this.htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
       this.bundle = ResourceBundle.getBundle( ApplyFilterContext.class.getName(), new Locale("SV","se") ); // TODO These texts need to use the locale for the user
    }
 
@@ -263,18 +265,22 @@ public class ApplyFilterContext
             {
                Participant participant = module.unitOfWorkFactory().currentUnitOfWork().get(Participant.class, ((EmailActionValue) actionValue).participant().get().identity());
 
-               sendEmailToParticipant(administrator, participant);
+               //sendEmailToParticipant(administrator, participant);
+               createConversationMessageWithAttachments( administrator, participant );
+
             } else if (actionValue instanceof EmailNotificationActionValue)
             {
                Participant participant = module.unitOfWorkFactory().currentUnitOfWork().get(Participant.class, ((EmailNotificationActionValue) actionValue).participant().get().identity());
 
-               sendEmailNotificationToParticipant(administrator, participant);
+               //sendEmailNotificationToParticipant(administrator, participant);
+               createNotificationConversation( administrator, participant );
             }
          }
       }
 
-      private void sendEmailToParticipant(UserEntity administrator, Participant participant)
+ /*     private void sendEmailToParticipant(UserEntity administrator, Participant participant)
       {
+         //TODO Create conversation for this message so we actually are able to receive responses to this mail
          if (participant instanceof Contactable)
          {
             Contactable contact = (Contactable) participant;
@@ -287,8 +293,8 @@ public class ApplyFilterContext
                // the default mail address from mail sender configuration
                builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
                builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
-               builder.prototype().content().set(bundle.getString( "message" ));
-               builder.prototype().contentType().set("text/plain");
+               builder.prototype().content().set( htmlGenerator.createMailContent( bundle.getString( "message" ), "" ) );
+               builder.prototype().contentType().set( Translator.HTML );
                builder.prototype().to().set(email.emailAddress().get());
 
                try
@@ -386,6 +392,7 @@ public class ApplyFilterContext
       
       private void sendEmailNotificationToParticipant(UserEntity administrator, Participant participant)
       {
+         //TODO Create conversation for this message so we actually are able to receive responses to this mail
          if (participant instanceof Contactable)
          {
             Contactable contact = (Contactable) participant;
@@ -398,8 +405,7 @@ public class ApplyFilterContext
                // the default mail address from mail sender configuration
                builder.prototype().fromName().set(((Describable) self.owner().get()).getDescription());
                builder.prototype().subject().set(bundle.getString( "subject" ) + self.caseId().get()); 
-               builder.prototype().content().set(bundle.getString( "message" ));
-               builder.prototype().contentType().set("text/plain");
+               builder.prototype().contentType().set( Translator.HTML );
                builder.prototype().to().set(email.emailAddress().get());
                StringBuffer notification = new StringBuffer();
                SimpleDateFormat dateFormat = new SimpleDateFormat( bundle.getString( "date_format" ) );
@@ -430,7 +436,7 @@ public class ApplyFilterContext
                   first = false;
                }
                                              
-               builder.prototype().content().set(notification.toString());
+               builder.prototype().content().set( htmlGenerator.createMailContent( notification.toString(), "" ) );
 
                try {
                   mailSender.sentEmail(null, builder.newInstance());
@@ -450,6 +456,142 @@ public class ApplyFilterContext
             }
          }
 
+      }
+
+*/
+      private void createConversationMessageWithAttachments(UserEntity administrator, Participant participant)
+      {
+         Conversations conversations = RoleMap.role( Conversations.class );
+         Conversation conversation = conversations.createConversation( bundle.getString( "subject" ) + self.caseId().get(), administrator );
+         if( participant instanceof ConversationParticipant )
+         {
+            conversation.addParticipant( (ConversationParticipant)participant );
+         } else if (participant instanceof Participants)
+         {
+            Participants.Data participants = (Participants.Data)participant;
+            for (Participant participant1 : participants.participants())
+            {
+               conversation.addParticipant( (ConversationParticipant)participant1 );
+            }
+         }
+
+         ((MessageDraft)conversation).changeDraftMessage(  htmlGenerator.createMailContent( bundle.getString( "message" ), "" ));
+
+         try
+         {
+            // Store case as PDF for attachment purposes
+            ValueBuilder<CaseOutputConfigDTO> config = module.valueBuilderFactory().newValueBuilder(CaseOutputConfigDTO.class);
+            config.prototype().attachments().set(true);
+            config.prototype().contacts().set(true);
+            config.prototype().conversations().set(true);
+            config.prototype().submittedForms().set(true);
+            config.prototype().caselog().set(true);
+            RoleMap.current().set(new Locale( "SV", "se" ));
+            RoleMap.current().set(self);
+            final PDDocument pdf = module.transientBuilderFactory().newTransient(CaseCommandsContext.class).exportpdf(config.newInstance());
+
+            String id = attachmentStore.storeAttachment(new OutputstreamInput(new Visitor<OutputStream, IOException>()
+            {
+               public boolean visit(OutputStream out) throws IOException
+               {
+                  COSWriter writer = new COSWriter(out);
+
+                  try
+                  {
+                     writer.write(pdf);
+                  } catch (COSVisitorException e)
+                  {
+                     throw new IOException(e);
+                  } finally
+                  {
+                     writer.close();
+                  }
+
+                  return true;
+               }
+            }, 4096));
+            pdf.close();
+
+            System.out.println("Written to:" + id + ", length:" + attachmentStore.getAttachmentSize(id));
+
+            Attachment conversationAttachment = conversation.createAttachment( "store:" + id );
+            conversationAttachment.changeDescription( self.caseId().get() + ".pdf" );
+            conversationAttachment.changeMimeType( "application/pdf" );
+            conversationAttachment.changeModificationDate( self.createdOn().get() );
+            conversationAttachment.changeSize( attachmentStore.getAttachmentSize( id ) );
+            conversationAttachment.changeName( self.caseId().get() + ".pdf" );
+
+
+            if ( self.attachments().count() > 0 ) {
+               for (Attachment caseAttachment : self.attachments())
+               {
+                  conversation.addAttachment( caseAttachment );
+               }
+            }
+
+            if( self.formAttachments().count() > 0 )
+            {
+               for( Attachment formAttachment : self.formAttachments())
+               {
+                  conversation.addAttachment( formAttachment );
+               }
+            }
+
+         } catch (Throwable throwable)
+         {
+            logger.error("Could not create case notification message.", throwable);
+         }
+         conversation.createMessageFromDraft( administrator, MessageType.HTML );
+      }
+
+      private void createNotificationConversation(UserEntity administrator, Participant participant)
+      {
+         Conversations conversations = RoleMap.role( Conversations.class );
+         Conversation conversation = conversations.createConversation( bundle.getString( "subject" ) + self.caseId().get(), administrator );
+         if( participant instanceof ConversationParticipant )
+         {
+            conversation.addParticipant( (ConversationParticipant)participant );
+         } else if (participant instanceof Participants)
+         {
+            Participants.Data participants = (Participants.Data)participant;
+            for (Participant participant1 : participants.participants())
+            {
+              conversation.addParticipant( (ConversationParticipant)participant1 );
+            }
+         }
+
+         StringBuffer notification = new StringBuffer();
+         SimpleDateFormat dateFormat = new SimpleDateFormat( bundle.getString( "date_format" ) );
+         notification.append( bundle.getString( "description" )).append(": ").append(self.getDescription()).append("\n");
+         if (self.priority().get() != null)
+         {
+            notification.append( bundle.getString( "priority" )).append(": ").append(self.priority().get().getDescription()).append("\n");
+         }
+         notification.append( bundle.getString( "createdon" )).append(": ").append( dateFormat.format( self.createdOn().get() )).append("\n");
+         if (self.dueOn().get() != null)
+         {
+            notification.append( bundle.getString( "duedate" )).append(": ").append( dateFormat.format( self.dueOn().get())).append("\n");
+         }
+         if (self.createdBy().get() instanceof User)
+         {
+            notification.append( bundle.getString( "createdby" )).append(": ").append(((Describable)self.createdBy().get()).getDescription()).append("\n");
+         }
+         notification.append( bundle.getString( "owner" )).append(": ").append(((Describable)self.owner().get()).getDescription()).append("\n");
+         notification.append( bundle.getString( "casetype" )).append(": ").append(self.caseType().get().getDescription()).append("\n");
+         notification.append( bundle.getString( "labels" )).append(": ");
+         boolean first = true;
+         for (Label label : self.labels())
+         {
+            if (!first) {
+               notification.append(", ");
+            }
+            notification.append(label.getDescription());
+            first = false;
+         }
+
+         ((MessageDraft)conversation).changeDraftMessage(  htmlGenerator.createMailContent( notification.toString(), "" ) );
+
+         conversation.createMessageFromDraft( administrator, MessageType.HTML );
       }
    }
 }

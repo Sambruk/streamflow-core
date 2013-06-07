@@ -216,14 +216,30 @@
             <version>2.0b4</version>
         </dependency>
         <dependency>
-            <artifactId>solr-solrj</artifactId>
             <groupId>org.apache.solr</groupId>
-            <version>1.4.1</version>
+            <artifactId>solr-solrj</artifactId>
+            <version>4.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.2.4</version>
         </dependency>
         <dependency>
             <artifactId>solr-core</artifactId>
             <groupId>org.apache.solr</groupId>
-            <version>1.4.1</version>
+            <version>4.2.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -235,7 +251,7 @@
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>
-            <version>2.3.1</version>
+            <version>2.6.5</version>
         </dependency>
 
         <!-- Database -->

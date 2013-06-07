@@ -16,9 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.Identity;
@@ -27,8 +24,10 @@ import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
-
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * List of attached files
@@ -94,7 +93,7 @@ public interface Attachments
 
       public void removeAttachment( Attachment attachment )
       {
-         // Delete the attachment entity
+         // Remove the attachment entity
          removedAttachment( null, attachment );
 
          attachment.deleteEntity();

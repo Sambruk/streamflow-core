@@ -58,6 +58,7 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseCon
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
 import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
+import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.ReceiveMailConfiguration;
 import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.application.mail.SendMailConfiguration;
@@ -350,6 +351,7 @@ public class AppAssembler
       {
          throw new AssemblyException("Could not load velocity properties", e);
       }
+      module.objects( HtmlMailGenerator.class ).visibleIn( Visibility.application );
    }
    
    private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException

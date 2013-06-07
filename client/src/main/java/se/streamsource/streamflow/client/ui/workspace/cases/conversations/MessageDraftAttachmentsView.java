@@ -122,7 +122,7 @@ public class MessageDraftAttachmentsView
          {
             public void actionPerformed( ActionEvent e )
             {
-               new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageDraftAttachmentsView.this, model ).execute();
+               new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageDraftAttachmentsView.this, model, dialogs ).execute();
             }
          } );
          attachmentPanel.add( openButton );

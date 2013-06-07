@@ -16,13 +16,6 @@
  */
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
@@ -50,6 +43,14 @@ import org.qi4j.spi.entity.EntityStatus;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.util.Translator;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JAVADOC Add JavaDoc
@@ -95,43 +96,34 @@ public class SolrEntityIndexerMixin
    {
       try
       {
-         try
+
+         // Figure out what to update
+         List<String> deleted = null;
+         List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
+         for (EntityState entityState : entityStates)
          {
-            // Figure out what to update
-            List<String> deleted = null;
-            List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
-            for (EntityState entityState : entityStates)
+            if (entityState.entityDescriptor().entityType().queryable())
             {
-               if (entityState.entityDescriptor().entityType().queryable())
+               if (entityState.status().equals( EntityStatus.REMOVED ))
                {
-                  if (entityState.status().equals( EntityStatus.REMOVED ))
-                  {
-                     if (deleted == null)
-                        deleted = new ArrayList<String>();
-                     deleted.add( entityState.identity().identity() );
-                  } else if (entityState.status().equals( EntityStatus.UPDATED ))
-                  {
-                     added.add( indexEntityState( entityState, server ) );
-                  } else if (entityState.status().equals( EntityStatus.NEW ))
-                  {
-                     added.add( indexEntityState( entityState, server ) );
-                  }
+                  if (deleted == null)
+                     deleted = new ArrayList<String>();
+                  deleted.add( entityState.identity().identity() );
+               } else if (entityState.status().equals( EntityStatus.UPDATED ))
+               {
+                  added.add( indexEntityState( entityState, server ) );
+               } else if (entityState.status().equals( EntityStatus.NEW ))
+               {
+                  added.add( indexEntityState( entityState, server ) );
                }
             }
+         }
 
-            // Send changes to Solr
-            if (deleted != null)
-               server.deleteById( deleted );
-            if (!added.isEmpty())
-               server.add( added );
-         }
-         finally
-         {
-            if (server != null)
-            {
-               server.commit( false, false );
-            }
-         }
+         // Send changes to Solr
+         if (deleted != null)
+            server.deleteById( deleted );
+         if (!added.isEmpty())
+            server.add( added );
       }
       catch (Throwable e)
       {
@@ -223,7 +215,28 @@ public class SolrEntityIndexerMixin
                SchemaField field = indexedFields.get( name.toString() );
                if (field != null)
                {
-                  input.addField( name.toString(), jsonObject.get( name.toString() ) );
+                  // if note is html formatted - remove html tags
+                  if( "note".equals( name.toString() )  )
+                  {
+                     String contentType = "";
+                     try
+                     {
+                        contentType = (String)jsonObject.get( "contentType" );
+                     }catch (JSONException je )
+                     {
+                        //do nothing
+                     }
+                     if( Translator.HTML.equals( contentType ) )
+                     {
+                        input.addField( name.toString(), Translator.htmlToText( (String)jsonObject.get( name.toString() ) ) );
+                     } else
+                     {
+                        input.addField( name.toString(), jsonObject.get( name.toString() ) );
+                     }
+                  } else
+                  {
+                     input.addField( name.toString(), jsonObject.get( name.toString() ) );
+                  }
                }
             }
          }

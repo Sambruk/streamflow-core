@@ -16,14 +16,6 @@
  */
 package se.streamsource.streamflow.web.rest.service.conversation;
 
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -40,9 +32,9 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
@@ -52,6 +44,7 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailReceiver;
@@ -64,6 +57,14 @@ import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Receive emails and create responses in conversations
@@ -197,8 +198,15 @@ public interface ConversationResponseService
                         RoleMap.current().set( from, ConversationParticipant.class );
                         RoleMap.current().set( caze, CaseLoggable.Data.class );
 
-                        Message message = conversation.createMessage( content, from );
+                        Message message = null;
 
+                        if( Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
+                        {
+                           message = conversation.createMessage( email.contentHtml().get(), MessageType.HTML, from );
+                        } else
+                        {
+                           message = conversation.createMessage( email.content().get(), MessageType.PLAIN, from );
+                        }
                         // Create attachments
                         for (AttachedFileValue attachedFileValue : email.attachments().get())
                         {
@@ -250,10 +258,10 @@ public interface ConversationResponseService
             } catch (Exception ex)
             {
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
-               String subj = "General Error: " + builder.prototype().subject().get();
+               String subj = "Conversation Response Error: " + builder.prototype().subject().get();
                builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
 
-               systemDefaults.createCaseOnEmailFailure( email );
+               systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                uow.discard();
                throw new ApplicationEventReplayException(event, ex);
             }

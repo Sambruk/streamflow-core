@@ -16,22 +16,47 @@
  */
 package se.streamsource.streamflow.web.application.mail;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.spi.service.ServiceDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.infrastructure.NamedThreadFactory;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.service.AbstractEnabledCircuitBreakerAvailability;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
+import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import javax.mail.Address;
 import javax.mail.Authenticator;
@@ -52,48 +77,22 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.Usecase;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.infrastructure.NamedThreadFactory;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.service.AbstractEnabledCircuitBreakerAvailability;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
-import se.streamsource.streamflow.web.application.security.UserPrincipal;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * Receive mail. This service
@@ -346,7 +345,9 @@ public interface ReceiveMailService
                      builder.prototype().headers().get().put(header.getName(), header.getValue());
                   }
 
-                  builder.prototype().to().set( toaddress( message.getRecipients( Message.RecipientType.TO ), builder.prototype().headers().get().get( "References" )));
+                  // Get all recipients in order - TO, CC, BCC
+                  // and provide it to the toaddress method to pick the first possible valid adress
+                  builder.prototype().to().set( toaddress( message.getAllRecipients(), builder.prototype().headers().get().get( "References" )));
 
                   builder.prototype().messageId().set(message.getHeader("Message-ID")[0]);
 
@@ -520,7 +521,8 @@ public interface ReceiveMailService
       }
 
       /**
-       * Handel multipart messages recursiveley until we find the first text/plain message.
+       * Handel multipart messages recursive until we find the first text/html message.
+       * Or text/plain if html is not available.
        * @param multipart the multipart portion
        * @param message the message
        * @param builder the email value builder
@@ -566,15 +568,28 @@ public interface ReceiveMailService
                builder.prototype().attachments().get().add(attachmentBuilder.newInstance());
             } else
             {
-               if (part.isMimeType("text/plain"))
+               if (part.isMimeType( Translator.PLAIN ))
                {
                   body = (String) part.getContent();
                   builder.prototype().content().set(body);
                   builder.prototype().contentType().set(part.getContentType());
+
+               } else if (part.isMimeType( Translator.HTML ))
+               {
+                  body = (String) part.getContent();
+                  builder.prototype().contentHtml().set(body);
+                  builder.prototype().contentType().set(part.getContentType());
+
                } else if (part.getContent() instanceof Multipart) {
                   handleMultipart( (Multipart)part.getContent(), message, builder );
                }
             }
+         }
+         // if contentHtml is not empty set the content type to text/html
+         if( !Strings.empty( builder.prototype().contentHtml().get() ) )
+         {
+            builder.prototype().content().set( builder.prototype().contentHtml().get() );
+            builder.prototype().contentType().set( Translator.HTML );
          }
       }
 

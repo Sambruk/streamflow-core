@@ -193,7 +193,7 @@ public class CaseCommandsContextTest
 
       // Check actions for new draft
       {
-         checkActions( caze, "delete", "read", "sendto" );
+         checkActions( caze, "delete", "sendto" );
       }
 
       // Send to project
@@ -212,7 +212,7 @@ public class CaseCommandsContextTest
 
       // Check actions for draft sent to project
       {
-         checkActions( caze, "delete", "read", "open", "sendto" );
+         checkActions( caze, "delete", "open", "sendto" );
       }
 
       // Select casetype
@@ -261,7 +261,7 @@ public class CaseCommandsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "assign" );
+         checkActions( caze, "delete", "resolve", "read", "markread", "sendto", "restrict", "assign" );
       }
 
       // Assign case
@@ -283,7 +283,7 @@ public class CaseCommandsContextTest
 
       // Check assigned actions
       {
-         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "unassign" );
+         checkActions( caze, "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
       }
 
       // Resolve case
@@ -308,7 +308,7 @@ public class CaseCommandsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "read", "reopen" );
+         checkActions( caze, "reopen" );
       }
 
       // Reopen case
@@ -327,7 +327,7 @@ public class CaseCommandsContextTest
 
       // Check reopened actions
       {
-         checkActions( caze, "delete", "resolve", "read", "sendto", "restrict", "unassign" );
+         checkActions( caze, "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
       }
 
       // Close
@@ -346,7 +346,7 @@ public class CaseCommandsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "read", "reopen" );
+         checkActions( caze, "reopen" );
       }
    }
 
