@@ -33,7 +33,6 @@ public interface CaseStatisticsValue
    Property<String> identity();
    Property<String> caseId();
    Property<String> description();
-   Property<String> note();
    Property<Date> createdOn();
    Property<Date> closedOn();
    Property<Long> duration();
@@ -51,4 +50,6 @@ public interface CaseStatisticsValue
    @Optional Property<String> organizationalUnitId();
    @Optional Property<String> groupId();
    @Optional Property<String> resolutionId();
+   @Optional Property<Date> dueOn();
+   @Optional Property<String> priority();
 }
