@@ -162,6 +162,13 @@ public class FieldValueEditModel
          client.postCommand( "changedatatype", module.valueBuilderFactory().newValue(EntityValue.class) );
       }
    }
+
+   public void changeStatistical( boolean statistical ) throws ResourceException
+   {
+      Form form = new Form( );
+      form.set( "statistical", ""+statistical );
+      client.postCommand( "changestatistical", form.getWebRepresentation() );
+   }
    
    public LinkValue getSelectedDatatype()
    {
