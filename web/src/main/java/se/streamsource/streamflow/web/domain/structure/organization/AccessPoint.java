@@ -38,6 +38,8 @@ public interface AccessPoint
       EndUserCases,
       MailSelectionMessage,
       AccessPointSettings,
-      RequiredSignatures
+      RequiredSignatures,
+      WebAPMailTemplates,
+      WebAPMailTemplates.Data
 {
 }

@@ -17,10 +17,13 @@
 package se.streamsource.streamflow.api.administration.surface;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
+
+import java.util.Map;
 
 /**
  * Link value
@@ -50,4 +53,11 @@ public interface AccessPointDTO
 
    @Optional
    Property<RequiredSignatureValue> secondarysign();
+
+
+   @UseDefaults
+   Property<String> subject();
+
+   @UseDefaults
+   Property<Map<String, String>> messages();
 }
