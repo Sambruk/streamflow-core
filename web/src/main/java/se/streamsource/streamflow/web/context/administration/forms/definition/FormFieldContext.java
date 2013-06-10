@@ -152,6 +152,7 @@ public interface FormFieldContext
    @Requires(GeoLocationFieldValue.class)
    public void changepolygon( @Name("polygon") boolean polygon);
    
+   public void changestatistical( @Name("statistical") boolean statistical );
    abstract class Mixin
          implements FormFieldContext
    {

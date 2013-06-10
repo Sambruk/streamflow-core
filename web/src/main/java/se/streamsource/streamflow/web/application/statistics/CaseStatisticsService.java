@@ -595,6 +595,8 @@ public interface CaseStatisticsService
                      formBuilder.prototype().fieldId().set(submittedFieldValue.field().get().identity());
                      if (fieldEntity.datatype().get() != null) {
                         formBuilder.prototype().datatype().set( fieldEntity.datatype().get().getUrl() );
+                     } else {
+                        formBuilder.prototype().datatype().set( "" );
                      }
                      // truncate field value if greater than 500 chars.
                      // value in fields table is varchar(500)
