@@ -16,6 +16,14 @@
  */
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -38,6 +46,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
@@ -72,14 +81,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import se.streamsource.streamflow.web.domain.structure.form.Statistical;
 
 /**
  * JAVADOC
@@ -150,6 +152,7 @@ public interface FormFieldContext
    @Requires(GeoLocationFieldValue.class)
    public void changepolygon( @Name("polygon") boolean polygon);
    
+   public void changestatistical( @Name("statistical") boolean statistical );
    abstract class Mixin
          implements FormFieldContext
    {
@@ -186,6 +189,7 @@ public interface FormFieldContext
          }
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
+         builder.prototype().statistical().set( fieldEntity.isStatistical() );
 
          builder.prototype().rule().set( fieldEntity.getRule() );
 
@@ -509,6 +513,12 @@ public interface FormFieldContext
          builder.prototype().polygon().set( polygon );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
+      }
+
+      public void changestatistical( boolean statistical )
+      {
+         Statistical statisticalField = RoleMap.role( Statistical.class );
+         statisticalField.changeStatistical( statistical );
       }
       
       public void importvalues(Representation representation)

@@ -213,6 +213,7 @@ public enum AdministrationResources
    import_values,
    point,
    polyline,
-   polygon;
+   polygon,
+   statistical;
 
 }

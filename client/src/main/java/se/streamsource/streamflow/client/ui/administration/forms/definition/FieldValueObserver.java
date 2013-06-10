@@ -208,7 +208,18 @@ public class FieldValueObserver
                model.changePolygon( (Boolean) property.get() );
             }
          }.execute();
-      }
+      } else if (property.qualifiedName().name().equals( "statistical" ))
+      {
+         new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeStatistical( (Boolean) property.get() );
+            }
+         }.execute();
+      } 
    }
 
 }
