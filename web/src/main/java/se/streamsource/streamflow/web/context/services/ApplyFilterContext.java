@@ -248,9 +248,11 @@ public class ApplyFilterContext
               
             } else 
              */
+
+            RoleMap.current().set(self);
+            
             if (actionValue instanceof CloseActionValue)
             {
-               RoleMap.current().set(self);
 
                try
                {
