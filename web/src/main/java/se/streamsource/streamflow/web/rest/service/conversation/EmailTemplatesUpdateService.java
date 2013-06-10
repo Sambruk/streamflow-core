@@ -16,10 +16,6 @@
  */
 package se.streamsource.streamflow.web.rest.service.conversation;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
@@ -28,8 +24,10 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-
 import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * When the list of possible templates for emails has been updated this service
@@ -50,11 +48,11 @@ public interface EmailTemplatesUpdateService
       public void activate() throws Exception
       {
          // Get defaults for emails
-         ResourceBundle bundle = ResourceBundle.getBundle(EmailTemplates.class.getName());
+         /*ResourceBundle bundle = ResourceBundle.getBundle(EmailTemplates.class.getName());
          for (String key : bundle.keySet())
          {
             templateDefaults.put(key, bundle.getString(key));
-         }
+         }*/
 
          // Update all email->AccessPoint template lists
          UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Synchronize templates"));

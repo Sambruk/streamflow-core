@@ -52,13 +52,19 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -106,6 +112,10 @@ public class AccessPointView
    private JCheckBox mandatory2;
    private JTextField formQuestion2;
 
+   private JList emailTemplateList = new JList();
+   private JTextArea emailTemplateText = new JTextArea();
+   private JTextField subject;
+
    private AccessPointModel model;
 
    private ActionBinder actionBinder;
@@ -113,7 +123,7 @@ public class AccessPointView
 
 
    public AccessPointView( @Service ApplicationContext appContext,
-                           @Uses AccessPointModel model,
+                           @Uses final AccessPointModel model,
                            @Structure Module module )
    {
       this.model = model;
@@ -132,7 +142,7 @@ public class AccessPointView
 
       FormLayout layout = new FormLayout( "90dlu, 5dlu, 150:grow",
             "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 12dlu, " +
-            "pref, 12dlu, default:grow" );
+            "pref, 12dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -384,6 +394,37 @@ public class AccessPointView
       builder.add( signPanel.getPanel(),
             new CellConstraints( 1, 13, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
 
+      JPanel templatePanel = new JPanel( );
+      templatePanel.setVisible( false );
+      FormLayout templateFormLayout
+            = new FormLayout( "75dlu, 5dlu, fill:p:grow",
+            "pref, pref, fill:p:grow, pref");
+      DefaultFormBuilder templateFormBuilder = new DefaultFormBuilder( templateFormLayout, templatePanel );
+      templateFormBuilder.addSeparator(i18n.text(AdministrationResources.emailTemplates));
+      templateFormBuilder.nextLine();
+      templateFormBuilder.append( i18n.text(AdministrationResources.subject),  valueBinder.bind("subject", actionBinder.bind( "changeSubject", subject = new JTextField() ) ) );
+      templateFormBuilder.nextLine();
+      templateFormBuilder.append(new JScrollPane(emailTemplateList));
+      templateFormBuilder.append(new JScrollPane( actionBinder.bind( "save", emailTemplateText ) ) );
+      templateFormBuilder.nextLine();
+
+      emailTemplateList.addListSelectionListener(new ListSelectionListener()
+      {
+         public void valueChanged(ListSelectionEvent e)
+         {
+            if (!e.getValueIsAdjusting())
+            {
+               if (emailTemplateList.getSelectedIndex() != -1)
+               {
+                  emailTemplateText.setText(model.getAccessPointValue().messages().get().get(emailTemplateList.getSelectedValue()));
+               }
+            }
+         }
+      });
+
+      refreshComponents.visibleOn( "updatesecondarysign", templatePanel );
+
+      builder.add( templatePanel, new CellConstraints( 1, 15, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
       add( panel, BorderLayout.CENTER );
 
 
@@ -681,5 +722,44 @@ public class AccessPointView
       model.refresh();
 
       valueBinder.update( model.getAccessPointValue() );
+
+      int selectedIndex = emailTemplateList.getSelectedIndex();
+      DefaultListModel emailTemplateListModel = new DefaultListModel();
+      for (String key : model.getAccessPointValue().messages().get().keySet())
+      {
+         emailTemplateListModel.addElement(key);
+      }
+      emailTemplateList.setModel(emailTemplateListModel);
+      emailTemplateList.setSelectedIndex( selectedIndex );
+   }
+
+   @org.jdesktop.application.Action
+   public Task changeSubject()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeSubject(subject.getText());
+         }
+      };
+   }
+
+   @org.jdesktop.application.Action
+   public Task save()
+   {
+      final String template = emailTemplateText.getText();
+      final String key = (String) emailTemplateList.getSelectedValue();
+
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.updateTemplate(key, template);
+            model.getAccessPointValue().messages().get().put(key, template);
+         }
+      };
    }
 }

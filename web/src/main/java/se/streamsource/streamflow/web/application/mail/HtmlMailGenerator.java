@@ -22,6 +22,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.util.Strings;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 
 /**
@@ -39,20 +40,20 @@ public class HtmlMailGenerator
       context.put( "content", content );
       context.put( "footer", Strings.empty( footer ) ? "" : footer );
 
-      return create( "se/streamsource/streamflow/web/application/mail/htmlmail_sv.html", context );
+      return createFromFile( "se/streamsource/streamflow/web/application/mail/htmlmail_sv.html", context );
    }
 
-   public String createDoubleSignatureMail( VelocityContext context )
+   public String createDoubleSignatureMail( String templateString, VelocityContext context )
    {
-      return create( "se/streamsource/streamflow/web/application/mail/doublesignaturehtmlmail_sv.html" , context );
+      return createFromString( templateString , context );
    }
 
    public String createDueOnNotificationMail( VelocityContext context )
    {
-      return create( "se/streamsource/streamflow/web/application/mail/dueonnotificationhtmlmail_sv.html" , context );
+      return createFromFile( "se/streamsource/streamflow/web/application/mail/dueonnotificationhtmlmail_sv.html" , context );
    }
 
-   private String create( String templateFile, VelocityContext context )
+   private String createFromFile( String templateFile, VelocityContext context )
    {
       StringWriter result = new StringWriter(  );
       try
@@ -61,6 +62,19 @@ public class HtmlMailGenerator
          template.merge( context, result );
 
       } catch( Throwable throwable )
+      {
+         throw new IllegalArgumentException( "Could not create html mail.", throwable );
+      }
+      return result.toString();
+   }
+
+   private String createFromString( String template, VelocityContext context )
+   {
+      StringWriter result = new StringWriter( );
+      try
+      {
+         velocity.evaluate( context, result, "", new StringReader( template ) );
+      }  catch( Throwable throwable )
       {
          throw new IllegalArgumentException( "Could not create html mail.", throwable );
       }

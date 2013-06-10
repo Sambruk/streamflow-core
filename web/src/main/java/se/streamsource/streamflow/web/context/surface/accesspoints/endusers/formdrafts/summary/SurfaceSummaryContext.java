@@ -49,6 +49,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.util.Visitor;
@@ -167,7 +168,6 @@ public interface SurfaceSummaryContext
          if( task != null )
          {
             // set task reference back to subittedform - second signee info
-            ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), new Locale("sv","SE") );
 
             try
             {
@@ -182,10 +182,14 @@ public interface SurfaceSummaryContext
                context.put( "id", id );
                context.put( "link", link );
 
-               String htmlMail = module.objectBuilderFactory().newObject( HtmlMailGenerator.class ).createDoubleSignatureMail( context );
+               String subjectText = MessageTemplate.text( accessPoint.subject().get() )
+                     .bind( "caseId", id ).bind("organisation", organisation).eval();
+
+               String velocityTemplate = accessPoint.emailTemplates().get().get( "secondsigneenotification" );
+               String htmlMail = module.objectBuilderFactory().newObject( HtmlMailGenerator.class ).createDoubleSignatureMail( velocityTemplate, context );
 
                Conversations conversations = RoleMap.role( Conversations.class );
-               Conversation conversation = conversations.createConversation( organisation + " - " + bundle.getString( "signature_notification_subject" ), administrator );
+               Conversation conversation = conversations.createConversation( subjectText, administrator );
                EmailUserEntity emailUser = users.createEmailUser( submittedForm.secondsignee().get().email().get() );
                conversation.addParticipant( emailUser );
 
@@ -195,7 +199,7 @@ public interface SurfaceSummaryContext
                // for resend
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
 
-               builder.prototype().subject().set( organisation + " - " + bundle.getString( "signature_notification_subject" ) );
+               builder.prototype().subject().set( subjectText );
                builder.prototype().contentType().set( Translator.HTML );
                builder.prototype().content().set( htmlMail );
                builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
@@ -204,8 +208,6 @@ public interface SurfaceSummaryContext
                task.updateEmailValue( email );
                task.updateSecondDraftUrl( link );
                task.updateLastReminderSent(new DateTime( DateTimeZone.UTC ) );
-
-               //mailSender.sentEmail( email );
 
             } catch (Throwable throwable)
             {

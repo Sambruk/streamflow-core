@@ -297,4 +297,19 @@ public class AccessPointModel extends Observable
                e );
       }
    }
+
+   public void changeSubject(String text)
+   {
+      Form form = new Form();
+      form.set("subject", text);
+      client.postCommand("changesubject", form.getWebRepresentation());
+   }
+
+   public void updateTemplate(String key, String template)
+   {
+      Form form = new Form();
+      form.set("key", key);
+      form.set("template", template);
+      client.postCommand("changetemplate", form.getWebRepresentation());
+   }
 }
