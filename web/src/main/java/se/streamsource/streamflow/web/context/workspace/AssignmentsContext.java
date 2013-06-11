@@ -122,6 +122,7 @@ public interface AssignmentsContext
          caze.open();
 
          caze.assignTo(RoleMap.role(Assignee.class));
+         caze.setUnread( false );
       }
    }
 }
