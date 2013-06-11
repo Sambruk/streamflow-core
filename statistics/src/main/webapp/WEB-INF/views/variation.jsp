@@ -35,27 +35,25 @@
 <!--[if lte IE 8]>
   	<script language="javascript" type="text/javascript" src="resources/js/external/excanvas.min.js"></script>
   	<![endif]-->
-
-<!-- Styles -->
-<link href="resources/css/external/bootstrap.css" rel="stylesheet">
-<link href="resources/css/external/bootstrap-responsive.css" rel="stylesheet">
-<link href="resources/css/external/redmond/jquery-ui-1.8.10.custom.css" rel="stylesheet" type="text/css" >
-<link href="resources/css/style.css" rel="stylesheet">
-
-<!-- favorite and touch icons -->
-<link rel="shortcut icon" href="resources/images/favicon.png">
-<link rel="apple-touch-icon"
-	href="resources/images/app_icons512x512.png">
-<link rel="apple-touch-icon" sizes="57x57"
-	href="resources/images/app_icons57x57.png">
-<link rel="apple-touch-icon" sizes="72x72"
-	href="resources/images/app_icons72x72.png">
-<link rel="apple-touch-icon" sizes="114x114"
-	href="resources/images/app_icons114x114.png">
-
-<script src="resources/js/external/jquery-1.7.1.min.js"></script>
-<script src="resources/js/external/jquery-ui-1.8.10.custom.min.js"></script>
-<script src="resources/js/external/jquery.ui.datepicker2-sv.js"></script>
+	
+	<!-- Styles -->
+	<link href="resources/css/external/bootstrap.css" rel="stylesheet">
+	<link href="resources/css/external/bootstrap-responsive.css" rel="stylesheet">
+	<link href="resources/css/external/redmond/jquery-ui-1.8.10.custom.css" rel="stylesheet" type="text/css" >
+	<link href="resources/css/style.css" rel="stylesheet">
+		
+	<!-- favorite and touch icons -->
+	<link rel="shortcut icon" href="resources/images/favicon.png">
+	<link rel="apple-touch-icon" href="resources/images/app_icons512x512.png">
+	<link rel="apple-touch-icon" sizes="57x57" href="resources/images/app_icons57x57.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="resources/images/app_icons72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="resources/images/app_icons114x114.png">
+		
+	<script src="resources/js/external/jquery-1.7.1.min.js"></script>
+	<script src="resources/js/external/jquery-ui-1.8.10.custom.min.js"></script>
+	<script src="resources/js/external/jquery.ui.datepicker2-sv.js"></script>
+	<script src="resources/js/external/jquery.flot.min.js"></script>
+	<script src="resources/js/external/jquery.flot.resize.min.js"></script>
 </head>
 
 <body>
@@ -95,7 +93,7 @@
 					</div>
 					<div class="span3">
 						<label class="control-label" for="caseTypeId">Ärendetyp:</label> 
-						<select name="caseTypeId" class="span2 caseTypeId">
+						<select name="caseTypeId" class="input-medium">
 							<c:forEach var="caseType" items="${caseTypes}">
 								<option <c:if test="${caseTypeId == caseType.id}">selected="selected"</c:if> value="<c:out value="${caseType.id}"/>">
 									<c:out value="${caseType.name}" />
@@ -138,8 +136,23 @@
 
 	</div>
 	<!-- /container -->
-
 	<script type="text/javascript">
+		$(function() {
+		    $( "#fromDate" ).datepicker({
+		      numberOfMonths: 2
+		    });
+		    $( "#fromDateBtn" ).click(function() {
+				$( "#fromDate" ).datepicker("show");
+			});
+			
+		    $( "#toDate" ).datepicker({
+		      numberOfMonths: 2
+		    });
+		    $( "#toDateBtn" ).click(function() {
+				$( "#toDate" ).datepicker("show");
+			});
+		  });
+		  
 		$(function() {
 			var series = [
 					<c:forEach var="scatteredValue" items="${result}" >[<c:out value="${scatteredValue.xAxis}" />,
