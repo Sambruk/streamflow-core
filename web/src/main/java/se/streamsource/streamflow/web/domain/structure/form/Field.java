@@ -29,6 +29,7 @@ public interface Field
       Mandatory,
       FieldId,
       Datatype,
-      VisibilityRule
+      VisibilityRule,
+      Statistical
 {
 }

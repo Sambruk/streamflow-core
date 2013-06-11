@@ -587,23 +587,24 @@ public interface CaseStatisticsService
             {
                for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
                {
-                  formBuilder.prototype().formId().set(submittedFormValue.form().get().identity());
-                  formBuilder.prototype().fieldId().set(submittedFieldValue.field().get().identity());
-                  try
-                  {
-                     FieldEntity fieldEntity = module.unitOfWorkFactory().currentUnitOfWork()
+                  FieldEntity fieldEntity  = module.unitOfWorkFactory().currentUnitOfWork()
                            .get( FieldEntity.class, submittedFieldValue.field().get().identity() );
-                     formBuilder.prototype().datatype().set( fieldEntity.datatype().get().getUrl() );
-                  } catch (Exception e)
-                  {
-                     formBuilder.prototype().datatype().set( "" );
+                     
+                  if (fieldEntity.isStatistical()) {
+                     formBuilder.prototype().formId().set(submittedFormValue.form().get().identity());
+                     formBuilder.prototype().fieldId().set(submittedFieldValue.field().get().identity());
+                     if (fieldEntity.datatype().get() != null) {
+                        formBuilder.prototype().datatype().set( fieldEntity.datatype().get().getUrl() );
+                     } else {
+                        formBuilder.prototype().datatype().set( "" );
+                     }
+                     // truncate field value if greater than 500 chars.
+                     // value in fields table is varchar(500)
+                     String fieldValue = submittedFieldValue.value().get();
+                     fieldValue = fieldValue.length() > 500 ? fieldValue.substring(0, 500) : fieldValue;
+                     formBuilder.prototype().value().set(fieldValue);
+                     prototype.fields().get().add(formBuilder.newInstance());
                   }
-                  // truncate field value if greater than 500 chars.
-                  // value in fields table is varchar(500)
-                  String fieldValue = submittedFieldValue.value().get();
-                  fieldValue = fieldValue.length() > 500 ? fieldValue.substring(0, 500) : fieldValue;
-                  formBuilder.prototype().value().set(fieldValue);
-                  prototype.fields().get().add(formBuilder.newInstance());
                }
             }
          }
