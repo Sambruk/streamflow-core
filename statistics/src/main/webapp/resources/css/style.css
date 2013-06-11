@@ -148,6 +148,11 @@ hr.soften {
 	}
 }
 
+.brand > img {
+	vertical-align: baseline;
+	padding-right: 5px;
+}
+
 #interval>div.row {
 	height: 25px;
 }
@@ -171,9 +176,8 @@ h2 {
 	text-align: right;
 }
 
-.form-inline input {
-	width: 70px;
-	margin-right: 13px;
+.input-small {
+	width: 73px;
 }
 
 select.span2.caseTypeId {

@@ -34,8 +34,8 @@
 
 <!-- Styles -->
 <link href="resources/css/external/bootstrap.css" rel="stylesheet">
-<link href="resources/css/external/bootstrap-responsive.css"
-	rel="stylesheet">
+<link href="resources/css/external/bootstrap-responsive.css" rel="stylesheet">
+<link href="resources/css/external/redmond/jquery-ui-1.8.10.custom.css" rel="stylesheet" type="text/css" >
 <link href="resources/css/style.css" rel="stylesheet">
 
 <!-- favorite and touch icons -->
@@ -50,15 +50,16 @@
 	href="resources/images/app_icons114x114.png">
 
 <script src="resources/js/external/jquery-1.7.1.min.js"></script>
+<script src="resources/js/external/jquery-ui-1.8.10.custom.min.js"></script>
+<script src="resources/js/external/jquery.ui.datepicker2-sv.js"></script>
 <script src="resources/js/labels.js"></script>
 </head>
 
 <body data-spy="scroll" data-target=".subnav" data-offset="60">
-	<div class="navbar navbar-fixed-top">
+	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
-				<a class="brand" href="count"><img
-					src="resources/images/favicon.png" />Statistik</a>
+				<a class="brand" href="count"><img src="resources/images/favicon.png" />Statistik</a>
 				<ul class="nav">
 					<li class="active"><a href="count">Antal</a></li>
 					<li><a href="variation">Variation</a></li>
@@ -78,38 +79,41 @@
 	</div>
 	<div class="container">
 		<section id="interval" class="well">
-			<div class="row">
-				<div class="span10">
-					<form class="form-inline" method="POST">
-						<label class="control-label" for="fromDate">Från:</label> <input
-							class="date focused" name="fromDate" type="date"
-							value="<c:out value="${fromDate}"/>"> <label
-							class="control-label" for="toDate">Till:</label> <input
-							class="date focused" name="toDate" type="date"
-							value="<c:out value="${toDate}"/>"> <label
-							class="control-label" for="perodicity">Period:</label> <select
-							name="periodicity" class="span2">
-							<option
-								<c:if test="${periodicity == 'monthly'}">selected="selected"</c:if>
-								value="monthly">Månadsvis</option>
-							<option
-								<c:if test="${periodicity == 'weekly'}">selected="selected"</c:if>
-								value="weekly">Veckovis</option>
-							<option
-								<c:if test="${periodicity == 'yearly'}">selected="selected"</c:if>
-								value="yearly">Årsvis</option>
-						</select> <a href="#"
-							onclick="{ document.forms[0].action = '';document.forms[0].submit();return false;}"
-							class="btn btn-success">Uppdatera</a>
-					</form>
-				</div>
-				<div class="span1">
-					<div class="pull-right">
-						<a href="#download"
-							onclick="{ document.forms[0].action = 'download';document.forms[0].submit();return false;}"
-							class="btn"><i class="icon-download"></i>Excel</a>
+			<div class="row-fluid">
+				<form class="form-inline" method="POST">
+					<div class="span2">
+						<a href="#" onclick="{ document.forms[0].action = '';document.forms[0].submit();return false;}" class="btn btn-success"><i class="icon-refresh icon-white"></i> Uppdatera</a>
 					</div>
-				</div>
+					<div class="span2">
+						<label class="control-label" for="fromDate">Från:</label>
+						<div class="input-append">
+							<input class="input-small" name="fromDate" id="fromDate" type="text" value="<c:out value="${fromDate}"/>">
+							<button class="btn" id="fromDateBtn" type="button"><i class="icon-calendar"></i></button>
+						</div>
+					</div>
+					<div class="span2">
+						<label class="control-label" for="toDate">Till:</label>
+						<div class="input-append">
+							<input class="input-small" name="toDate" id="toDate" type="text" value="<c:out value="${toDate}"/>">
+							<button class="btn" id="toDateBtn" type="button"><i class="icon-calendar"></i></button>
+						</div>
+					</div>
+					<div class="span3">
+						<label class="control-label" for="perodicity">Period:</label> 
+						<select name="periodicity" class="input-medium">
+							<option <c:if test="${periodicity == 'monthly'}">selected="selected"</c:if> value="monthly">Månadsvis</option>
+							<option <c:if test="${periodicity == 'weekly'}">selected="selected"</c:if> value="weekly">Veckovis</option>
+							<option <c:if test="${periodicity == 'yearly'}">selected="selected"</c:if> value="yearly">Årsvis</option>
+						</select> 
+					</div>
+					<div class="span3">
+						<div class="pull-right">
+							<a href="#download"
+								onclick="{ document.forms[0].action = 'download';document.forms[0].submit();return false;}"
+								class="btn"><i class="icon-download"></i>Excel</a>
+						</div>
+					</div>
+				</form>
 			</div>
 		</section>
 
@@ -305,5 +309,24 @@
 	<!-- /container -->
 
 	<script src="resources/js/external/bootstrap-scrollspy.js"></script>
+	<script>
+	  $(function() {
+	    $( "#fromDate" ).datepicker({
+	      numberOfMonths: 2
+	    });
+	    $( "#fromDateBtn" ).click(function() {
+			$( "#fromDate" ).datepicker("show");
+		});
+		
+	    $( "#toDate" ).datepicker({
+	      numberOfMonths: 2
+	    });
+	    $( "#toDateBtn" ).click(function() {
+			$( "#toDate" ).datepicker("show");
+		});
+	  });
+  </script>
 </body>
+
+
 </html>
