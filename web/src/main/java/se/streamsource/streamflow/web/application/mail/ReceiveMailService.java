@@ -557,7 +557,8 @@ public interface ReceiveMailService
 
                prototype.mimeType().set( contentType );
                prototype.modificationDate().set((message.getSentDate()));
-               prototype.name().set( MimeUtility.decodeText( part.getFileName() ) );
+               String fileName =  part.getFileName();
+               prototype.name().set( fileName == null ? "Nofilename" : MimeUtility.decodeText( fileName ) );
                prototype.size().set((long) part.getSize());
 
                InputStream inputStream = part.getInputStream();
