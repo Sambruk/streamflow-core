@@ -74,11 +74,11 @@ public class Translator
    {
       String result = html;
 
-         ContentHandler handler = new BodyContentHandler();
+         ContentHandler handler = new BodyContentHandler( );
          Metadata metadata = new Metadata();
          try
          {
-            new HtmlParser().parse( IOUtils.toInputStream( result ), handler, metadata, new ParseContext());
+            new HtmlParser().parse( IOUtils.toInputStream( result, "UTF-8" ), handler, metadata, new ParseContext());
             result = handler.toString();
          } catch (Exception e)
          {
