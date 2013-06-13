@@ -42,6 +42,7 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -180,6 +181,10 @@ public class CaseNoteView
    {
       model.refresh();
       note.setContentType( Strings.empty( model.getNote().contentType().get() ) ? "text/plain" : "text/html" );
+      if(Translator.HTML.equalsIgnoreCase( note.getContentType() ))
+      {
+         note.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
+      }
       valueBinder.update( model.getNote() );
    }
 
