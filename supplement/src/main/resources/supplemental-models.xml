@@ -123,6 +123,16 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <organization>
+                <name>Google</name>
+                <url>https://code.google.com/p/guava-libraries/</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>com.googlecode.juniversalchardet</groupId>
             <artifactId>juniversalchardet</artifactId>
             <organization>
@@ -171,6 +181,16 @@
             <organization>
                 <name>JGoodies Validation</name>
                 <url>https://validationt.dev.java.net/</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>com.spatial4j</groupId>
+            <artifactId>spatial4j</artifactId>
+            <organization>
+                <name>Spatial4j on Github</name>
+                <url>https://github.com/spatial4j/spatial4j</url>
             </organization>
         </project>
     </supplement>
@@ -764,6 +784,22 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <organization>
+                <name>Apache Software Foundation</name>
+                <url>http://hadoop.apache.org/zookeeper</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <organization>
@@ -789,6 +825,36 @@
             <organization>
                 <name>The Legion of the Bouncy Castle</name>
                 <url>http://www.bouncycastle.org/java.html</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.carrot2</groupId>
+            <artifactId>morfologik-fsa</artifactId>
+            <organization>
+                <name>Dawid Weiss</name>
+                <url>https://github.com/morfologik/morfologik-stemming</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.carrot2</groupId>
+            <artifactId>morfologik-polish</artifactId>
+            <organization>
+                <name>Dawid Weiss</name>
+                <url>https://github.com/morfologik/morfologik-stemming</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.carrot2</groupId>
+            <artifactId>morfologik-stemming</artifactId>
+            <organization>
+                <name>Dawid Weiss</name>
+                <url>https://github.com/morfologik/morfologik-stemming</url>
             </organization>
         </project>
     </supplement>
