@@ -563,6 +563,12 @@ public interface ReceiveMailService
       {
          String body = "";
 
+         String contentType = "";
+         if(multipart.getContentType().indexOf( ';' ) == -1 )
+            contentType = multipart.getContentType();
+         else
+            contentType = multipart.getContentType().substring( 0, multipart.getContentType().indexOf( ';' ) );
+
          for (int i = 0, n = multipart.getCount(); i < n; i++)
          {
             BodyPart part = multipart.getBodyPart(i);
@@ -579,7 +585,14 @@ public interface ReceiveMailService
             {
                if (part.isMimeType( Translator.PLAIN ))
                {
-                  body = (String) part.getContent();
+                  // if contents is multipart mixed concatenate text plain parts
+                  if( "multipart/mixed".equalsIgnoreCase( contentType ) )
+                  {
+                     body += (String)part.getContent() + "\n\r";
+                  } else
+                  {
+                     body = (String) part.getContent();
+                  }
                   builder.prototype().content().set(body);
                   builder.prototype().contentType().set(Translator.PLAIN);
 
