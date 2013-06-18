@@ -123,23 +123,9 @@ public class MessageView extends JPanel
       messageDetailButtonPanel.add(messageDetailsLabelPanel, BorderLayout.WEST);
 
       showMessage = new JTextPane();
-      //showMessage.setContentType("text/plain");
       valueBinder.bind( "text", showMessage );
       showMessage.setEditable(false);
       messageShowScroll.getViewport().add(showMessage);
-
-     /* doc = showMessage.getStyledDocument();
-      Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-
-      Style regular = doc.addStyle("regular", def);
-      StyleConstants.setFontFamily( def, "SansSerif" );
-
-      Style s = doc.addStyle("italic", regular);
-      StyleConstants.setItalic(s, true);
-
-      s = doc.addStyle("bold", regular);
-      StyleConstants.setBold(s, true);
-      */
 
       add( messageShowScroll, BorderLayout.CENTER );
       add( messageDetailButtonPanel, BorderLayout.NORTH );
@@ -149,7 +135,6 @@ public class MessageView extends JPanel
 
    public void refresh()
    {
-      //showMessage.setText( null );
       model.refresh();
       if(MessageType.HTML.equals( model.getMessageDTO().messageType().get() ) )
       {
@@ -160,13 +145,7 @@ public class MessageView extends JPanel
          showMessage.setContentType( "text/plain" );
       }
       valueBinder.update( model.getMessageDTO() );
-      /*try
-      {
-         doc.insertString(0, model.getMessageDTO().text().get(), doc.getStyle("regular"));
-      } catch (BadLocationException e)
-      {
-         e.printStackTrace();
-      }*/
+
       createdOnLabelValue.setText( DateFormats.getFullDateTimeValue(
             model.getMessageDTO().createdOn().get(), Locale.getDefault() ) );
 

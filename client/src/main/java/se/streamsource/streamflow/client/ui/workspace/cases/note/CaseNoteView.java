@@ -41,7 +41,6 @@ import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Translator;
 
 import javax.swing.ActionMap;
@@ -141,8 +140,6 @@ public class CaseNoteView
       formBuilder.add( textScroll = new JScrollPane( valueBinder.bind( "note", actionBinder.bind( "addNote",  note = new JTextPane() ) ) ),
             new CellConstraints( 1, 2, 5, 1, CellConstraints.FILL, CellConstraints.FILL ) );
       textScroll.setPreferredSize( new Dimension( 210, 120 ) );
-      //note.setLineWrap( true );
-      //note.setWrapStyleWord( true );
 
       textScroll.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
       textScroll.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
@@ -180,10 +177,15 @@ public class CaseNoteView
    public void refresh()
    {
       model.refresh();
-      note.setContentType( Strings.empty( model.getNote().contentType().get() ) ? "text/plain" : "text/html" );
-      if(Translator.HTML.equalsIgnoreCase( note.getContentType() ))
+      if(Translator.HTML.equalsIgnoreCase( model.getNote().contentType().get() ) )
       {
-         note.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
+         note.setContentType( Translator.HTML );
+         note.getDocument().putProperty( "IgnoreCharsetDirective", Boolean.TRUE );
+         note.setEditable( true );
+      } else
+      {
+         note.setContentType( Translator.PLAIN );
+         note.setEditable( true );
       }
       valueBinder.update( model.getNote() );
    }

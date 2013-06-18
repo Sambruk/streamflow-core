@@ -21,8 +21,13 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.w3c.tidy.Tidy;
 import org.xml.sax.ContentHandler;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,5 +91,17 @@ public class Translator
          }
       return result;
    }
-   
+
+   public static String cleanHtml( String html ) throws UnsupportedEncodingException
+   {
+
+      Tidy tidy = new Tidy();
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      PrintStream ps = new PrintStream(baos);
+
+      tidy.parse(new StringReader(html), ps);
+      return baos.toString("UTF-8");
+
+   }
 }
