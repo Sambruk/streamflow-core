@@ -178,11 +178,11 @@ public interface CreateCaseFromEmailService
 
                   if (Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
                   {
-                     caze.addNote( email.content().get(), email.contentType().get().toLowerCase() );
+                     caze.addNote( Translator.cleanHtml( email.content().get() ), Translator.HTML );
 
                   } else
                   {
-                     caze.addNote( email.content().get(), email.contentType().get().toLowerCase() );
+                     caze.addNote( email.content().get(), Translator.PLAIN );
 
                   }
 
@@ -191,7 +191,7 @@ public interface CreateCaseFromEmailService
                   Message message = null;
                   if (Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
                   {
-                     message = conversation.createMessage( email.content().get(), MessageType.HTML, participant );
+                     message = conversation.createMessage( Translator.cleanHtml( email.content().get() ), MessageType.HTML, participant );
                   } else
                   {
                      message = conversation.createMessage( email.content().get(), MessageType.PLAIN, participant );
