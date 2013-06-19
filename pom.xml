@@ -19,12 +19,30 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>nexus</id>
-            <url>http://79.125.6.136/nexus/content/groups/public</url>
-        </repository>
-    </repositories>
+	<repositories>
+    	<repository>
+      	  <id>streamflow-release</id>
+		  <name>Streamflow Release Repository</name>
+		  <url>https://repository-streamflow.forge.cloudbees.com/release/</url>
+		  <releases>
+			  <enabled>true</enabled>
+		  </releases>
+		  <snapshots>
+			  <enabled>false</enabled>
+		  </snapshots>
+		</repository>
+		<repository>
+			<id>streamflow-snapshot</id>
+			<name>Streamflow Release Repository</name>
+			<url>https://repository-streamflow.forge.cloudbees.com/snapshot/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
     <modules>
         <module>dci</module>
@@ -53,13 +71,13 @@
     <distributionManagement>
         <repository>
             <id>releases</id>
-            <name>Waybuild Release Repo</name>
-            <url>http://79.125.6.136/nexus/content/repositories/releases</url>
+            <name>Cloudbees Release Repo</name>
+            <url>https://repository-streamflow.forge.cloudbees.com/release/</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>Waybuild Snapshot Repo</name>
-            <url>http://79.125.6.136/nexus/content/repositories/snapshots</url>
+            <name>Cloudbees Snapshot Repo</name>
+            <url>https://repository-streamflow.forge.cloudbees.com/snapshot/</url>
         </snapshotRepository>
     </distributionManagement>
 
