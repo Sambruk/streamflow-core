@@ -225,7 +225,7 @@
 			</div>
 		</section>
 
-		<section id="casetyp">
+		<section id="casetype">
 			<div class="page-header">
 				<h2>
 					Ärendetyp och etiketter <small>Ärenden fördelade på
