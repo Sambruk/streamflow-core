@@ -154,6 +154,7 @@ public class MessageView extends JPanel
       if(MessageType.HTML.equals( model.getMessageDTO().messageType().get() ) )
       {
          showMessage.setContentType( "text/html" );
+         showMessage.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
       } else
       {
          showMessage.setContentType( "text/plain" );

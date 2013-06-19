@@ -152,14 +152,15 @@ public interface NotificationService
                // check if sender is administrator and in that case dont set fromName - this will be picked up by
                // MailSender and replaced with the configurated default fromName
                String sender = null;
-               String footer ="";
                if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
                {
                   sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
-                  if( messageData.sender().get() instanceof MailFooter )
-                  {
-                     footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
-                  }
+               }
+
+               String footer ="";
+               if( messageData.sender().get() instanceof MailFooter)
+               {
+                  footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
                }
 
                String caseId = "n/a";

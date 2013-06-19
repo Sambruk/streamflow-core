@@ -245,7 +245,6 @@ public class CaseSubmittedFormView
 
          final AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldValue);
          JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-         panel.setBackground(Color.WHITE);
          panel.add(new StreamflowSelectableLabel(attachment.name().get()));
          StreamflowButton button = new StreamflowButton(context.getActionMap(this).get("open"));
          buttons.put(button, attachment);

@@ -861,7 +861,7 @@
                                         </resourceBundles>
                                         <supplementalModelArtifacts>
                                             <supplementalModelArtifact>
-                                                se.streamsource.streamflow:dependency-resource-supplement:1.7
+                                                se.streamsource.streamflow:dependency-resource-supplement:1.8
                                             </supplementalModelArtifact>
                                         </supplementalModelArtifacts>
                                         <supplementalModels>

@@ -425,7 +425,7 @@ public class AccessPointView
       refreshComponents.visibleOn( "updatesecondarysign", templatePanel );
 
       builder.add( templatePanel, new CellConstraints( 1, 15, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
-      add( panel, BorderLayout.CENTER );
+      add( new JScrollPane( panel ), BorderLayout.CENTER );
 
 
       new RefreshWhenShowing( this, this );

@@ -28,6 +28,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.util.Iterables;
@@ -85,6 +86,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -326,164 +328,191 @@ public interface ReceiveMailService
 
             for (javax.mail.Message message : messages)
             {
-               uow = module.unitOfWorkFactory().newUnitOfWork(usecase);
-
-               ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
-
-               try
+               int tries = 0;
+               while ( tries < 3 )
                {
-                  Object content = message.getContent();
+                  uow = module.unitOfWorkFactory().newUnitOfWork( usecase );
 
-                  // Get email fields
-                  builder.prototype().from().set(((InternetAddress) message.getFrom()[0]).getAddress());
-                  builder.prototype().fromName().set(((InternetAddress) message.getFrom()[0]).getPersonal());
-                  builder.prototype().subject().set(message.getSubject() == null ? "" : message.getSubject());
+                  ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
 
-                  // Get headers
-                  for (Header header : Iterables.iterable( (Enumeration<Header>) message.getAllHeaders() ))
+                  try
                   {
-                     builder.prototype().headers().get().put(header.getName(), header.getValue());
-                  }
+                     Object content = message.getContent();
 
-                  // Get all recipients in order - TO, CC, BCC
-                  // and provide it to the toaddress method to pick the first possible valid adress
-                  builder.prototype().to().set( toaddress( message.getAllRecipients(), builder.prototype().headers().get().get( "References" )));
+                     // Get email fields
+                     builder.prototype().from().set( ((InternetAddress) message.getFrom()[0]).getAddress() );
+                     builder.prototype().fromName().set( ((InternetAddress) message.getFrom()[0]).getPersonal() );
+                     builder.prototype().subject().set( message.getSubject() == null ? "" : message.getSubject() );
 
-                  builder.prototype().messageId().set(message.getHeader("Message-ID")[0]);
+                     // Get headers
+                     for (Header header : Iterables.iterable( (Enumeration<Header>) message.getAllHeaders() ))
+                     {
+                        builder.prototype().headers().get().put( header.getName(), header.getValue() );
+                     }
 
-                  // Get body and attachments
-                  String body = "";
-                  // set content initially so it never can become null
-                  builder.prototype().content().set( body );
+                     // Get all recipients in order - TO, CC, BCC
+                     // and provide it to the toaddress method to pick the first possible valid adress
+                     builder.prototype().to().set( toaddress( message.getAllRecipients(), builder.prototype().headers().get().get( "References" ) ) );
 
-                  if (content instanceof String)
-                  {
-                     body = content.toString();
-                     builder.prototype().content().set(body);
-                     builder.prototype().contentType().set(message.getContentType());
-                  } else if (content instanceof Multipart)
-                  {
-                     handleMultipart( (Multipart)content, message, builder );
-                  } else if (content instanceof InputStream)
-                  {
-                     content = new MimeMessage(session, (InputStream) content).getContent();
-                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                     Inputs.byteBuffer((InputStream) content, 4096).transferTo(Outputs.byteBuffer(baos));
+                     builder.prototype().messageId().set( message.getHeader( "Message-ID" )[0] );
 
-                     String data = new String(baos.toByteArray(), "UTF-8");
-                     // Unknown content type - abort
-                     // and create failure case
-                     String subj = "Unkonwn content type: " + message.getSubject();
-                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                     // Get body and attachments
+                     String body = "";
+                     // set content initially so it never can become null
                      builder.prototype().content().set( body );
+
+                     if (content instanceof String)
+                     {
+                        body = content.toString();
+                        builder.prototype().content().set( body );
+                        builder.prototype().contentType().set( message.getContentType() );
+                     } else if (content instanceof Multipart)
+                     {
+                        handleMultipart( (Multipart) content, message, builder );
+                     } else if (content instanceof InputStream)
+                     {
+                        content = new MimeMessage( session, (InputStream) content ).getContent();
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        Inputs.byteBuffer( (InputStream) content, 4096 ).transferTo( Outputs.byteBuffer( baos ) );
+
+                        String data = new String( baos.toByteArray(), "UTF-8" );
+                        // Unknown content type - abort
+                        // and create failure case
+                        String subj = "Unkonwn content type: " + message.getSubject();
+                        builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                        builder.prototype().content().set( body );
+                        builder.prototype().contentType().set( message.getContentType() );
+                        systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                        copyToArchive.add( message );
+                        if (expunge)
+                           message.setFlag( Flags.Flag.DELETED, true );
+
+                        uow.discard();
+                        continue;
+                     } else
+                     {
+                        // Unknown content type - abort
+                        // and create failure case
+                        String subj = "Unkonwn content type: " + message.getSubject();
+                        builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                        builder.prototype().content().set( body );
+                        builder.prototype().contentType().set( message.getContentType() );
+                        systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                        copyToArchive.add( message );
+                        if (expunge)
+                           message.setFlag( Flags.Flag.DELETED, true );
+
+                        uow.discard();
+                        logger.error( "Could not parse emails: unknown content type " + content.getClass().getName() );
+                        continue;
+                     }
+
+                     // make sure mail content fit's into statistic database - truncate on 65.500 characters.
+                     if (builder.prototype().content().get().length() > 65000)
+                     {
+                        builder.prototype().content().set( builder.prototype().content().get().substring( 0, 65000 ) );
+                     }
+
+                     // try to reveal if it is a smpt error we are looking at
+                     // X-Failed-Recipients is returned by Gmail
+                     // X-FC-MachineGenerated is returned by FirstClass
+                     // Exchange is following RFC 6522 -  The Multipart/Report Media Type for
+                     // the Reporting of Mail System Administrative Messages
+                     boolean isSmtpErrorReport =
+                           !Strings.empty( builder.prototype().headers().get().get( "X-Failed-Recipients" ) ) ||
+                                 (!Strings.empty( builder.prototype().headers().get().get( "X-FC-MachineGenerated" ) )
+                                       && "true".equals( builder.prototype().headers().get().get( "X-FC-MachineGenerated" ) )) ||
+                                 !Strings.empty( new ContentType( builder.prototype().headers().get().get( "Content-Type" ) ).getParameter( "report-type" ) );
+
+                     if (isSmtpErrorReport)
+                     {
+                        // This is a mail bounce due to SMTP error - create support case.
+
+                        String subj = "Undeliverable mail: " + builder.prototype().subject().get();
+
+                        builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                        systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                        copyToArchive.add( message );
+                        if (expunge)
+                           message.setFlag( Flags.Flag.DELETED, true );
+
+                        uow.discard();
+                        logger.error( "Received a mail bounce reply: " + body );
+                        continue;
+                     }
+
+                     if (builder.prototype().to().get().equals( "n/a" ))
+                     {
+                        // This is a mail has no to address - create support case.
+
+                        String subj = "No TO address: " + builder.prototype().subject().get();
+
+                        builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                        systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                        copyToArchive.add( message );
+                        if (expunge)
+                           message.setFlag( Flags.Flag.DELETED, true );
+
+                        uow.discard();
+                        logger.error( "Received a mail without TO address: " + body );
+                        continue;
+                     }
+
+                     mailReceiver.receivedEmail( null, builder.newInstance() );
+
+                     try
+                     {
+                        logger.debug( "This is try " + tries );
+                        uow.complete();
+                        tries = 3;
+                     } catch (ConcurrentEntityModificationException ceme)
+                     {
+                        if (tries < 2 )
+                        {
+                           logger.debug( "Encountered ConcurrentEntityModificationException - try again " );
+                           // discard uow and try again
+                           uow.discard();
+                           tries++;
+                           continue;
+
+                        } else
+                        {
+                           logger.debug( "Rethrowing ConcurrentEntityModification.Exception" );
+                           tries++;
+                           throw ceme;
+                        }
+
+                     }
+
+                     copyToArchive.add( message );
+                     // remove mail on success if expunge is true
+                     if (expunge)
+                        message.setFlag( Flags.Flag.DELETED, true );
+
+                  } catch (Throwable e)
+                  {
+                     String subj = "Unknown error: " + message.getSubject();
+                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+
+                     StringBuilder content = new StringBuilder();
+                     content.append( "Error Message: " + e.getMessage() );
+                     content.append( "\n\rStackTrace:\n\r" );
+                     for (StackTraceElement trace : Arrays.asList( e.getStackTrace() ))
+                     {
+                        content.append( trace.toString() + "\n\r" );
+                     }
+
+                     builder.prototype().content().set( content.toString() );
                      builder.prototype().contentType().set( message.getContentType() );
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      copyToArchive.add( message );
-                     if( expunge )
+                     if (expunge)
                         message.setFlag( Flags.Flag.DELETED, true );
 
                      uow.discard();
-                     continue;
-                  }else
-                  {
-                     // Unknown content type - abort
-                     // and create failure case
-                     String subj = "Unkonwn content type: " + message.getSubject();
-                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
-                     builder.prototype().content().set( body );
-                     builder.prototype().contentType().set( message.getContentType() );
-                     systemDefaults.createCaseOnEmailFailure(  builder.newInstance() );
-                     copyToArchive.add( message );
-                     if( expunge )
-                        message.setFlag( Flags.Flag.DELETED, true );
-
-                     uow.discard();
-                     logger.error("Could not parse emails: unknown content type "+content.getClass().getName());
-                     continue;
+                     logger.error( "Could not parse emails", e );
                   }
 
-                  // make sure mail content fit's into statistic database - truncate on 65.500 characters.
-                  if( builder.prototype().content().get().length() > 65000 )
-                  {
-                     builder.prototype().content().set( builder.prototype().content().get().substring( 0, 65000 ) );
-                  }
-
-                  // try to reveal if it is a smpt error we are looking at
-                  // X-Failed-Recipients is returned by Gmail
-                  // X-FC-MachineGenerated is returned by FirstClass
-                  // Exchange is following RFC 6522 -  The Multipart/Report Media Type for
-                  // the Reporting of Mail System Administrative Messages
-                  boolean isSmtpErrorReport =
-                        !Strings.empty( builder.prototype().headers().get().get( "X-Failed-Recipients" ) ) ||
-                        ( !Strings.empty( builder.prototype().headers().get().get( "X-FC-MachineGenerated" ) )
-                              && "true".equals( builder.prototype().headers().get().get( "X-FC-MachineGenerated" ) ) ) ||
-                        !Strings.empty( new ContentType( builder.prototype().headers().get().get( "Content-Type" ) ).getParameter( "report-type" ) );
-
-                  if( isSmtpErrorReport )
-                  {
-                     // This is a mail bounce due to SMTP error - create support case.
-
-                     String subj = "Undeliverable mail: " + builder.prototype().subject().get();
-
-                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
-                     systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
-                     copyToArchive.add( message );
-                     if( expunge )
-                        message.setFlag( Flags.Flag.DELETED, true );
-
-                     uow.discard();
-                     logger.error("Received a mail bounce reply: " + body );
-                     continue;
-                  }
-
-                  if( builder.prototype().to().get().equals( "n/a" ) )
-                  {
-                     // This is a mail has no to address - create support case.
-
-                     String subj = "No TO address: " + builder.prototype().subject().get();
-
-                     builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
-                     systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
-                     copyToArchive.add( message );
-                     if( expunge )
-                        message.setFlag( Flags.Flag.DELETED, true );
-
-                     uow.discard();
-                     logger.error("Received a mail without TO address: " + body );
-                     continue;
-                  }
-
-                  mailReceiver.receivedEmail(null, builder.newInstance());
-
-                  uow.complete();
-
-                  copyToArchive.add( message );
-                  // remove mail on success if expunge is true
-                  if( expunge )
-                     message.setFlag( Flags.Flag.DELETED, true );
-
-               } catch (Throwable e)
-               {
-                  String subj = "Unknown error: " + message.getSubject();
-                  builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
-
-                  StringBuilder content = new StringBuilder( );
-                  content.append( "Error Message: " + e.getMessage() );
-                  content.append( "\n\rStackTrace:\n\r" );
-                  for( StackTraceElement trace : Arrays.asList( e.getStackTrace() ))
-                  {
-                     content.append( trace.toString() + "\n\r" );
-                  }
-
-                  builder.prototype().content().set( content.toString() );
-                  builder.prototype().contentType().set( message.getContentType() );
-                  systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
-                  copyToArchive.add( message );
-                  if( expunge )
-                     message.setFlag( Flags.Flag.DELETED, true );
-
-                  uow.discard();
-                  logger.error("Could not parse emails", e);
                }
             }
 
@@ -534,6 +563,12 @@ public interface ReceiveMailService
       {
          String body = "";
 
+         String contentType = "";
+         if(multipart.getContentType().indexOf( ';' ) == -1 )
+            contentType = multipart.getContentType();
+         else
+            contentType = multipart.getContentType().substring( 0, multipart.getContentType().indexOf( ';' ) );
+
          for (int i = 0, n = multipart.getCount(); i < n; i++)
          {
             BodyPart part = multipart.getBodyPart(i);
@@ -544,41 +579,32 @@ public interface ReceiveMailService
                   ((disposition.equalsIgnoreCase( Part.ATTACHMENT ) ||
                         (disposition.equalsIgnoreCase( Part.INLINE )))))
             {
-               // Create attachment
-               ValueBuilder<AttachedFileValue> attachmentBuilder = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
+               builder.prototype().attachments().get().add( createAttachedFileValue( message.getSentDate(), part ) );
 
-               AttachedFileValue prototype = attachmentBuilder.prototype();
-               //check contentType and fetch just the first part if necessary
-               String contentType = "";
-               if(part.getContentType().indexOf( ';' ) == -1 )
-                  contentType = part.getContentType();
-               else
-                  contentType = part.getContentType().substring( 0, part.getContentType().indexOf( ';' ) );
-
-               prototype.mimeType().set( contentType );
-               prototype.modificationDate().set((message.getSentDate()));
-               prototype.name().set( MimeUtility.decodeText( part.getFileName() ) );
-               prototype.size().set((long) part.getSize());
-
-               InputStream inputStream = part.getInputStream();
-               String id = attachmentStore.storeAttachment(Inputs.byteBuffer(inputStream, 4096));
-               String uri = "store:"+id;
-               prototype.uri().set(uri);
-
-               builder.prototype().attachments().get().add(attachmentBuilder.newInstance());
             } else
             {
                if (part.isMimeType( Translator.PLAIN ))
                {
-                  body = (String) part.getContent();
+                  // if contents is multipart mixed concatenate text plain parts
+                  if( "multipart/mixed".equalsIgnoreCase( contentType ) )
+                  {
+                     body += (String)part.getContent() + "\n\r";
+                  } else
+                  {
+                     body = (String) part.getContent();
+                  }
                   builder.prototype().content().set(body);
-                  builder.prototype().contentType().set(part.getContentType());
+                  builder.prototype().contentType().set(Translator.PLAIN);
 
                } else if (part.isMimeType( Translator.HTML ))
                {
                   body = (String) part.getContent();
                   builder.prototype().contentHtml().set(body);
-                  builder.prototype().contentType().set(part.getContentType());
+                  builder.prototype().contentType().set( Translator.HTML) ;
+
+               } else if( part.isMimeType( "image/*" ) )
+               {
+                  builder.prototype().attachments().get().add( createAttachedFileValue( message.getSentDate(), part ) );
 
                } else if (part.getContent() instanceof Multipart) {
                   handleMultipart( (Multipart)part.getContent(), message, builder );
@@ -591,6 +617,32 @@ public interface ReceiveMailService
             builder.prototype().content().set( builder.prototype().contentHtml().get() );
             builder.prototype().contentType().set( Translator.HTML );
          }
+      }
+
+      private AttachedFileValue createAttachedFileValue( Date sentDate, BodyPart part ) throws MessagingException, IOException
+      {
+         // Create attachment
+         ValueBuilder<AttachedFileValue> attachmentBuilder = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
+
+         AttachedFileValue prototype = attachmentBuilder.prototype();
+         //check contentType and fetch just the first part if necessary
+         String contentType = "";
+         if(part.getContentType().indexOf( ';' ) == -1 )
+            contentType = part.getContentType();
+         else
+            contentType = part.getContentType().substring( 0, part.getContentType().indexOf( ';' ) );
+
+         prototype.mimeType().set( contentType );
+         prototype.modificationDate().set( sentDate );
+         String fileName =  part.getFileName();
+         prototype.name().set( fileName == null ? "Nofilename" : MimeUtility.decodeText( fileName ) );
+         prototype.size().set((long) part.getSize());
+
+         InputStream inputStream = part.getInputStream();
+         String id = attachmentStore.storeAttachment( Inputs.byteBuffer( inputStream, 4096 ));
+         String uri = "store:"+id;
+         prototype.uri().set(uri);
+         return attachmentBuilder.newInstance();
       }
 
       /**
