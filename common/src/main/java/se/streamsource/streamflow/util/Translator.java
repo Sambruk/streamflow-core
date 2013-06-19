@@ -25,11 +25,11 @@ import org.w3c.tidy.Tidy;
 import org.xml.sax.ContentHandler;
 
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * 
@@ -92,16 +92,35 @@ public class Translator
       return result;
    }
 
-   public static String cleanHtml( String html ) throws UnsupportedEncodingException
+   public static String cleanHtml( String html ) throws IOException
    {
 
+      Properties p = new Properties(  );
+      p.setProperty( "new-blocklevel-tags", "st1:date, st1:city, st1:country-region, st1:place, " +
+            "st1:time, o:p, o:smarttagtype, st1:placename, st1:placetype, st1:street, " +
+            "st1:address, st1:state, st2:place, st2:placename, st2:placetype, " +
+            "st2:city, st2:street, st2:address, st2:time, st2:state, " +
+            "st2:country-region, quote, dt, dd" );
+
       Tidy tidy = new Tidy();
+      tidy.getConfiguration().addProps( p );
+      tidy.setMakeBare( true );
+      tidy.setWord2000( true );
+      tidy.setMakeClean( true );
+      tidy.setQuiet( true );
+      tidy.setShowWarnings( false );
 
+      //tidy.getConfiguration().printConfigOptions( new OutputStreamWriter( System.out ), true );
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      PrintStream ps = new PrintStream(baos);
+      StringReader reader = new StringReader( html );
 
-      tidy.parse(new StringReader(html), ps);
-      return baos.toString("UTF-8");
+      tidy.parse( reader, baos );
+
+      String result = baos.toString("UTF-8");
+      baos.close();
+      reader.close();
+
+      return result;
 
    }
 }
