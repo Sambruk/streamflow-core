@@ -16,11 +16,13 @@
  */
 package se.streamsource.streamflow.web.domain.structure.note;
 
-import java.util.Date;
-
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+
+import java.util.Date;
 
 /**
  * Value to hold information about a note.
@@ -33,4 +35,8 @@ public interface NoteValue
    Property<Date> createdOn();
 
    Property<EntityReference> createdBy();
+
+   @Optional
+   @UseDefaults
+   Property<String> contentType();
 }

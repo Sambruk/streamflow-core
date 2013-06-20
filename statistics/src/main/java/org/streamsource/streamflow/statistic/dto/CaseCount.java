@@ -23,29 +23,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: arvidhuss
- * Date: 2/20/12
- * Time: 12:53 PM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: arvidhuss Date: 2/20/12 Time: 12:53 PM To
+ * change this template use File | Settings | File Templates.
  */
-public class CaseCount implements Comparable
+public class CaseCount implements Comparable<CaseCount>
 {
-   
    protected String name;
-
    protected Integer total = new Integer( 0 );
-
    protected Map<String, Period> values;
 
-   public CaseCount( String name, String[] periods )
+   public CaseCount(String name, String[] periods)
    {
       this.name = name;
-      this.values = new HashMap<String, Period>( );
-      
+      this.values = new HashMap<String, Period>();
+
       for (int i = 0; i < periods.length; i++)
       {
-         this.values.put( periods[i], new Period( periods[i] ));
+         this.values.put( periods[i], new Period( periods[i] ) );
       }
    }
 
@@ -59,20 +53,22 @@ public class CaseCount implements Comparable
       return total;
    }
 
-   public void addCount(String period, Integer count) {
+   public void addCount(String period, Integer count)
+   {
       values.get( period ).setCount( count );
       total += count;
    }
 
-   public List<Period> getValues() {
+   public List<Period> getValues()
+   {
       ArrayList<Period> periods = new ArrayList<Period>( values.values() );
       Collections.sort( periods );
+
       return periods;
    }
 
-   public int compareTo( Object o )
+   public int compareTo(CaseCount o)
    {
-      return ((CaseCount)o).total - this.total;
+      return ((CaseCount) o).total - this.total;
    }
-
 }

@@ -38,6 +38,7 @@ import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.util.Translator;
@@ -226,6 +227,10 @@ public class CasePdfGenerator implements CaseOutput
       String note = ((Notes)caze).getLastNote() != null ? ((Notes)caze).getLastNote().note().get() : "";
       if (!empty(note))
       {
+         if( Translator.HTML.equalsIgnoreCase( ((Notes) caze).getLastNote().contentType().get() ))
+         {
+            note = Translator.htmlToText( note );
+         }
          document.moveUpOneRow( valueFontBold ).print( bundle.getString( "note" ) + ":", valueFontBold ).print( note, valueFont ).print( "", valueFont );
       }
 
@@ -392,8 +397,12 @@ public class CasePdfGenerator implements CaseOutput
                               + ", "
                               + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format(
                               data.createdOn().get() ) + ": ";
-
-                        document.print( label, valueFontBold ).print( data.body().get(), valueFont )
+                        String text = data.body().get();
+                        if(MessageType.HTML.equals( data.messageType().get() ))
+                        {
+                           text = Translator.htmlToText( text );
+                        }
+                        document.print( label, valueFontBold ).print( text, valueFont )
                               .print( "", valueFont );
                      }
                   }

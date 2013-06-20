@@ -175,7 +175,51 @@ public class FieldValueObserver
                model.changeDatatype( (String) property.get() );
             }
          }.execute();
-      }
+      }else if (property.qualifiedName().name().equals( "point" ))
+      {
+         new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changePoint( (Boolean) property.get() );
+            }
+         }.execute();
+      }else if (property.qualifiedName().name().equals( "polyline" ))
+      {
+         new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changePolyline( (Boolean) property.get() );
+            }
+         }.execute();
+      }else if (property.qualifiedName().name().equals( "polygon" ))
+      {
+         new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changePolygon( (Boolean) property.get() );
+            }
+         }.execute();
+      } else if (property.qualifiedName().name().equals( "statistical" ))
+      {
+         new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeStatistical( (Boolean) property.get() );
+            }
+         }.execute();
+      } 
    }
 
 }

@@ -51,4 +51,7 @@ public interface FieldDefinitionAdminValue
 
    @Optional
    Property<VisibilityRuleDefinitionValue> rule();
+   
+   @UseDefaults
+   Property<Boolean> statistical();
 }

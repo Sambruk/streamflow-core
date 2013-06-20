@@ -43,97 +43,146 @@ import java.util.Map;
 @Controller
 public class StatisticController
 {
-
    public StatisticController()
    {
    }
-   
+
    @RequestMapping(value = "count")
-   public ModelAndView index( @RequestParam(required = false) String fromDate,
-                        @RequestParam(required = false ) String toDate,
-                        @RequestParam(required = false ) String periodicity )
+   public ModelAndView index(@RequestParam(required = false) String fromDate,
+         @RequestParam(required = false) String toDate, @RequestParam(required = false) String periodicity)
    {
 
-      SearchCriteria criteria = new SearchCriteria(fromDate, toDate, periodicity );
+      SearchCriteria criteria = new SearchCriteria( fromDate, toDate, periodicity );
 
       StatisticService statistics = StatisticServiceFactory.getInstance( criteria );
-      
+
       ModelAndView modelAndView = new ModelAndView( "count" );
       modelAndView.addObject( "fromDate", criteria.getFormattedFromDate() );
       modelAndView.addObject( "toDate", criteria.getFormattedToDate() );
       modelAndView.addObject( "periodicity", criteria.getPeriodicity().toString() );
       modelAndView.addObject( "periods", criteria.getPeriods() );
-      modelAndView.addObject( "result",statistics.getStatistics() );
+      modelAndView.addObject( "result", statistics.getStatistics() );
+
       return modelAndView;
    }
-   
-   @RequestMapping(value="download")
-   public ModelAndView download( @RequestParam(required = false) String fromDate,
-   @RequestParam(required = false ) String toDate,
-   @RequestParam(required = false ) String periodicity )
-   {
 
-      SearchCriteria criteria = new SearchCriteria(fromDate, toDate, periodicity );
+   @RequestMapping(value = "download")
+   public ModelAndView download(@RequestParam(required = false) String fromDate,
+         @RequestParam(required = false) String toDate, @RequestParam(required = false) String periodicity)
+   {
+      SearchCriteria criteria = new SearchCriteria( fromDate, toDate, periodicity );
 
       StatisticService statistics = StatisticServiceFactory.getInstance( criteria );
-      
-      Map model = new HashMap( );
+
+      Map<String, Object> model = new HashMap<String, Object>();
       model.put( "criteria", criteria );
       model.put( "statistics", statistics.getStatistics() );
 
-
-      return new ModelAndView( new AbstractExcelView( ){
-
+      return new ModelAndView( new AbstractExcelView()
+      {
          @Override
-         protected void buildExcelDocument( Map<String, Object> model, HSSFWorkbook workbook, HttpServletRequest request, HttpServletResponse response ) throws Exception
+         protected void buildExcelDocument(Map<String, Object> model, HSSFWorkbook workbook,
+               HttpServletRequest request, HttpServletResponse response) throws Exception
          {
-            SearchCriteria criteria = (SearchCriteria)model.get( "criteria" );
-            StatisticsResult statistics = (StatisticsResult)model.get( "statistics" );
+            SearchCriteria criteria = (SearchCriteria) model.get( "criteria" );
+            StatisticsResult statistics = (StatisticsResult) model.get( "statistics" );
 
-            //create a summary sheet
-            createWorkbookSheet(workbook, "Summering", criteria.getPeriods(), statistics.getCasecountSummary() );
-            
+            // create a summary sheet
+            createWorkbookSheet( workbook, "Summering", criteria.getPeriods(), statistics.getCaseCountSummary() );
+
             // create top OU sheet
             createWorkbookSheet( workbook, "Huvudenhet", criteria.getPeriods(), statistics.getCaseCountByTopOuOwner() );
 
             createWorkbookSheet( workbook, "Ägare", criteria.getPeriods(), statistics.getCaseCountByOuOwner() );
+
+            createWorkbookSheet( workbook, "Ärendetyp", criteria.getPeriods(), statistics.getCaseCountByCaseType() );
             
-            createWorkbookSheet( workbook, "Ärendetypen", criteria.getPeriods(), statistics.getCaseCountByCasetype() );
+            createWorkbookSheet( workbook, "Ärendetyp med etiketter", criteria.getPeriods(), statistics.getCaseCountByCaseType(), statistics.getCaseCountByLabelPerCaseType());
 
-            response.setHeader("Content-Disposition", "attachment; filename=\"" +
-                  "StreamflowStatistics_" + criteria.getFormattedFromDate() + "_" + criteria.getFormattedToDate() + ".xls\"");
+            response.setHeader( "Content-Disposition",
+                  "attachment; filename=\"" + "StreamflowStatistics_" + criteria.getFormattedFromDate() + "_"
+                        + criteria.getFormattedToDate() + ".xls\"" );
          }
-         
-         private void createWorkbookSheet( HSSFWorkbook workbook, String name, String[] periods, List<CaseCount> caseCounts )
+
+         private void createWorkbookSheet(HSSFWorkbook workbook, String name, String[] periods,
+               List<CaseCount> caseCounts, Map<String, List<CaseCount>> caseCountsByLabel)
          {
-            //create a sheet
-            HSSFSheet summary = workbook.createSheet(name);
+            // create a sheet
+            HSSFSheet summary = workbook.createSheet( name );
 
-            HSSFRow header = summary.createRow(0);
+            HSSFRow header = summary.createRow( 0 );
             int count = 0;
-            header.createCell( count++ ).setCellValue("");
-            header.createCell(count++).setCellValue( "Total" );
+            header.createCell( count++ ).setCellValue( "Ärendetyp" );
+            header.createCell( count++ ).setCellValue( "Etikett" );
+            header.createCell( count++ ).setCellValue( "Total" );
 
-            for( String period : periods )
+            for (String period : periods)
             {
-               header.createCell(count++).setCellValue( period );
+               header.createCell( count++ ).setCellValue( period );
             }
 
             int rowNum = 1;
-            for(CaseCount caseCount : caseCounts )
+            
+            for (CaseCount caseCount : caseCounts)
             {
                count = 0;
-               HSSFRow row = summary.createRow(rowNum++);
+               HSSFRow row = summary.createRow( rowNum++ );
+               row.createCell( count++ ).setCellValue( caseCount.getName() );
+               row.createCell( count++ ).setCellValue( "" );
+               row.createCell( count++ ).setCellValue( caseCount.getTotal() );
+
+               for (Period period : caseCount.getValues())
+               {
+                  row.createCell( count++ ).setCellValue( period.getCount() );
+               }
+               
+               if (caseCountsByLabel.get( caseCount.getName() ) != null) {
+                  for (CaseCount labelCaseCount : caseCountsByLabel.get( caseCount.getName() )) {
+                     count = 0;
+                     HSSFRow newRow = summary.createRow( rowNum++ );
+                     newRow.createCell( count++ ).setCellValue( "" );
+                     newRow.createCell( count++ ).setCellValue( labelCaseCount.getName() );
+                     newRow.createCell( count++ ).setCellValue( labelCaseCount.getTotal() );
+   
+                     for (Period period : labelCaseCount.getValues())
+                     {
+                        newRow.createCell( count++ ).setCellValue( period.getCount() );
+                     }
+                  }
+               }
+            }
+         }
+         
+         private void createWorkbookSheet(HSSFWorkbook workbook, String name, String[] periods,
+               List<CaseCount> caseCounts)
+         {
+            // create a sheet
+            HSSFSheet summary = workbook.createSheet( name );
+
+            HSSFRow header = summary.createRow( 0 );
+            int count = 0;
+            header.createCell( count++ ).setCellValue( "" );
+            header.createCell( count++ ).setCellValue( "Total" );
+
+            for (String period : periods)
+            {
+               header.createCell( count++ ).setCellValue( period );
+            }
+
+            int rowNum = 1;
+            for (CaseCount caseCount : caseCounts)
+            {
+               count = 0;
+               HSSFRow row = summary.createRow( rowNum++ );
                row.createCell( count++ ).setCellValue( caseCount.getName() );
                row.createCell( count++ ).setCellValue( caseCount.getTotal() );
 
-               for( Period period : caseCount.getValues() )
+               for (Period period : caseCount.getValues())
                {
-                  row.createCell( count++).setCellValue( period.getCount() );
+                  row.createCell( count++ ).setCellValue( period.getCount() );
                }
             }
          }
       }, model );
    }
-
 }

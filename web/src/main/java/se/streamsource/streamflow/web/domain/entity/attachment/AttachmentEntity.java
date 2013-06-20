@@ -16,8 +16,6 @@
  */
 package se.streamsource.streamflow.web.domain.entity.attachment;
 
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
@@ -27,7 +25,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
@@ -36,6 +33,8 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * Attachment
@@ -107,6 +106,12 @@ public interface AttachmentEntity
          }
 
          return removed;
+      }
+
+      public void deleteEntity()
+      {
+         attachment.deleteFile();
+         next.deleteEntity();
       }
    }
 }

@@ -185,6 +185,11 @@ public class CaseModel
       client.postCommand( "markunread" );
    }
 
+   public void markread()
+   {
+      client.postCommand( "markread" );
+   }
+
    public CaseGeneralModel newGeneralModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();

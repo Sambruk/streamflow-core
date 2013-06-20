@@ -162,6 +162,13 @@ public class FieldValueEditModel
          client.postCommand( "changedatatype", module.valueBuilderFactory().newValue(EntityValue.class) );
       }
    }
+
+   public void changeStatistical( boolean statistical ) throws ResourceException
+   {
+      Form form = new Form( );
+      form.set( "statistical", ""+statistical );
+      client.postCommand( "changestatistical", form.getWebRepresentation() );
+   }
    
    public LinkValue getSelectedDatatype()
    {
@@ -206,6 +213,27 @@ public class FieldValueEditModel
          form.set( "visiblewhen", "" + visibleWhen );
          client.putCommand( "changerulevisiblewhen", form.getWebRepresentation() );
       }
+   }
+
+   public void changePoint( boolean point ) throws ResourceException
+   {
+      Form form = new Form( );
+      form.set( "point", ""+point );
+      client.postCommand( "changepoint", form.getWebRepresentation() );
+   }
+
+   public void changePolyline( boolean polyline ) throws ResourceException
+   {
+      Form form = new Form( );
+      form.set( "polyline", ""+polyline );
+      client.postCommand( "changepolyline", form.getWebRepresentation() );
+   }
+
+   public void changePolygon( boolean polygon ) throws ResourceException
+   {
+      Form form = new Form( );
+      form.set( "polygon", ""+polygon );
+      client.postCommand( "changepolygon", form.getWebRepresentation() );
    }
 
    @Override

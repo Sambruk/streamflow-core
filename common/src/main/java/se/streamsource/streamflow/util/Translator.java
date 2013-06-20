@@ -16,6 +16,14 @@
  */
 package se.streamsource.streamflow.util;
 
+import org.apache.tika.io.IOUtils;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.ContentHandler;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +34,9 @@ import java.util.Map;
  */
 public class Translator
 {
+   public static String HTML = "text/html";
+   public static String PLAIN = "text/plain";
+
    public static String translate(String text, Map<String, String> translations)
    {
       return translate(text, translations, null);
@@ -59,5 +70,44 @@ public class Translator
       } else
          return text;
    }
-   
+
+   public static String htmlToText( String html )
+   {
+      String result = html;
+
+         ContentHandler handler = new BodyContentHandler( );
+         Metadata metadata = new Metadata();
+         try
+         {
+            new HtmlParser().parse( IOUtils.toInputStream( result, "UTF-8" ), handler, metadata, new ParseContext());
+            result = handler.toString();
+         } catch (Exception e)
+         {
+            //do nothing
+         }
+      return result;
+   }
+
+   public static String cleanHtml( String html ) throws IOException
+   {
+
+      /*Tidy tidy = new Tidy();
+      tidy.setWord2000( true );
+      tidy.setQuiet( true );
+      tidy.setShowWarnings( false );
+
+      tidy.getConfiguration().printConfigOptions( new OutputStreamWriter( System.out ), true );
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      StringReader reader = new StringReader( html );
+
+      tidy.parse( reader, baos );
+
+      String result = baos.toString("UTF-8");
+      baos.close();
+      reader.close();
+
+      return result;*/
+      return html.replaceAll("<o:p>(\\s|&nbsp;)*</o:p>", "" );
+
+   }
 }

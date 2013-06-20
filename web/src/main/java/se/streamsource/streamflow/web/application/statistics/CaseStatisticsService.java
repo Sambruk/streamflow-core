@@ -16,16 +16,6 @@
  */
 package se.streamsource.streamflow.web.application.statistics;
 
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntityTypes;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.paramIs;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Stack;
-
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
@@ -46,7 +36,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -58,6 +47,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.util.HierarchicalVisitor;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -80,6 +70,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -97,6 +88,14 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Stack;
+
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Consumes domain events and creates application events for statistics.
@@ -529,8 +528,6 @@ public interface CaseStatisticsService
 
          prototype.identity().set(aCase.identity().get());
          prototype.description().set(aCase.getDescription() == null ? "" : aCase.getDescription() );
-         NotesTimeLine latestNote = (NotesTimeLine)aCase.notes().get();
-         prototype.note().set( (latestNote == null || latestNote.getLastNote() == null) ? "" : latestNote.getLastNote().note().get() );
          Assignee assignee = aCase.assignedTo().get();
          prototype.assigneeId().set(((Identity) assignee).identity().get());
          prototype.caseId().set(aCase.caseId().get());
@@ -538,6 +535,11 @@ public interface CaseStatisticsService
          Date closeDate = aCase.closedOn().get();
          prototype.closedOn().set(new Date(closeDate.getTime()));
          prototype.duration().set(closeDate.getTime() - aCase.createdOn().get().getTime());
+         prototype.dueOn().set(aCase.dueOn().get());
+         if (aCase.priority().get() != null)
+         {
+            prototype.priority().set(aCase.priority().get().getDescription());
+         }
 
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
@@ -585,23 +587,24 @@ public interface CaseStatisticsService
             {
                for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
                {
-                  formBuilder.prototype().formId().set(submittedFormValue.form().get().identity());
-                  formBuilder.prototype().fieldId().set(submittedFieldValue.field().get().identity());
-                  try
-                  {
-                     FieldEntity fieldEntity = module.unitOfWorkFactory().currentUnitOfWork()
+                  FieldEntity fieldEntity  = module.unitOfWorkFactory().currentUnitOfWork()
                            .get( FieldEntity.class, submittedFieldValue.field().get().identity() );
-                     formBuilder.prototype().datatype().set( fieldEntity.datatype().get().getUrl() );
-                  } catch (Exception e)
-                  {
-                     formBuilder.prototype().datatype().set( "" );
+                     
+                  if (fieldEntity.isStatistical()) {
+                     formBuilder.prototype().formId().set(submittedFormValue.form().get().identity());
+                     formBuilder.prototype().fieldId().set(submittedFieldValue.field().get().identity());
+                     if (fieldEntity.datatype().get() != null) {
+                        formBuilder.prototype().datatype().set( fieldEntity.datatype().get().getUrl() );
+                     } else {
+                        formBuilder.prototype().datatype().set( "" );
+                     }
+                     // truncate field value if greater than 500 chars.
+                     // value in fields table is varchar(500)
+                     String fieldValue = submittedFieldValue.value().get();
+                     fieldValue = fieldValue.length() > 500 ? fieldValue.substring(0, 500) : fieldValue;
+                     formBuilder.prototype().value().set(fieldValue);
+                     prototype.fields().get().add(formBuilder.newInstance());
                   }
-                  // truncate field value if greater than 500 chars.
-                  // value in fields table is varchar(500)
-                  String fieldValue = submittedFieldValue.value().get();
-                  fieldValue = fieldValue.length() > 500 ? fieldValue.substring(0, 500) : fieldValue;
-                  formBuilder.prototype().value().set(fieldValue);
-                  prototype.fields().get().add(formBuilder.newInstance());
                }
             }
          }

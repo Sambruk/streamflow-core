@@ -62,6 +62,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPointS
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.WebAPMailTemplates;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
@@ -119,6 +120,10 @@ public interface AccessPointAdministrationContext
                            @Optional @Name("mandatory") String mandatory,
                            @Optional @Name("question") String question );
 
+   void changesubject(@Name("subject") String subject);
+
+   void changetemplate(@Name("key") String key, @Optional @Name("template") String template);
+
    abstract class Mixin
          implements AccessPointAdministrationContext
    {
@@ -135,6 +140,7 @@ public interface AccessPointAdministrationContext
          Labelable.Data labelsData = RoleMap.role( Labelable.Data.class );
          FormPdfTemplate.Data template = RoleMap.role( FormPdfTemplate.Data.class );
          RequiredSignatures.Data signatures = RoleMap.role( RequiredSignatures.Data.class );
+         WebAPMailTemplates.Data messages = RoleMap.role( WebAPMailTemplates.Data.class );
 
          builder.prototype().accessPoint().set( createLinkValue( accessPoint ) );
          if (accessPointData.project().get() != null)
@@ -195,6 +201,10 @@ public interface AccessPointAdministrationContext
                builder.prototype().primarysign().set( signatures.requiredSignatures().get().get( 0 ).<RequiredSignatureValue>buildWith().newInstance() );
                builder.prototype().secondarysign().set( signatures.requiredSignatures().get().get( 1 ).<RequiredSignatureValue>buildWith().newInstance() );
          }
+
+         builder.prototype().subject().set( messages.subject().get() );
+         builder.prototype().messages().set( messages.emailTemplates().get() );
+
          return builder.newInstance();
       }
 
@@ -526,6 +536,16 @@ public interface AccessPointAdministrationContext
             return signatures.size() > 1 && signatures.get( 1 ).active().get();
          }
          return false;
+      }
+
+      public void changesubject(@Name("subject") String subject)
+      {
+         role(WebAPMailTemplates.class).changeSubject(subject);
+      }
+
+      public void changetemplate(@Name("key") String key, @Optional @Name("template") String template)
+      {
+         role(WebAPMailTemplates.class).changeTemplate(key, template);
       }
    }
 }

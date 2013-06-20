@@ -16,33 +16,19 @@
  */
 package se.streamsource.streamflow.client.ui.account;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
 import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
-import se.streamsource.streamflow.client.util.Refreshable;
-
-import java.util.Observable;
+import se.streamsource.streamflow.client.ResourceModel;
 
 /**
  * JAVADOC
  */
 public class ProfileModel
-      extends Observable
-   implements Refreshable
+      extends ResourceModel<UserProfileDTO>
 {
-   @Structure
-   Module module;
-
-   @Uses
-   private CommandQueryClient client;
-
-   private UserProfileDTO profile;
 
    public void changeMessageDeliveryType( String newDeliveryType )
          throws ResourceException
@@ -52,45 +38,35 @@ public class ProfileModel
       client.putCommand( "changemessagedeliverytype", form.getWebRepresentation() );
    }
 
-   public String getMessageDeliveryType()
+   /*public String getMessageDeliveryType()
    {
       return profile.messageDeliveryType().get();
    }
 
-   // Contact Details
-
-   public void refresh()
-   {
-      profile = client.query("index", UserProfileDTO.class ).<UserProfileDTO>buildWith().prototype();
-      setChanged();
-      notifyObservers();
-   }
 
    public UserProfileDTO getProfile()
    {
       return profile;
    }
-
+*/
    public ContactPhoneDTO getPhoneNumber()
    {
-      if (profile.phoneNumbers().get().isEmpty())
+      if (getIndex().phoneNumbers().get().isEmpty())
       {
-         ContactPhoneDTO phone = module.valueBuilderFactory().newValue(ContactPhoneDTO.class)
+         return module.valueBuilderFactory().newValue(ContactPhoneDTO.class)
                .<ContactPhoneDTO>buildWith().prototype();
-         profile.phoneNumbers().get().add( phone );
       }
-      return profile.phoneNumbers().get().get( 0 );
+      return getIndex().phoneNumbers().get().get( 0 );
    }
 
    public ContactEmailDTO getEmailAddress()
    {
-      if (profile.emailAddresses().get().isEmpty())
+      if (getIndex().emailAddresses().get().isEmpty())
       {
-         ContactEmailDTO email = module.valueBuilderFactory().newValue(ContactEmailDTO.class)
+         return module.valueBuilderFactory().newValue(ContactEmailDTO.class)
                .<ContactEmailDTO>buildWith().prototype();
-         profile.emailAddresses().get().add( email );
       }
-      return profile.emailAddresses().get().get( 0 );
+      return getIndex().emailAddresses().get().get( 0 );
    }
 
    public void changeName( String newName )

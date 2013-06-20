@@ -66,6 +66,7 @@ public class MessageContext
       builder.prototype().text().set( message.translateBody(translations) );
       builder.prototype().hasAttachments().set( ((Message)messageData).hasAttachments() );
       builder.prototype().unread().set( ((Message) messageData).isUnread() );
+      builder.prototype().messageType().set( messageData.messageType().get() );
 
       return builder.newInstance();
    }

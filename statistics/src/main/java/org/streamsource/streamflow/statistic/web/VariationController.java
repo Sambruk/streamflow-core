@@ -25,19 +25,16 @@ import org.streamsource.streamflow.statistic.service.StatisticService;
 import org.streamsource.streamflow.statistic.service.StatisticServiceFactory;
 
 /**
- * The casetyp variation controller.
+ * The case type variation controller.
  */
 @Controller
 public class VariationController
 {
-
    @RequestMapping(value = "variation")
-   public ModelAndView variation( @RequestParam(required = false) String fromDate,
-                              @RequestParam(required = false ) String toDate,
-                              @RequestParam(required = false ) String caseTypeId )
+   public ModelAndView variation(@RequestParam(required = false) String fromDate,
+         @RequestParam(required = false) String toDate, @RequestParam(required = false) String caseTypeId)
    {
-
-      SearchCriteria criteria = new SearchCriteria(fromDate, toDate, SearchCriteria.SearchPeriodicity.monthly.name() );
+      SearchCriteria criteria = new SearchCriteria( fromDate, toDate, SearchCriteria.SearchPeriodicity.monthly.name() );
 
       StatisticService statistics = StatisticServiceFactory.getInstance( criteria );
 
@@ -45,8 +42,9 @@ public class VariationController
       modelAndView.addObject( "fromDate", criteria.getFormattedFromDate() );
       modelAndView.addObject( "toDate", criteria.getFormattedToDate() );
       modelAndView.addObject( "caseTypeId", caseTypeId );
-      modelAndView.addObject( "casetypes", statistics.getCaseTypes() );
-      modelAndView.addObject( "result",statistics.getVariationForCaseType( caseTypeId ) );
+      modelAndView.addObject( "caseTypes", statistics.getCaseTypes() );
+      modelAndView.addObject( "result", statistics.getVariationForCaseType( caseTypeId ) );
+
       return modelAndView;
    }
 }

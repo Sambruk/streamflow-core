@@ -60,7 +60,7 @@ public class FieldEditorDateFieldValueView
       JPanel fieldPanel = new JPanel();
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, 5dlu, top:70dlu, pref" );
+            "pref, pref, pref, pref, 5dlu, top:70dlu, pref" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
@@ -78,6 +78,11 @@ public class FieldEditorDateFieldValueView
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.mandatory ) ) );
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.statistical ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.statistical() ) );
       formBuilder.nextLine();
 
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.name_label ) ) );

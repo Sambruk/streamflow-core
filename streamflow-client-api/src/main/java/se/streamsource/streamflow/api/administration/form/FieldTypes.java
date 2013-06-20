@@ -29,4 +29,6 @@ public enum FieldTypes
    openselection,
    textarea,
    text
+   // Postpone to 1.12
+   // geolocation
 }

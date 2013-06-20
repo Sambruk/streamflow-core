@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.api.workspace.cases.general;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.link.LinkValue;
 
@@ -34,5 +36,9 @@ public interface NoteDTO
    Property<Date> createdOn();
 
    Property<String> creator();
+
+   @Optional
+   @UseDefaults
+   Property<String> contentType();
 
 }

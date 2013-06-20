@@ -19,9 +19,7 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.qi4j.api.common.Optional;
@@ -48,22 +46,31 @@ import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignaturesValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.util.Visitor;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -79,14 +86,12 @@ import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.infrastructure.attachment.OutputstreamInput;
-import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -103,7 +108,6 @@ import static se.streamsource.dci.api.RoleMap.*;
 public interface SurfaceSummaryContext
       extends Context, IndexContext<FormDraftDTO>
 {
-   //void submit();
 
    void submitandsend();
 
@@ -131,10 +135,6 @@ public interface SurfaceSummaryContext
 
       @Optional
       @Service
-      MailSenderService mailSender;
-
-      @Optional
-      @Service
       SystemDefaultsService defaults;
 
       @Structure
@@ -142,10 +142,6 @@ public interface SurfaceSummaryContext
 
       @Service
       AttachmentStore attachmentStore;
-
-      @Optional
-      @Service
-      VelocityEngine velocity;
 
       final Logger logger = LoggerFactory.getLogger( SubmittedForms.class.getName() );
 
@@ -161,33 +157,51 @@ public interface SurfaceSummaryContext
          EndUser user = RoleMap.role( EndUser.class );
          FormDraft formSubmission = RoleMap.role( FormDraft.class );
          Case aCase = RoleMap.role( Case.class );
+         Users users = RoleMap.role( Users.class );
+         AccessPoint accessPoint = role( AccessPoint.class );
+
+         UserEntity administrator = module.unitOfWorkFactory().currentUnitOfWork().get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
+
 
          SubmittedFormValue submittedForm = userCases.submitFormAndSendCase( aCase, formSubmission, user );
          DoubleSignatureTask task = createDoubleSignatureTaskIfNeccessary( aCase, submittedForm );
          if( task != null )
          {
             // set task reference back to subittedform - second signee info
-            ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), new Locale("sv","SE") );
 
             try
             {
-               Template textTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturetextmail_sv.html" );
-               Template htmlTemplate = velocity.getTemplate( "/se/streamsource/streamflow/web/context/surface/tasks/doublesignaturehtmlmail_sv.html" );
-
 
                Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
                String organisation = organizations.organization().get().getDescription();
                String id = ((CaseId.Data)aCase).caseId().get();
                String link = defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity)task ).identity().get();
-               String textMail = createFormatedMail( id, link, organisation, textTemplate );
-               String htmlMail = createFormatedMail( id, link, organisation, htmlTemplate );
 
+               VelocityContext context = new VelocityContext();
+               context.put( "organisation", organisation );
+               context.put( "id", id );
+               context.put( "link", link );
+
+               String subjectText = MessageTemplate.text( accessPoint.subject().get() )
+                     .bind( "caseId", id ).bind("organisation", organisation).eval();
+
+               String velocityTemplate = accessPoint.emailTemplates().get().get( "secondsigneenotification" );
+               String htmlMail = module.objectBuilderFactory().newObject( HtmlMailGenerator.class ).createDoubleSignatureMail( velocityTemplate, context );
+
+               Conversations conversations = RoleMap.role( Conversations.class );
+               Conversation conversation = conversations.createConversation( subjectText, administrator );
+               EmailUserEntity emailUser = users.createEmailUser( submittedForm.secondsignee().get().email().get() );
+               conversation.addParticipant( emailUser );
+
+               conversation.createMessage( htmlMail, MessageType.HTML, administrator );
+
+               // TODO is there a way to collect the email value created by notification service to save into the task
+               // for resend
                ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
 
-               builder.prototype().subject().set( organisation + " - " + bundle.getString( "signature_notification_subject" ) );
-               builder.prototype().content().set( textMail );
-               builder.prototype().contentType().set( "text/plain" );
-               builder.prototype().contentHtml().set( htmlMail );
+               builder.prototype().subject().set( subjectText );
+               builder.prototype().contentType().set( Translator.HTML );
+               builder.prototype().content().set( htmlMail );
                builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
 
                EmailValue email = builder.newInstance();
@@ -195,11 +209,9 @@ public interface SurfaceSummaryContext
                task.updateSecondDraftUrl( link );
                task.updateLastReminderSent(new DateTime( DateTimeZone.UTC ) );
 
-               mailSender.sentEmail( email );
-
             } catch (Throwable throwable)
             {
-               logger.error( "Could not send mail", throwable );
+               logger.error( "Could not create message", throwable );
                throw new ResourceException( Status.SERVER_ERROR_INTERNAL, throwable );
             }
          }
@@ -221,35 +233,55 @@ public interface SurfaceSummaryContext
                      submittedFormValue = value;
                   }
                }
+
                if ( submittedFormValue != null )
                {
+                  Conversations conversations = RoleMap.role( Conversations.class );
+                  Conversation conversation = conversations.createConversation( accessPoint.getDescription(), user );
+
+                  PDDocument document = generatePdf( submittedFormValue );
+                  String attachmentStoreId = addToAttachmentStore( document );
+                  Attachment formPdfAttachment = conversation.createAttachment( "store:" + attachmentStoreId );
+                  formPdfAttachment.changeDescription( accessPoint.getDescription() + ".pdf" );
+                  formPdfAttachment.changeMimeType( "application/pdf" );
+                  formPdfAttachment.changeModificationDate( new Date( ) );
+                  formPdfAttachment.changeSize( attachmentStore.getAttachmentSize( attachmentStoreId ) );
+                  formPdfAttachment.changeName( accessPoint.getDescription() + ".pdf" );
+
                   // find all form attachments and attach them to the email as well
                   List<AttachedFileValue> formAttachments = new ArrayList<AttachedFileValue>();
                   for (SubmittedFieldValue value : submittedFormValue.fields())
                   {
                      FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, value.field().get().identity() );
-                     if ( field.fieldValue().get() instanceof AttachmentFieldValue )
+                     if ( field.fieldValue().get() instanceof AttachmentFieldValue)
                      {
                         if ( !Strings.empty( value.value().get() ) )
                         {
                            AttachmentFieldSubmission currentFormDraftAttachmentField = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, value.value().get() );
                            AttachmentEntity attachment = module.unitOfWorkFactory().currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+                           conversation.addAttachment( attachment );
 
-                           ValueBuilder<AttachedFileValue> formAttachment = module.valueBuilderFactory().newValueBuilder( AttachedFileValue.class );
-                           formAttachment.prototype().mimeType().set( URLConnection.guessContentTypeFromName( currentFormDraftAttachmentField.name().get() ) );
-                           formAttachment.prototype().uri().set( attachment.uri().get() );
-                           formAttachment.prototype().modificationDate().set( attachment.modificationDate().get() );
-                           formAttachment.prototype().name().set( currentFormDraftAttachmentField.name().get() );
-                           formAttachment.prototype().size().set( attachmentStore.getAttachmentSize( attachment.uri().get() ) );
-                           formAttachments.add( formAttachment.newInstance() );
                         }
                      }
                   }
-                  notifyByMail( submittedFormValue, form.enteredEmails().get(), formAttachments );
+
+                  String[] mailAddresses = form.enteredEmails().get().split( "," );
+
+                  for( String mailAddress : mailAddresses )
+                  {
+                     conversation.addParticipant( users.createEmailUser( mailAddress ) );
+                  }
+
+                  ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), locale );
+                  HtmlMailGenerator htmlMailGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
+
+                  conversation.changeDraftMessage( htmlMailGenerator.createMailContent( bundle.getString( "mail_notification_body" ), "" ) );
+
+                  conversation.createMessageFromDraft( administrator, MessageType.HTML );
                }
             } catch (Throwable throwable)
             {
-               logger.error( "Could not send mail", throwable );
+               logger.error( "Could not create confirmation conversation message.", throwable );
             }
          }
       }
@@ -294,25 +326,6 @@ public interface SurfaceSummaryContext
             }
          }
          return task;
-      }
-
-      private String createFormatedMail( String id, String link, String organisation, Template template)
-      {
-         VelocityContext context = new VelocityContext();
-         
-         context.put( "organisation", organisation );
-         context.put( "id", id );
-         context.put( "link", link );
-         StringWriter writer = new StringWriter();
-         try
-         {
-            template.merge( context, writer );
-
-            return writer.toString();
-         } catch (IOException e)
-         {
-            throw new IllegalArgumentException("Could not create html mail", e);
-         }
       }
 
       public RequiredSignaturesValue signatures()
@@ -388,59 +401,6 @@ public interface SurfaceSummaryContext
          CaseId.Data idData = role( CaseId.Data.class);
 
          return pdfGenerator.generateSubmittedFormPdf( submittedFormValue, idData, uri, locale );
-      }
-
-      private void notifyByMail( SubmittedFormValue form, String emails, List<AttachedFileValue> formAttachments ) throws Throwable
-      {
-         String[] mails = emails.split( "," );
-         PDDocument document = generatePdf( form );
-
-         // TODO handle case attachments: also attach them to the mail
-         AccessPoint role = role( AccessPoint.class );
-         Date submittedOn = form.submissionDate().get();
-
-         mailFormPDF( role.getDescription(), submittedOn, document, formAttachments, mails );
-      }
-
-      private void mailFormPDF( String accessPointName, Date submittedOn, PDDocument document, List<AttachedFileValue> formAttachments, String... recipients )
-      {
-         ResourceBundle bundle = ResourceBundle.getBundle( SurfaceSummaryContext.class.getName(), locale );
-
-         try
-         {
-            String id = addToAttachmentStore( document );
-            for (String recipient : recipients)
-            {
-               ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class);
-
-               // leave from address and fromName empty to allow mail sender to pick up
-               // default values from mail sender configuration
-               builder.prototype().subject().set( accessPointName );
-               builder.prototype().content().set( bundle.getString( "mail_notification_body" ) );
-               builder.prototype().contentType().set("text/plain");
-               builder.prototype().to().set( recipient );
-
-               List<AttachedFileValue> attachments = builder.prototype().attachments().get();
-               ValueBuilder<AttachedFileValue> attachment = vbf.newValueBuilder( AttachedFileValue.class );
-               attachment.prototype().mimeType().set("application/pdf");
-               attachment.prototype().uri().set("store:" + id);
-               attachment.prototype().modificationDate().set( submittedOn );
-               attachment.prototype().name().set( accessPointName + ".pdf");
-               attachment.prototype().size().set(attachmentStore.getAttachmentSize(id));
-               attachments.add(attachment.newInstance());
-
-               if ( formAttachments.size() > 0 ) {
-                  for (AttachedFileValue formAttachment : formAttachments)
-                  {
-                     attachments.add( formAttachment );
-                  }
-               }
-               mailSender.sentEmail( builder.newInstance() );
-            }
-         } catch (Throwable throwable)
-         {
-            logger.error( "Could not send mail", throwable );
-         }
       }
 
       private String addToAttachmentStore( final PDDocument pdf ) throws Throwable

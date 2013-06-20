@@ -21,53 +21,68 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.structure.Module;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
-import se.streamsource.streamflow.api.workspace.cases.contact.ContactPhoneDTO;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
 
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
  */
 public class ProfileView
       extends JScrollPane
-      implements Observer, Refreshable
+      implements TransactionListener, Refreshable
 {
+   @Service
+   DialogService dialogs;
+
+   @Structure
+   Module module;
+
    private ProfileModel model;
 
-   private StateBinder profileBinder;
-   private StateBinder phoneNumberBinder;
-   private StateBinder emailBinder;
+   private ValueBinder profileBinder;
+   private ValueBinder phoneNumberBinder;
+   private ValueBinder emailBinder;
 
-   public JPanel profileForm;
-   public JRadioButton noneButton;
-   public JRadioButton emailButton;
+   private ActionBinder actionBinder;
+
+   private JPanel profileForm;
+   private JRadioButton noneButton;
+   private JRadioButton emailButton;
+
+   private JTextField name;
+   private JTextField emailAddress;
+   private JTextField phoneNumber;
+
+   private JTextField markReadTimeout;
+   private JTextArea mailFooter;
+
 
    public ProfileView(@Service ApplicationContext context, @Uses ProfileModel model, @Structure Module module)
    {
@@ -75,7 +90,9 @@ public class ProfileView
       setActionMap(am);
 
       this.model = model;
-      model.addObserver( this );
+
+      actionBinder = module.objectBuilderFactory().newObjectBuilder( ActionBinder.class ).use( am ).newInstance();
+      actionBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
       JPanel panel = new JPanel(new BorderLayout());
       panel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
@@ -85,180 +102,179 @@ public class ProfileView
       FormLayout profileLayout = new FormLayout("85dlu, 5dlu, 120dlu:grow",
             "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
-      profileBinder = module.objectBuilderFactory().newObject(StateBinder.class);
-      profileBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      UserProfileDTO profileTemplate = profileBinder
-            .bindingTemplate(UserProfileDTO.class);
-
-      phoneNumberBinder = module.objectBuilderFactory().newObject(StateBinder.class);
-      phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactPhoneDTO phoneTemplate = phoneNumberBinder
-            .bindingTemplate(ContactPhoneDTO.class);
-
-      emailBinder = module.objectBuilderFactory().newObject(StateBinder.class);
-      emailBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactEmailDTO emailTemplate = emailBinder
-            .bindingTemplate(ContactEmailDTO.class);
+      profileBinder = module.objectBuilderFactory().newObject( ValueBinder.class );
+      phoneNumberBinder = module.objectBuilderFactory().newObject( ValueBinder.class );
+      emailBinder = module.objectBuilderFactory().newObject( ValueBinder.class );
 
       DefaultFormBuilder profileBuilder = new DefaultFormBuilder(profileLayout,
             profileForm );
 
       JLabel title = new JLabel(i18n
             .text( AccountResources.contact_info_for_user_separator));
-      title.setFont(title.getFont().deriveFont(Font.BOLD));
+      title.setFont( title.getFont().deriveFont( Font.BOLD ) );
       profileBuilder.append( title, 3 );
       profileBuilder.nextLine();
 
       profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( profileBinder.bind( TEXTFIELD.newField(),
-            profileTemplate.name() ) );
+      profileBuilder.add( profileBinder.bind( "name", actionBinder.bind( "changeName", name = new JTextField() ) ) );
       profileBuilder.nextLine();
 
       profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.email_label ) ) );
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( emailBinder.bind( TEXTFIELD.newField(), emailTemplate
-            .emailAddress() ) );
+      profileBuilder.add( emailBinder.bind( "emailAddress", actionBinder.bind( "changeEmailAddress", emailAddress = new JTextField() ) ) );
       profileBuilder.nextLine();
 
       profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.phone_label ) ) );
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( phoneNumberBinder.bind( TEXTFIELD.newField(),
-            phoneTemplate.phoneNumber() ) );
+      profileBuilder.add( phoneNumberBinder.bind( "phoneNumber", actionBinder.bind( "changePhoneNumber", phoneNumber = new JTextField() ) ) );
       profileBuilder.nextLine( 2 );
 
       profileBuilder.add( new JLabel( i18n
             .text( WorkspaceResources.choose_message_delivery_type ) ) );
-      noneButton = (JRadioButton) RADIOBUTTON.newField();
-      noneButton.setAction( am.get( "messageDeliveryTypeNone" ) );
-      noneButton.setSelected(true);
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( noneButton );
+      profileBuilder.add( profileBinder.bind( "messageDeliveryType", actionBinder.bind( "messageDeliveryTypeNone", noneButton = new JRadioButton( ) ) ) );
       profileBuilder.nextLine();
       profileBuilder.nextColumn( 2 );
-      emailButton = (JRadioButton) RADIOBUTTON.newField();
-      emailButton.setAction( am.get( "messageDeliveryTypeEmail" ) );
-      profileBuilder.add( emailButton );
+      profileBuilder.add( profileBinder.bind( "messageDeliveryType", actionBinder.bind( "messageDeliveryTypeEmail", emailButton = new JRadioButton(  ) ) ) );
 
+      noneButton.setAction( am.get( "messageDeliveryTypeNone" ) );
+      emailButton.setAction( am.get( "messageDeliveryTypeEmail" ) );
+      noneButton.setActionCommand( "none" );
+      emailButton.setActionCommand( "email" );
       // Group the radio buttons.
       ButtonGroup group = new ButtonGroup();
       group.add(noneButton);
-      group.add(emailButton);
+      group.add( emailButton );
 
       profileBuilder.nextLine( 2 );
 
-      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mark_read_timeout )));
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mark_read_timeout ) ) );
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( profileBinder.bind( TEXTFIELD.newField(),profileTemplate.markReadTimeout() ));
-
+      profileBuilder.add( profileBinder.bind( "markReadTimeout", actionBinder.bind( "changeMarkReadTimeout", markReadTimeout = new JTextField() ) ) );
       profileBuilder.nextLine( 2 );
 
-      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mail_footer )));
+      profileBuilder.add( new JLabel( i18n.text( WorkspaceResources.mail_footer ) ) );
       profileBuilder.nextColumn( 2 );
-      profileBuilder.add( profileBinder.bind( TEXTAREA.newField(),profileTemplate.mailFooter() ));
+
+      mailFooter = new JTextArea(10,30);
+      profileBuilder.add( profileBinder.bind( "mailFooter", actionBinder.bind( "changeMailFooter", mailFooter )) );
+
       profileBuilder.nextLine();
 
-      profileBinder.addObserver( this );
-      phoneNumberBinder.addObserver(this);
-      emailBinder.addObserver(this);
       setViewportView(panel);
 
-      new RefreshWhenShowing(this, model);
+      new RefreshWhenShowing(this, this);
    }
 
    @Action
-   public void messageDeliveryTypeNone() throws Exception
+   public Task messageDeliveryTypeNone() throws Exception
    {
-      model.changeMessageDeliveryType("none");
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeMessageDeliveryType("none");
+         }
+      };
    }
 
    @Action
-   public void messageDeliveryTypeEmail() throws Exception
+   public Task messageDeliveryTypeEmail() throws Exception
    {
-      model.changeMessageDeliveryType("email");
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeMessageDeliveryType("email");
+         }
+      };
+   }
+
+
+   @Action
+   public Task changeName()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeName( name.getText() );
+         }
+      };
    }
 
    @Action
-   public void execute()
+   public Task changeEmailAddress()
    {
-      
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeEmailAddress( emailAddress.getText() );
+         }
+      };
+   }
+
+   @Action
+   public Task changePhoneNumber()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changePhoneNumber( phoneNumber.getText() );
+         }
+      };
+   }
+
+   @Action
+   public Task changeMarkReadTimeout()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeMarkReadTimeout( markReadTimeout.getText() );
+         }
+      };
+   }
+
+   @Action
+   public Task changeMailFooter()
+   {
+      return new CommandTask()
+      {
+         @Override
+         protected void command() throws Exception
+         {
+            model.changeMailFooter( mailFooter.getText( ) );
+         }
+      };
    }
 
    public void refresh()
    {
       model.refresh();
+
+      profileBinder.update( model.getIndex() );
+      emailBinder.update( model.getEmailAddress() );
+      phoneNumberBinder.update( model.getPhoneNumber() );
+
    }
 
-   public void update(Observable observable, Object arg)
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (observable == model)
+      if (matches( withNames( "changedTimeout", "updatedContact", "changedMessageDeliveryType", "changedDescription", "changedMailFooter"),
+            transactions ))
       {
-         profileBinder.updateWith( model.getProfile() );
-         phoneNumberBinder.updateWith(model.getPhoneNumber());
-         emailBinder.updateWith(model.getEmailAddress());
-
-         String messageDeliveryType = model.getMessageDeliveryType();
-         if ("email".equalsIgnoreCase(messageDeliveryType))
-         {
-            emailButton.setSelected(true);
-         } else
-         {
-            noneButton.setSelected(true);
-         }
-      } else
-      {
-         Property property = (Property) arg;
-         if (property.qualifiedName().name().equals("name"))
-         {
-            try
-            {
-               model.changeName((String) property.get());
-            } catch (ResourceException e)
-            {
-               throw new OperationException( CaseResources.could_not_change_name, e);
-            }
-         } else if (property.qualifiedName().name().equals("phoneNumber"))
-         {
-            try
-            {
-               model.changePhoneNumber((String) property.get());
-            } catch (ResourceException e)
-            {
-               throw new OperationException(
-                     CaseResources.could_not_change_phone_number, e);
-            }
-         } else if (property.qualifiedName().name().equals("emailAddress"))
-         {
-            try
-            {
-               model.changeEmailAddress((String) property.get());
-            } catch (ResourceException e)
-            {
-               throw new OperationException(
-                     CaseResources.could_not_change_email_address, e);
-            }
-         } else if (property.qualifiedName().name().equals("markReadTimeout"))
-         {
-            try
-            {
-               model.changeMarkReadTimeout((String) property.get());
-            } catch (ResourceException e)
-            {
-               throw new OperationException(
-                     CaseResources.could_not_change_mark_read_timeout, e);
-            }
-         } else if (property.qualifiedName().name().equals("mailFooter"))
-         {
-            try
-            {
-               model.changeMailFooter( (String) property.get() );
-            } catch (ResourceException e)
-            {
-               throw new OperationException(
-                     CaseResources.could_not_change_mark_read_timeout, e);
-            }
-         }
+         refresh();
       }
    }
-
 }

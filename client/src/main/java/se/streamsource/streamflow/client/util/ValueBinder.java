@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLab
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -69,6 +70,7 @@ public class ValueBinder
             JTextField.class,
             JTextArea.class,
             JTextPane.class,
+            JEditorPane.class,
             JScrollPane.class,
             JPasswordField.class,
             JCheckBox.class,

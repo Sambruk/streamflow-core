@@ -23,6 +23,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.Iterables;
@@ -54,7 +55,7 @@ public class SelectLinkDialog
    private JTextField filterField;
 
    public SelectLinkDialog( final @Service ApplicationContext context,
-                                     @Uses EventList<? extends LinkValue> links)
+                                     @Uses EventList<? extends LinkValue> links, @Optional @Uses Integer showFilterCount)
    {
       super( new BorderLayout());
       setPreferredSize( new Dimension( 250, 200 ) );
@@ -82,7 +83,7 @@ public class SelectLinkDialog
       }
 
       // Skip filtering if short list
-      if (links.size() < 10)
+      if (links.size() < (showFilterCount == null ? 10 : showFilterCount.intValue()) )
          filterField.setVisible( false );
    }
 

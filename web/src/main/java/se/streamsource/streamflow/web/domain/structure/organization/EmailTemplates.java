@@ -16,16 +16,16 @@
  */
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Templates for emails sent out by email Access Points.
@@ -39,6 +39,7 @@ public interface EmailTemplates
 
    interface Data
    {
+      @UseDefaults
       Property<String> subject();
 
       @UseDefaults
@@ -82,7 +83,7 @@ public interface EmailTemplates
       public void synchronizeTemplates()
       {
          // Synchronize defaults for emails
-         ResourceBundle bundle = ResourceBundle.getBundle(EmailTemplates.class.getName());
+         ResourceBundle bundle = ResourceBundle.getBundle(EmailTemplates.class.getName(), new Locale( "sv", "SE" ) );
          for (String key : bundle.keySet())
          {
             if (data.emailTemplates().get().get(key) == null)

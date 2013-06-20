@@ -65,13 +65,14 @@ public class CaseNoteModel extends Observable
 
    public void addNote( String newNote )
    {
-      if (newNote.equals(note.note().get()))
+      if ( newNote.equals( note.note().get() ) )
          return; // No change
       else
          note.note().set( newNote );
 
       ValueBuilder<NoteDTO> builder = module.valueBuilderFactory()
             .newValueBuilder( NoteDTO.class ).withPrototype( note );
+      builder.prototype().contentType().set( note.contentType().get() );
       client.postCommand( "addnote", builder.newInstance() );
    }
 

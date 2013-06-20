@@ -16,11 +16,6 @@
  */
 package se.streamsource.streamflow.web.application.organization;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -30,7 +25,6 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
@@ -38,6 +32,7 @@ import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValu
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
@@ -68,6 +63,11 @@ import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * Generates test data
@@ -186,8 +186,8 @@ public interface TestDataService
                conversationEntity.addParticipant( testUser );
                conversationEntity.addParticipant( someUser );
                conversationEntity.addParticipant( someUser2 );
-               conversation.createMessage( "Test message " + i, testUser );
-               conversation.createMessage( "In reply " + i, someUser );
+               conversation.createMessage( "Test message " + i, MessageType.PLAIN, testUser );
+               conversation.createMessage( "In reply " + i, MessageType.PLAIN, someUser );
             }
          }
 
