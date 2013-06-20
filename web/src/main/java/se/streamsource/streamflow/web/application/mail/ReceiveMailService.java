@@ -293,6 +293,7 @@ public interface ReceiveMailService
          Folder archive = null;
          boolean archiveExists = false;
          List<Message> copyToArchive = new ArrayList<Message>();
+         MimeMessage internalMessage = null;
 
          try
          {
@@ -337,24 +338,32 @@ public interface ReceiveMailService
 
                   try
                   {
-                     Object content = message.getContent();
+                     // Force a complete fetch of the message by cloning it to a internal MimeMessage
+                     // to avoid "javax.mail.MessagingException: Unable to load BODYSTRUCTURE" problems
+                     // f.ex. experienced if the message contains a windows .eml file as attachment!
+
+                     // Beware that all flag and folder operations have to be made on the original message
+                     // and not on the internal one!!
+                     internalMessage = new MimeMessage( (MimeMessage)message );
+
+                     Object content = internalMessage.getContent();
 
                      // Get email fields
-                     builder.prototype().from().set( ((InternetAddress) message.getFrom()[0]).getAddress() );
-                     builder.prototype().fromName().set( ((InternetAddress) message.getFrom()[0]).getPersonal() );
-                     builder.prototype().subject().set( message.getSubject() == null ? "" : message.getSubject() );
+                     builder.prototype().from().set( ((InternetAddress) internalMessage.getFrom()[0]).getAddress() );
+                     builder.prototype().fromName().set( ((InternetAddress) internalMessage.getFrom()[0]).getPersonal() );
+                     builder.prototype().subject().set( internalMessage.getSubject() == null ? "" : internalMessage.getSubject() );
 
                      // Get headers
-                     for (Header header : Iterables.iterable( (Enumeration<Header>) message.getAllHeaders() ))
+                     for (Header header : Iterables.iterable( (Enumeration<Header>) internalMessage.getAllHeaders() ))
                      {
                         builder.prototype().headers().get().put( header.getName(), header.getValue() );
                      }
 
                      // Get all recipients in order - TO, CC, BCC
                      // and provide it to the toaddress method to pick the first possible valid adress
-                     builder.prototype().to().set( toaddress( message.getAllRecipients(), builder.prototype().headers().get().get( "References" ) ) );
+                     builder.prototype().to().set( toaddress( internalMessage.getAllRecipients(), builder.prototype().headers().get().get( "References" ) ) );
 
-                     builder.prototype().messageId().set( message.getHeader( "Message-ID" )[0] );
+                     builder.prototype().messageId().set( internalMessage.getHeader( "Message-ID" )[0] );
 
                      // Get body and attachments
                      String body = "";
@@ -365,10 +374,10 @@ public interface ReceiveMailService
                      {
                         body = content.toString();
                         builder.prototype().content().set( body );
-                        builder.prototype().contentType().set( message.getContentType() );
+                        builder.prototype().contentType().set( internalMessage.getContentType() );
                      } else if (content instanceof Multipart)
                      {
-                        handleMultipart( (Multipart) content, message, builder );
+                        handleMultipart( (Multipart) content, internalMessage, builder );
                      } else if (content instanceof InputStream)
                      {
                         content = new MimeMessage( session, (InputStream) content ).getContent();
@@ -378,10 +387,10 @@ public interface ReceiveMailService
                         String data = new String( baos.toByteArray(), "UTF-8" );
                         // Unknown content type - abort
                         // and create failure case
-                        String subj = "Unkonwn content type: " + message.getSubject();
+                        String subj = "Unkonwn content type: " + internalMessage.getSubject();
                         builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
                         builder.prototype().content().set( body );
-                        builder.prototype().contentType().set( message.getContentType() );
+                        builder.prototype().contentType().set( internalMessage.getContentType() );
                         systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                         copyToArchive.add( message );
                         if (expunge)
@@ -393,10 +402,10 @@ public interface ReceiveMailService
                      {
                         // Unknown content type - abort
                         // and create failure case
-                        String subj = "Unkonwn content type: " + message.getSubject();
+                        String subj = "Unkonwn content type: " + internalMessage.getSubject();
                         builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
                         builder.prototype().content().set( body );
-                        builder.prototype().contentType().set( message.getContentType() );
+                        builder.prototype().contentType().set( internalMessage.getContentType() );
                         systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                         copyToArchive.add( message );
                         if (expunge)
@@ -491,7 +500,7 @@ public interface ReceiveMailService
 
                   } catch (Throwable e)
                   {
-                     String subj = "Unknown error: " + message.getSubject();
+                     String subj = "Unknown error: " + internalMessage.getSubject();
                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
 
                      StringBuilder content = new StringBuilder();
@@ -503,7 +512,7 @@ public interface ReceiveMailService
                      }
 
                      builder.prototype().content().set( content.toString() );
-                     builder.prototype().contentType().set( message.getContentType() );
+                     builder.prototype().contentType().set( internalMessage.getContentType() );
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      copyToArchive.add( message );
                      if (expunge)
