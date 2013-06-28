@@ -397,6 +397,7 @@ public interface ReceiveMailService
                            message.setFlag( Flags.Flag.DELETED, true );
 
                         uow.discard();
+                        tries = 3;
                         continue;
                      } else
                      {
@@ -413,6 +414,7 @@ public interface ReceiveMailService
 
                         uow.discard();
                         logger.error( "Could not parse emails: unknown content type " + content.getClass().getName() );
+                        tries = 3;
                         continue;
                      }
 
@@ -447,6 +449,7 @@ public interface ReceiveMailService
 
                         uow.discard();
                         logger.error( "Received a mail bounce reply: " + body );
+                        tries = 3;
                         continue;
                      }
 
@@ -464,6 +467,7 @@ public interface ReceiveMailService
 
                         uow.discard();
                         logger.error( "Received a mail without TO address: " + body );
+                        tries = 3;
                         continue;
                      }
 
