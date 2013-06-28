@@ -143,7 +143,7 @@ public abstract class StatisticService
             + "where c.closed_on >= ? " //
             + "and c.closed_on <= ? " //
             + "and c.casetype is null " //
-            + "group by the_casetype, " + getGroupOrOrderByClause( "closed_on", "period" )
+            + "group by casetype, " + getGroupOrOrderByClause( "closed_on", "period" )
             + " " //
             + "union " //
             + "select casetype as the_casetype, " + getPeriodFunction( "closed_on" )
@@ -152,7 +152,7 @@ public abstract class StatisticService
             + "where c.closed_on >= ? " //
             + "and c.closed_on <= ? " //
             + "and c.casetype is not null " //
-            + "group by the_casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) + " " //
+            + "group by casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) + " " //
             + "order by the_casetype, " + getGroupOrOrderByClause( "closed_on", "period" );
    }
 
@@ -167,7 +167,7 @@ public abstract class StatisticService
             + "and c.closed_on >= ? " //
             + "and c.closed_on <= ? " //
             + "and c.casetype is null " //
-            + "group by the_casetype, " + getGroupOrOrderByClause( "closed_on", "period" )
+            + "group by casetype, " + getGroupOrOrderByClause( "closed_on", "period" )
             + ", label " //
             + "union " //
             + "select d1.description as the_casetype, d2.description as the_label, " + getPeriodFunction( "closed_on" )
@@ -178,7 +178,7 @@ public abstract class StatisticService
             + "and c.closed_on >= ? " //
             + "and c.closed_on <= ? " //
             + "and c.casetype is not null " //
-            + "group by the_casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) + ", the_label " //
+            + "group by casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) + ", the_label " //
             + "order by the_casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) + ", the_label";
    }
 
