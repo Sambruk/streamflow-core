@@ -22,7 +22,7 @@ Mac OSX:
 
 ## Installation
 
-see [install.md](readme.md)
+see [install.md](install.md)
 
 ## Run
 
