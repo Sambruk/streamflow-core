@@ -34,6 +34,7 @@
         case 'production':
           return 'http://localhost:8082/streamflow/';
         default:
+          //return baseUrl + "/../streamflow"/;
           return baseUrl + "/api/";
       }
     }
