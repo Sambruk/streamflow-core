@@ -9,15 +9,15 @@ files = [
   JASMINE_ADAPTER,
   'app/components/angular/angular.js',
   'app/components/angular-mocks/angular-mocks.js',
+  'app/components/underscore/underscore-min.js',
+  'app/components/jquery/jquery.min.js',
   'app/modules/*.js',
   'app/modules/**/*.js',
-  'test/fixture/**/*.js',
-  'test/lib/**/*.js',
-  'test/unit/**/*.js'
+  'test/**/*.js'
 ];
 
 // list of files to exclude
-exclude = [];
+exclude = ['test/e2e/**/*.js'];
 
 // test results reporter to use
 // possible values: dots || progress || growl
