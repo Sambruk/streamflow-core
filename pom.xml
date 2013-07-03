@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.14-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -19,7 +19,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-	<repositories>
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <url>http://79.125.6.136/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
+	<!-- <repositories>
     	<repository>
       	  <id>streamflow-release</id>
 		  <name>Streamflow Release Repository</name>
@@ -42,7 +49,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
+	</repositories> -->
 
     <modules>
         <module>dci</module>
@@ -71,6 +78,18 @@
     <distributionManagement>
         <repository>
             <id>releases</id>
+            <name>Waybuild Release Repo</name>
+            <url>http://79.125.6.136/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Waybuild Snapshot Repo</name>
+            <url>http://79.125.6.136/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <!-- <distributionManagement>
+        <repository>
+            <id>releases</id>
             <name>Cloudbees Release Repo</name>
             <url>https://repository-streamflow.forge.cloudbees.com/release/</url>
         </repository>
@@ -79,7 +98,7 @@
             <name>Cloudbees Snapshot Repo</name>
             <url>https://repository-streamflow.forge.cloudbees.com/snapshot/</url>
         </snapshotRepository>
-    </distributionManagement>
+    </distributionManagement> -->
 
     <issueManagement>
         <system>JIRA</system>
