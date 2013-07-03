@@ -21,6 +21,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.xml.sax.ContentHandler;
 
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class Translator
          Metadata metadata = new Metadata();
          try
          {
-            new HtmlParser().parse( IOUtils.toInputStream( result, "UTF-8" ), handler, metadata, new ParseContext());
+            new HtmlParser().parse( IOUtils.toInputStream( result, guessEncoding( result ) ), handler, metadata, new ParseContext());
             result = handler.toString();
          } catch (Exception e)
          {
@@ -109,5 +110,19 @@ public class Translator
       return result;*/
       return html.replaceAll("<o:p>(\\s|&nbsp;)*</o:p>", "" );
 
+   }
+
+   public static String guessEncoding( String input) {
+      byte [] bytes = input.getBytes();
+      String DEFAULT_ENCODING = "UTF-8";
+      UniversalDetector detector = new UniversalDetector(null);
+      detector.handleData(bytes, 0, bytes.length);
+      detector.dataEnd();
+      String encoding = detector.getDetectedCharset();
+      detector.reset();
+      if (encoding == null) {
+         encoding = DEFAULT_ENCODING;
+      }
+      return encoding;
    }
 }

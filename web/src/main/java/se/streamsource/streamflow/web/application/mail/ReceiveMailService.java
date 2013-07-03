@@ -438,7 +438,6 @@ public interface ReceiveMailService
                      if (isSmtpErrorReport)
                      {
                         // This is a mail bounce due to SMTP error - create support case.
-
                         String subj = "Undeliverable mail: " + builder.prototype().subject().get();
 
                         builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
@@ -524,6 +523,7 @@ public interface ReceiveMailService
 
                      uow.discard();
                      logger.error( "Could not parse emails", e );
+                     tries = 3;
                   }
 
                }

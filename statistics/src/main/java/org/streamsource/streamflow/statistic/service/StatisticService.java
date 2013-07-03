@@ -16,14 +16,6 @@
  */
 package org.streamsource.streamflow.statistic.service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -36,6 +28,14 @@ import org.streamsource.streamflow.statistic.dto.StatisticsResult;
 import org.streamsource.streamflow.statistic.dto.TopOu;
 import org.streamsource.streamflow.statistic.web.AppContextListener;
 import org.streamsource.streamflow.statistic.web.Dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A service that fetches case statistics data from the statistics database.
@@ -168,7 +168,7 @@ public abstract class StatisticService
             + "and c.closed_on <= ? " //
             + "and c.casetype is null " //
             + "group by casetype, " + getGroupOrOrderByClause( "closed_on", "period" )
-            + ", label " //
+            + ", label, d2.description " //
             + "union " //
             + "select d1.description as the_casetype, d2.description as the_label, " + getPeriodFunction( "closed_on" )
             + " as period, count(case_id) as number " //
@@ -178,7 +178,7 @@ public abstract class StatisticService
             + "and c.closed_on >= ? " //
             + "and c.closed_on <= ? " //
             + "and c.casetype is not null " //
-            + "group by casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) + ", the_label " //
+            + "group by casetype, d1.description, " + getGroupOrOrderByClause( "closed_on", "period" ) + ", d2.description " //
             + "order by the_casetype, " + getGroupOrOrderByClause( "closed_on", "period" ) + ", the_label";
    }
 
