@@ -78,6 +78,18 @@
     <distributionManagement>
         <repository>
             <id>releases</id>
+            <name>Waybuild Release Repo</name>
+            <url>http://79.125.6.136/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Waybuild Snapshot Repo</name>
+            <url>http://79.125.6.136/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <!-- <distributionManagement>
+        <repository>
+            <id>releases</id>
             <name>Cloudbees Release Repo</name>
             <url>https://repository-streamflow.forge.cloudbees.com/release/</url>
         </repository>
@@ -86,7 +98,7 @@
             <name>Cloudbees Snapshot Repo</name>
             <url>https://repository-streamflow.forge.cloudbees.com/snapshot/</url>
         </snapshotRepository>
-    </distributionManagement>
+    </distributionManagement> -->
 
     <issueManagement>
         <system>JIRA</system>
