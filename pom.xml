@@ -19,7 +19,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-	<repositories>
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <url>http://79.125.6.136/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
+	<!-- <repositories>
     	<repository>
       	  <id>streamflow-release</id>
 		  <name>Streamflow Release Repository</name>
@@ -42,7 +49,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
+	</repositories> -->
 
     <modules>
         <module>dci</module>
