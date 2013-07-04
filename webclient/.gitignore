@@ -5,4 +5,4 @@ dist
 app/components
 test_server/*.jar
 test_server/*.war
-
+libpeerconnection.log
