@@ -29,7 +29,7 @@
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
       $routeProvider
-      .when('/:projectId/:projectType', {
+      .when('/projects/:projectId/:projectType', {
         templateUrl: 'modules/views/case-list.html',
         controller: 'CaseListCtrl'
       })
