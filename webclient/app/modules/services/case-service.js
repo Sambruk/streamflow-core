@@ -34,7 +34,7 @@
             {links: caseId}
           ],
           onSuccess:function (resource, result) {
-            result.index = new SfCase(resource.response.index);
+            result.push(new SfCase(resource.response.index));
           }
         });
       },
@@ -52,6 +52,23 @@
           ],
           onSuccess:function (resource, result) {
             result.push(resource.response.index.note);
+          }
+        });
+      },
+
+      getSelectedGeneral: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:[
+            {resources:'workspacev2'},
+            {resources: 'projects'},
+            {'index.links': projectId},
+            {resources: projectType },
+            {queries: 'cases?tq=select+*'},
+            {links: caseId},
+            {resources: 'general'}
+          ],
+          onSuccess:function (resource, result) {
+            result.push(resource.response.index);
           }
         });
       },
