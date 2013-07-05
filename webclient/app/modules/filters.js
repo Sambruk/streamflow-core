@@ -30,5 +30,11 @@
     };
   }]);
 
+  sf.filters.filter('longDate', ['$filter', function($filter) {
+    return function(input) {
+      return $filter('date')(input, 'yyyy-MM-dd');
+    };
+  }]);
+
 }());
 

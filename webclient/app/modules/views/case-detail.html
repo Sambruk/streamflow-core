@@ -22,7 +22,7 @@
 
     <!-- Issue header -->
     <div class="m-h cf">
-      <div class="id">{{case.index.caseId}}</div>
+      <div class="id">{{case[0].caseId}}</div>
       <div class="choose-type">
         <i class="icon-search"></i>
         <label class="struct" for="issue-type">Ärendetyp</label>
@@ -40,16 +40,17 @@
     <!-- Issue body -->
     <div class="issue-body">
       <div class="due-date {{case.index.overdueStatus()}}">
-        <span>{{case.index.overdueDays() | positive}}</span>
+        <span>{{case[0].overdueDays() | positive}}</span>
       </div>
       <div class="issue-description">
-        <h2>{{case.index.text}}</h2>
+        <h2>{{case[0].text}}</h2>
         <p>{{notes[0]}}</p>
       </div>
     </div>
     <!-- /Issue body -->
 
     <!-- Issue notes -->
+    <!--
     <div class="issue-notes cf">
 
       <div class="notes-content">
@@ -130,12 +131,14 @@
       </div>
 
     </div>
+    -->
     <!-- /Issue notes -->
 
   </div>
   <!-- /Single issue -->
 
   <!-- Module: Check list -->
+  <!--
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Checklista</h2>
@@ -166,6 +169,7 @@
       </form>
     </div>
   </div>
+  -->
   <!-- /Check list -->
 
   <!-- Issue forms -->
@@ -275,10 +279,11 @@
     <div class="m-c">
       <div class="m-box">
         <ul>
-          <li><strong>Ägare:</strong> Kontaktcenter</li>
-          <li><strong>Handläggare:</strong> Solveig Grankvist</li>
-          <li><strong>Kund:</strong> Henrik Reinhold 19760901-4046</li>
-          <li><strong>Förfallodatum:</strong> 2013-03-10</li>
+          <li><strong>Ägare:</strong> {{ case[0].owner }}</li>
+          <li><strong>Handläggare:</strong> {{ case[0].assignedTo }}</li>
+          <li ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
+          <li><strong>Kund:</strong> TODO TODOsson 19760901-4046</li>
+          <li ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
         </ul>
       </div>
     </div>
