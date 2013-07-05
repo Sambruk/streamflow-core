@@ -29,13 +29,32 @@
       getAll:function () {
         return backendService.get({
           specs:[
-            {resources:'workspacev2'},
-            {resources: 'projects'}
+            {resources:'workspacev2'}
+            //{resources: 'projects'}
           ],
           onSuccess:function (resource, result) {
-            resource.response.index.links.forEach(function(item){
-              // TODO maybe filter rel='project'
-              result.push({text: item.text, types: [{name: 'Inbox', href: item.href + 'inbox'}, {name: 'Ärenden', href: item.href + 'assignments'}]});
+
+            var projects = _.chain(resource.response.index.links)
+              .filter(function(item){
+                return item.rel === 'inbox' || item.rel === 'assignments'
+              })
+              .groupBy('text')
+              .value();
+
+            _.forEach(projects, function(values, key){
+
+              // TODO Investigate usage of i18n directives
+              var translation = {
+                inbox: 'Inkorg',
+                assignments: "Ärenden"
+              };
+
+              var types = _.map(values, function(item){
+                return {name: translation[item.rel], href: item.href};
+              });
+
+              result.push({text: key, types: types});
+              //result.push({text: key, types: [{name: value.rel, href: item.href + 'inbox'}, {name: 'Ärenden', href: item.href + 'assignments'}]});
             });
           }
         });
