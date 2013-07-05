@@ -297,24 +297,14 @@
     </div>
     <div class="m-c">
       <ul>
-        <li>
-        <a href="#" class="block-link">
-          <h3>Detaljer om ansökan</h3>
+        <li ng-repeat='conversation in conversations'>
+          <a href="#" class="block-link">
+          <h3>{{ conversation.text }}</h3>
           <span class="date">2013-01-21, 13:45</span>
           <ul class="convo-status">
             <li class="icon-user" title="2 användare i konversationen">2 <span class="struct">användare i konversationen</span></li>
             <li class="icon-chat" title="3 meddelanden i konversationen">3 <span class="struct">meddelanden i konversationen</span></li>
           </ul>
-        </a>
-        </li>
-        <li>
-        <a href="#" class="block-link">
-            <h3>Detaljer om ansökan</h3>
-            <span class="date">2013-01-21, 13:45</span>
-            <ul class="convo-status">
-                <li class="icon-user" title="2 användare i konversationen">2 <span class="struct">användare i konversationen</span></li>
-                <li class="icon-chat" title="3 meddelanden i konversationen">3 <span class="struct">meddelanden i konversationen</span></li>
-            </ul>
         </a>
         </li>
       </ul>

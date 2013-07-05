@@ -73,6 +73,26 @@
         });
       },
 
+      getSelectedConversations: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:[
+            {resources:'workspacev2'},
+            {resources: 'projects'},
+            {'index.links': projectId},
+            {resources: projectType },
+            {queries: 'cases?tq=select+*'},
+            {links: caseId},
+            {resources: 'conversations'}
+          ],
+          onSuccess:function (resource, result) {
+
+            resource.response.index.links.forEach(function(link){
+              result.push(link);
+            });
+          }
+        });
+      },
+
       getSelectedContacts: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:[
