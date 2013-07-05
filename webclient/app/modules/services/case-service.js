@@ -22,17 +22,21 @@
 
   sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', function (backendService, navigationService, SfCase) {
 
+    var caseBase = function(projectId, projectType, caseId){
+     return [
+        {resources:'workspacev2'},
+        {resources: 'projects'},
+        {'index.links': projectId},
+        {resources: projectType },
+        {queries: 'cases?tq=select+*'},
+        {links: caseId}
+      ];
+    };
+
     return {
       getSelected: function(projectId, projectType, caseId) {
         return backendService.get({
-          specs:[
-            {resources:'workspacev2'},
-            {resources: 'projects'},
-            {'index.links': projectId},
-            {resources: projectType },
-            {queries: 'cases?tq=select+*'},
-            {links: caseId}
-          ],
+          specs: caseBase(projectId, projectType, caseId),
           onSuccess:function (resource, result) {
             result.push(new SfCase(resource.response.index));
           }
@@ -41,15 +45,7 @@
 
       getSelectedNotes: function(projectId, projectType, caseId) {
         return backendService.get({
-          specs:[
-            {resources:'workspacev2'},
-            {resources: 'projects'},
-            {'index.links': projectId},
-            {resources: projectType },
-            {queries: 'cases?tq=select+*'},
-            {links: caseId},
-            {resources: 'note'}
-          ],
+          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'note'}]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index.note);
           }
@@ -58,32 +54,27 @@
 
       getSelectedGeneral: function(projectId, projectType, caseId) {
         return backendService.get({
-          specs:[
-            {resources:'workspacev2'},
-            {resources: 'projects'},
-            {'index.links': projectId},
-            {resources: projectType },
-            {queries: 'cases?tq=select+*'},
-            {links: caseId},
-            {resources: 'general'}
-          ],
+          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'general'}]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
           }
         });
       },
 
+      getSelectedConversations: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'conversations'}]),
+          onSuccess:function (resource, result) {
+            resource.response.index.links.forEach(function(link){
+              result.push(link);
+            });
+          }
+        });
+      },
+
       getSelectedContacts: function(projectId, projectType, caseId) {
         return backendService.get({
-          specs:[
-            {resources:'workspacev2'},
-            {resources: 'projects'},
-            {'index.links': projectId},
-            {resources: projectType },
-            {queries: 'cases?tq=select+*'},
-            {links: caseId},
-            {resources: 'contacts'}
-          ],
+          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'contacts'}]),
           onSuccess:function (resource, result) {
             resource.response.index.contacts.forEach(function(item){result.push(item)});
           }
