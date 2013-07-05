@@ -281,6 +281,7 @@
         <ul>
           <li><strong>Ägare:</strong> {{ case[0].owner }}</li>
           <li><strong>Handläggare:</strong> {{ case[0].assignedTo }}</li>
+          <li ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
           <li><strong>Kund:</strong> TODO TODOsson 19760901-4046</li>
           <li ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
         </ul>
