@@ -32,7 +32,7 @@
       <ul>
         <li ng-repeat="type in project.types">
         <a href="#/{{type.href}}" sf-active-link>
-          <span>12</span><span class="struct">meddelanden i din</span> {{type.name}}
+          <span>12</span><span class="struct">meddelanden i din</span> {{type.name | translate }}
         </a>
         </li>
       </ul>

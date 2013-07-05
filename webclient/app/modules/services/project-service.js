@@ -43,18 +43,11 @@
 
             _.forEach(projects, function(values, key){
 
-              // TODO Investigate usage of i18n directives
-              var translation = {
-                inbox: 'Inkorg',
-                assignments: "Ärenden"
-              };
-
               var types = _.map(values, function(item){
-                return {name: translation[item.rel], href: item.href};
+                return {name: item.rel, href: item.href};
               });
 
               result.push({text: key, types: types});
-              //result.push({text: key, types: [{name: value.rel, href: item.href + 'inbox'}, {name: 'Ärenden', href: item.href + 'assignments'}]});
             });
           }
         });
