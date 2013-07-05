@@ -36,5 +36,18 @@
     };
   }]);
 
+  sf.filters.filter('translate', ['$filter', function($filter) {
+    return function(input) {
+
+      // So far, we keep it simple by just using a lookup table
+      var translation = {
+        inbox: 'Inkorg',
+        assignments: "Ärenden"
+      };
+
+      return translation[input];
+    };
+  }]);
+
 }());
 
