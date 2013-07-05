@@ -39,6 +39,23 @@
         });
       },
 
+      getSelectedNotes: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:[
+            {resources:'workspacev2'},
+            {resources: 'projects'},
+            {'index.links': projectId},
+            {resources: projectType },
+            {queries: 'cases?tq=select+*'},
+            {links: caseId},
+            {resources: 'note'}
+          ],
+          onSuccess:function (resource, result) {
+            result.push(resource.response.index.note);
+          }
+        });
+      },
+
       getSelectedContacts: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:[
@@ -51,7 +68,6 @@
             {resources: 'contacts'}
           ],
           onSuccess:function (resource, result) {
-            //
             resource.response.index.contacts.forEach(function(item){result.push(item)});
           }
         });
