@@ -22,7 +22,7 @@
 
     <!-- Issue header -->
     <div class="m-h cf">
-      <div class="id">{{case.index.caseId}}</div>
+      <div class="id">{{case[0].caseId}}</div>
       <div class="choose-type">
         <i class="icon-search"></i>
         <label class="struct" for="issue-type">Ärendetyp</label>
@@ -40,10 +40,10 @@
     <!-- Issue body -->
     <div class="issue-body">
       <div class="due-date {{case.index.overdueStatus()}}">
-        <span>{{case.index.overdueDays() | positive}}</span>
+        <span>{{case[0].overdueDays() | positive}}</span>
       </div>
       <div class="issue-description">
-        <h2>{{case.index.text}}</h2>
+        <h2>{{case[0].text}}</h2>
         <p>{{notes[0]}}</p>
       </div>
     </div>
