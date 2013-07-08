@@ -100,15 +100,6 @@
           {});
       },
 
-      getSelectedFormDraft: function(projectId, projectType, caseId, formId) {
-        return backendService.get(
-          caseBase(projectId, projectType, caseId).concat([
-            {resources: 'possibleforms'},
-            {'index.links': formId.replace("/", "")},
-            {commands: 'create'}
-            ]),
-          {});
-      },
     }
   }]);
 

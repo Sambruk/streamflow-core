@@ -50,9 +50,15 @@
 
     $scope.selectForm = function(formId){
       $scope.currentForm = caseService.getSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(data){
+        var id = JSON.parse(data.events[0].parameters).param1;
+
         window.debug = data;
         return data;
       });
+    }
+
+    $scope.selectFormPage = function(page){
+      $scope.currentFormPage = page;
     }
 
     window.form = formDraft;
