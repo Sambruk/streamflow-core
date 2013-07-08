@@ -194,7 +194,7 @@
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
                         <div class="text col full col-1">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}
-                            <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
+                            <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})<span ng-show="{{ field.field.mandatory }}">*</span></em></label>
                             <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" value="{{ field.value }}">
                         </div>
                       </div>
