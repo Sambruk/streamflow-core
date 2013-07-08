@@ -210,7 +210,7 @@
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue">
                         <div class="select col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
-                            <select id="{{ field.field.field }}" name="{{ field.field.fieldId }}">
+                            <select id="{{ field.field.field }}" name="{{ field.field.fieldId }}" custom-select>
                                 <option value="{{ option }}" ng-repeat="option in field.field.fieldValue.values">{{ option }}</option>
                             </select>
                         </div>
