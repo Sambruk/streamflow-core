@@ -195,7 +195,7 @@
                         <div class="text col full col-1">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                             <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
-                            <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}">
+                            <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" value="{{ field.value }}">
                         </div>
                       </div>
 
@@ -203,7 +203,7 @@
                         <div class="text col full col-1">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                             <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
-                            <textarea name="{{ field.field.fieldId }}" id="{{ field.field.field }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}"></textarea>
+                            <textarea name="{{ field.field.fieldId }}" id="{{ field.field.field }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}">{{ field.value }}</textarea>
                         </div>
                       </div>
 
