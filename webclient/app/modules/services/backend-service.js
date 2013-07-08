@@ -54,6 +54,8 @@
         });
 
         if (!w) {
+          console.log("Not found: ", trimmedId, " in ", JSON.stringify(resourceData));
+
           var deferred = $q.defer();
           deferred.reject({msg: "Missing key in json " + id, data: resourceData});
           return deferred.promise;

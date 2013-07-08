@@ -176,27 +176,27 @@
   <div class="m m-issue-forms">
     <div class="m-h">
       <h2>Formulär</h2>
-      <div>Foo: {{ foo }}</div>
       <div class="m-c">
           <ul class="form-tabs cf">
-             <li class="has-versions" ng-repeat='form in possibleForms'>
-               <a href="" ng-click="selectForm" class="sel">{{ form.text }}</a>
+            <li class="has-versions" ng-repeat="form in possibleForms">
+               <a href="" ng-click="selectForm( form.href )" class="sel">{{ form.text }}</a>
                <a href="xlink-" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a>
             </li>
           </ul>
           <ol class="form-sections cf">
-              <li class="section-item sel"><a href="xlink-">Sökandes kontaktdetaljer</a></li>
-              <li class="section-item"><a href="xlink-">Skola och personlig information</a></li>
+              <!-- TODO selected element -->
+              <li class="section-item" ng-repeat="page in form.pages"><a href="xlink-">{{page.title}}</a></li>
           </ol>
 
           <form action="#" method="get">
-
-              <div class="row cols-1 cf">
+              <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
                   <div class="text col full col-1">
-                      <label for="field-1">Namn ( Elev ) <em>Samtliga förnamn samt efternamn ska anges</em></label>
-                      <input type="text" name="field-1" id="field-1">
+                      <label for="{{ field.field.fieldId }}">{{ field.field.description }}
+                      <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
+                      <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}">
                   </div>
               </div>
+              <!--
               <div class="row cols-1 cf">
                   <div class="text col full col-1">
                       <label for="field-2">Personnummer <em>ååååmmdd-xxxx</em></label>
@@ -236,7 +236,7 @@
                       <label for="field-8">E-post</label>
                       <input type="text" name="field-8" id="field-8">
                   </div>
-              </div>
+              </div>-->
           </form>
 
           <a href="#" class="btn inactive inline">Tillbaka</a> <a href="#" class="btn inline">Nästa</a>
