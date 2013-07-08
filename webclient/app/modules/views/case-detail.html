@@ -190,11 +190,31 @@
 
           <form action="#" method="get">
               <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
-                  <div class="text col full col-1">
-                      <label for="{{ field.field.fieldId }}">{{ field.field.description }}
-                      <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
-                      <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}">
+                  <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
+                        <div class="text col full col-1">
+                            <label for="{{ field.field.fieldId }}">{{ field.field.description }}
+                            <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
+                            <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}">
+                        </div>
+                      </div>
+
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextAreaFieldValue">
+                        <div class="text col full col-1">
+                            <label for="{{ field.field.fieldId }}">{{ field.field.description }}
+                            <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
+                            <textarea name="{{ field.field.fieldId }}" id="{{ field.field.field }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}"></textarea>
+                        </div>
+                      </div>
+
+                      <div data-ng-switch-default>
+                        <div class="text col full col-1">
+                            <b>{{ field.field.description }}</b><br />
+                            Not supported form type <i>{{ field.field.fieldValue._type }}</i>
+                        </div>
+                      </div>
                   </div>
+
               </div>
               <!--
               <div class="row cols-1 cf">
