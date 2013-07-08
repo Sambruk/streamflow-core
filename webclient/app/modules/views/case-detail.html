@@ -176,22 +176,13 @@
   <div class="m m-issue-forms">
     <div class="m-h">
       <h2>Formulär</h2>
+      <div>Foo: {{ foo }}</div>
       <div class="m-c">
           <ul class="form-tabs cf">
-              <li class="has-versions">
-              <a href="xlink-" class="sel">Skolplats ansökning</a>
-              <a href="xlink-" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a>
-              </li>
-              <li class="has-versions">
-              <a href="xlink-">Signatur</a>
-              <a href="xlink-" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a>
-              </li>
-              <li>
-              <a href="xlink-">Formulär 1</a>
-              </li>
-              <li>
-              <a href="xlink-">Formulär 2</a>
-              </li>
+             <li class="has-versions" ng-repeat='form in possibleForms'>
+               <a href="" ng-click="selectForm" class="sel">{{ form.text }}</a>
+               <a href="xlink-" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a>
+            </li>
           </ul>
           <ol class="form-sections cf">
               <li class="section-item sel"><a href="xlink-">Sökandes kontaktdetaljer</a></li>

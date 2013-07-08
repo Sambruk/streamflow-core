@@ -79,8 +79,16 @@
             resource.response.index.contacts.forEach(function(item){result.push(item)});
           }
         });
+      },
 
-      }
+      getSelectedPossibleForms: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'possibleforms'}]),
+          onSuccess:function (resource, result) {
+            resource.response.index.links.forEach(function(item){result.push(item)});
+          }
+        });
+      },
 
     }
   }]);
