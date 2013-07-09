@@ -52,8 +52,11 @@
 
       caseService.createSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(response){
         if (response.data.events.length === 0) {
+
+          $scope.form = caseService.getFormDraftFromForm($params.projectId, $params.projectType, $params.caseId, formId)
+
           // TODO!!! Use more general version!!!
-          $scope.form = caseService.getFormDraftDebug($params.projectId, $params.projectType, $params.caseId)
+          //$scope.form = caseService.getFormDraftDebug($params.projectId, $params.projectType, $params.caseId)
         }
         else {
           var draftId = JSON.parse(response.data.events[0].parameters).param1;

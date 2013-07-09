@@ -112,6 +112,29 @@
         });
       },
 
+      getFormDraftFromForm: function(projectId, projectType, caseId, formId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'possibleforms'},
+            {'index.links': formId.replace("/", "")},
+            {queries: 'formdraft'}
+            ]),
+          onSuccess:function (resource, result) {
+            var id = resource.response.id;
+
+            return backendService.get({
+            specs:caseBase(projectId, projectType, caseId).concat([
+              {resources: 'formdrafts'},
+              {'index.links': id}
+              ]),
+            onSuccess:function (resource) {
+              result.push(resource.response.index);
+            }
+          });
+          }
+        });
+      },
+
       // For development only!!! API needs to be fixed to support more general case
       getFormDraftDebug: function(projectId, projectType, caseId){
         return $http({
