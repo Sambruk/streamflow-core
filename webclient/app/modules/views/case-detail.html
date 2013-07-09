@@ -300,10 +300,10 @@
         <li ng-repeat='conversation in conversations'>
           <a href="#" class="block-link">
           <h3>{{ conversation.text }}</h3>
-          <span class="date">2013-01-21, 13:45 TODO</span>
+          <span class="date">{{ conversation.creationDate | dateTime }}</span>
           <ul class="convo-status">
-            <li class="icon-user" title="2 användare i konversationen">2 <span class="struct">användare i konversationen</span></li>
-            <li class="icon-chat" title="3 meddelanden i konversationen">3 <span class="struct">meddelanden i konversationen</span></li>
+            <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
+            <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
           </ul>
         </a>
         </li>
