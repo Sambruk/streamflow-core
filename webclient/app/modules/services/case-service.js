@@ -133,26 +133,7 @@
           });
           }
         });
-      },
-
-      // For development only!!! API needs to be fixed to support more general case
-      getFormDraftDebug: function(projectId, projectType, caseId){
-        return $http({
-          method: 'GET',
-          url: 'https://test.sf.streamsource.se/streamflow/workspacev2/cases/37ed3d41-3338-427e-8542-c8ac0e794c2d-2/formdrafts/.json'
-        }).then(function(response){
-          return backendService.get({
-            specs:caseBase(projectId, projectType, caseId).concat([
-              {resources: 'formdrafts'},
-              {'index.links': response.data.index.links[0].id}
-              ]),
-            onSuccess:function (resource, result) {
-              result.push(resource.response.index);
-            }
-          });
-        });
       }
-
     }
   }]);
 
