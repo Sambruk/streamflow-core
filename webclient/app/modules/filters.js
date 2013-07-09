@@ -36,6 +36,12 @@
     };
   }]);
 
+  sf.filters.filter('dateTime', ['$filter', function($filter) {
+    return function(input) {
+      return $filter('date')(input, 'yyyy-MM-dd, hh:mm');
+    };
+  }]);
+
   sf.filters.filter('translate', ['$filter', function($filter) {
     return function(input) {
 
