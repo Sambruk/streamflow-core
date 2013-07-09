@@ -49,12 +49,21 @@
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
     $scope.selectForm = function(formId){
-      $scope.currentForm = caseService.getSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(data){
-        var id = JSON.parse(data.events[0].parameters).param1;
 
-        window.debug = data;
-        return data;
+      caseService.createSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(response){
+        if (response.data.events.length === 0) {
+          // TODO!!! Use more general version!!!
+          $scope.form = caseService.getFormDraftDebug($params.projectId, $params.projectType, $params.caseId)
+        }
+        else {
+          var draftId = JSON.parse(response.data.events[0].parameters).param1;
+          $scope.form = caseService.getFormDraft($params.projectId, $params.projectType, $params.caseId, draftId);
+        }
       });
+    }
+
+    $scope.fooTest = function(){
+      $scope.form = caseService.getFormDraftDebug($params.projectId, $params.projectType, $params.caseId);
     }
 
     $scope.selectFormPage = function(page){
@@ -62,10 +71,7 @@
     }
 
     window.form = formDraft;
-    $scope.form = formDraft;
-
-    $scope.currentFormPage = formDraft.pages[0];
-
+    //$scope.form = formDraft;
   }]);
 
 
