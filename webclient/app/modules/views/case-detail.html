@@ -188,7 +188,7 @@
               <li class="section-item" ng-class="{sel: currentFormPage.title==page.title}" ng-repeat="page in form[0].pages"><a href="" ng-click="selectFormPage(page)">{{page.title}}</a></li>
           </ol>
 
-          <form action="#" method="get">
+          <form method="post" ng-submit="submitForm()">
               <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
                   <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
@@ -224,6 +224,11 @@
                       </div>
                   </div>
 
+              </div>
+
+
+              <div>
+                <input type="submit" name="submit" value="Skicka"></input>
               </div>
               <!--
               <div class="row cols-1 cf">

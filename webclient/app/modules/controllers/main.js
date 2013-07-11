@@ -66,6 +66,10 @@
       var value = $($event.target).val();
       caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, fieldId, value);
     }
+
+    $scope.submitForm = function(){
+      caseService.submitForm($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId);
+    }
   }]);
 
 

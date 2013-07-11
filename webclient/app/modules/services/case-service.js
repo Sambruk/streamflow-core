@@ -147,6 +147,16 @@
             {commands: 'updatefield'}
             ]),
           {field: fieldId, value: value});
+      },
+
+      submitForm: function(projectId, projectType, caseId, formId) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'formdrafts'},
+            {'index.links': formId},
+            {commands: 'submit'}
+            ]),
+          {});
       }
     }
   }]);
