@@ -107,7 +107,9 @@
             {'index.links': draftId}
             ]),
           onSuccess:function (resource, result) {
-            result.push(resource.response.index);
+            var index = resource.response.index;
+            index.draftId = draftId;
+            result.push(index);
           }
         });
       },
@@ -128,11 +130,23 @@
               {'index.links': id}
               ]),
             onSuccess:function (resource) {
-              result.push(resource.response.index);
+              var index = resource.response.index;
+              index.draftId = id;
+              result.push(index);
             }
           });
           }
         });
+      },
+
+      updateField: function(projectId, projectType, caseId, formId, fieldId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'formdrafts'},
+            {'index.links': formId},
+            {commands: 'updatefield'}
+            ]),
+          {field: fieldId, value: value});
       }
     }
   }]);

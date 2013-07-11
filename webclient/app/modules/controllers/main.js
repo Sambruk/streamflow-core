@@ -61,6 +61,11 @@
     $scope.selectFormPage = function(page){
       $scope.currentFormPage = page;
     }
+
+    $scope.saveForm = function(fieldId, $event){
+      var value = $($event.target).val();
+      caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, fieldId, value);
+    }
   }]);
 
 
