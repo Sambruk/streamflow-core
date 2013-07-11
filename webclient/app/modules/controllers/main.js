@@ -75,11 +75,24 @@
       $scope.currentFormPage = null;
     }
 
-    $scope.isLastPage = function(page){
-      if (page)
-        return $scope.form[0].pages.indexOf(page) === ($scope.form[0].pages.length - 1);
+    $scope.isLastPage = function(){
+        return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === ($scope.form[0].pages.length - 1);
+    },
 
-      return false;
+    $scope.isFirstPage = function(){
+      return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === 0;
+    }
+
+    $scope.nextFormPage = function(){
+      var index = $scope.form[0].pages.indexOf($scope.currentFormPage);
+      index += 1;
+      $scope.currentFormPage = $scope.form[0].pages[index];
+    }
+
+    $scope.previousFormPage = function(){
+      var index = $scope.form[0].pages.indexOf($scope.currentFormPage);
+      index -= 1;
+      $scope.currentFormPage = $scope.form[0].pages[index];
     }
   }]);
 

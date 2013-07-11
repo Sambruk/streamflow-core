@@ -274,7 +274,10 @@
               </div>-->
           </form>
 
-          <a href="#" class="btn inactive inline">Tillbaka</a> <a href="#" class="btn inline">Nästa</a>
+          <div ng-show="currentFormPage">
+            <a href="" class="btn inline" ng-class="{inactive: isFirstPage()}" ng-click="!isFirstPage() && previousFormPage()">Tillbaka</a> <a href="" class="btn inline" ng-class="{inactive: isLastPage()}" ng-click="!isLastPage() && nextFormPage()">Nästa</a>
+          </div>
+
       </div>
     </div>
   </div>
