@@ -69,6 +69,17 @@
 
     $scope.submitForm = function(){
       caseService.submitForm($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId);
+      $scope.formMessage = "Skickat!";
+
+      $scope.form = [];
+      $scope.currentFormPage = null;
+    }
+
+    $scope.isLastPage = function(page){
+      if (page)
+        return $scope.form[0].pages.indexOf(page) === ($scope.form[0].pages.length - 1);
+
+      return false;
     }
   }]);
 

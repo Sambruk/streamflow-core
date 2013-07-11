@@ -189,6 +189,7 @@
           </ol>
 
           <form method="post" ng-submit="submitForm()">
+              <div>{{ formMessage }}</div>
               <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
                   <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
@@ -227,7 +228,7 @@
               </div>
 
 
-              <div>
+              <div ng-show="isLastPage(currentFormPage)">
                 <input type="submit" name="submit" value="Skicka"></input>
               </div>
               <!--
