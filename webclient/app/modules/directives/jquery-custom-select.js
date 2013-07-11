@@ -17,12 +17,19 @@
 (function () {
   'use strict';
 
-  // see http://jsfiddle.net/p3ZMR/3/ for another example of doing this
+  // Using customSelect from http://adam.co/lab/jquery/customselect/
+  // See http://jsfiddle.net/p3ZMR/3/ for another example of doing this
   sf.directives.directive('customSelect', ['$location', function (location) {
     return {
       restrict:'A',
-      link: function (scope, element, attrs, controller) {
+      require: "ngModel",
+      link: function (scope, element, attrs, ngModel) {
         $(element).customSelect({customClass:'custom-select'});
+
+        // update inner div when model changed
+        scope.$watch(attrs.ngModel, function() {
+          $(element).trigger('update');
+        });
       }
     };
   }]);

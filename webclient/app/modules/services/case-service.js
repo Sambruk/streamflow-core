@@ -108,7 +108,20 @@
             ]),
           onSuccess:function (resource, result) {
             var index = resource.response.index;
+
             index.draftId = draftId;
+
+            // Fix for ng-options et al
+            _.forEach(index.pages, function(page){
+              _.forEach(page.fields, function(field){
+                var options = _.map(field.field.fieldValue.values,
+                  function(value){ return {name: value, value: value}
+                });
+
+                field.field.fieldValue.options = options;
+              });
+            });
+
             result.push(index);
           }
         });
@@ -131,7 +144,20 @@
               ]),
             onSuccess:function (resource) {
               var index = resource.response.index;
+
+              // Fix for ng-options et al
+              _.forEach(index.pages, function(page){
+                _.forEach(page.fields, function(field){
+                  var options = _.map(field.field.fieldValue.values,
+                    function(value){ return {name: value, value: value}
+                  });
+
+                  field.field.fieldValue.options = options;
+                });
+              });
+
               index.draftId = id;
+
               result.push(index);
             }
           });

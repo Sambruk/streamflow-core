@@ -78,7 +78,14 @@
 
     // TODO Remove, use ng-model instead
     $scope.saveForm = function(fieldId, $event){
-      var value = $($event.target).val();
+
+      var elementName = $($event.target).get(0).tagName.toLowerCase();
+      var value;
+      if (elementName === "select")
+        value = $($event.target).find(":selected").text(); // TODO Hack!
+      else
+        value = $($event.target).val();
+
       caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, fieldId, value);
     }
 
