@@ -47,6 +47,8 @@
 
     $scope.selectForm = function(formId){
 
+      $scope.formMessage = "";
+
       caseService.createSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(response){
         if (response.data.events.length === 0) {
           $scope.form = caseService.getFormDraftFromForm($params.projectId, $params.projectType, $params.caseId, formId)
@@ -76,11 +78,27 @@
     }
 
     $scope.isLastPage = function(page){
-      if (page)
-        return $scope.form[0].pages.indexOf(page) === ($scope.form[0].pages.length - 1);
+        return page && $scope.form[0].pages.indexOf(page) === ($scope.form[0].pages.length - 1);
+    },
 
-      return false;
+    $scope.isFirstPage = function(page){
+      return page && $scope.form[0].pages.indexOf(page) === 0;
     }
+
+    $scope.nextFormPage = function(page){
+      var index = $scope.form[0].pages.indexOf(page);
+      index += 1;
+      $scope.currentFormPage = $scope.form[0].pages[index];
+    }
+
+    $scope.previousFormPage = function(page){
+      var index = $scope.form[0].pages.indexOf(page);
+      index -= 1;
+      $scope.currentFormPage = $scope.form[0].pages[index];
+    }
+
+
+
   }]);
 
 
