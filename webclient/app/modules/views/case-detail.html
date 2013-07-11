@@ -17,6 +17,7 @@
 
 -->
 <div class="content-primary" role="main">
+
   <!-- Single issue -->
   <div class="single-issue">
 
@@ -214,6 +215,15 @@
                             <select id="{{ field.field.field }}" name="{{ field.field.fieldId }}" custom-select sf-on-blur="saveForm(field.field.field, $event)">
                                 <option value="{{ option }}" ng-repeat="option in field.field.fieldValue.values">{{ option }}</option>
                             </select>
+                        </div>
+                      </div>
+
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue">
+                        <div class="radio col medium col-2">
+                            <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
+                            <span ng-repeat="option in field.field.fieldValue.values">
+                              <input ng-change="inputChanged({fieldId: field.field.field, value: field.value})" ng-model="field.value" type="radio" name="{{ field.field.fieldId }}" value="{{ option }}" sf-on-blur="saveForm(field.field.field, $event)">{{ option }}</input>
+                            </span>
                         </div>
                       </div>
 
@@ -416,6 +426,6 @@
     </div>
   </div>
   <!-- /Module: Ärendelogg -->
-
+<!-- <pre><code>{{ form[0] | json }}</code></pre> -->
 </div>
 <!-- /Content secondary -->

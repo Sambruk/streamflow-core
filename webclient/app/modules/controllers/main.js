@@ -76,9 +76,14 @@
       $scope.currentFormPage = page;
     }
 
+    // TODO Remove, use ng-model instead
     $scope.saveForm = function(fieldId, $event){
       var value = $($event.target).val();
       caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, fieldId, value);
+    }
+
+    $scope.inputChanged = function(args){
+      caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, args.fieldId, args.value);
     }
 
     $scope.submitForm = function(){
@@ -91,7 +96,7 @@
 
     $scope.isLastPage = function(){
         return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === ($scope.form[0].pages.length - 1);
-    },
+    }
 
     $scope.isFirstPage = function(){
       return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === 0;
@@ -109,6 +114,5 @@
       $scope.currentFormPage = $scope.form[0].pages[index];
     }
   }]);
-
 
 })();
