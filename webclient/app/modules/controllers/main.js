@@ -47,6 +47,18 @@
 
     $scope.selectForm = function(formId){
 
+      // TODO Is there a better way than this?
+      $scope.$watch("form", function(){
+        setTimeout(function(){
+          $scope.$apply(function () {
+              if ($scope.form && $scope.form[0]) {
+                $scope.currentFormPage = $scope.form[0].pages[0];
+              };
+          });
+        }, 1000);
+
+      })
+
       caseService.createSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(response){
         if (response.data.events.length === 0) {
           $scope.form = caseService.getFormDraftFromForm($params.projectId, $params.projectType, $params.caseId, formId)
