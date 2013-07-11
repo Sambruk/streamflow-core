@@ -204,14 +204,14 @@
                         <div class="text col full col-1">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                             <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
-                            <textarea name="{{ field.field.fieldId }}" id="{{ field.field.field }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}">{{ field.value }}</textarea>
+                            <textarea name="{{ field.field.fieldId }}" id="{{ field.field.field }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" sf-on-blur="saveForm(field.field.field, $event)">{{ field.value }}</textarea>
                         </div>
                       </div>
 
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue">
                         <div class="select col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
-                            <select id="{{ field.field.field }}" name="{{ field.field.fieldId }}" custom-select>
+                            <select id="{{ field.field.field }}" name="{{ field.field.fieldId }}" custom-select sf-on-blur="saveForm(field.field.field, $event)">
                                 <option value="{{ option }}" ng-repeat="option in field.field.fieldValue.values">{{ option }}</option>
                             </select>
                         </div>
