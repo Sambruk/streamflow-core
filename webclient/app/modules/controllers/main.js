@@ -55,6 +55,8 @@
           var draftId = JSON.parse(response.data.events[0].parameters).param1;
           $scope.form = caseService.getFormDraft($params.projectId, $params.projectType, $params.caseId, draftId);
         }
+
+        $scope.currentFormPage = null;
       });
     }
 
