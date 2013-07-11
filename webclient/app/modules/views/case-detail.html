@@ -196,7 +196,7 @@
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
                         <div class="text col full col-1">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}
-                            <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})<span ng-show="{{ field.field.mandatory }}">*</span></em></label>
+                            <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
                             <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" value="{{ field.value }}" sf-on-blur="saveForm(field.field.field, $event)">
                         </div>
                       </div>
@@ -204,7 +204,7 @@
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextAreaFieldValue">
                         <div class="text col full col-1">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}
-                            <em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em></label>
+                            <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
                             <textarea name="{{ field.field.fieldId }}" id="{{ field.field.field }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" sf-on-blur="saveForm(field.field.field, $event)">{{ field.value }}</textarea>
                         </div>
                       </div>
