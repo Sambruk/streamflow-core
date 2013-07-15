@@ -189,15 +189,16 @@
               <li class="section-item" ng-class="{sel: currentFormPage.title==page.title}" ng-repeat="page in form[0].pages"><a href="" ng-click="selectFormPage(page)">{{page.title}}</a></li>
           </ol>
 
-          <form method="post" ng-submit="submitForm()">
+          <form method="post" novalidate ng-submit="submitForm()">
               <div>{{ formMessage }}</div>
               <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
                   <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
                         <div class="text col full col-1">
-                            <label for="{{ field.field.fieldId }}">{{ field.field.description }}
-                            <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                            <input type="text" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" value="{{ field.value }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <label for="{{ field.field.fieldId }}">{{ field.field.description }}
+                          <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
+                          <input required type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <span class="error" style="display: none">Required!</span>
                         </div>
                       </div>
 

@@ -21,9 +21,16 @@
     return function(scope, element, attr) {
       var fn = $parse(attr['sfOnBlur']);
       element.bind('blur', function(event) {
-        scope.$apply(function() {
-          fn(scope, {$event:event});
-        });
+        if (!element.hasClass("ng-invalid")) {
+          scope.$apply(function() {
+            fn(scope, {$event:event});
+          });
+
+          $(".error", element.parent()).hide();
+        }
+        else {
+          $(".error", element.parent()).show();
+        }
       });
     }
   }]);
