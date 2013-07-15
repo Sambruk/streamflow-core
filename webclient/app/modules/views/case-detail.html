@@ -231,7 +231,7 @@
                         <div class="radio col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
                             <span ng-repeat="option in field.field.fieldValue.checkings">
-                              <input type="checkbox" value="{{option.name}}" ng-change="inputChanged({fieldId: field.field.field, value: option.name})" ng-model="option.checked" type="radio" name="{{ field.field.fieldId }}" sf-on-blur="saveForm(field.field.field, $event)">{{ option.name }}</input>
+                              <input type="checkbox" sf-checkbox-auto-send="{{field.field.fieldValue.checkings}}"  value="{{option.name}}" ng-model="option.checked" type="radio" name="{{ field.field.field }}">{{ option.name }}</input>
                             </span>
                         </div>
                       </div>

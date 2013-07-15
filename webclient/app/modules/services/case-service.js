@@ -151,12 +151,15 @@
                   var options = _.map(field.field.fieldValue.values, function(value){
                     return {name: value, value: value}
                   });
-                  var checkings = _.map(field.field.fieldValue.values, function(value){
-                    return {name: value, checked: value === field.value};
-                  });
-                    
+                  if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
+                    var checkings = _.map(field.field.fieldValue.values, function(value){
+                      return {name: value, checked: field.value && field.value.indexOf(value) != -1};
+                    });
+
+                    field.field.fieldValue.checkings = checkings;
+                  }
+
                   field.field.fieldValue.options = options;
-                  field.field.fieldValue.checkings = checkings;
                 });
               });
 
