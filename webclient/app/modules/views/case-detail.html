@@ -193,12 +193,24 @@
               <div>{{ formMessage }}</div>
               <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
                   <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
+
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
                         <div class="text col full col-1">
                           <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                           <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                          <input required type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <input ng-required="field.field.mandatory" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
                           <span class="error-ng-invalid-required" style="display: none">Required!</span>
+                          <span class="error-ng-invalid-pattern" style="display: none">Must be a ... TODO!</span>
+                        </div>
+                      </div>
+
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.NumberFieldValue">
+                        <div class="text col full col-1">
+                          <label for="{{ field.field.fieldId }}">{{ field.field.description }}
+                          <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
+                          <input required ng-pattern="/^\d+$/" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <span class="error-ng-invalid-required" style="display: none">Required!</span>
+                          <span class="error-ng-invalid-pattern" style="display: none">Must be a ... TODO!</span>
                         </div>
                       </div>
 
