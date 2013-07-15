@@ -227,6 +227,17 @@
                         </div>
                       </div>
 
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue">
+                        <div class="radio col medium col-2">
+                            <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
+                            <span ng-repeat="option in field.field.fieldValue.extendedValues">
+                              <input sf-radio-extended-auto-send="{{ option.value != option.display }}" ng-model="field.value" type="radio" name="{{ field.field.fieldId }}"
+                              id="{{ field.field.field }}" value="{{ option.value }}">{{ option.display }}</input>
+                            </span>
+                            <div ng-show="field.field.fieldValue.values.indexOf(field.value) == -1 || field.value == field.field.fieldValue.openSelectionName"><input ng-model="field.value" sf-radio-extended-text-field="{{ field.field.fieldValue.extendedValues }}" type="text" name="{{ field.field.field }}"></div>
+                        </div>
+                      </div>
+
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue">
                         <div class="radio col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>

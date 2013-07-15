@@ -159,6 +159,26 @@
                     field.field.fieldValue.checkings = checkings;
                   }
 
+                  if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
+
+                    field.field.fieldValue.extendedValues = _.map(field.field.fieldValue.values, function(value){
+                      return {
+                        value: value,
+                        display: value
+                      }
+                    });
+
+                    var value;
+                    if (field.field.fieldValue.values.indexOf(field.value) == -1) {
+                      value = field.value
+                    }
+
+                    field.field.fieldValue.extendedValues.push({
+                      value: value,
+                      display: field.field.fieldValue.openSelectionName
+                    });
+                  }
+
                   field.field.fieldValue.options = options;
                 });
               });
