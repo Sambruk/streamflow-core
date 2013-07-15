@@ -26,10 +26,14 @@
             fn(scope, {$event:event});
           });
 
-          $(".error", element.parent()).hide();
+          $("[class^=error]", element.parent()).hide();
         }
         else {
-          $(".error", element.parent()).show();
+          _.each(element.attr("class").split(" "), function(klass){
+            var errorClass = ".error-" + klass
+            $(errorClass, element.parent()).show();
+          });
+
         }
       });
     }

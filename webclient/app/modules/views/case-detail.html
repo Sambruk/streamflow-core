@@ -198,7 +198,7 @@
                           <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                           <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
                           <input required type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
-                          <span class="error" style="display: none">Required!</span>
+                          <span class="error-ng-invalid-required" style="display: none">Required!</span>
                         </div>
                       </div>
 
