@@ -148,11 +148,15 @@
               // Fix for ng-options et al
               _.forEach(index.pages, function(page){
                 _.forEach(page.fields, function(field){
-                  var options = _.map(field.field.fieldValue.values,
-                    function(value){ return {name: value, value: value}
+                  var options = _.map(field.field.fieldValue.values, function(value){
+                    return {name: value, value: value}
                   });
-
+                  var checkings = _.map(field.field.fieldValue.values, function(value){
+                    return {name: value, checked: value === field.value};
+                  });
+                    
                   field.field.fieldValue.options = options;
+                  field.field.fieldValue.checkings = checkings;
                 });
               });
 

@@ -227,6 +227,15 @@
                         </div>
                       </div>
 
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue">
+                        <div class="radio col medium col-2">
+                            <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
+                            <span ng-repeat="option in field.field.fieldValue.checkings">
+                              <input type="checkbox" value="{{option.name}}" ng-change="inputChanged({fieldId: field.field.field, value: option.name})" ng-model="option.checked" type="radio" name="{{ field.field.fieldId }}" sf-on-blur="saveForm(field.field.field, $event)">{{ option.name }}</input>
+                            </span>
+                        </div>
+                      </div>
+
                       <div data-ng-switch-default>
                         <div class="text col full col-1">
                             <b>{{ field.field.description }}</b><br />
