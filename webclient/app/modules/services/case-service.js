@@ -20,7 +20,7 @@
 
   var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models']);
 
-  sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', "$http", function (backendService, navigationService, SfCase, $http) {
+  sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', "$http", "debounce", function (backendService, navigationService, SfCase, $http, debounce) {
 
     var caseBase = function(projectId, projectType, caseId){
      return [
@@ -192,7 +192,7 @@
         });
       },
 
-      updateField: function(projectId, projectType, caseId, formId, fieldId, value) {
+      updateField: debounce(function(projectId, projectType, caseId, formId, fieldId, value) {
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
             {resources: 'formdrafts'},
@@ -200,7 +200,7 @@
             {commands: 'updatefield'}
             ]),
           {field: fieldId, value: value});
-      },
+      }, 1000),
 
       submitForm: function(projectId, projectType, caseId, formId) {
         return backendService.postNested(
