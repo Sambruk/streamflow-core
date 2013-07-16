@@ -139,25 +139,10 @@
         }
       },
       getValue: function(value, attr) {
-        if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
-          var mapper = mappings[attr.fieldType];
-          if (mapper && mapper.getValue) {
-            return mapper.getValue(value, attr);
-          }
-        }
 
-        if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
-          var mapper = mappings[attr.fieldType];
-          if (mapper && mapper.getValue) {
-            return mapper.getValue(value, attr);
-          }
-        }
-
-        if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
-          var mapper = mappings[attr.fieldType];
-          if (mapper && mapper.getValue) {
-            return mapper.getValue(value, attr);
-          }
+        var mapper = mappings[attr.fieldType];
+        if (mapper && mapper.getValue) {
+          return mapper.getValue(value, attr);
         }
 
         return value;
