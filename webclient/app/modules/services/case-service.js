@@ -124,6 +124,11 @@
               field.value = values;
             }
 
+            if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
+              if (field.value)
+                field.value = field.value.split("T")[0];
+            }
+
             if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
               var regex;
               if (field.field.fieldValue.integer) {
