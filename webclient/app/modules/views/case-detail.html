@@ -269,6 +269,10 @@
                         </div>
                       </div>
 
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CommentFieldValue">
+                        <div class="col medium col-2" ng-bind-html-unsafe="field.field.note"></div>
+                      </div>
+
                       <div data-ng-switch-default>
                         <div class="text col full col-1">
                             <b>{{ field.field.description }}</b><br />
