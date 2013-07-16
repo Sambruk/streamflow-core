@@ -198,7 +198,7 @@
                         <div class="text col full col-1">
                           <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                           <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                          <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
                           <span class="error-ng-invalid-required" style="display: none">Required!</span>
                           <span class="error-ng-invalid-pattern" style="display: none">Invalid input format</span>
                         </div>
@@ -208,19 +208,17 @@
                         <div class="text col full col-1">
                           <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                           <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                          <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
                           <span class="error-ng-invalid-required" style="display: none">Required!</span>
                           <span class="error-ng-invalid-pattern" style="display: none">Invalid input format</span>
                         </div>
                       </div>
 
-
-
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.NumberFieldValue">
                         <div class="text col full col-1">
                           <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                           <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                          <input ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <input ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-generic-auto-send>
                           <span class="error-ng-invalid-required" style="display: none">Required!</span>
                           <span class="error-ng-invalid-pattern" style="display: none">Invalid number format</span>
                         </div>
@@ -230,7 +228,7 @@
                         <div class="text col full col-1">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                             <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                            <textarea name="{{ field.field.fieldId }}" id="{{ field.field.field }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" sf-on-blur="saveForm(field.field.field, $event)">{{ field.value }}</textarea>
+                            <textarea ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" sf-generic-auto-send></textarea>
                         </div>
                       </div>
 

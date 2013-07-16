@@ -26,7 +26,6 @@
         scope.$watch(attr.ngModel, function (newValue, oldValue) {
 
           if (hasRunAtLeastOnce) {
-            //var input = _.last($("input[type=radio]", $(element).parent().parent()));
             caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, newValue);
           }
 
