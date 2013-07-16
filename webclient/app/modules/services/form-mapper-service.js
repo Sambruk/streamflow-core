@@ -115,53 +115,9 @@
     return {
       addProperties: function(field) {
 
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue") {
-          var mapper = mappings[field.field.fieldValue._type];
-          if (mapper && mapper.addProperties) {
-            mapper.addProperties(field);
-          }
-        }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
-          var mapper = mappings[field.field.fieldValue._type];
-          if (mapper && mapper.addProperties) {
-            mapper.addProperties(field);
-          }
-        }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
-          var mapper = mappings[field.field.fieldValue._type];
-          if (mapper && mapper.addProperties) {
-            mapper.addProperties(field);
-          }
-        }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
-          var mapper = mappings[field.field.fieldValue._type];
-          if (mapper && mapper.addProperties) {
-            mapper.addProperties(field);
-          }
-        }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
-          var mapper = mappings[field.field.fieldValue._type];
-          if (mapper && mapper.addProperties) {
-            mapper.addProperties(field);
-          }
-        }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.TextFieldValue") {
-          var mapper = mappings[field.field.fieldValue._type];
-          if (mapper && mapper.addProperties) {
-            mapper.addProperties(field);
-          }
-        }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
-         var mapper = mappings[field.field.fieldValue._type];
-          if (mapper && mapper.addProperties) {
-            mapper.addProperties(field);
-          }
+        var mapper = mappings[field.field.fieldValue._type];
+        if (mapper && mapper.addProperties) {
+          mapper.addProperties(field);
         }
       },
       getValue: function(value, attr) {
