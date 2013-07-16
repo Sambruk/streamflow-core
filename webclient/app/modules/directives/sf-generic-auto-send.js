@@ -26,7 +26,14 @@
         scope.$watch(attr.ngModel, function (newValue, oldValue) {
 
           if (hasRunAtLeastOnce) {
-            caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, newValue);
+
+            var value = newValue;
+
+            if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
+              value = value + "T00:00:00.000Z";
+            }
+
+            caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, value);
           }
 
           hasRunAtLeastOnce = true;

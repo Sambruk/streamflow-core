@@ -208,7 +208,7 @@
                         <div class="text col full col-1">
                           <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                           <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                          <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
+                          <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
                           <span class="error-ng-invalid-required" style="display: none">Required!</span>
                           <span class="error-ng-invalid-pattern" style="display: none">Invalid input format</span>
                         </div>
