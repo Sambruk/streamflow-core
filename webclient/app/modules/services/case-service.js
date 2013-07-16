@@ -104,9 +104,19 @@
 
         _.forEach(pages, function(page){
           _.forEach(page.fields, function(field){
-            var options = _.map(field.field.fieldValue.values, function(value){
-              return {name: value, value: value}
-            });
+
+            function addOptions(fieldValue){
+              var options = _.map(field.field.fieldValue.values, function(value){
+                return {name: value, value: value}
+              });
+
+              fieldValue.options = options;
+            }
+
+            if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue") {
+              addOptions(field.field.fieldValue);
+            }
+
             if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
               var checkings = _.map(field.field.fieldValue.values, function(value){
                 return {name: value, checked: field.value && field.value.indexOf(value) != -1};
@@ -116,6 +126,9 @@
             }
 
             if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
+
+              addOptions(field.field.fieldValue);
+
               if (field.value) {
                 var escapedValue = field.value.replace(/\[(.*),(.*)\]/, "$1" + encodeURIComponent(",")  + "$2");
                 var values = _.map(escapedValue.split(", "), function(espaced){
@@ -159,7 +172,7 @@
                 return {
                   value: value,
                   display: value
-                }
+                };
               });
 
               var value;
@@ -172,8 +185,6 @@
                 display: field.field.fieldValue.openSelectionName
               });
             }
-
-            field.field.fieldValue.options = options;
           });
         });
       },
