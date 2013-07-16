@@ -100,7 +100,60 @@
           {});
       },
 
+      addViewModelProperties: function(pages){
+
+        _.forEach(pages, function(page){
+          _.forEach(page.fields, function(field){
+            var options = _.map(field.field.fieldValue.values, function(value){
+              return {name: value, value: value}
+            });
+            if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
+              var checkings = _.map(field.field.fieldValue.values, function(value){
+                return {name: value, checked: field.value && field.value.indexOf(value) != -1};
+              });
+
+              field.field.fieldValue.checkings = checkings;
+            }
+
+            if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
+              var regex;
+              if (field.field.fieldValue.integer) {
+                 regex = /^\d+$/; // Integer
+              }
+              else {
+                regex = /^(\d+(?:[\.\,]\d*)?)$/ // Possible decimal, with . or ,
+              }
+
+              field.field.fieldValue.regexViewValue = regex;
+            }
+
+            if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
+
+              field.field.fieldValue.extendedValues = _.map(field.field.fieldValue.values, function(value){
+                return {
+                  value: value,
+                  display: value
+                }
+              });
+
+              var value;
+              if (field.field.fieldValue.values.indexOf(field.value) == -1) {
+                value = field.value
+              }
+
+              field.field.fieldValue.extendedValues.push({
+                value: value,
+                display: field.field.fieldValue.openSelectionName
+              });
+            }
+
+            field.field.fieldValue.options = options;
+          });
+        });
+      },
+
       getFormDraft: function(projectId, projectType, caseId, draftId) {
+        var that = this;
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'formdrafts'},
@@ -110,17 +163,7 @@
             var index = resource.response.index;
 
             index.draftId = draftId;
-
-            // Fix for ng-options et al
-            _.forEach(index.pages, function(page){
-              _.forEach(page.fields, function(field){
-                var options = _.map(field.field.fieldValue.values,
-                  function(value){ return {name: value, value: value}
-                });
-
-                field.field.fieldValue.options = options;
-              });
-            });
+            that.addViewModelProperties(index.pages);
 
             result.push(index);
           }
@@ -128,6 +171,7 @@
       },
 
       getFormDraftFromForm: function(projectId, projectType, caseId, formId) {
+        var that = this;
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'possibleforms'},
@@ -145,55 +189,7 @@
             onSuccess:function (resource) {
               var index = resource.response.index;
 
-              // Fix for ng-options et al
-              _.forEach(index.pages, function(page){
-                _.forEach(page.fields, function(field){
-                  var options = _.map(field.field.fieldValue.values, function(value){
-                    return {name: value, value: value}
-                  });
-                  if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
-                    var checkings = _.map(field.field.fieldValue.values, function(value){
-                      return {name: value, checked: field.value && field.value.indexOf(value) != -1};
-                    });
-
-                    field.field.fieldValue.checkings = checkings;
-                  }
-
-                  if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
-                    var regex;
-                    if (field.field.fieldValue.integer) {
-                       regex = /^\d+$/; // Integer
-                    }
-                    else {
-                      regex = /^(\d+(?:[\.\,]\d*)?)$/ // Possible decimal, with . or ,
-                    }
-
-                    field.field.fieldValue.regexViewValue = regex;
-                  }
-
-                  if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
-
-                    field.field.fieldValue.extendedValues = _.map(field.field.fieldValue.values, function(value){
-                      return {
-                        value: value,
-                        display: value
-                      }
-                    });
-
-                    var value;
-                    if (field.field.fieldValue.values.indexOf(field.value) == -1) {
-                      value = field.value
-                    }
-
-                    field.field.fieldValue.extendedValues.push({
-                      value: value,
-                      display: field.field.fieldValue.openSelectionName
-                    });
-                  }
-
-                  field.field.fieldValue.options = options;
-                });
-              });
+              that.addViewModelProperties(index.pages);
 
               index.draftId = id;
 
