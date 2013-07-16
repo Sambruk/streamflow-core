@@ -40,6 +40,9 @@
         addProperties: function(field){
           if (field.value)
             field.value = field.value.split("T")[0];
+        },
+        getValue: function(value, attr){
+          return value + "T00:00:00.000Z";
         }
       },
       "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue": {
@@ -49,6 +52,16 @@
           });
 
           field.field.fieldValue.checkings = checkings;
+        },
+        getValue: function(value, attr){
+          var checked = _.chain($parse(attr.backingField)())
+            .filter(function(input){
+              return input.checked;
+            }).map(function(input){
+              return input.name
+            }).value();
+
+          return checked.join(", ");
         }
       },
       "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue": {
@@ -63,6 +76,13 @@
 
             field.value = values;
           }
+        },
+        getValue: function(value, attr){
+          var espacedValues = _.map(value, function(value){
+            return value.indexOf(",") !== -1 ? "[" + value + "]" : value;
+          });
+
+          return espacedValues.join(", ");
         }
       },
       "se.streamsource.streamflow.api.administration.form.NumberFieldValue": {
@@ -107,9 +127,7 @@
             display: field.field.fieldValue.openSelectionName
           });
         }
-      },
-
-
+      }
     };
 
     return {
@@ -122,26 +140,24 @@
       },
       getValue: function(value, attr) {
         if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
-          return value + "T00:00:00.000Z";
+          var mapper = mappings[attr.fieldType];
+          if (mapper && mapper.getValue) {
+            return mapper.getValue(value, attr);
+          }
         }
 
         if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
-          var checked = _.chain($parse(attr.backingField)())
-            .filter(function(input){
-              return input.checked;
-            }).map(function(input){
-              return input.name
-            }).value();
-
-          return checked.join(", ");
+          var mapper = mappings[attr.fieldType];
+          if (mapper && mapper.getValue) {
+            return mapper.getValue(value, attr);
+          }
         }
 
         if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
-          var espacedValues = _.map(value, function(value){
-            return value.indexOf(",") !== -1 ? "[" + value + "]" : value;
-          });
-
-         return espacedValues.join(", ");
+          var mapper = mappings[attr.fieldType];
+          if (mapper && mapper.getValue) {
+            return mapper.getValue(value, attr);
+          }
         }
 
         return value;
