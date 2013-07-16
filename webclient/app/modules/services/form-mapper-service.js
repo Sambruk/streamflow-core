@@ -22,30 +22,37 @@
 
   sfServices.factory('formMapperService', ['$parse', function ($parse) {
 
-    return {
-      addProperties: function(field) {
-        function addOptions(fieldValue){
-          var options = _.map(field.field.fieldValue.values, function(value){
-            return {name: value, value: value}
-          });
+    function addOptions(fieldValue){
+      var options = _.map(fieldValue.values, function(value){
+        return {name: value, value: value}
+      });
 
-          fieldValue.options = options;
-        }
+      fieldValue.options = options;
+    }
 
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue") {
+    var mappings = {
+      "se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue": {
+        addProperties: function(field){
           addOptions(field.field.fieldValue);
         }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
+      },
+      "se.streamsource.streamflow.api.administration.form.DateFieldValue": {
+        addProperties: function(field){
+          if (field.value)
+            field.value = field.value.split("T")[0];
+        }
+      },
+      "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue": {
+        addProperties: function(field){
           var checkings = _.map(field.field.fieldValue.values, function(value){
             return {name: value, checked: field.value && field.value.indexOf(value) != -1};
           });
 
           field.field.fieldValue.checkings = checkings;
         }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
-
+      },
+      "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue": {
+        addProperties: function(field){
           addOptions(field.field.fieldValue);
 
           if (field.value) {
@@ -57,13 +64,9 @@
             field.value = values;
           }
         }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
-          if (field.value)
-            field.value = field.value.split("T")[0];
-        }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
+      },
+      "se.streamsource.streamflow.api.administration.form.NumberFieldValue": {
+        addProperties: function(field){
           var regex;
           if (field.field.fieldValue.integer) {
              regex = /^\d+$/; // Integer
@@ -74,9 +77,9 @@
 
           field.field.fieldValue.regularExpression = regex;
         }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.TextFieldValue") {
-
+      },
+      "se.streamsource.streamflow.api.administration.form.TextFieldValue": {
+        addProperties: function(field){
           if (!field.field.fieldValue.regularExpression) {
             field.field.fieldValue.regularExpression = /(?:)/;
           }
@@ -84,9 +87,9 @@
             field.field.fieldValue.regularExpression = new RegExp(field.field.fieldValue.regularExpression)
           }
         }
-
-        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
-
+      },
+      "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue": {
+        addProperties: function(field){
           field.field.fieldValue.extendedValues = _.map(field.field.fieldValue.values, function(value){
             return {
               value: value,
@@ -103,6 +106,62 @@
             value: value,
             display: field.field.fieldValue.openSelectionName
           });
+        }
+      },
+
+
+    };
+
+    return {
+      addProperties: function(field) {
+
+        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue") {
+          var mapper = mappings[field.field.fieldValue._type];
+          if (mapper && mapper.addProperties) {
+            mapper.addProperties(field);
+          }
+        }
+
+        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
+          var mapper = mappings[field.field.fieldValue._type];
+          if (mapper && mapper.addProperties) {
+            mapper.addProperties(field);
+          }
+        }
+
+        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
+          var mapper = mappings[field.field.fieldValue._type];
+          if (mapper && mapper.addProperties) {
+            mapper.addProperties(field);
+          }
+        }
+
+        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
+          var mapper = mappings[field.field.fieldValue._type];
+          if (mapper && mapper.addProperties) {
+            mapper.addProperties(field);
+          }
+        }
+
+        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
+          var mapper = mappings[field.field.fieldValue._type];
+          if (mapper && mapper.addProperties) {
+            mapper.addProperties(field);
+          }
+        }
+
+        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.TextFieldValue") {
+          var mapper = mappings[field.field.fieldValue._type];
+          if (mapper && mapper.addProperties) {
+            mapper.addProperties(field);
+          }
+        }
+
+        if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
+         var mapper = mappings[field.field.fieldValue._type];
+          if (mapper && mapper.addProperties) {
+            mapper.addProperties(field);
+          }
         }
       },
       getValue: function(value, attr) {
