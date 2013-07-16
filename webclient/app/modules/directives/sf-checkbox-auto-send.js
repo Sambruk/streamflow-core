@@ -23,7 +23,7 @@
       link: function(scope, element, attr, ngModel) {
 
         var hasRunAtLeastOnce = false;
-        scope.$watch(attr.ngModel, function (newUrl, oldUrl, srcScope) {
+        scope.$watch(attr.ngModel, function (oldValue, newValue) {
           if (hasRunAtLeastOnce) {
             var checked = _.chain($parse(attr['sfCheckboxAutoSend'])())
             .filter(function(input){
