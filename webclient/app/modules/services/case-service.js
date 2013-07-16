@@ -18,9 +18,9 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models']);
+  var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.forms']);
 
-  sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', "$http", function (backendService, navigationService, SfCase, $http) {
+  sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
     var caseBase = function(projectId, projectType, caseId){
      return [
@@ -100,7 +100,17 @@
           {});
       },
 
+      addViewModelProperties: function(pages){
+
+        _.forEach(pages, function(page){
+          _.forEach(page.fields, function(field){
+            formMapper.addProperties(field)
+          });
+        });
+      },
+
       getFormDraft: function(projectId, projectType, caseId, draftId) {
+        var that = this;
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'formdrafts'},
@@ -110,17 +120,7 @@
             var index = resource.response.index;
 
             index.draftId = draftId;
-
-            // Fix for ng-options et al
-            _.forEach(index.pages, function(page){
-              _.forEach(page.fields, function(field){
-                var options = _.map(field.field.fieldValue.values,
-                  function(value){ return {name: value, value: value}
-                });
-
-                field.field.fieldValue.options = options;
-              });
-            });
+            that.addViewModelProperties(index.pages);
 
             result.push(index);
           }
@@ -128,6 +128,7 @@
       },
 
       getFormDraftFromForm: function(projectId, projectType, caseId, formId) {
+        var that = this;
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'possibleforms'},
@@ -145,16 +146,7 @@
             onSuccess:function (resource) {
               var index = resource.response.index;
 
-              // Fix for ng-options et al
-              _.forEach(index.pages, function(page){
-                _.forEach(page.fields, function(field){
-                  var options = _.map(field.field.fieldValue.values,
-                    function(value){ return {name: value, value: value}
-                  });
-
-                  field.field.fieldValue.options = options;
-                });
-              });
+              that.addViewModelProperties(index.pages);
 
               index.draftId = id;
 
@@ -165,7 +157,7 @@
         });
       },
 
-      updateField: function(projectId, projectType, caseId, formId, fieldId, value) {
+      updateField: debounce(function(projectId, projectType, caseId, formId, fieldId, value) {
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
             {resources: 'formdrafts'},
@@ -173,7 +165,7 @@
             {commands: 'updatefield'}
             ]),
           {field: fieldId, value: value});
-      },
+      }, 1000),
 
       submitForm: function(projectId, projectType, caseId, formId) {
         return backendService.postNested(

@@ -78,23 +78,6 @@
       $scope.currentFormPage = page;
     }
 
-    // TODO Remove, use ng-model instead
-    $scope.saveForm = function(fieldId, $event){
-
-      var elementName = $($event.target).get(0).tagName.toLowerCase();
-      var value;
-      if (elementName === "select")
-        value = $($event.target).find(":selected").text(); // TODO Hack!
-      else
-        value = $($event.target).val();
-
-      caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, fieldId, value);
-    }
-
-    $scope.inputChanged = function(args){
-      caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, args.fieldId, args.value);
-    }
-
     $scope.submitForm = function(){
       caseService.submitForm($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId);
       $scope.formMessage = "Skickat!";
@@ -122,6 +105,28 @@
       index -= 1;
       $scope.currentFormPage = $scope.form[0].pages[index];
     }
+  }]);
+
+  // https://github.com/angular/angular.js/issues/2690
+  main.factory('debounce', ['$timeout', function ($timeout) {
+      return function(fn, timeout, apply){ // debounce fn
+          timeout = angular.isUndefined(timeout) ? 0 : timeout;
+          apply = angular.isUndefined(apply) ? true : apply; // !!default is true! most suitable to my experience
+          var nthCall = 0;
+          return function(){ // intercepting fn
+              var that = this;
+              var argz = arguments;
+              nthCall++;
+              var later = (function(version){
+                  return function(){
+                      if (version === nthCall){
+                          return fn.apply(that, argz);
+                      }
+                  };
+              })(nthCall);
+              return $timeout(later, timeout, apply);
+          };
+      };
   }]);
 
 })();

@@ -30,7 +30,7 @@
         var now = new Date();
         var dueDate = new Date(this.dueDate);
         var diff = Math.round((now.getTime() - dueDate.getTime())/(oneDay));
-        console.log(this.dueDate);
+        //console.log(this.dueDate);
         return diff > 0 ? diff : 0;
       },
 
