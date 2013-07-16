@@ -20,7 +20,7 @@
 
   var sfServices = angular.module('sf.services.forms', []);
 
-  sfServices.factory('formMapperService', [function () {
+  sfServices.factory('formMapperService', ['$parse', function ($parse) {
 
     return {
       addProperties: function(field) {
@@ -105,11 +105,33 @@
           });
         }
       },
-      getValue: function() {
-        return "bar";
+      getValue: function(value, attr) {
+        if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
+          return value + "T00:00:00.000Z";
+        }
+
+        if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
+          var checked = _.chain($parse(attr.backingField)())
+            .filter(function(input){
+              return input.checked;
+            }).map(function(input){
+              return input.name
+            }).value();
+
+          return checked.join(", ");
+        }
+
+        if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
+          var espacedValues = _.map(value, function(value){
+            return value.indexOf(",") !== -1 ? "[" + value + "]" : value;
+          });
+
+         return espacedValues.join(", ");
+        }
+
+        return value;
       },
     };
   }]);
-
 
 })();

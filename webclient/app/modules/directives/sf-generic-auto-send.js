@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  sf.directives.directive('sfGenericAutoSend', ['$parse', '$routeParams', 'caseService', function($parse, $params, caseService) {
+  sf.directives.directive('sfGenericAutoSend', ['$parse', '$routeParams', 'caseService', 'formMapperService', function($parse, $params, caseService, formMapper) {
     return {
       require: 'ngModel',
       link: function(scope, element, attr, ngModel) {
@@ -40,32 +40,8 @@
             // Valid input, clear error warnings
             $("[class^=error]", element.parent()).hide();
 
-            var value = newValue;
 
-            if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
-              value = value + "T00:00:00.000Z";
-            }
-
-            if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
-
-              var checked = _.chain($parse(attr.backingField)())
-                .filter(function(input){
-                  return input.checked;
-                }).map(function(input){
-                  return input.name
-                }).value();
-
-              value = checked.join(", ");
-            }
-
-            if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
-              var espacedValues = _.map(newValue, function(value){
-                return value.indexOf(",") !== -1 ? "[" + value + "]" : value;
-              });
-
-              value = espacedValues.join(", ");
-            }
-
+            var value = formMapper.getValue(newValue, attr);
             caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, value);
           }
 
