@@ -35,8 +35,7 @@
 
             if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
 
-              // Could find a better way than using eval() here..
-              var checked = _.chain(eval(attr.backingField))
+              var checked = _.chain($parse(attr.backingField)())
                 .filter(function(input){
                   return input.checked;
                 }).map(function(input){
