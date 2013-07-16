@@ -78,23 +78,6 @@
       $scope.currentFormPage = page;
     }
 
-    // TODO Remove, use ng-model instead
-    $scope.saveForm = function(fieldId, $event){
-
-      var elementName = $($event.target).get(0).tagName.toLowerCase();
-      var value;
-      if (elementName === "select")
-        value = $($event.target).find(":selected").text(); // TODO Hack!
-      else
-        value = $($event.target).val();
-
-      caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, fieldId, value);
-    }
-
-    $scope.inputChanged = function(args){
-      caseService.updateField($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId, args.fieldId, args.value);
-    }
-
     $scope.submitForm = function(){
       caseService.submitForm($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId);
       $scope.formMessage = "Skickat!";
