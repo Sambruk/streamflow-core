@@ -79,7 +79,7 @@
           <div class="radio col medium col-2">
               <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
               <span ng-repeat="option in field.field.fieldValue.values">
-                <input ng-model="field.value" type="radio" name="{{ field.field.fieldId }}" value="{{ option }}" >{{ option }}</input>
+                <input ng-model="field.value" type="radio" name="{{ field.field.field }}" value="{{ option }}" sf-generic-auto-send>{{ option }}</input>
               </span>
           </div>
         </div>
