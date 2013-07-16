@@ -236,7 +236,8 @@
                         <div class="select col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
                             <select custom-select ng-model="field.value"
-                                    ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-on-blur="saveForm(field.field.field, $event)">
+                            name="{{ field.field.field }}" id="{{ field.field.fieldId }}"
+                                    ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
                             </select>
                         </div>
                       </div>
@@ -245,7 +246,7 @@
                         <div class="select col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
                             <select multiple ng-multiple="true" ng-model="field.value"
-                                    ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-multiple-select-auto-send name="{{ field.field.field }}">
+                                    ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-multiple-select-auto-send name="{{ field.field.field }}" data-field-type="{{ field.field.fieldValue._type }}">
                             </select>
                         </div>
                       </div>
@@ -254,7 +255,7 @@
                         <div class="radio col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
                             <span ng-repeat="option in field.field.fieldValue.values">
-                              <input ng-change="inputChanged({fieldId: field.field.field, value: field.value})" ng-model="field.value" type="radio" name="{{ field.field.fieldId }}" value="{{ option }}" sf-on-blur="saveForm(field.field.field, $event)">{{ option }}</input>
+                              <input ng-model="field.value" type="radio" name="{{ field.field.fieldId }}" value="{{ option }}" >{{ option }}</input>
                             </span>
                         </div>
                       </div>
@@ -274,7 +275,7 @@
                         <div class="radio col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
                             <span ng-repeat="option in field.field.fieldValue.checkings">
-                              <input type="checkbox" sf-checkbox-auto-send="{{field.field.fieldValue.checkings}}"  value="{{option.name}}" ng-model="option.checked" type="radio" name="{{ field.field.field }}">{{ option.name }}</input>
+                              <input type="checkbox" value="{{option.name}}" ng-model="option.checked" type="radio" name="{{ field.field.field }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}" data-backing-field="{{ field.field.fieldValue.checkings }}">{{ option.name }}</input>
                             </span>
                         </div>
                       </div>

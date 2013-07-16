@@ -33,6 +33,19 @@
               value = value + "T00:00:00.000Z";
             }
 
+            if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue") {
+
+              // Could find a better way than using eval() here..
+              var checked = _.chain(eval(attr.backingField))
+                .filter(function(input){
+                  return input.checked;
+                }).map(function(input){
+                  return input.name
+                }).value();
+
+              value = checked.join(", ");
+            }
+
             caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, value);
           }
 
