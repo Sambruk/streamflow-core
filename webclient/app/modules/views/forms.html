@@ -18,8 +18,7 @@
           <div class="text col full col-1">
             <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
             <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
-            <span class="error-ng-invalid-required" style="display: none">Required!</span>
-            <span class="error-ng-invalid-pattern" style="display: none">Invalid input format</span>
+            <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
           </div>
         </div>
 
@@ -27,8 +26,7 @@
           <div class="text col full col-1">
             <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
             <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
-            <span class="error-ng-invalid-required" style="display: none">Required!</span>
-            <span class="error-ng-invalid-pattern" style="display: none">Invalid input format</span>
+            <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
           </div>
         </div>
 
@@ -36,15 +34,15 @@
           <div class="text col full col-1">
             <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
             <input ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-generic-auto-send>
-            <span class="error-ng-invalid-required" style="display: none">Required!</span>
-            <span class="error-ng-invalid-pattern" style="display: none">Invalid number format</span>
+            <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
           </div>
         </div>
 
         <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextAreaFieldValue">
           <div class="text col full col-1">
               <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
-              <textarea ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" sf-generic-auto-send></textarea>
+              <textarea ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" ng-required="field.field.mandatory" sf-generic-auto-send></textarea>
+              <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
           </div>
         </div>
 
@@ -64,6 +62,7 @@
               <select multiple ng-multiple="true" ng-model="field.value"
                       ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-generic-auto-send name="{{ field.field.field }}" data-field-type="{{ field.field.fieldValue._type }}">
               </select>
+              <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
           </div>
         </div>
 

@@ -27,6 +27,19 @@
 
           if (hasRunAtLeastOnce) {
 
+            // Validation
+            if (element.hasClass("ng-invalid")) {
+              _.each(element.attr("class").split(" "), function(klass){
+                var errorClass = ".error-" + klass
+                $(errorClass, element.parent()).show();
+              });
+
+              return;
+            }
+
+            // Valid input, clear error warnings
+            $("[class^=error]", element.parent()).hide();
+
             var value = newValue;
 
             if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.DateFieldValue") {
