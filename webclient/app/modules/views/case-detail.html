@@ -208,7 +208,7 @@
                         <div class="text col full col-1">
                           <label for="{{ field.field.fieldId }}">{{ field.field.description }}
                           <span><em ng-show="field.field.fieldValue.hint">({{ field.field.fieldValue.hint }})</em><span ng-show="field.field.mandatory">*</span></span></label>
-                          <input required ng-pattern="/^\d+$/" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
+                          <input required ng-pattern="field.field.fieldValue.regexViewValue" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-on-blur="saveForm(field.field.field, $event)">
                           <span class="error-ng-invalid-required" style="display: none">Required!</span>
                           <span class="error-ng-invalid-pattern" style="display: none">Must be a ... TODO!</span>
                         </div>

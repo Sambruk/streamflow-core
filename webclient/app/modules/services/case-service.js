@@ -159,6 +159,18 @@
                     field.field.fieldValue.checkings = checkings;
                   }
 
+                  if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
+                    var regex;
+                    if (field.field.fieldValue.integer) {
+                       regex = /^\d+$/; // Integer
+                    }
+                    else {
+                      regex = /^(\d+(?:[\.\,]\d*)?)$/ // Possible decimal, with . or ,
+                    }
+
+                    field.field.fieldValue.regexViewValue = regex;
+                  }
+
                   if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
 
                     field.field.fieldValue.extendedValues = _.map(field.field.fieldValue.values, function(value){
