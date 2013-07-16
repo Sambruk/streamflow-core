@@ -124,7 +124,17 @@
                 regex = /^(\d+(?:[\.\,]\d*)?)$/ // Possible decimal, with . or ,
               }
 
-              field.field.fieldValue.regexViewValue = regex;
+              field.field.fieldValue.regularExpression = regex;
+            }
+
+            if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.TextFieldValue") {
+
+              if (!field.field.fieldValue.regularExpression) {
+                field.field.fieldValue.regularExpression = /(?:)/;
+              }
+              else {
+                field.field.fieldValue.regularExpression = new RegExp(field.field.fieldValue.regularExpression)
+              }
             }
 
             if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue") {
