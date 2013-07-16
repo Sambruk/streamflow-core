@@ -246,7 +246,7 @@
                         <div class="select col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
                             <select multiple ng-multiple="true" ng-model="field.value"
-                                    ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-multiple-select-auto-send name="{{ field.field.field }}" data-field-type="{{ field.field.fieldValue._type }}">
+                                    ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-generic-auto-send name="{{ field.field.field }}" data-field-type="{{ field.field.fieldValue._type }}">
                             </select>
                         </div>
                       </div>

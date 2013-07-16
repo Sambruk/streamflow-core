@@ -45,6 +45,14 @@
               value = checked.join(", ");
             }
 
+            if (attr.fieldType === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
+              var espacedValues = _.map(newValue, function(value){
+                return value.indexOf(",") !== -1 ? "[" + value + "]" : value;
+              });
+
+              value = espacedValues.join(", ");
+            }
+
             caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, value);
           }
 
