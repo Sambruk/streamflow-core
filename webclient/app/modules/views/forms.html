@@ -6,43 +6,52 @@
     </li>
 </ul>
 <ol class="form-sections cf">
-    <li class="section-item" ng-class="{sel: currentFormPage.title==page.title}" ng-repeat="page in form[0].pages"><a href="" ng-click="selectFormPage(page)">{{page.title}}</a></li>
+    <li class="section-item" ng-class="{sel: currentFormPage.title==page.title}" ng-repeat="page in form[0].pages"><a href="" ng-click="myForm.$valid && selectFormPage(page)">{{page.title}}</a></li>
 </ol>
 
-<form method="post" novalidate ng-submit="submitForm()">
+<form name="myForm" method="post" novalidate ng-submit="submitForm()">
+  <div class="error" ng-show="!myForm.$valid">Not valid!</div>
   <div>{{ formMessage }}</div>
   <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
     <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
 
         <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
           <div class="text col full col-1">
-            <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
-            <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
-            <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+            <ng-form name="{{ field.field.fieldId }}">
+              <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
+              <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
+              <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+            </ng-form>
           </div>
         </div>
 
         <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.DateFieldValue">
           <div class="text col full col-1">
-            <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
-            <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
-            <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+            <ng-form name="{{ field.field.fieldId }}">
+              <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
+              <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
+              <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+            </ng-form>
           </div>
         </div>
 
         <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.NumberFieldValue">
           <div class="text col full col-1">
-            <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
-            <input ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-generic-auto-send>
-            <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+            <ng-form name="{{ field.field.fieldId }}">
+              <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
+              <input ng-required="field.field.mandatory" ng-pattern="field.field.fieldValue.regularExpression" type="text" ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-generic-auto-send>
+              <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+            </ng-form>
           </div>
         </div>
 
         <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextAreaFieldValue">
           <div class="text col full col-1">
-              <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
-              <textarea ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" ng-required="field.field.mandatory" sf-generic-auto-send></textarea>
-              <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+              <ng-form name="{{ field.field.fieldId }}">
+                <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
+                <textarea ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" ng-required="field.field.mandatory" sf-generic-auto-send></textarea>
+                <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
+              </ng-form>
           </div>
         </div>
 
@@ -109,9 +118,8 @@
 
   </div>
 
-
   <div ng-show="isLastPage(currentFormPage)">
-    <input type="submit" name="submit" value="Skicka"></input>
+    <input ng-disabled="!myForm.$valid" type="submit" name="submit" value="Skicka"></input>
   </div>
   <!--
   <div class="row cols-1 cf">
@@ -157,5 +165,5 @@
 </form>
 
 <div ng-show="currentFormPage">
-  <a href="" class="btn inline" ng-class="{inactive: isFirstPage()}" ng-click="!isFirstPage() && previousFormPage()">Tillbaka</a> <a href="" class="btn inline" ng-class="{inactive: isLastPage()}" ng-click="!isLastPage() && nextFormPage()">Nästa</a>
+  <a href="" class="btn inline" ng-class="{inactive: isFirstPage() || !myForm.$valid}" ng-click="!isFirstPage() && myForm.$valid && previousFormPage()">Tillbaka</a> <a href="" class="btn inline" ng-class="{inactive: isLastPage() || !myForm.$valid}" ng-click="!isLastPage() && myForm.$valid && nextFormPage()">Nästa</a>
 </div>
