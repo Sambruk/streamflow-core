@@ -10,7 +10,6 @@
 </ol>
 
 <form name="myForm" method="post" novalidate ng-submit="submitForm()">
-  <div class="error" ng-show="!myForm.$valid">Not valid!</div>
   <div>{{ formMessage }}</div>
   <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
     <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
