@@ -231,6 +231,15 @@
                         </div>
                       </div>
 
+                      <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ListBoxFieldValue">
+                        <div class="select col medium col-2">
+                            <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>
+                            <select multiple ng-multiple="true" ng-model="field.value"
+                                    ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-multiple-select-auto-send name="{{ field.field.field }}">
+                            </select>
+                        </div>
+                      </div>
+
                       <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue">
                         <div class="radio col medium col-2">
                             <label for="{{ field.field.fieldId }}">{{ field.field.description }}</label>

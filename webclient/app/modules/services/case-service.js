@@ -115,6 +115,15 @@
               field.field.fieldValue.checkings = checkings;
             }
 
+            if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue") {
+              var escapedValue = field.value.replace(/\[(.*),(.*)\]/, "$1" + encodeURIComponent(",")  + "$2");
+              var values = _.map(escapedValue.split(", "), function(espaced){
+                return decodeURIComponent(espaced);
+              });
+
+              field.value = values;
+            }
+
             if (field.field.fieldValue._type === "se.streamsource.streamflow.api.administration.form.NumberFieldValue") {
               var regex;
               if (field.field.fieldValue.integer) {
