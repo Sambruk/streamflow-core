@@ -35,18 +35,22 @@
     $scope.cases = projectService.getSelected($params.projectId, $params.projectType);
   }]);
 
-  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
-                  function($scope, caseService, $params){
-    console.log('params', $params);
+  var loadSidebarData = function($scope, caseService, $params){
+
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType
-
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
     $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
+  }
+
+  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params){
+
+    loadSidebarData($scope, caseService, $params);
 
     // Forms
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
@@ -115,6 +119,8 @@
 
   main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams',
                   function($scope, caseService, $params) {
+
+    loadSidebarData($scope, caseService, $params);
 
     $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
