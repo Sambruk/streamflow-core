@@ -53,6 +53,11 @@
           return item.id === trimmedId;
         });
 
+        // Fix for broken href attribute values in API
+        if (w.href.indexOf("/") === -1 && w.classes !== "query") {
+          w.href = w.href + "/"
+        }
+
         if (!w) {
           console.log("Not found: ", trimmedId, " in ", JSON.stringify(resourceData));
 

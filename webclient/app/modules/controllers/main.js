@@ -115,8 +115,7 @@
 
   main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams',
                   function($scope, caseService, $params) {
-                    debugger;
-    $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
+    $scope.conversationMessages = caseService.getConversation($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
   }]);
 
 

@@ -226,7 +226,6 @@
     <div class="m-c">
       <ul>
         <li ng-repeat='conversation in conversations'>
-        {{ conversation }}
           <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/conversation/{{ conversation.id }}" class="block-link">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
