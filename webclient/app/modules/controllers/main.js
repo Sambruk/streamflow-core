@@ -38,6 +38,24 @@
   main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
                   function($scope, caseService, $params){
     console.log('params', $params);
+
+    var modalWindow = $(".modal-window");
+    
+    modalWindow.easyModal({
+        top: 50,
+        overlayOpacity: 0.7,
+        overlayColor: "#000",
+        closeButtonClass: "modal-close"
+    });
+ 
+    $scope.openConversation = function(){
+      $(".modal-window").easyModal().trigger("openModal"); 
+    }
+
+    $scope.closeModal = function(){
+      $(".modal-window").easyModal().trigger("closeModal"); 
+    }
+    
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);

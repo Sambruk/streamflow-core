@@ -226,14 +226,14 @@
     <div class="m-c">
       <ul>
         <li ng-repeat='conversation in conversations'>
-          <a href="#" class="block-link">
-          <h3>{{ conversation.text }}</h3>
-          <span class="date">{{ conversation.creationDate | dateTime }}</span>
-          <ul class="convo-status">
-            <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
-            <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
-          </ul>
-        </a>
+          <a href="" ng-click="openConversation()" class="block-link">
+            <h3>{{ conversation.text }}</h3>
+            <span class="date">{{ conversation.creationDate | dateTime }}</span>
+            <ul class="convo-status">
+              <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
+              <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
+            </ul>
+          </a>
         </li>
       </ul>
     </div>
@@ -318,3 +318,127 @@
 <!-- <pre><code>{{ form[0] | json }}</code></pre> -->
 </div>
 <!-- /Content secondary -->
+<div class="modal-window">
+        
+  <div class="conversation">
+    <div class="convo-head">
+      <h2>Detaljer om ansökan</h2>
+      <div class="participants">
+        <h3 class="struct">Deltagare i denna konversation</h3>
+        <span>Streamsource Admin <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
+        <span>esbjorn.karlsson@cloudmail.com <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
+        <span>mborn97@freemail.com <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
+        <a href="xlink-" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
+      </div>
+    </div>
+    <div class="convo-input">
+      <form action="#" method="get" class="cf">
+        <div class="text">
+          <label for="convo-text" class="struct">Meddelande</label>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="2"></textarea>
+        </div>
+        <div class="upload">
+          <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
+        </div>
+        <div class="submit-area">
+          <button type="submit" name="convo-submit">Skicka</button>
+        </div>
+      </form>
+      <div class="attached-files">Bifogad fil: <a href="xlink-d6as78">uppladdad-fil.doc</a></div>
+    </div>
+    <div class="convo-body">
+      <ul class="convo-messages">
+        <li class="msg-item">
+        <div class="msg-head cf">
+          <div class="msg-author">esbjorn.karlsson@cloudmail.com</div>
+          <div class="msg-attachment"><strong>Bifogad fil:</strong> <a href="xlink-ddsa789">en-bild.jpeg</a></div>
+        </div>
+        <div class="msg-body">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <div class="msg-meta cf">
+          <div class="msg-recipients">
+            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
+          </div>
+          <div class="msg-timestamp">
+            2012-01-21, 13:45
+          </div>
+        </div>
+        </li>
+        <li class="msg-item">
+        <div class="msg-head cf">
+          <div class="msg-author">Streamsource admin</div>
+          <div class="msg-attachment"></div>
+        </div>
+        <div class="msg-body">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <div class="msg-meta cf">
+          <div class="msg-recipients">
+            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
+          </div>
+          <div class="msg-timestamp">
+            2012-01-21, 13:45
+          </div>
+        </div>
+        </li>
+        <li class="msg-item">
+        <div class="msg-head cf">
+          <div class="msg-author">Streamsource admin</div>
+          <div class="msg-attachment"></div>
+        </div>
+        <div class="msg-body">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <div class="msg-meta cf">
+          <div class="msg-recipients">
+            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
+          </div>
+          <div class="msg-timestamp">
+            2012-01-21, 13:45
+          </div>
+        </div>
+        </li>
+        <li class="msg-item">
+        <div class="msg-head cf">
+          <div class="msg-author">Streamsource admin</div>
+          <div class="msg-attachment"></div>
+        </div>
+        <div class="msg-body">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <div class="msg-meta cf">
+          <div class="msg-recipients">
+            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
+          </div>
+          <div class="msg-timestamp">
+            2012-01-21, 13:45
+          </div>
+        </div>
+        </li>
+        <li class="msg-item">
+        <div class="msg-head cf">
+          <div class="msg-author">Streamsource admin</div>
+          <div class="msg-attachment"></div>
+        </div>
+        <div class="msg-body">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <div class="msg-meta cf">
+          <div class="msg-recipients">
+            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
+          </div>
+          <div class="msg-timestamp">
+            2012-01-21, 13:45
+          </div>
+        </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <a href="" ng-click="closeModal()" class="modal-close icon-close"><span class="struct">Stäng detta fönster</span></a>
+
+</div>
+<!-- /modal-window -->
+
