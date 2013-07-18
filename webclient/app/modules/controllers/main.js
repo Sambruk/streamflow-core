@@ -25,9 +25,19 @@
     $('.functions-menu').toggleClass('open');
   }
 
-  main.controller('ProjectListCtrl', ['$scope', 'projectService', function($scope, projectService) {
+  main.controller('ProjectListCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', function($scope, projectService, $params, navigationService) {
     $scope.projects = projectService.getAll();
     $scope.toggleToolbar = toggleToolbar;
+
+    $scope.createIssue = function(){
+      projectService.addIssue($params.projectId, $params.projectType).then(function(response){
+        var caseId = response.data.events[0].identity;
+        var href = navigationService.caseHref(caseId);
+
+        window.location.replace(href);
+      });
+    }
+
   }]);
 
   main.controller('CaseListCtrl', ['$scope', 'projectService', '$routeParams',
@@ -115,6 +125,16 @@
       index -= 1;
       $scope.currentFormPage = $scope.form[0].pages[index];
     }
+  }]);
+
+  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params) {
+
+    loadSidebarData($scope, caseService, $params);
+
+    $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
+
+
   }]);
 
   main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams',

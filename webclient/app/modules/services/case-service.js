@@ -56,7 +56,12 @@
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'general'}]),
           onSuccess:function (resource, result) {
-            result.push(resource.response.index);
+            var index = resource.response.index;
+
+            if (index.dueOn)
+              index.dueOnShort = index.dueOn.split("T")[0]
+
+            result.push(index);
           }
         });
       },
@@ -80,6 +85,35 @@
           }
         });
       },
+
+      getPossibleCaseTypes: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'general'},
+            {queries: 'possiblecasetypes'}
+            ]),
+          onSuccess:function (resource, result) {
+            var caseTypeOptions = _.map(resource.response.links, function(link){
+              return {name: link.text, value: link.id};
+            });
+
+            caseTypeOptions.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+
+      updateSimpleValue: debounce(function(projectId, projectType, caseId, resource, command, property, value) {
+
+        var toSend = {};
+        toSend[property] = value;
+
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: resource},
+            {commands: command}
+            ]),
+          toSend);
+      }, 1000),
 
       getSelectedPossibleForms: function(projectId, projectType, caseId) {
         return backendService.get({
