@@ -37,6 +37,10 @@
         templateUrl:'modules/views/case-detail.html',
         controller: 'CaseDetailCtrl'
       })
+      .when('/:projectId/:projectType/:caseId/conversation/:conversationId', {
+        templateUrl:'modules/views/conversation-detail.html',
+        controller: 'ConversationDetailCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

@@ -38,29 +38,17 @@
   main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
                   function($scope, caseService, $params){
     console.log('params', $params);
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType
 
-    var modalWindow = $(".modal-window");
-    
-    modalWindow.easyModal({
-        top: 50,
-        overlayOpacity: 0.7,
-        overlayColor: "#000",
-        closeButtonClass: "modal-close"
-    });
- 
-    $scope.openConversation = function(){
-      $(".modal-window").easyModal().trigger("openModal"); 
-    }
 
-    $scope.closeModal = function(){
-      $(".modal-window").easyModal().trigger("closeModal"); 
-    }
-    
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
     $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
+
+    // Forms
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
     $scope.selectForm = function(formId){
@@ -124,6 +112,13 @@
       $scope.currentFormPage = $scope.form[0].pages[index];
     }
   }]);
+
+  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params) {
+                    debugger;
+    $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
+  }]);
+
 
   // https://github.com/angular/angular.js/issues/2690
   main.factory('debounce', ['$timeout', function ($timeout) {
