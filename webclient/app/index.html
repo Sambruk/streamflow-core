@@ -69,27 +69,28 @@
         <!-- Add your site or application content here -->
         <div class='body'>
 
-          <div class='header' role='banner'>
-            <div class='header-body cf'>
-              <div class='header-primary'>
+          <div class="header cf" role="banner">
+
+            <div class="client-name">
                 <h1>Malmö Kommun Kontaktcenter</h1>
+            </div>
+            <!-- /client-name -->
 
-                <form action="#" method="get" class="main-search" role='search'>
-                  <div>
-                    <label for="main-searchtext"></label>
+            <form action="#" method="get" class="main-search" role="search">
+                <div>
+                    <label for="main-searchtext" class="struct">Sök</label>
                     <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
-                    <button type="submit"><i class="glyph icon-search"><span>Sök</span></i></button>
-                  </div>
-                </form>
-              </div> <!-- header-primary -->
+                    <button type="submit"><i class="icon-search"><span>Sök</span></i></button>
+                </div>
+            </form>
+            <!-- /main-search -->
 
-              <div class="header-secondary">
-                <a href="xlink-" class="glyph icon-user logged-in">Solveig Grankvist</a>
-              </div> <!-- header-secondary -->
+            <div class="user-area">
+                <a href="xlink-" class="icon-user logged-in">Solveig Grankvist</a>
+            </div>
+            <!-- /user-area -->
 
-            </div> <!-- header-body -->
-
-          </div> <!-- header -->
+        </div>
 
           <div class="main">
             <ng-include src="'modules/views/navigation.html'"></ng-include>
