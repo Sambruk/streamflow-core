@@ -1,0 +1,43 @@
+<div class="content-primary" role="main">
+
+    <form action="#" method="get" class="form-general">
+
+        <!-- Module: Ärendebeskrivning & taggar -->
+        <div class="m">
+            <div class="m-h">
+                <h2>20121016-1</h2>
+                <div class="choose-type">
+                    <i class="icon-search"></i>
+                    <label class="struct" for="issue-type">Ärendetyp</label>
+                    <input type="text" name="issue-type" id="issue-type" placeholder="Välj ärendetyp">
+                </div>
+                <div class="set-due-date">
+                    <label class="struct" for="set-due-date">Förfallodatum</label>
+                    <input type="text" name="set-due-date" id="set-due-date" placeholder="Förfallodatum">
+                </div>
+            </div>
+            <div class="m-c">
+
+                <div class="row cols-1 cf">
+                    <div class="text col full col-1">
+                        <label for="case-description">Beskrivning</label>
+                        <input type="text" sf-simple-field-auto-send data-resource="general" command="changedescription" name="description" id="case-description" ng-model="case[0].text">
+                    </div>
+                </div>
+
+                <div class="row cols-1 cf">
+                    <div class="text col full col-1">
+                        <label for="issue-notes">Notering</label>
+                        <textarea name="issue-notes" id="issue-notes" cols="30" rows="5"></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- /Module: Ärendebeskrivning & taggar -->
+
+    </form>
+</div>
+
+<!-- Content secondary -->
+<ng-include class="m-c" src="'modules/views/case-sidebar.html'"></ng-include>

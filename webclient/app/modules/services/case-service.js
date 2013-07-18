@@ -81,6 +81,30 @@
         });
       },
 
+      // TODO remove
+      editCaseDescription: function(projectId, projectType, caseId) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'general'},
+            {commands: 'changedescription'}
+            ]),
+          {description: "skiftes teeeeest"});
+      },
+
+      updateSimpleValue: debounce(function(projectId, projectType, caseId, resource, command, property, value) {
+
+        var toSend = {};
+        toSend[property] = value;
+
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: resource},
+            {commands: command}
+            ]),
+          toSend);
+      }, 1000),
+
+
       getSelectedPossibleForms: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'possibleforms'}]),
