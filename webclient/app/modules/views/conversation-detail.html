@@ -1,0 +1,69 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main" ng-controller="ConversationDetailCtrl">
+  <div class="conversation">
+    <div class="convo-head">
+      <h2>Detaljer om ansökan</h2>
+      <div class="participants">
+        <h3 class="struct">Deltagare i denna konversation</h3>
+        <span ng-repeat="participant in conversationParticipants">{{ participant.text }} <!-- <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span> -->
+        <!-- <a href="xlink-" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a> -->
+      </div>
+    </div>
+    <div class="convo-input">
+      <form action="#" method="get" class="cf">
+        <div class="text">
+          <label for="convo-text" class="struct">Meddelande</label>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="2"></textarea>
+        </div>
+        <!-- <div class="upload">
+          <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
+        </div> -->
+        <div class="submit-area">
+          <button type="submit" name="convo-submit">Skicka</button>
+        </div>
+      </form>
+      <!-- <div class="attached-files">Bifogad fil: <a href="xlink-d6as78">uppladdad-fil.doc</a></div> -->
+    </div>
+    <div class="convo-body">
+      <ul class="convo-messages">
+        <li class="msg-item" ng-repeat="message in conversationMessages">
+          <div class="msg-head cf">
+            <div class="msg-author">{{ message.sender }}</div>
+            <!-- <div class="msg-attachment"><strong>Bifogad fil:</strong> <a href="xlink-ddsa789">en-bild.jpeg</a></div> -->
+          </div>
+          <div class="msg-body">
+            <p>{{ message.text }}</p>
+          </div>
+          <div class="msg-meta cf">
+            <!-- TODO What is this?!? Check with Reinhold and Kleine <div class="msg-recipients">
+              Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
+            </div> -->
+            <div class="msg-timestamp">
+              {{ message.createdOn | dateTime}}
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Content secondary -->
+<ng-include class="m-c" src="'modules/views/case-sidebar.html'"></ng-include>
