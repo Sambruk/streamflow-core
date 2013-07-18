@@ -25,9 +25,19 @@
     $('.functions-menu').toggleClass('open');
   }
 
-  main.controller('ProjectListCtrl', ['$scope', 'projectService', function($scope, projectService) {
+  main.controller('ProjectListCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', function($scope, projectService, $params, navigationService) {
     $scope.projects = projectService.getAll();
     $scope.toggleToolbar = toggleToolbar;
+
+    $scope.createIssue = function(){
+      projectService.addIssue($params.projectId, $params.projectType).then(function(response){
+        var caseId = response.data.events[0].identity;
+        var href = navigationService.caseHref(caseId);
+
+        window.location.replace(href);
+      });
+    }
+
   }]);
 
   main.controller('CaseListCtrl', ['$scope', 'projectService', '$routeParams',

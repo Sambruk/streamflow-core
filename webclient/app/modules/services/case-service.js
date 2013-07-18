@@ -115,7 +115,6 @@
           toSend);
       }, 1000),
 
-
       getSelectedPossibleForms: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'possibleforms'}]),

@@ -71,11 +71,25 @@
         });
       },
 
+      // TODO Rename to caseFactory or loadCase or something better
       createCase: function(model) {
         var href = navigationService.caseHref(model.id);
         var o = new SfCase(model, href);
         return o;
-      }
+      },
+
+      addIssue: function(projectId, projectType) {
+
+        return backendService.postNested(
+          [
+            {resources:'workspacev2'},
+            {resources: 'projects'},
+            {'index.links': projectId},
+            {resources: projectType },
+            {commands: 'createcase'}
+          ],
+          {});
+      },
 
 
     };
