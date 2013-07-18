@@ -178,12 +178,24 @@
       },
 
       // Conversations
-      getConversation: function(projectId, projectType, caseId, conversationId) {
+      getConversationMessages: function(projectId, projectType, caseId, conversationId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
+            ]),
+          onSuccess:function (resource, result) {
+            resource.response.index.links.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+      getConversationParticipants: function(projectId, projectType, caseId, conversationId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
             ]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});

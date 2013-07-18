@@ -22,10 +22,8 @@
       <h2>Detaljer om ansökan</h2>
       <div class="participants">
         <h3 class="struct">Deltagare i denna konversation</h3>
-        <span>Streamsource Admin <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
-        <span>esbjorn.karlsson@cloudmail.com <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
-        <span>mborn97@freemail.com <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
-        <a href="xlink-" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
+        <span ng-repeat="participant in conversationParticipants">{{ participant.text }} <!-- <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span> -->
+        <!-- <a href="xlink-" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a> -->
       </div>
     </div>
     <div class="convo-input">
@@ -62,79 +60,7 @@
             </div>
           </div>
         </li>
-
-        <!-- <li class="msg-item">
-        <div class="msg-head cf">
-          <div class="msg-author">Streamsource admin</div>
-          <div class="msg-attachment"></div>
-        </div>
-        <div class="msg-body">
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-        <div class="msg-meta cf">
-          <div class="msg-recipients">
-            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
-          </div>
-          <div class="msg-timestamp">
-            2012-01-21, 13:45
-          </div>
-        </div>
-        </li>
-        <li class="msg-item">
-        <div class="msg-head cf">
-          <div class="msg-author">Streamsource admin</div>
-          <div class="msg-attachment"></div>
-        </div>
-        <div class="msg-body">
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-        <div class="msg-meta cf">
-          <div class="msg-recipients">
-            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
-          </div>
-          <div class="msg-timestamp">
-            2012-01-21, 13:45
-          </div>
-        </div>
-        </li>
-        <li class="msg-item">
-        <div class="msg-head cf">
-          <div class="msg-author">Streamsource admin</div>
-          <div class="msg-attachment"></div>
-        </div>
-        <div class="msg-body">
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-        <div class="msg-meta cf">
-          <div class="msg-recipients">
-            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
-          </div>
-          <div class="msg-timestamp">
-            2012-01-21, 13:45
-          </div>
-        </div>
-        </li>
-        <li class="msg-item">
-        <div class="msg-head cf">
-          <div class="msg-author">Streamsource admin</div>
-          <div class="msg-attachment"></div>
-        </div>
-        <div class="msg-body">
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-        <div class="msg-meta cf">
-          <div class="msg-recipients">
-            Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
-          </div>
-          <div class="msg-timestamp">
-            2012-01-21, 13:45
-          </div>
-        </div>
-        </li> -->
       </ul>
     </div>
   </div>
-
-<pre><code>{{ conversationMessages[0] | json }}</code></pre>
-
 </div>
