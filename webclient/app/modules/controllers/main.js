@@ -122,9 +122,9 @@
 
     loadSidebarData($scope, caseService, $params);
 
-    $scope.foobar = function(){
-      caseService.editCaseDescription($params.projectId, $params.projectType, $params.caseId);
-    }
+    $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
+
+
   }]);
 
   main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams',

@@ -7,9 +7,11 @@
             <div class="m-h">
                 <h2>20121016-1</h2>
                 <div class="choose-type">
-                    <i class="icon-search"></i>
                     <label class="struct" for="issue-type">Ärendetyp</label>
-                    <input type="text" name="issue-type" id="issue-type" placeholder="Välj ärendetyp">
+                    <select ng-model="general[0].caseType.id"
+                        name="entity" id="issue-type"
+                        ng-options="option.value as option.name for option in possibleCaseTypes" sf-simple-field-auto-send data-resource="general" command="casetype">
+              </select>
                 </div>
                 <div class="set-due-date">
                     <label class="struct" for="set-due-date">Förfallodatum</label>

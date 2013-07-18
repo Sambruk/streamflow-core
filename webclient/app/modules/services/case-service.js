@@ -86,14 +86,20 @@
         });
       },
 
-      // TODO remove
-      editCaseDescription: function(projectId, projectType, caseId) {
-        return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+      getPossibleCaseTypes: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'general'},
-            {commands: 'changedescription'}
+            {queries: 'possiblecasetypes'}
             ]),
-          {description: "skiftes teeeeest"});
+          onSuccess:function (resource, result) {
+            var caseTypeOptions = _.map(resource.response.links, function(link){
+              return {name: link.text, value: link.id};
+            });
+
+            caseTypeOptions.forEach(function(item){result.push(item)});
+          }
+        });
       },
 
       updateSimpleValue: debounce(function(projectId, projectType, caseId, resource, command, property, value) {
