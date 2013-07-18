@@ -35,6 +35,10 @@
             var name = attr.name;
             var value = newValue;
 
+            if (attr.type === "date") {
+              value = value + "T00:00:00.000Z";
+            }
+
             caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value);
           }
 

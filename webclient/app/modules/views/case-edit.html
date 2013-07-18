@@ -13,7 +13,7 @@
                 </div>
                 <div class="set-due-date">
                     <label class="struct" for="set-due-date">Förfallodatum</label>
-                    <input type="text" name="set-due-date" id="set-due-date" placeholder="Förfallodatum">
+                    <input type="date" name="date" id="set-due-date" placeholder="Förfallodatum" ng-model="general[0].dueOnShort" sf-simple-field-auto-send data-resource="general" command="changedueon" />
                 </div>
             </div>
             <div class="m-c">

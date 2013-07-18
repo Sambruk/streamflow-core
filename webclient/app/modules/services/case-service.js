@@ -56,7 +56,12 @@
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'general'}]),
           onSuccess:function (resource, result) {
-            result.push(resource.response.index);
+            var index = resource.response.index;
+
+            if (index.dueOn)
+              index.dueOnShort = index.dueOn.split("T")[0]
+
+            result.push(index);
           }
         });
       },
