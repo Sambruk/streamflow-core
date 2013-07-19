@@ -79,6 +79,15 @@
         $scope.case.resolve();
     });
 
+    $scope.deleteAttachment = function(attachmentId){
+
+      var callback = function(){
+        $scope.attachments.invalidate();
+        $scope.attachments.resolve();
+      }
+      caseService.deleteAttachment($params.projectId, $params.projectType, $params.caseId, attachmentId, callback);
+    }
+
     // Forms
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 

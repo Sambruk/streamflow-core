@@ -88,6 +88,16 @@
         });
       },
 
+      deleteAttachment: function(projectId, projectType, caseId, attachmentId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'attachments'},
+            {'index.links': attachmentId},
+            {commands: 'delete'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
       getSelectedContacts: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'contacts'}]),
