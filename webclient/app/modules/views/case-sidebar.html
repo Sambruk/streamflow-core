@@ -99,20 +99,10 @@
           </tr>
         </thead>
         <tbody>
-        <tr>
-          <td>1 juli</td>
-          <td>Öppna ärende</td>
-          <td>Henrik Reinhold</td>
-        </tr>
-        <tr class="even">
-          <td>15 juni</td>
-          <td>Tilldela ärende</td>
-          <td>Solveig Grankvist</td>
-        </tr>
-        <tr>
-          <td>13 juni</td>
-          <td>Tilldela ärende</td>
-          <td>Henrik Reinhold</td>
+        <tr ng-repeat="entry in caseLog" ng-class-even="'even'">
+          <td>{{ entry.creationDate | shortDate}}</td>
+          <td>{{ entry.text }}</td>
+          <td>{{ entry.creator }}</td>
         </tr>
         </tbody>
       </table>

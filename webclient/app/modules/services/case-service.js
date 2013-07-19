@@ -107,6 +107,23 @@
         });
       },
 
+      getSelectedCaseLog: function(projectId, projectType, caseId) {
+
+        var defaultParams = { "attachment":false,"contact":false,"conversation":false,"custom":true,"form":true,"system":false,"systemTrace":false}; // From API
+
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+              {resources: 'caselog'},
+              {queries: 'list?system=false&systemTrace=false&form=true&conversation=false&attachment=false&contact=false&custom=true'},
+            ]),
+          onSuccess:function (resource, result) {
+            _.first(resource.response.links.reverse(), 3).forEach(function(link){
+              result.push(link);
+            });
+          }
+        });
+      },
+
       getPossibleCaseTypes: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
