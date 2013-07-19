@@ -18,7 +18,7 @@ describe("sf.services.case", function () {
 
     describe("getSelected", function () {
 
-      it("returns the selected project", inject(function (caseService, $httpBackend) {
+      it("returns the selected case", inject(function (caseService, $httpBackend) {
         // Given
         $httpBackend.expectGET('mock/').respond(backend.root);
         $httpBackend.expectGET('mock/workspacev2/').respond(backend.workspacev2);
@@ -40,8 +40,8 @@ describe("sf.services.case", function () {
         $httpBackend.flush();
 
         // Then
-        expect(response.index.id).toEqual('0f0008c2-4d6e-453a-b255-0d6ec86145f9-2');
-        expect(response.index.text).toEqual('formulärstest');
+        expect(response[0].id).toEqual('0f0008c2-4d6e-453a-b255-0d6ec86145f9-2');
+        expect(response[0].text).toEqual('formulärstest');
       }));
     });
 
