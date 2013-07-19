@@ -1,5 +1,47 @@
 ## Streamflow Client
 
+# Developer Installation
+
+## Quick way to get the application up and running
+
+Clone the repo and checkout the develop branch
+    
+    git checkout develop
+
+Go to the webclient folder
+
+    cd webclient
+    
+Install the node dependencies
+
+    npm install
+
+If you just want to run the site, you can run `bower install` from you local `node_modules`, like this:
+
+    node_modules/bower/bin/bower install
+
+Otherwise, you can install yeoman (see below) and use the globally installed `bower`
+
+Open a chrome/chromium browser with the flag --disable-web-security
+
+    chrome --disable-web-security
+    
+Visit the API, to get an authentication token. Surf to the following url and enter the credentials
+
+    https://test.sf.streamsource.se/streamflow/
+
+Start the local web server
+
+    ./web-server.js
+    
+Open the application! :)
+
+    http://localhost:8000/app/
+    
+If you don't get a populated case list, the console log is your friend.
+    
+
+
 ## Using the real Streamflow backend
 
 If you are using the real streamflow backend (see config below) you need to
@@ -22,7 +64,7 @@ Mac OSX:
 
 ## Installation
 
-see [install.md](readme.md)
+see [install.md](install.md)
 
 ## Run
 
