@@ -77,6 +77,17 @@
         });
       },
 
+      getSelectedAttachments: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'attachments'}]),
+          onSuccess:function (resource, result) {
+            resource.response.index.links.forEach(function(link){
+              result.push(link);
+            });
+          }
+        });
+      },
+
       getSelectedContacts: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'contacts'}]),
