@@ -102,7 +102,7 @@
         });
       },
 
-      updateSimpleValue: debounce(function(projectId, projectType, caseId, resource, command, property, value) {
+      updateSimpleValue: debounce(function(projectId, projectType, caseId, resource, command, property, value, callback) {
 
         var toSend = {};
         toSend[property] = value;
@@ -112,7 +112,7 @@
             {resources: resource},
             {commands: command}
             ]),
-          toSend);
+          toSend).then(_.debounce(callback)());
       }, 1000),
 
       getSelectedPossibleForms: function(projectId, projectType, caseId) {

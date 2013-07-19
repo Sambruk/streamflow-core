@@ -39,7 +39,12 @@
               value = value + "T00:00:00.000Z";
             }
 
-            caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value);
+            var callback = function(){
+                scope.case.invalidate();
+                scope.general.invalidate();
+            };
+
+            caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value, callback);
           }
 
           hasRunAtLeastOnce = true;
