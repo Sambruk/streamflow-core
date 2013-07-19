@@ -62,6 +62,7 @@
     $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
     $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
+    $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
   }
 
   main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
@@ -77,6 +78,19 @@
         $scope.case.invalidate();
         $scope.case.resolve();
     });
+
+    $scope.downloadAttachment = function(attachmentId){
+      alert("Not supported - need absolute url in API.");
+    }
+
+    $scope.deleteAttachment = function(attachmentId){
+
+      var callback = function(){
+        $scope.attachments.invalidate();
+        $scope.attachments.resolve();
+      }
+      caseService.deleteAttachment($params.projectId, $params.projectType, $params.caseId, attachmentId, callback);
+    }
 
     // Forms
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
