@@ -1,5 +1,46 @@
 # Developer Installation
 
+## Quick way to get the application up and running
+
+Clone the repo and checkout the develop branch
+    
+    git checkout develop
+
+Go to the webclient folder
+
+    cd webclient
+    
+Install the node dependencies
+
+    npm install
+
+If you just want to run the site, you can run `bower install` from you local `node_modules`, like this:
+
+    node_modules/bower/bin/bower install
+
+Otherwise, you can install yeoman (see below) and use the globally installed `bower`
+
+Open a chrome/chromium browser with the flag --disable-web-security
+
+    chrome --disable-web-security   (or whatever you open your chrome/chromium)
+    
+Visit the API, to get an authentication token. Surf to the following url and enter the credentials
+
+    https://test.sf.streamsource.se/streamflow/
+
+Start the local web server
+
+    ./web-server.js
+    
+Open the application! :)
+
+    http://localhost:8000/app/
+    
+If you don't get a populated case list, the console log is your friend.
+    
+
+## Full guide, including how to run the tests
+
 ### Node.js and npm
 
 Install node js version 0.8.x
@@ -21,12 +62,6 @@ Mac
     brew install node
     curl http://npmjs.org/install.sh | sh
 
-windows 7
-
-    download and install node-v0.8.14-x64.msi
-    add nodejs folder to environment variables
-
-
 Make sure you don't install 0.9.x or 0.7 version !
 npm is the node package manager.
 
@@ -39,30 +74,14 @@ Download the binaries from here: http://phantomjs.org/download.html
 
     http://phantomjs.org/download.html
 
-Ubuntu:
-
-    tar jxvf phantomjs-1.7.0-linux-i686.tar.bz2
-
 Make sure you have the bin/phantomjs in your PATH environment
 
-Windows 7
-    download and install phantomjs-1.7.0-windows.zip
-    add phantomjs folder to environment variables
 
-
-### testacular
+### karma (TODO, verify this!)
 
 Used to runs tests
 
-    sudo npm install -g testacular
-
-Windows 7
-    In order to run testacular "start --single-run" with the default script in the streamflow directory you will have to register the browser with the Windows Environment variables.
-    Example:
-      CHROME_BIN = C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
-      PHANTOMJS_BIN = C:\Program Files\Phantomjs\phantomjs-1.7.0-windows\phantomjs.exe
-
-    (Remember to restart your cmd prompt to reload the variables from the system.)
+    (sudo npm install -g testacular) # Outdated! Do not use!
 
 ###  Yeoman
 
@@ -70,11 +89,11 @@ Yeoman is used to build the site.
 It can also be used for running a webserver and sync. a webbrowser, or
 running tests.
 
-   curl -L get.yeoman.io | bash
+   npm install -g yo grunt-cli bower
 
 Yeoman needs:
 * Ruby
 * NodeJs
 * Compass
 
-It will check the environment that everthing is installed.
+It will check the environment that everything is installed.
