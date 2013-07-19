@@ -75,7 +75,7 @@
     <div class="m-c">
       <ul class="zebra-list">
         <li ng-class-odd="'odd'" ng-repeat="attachment in attachments" ng-odd=>
-        <a href="xlink-">{{ attachment.text }}</a>
+        <a ng-click="downloadAttachment(attachment.id)" href="">{{ attachment.text }}</a>
         <a ng-click="deleteAttachment(attachment.id)" href="" class="delete" title="Radera fil">Radera fil</a>
         </li>
       </ul>

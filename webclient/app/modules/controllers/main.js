@@ -79,6 +79,10 @@
         $scope.case.resolve();
     });
 
+    $scope.downloadAttachment = function(attachmentId){
+      alert("Not supported - need absolute url in API.");
+    }
+
     $scope.deleteAttachment = function(attachmentId){
 
       var callback = function(){
