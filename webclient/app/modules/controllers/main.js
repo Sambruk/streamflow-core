@@ -63,6 +63,7 @@
     $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
     $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
+    $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
   }
 
   main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
