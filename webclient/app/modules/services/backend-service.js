@@ -37,6 +37,10 @@
       return str.substring(0, lastIndex + 1);
     }
 
+    var isId = function(href){
+      return href.split("-").length - 1 === 5
+    }
+
     // The Instance API
     SfResource.prototype = {
 
@@ -53,10 +57,11 @@
           return item.id === trimmedId;
         });
 
-        // Fix for broken href attribute values in API
-        if (w.href.indexOf("/") === -1 && w.classes !== "query") {
+        // Fix for broken API links to entities
+        if (isId(w.href) && _.last(w.href) !== "/") {
           w.href = w.href + "/"
         }
+
 
         if (!w) {
           console.log("Not found: ", trimmedId, " in ", JSON.stringify(resourceData));

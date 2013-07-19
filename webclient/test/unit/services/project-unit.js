@@ -35,7 +35,6 @@ describe("sf.services.project", function () {
         // Given
         $httpBackend.expectGET('mock/').respond(backend.root);
         $httpBackend.expectGET('mock/workspacev2/').respond(backend.workspacev2);
-        $httpBackend.expectGET('mock/workspacev2/projects/').respond(backend.projects);
 
         // When
         var response = projectService.getAll();
