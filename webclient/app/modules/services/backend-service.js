@@ -53,8 +53,8 @@
           return item.id === trimmedId;
         });
 
-        // Fix for broken href attribute values in API
-        if (w.href.indexOf("/") === -1 && w.classes !== "query") {
+        // Fix for broken API links to entities
+        if (w && isId(w.href) && _.last(w.href) !== "/") {
           w.href = w.href + "/"
         }
 
