@@ -18,7 +18,7 @@
 (function() {
   'use strict';
 
-  var main = angular.module('sf.controllers', ['sf.services.project', 'sf.services.case']);
+  var main = angular.module('sf.controllers', ['sf.services.project', 'sf.services.case', 'sf.services.navigation']);
 
   function toggleToolbar($event) {
     $event.preventDefault();
@@ -52,7 +52,8 @@
 
   }]);
 
-  var loadSidebarData = function($scope, caseService, $params){
+  // TODO Refactor to separate controller
+  var loadSidebarData = function($scope, caseService, $params, navigationService, $rootScope){
 
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType
@@ -64,21 +65,36 @@
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
     $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
     $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
-  }
 
-  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams',
-                  function($scope, caseService, $params){
+    $scope.closeCase = function(){
+      alert("TODO");
+    }
 
-    loadSidebarData($scope, caseService, $params);
+    $scope.changeOwner = function(){
+      alert("TODO");
+    }
 
-    $scope.$on('case-created', function() {
-        $scope.case.invalidate();
-    });
+    $scope.assign = function(){
+      alert("TODO");
+    }
 
-    $scope.$on('case-changed', function() {
-        $scope.case.invalidate();
-        $scope.case.resolve();
-    });
+    $scope.moreCommands = function(){
+      alert("TODO");
+    }
+
+    $scope.deleteCase = function(){
+
+      var callback = function(){
+
+        alert("Ärendet är nu borttaget. Var vänlig ladda om sidan.");
+
+        // TODO Find a way to invalidate the case list
+        var href = navigationService.caseListHref();
+        window.location.replace(href);
+      }
+
+      caseService.deleteCase($params.projectId, $params.projectType, $params.caseId, callback);
+    }
 
     $scope.downloadAttachment = function(attachmentId){
       alert("Not supported - need absolute url in API.");
@@ -96,6 +112,21 @@
     $scope.showContact = function(contactId){
       alert("Not supported - need UX for this.");
     }
+  }
+
+  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
+                  function($scope, caseService, $params, navigationService, $rootScope){
+
+    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
+
+    $scope.$on('case-created', function() {
+        $scope.case.invalidate();
+    });
+
+    $scope.$on('case-changed', function() {
+        $scope.case.invalidate();
+        $scope.case.resolve();
+    });
 
     // Forms
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
@@ -162,22 +193,27 @@
     }
   }]);
 
-  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams',
-                  function($scope, caseService, $params) {
+  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
+                  function($scope, caseService, $params, navigationService, $rootScope) {
 
-    loadSidebarData($scope, caseService, $params);
+    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
 
     $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
 
   }]);
 
-  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams',
-                  function($scope, caseService, $params) {
+  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService', '$rootScope',
+                  function($scope, caseService, $params, navigationService, $rootScope) {
 
-    loadSidebarData($scope, caseService, $params);
+    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
 
     $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+
+    $scope.submitMessage = function($event){
+      $event.preventDefault();
+      alert("Not supported - API action in not browsable")
+    }
   }]);
 
 

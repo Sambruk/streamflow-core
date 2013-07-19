@@ -43,6 +43,14 @@
         });
       },
 
+      deleteCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'delete'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
       getSelectedNotes: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'note'}]),
