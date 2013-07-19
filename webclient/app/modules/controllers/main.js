@@ -73,6 +73,11 @@
         $scope.case.invalidate();
     });
 
+    $scope.$on('case-changed', function() {
+        $scope.case.invalidate();
+        $scope.case.resolve();
+    });
+
     // Forms
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
