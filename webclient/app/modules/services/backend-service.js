@@ -37,6 +37,10 @@
       return str.substring(0, lastIndex + 1);
     }
 
+    var isId = function(href){
+      return href.split("-").length - 1 === 5
+    }
+
     // The Instance API
     SfResource.prototype = {
 
