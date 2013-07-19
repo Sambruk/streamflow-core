@@ -24,7 +24,7 @@ Otherwise, you can install yeoman (see below) and use the globally installed `bo
 
 Open a chrome/chromium browser with the flag --disable-web-security
 
-    chrome --disable-web-security   (or whatever you open your chrome/chromium)
+    chrome --disable-web-security
     
 Visit the API, to get an authentication token. Surf to the following url and enter the credentials
 
