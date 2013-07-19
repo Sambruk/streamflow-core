@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  sf.directives.directive('sfSimpleFieldAutoSend', ['$parse', '$routeParams', 'caseService', function($parse, $params, caseService) {
+  sf.directives.directive('sfSimpleFieldAutoSend', ['$parse', '$routeParams', 'caseService', '$rootScope', function($parse, $params, caseService, $rootScope) {
     return {
       require: 'ngModel',
       link: function(scope, element, attr, ngModel) {
@@ -39,7 +39,13 @@
               value = value + "T00:00:00.000Z";
             }
 
-            caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value);
+            var callback = function(){
+                scope.case.invalidate();
+                scope.general.invalidate();
+                $rootScope.$broadcast('case-changed');
+            };
+
+            caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value, callback);
           }
 
           hasRunAtLeastOnce = true;

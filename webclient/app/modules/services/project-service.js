@@ -65,20 +65,19 @@
           ],
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){
-              result.push(self.createCase(item));
+              result.push(self.sfCaseFactory(item));
             });
           }
         });
       },
 
-      // TODO Rename to caseFactory or loadCase or something better
-      createCase: function(model) {
+      sfCaseFactory: function(model) {
         var href = navigationService.caseHref(model.id);
         var o = new SfCase(model, href);
         return o;
       },
 
-      addIssue: function(projectId, projectType) {
+      createCase: function(projectId, projectType) {
 
         return backendService.postNested(
           [

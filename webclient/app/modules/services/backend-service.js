@@ -58,10 +58,9 @@
         });
 
         // Fix for broken API links to entities
-        if (isId(w.href) && _.last(w.href) !== "/") {
+        if (w && isId(w.href) && _.last(w.href) !== "/") {
           w.href = w.href + "/"
         }
-
 
         if (!w) {
           console.log("Not found: ", trimmedId, " in ", JSON.stringify(resourceData));
