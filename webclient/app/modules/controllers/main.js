@@ -93,6 +93,10 @@
       caseService.deleteAttachment($params.projectId, $params.projectType, $params.caseId, attachmentId, callback);
     }
 
+    $scope.showContact = function(contactId){
+      alert("Not supported - need UX for this.");
+    }
+
     // Forms
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
