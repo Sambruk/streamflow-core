@@ -1,5 +1,7 @@
 # Developer Installation
 
+Note: More current version in develop branch!
+
 ### Node.js and npm
 
 Install node js version 0.8.x
