@@ -127,8 +127,34 @@
         $scope.case.invalidate();
         $scope.case.resolve();
     });
+  }]);
 
-    // Forms
+  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
+                  function($scope, caseService, $params, navigationService, $rootScope) {
+
+    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
+
+    $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
+
+  }]);
+
+  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService', '$rootScope',
+                  function($scope, caseService, $params, navigationService, $rootScope) {
+
+    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
+
+    $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+    $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+
+    $scope.submitMessage = function($event){
+      $event.preventDefault();
+      alert("Not supported - API action in not browsable")
+    }
+  }]);
+
+  main.controller('FormCtrl', ['$scope', 'caseService', '$routeParams','navigationService', '$rootScope',
+                  function($scope, caseService, $params, navigationService, $rootScope) {
+
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
     $scope.selectForm = function(formId){
@@ -190,29 +216,6 @@
       var index = $scope.form[0].pages.indexOf($scope.currentFormPage);
       index -= 1;
       $scope.currentFormPage = $scope.form[0].pages[index];
-    }
-  }]);
-
-  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope) {
-
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
-
-    $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
-
-  }]);
-
-  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope) {
-
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
-
-    $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
-    $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
-
-    $scope.submitMessage = function($event){
-      $event.preventDefault();
-      alert("Not supported - API action in not browsable")
     }
   }]);
 
