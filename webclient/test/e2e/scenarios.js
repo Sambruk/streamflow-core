@@ -6,27 +6,16 @@
       browser().navigateTo('../../app/index.html');
     });
 
-    it("should list all available projects", function() {
-      expect(repeater('.projects').column('project.text')).toEqual(["Streamflow","Kontaktcenter"]);
-    });
+    it("should display the title of an issue", function() {
+      element('.open-toolbar').click();
+      // This selects the last(!) project type in the projects list
+      element(".sub-category a").click();
+      element(".issue-list a").click();
 
-
-    it("should display the case list view when clicking on a project", function() {
-      element('.project-type:first-child a:first-child').click();
-      expect(browser().location().url()).toBe("/b35873ba-4007-40ac-9936-975eab38395a-ff/inbox");
+      expect(element(".issue-description").text()).toMatch("Acceptance test");
     });
   });
 
-  describe("when first project inbox is chosen", function() {
-    beforeEach(function() {
-      browser().navigateTo('../../app/index.html#/b35873ba-4007-40ac-9936-975eab38395a-ff/inbox');
-    });
-
-    it("should display the cases for selected project and inbox", function() {
-      expect(repeater('.case-item').column('case.text')).toEqual(["Test Test Test 2","Kontakt Center Thingy"]);
-    });
-
-  });
 })();
 
 
