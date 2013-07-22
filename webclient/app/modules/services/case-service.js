@@ -200,7 +200,9 @@
             var index = resource.response.index;
 
             index.draftId = draftId;
-            that.addViewModelProperties(index.pages);
+
+            index.enhancedPages = angular.copy(index.pages);
+            that.addViewModelProperties(index.enhancedPages);
 
             result.push(index);
           }
@@ -226,7 +228,8 @@
             onSuccess:function (resource) {
               var index = resource.response.index;
 
-              that.addViewModelProperties(index.pages);
+              index.enhancedPages = angular.copy(index.pages);
+              that.addViewModelProperties(index.enhancedPages);
 
               index.draftId = id;
 

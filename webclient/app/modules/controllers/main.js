@@ -49,14 +49,13 @@
     $scope.$on('case-created', function() {
         $scope.cases.invalidate();
     });
-
   }]);
 
-  // TODO Refactor to separate controller
-  var loadSidebarData = function($scope, caseService, $params, navigationService, $rootScope){
+  main.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService',
+                  function($scope, projectService, $params, navigationService, caseService) {
 
     $scope.projectId = $params.projectId;
-    $scope.projectType = $params.projectType
+    $scope.projectType = $params.projectType;
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
@@ -112,12 +111,16 @@
     $scope.showContact = function(contactId){
       alert("Not supported - need UX for this.");
     }
-  }
+  }]);
 
-  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope){
+  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService',
+                  function($scope, caseService, $params, navigationService){
 
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+
+    $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
 
     $scope.$on('case-created', function() {
         $scope.case.invalidate();
@@ -127,8 +130,33 @@
         $scope.case.invalidate();
         $scope.case.resolve();
     });
+  }]);
 
-    // Forms
+  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService',
+                  function($scope, caseService, $params, navigationService) {
+
+    $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
+
+  }]);
+
+  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
+                  function($scope, caseService, $params, navigationService) {
+
+    $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+    $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+
+    $scope.submitMessage = function($event){
+      $event.preventDefault();
+      alert("Not supported - API action in not browsable")
+    }
+  }]);
+
+  main.controller('FormCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params) {
+
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
     $scope.selectForm = function(formId){
@@ -138,7 +166,7 @@
         setTimeout(function(){
           $scope.$apply(function () {
               if ($scope.form && $scope.form[0]) {
-                $scope.currentFormPage = $scope.form[0].pages[0];
+                $scope.currentFormPage = $scope.form[0].enhancedPages[0];
               };
           });
         }, 1000);
@@ -173,48 +201,24 @@
     }
 
     $scope.isLastPage = function(){
-      return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === ($scope.form[0].pages.length - 1);
+      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1);
     }
 
     $scope.isFirstPage = function(){
-      return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === 0;
+      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === 0;
     }
 
     $scope.nextFormPage = function(){
-      var index = $scope.form[0].pages.indexOf($scope.currentFormPage);
+      var index = $scope.form[0].enhancedPages.indexOf($scope.currentFormPage);
       index += 1;
-      $scope.currentFormPage = $scope.form[0].pages[index];
+      $scope.currentFormPage = $scope.form[0].enhancedPages[index];
     }
 
     $scope.previousFormPage = function(){
-      var index = $scope.form[0].pages.indexOf($scope.currentFormPage);
+      var index = $scope.form[0].enhancedPages.indexOf($scope.currentFormPage);
       index -= 1;
-      $scope.currentFormPage = $scope.form[0].pages[index];
+      $scope.currentFormPage = $scope.form[0].enhancedPages[index];
     }
   }]);
-
-  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope) {
-
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
-
-    $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
-
-  }]);
-
-  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope) {
-
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
-
-    $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
-    $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
-
-    $scope.submitMessage = function($event){
-      $event.preventDefault();
-      alert("Not supported - API action in not browsable")
-    }
-  }]);
-
 
 })();
