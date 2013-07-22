@@ -93,5 +93,44 @@ describe("sf.services.forms", function () {
       }));
 
     });
+
+    describe("ListBoxFieldValue", function() {
+
+      var type;
+
+      beforeEach(function(){
+        type = "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue";
+      });
+
+      it("addProperties maps to name and value pairs and unescapes comma values", inject(function (formMapperService) {
+
+        var field = {
+          value: "one, [three, last one]",
+          field: {
+            fieldValue: {
+              _type: type,
+              values: ["one", "two", "three, last one"]
+            }
+          }
+        };
+
+        formMapperService.addProperties(field);
+
+        expect(field.field.fieldValue.options[0].name).toEqual("one");
+        expect(field.field.fieldValue.options[0].value).toEqual("one");
+
+        expect(field.value).toEqual(["one", "three, last one"]);
+      }));
+
+      it("getValue escapes values containing commas", inject(function (formMapperService) {
+
+        var attr = { fieldType: type };
+
+        var value = formMapperService.getValue(["one", "three, last one"], attr);
+
+        expect(value).toEqual("one, [three, last one]");
+      }));
+
+    });
   });
 });
