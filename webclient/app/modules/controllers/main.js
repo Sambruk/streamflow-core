@@ -166,7 +166,7 @@
         setTimeout(function(){
           $scope.$apply(function () {
               if ($scope.form && $scope.form[0]) {
-                $scope.currentFormPage = $scope.form[0].pages[0];
+                $scope.currentFormPage = $scope.form[0].enhancedPages[0];
               };
           });
         }, 1000);
@@ -201,23 +201,23 @@
     }
 
     $scope.isLastPage = function(){
-      return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === ($scope.form[0].pages.length - 1);
+      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1);
     }
 
     $scope.isFirstPage = function(){
-      return $scope.currentFormPage && $scope.form[0].pages.indexOf($scope.currentFormPage) === 0;
+      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === 0;
     }
 
     $scope.nextFormPage = function(){
-      var index = $scope.form[0].pages.indexOf($scope.currentFormPage);
+      var index = $scope.form[0].enhancedPages.indexOf($scope.currentFormPage);
       index += 1;
-      $scope.currentFormPage = $scope.form[0].pages[index];
+      $scope.currentFormPage = $scope.form[0].enhancedPages[index];
     }
 
     $scope.previousFormPage = function(){
-      var index = $scope.form[0].pages.indexOf($scope.currentFormPage);
+      var index = $scope.form[0].enhancedPages.indexOf($scope.currentFormPage);
       index -= 1;
-      $scope.currentFormPage = $scope.form[0].pages[index];
+      $scope.currentFormPage = $scope.form[0].enhancedPages[index];
     }
   }]);
 
