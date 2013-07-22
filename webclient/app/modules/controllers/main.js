@@ -49,6 +49,10 @@
     $scope.$on('case-created', function() {
         $scope.cases.invalidate();
     });
+  }]);
+
+  main.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams',
+                  function($scope, projectService, $params) {
 
   }]);
 
@@ -152,8 +156,8 @@
     }
   }]);
 
-  main.controller('FormCtrl', ['$scope', 'caseService', '$routeParams','navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope) {
+  main.controller('FormCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params) {
 
     $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
