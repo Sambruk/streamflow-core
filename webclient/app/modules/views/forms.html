@@ -6,10 +6,10 @@
     </li>
 </ul>
 <ol class="form-sections cf">
-    <li class="section-item" ng-class="{sel: currentFormPage.title==page.title}" ng-repeat="page in form[0].pages"><a href="" ng-click="myForm.$valid && selectFormPage(page)">{{page.title}}</a></li>
+    <li class="section-item" ng-class="{sel: currentFormPage.title==page.title}" ng-repeat="page in form[0].pages"><a href="" ng-click="issueForm.$valid && selectFormPage(page)">{{page.title}}</a></li>
 </ol>
 
-<form name="myForm" method="post" novalidate ng-submit="submitForm()">
+<form name="issueForm" method="post" novalidate ng-submit="submitForm()">
   <div>{{ formMessage }}</div>
   <div ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
     <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
@@ -118,7 +118,7 @@
   </div>
 
   <div ng-show="isLastPage(currentFormPage)">
-    <input ng-disabled="!myForm.$valid" type="submit" name="submit" value="Skicka"></input>
+    <input ng-disabled="!issueForm.$valid" type="submit" name="submit" value="Skicka"></input>
   </div>
   <!--
   <div class="row cols-1 cf">
@@ -164,5 +164,5 @@
 </form>
 
 <div ng-show="currentFormPage">
-  <a href="" class="btn inline" ng-class="{inactive: isFirstPage() || !myForm.$valid}" ng-click="!isFirstPage() && myForm.$valid && previousFormPage()">Tillbaka</a> <a href="" class="btn inline" ng-class="{inactive: isLastPage() || !myForm.$valid}" ng-click="!isLastPage() && myForm.$valid && nextFormPage()">Nästa</a>
+  <a href="" class="btn inline" ng-class="{inactive: isFirstPage() || !issueForm.$valid}" ng-click="!isFirstPage() && issueForm.$valid && previousFormPage()">Tillbaka</a> <a href="" class="btn inline" ng-class="{inactive: isLastPage() || !issueForm.$valid}" ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
 </div>
