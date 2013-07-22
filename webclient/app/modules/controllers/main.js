@@ -51,16 +51,11 @@
     });
   }]);
 
-  main.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams',
-                  function($scope, projectService, $params) {
-
-  }]);
-
-  // TODO Refactor to separate controller
-  var loadSidebarData = function($scope, caseService, $params, navigationService, $rootScope){
+  main.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService',
+                  function($scope, projectService, $params, navigationService, caseService) {
 
     $scope.projectId = $params.projectId;
-    $scope.projectType = $params.projectType
+    $scope.projectType = $params.projectType;
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
@@ -116,12 +111,16 @@
     $scope.showContact = function(contactId){
       alert("Not supported - need UX for this.");
     }
-  }
+  }]);
 
-  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope){
+  main.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService',
+                  function($scope, caseService, $params, navigationService){
 
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+
+    $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
 
     $scope.$on('case-created', function() {
         $scope.case.invalidate();
@@ -133,19 +132,18 @@
     });
   }]);
 
-  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope) {
+  main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService',
+                  function($scope, caseService, $params, navigationService) {
 
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
+    $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
 
     $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
 
   }]);
 
-  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService', '$rootScope',
-                  function($scope, caseService, $params, navigationService, $rootScope) {
-
-    loadSidebarData($scope, caseService, $params, navigationService, $rootScope);
+  main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
+                  function($scope, caseService, $params, navigationService) {
 
     $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
@@ -222,6 +220,5 @@
       $scope.currentFormPage = $scope.form[0].pages[index];
     }
   }]);
-
 
 })();
