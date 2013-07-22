@@ -57,5 +57,41 @@ describe("sf.services.forms", function () {
       }));
 
     });
+
+    describe("ComboBoxFieldValue", function() {
+
+      var type;
+
+      beforeEach(function(){
+        type = "se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue";
+      });
+
+      it("addProperties maps to name and value pairs", inject(function (formMapperService) {
+
+        var field = {
+          field: {
+            fieldValue: {
+              _type: type,
+              values: ["one", "two", "three"]
+            }
+          }
+        };
+
+        formMapperService.addProperties(field);
+
+        expect(field.field.fieldValue.options[0].name).toEqual("one");
+        expect(field.field.fieldValue.options[0].value).toEqual("one");
+      }));
+
+      it("getValue does nothing", inject(function (formMapperService) {
+
+        var attr = { fieldType: type };
+
+        var value = formMapperService.getValue("two", attr);
+
+        expect(value).toEqual("two");
+      }));
+
+    });
   });
 });
