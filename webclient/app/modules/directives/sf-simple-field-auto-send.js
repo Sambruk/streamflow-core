@@ -35,7 +35,7 @@
             var name = attr.name;
             var value = newValue;
 
-            if (attr.type === "date") {
+            if (attr.inputType === "date") {
               value = value + "T00:00:00.000Z";
             }
 
