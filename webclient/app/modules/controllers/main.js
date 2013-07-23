@@ -152,9 +152,15 @@
     $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     $scope.conversationMessageDraft = caseService.getMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
 
+    $scope.$watch("conversationMessageDraft[0]", function(){
+      var toSend = $scope.conversationMessageDraft[0];
+      caseService.updateMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId, toSend);
+    })
+
     $scope.submitMessage = function($event){
+      var toSend = $scope.conversationMessageDraft[0];
       $event.preventDefault();
-      alert("Not supported - API action in not browsable")
+      caseService.updateMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId, toSend);
     }
   }]);
 
