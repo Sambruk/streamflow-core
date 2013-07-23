@@ -297,6 +297,16 @@
             ]),
           {message: value});
       }, 500),
+      createMessage: function(projectId, projectType, caseId, conversationId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'messages'},
+            {commands: 'createmessagefromdraft'}
+            ]),
+          {});
+      },
       getConversationParticipants: function(projectId, projectType, caseId, conversationId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([

@@ -158,9 +158,8 @@
     })
 
     $scope.submitMessage = function($event){
-      var toSend = $scope.conversationMessageDraft[0];
       $event.preventDefault();
-      caseService.updateMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId, toSend);
+      caseService.createMessage($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     }
   }]);
 
