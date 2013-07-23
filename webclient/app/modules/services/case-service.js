@@ -307,6 +307,14 @@
             ]),
           {});
       },
+      createConversation: function(projectId, projectType, caseId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {commands: 'create'}
+            ]),
+          {topic: value});
+      },
       getConversationParticipants: function(projectId, projectType, caseId, conversationId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([

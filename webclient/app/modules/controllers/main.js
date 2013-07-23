@@ -163,6 +163,18 @@
     }
   }]);
 
+  main.controller('ConversationCreateCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
+                  function($scope, caseService, $params, navigationService) {
+
+    $scope.submitMessage = function($event){
+      $event.preventDefault();
+
+      var topic = $scope.conversationTopicToCreate;
+      caseService.createConversation($params.projectId, $params.projectType, $params.caseId, topic);
+    }
+
+  }]);
+
   main.controller('FormCtrl', ['$scope', 'caseService', '$routeParams',
                   function($scope, caseService, $params) {
 
