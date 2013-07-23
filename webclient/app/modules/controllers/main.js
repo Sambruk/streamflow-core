@@ -148,6 +148,11 @@
   main.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
                   function($scope, caseService, $params, navigationService) {
 
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+    $scope.caseId = $params.caseId;
+    $scope.conversationId = $params.conversationId;
+
     $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     $scope.conversationMessageDraft = caseService.getMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
@@ -157,6 +162,10 @@
       caseService.updateMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId, toSend);
     })
 
+    $scope.removeParticipant = function(id){
+      alert("Not implemented");
+    }
+
     $scope.submitMessage = function($event){
       $event.preventDefault();
       caseService.createMessage($params.projectId, $params.projectType, $params.caseId, $params.conversationId).then(function(){
@@ -165,6 +174,21 @@
         $scope.conversationMessageDraft = "";
       });
     }
+  }]);
+
+  main.controller('ConversationParticipantCreateCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
+                  function($scope, caseService, $params, navigationService) {
+
+    $scope.possibleParticipants = caseService.getPossibleConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+
+    $scope.addParticipant = function($event){
+      $event.preventDefault();
+
+      var participant = $scope.participant;
+
+      caseService.addParticipantToConversation($params.projectId, $params.projectType, $params.caseId, $params.conversationId, participant);
+    }
+
   }]);
 
   main.controller('ConversationCreateCtrl', ['$scope', 'caseService', '$routeParams','navigationService',

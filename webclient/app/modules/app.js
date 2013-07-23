@@ -41,6 +41,10 @@
         templateUrl:'modules/views/conversation-create.html',
         controller: 'ConversationCreateCtrl'
       })
+      .when('/:projectId/:projectType/:caseId/conversation/:conversationId/participants/create', {
+        templateUrl:'modules/views/conversation-participant-create.html',
+        controller: 'ConversationParticipantCreateCtrl'
+      })
       .when('/:projectId/:projectType/:caseId/conversation/:conversationId', {
         templateUrl:'modules/views/conversation-detail.html',
         controller: 'ConversationDetailCtrl'

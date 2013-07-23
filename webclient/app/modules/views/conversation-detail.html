@@ -22,8 +22,8 @@
       <h2>Detaljer om ansökan</h2>
       <div class="participants">
         <h3 class="struct">Deltagare i denna konversation</h3>
-        <span ng-repeat="participant in conversationParticipants">{{ participant.text }} <!-- <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span> -->
-        <!-- <a href="xlink-" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a> -->
+        <span ng-repeat="participant in conversationParticipants">{{ participant.text }}<a ng-click="removeParticipant(participant.id)" href="" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
+        <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/conversation/{{ conversationId }}/participants/create" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
       </div>
     </div>
     <div class="convo-input">

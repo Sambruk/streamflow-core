@@ -327,6 +327,29 @@
           }
         });
       },
+      getPossibleConversationParticipants: function(projectId, projectType, caseId, conversationId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
+            {queries: 'possibleparticipants'},
+            ]),
+          onSuccess:function (resource, result) {
+            resource.response.links.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+      addParticipantToConversation: function(projectId, projectType, caseId, conversationId, participant) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
+            {commands: 'addparticipant'}
+            ]),
+          {entity: participant});
+      }
 
     }
   }]);
