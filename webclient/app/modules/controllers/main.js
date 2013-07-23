@@ -159,7 +159,11 @@
 
     $scope.submitMessage = function($event){
       $event.preventDefault();
-      caseService.createMessage($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+      caseService.createMessage($params.projectId, $params.projectType, $params.caseId, $params.conversationId).then(function(){
+        $scope.conversationMessages.invalidate();
+        $scope.conversationMessages.resolve();
+        $scope.conversationMessageDraft = "";
+      });
     }
   }]);
 
