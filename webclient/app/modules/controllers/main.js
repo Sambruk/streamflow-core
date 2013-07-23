@@ -203,6 +203,10 @@
   main.controller('ConversationCreateCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
                   function($scope, caseService, $params, navigationService) {
 
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+    $scope.caseId = $params.caseId;
+
     $scope.submitMessage = function($event){
       $event.preventDefault();
 
