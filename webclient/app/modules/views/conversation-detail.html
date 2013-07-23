@@ -19,18 +19,20 @@
 <div class="content-primary" role="main" ng-controller="ConversationDetailCtrl">
   <div class="conversation">
     <div class="convo-head">
-      <h2>Detaljer om ansökan</h2>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
+      <h2>Detaljer om ansökan (TODO)</h2>
+
       <div class="participants">
         <h3 class="struct">Deltagare i denna konversation</h3>
-        <span ng-repeat="participant in conversationParticipants">{{ participant.text }} <!-- <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span> -->
-        <!-- <a href="xlink-" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a> -->
+        <span ng-repeat="participant in conversationParticipants">{{ participant.text }}<a ng-click="removeParticipant(participant.id)" href="" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
+        <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/conversation/{{ conversationId }}/participants/create" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
       </div>
     </div>
     <div class="convo-input">
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
-          <textarea name="convo-text" id="convo-text" cols="30" rows="2"></textarea>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="2" ng-model="conversationMessageDraft[0]"></textarea>
         </div>
         <!-- <div class="upload">
           <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>

@@ -273,6 +273,48 @@
           }
         });
       },
+      getMessageDraft: function(projectId, projectType, caseId, conversationId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'messages'},
+            {resources: 'messagedraft', unsafe: true},
+            ]),
+          onSuccess:function (resource, result) {
+            result.push(resource.response.index.string);
+          }
+        });
+      },
+      updateMessageDraft: debounce(function(projectId, projectType, caseId, conversationId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'messages'},
+            {resources: 'messagedraft', unsafe: true},
+            {commands: 'changemessage'}
+            ]),
+          {message: value});
+      }, 500),
+      createMessage: function(projectId, projectType, caseId, conversationId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'messages'},
+            {commands: 'createmessagefromdraft'}
+            ]),
+          {});
+      },
+      createConversation: function(projectId, projectType, caseId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {commands: 'create'}
+            ]),
+          {topic: value});
+      },
       getConversationParticipants: function(projectId, projectType, caseId, conversationId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
@@ -285,6 +327,40 @@
           }
         });
       },
+      getPossibleConversationParticipants: function(projectId, projectType, caseId, conversationId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
+            {queries: 'possibleparticipants'},
+            ]),
+          onSuccess:function (resource, result) {
+            resource.response.links.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+      addParticipantToConversation: function(projectId, projectType, caseId, conversationId, participant) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
+            {commands: 'addparticipant'}
+            ]),
+          {entity: participant});
+      },
+      deleteParticipantFromConversation: function(projectId, projectType, caseId, conversationId, participant) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
+            {'index.links': participant},
+            {commands: 'delete'}
+            ]),
+          {});
+      }
 
     }
   }]);

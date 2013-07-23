@@ -5,7 +5,8 @@
         <!-- Module: Ärendebeskrivning & taggar -->
         <div class="m">
             <div class="m-h">
-                <h2>20121016-1</h2>
+                <h2>{{case[0].caseId}}</h2>
+                <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
                 <div class="choose-type">
                     <label class="struct" for="issue-type">Ärendetyp</label>
                     <select ng-model="general[0].caseType.id"
@@ -33,16 +34,7 @@
                         <textarea disabled name="issue-notes" id="issue-notes" cols="30" rows="5">{{notes[0]}}</textarea>
                     </div>
                 </div>
-                <div class="row cols-1 cf">
-                    <div class="col full col-1">
-                        <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}" title="Klar">
-            <span>Tillbaka</span></a>
-                    </div>
-                </div>
-
-
             </div>
-
 
         </div>
         <!-- /Module: Ärendebeskrivning & taggar -->

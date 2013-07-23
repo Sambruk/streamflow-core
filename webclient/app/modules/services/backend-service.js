@@ -86,6 +86,18 @@
         }
         var spec = specs.splice(0, 1)[0];
         var key = Object.keys(spec)[0];
+
+        // Override API browsability if needed
+        if (spec.unsafe) {
+          var valueToPush = spec[key];
+
+          this.response[key].push({
+            href: valueToPush + "/",
+            id: valueToPush,
+            rel: valueToPush
+          });
+        }
+
         var id = spec[key];
         if (typeof id === 'function') {
           id = id();
