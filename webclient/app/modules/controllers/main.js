@@ -135,6 +135,9 @@
   main.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService',
                   function($scope, caseService, $params, navigationService) {
 
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
 
