@@ -273,6 +273,19 @@
           }
         });
       },
+      getMessageDraft: function(projectId, projectType, caseId, conversationId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'messages'},
+            {resources: 'messagedraft', unsafe: true},
+            ]),
+          onSuccess:function (resource, result) {
+            result.push(resource.response.index.string);
+          }
+        });
+      },
       getConversationParticipants: function(projectId, projectType, caseId, conversationId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([

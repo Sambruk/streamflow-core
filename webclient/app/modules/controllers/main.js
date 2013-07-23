@@ -150,6 +150,7 @@
 
     $scope.conversationMessages = caseService.getConversationMessages($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
+    $scope.conversationMessageDraft = caseService.getMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
 
     $scope.submitMessage = function($event){
       $event.preventDefault();
