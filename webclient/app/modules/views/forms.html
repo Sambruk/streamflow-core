@@ -29,7 +29,7 @@
             <div class="text col full col-1">
               <ng-form name="{{ field.field.fieldId }}">
                 <ng-include class="m-c" src="'modules/views/form-label.html'"></ng-include>
-                <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="date" ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
+                <input maxlength="{{ field.field.fieldValue.width }}" ng-required="field.field.mandatory" type="text" date-input-type="date" sf-date-picker ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
                 <ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></ng-include>
               </ng-form>
             </div>
