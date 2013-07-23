@@ -163,5 +163,73 @@ describe("sf.services.forms", function () {
 
     });
 
+    describe("OpenSelectionFieldValue", function() {
+
+      var type;
+
+      beforeEach(function(){
+        type = "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue";
+      });
+
+      it("addProperties maps to name value pairs", inject(function (formMapperService) {
+
+        var field = {
+          value: "two",
+          field: {
+            fieldValue: {
+              _type: type,
+              values: ["one", "two", "three"]
+            }
+          }
+        };
+
+        formMapperService.addProperties(field);
+
+        expect(field.field.fieldValue.extendedValues[0].display).toEqual("one");
+        expect(field.field.fieldValue.extendedValues[0].value).toEqual("one");
+      }));
+
+      it("addProperties assigns the saved value to the extra item if the value is not found in the options", inject(function (formMapperService) {
+
+        var field = {
+          value: "I was written by the user",
+          field: {
+            fieldValue: {
+              _type: type,
+              values: ["one", "two", "three"],
+              openSelectionName: "Other"
+            }
+          }
+        };
+
+        formMapperService.addProperties(field);
+
+        expect(field.field.fieldValue.extendedValues[3].display).toEqual("Other");
+        expect(field.field.fieldValue.extendedValues[3].value).toEqual("I was written by the user");
+      }));
+
+      it("addProperties assign the extra item no value if the saved value is found in the options", inject(function (formMapperService) {
+
+        var field = {
+          value: "two",
+          field: {
+            fieldValue: {
+              _type: type,
+              values: ["one", "two", "three"],
+              openSelectionName: "Other"
+            }
+          }
+        };
+
+        formMapperService.addProperties(field);
+
+        expect(field.field.fieldValue.extendedValues[3].display).toEqual("Other");
+        expect(field.field.fieldValue.extendedValues[3].value).toEqual(undefined);
+      }));
+
+
+    });
+   
+
   });
 });
