@@ -349,6 +349,17 @@
             {commands: 'addparticipant'}
             ]),
           {entity: participant});
+      },
+      deleteParticipantFromConversation: function(projectId, projectType, caseId, conversationId, participant) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
+            {'index.links': participant},
+            {commands: 'delete'}
+            ]),
+          {});
       }
 
     }

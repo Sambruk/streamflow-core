@@ -162,8 +162,10 @@
       caseService.updateMessageDraft($params.projectId, $params.projectType, $params.caseId, $params.conversationId, toSend);
     })
 
-    $scope.removeParticipant = function(id){
-      alert("Not implemented");
+    $scope.removeParticipant = function(participant){
+      caseService.deleteParticipantFromConversation($params.projectId, $params.projectType, $params.caseId, $params.conversationId, participant).then(function(){
+        alert("Deltagare borttagen!")
+      });
     }
 
     $scope.submitMessage = function($event){
@@ -186,7 +188,9 @@
 
       var participant = $scope.participant;
 
-      caseService.addParticipantToConversation($params.projectId, $params.projectType, $params.caseId, $params.conversationId, participant);
+      caseService.addParticipantToConversation($params.projectId, $params.projectType, $params.caseId, $params.conversationId, participant).then(function(){
+        alert("Deltagare tillagd!")
+      });
     }
 
   }]);
