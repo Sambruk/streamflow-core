@@ -25,30 +25,26 @@
         var hasRunAtLeastOnce = false;
         scope.$watch(attr.ngModel, function (newValue, oldValue) {
 
-          if (newValue === oldValue)
+          if (!oldValue || newValue === oldValue) {
             return;
-
-          if (hasRunAtLeastOnce) {
-
-            var resource = attr.resource;
-            var command = attr.command;
-            var name = attr.name;
-            var value = newValue;
-
-            if (attr.inputType === "date") {
-              value = value + "T00:00:00.000Z";
-            }
-
-            var callback = function(){
-                scope.case.invalidate();
-                scope.general.invalidate();
-                $rootScope.$broadcast('case-changed');
-            };
-
-            caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value, callback);
           }
 
-          hasRunAtLeastOnce = true;
+          var resource = attr.resource;
+          var command = attr.command;
+          var name = attr.name;
+          var value = newValue;
+
+          if (attr.inputType === "date") {
+            value = value + "T00:00:00.000Z";
+          }
+
+          var callback = function(){
+              scope.case.invalidate();
+              scope.general.invalidate();
+              $rootScope.$broadcast('case-changed');
+          };
+
+          caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value, callback);
         });
       }
     }
