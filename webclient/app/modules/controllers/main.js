@@ -58,17 +58,44 @@
     $scope.projectType = $params.projectType;
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.commands = caseService.getSelectedCommands($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
     $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
     $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
 
-    $scope.closeCase = function(){
+
+    $scope.$watch("commands[0]", function(){
+
+      var commands = $scope.commands;
+
+      $scope.canResolve = _.any(commands, function(command){
+        return command.rel === "resolve";
+      });
+      $scope.canClose = _.any(commands, function(command){
+        return command.rel === "close";
+      });
+      $scope.canDelete = _.any(commands, function(command){
+        return command.rel === "delete";
+      });
+      $scope.canUnassign = _.any(commands, function(command){
+        return command.rel === "unassign";
+      });
+      $scope.canRestrict = _.any(commands, function(command){
+        return command.rel === "restrict";
+      });
+      $scope.canMarkUnread = _.any(commands, function(command){
+        return command.rel === "markunread";
+      });
+
+    });
+
+    $scope.resolve = function(){
       alert("TODO");
     }
 
-    $scope.changeOwner = function(){
+    $scope.close = function(){
       alert("TODO");
     }
 

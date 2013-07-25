@@ -43,6 +43,15 @@
         });
       },
 
+      getSelectedCommands: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs: caseBase(projectId, projectType, caseId),
+          onSuccess:function (resource, result) {
+            resource.response.commands.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+
       deleteCase: function(projectId, projectType, caseId, callback) {
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
