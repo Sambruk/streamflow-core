@@ -43,6 +43,42 @@
         });
       },
 
+      getSelectedCommands: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs: caseBase(projectId, projectType, caseId),
+          onSuccess:function (resource, result) {
+            resource.response.commands.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+
+      getPossibleResolutions: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {queries: 'possibleresolutions'}
+            ]),
+          onSuccess:function (resource, result) {
+            resource.response.links.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+
+      resolveCase: function(projectId, projectType, caseId, resolutionId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'resolve'}
+            ]),
+          {entity: resolutionId}).then(_.debounce(callback)());
+      },
+
+      closeCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'close'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
       deleteCase: function(projectId, projectType, caseId, callback) {
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
