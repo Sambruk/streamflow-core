@@ -26,6 +26,10 @@
             <button ng-click="onResolveButtonClicked($event)">Avsluta</button>
           </div>
 
+          <div data-ng-switch-when="close">
+            <button ng-click="onCloseButtonClicked($event)">Stäng</button>
+          </div>
+
           <div data-ng-switch-when="sendTo">
               Send to...
           </div>

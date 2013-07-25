@@ -123,7 +123,20 @@
     }
 
     $scope.close = function(){
-      $scope.commandView = "todo";
+      $scope.commandView = "close";
+    }
+
+    $scope.onCloseButtonClicked = function($event){
+      $event.preventDefault();
+
+      var callback = function(){
+        alert("Ärendet stängdes. Var vänlig ladda om sidan.");
+
+        // TODO Find a way to invalidate the case list
+        var href = navigationService.caseListHref();
+        window.location.replace(href);
+      };
+      caseService.closeCase($params.projectId, $params.projectType, $params.caseId, callback)
     }
 
     $scope.assign = function(){

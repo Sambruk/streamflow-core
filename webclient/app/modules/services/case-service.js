@@ -71,6 +71,14 @@
           {entity: resolutionId}).then(_.debounce(callback)());
       },
 
+      closeCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'close'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
       deleteCase: function(projectId, projectType, caseId, callback) {
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
