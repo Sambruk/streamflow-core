@@ -60,7 +60,6 @@
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
-    $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
     $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
     $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
@@ -121,6 +120,7 @@
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+    $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
 
     $scope.$on('case-created', function() {
         $scope.case.invalidate();
@@ -140,6 +140,7 @@
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+    $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
 
     $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
 
