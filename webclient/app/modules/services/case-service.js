@@ -69,6 +69,18 @@
           value);
       },
 
+      getAllNotes: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'note'},
+            {queries: 'allnotes'}
+            ]),
+          onSuccess:function (resource, result) {
+            resource.response.links.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+
       getSelectedGeneral: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'general'}]),

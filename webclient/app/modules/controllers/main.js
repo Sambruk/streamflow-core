@@ -140,6 +140,7 @@
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+
     $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
     $scope.cachedNote = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
 
@@ -306,6 +307,16 @@
         $scope.submittedForm = caseService.getSubmittedForm($params.projectId, $params.projectType, $params.caseId, index);
     });
 
+  }]);
+
+  main.controller('NotesHistoryCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params) {
+
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+    $scope.caseId = $params.caseId;
+
+    $scope.notesHistory = caseService.getAllNotes($params.projectId, $params.projectType, $params.caseId);
   }]);
 
 })();
