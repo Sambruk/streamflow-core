@@ -60,7 +60,6 @@
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
-    $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
     $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
     $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
     $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
@@ -121,6 +120,7 @@
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
 
     $scope.$on('case-created', function() {
         $scope.case.invalidate();
@@ -141,7 +141,16 @@
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
 
+    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+    $scope.cachedNote = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+
     $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.addNote = function($event){
+      $event.preventDefault();
+      if ($scope.notes[0].note !== $scope.cachedNote[0].note)
+        caseService.addNote($params.projectId, $params.projectType, $params.caseId, $scope.notes[0])
+    }
 
   }]);
 
@@ -298,6 +307,16 @@
         $scope.submittedForm = caseService.getSubmittedForm($params.projectId, $params.projectType, $params.caseId, index);
     });
 
+  }]);
+
+  main.controller('NotesHistoryCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params) {
+
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+    $scope.caseId = $params.caseId;
+
+    $scope.notesHistory = caseService.getAllNotes($params.projectId, $params.projectType, $params.caseId);
   }]);
 
 })();
