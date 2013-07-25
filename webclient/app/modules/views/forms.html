@@ -3,7 +3,7 @@
       <li class="has-versions" ng-repeat="possibleForm in possibleForms">
          <!-- TODO selected element -->
          <a href="" ng-click="selectForm( possibleForm.href )" class="sel">{{ possibleForm.text }}</a>
-         &nbsp;<!-- <a href="xlink-" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a> -->
+         <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/formhistory/{{ possibleForm.id }}" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a>
       </li>
   </ul>
   <ol class="form-sections cf">
