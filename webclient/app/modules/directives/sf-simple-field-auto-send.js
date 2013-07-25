@@ -41,7 +41,7 @@
           var callback = function(){
               scope.case.invalidate();
               scope.general.invalidate();
-              $rootScope.$broadcast('case-changed');
+              $rootScope.$broadcast('case-changed', {command: command, value: value});
           };
 
           caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value, callback);

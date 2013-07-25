@@ -65,9 +65,11 @@
     $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
     $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
 
-    $scope.$on('case-changed', function() {
-        $scope.commands.invalidate();
-        $scope.commands.resolve();
+    $scope.$on('case-changed', function(e, attr) {
+        if (attr.command === "casetype") {
+          $scope.commands.invalidate();
+          $scope.commands.resolve();
+        }
     });
 
     $scope.$watch("commands[0]", function(){
