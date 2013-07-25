@@ -49,6 +49,10 @@
         templateUrl:'modules/views/conversation-detail.html',
         controller: 'ConversationDetailCtrl'
       })
+      .when('/:projectId/:projectType/:caseId/formhistory/:formId', {
+        templateUrl:'modules/views/form-history.html',
+        controller: 'FormHistoryCtrl'
+      })
       .when('/:projectId/:projectType/:caseId/edit', {
         templateUrl:'modules/views/case-edit.html',
         controller: 'CaseEditCtrl'

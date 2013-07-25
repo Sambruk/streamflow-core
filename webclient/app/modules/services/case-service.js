@@ -260,6 +260,44 @@
           {});
       },
 
+      getSubmittedForms: function(projectId, projectType, caseId, formId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([{
+            resources: 'submittedforms'
+          }]),
+          onSuccess:function (resource, result) {
+
+            // NOTE: Need to index all forms and THEN filter them
+            // since query takes `index` as parameter
+            // where `index` is the index in the entire form list
+            resource.response.index.forms.forEach(function(item, index){
+              item.index = index;
+            });
+
+            var forms = _.filter(resource.response.index.forms, function(form){
+              return form.id === formId;
+            });
+
+            forms.reverse().forEach(function(item, index){
+              item.submissionDate = item.submissionDate.split("T")[0];
+              result.push(item)
+            });
+          }
+        });
+      },
+
+      getSubmittedForm: function(projectId, projectType, caseId, index) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'submittedforms'},
+            {queries: 'submittedform?index=' + index}
+          ]),
+          onSuccess:function (resource, result) {
+            result.push(resource.response);
+          }
+        });
+      },
+
       // Conversations
       getConversationMessages: function(projectId, projectType, caseId, conversationId) {
         return backendService.get({

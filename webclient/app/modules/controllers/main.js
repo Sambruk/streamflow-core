@@ -283,4 +283,21 @@
     }
   }]);
 
+  main.controller('FormHistoryCtrl', ['$scope', 'caseService', '$routeParams',
+                  function($scope, caseService, $params) {
+
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+    $scope.caseId = $params.caseId;
+
+    $scope.submittedForms = caseService.getSubmittedForms($params.projectId, $params.projectType, $params.caseId, $params.formId);
+
+    $scope.$watch("selectedSubmittedForm", function(){
+      var index = $scope.selectedSubmittedForm;
+      if (_.isNumber(index))
+        $scope.submittedForm = caseService.getSubmittedForm($params.projectId, $params.projectType, $params.caseId, index);
+    });
+
+  }]);
+
 })();
