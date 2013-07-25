@@ -120,7 +120,7 @@
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
-    $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
+    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
 
     $scope.$on('case-created', function() {
         $scope.case.invalidate();
@@ -140,9 +140,16 @@
 
     $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
-    $scope.notes = caseService.getSelectedNotes($params.projectId, $params.projectType, $params.caseId);
+    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+    $scope.cachedNote = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
 
     $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.addNote = function($event){
+      $event.preventDefault();
+      if ($scope.notes[0].note !== $scope.cachedNote[0].note)
+        caseService.addNote($params.projectId, $params.projectType, $params.caseId, $scope.notes[0])
+    }
 
   }]);
 

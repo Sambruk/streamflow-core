@@ -51,13 +51,22 @@
           {}).then(_.debounce(callback)());
       },
 
-      getSelectedNotes: function(projectId, projectType, caseId) {
+      getSelectedNote: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'note'}]),
           onSuccess:function (resource, result) {
-            result.push(resource.response.index.note);
+            result.push(resource.response.index);
           }
         });
+      },
+
+      addNote: function(projectId, projectType, caseId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'note'},
+            {commands: 'addnote'}
+            ]),
+          value);
       },
 
       getSelectedGeneral: function(projectId, projectType, caseId) {
