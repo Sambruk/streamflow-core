@@ -92,22 +92,50 @@
     });
 
     $scope.resolve = function(){
-      alert("TODO");
+
+      $scope.possibleResolutions = caseService.getPossibleResolutions($params.projectId, $params.projectType, $params.caseId);
+      $scope.$watch("possibleResolutions[0]", function(){
+        if ($scope.possibleResolutions[0]) {
+          $scope.resolution = $scope.possibleResolutions[0].id;
+        }
+      });
+
+      $scope.commandView = "resolve"
+    }
+
+    $scope.onResolveButtonClicked = function($event){
+      $event.preventDefault();
+
+      var resolutionId = $scope.resolution;
+
+      var callback = function(){
+        alert("Ärendet avslutades. Var vänlig ladda om sidan.");
+
+        // TODO Find a way to invalidate the case list
+        var href = navigationService.caseListHref();
+        window.location.replace(href);
+      };
+      caseService.resolveCase($params.projectId, $params.projectType, $params.caseId, resolutionId, callback)
+    }
+
+    $scope.sendTo = function(){
+      $scope.commandView = "sendTo"
     }
 
     $scope.close = function(){
-      alert("TODO");
+      $scope.commandView = "todo";
     }
 
     $scope.assign = function(){
-      alert("TODO");
+      $scope.commandView = "todo";
     }
 
-    $scope.moreCommands = function(){
-      alert("TODO");
+    $scope.markUnread = function(){
+      $scope.commandView = "todo";
     }
 
     $scope.deleteCase = function(){
+      $scope.commandView = undefined;
 
       var callback = function(){
 
