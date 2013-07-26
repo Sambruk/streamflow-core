@@ -104,7 +104,19 @@ Notice it's possible to simulate HTTP error codes etc with the web-server.js (ch
 
 ### Unit Tests
 
-   yeoman test
+Install phantom.js
+
+    npm install -g phantomjs
+
+Install and start karma
+
+    npm install -g karma
+    karma start
+   
+Now open a new terminal and run
+
+    karma run
+
 
 Or run it from WebStrom IDEA, see docs/testacular.png and http://vojtajina.github.com/testacular/
 
@@ -114,7 +126,7 @@ Start the web-server (./web-server.js)
 Navigate to http://localhost:8000/test/e2e/runner.html
 
 The test files are located here: `test/e2e/scenarios.js'
-It uses the mock data located in app/api.
+The default configuration is to run against the live server. That makes it a bit fragile. Instead, you can use the mock data located in app/api.
 
 ### Manual Testing
 
