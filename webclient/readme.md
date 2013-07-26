@@ -4,7 +4,7 @@
 
 ## Quick way to get the application up and running
 
-Clone the repo and then initialize the submodule containing the design
+Clone the repo and then initialize the submodule(s)
 
     git submodule update --init
 
