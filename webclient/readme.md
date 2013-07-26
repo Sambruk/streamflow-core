@@ -49,7 +49,7 @@ If you don't get a populated case list, the console log is your friend.
 
 From https://github.com/yeoman/yeoman/wiki/Getting-Started
 
-npm install -g yo grunt-cli bower
+    npm install -g yo grunt-cli bower
 
 If you get lots of errors, including
 
