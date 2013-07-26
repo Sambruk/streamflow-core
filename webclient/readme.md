@@ -44,6 +44,11 @@ Open the application! :)
     
 If you don't get a populated case list, the console log is your friend.
     
+The design will probably look very strange. Pull the latest changes from the submodule to fix that
+
+    cd app/design
+    git pull origin master
+    
 
 ## Installing yeoman
 
