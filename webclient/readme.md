@@ -12,7 +12,7 @@ Go to the webclient folder
 
     cd webclient
     
-Install the node dependencies
+Install the node dependencies (you need to have node.js installed)
 
     npm install
 
