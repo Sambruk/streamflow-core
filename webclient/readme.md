@@ -83,10 +83,6 @@ Mac OSX:
 * http://www.cheatography.com/proloser/cheat-sheets/angularjs/
 * IRC help: http://webchat.freenode.net/?channels=angularjs&uio=d4
 
-## Installation
-
-see [install.md](install.md)
-
 ## Run
 
    ./web-server.js
