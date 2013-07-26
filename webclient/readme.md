@@ -4,11 +4,11 @@
 
 ## Quick way to get the application up and running
 
-Initialize the submodule containing the design
+Clone the repo and then initialize the submodule containing the design
 
     git submodule update --init
 
-Clone the repo and checkout the develop branch
+Checkout the develop branch
     
     git checkout develop
 
