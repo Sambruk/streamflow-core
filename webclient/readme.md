@@ -4,7 +4,11 @@
 
 ## Quick way to get the application up and running
 
-Clone the repo and checkout the develop branch
+Clone the repo and then initialize the submodule(s)
+
+    git submodule update --init
+
+Checkout the develop branch
     
     git checkout develop
 
@@ -12,7 +16,7 @@ Go to the webclient folder
 
     cd webclient
     
-Install the node dependencies
+Install the node dependencies (you need to have node.js installed)
 
     npm install
 
