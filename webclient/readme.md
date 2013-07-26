@@ -45,6 +45,18 @@ Open the application! :)
 If you don't get a populated case list, the console log is your friend.
     
 
+## Installing yeoman
+
+From https://github.com/yeoman/yeoman/wiki/Getting-Started
+
+npm install -g yo grunt-cli bower
+
+If you get lots of errors, including
+
+    "Please try running this command again as root/Administrator."
+
+..then you should NOT run the command with sudo. Instead, you should chown your usr/local. How this is done (and why) is described here: http://howtonode.org/introduction-to-npm
+
 
 ## Using the real Streamflow backend
 
