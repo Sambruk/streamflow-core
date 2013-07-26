@@ -31,19 +31,19 @@
     });
 
     it("should display a form", function() {
-      element(".m-issue-forms .form-tabs a:eq(3)").click();
+      element(".m-issue-forms .form-tabs a:eq(6)").click();
       sleep(1);
       expect(element(".m-issue-forms form .text:eq(0)").text()).toMatch("Text");
     });
 
     it("should display a form", function() {
-      element(".m-issue-forms .form-tabs a:eq(3)").click();
+      element(".m-issue-forms .form-tabs a:eq(6)").click();
       sleep(1);
       expect(element(".m-issue-forms form .text:eq(0)").text()).toMatch("Text");
     });
 
     it("should be possible to navigate to the second form page", function() {
-      element(".m-issue-forms .form-tabs a:eq(3)").click();
+      element(".m-issue-forms .form-tabs a:eq(6)").click();
       sleep(1);
       element(".m-issue-forms .form-sections li:eq(1) a:eq(0)").click();
       sleep(1);
