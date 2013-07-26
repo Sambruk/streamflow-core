@@ -1,5 +1,7 @@
 ## Streamflow Client
 
+NB! The information on this page is out of date Switch to the develop branch to get the latest installation documentation NB!
+
 ## Using the real Streamflow backend
 
 If you are using the real streamflow backend (see config below) you need to
