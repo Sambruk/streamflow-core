@@ -17,20 +17,44 @@
 
 -->
 <div class="content-primary" role="main" ng-controller="ConversationCreateCtrl">
-  <div class="conversation">
-    <div class="convo-head">
-    <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
-      <h2>Skapa ny konversation</h2>
+  <div class="m m-check-list">
+    <div class="m-h">
+      <h2>Skapa en ny konversation</h2>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn">Tillbaka <i class="icon-close"></i></a>
     </div>
-    <div class="convo-input">
+      <div class="participants">
+          <h3 class="struct">Deltagare i denna konversation</h3>
+          <!--<span>PARTICIPANT NAME <a href="xlink-" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>-->
+          <a href="xlink-" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
+      </div>
+      <div class="convo-input">
       <form action="#" method="get" class="cf">
-        <div class="text">
-          <label for="conversation-topic" class="struct">Titel</label>
-          <input type="text" ng-model="conversationTopicToCreate" id="conversation-topic">
+        <div class="row cf">
+          <div class="text col full">
+            <label for="conversation-topic">Titel</label>
+            <input type="text" ng-model="conversationTopicToCreate" id="conversation-topic">
+          </div>
         </div>
+        <div class="row cf">
+          <div class="text">
+            <label for="convo-text" class="struct">Meddelande</label>
+            <textarea name="convo-text" id="convo-text" cols="30" rows="2" placeholder="Skriv ditt meddelande här"></textarea>
+          </div>
+          <div class="upload">
+            <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
+          </div>
+          <div class="send">
+              <button ng-click="submitConversation($event)" name="convo-submit">Skicka</button>
+              <!--
+              <button type="createConvoAndSubmitMessage" name="convo-submit">Skicka</button>
+              -->
+          </div>
+        </div>
+        <!--
         <div class="submit-area">
           <button ng-click="submitMessage($event)" name="convo-submit">Skapa</button>
         </div>
+        -->
       </form>
     </div>
   </div>

@@ -3,14 +3,14 @@
     <form action="#" method="get" class="form-general">
 
         <!-- Module: Ärendebeskrivning & taggar -->
-        <div class="m">
-            <div class="m-h">
-                <h2>{{case[0].caseId}}</h2>
-                <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
+        <div class="m single-issue">
+            <div class="m-h cf">
+                <h2 class="id">{{case[0].caseId}}</h2>
+                <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
                 <div class="choose-type">
                     <label class="struct" for="issue-type">Ärendetyp</label>
                     <select ng-model="general[0].caseType.id"
-                        name="entity" id="issue-type"
+                        name="entity issue-type" id="issue-type"
                         ng-options="option.value as option.name for option in possibleCaseTypes" sf-simple-field-auto-send data-resource="general" command="casetype">
               </select>
                 </div>

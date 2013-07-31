@@ -49,6 +49,7 @@
   <div class="m m-general">
     <div class="m-h">
       <h2>Allmänt</h2>
+      <a href="xlink-" class="edit-module icon-edit" title="Redigera"><span class="struct">Redigera</span></a>
     </div>
     <div class="m-c">
       <div class="m-box">
@@ -68,6 +69,7 @@
   <div class="m m-convos">
     <div class="m-h">
       <h2>Konversationer</h2>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul>
@@ -82,7 +84,6 @@
           </a>
         </li>
       </ul>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/conversation/create" class="add-item">Lägg till <i class="icon-plus"></i></a>
     </div>
   </div>
   <!-- /Module: Konversationer -->
@@ -94,7 +95,7 @@
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li ng-repeat='contact in contacts'>
+        <li ng-class-odd="'odd'" ng-repeat='contact in contacts' ng-odd=>
         <a ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
         </li>
       </ul>

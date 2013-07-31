@@ -17,11 +17,12 @@
 
 -->
 <div class="content-primary" role="main" ng-controller="ConversationDetailCtrl">
-  <div class="conversation">
-    <div class="convo-head">
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
+  <div class="m m-check-list">
+    <div class="m-h">
       <h2>Detaljer om ansökan (TODO)</h2>
-
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
+    </div>
+    <div class="mc">
       <div class="participants">
         <h3 class="struct">Deltagare i denna konversation</h3>
         <span ng-repeat="participant in conversationParticipants">{{ participant.text }}<a ng-click="removeParticipant(participant.id)" href="" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
@@ -32,12 +33,14 @@
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
-          <textarea name="convo-text" id="convo-text" cols="30" rows="2" ng-model="conversationMessageDraft[0]"></textarea>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="2" placeholder="Skriv ditt meddelande här" ng-model="conversationMessageDraft[0]"></textarea>
         </div>
-        <!-- <div class="upload">
+        <div class="upload">
+          <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
+        </div>        <!-- <div class="upload">
           <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
         </div> -->
-        <div class="submit-area">
+        <div class="send">
           <button ng-click="submitMessage($event)" name="convo-submit">Skicka</button>
         </div>
       </form>

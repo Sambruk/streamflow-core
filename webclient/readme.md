@@ -138,6 +138,6 @@ Install the AngularJS Batarang chrome extension
 * Click on "Edit configuration..."
 * Create a new JavaScript remote debug
 * Start the debugging session
-* Map the javascript file you have breakpoints to, e.g http://localhost:3501/modules/main/controllers.main.js
+* Map the javascript file you have breakpoints to, e.g http://localhost:3501/modules/main/controllers.X.js
 
 You now get all the console.log output in the WebStorm IDE and can set break points

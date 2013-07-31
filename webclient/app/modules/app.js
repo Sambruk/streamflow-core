@@ -20,12 +20,13 @@
   window.sf = {
     directives: angular.module('sf.directives', []),
     filters: angular.module('sf.filters', []),
-    controllers: angular.module('sf.controllers', []),
+    controllers: angular.module('sf.controllers', 'sf.controllers.case', [])
   };
 
   sf.env = sf.env || 'development';
 
-  angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
+  angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation',
+    'sf.controllers.form', 'sf.controllers.notes', 'sf.controllers.project', 'sf.controllers.sidebar', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
       $routeProvider
