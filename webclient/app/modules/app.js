@@ -26,7 +26,8 @@
   sf.env = sf.env || 'development';
 
   angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation',
-    'sf.controllers.form', 'sf.controllers.notes', 'sf.controllers.project', 'sf.controllers.sidebar', 'sf.directives'])
+    'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 'sf.controllers.project',
+    'sf.controllers.sidebar', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
       $routeProvider
@@ -49,6 +50,10 @@
       .when('/:projectId/:projectType/:caseId/conversation/:conversationId', {
         templateUrl:'modules/views/conversation-detail.html',
         controller: 'ConversationDetailCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/contact/add', {
+        templateUrl:'modules/views/contact-create.html',
+        controller: 'ContactCreateCtrl'
       })
       .when('/:projectId/:projectType/:caseId/formhistory/:formId', {
         templateUrl:'modules/views/form-history.html',

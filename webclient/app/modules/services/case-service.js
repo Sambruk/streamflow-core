@@ -172,6 +172,15 @@
         });
       },
 
+      addContact: function(projectId, projectType, caseId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'contacts', unsafe: true},
+            {commands: 'add'}
+          ]),
+          value);
+      },
+
       getSelectedCaseLog: function(projectId, projectType, caseId) {
 
         var defaultParams = { "attachment":false,"contact":false,"conversation":false,"custom":true,"form":true,"system":false,"systemTrace":false}; // From API
@@ -179,7 +188,7 @@
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
               {resources: 'caselog'},
-              {queries: 'list?system=false&systemTrace=false&form=true&conversation=false&attachment=false&contact=false&custom=true'},
+              {queries: 'list?system=false&systemTrace=false&form=true&conversation=false&attachment=false&contact=false&custom=true'}
             ]),
           onSuccess:function (resource, result) {
             _.first(resource.response.links.reverse(), 3).forEach(function(link){
@@ -361,7 +370,7 @@
           specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
-            {resources: 'messages'},
+            {resources: 'messages'}
             ]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
@@ -374,7 +383,7 @@
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
-            {resources: 'messagedraft', unsafe: true},
+            {resources: 'messagedraft', unsafe: true}
             ]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index.string);
@@ -415,7 +424,7 @@
           specs:caseBase(projectId, projectType, caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
-            {resources: 'participants'},
+            {resources: 'participants'}
             ]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
@@ -428,7 +437,7 @@
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'},
-            {queries: 'possibleparticipants'},
+            {queries: 'possibleparticipants'}
             ]),
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){result.push(item)});
