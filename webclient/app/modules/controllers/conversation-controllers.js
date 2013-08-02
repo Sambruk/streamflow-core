@@ -31,7 +31,11 @@
         $event.preventDefault();
 
         var topic = $scope.conversationTopicToCreate;
-        $scope.conversationId = caseService.createConversation($params.projectId, $params.projectType, $params.caseId, topic);
+        caseService.createConversation($params.projectId, $params.projectType, $params.caseId, topic).then(function(response){
+          var conversationId = JSON.parse(response.data.events[0].parameters).param1;
+          var href = navigationService.caseHref($params.caseId) + "/conversation/" + conversationId;
+          window.location.assign(href);
+        });
       }
 
     }]);

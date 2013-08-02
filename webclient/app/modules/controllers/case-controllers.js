@@ -18,10 +18,23 @@
 (function() {
   'use strict';
 
-  var sfCase = angular.module('sf.controllers.case', ['sf.services.case', 'sf.services.navigation', 'sf.services.project']);
+  var sfCase = angular.module('sf.controllers.case', ['sf.services.case', 'sf.services.navigation', 'sf.services.perspective', 'sf.services.project']);
 
-  sfCase.controller('CaseListCtrl', ['$scope', 'projectService', '$routeParams',
-    function($scope, projectService, $params) {
+  sfCase.controller('CaseOverviewCtrl', ['$scope', '$routeParams', 'perspectiveService', 'navigationService',
+    function($scope, $params, perspectiveService, navigationService) {
+      $scope.perspectives = perspectiveService.getPerspectives();
+      /*$scope.myCases = perspectiveService.getMyCases();
+      $scope.myLatestCases = perspectiveService.getMyLatestCases();
+      $scope.myTodaysCases = perspectiveService.getTodaysCases();*/
+    }]);
+
+  sfCase.controller('CaseSearchCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
+    function($scope, $params, caseService, navigationService) {
+
+    }]);
+
+  sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService',
+    function($scope, $params, projectService) {
     $scope.cases = projectService.getSelected($params.projectId, $params.projectType);
 
     $scope.$on('case-created', function() {
@@ -29,8 +42,8 @@
     });
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService',
-    function($scope, caseService, $params, navigationService){
+  sfCase.controller('CaseDetailCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
+    function($scope, $params, caseService, navigationService){
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
 
@@ -48,8 +61,8 @@
     });
   }]);
 
-  sfCase.controller('CaseEditCtrl', ['$scope', 'caseService', '$routeParams', 'navigationService',
-    function($scope, caseService, $params, navigationService) {
+  sfCase.controller('CaseEditCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
+    function($scope, $params, caseService, navigationService) {
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
 

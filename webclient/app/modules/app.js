@@ -31,6 +31,14 @@
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
       $routeProvider
+      .when('/search', {
+        templateUrl: 'modules/views/case-search.html',
+        controller: 'CaseSearchCtrl'
+      })
+      .when('/perspectives', {
+        templateUrl: 'modules/views/case-overview.html',
+        controller: 'CaseOverviewCtrl'
+      })
       .when('/projects/:projectId/:projectType', {
         templateUrl: 'modules/views/case-list.html',
         controller: 'CaseListCtrl'
