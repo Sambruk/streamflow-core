@@ -39,6 +39,10 @@
         templateUrl:'modules/views/case-detail.html',
         controller: 'CaseDetailCtrl'
       })
+      .when('/:projectId/:projectType/:caseId/edit', {
+        templateUrl:'modules/views/case-edit.html',
+        controller: 'CaseEditCtrl'
+      })
       .when('/:projectId/:projectType/:caseId/conversation/create', {
         templateUrl:'modules/views/conversation-create.html',
         controller: 'ConversationCreateCtrl'
@@ -62,10 +66,6 @@
       .when('/:projectId/:projectType/:caseId/noteshistory/', {
         templateUrl:'modules/views/notes-history.html',
         controller: 'NotesHistoryCtrl'
-      })
-      .when('/:projectId/:projectType/:caseId/edit', {
-        templateUrl:'modules/views/case-edit.html',
-        controller: 'CaseEditCtrl'
       })
       .otherwise({
         redirectTo: '/'

@@ -34,17 +34,17 @@
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
 
-    $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
 
     $scope.$on('case-created', function() {
-        $scope.case.invalidate();
+        $scope.caze.invalidate();
     });
 
     $scope.$on('case-changed', function() {
-      $scope.case.invalidate();
-      $scope.case.resolve();
+      $scope.caze.invalidate();
+      $scope.caze.resolve();
     });
   }]);
 
@@ -53,7 +53,7 @@
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
 
-      $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+      $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
       $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
 
       $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);

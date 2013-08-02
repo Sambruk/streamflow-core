@@ -23,7 +23,7 @@
 
     <!-- Issue header -->
     <div class="m-h cf">
-      <h2 class="id">{{case[0].caseId}}</h2>
+      <h2 class="id">{{caze[0].caseId}}</h2>
       <div class="choose-type">
         <label class="struct" for="issue-type">Ärendetyp</label>
         <input type="text" disabled id="issue-type" ng-model="general[0].caseType.text">
@@ -31,7 +31,7 @@
       <!-- <a href="xlink-" class="wiki-link">
         <i class="icon-info"></i><span class="struct">Namn på ärendetyp</span>
       </a> -->
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
         <span class="struct">Redigera ärende</span>
       </a>
     </div>
@@ -39,11 +39,11 @@
 
     <!-- Issue body -->
     <div class="issue-body">
-      <div class="due-date {{case.index.overdueStatus()}}">
-        <span>{{case[0].overdueDays() | positive}}</span>
+      <div class="due-date {{caze.index.overdueStatus()}}">
+        <span>{{caze[0].overdueDays() | positive}}</span>
       </div>
       <div class="issue-description">
-        <h2>{{case[0].text}}</h2>
+        <h2>{{caze[0].text}}</h2>
         <p>{{notes[0].note}}</p>
       </div>
     </div>
