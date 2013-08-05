@@ -72,7 +72,7 @@
         caseService.createMessage($params.projectId, $params.projectType, $params.caseId, $params.conversationId).then(function(){
           $scope.conversationMessages.invalidate();
           $scope.conversationMessages.resolve();
-          $scope.conversationMessageDraft = "";
+          $scope.conversationMessageDraft[0] = "";
         });
       }
     }]);
