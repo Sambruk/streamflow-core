@@ -16,7 +16,7 @@
     limitations under the License.
 
 -->
-<div class="content-primary" role="main" ng-controller="ConversationCreateCtrl">
+<div class="content-primary" role="main" data-ng-controller="ConversationCreateCtrl">
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Skapa en ny konversation</h2>
@@ -27,7 +27,7 @@
         <div class="row cf">
           <div class="text col full">
             <label for="conversation-topic">Titel</label>
-            <input type="text" ng-model="conversationTopicToCreate" id="conversation-topic">
+            <input type="text" data-ng-model="conversationTopicToCreate" id="conversation-topic">
           </div>
         </div>
         <!--<div class="row cf">
@@ -43,7 +43,7 @@
           </div>
         </div>-->
         <div class="submit-area">
-          <button ng-click="submitConversation($event)" name="convo-submit">Skapa</button>
+          <button data-ng-click="submitConversation($event)" name="convo-submit">Skapa</button>
         </div>
       </form>
     </div>
@@ -51,4 +51,4 @@
 </div>
 
 <!-- Content secondary -->
-<ng-include src="'modules/views/case-sidebar.html'"></ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

@@ -16,14 +16,14 @@
     limitations under the License.
 
 -->
-<div class="content-primary" role="main" ng-controller="NotesHistoryCtrl">
+<div class="content-primary" role="main" data-ng-controller="NotesHistoryCtrl">
 
 <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/edit" title="Tillbaka" style="float: right;">Tillbaka</a>
   <h2>Noteringar, historik</h2>
 
   <br /><br />
 
-  <div ng-repeat="note in notesHistory">
+  <div data-ng-repeat="note in notesHistory">
     <div><em>{{ note.creator }} {{ note.createdOn | dateTime }}</em></div>
     <div>{{ note.note }}</div>
     <hr />
@@ -32,4 +32,4 @@
 </div>
 
 <!-- Content secondary -->
-<ng-include src="'modules/views/case-sidebar.html'"></ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

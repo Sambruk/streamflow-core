@@ -16,7 +16,7 @@
     limitations under the License.
 
 -->
-<div class="content-primary" role="main" ng-controller="ContactCreateCtrl">
+<div class="content-primary" role="main" data-ng-controller="ContactCreateCtrl">
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Skapa en ny kontakt</h2>
@@ -27,63 +27,63 @@
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-name">Namn</label>
-                  <input type="text" ng-model="contact.name" id="contact-name">
+                  <input type="text" data-ng-model="contact.name" id="contact-name">
               </div>
           </div>
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-name">Gatuadress</label>
-                  <input type="text" ng-model="contact.addresses[0].address" id="contact-address">
+                  <input type="text" data-ng-model="contact.addresses[0].address" id="contact-address">
               </div>
           </div>
           <div class="row cf cols-2">
               <div class="text col small col-1">
                   <label for="contact-zipcode">Postnummer</label>
-                  <input type="text" ng-model="contact.addresses[0].zipCode" id="contact-zipcode">
+                  <input type="text" data-ng-model="contact.addresses[0].zipCode" id="contact-zipcode">
               </div>
               <div class="text col large col-2">
                   <label for="contact-city">Postort</label>
-                  <input type="text" ng-model="contact.addresses[0].city" id="contact-city">
+                  <input type="text" data-ng-model="contact.addresses[0].city" id="contact-city">
               </div>
           </div>
           <div class="row cols-2 cf">
               <div class="text col medium col-1">
                   <label for="contact-region">Region</label>
-                  <input type="text" ng-model="contact.addresses[0].region" id="contact-region">
+                  <input type="text" data-ng-model="contact.addresses[0].region" id="contact-region">
               </div>
               <div class="text col medium col-2">
                   <label for="contact-country">Land</label>
-                  <input type="text" ng-model="contact.addresses[0].country" id="contact-country">
+                  <input type="text" data-ng-model="contact.addresses[0].country" id="contact-country">
               </div>
           </div>
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-phone">Telefon</label>
-                  <input type="text" name="contact.phoneNumbers[0].phoneNumber" ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone">
+                  <input type="text" name="contact.phoneNumbers[0].phoneNumber" data-ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone">
               </div>
           </div>
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-email">E-post</label>
-                  <input type="text" ng-model="contact.emailAddresses[0].emailAddress" id="contact-email">
+                  <input type="text" data-ng-model="contact.emailAddresses[0].emailAddress" id="contact-email">
               </div>
           </div>
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-id">Personnummer <em>åååmmdd-xxxx</em></label>
-                  <input type="text" ng-model="contact.contactId" id="contact-id">
+                  <input type="text" data-ng-model="contact.contactId" id="contact-id">
               </div>
           </div>
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-company">Företag</label>
-                  <input type="text" ng-model="contact.company" id="contact-company">
+                  <input type="text" data-ng-model="contact.company" id="contact-company">
               </div>
           </div>
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-pref">Föredraget kontaktsätt</label>
-                  <select custom-select class="hasCustomSelect" ng-model="contact.contactPreference" id="contact-pref">
+                  <select custom-select class="hasCustomSelect" data-ng-model="contact.contactPreference" id="contact-pref">
                       <option value="letter">Brev</option>
                       <option value="email" selected>E-post</option>
                       <option value="sms">SMS</option>
@@ -94,11 +94,11 @@
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-note">Anteckningar</label>
-                  <textarea ng-model="contact.note" id="contact-note" cols="30" rows="2" placeholder=""></textarea>
+                  <textarea data-ng-model="contact.note" id="contact-note" cols="30" rows="2" placeholder=""></textarea>
               </div>
           </div>
         <div class="submit-area">
-          <button ng-click="submitContact($event)" name="contact-submit">Skapa</button>
+          <button data-ng-click="submitContact($event)" name="contact-submit">Skapa</button>
         </div>
       </form>
     </div>
@@ -106,4 +106,4 @@
 </div>
 
 <!-- Content secondary -->
-<ng-include src="'modules/views/case-sidebar.html'"></ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

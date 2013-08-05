@@ -26,7 +26,7 @@
       <h2 class="id">{{case[0].caseId}}</h2>
       <div class="choose-type">
         <label class="struct" for="issue-type">Ärendetyp</label>
-        <input type="text" disabled id="issue-type" ng-model="general[0].caseType.text">
+        <input type="text" disabled id="issue-type" data-ng-model="general[0].caseType.text">
       </div>
       <!-- <a href="xlink-" class="wiki-link">
         <i class="icon-info"></i><span class="struct">Namn på ärendetyp</span>
@@ -178,7 +178,7 @@
       <h2>Formulär</h2>
     </div>
     <div class="m-c">
-      <ng-include class="m-c" src="'modules/views/forms.html'"></ng-include>
+      <data-ng-include class="m-c" src="'modules/views/forms.html'"></data-ng-include>
     </div>
   </div>
   <!-- /Issue forms -->
@@ -187,4 +187,4 @@
 <!-- /Content primary -->
 
 <!-- Content secondary -->
-<ng-include src="'modules/views/case-sidebar.html'"></ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

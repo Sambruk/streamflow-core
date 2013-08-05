@@ -16,7 +16,7 @@
     limitations under the License.
 
 -->
-<div class="content-primary" role="main" ng-controller="ConversationDetailCtrl">
+<div class="content-primary" role="main" data-ng-controller="ConversationDetailCtrl">
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Detaljer om ansökan (TODO)</h2>
@@ -25,7 +25,7 @@
     <div class="mc">
       <div class="participants">
         <h3 class="struct">Deltagare i denna konversation</h3>
-        <span ng-repeat="participant in conversationParticipants">{{ participant.text }}<a ng-click="removeParticipant(participant.id)" href="" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
+        <span data-ng-repeat="participant in conversationParticipants">{{ participant.text }}<a data-ng-click="removeParticipant(participant.id)" href="" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
         <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/conversation/{{ conversationId }}/participants/create" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
       </div>
     </div>
@@ -33,7 +33,7 @@
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
-          <textarea name="convo-text" id="convo-text" cols="30" rows="2" placeholder="Skriv ditt meddelande här" ng-model="conversationMessageDraft[0]"></textarea>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="2" placeholder="Skriv ditt meddelande här" data-ng-model="conversationMessageDraft[0]"></textarea>
         </div>
         <div class="upload">
           <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
@@ -41,14 +41,14 @@
           <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
         </div> -->
         <div class="send">
-          <button ng-click="submitMessage($event)" name="convo-submit">Skicka</button>
+          <button data-ng-click="submitMessage($event)" name="convo-submit">Skicka</button>
         </div>
       </form>
       <!-- <div class="attached-files">Bifogad fil: <a href="xlink-d6as78">uppladdad-fil.doc</a></div> -->
     </div>
     <div class="convo-body">
       <ul class="convo-messages">
-        <li class="msg-item" ng-repeat="message in conversationMessages">
+        <li class="msg-item" data-ng-repeat="message in conversationMessages">
           <div class="msg-head cf">
             <div class="msg-author">{{ message.sender }}</div>
             <!-- <div class="msg-attachment"><strong>Bifogad fil:</strong> <a href="xlink-ddsa789">en-bild.jpeg</a></div> -->
@@ -71,4 +71,4 @@
 </div>
 
 <!-- Content secondary -->
-<ng-include src="'modules/views/case-sidebar.html'"></ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

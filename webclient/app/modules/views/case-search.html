@@ -21,14 +21,14 @@
     <h2>Ärenden med förfallodatum passerat</h2>
     <div class="due-date-divider"><span>Förfallodatum</span></div>
     <ul class="issue-list">
-      <li class="issue-item {{case.overdueStatus()}}" ng-repeat='case in cases'>
+      <li class="issue-item {{case.overdueStatus()}}" data-ng-repeat='case in cases'>
       <a href="{{case.href}}" class="block-link">
         <div class="due-date">
           <span>{{case.overdueDays() | positive}}</span>
-          <ng-pluralize
+          <data-ng-pluralize
           count="case.overdueDays()"
           when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
-          </ng-pluralize>
+          </data-ng-pluralize>
         </div>
         <div class="issue-description">
           <span class="meta">{{case.caseId}} - {{case.project}}</span>

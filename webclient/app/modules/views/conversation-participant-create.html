@@ -16,7 +16,7 @@
     limitations under the License.
 
 -->
-<div class="content-primary" role="main" ng-controller="ConversationParticipantCreateCtrl">
+<div class="content-primary" role="main" data-ng-controller="ConversationParticipantCreateCtrl">
   <div class="m m-check-list">
     <div class="m-h">
         <h2>Lägg till deltagare</h2>
@@ -27,12 +27,12 @@
         <div class="form-row cols-1">
           <div class="text select large col full">
             <label for="convo-select" class="struct">Meddelande</label>
-            <select class="hasCustomSelect" custom-select name="convo-text" id="convo-select" ng-options="option.id as option.text for option in possibleParticipants" ng-model="participant"></select>
+            <select class="hasCustomSelect" custom-select name="convo-text" id="convo-select" data-ng-options="option.id as option.text for option in possibleParticipants" data-ng-model="participant"></select>
           </div>
         </div>
         <div class="form-row cols-1">
           <div class="submit-area">
-            <button ng-click="addParticipant($event)" name="convo-submit">Lägg till</button>
+            <button data-ng-click="addParticipant($event)" name="convo-submit">Lägg till</button>
           </div>
         </div>
       </form>
@@ -41,4 +41,4 @@
 </div>
 
 <!-- Content secondary -->
-<ng-include src="'modules/views/case-sidebar.html'"></ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

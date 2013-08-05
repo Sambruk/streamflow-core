@@ -16,21 +16,21 @@
     limitations under the License.
 
 -->
-<div class="navigation" role='navigation' ng-controller="ProjectListCtrl">
+<div class="navigation" role='navigation' data-ng-controller="ProjectListCtrl">
 
-  <a href="" ng-click="createCase()" class="add-new-issue"><i class="icon-plus"></i><span class="struct">Lägg till nytt ärende</span></a>
+  <a href="" data-ng-click="createCase()" class="add-new-issue"><i class="icon-plus"></i><span class="struct">Lägg till nytt ärende</span></a>
 
   <div class="functions-menu">
     <div class="functions-header cf">
       <h2><a href="/app/#perspectives">Funktioner</a></h2>
-      <a href="#" class="icon-menu open-toolbar" ng-click='toggleToolbar($event)'>
+      <a href="#" class="icon-menu open-toolbar" data-ng-click='toggleToolbar($event)'>
         <span class="struct">Visa/dölj funktionsmeny</span>
       </a>
     </div>
-    <div class="sub-category" ng-repeat="project in projects">
+    <div class="sub-category" data-ng-repeat="project in projects">
       <h3>{{project.text}}</h3>
       <ul>
-        <li ng-repeat="type in project.types">
+        <li data-ng-repeat="type in project.types">
         <a href="#/{{type.href}}" sf-active-link>
           <span>12</span><span class="struct">meddelanden i din</span> {{type.name | translate }}
         </a>
