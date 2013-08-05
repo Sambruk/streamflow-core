@@ -63,8 +63,7 @@
 
       $scope.removeParticipant = function(participant){
         caseService.deleteParticipantFromConversation($params.projectId, $params.projectType, $params.caseId, $params.conversationId, participant).then(function(){
-          $scope.conversationParticipants.invalidate();
-          $scope.conversationParticipants.resolve();
+          alert("Deltagare borttagen!")
         });
       }
 
@@ -85,7 +84,6 @@
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
       $scope.conversationId = $params.conversationId;
-      $scope.conversationParticipants = caseService.getConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
 
       $scope.possibleParticipants = caseService.getPossibleConversationParticipants($params.projectId, $params.projectType, $params.caseId, $params.conversationId);
 
@@ -96,9 +94,10 @@
 
         caseService.addParticipantToConversation($params.projectId, $params.projectType, $params.caseId, $params.conversationId, participant).then(function(){
           var href = navigationService.caseHref($params.caseId) + "/conversation/" + $params.conversationId;
-          $scope.conversationParticipants.invalidate();
-          $scope.conversationParticipants.resolve();
+          $scope.possibleParticipants.invalidate();
+          $scope.possibleParticipants.resolve();
           window.location.assign(href);
+//          alert("Deltagare tillagd!")
         });
       }
 
