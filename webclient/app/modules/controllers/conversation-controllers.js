@@ -26,6 +26,8 @@
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
+      // Necessary to get to be able to invalidate and resolve the conversation list after a create
+      $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
 
       $scope.submitConversation = function($event){
         $event.preventDefault();
@@ -34,6 +36,8 @@
         caseService.createConversation($params.projectId, $params.projectType, $params.caseId, topic).then(function(response){
           var conversationId = JSON.parse(response.data.events[0].parameters).param1;
           var href = navigationService.caseHref($params.caseId) + "/conversation/" + conversationId;
+          $scope.conversations.invalidate();
+          $scope.conversations.resolve();
           window.location.assign(href);
         });
       }
