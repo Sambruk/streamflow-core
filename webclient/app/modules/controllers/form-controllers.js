@@ -23,9 +23,11 @@
   sfForm.controller('FormCtrl', ['$scope', 'caseService', '$routeParams',
     function($scope, caseService, $params) {
 
+      $scope.currentFormId;
       $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
       $scope.selectForm = function(formId){
+        $scope.currentFormId = formId;
 
         // TODO Is there a better way than this?
         $scope.$watch("form", function(){
