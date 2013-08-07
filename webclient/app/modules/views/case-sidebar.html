@@ -54,8 +54,8 @@
     <div class="m-c">
       <div class="m-box">
         <ul>
-          <li><strong>Ägare:</strong> {{ case[0].owner }}</li>
-          <li><strong>Handläggare:</strong> {{ case[0].assignedTo }}</li>
+          <li><strong>Ägare:</strong> {{ caze[0].owner }}</li>
+          <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
           <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
           <li><strong>Kund:</strong> TODO TODOsson 19760901-4046</li>
           <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
@@ -69,12 +69,12 @@
   <div class="m m-convos">
     <div class="m-h">
       <h2>Konversationer</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul>
         <li data-ng-repeat='conversation in conversations'>
-          <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/conversation/{{ conversation.id }}" class="block-link">
+          <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
             <ul class="convo-status">
@@ -92,7 +92,7 @@
   <div class="m m-contacts">
     <div class="m-h">
       <h2>Kontakter</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul class="zebra-list">

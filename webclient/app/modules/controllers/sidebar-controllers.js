@@ -26,7 +26,7 @@
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
 
-      $scope.case = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+      $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
       $scope.commands = caseService.getSelectedCommands($params.projectId, $params.projectType, $params.caseId);
       $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
       $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);

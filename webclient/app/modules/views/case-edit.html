@@ -10,7 +10,7 @@
                 <div class="choose-type new-create-issue">
                     <label class="struct" for="issue-type">Ärendetyp</label>
                     <select data-ng-model="general[0].caseType.id"
-                        name="entity issue-type" id="issue-type"
+                        name="entity" id="issue-type"
                         data-ng-options="option.value as option.name for option in possibleCaseTypes" sf-simple-field-auto-send data-resource="general" command="casetype">
                     </select>
                 </div>
@@ -46,4 +46,4 @@
 </div>
 
 <!-- Content secondary -->
-<x-ng-include src="'modules/views/case-sidebar.html'"></x-ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

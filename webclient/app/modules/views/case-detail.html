@@ -24,10 +24,16 @@
     <!-- Issue header -->
     <div class="m-h cf">
       <h2 class="id">{{caze[0].caseId}}</h2>
-      <div class="choose-type">
-        <label class="struct" for="issue-type">Ärendetyp</label>
-        <input type="text" disabled id="issue-type" data-ng-model="general[0].caseType.text">
-      </div>
+        <div class="choose-type">
+            <label class="struct" for="issue-type">Ärendetyp</label>
+            <input type="text" disabled id="issue-type" data-ng-model="general[0].caseType.text">
+        </div>
+        <!--
+        <div class="choose-type">
+            <label class="struct" for="set-due-date">Förfallodatum</label>
+            <input type="text" disabled id="set-due-date" data-ng-model="general[0].dueOnShort">
+        </div>
+        -->
       <!-- <a href="xlink-" class="wiki-link">
         <i class="icon-info"></i><span class="struct">Namn på ärendetyp</span>
       </a> -->

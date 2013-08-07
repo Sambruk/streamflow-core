@@ -97,7 +97,6 @@
           $scope.possibleParticipants.invalidate();
           $scope.possibleParticipants.resolve();
           window.location.assign(href);
-//          alert("Deltagare tillagd!")
         });
       }
 

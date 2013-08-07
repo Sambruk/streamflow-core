@@ -35,7 +35,6 @@
           else
             element.addClass('layout-2');
         });
-
       }
     };
   }]);
