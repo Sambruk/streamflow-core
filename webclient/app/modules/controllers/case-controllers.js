@@ -77,7 +77,12 @@
       $scope.addNote = function($event){
         $event.preventDefault();
         if ($scope.notes[0].note !== $scope.cachedNote[0].note)
-          caseService.addNote($params.projectId, $params.projectType, $params.caseId, $scope.notes[0])
+          caseService.addNote($params.projectId, $params.projectType, $params.caseId, $scope.notes[0]).then(function(){
+            var href = navigationService.caseHref($params.caseId);
+            $scope.notes.invalidate();
+            $scope.notes.resolve();
+            window.location.assign(href);
+          });
       }
 
     }]);
