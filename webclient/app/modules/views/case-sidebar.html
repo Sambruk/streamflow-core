@@ -97,7 +97,10 @@
     <div class="m-c">
       <ul class="zebra-list">
         <li data-ng-class-odd="'odd'" ng-repeat='contact in contacts' ng-odd=>
-        <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
+            <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/{{$index}}/">{{contact.name}}</a>
+            <!--
+            <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
+            -->
         </li>
       </ul>
     </div>

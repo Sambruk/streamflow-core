@@ -163,9 +163,23 @@
           {}).then(_.debounce(callback)());
       },
 
+      getSelectedContact: function(projectId, projectType, caseId, contactIndex) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'contacts', unsafe: true},
+            {resources: contactIndex, unsafe: true}
+          ]),
+          onSuccess:function (resource, result) {
+            result.push(resource.response.index);
+          }
+        });
+      },
+
       getSelectedContacts: function(projectId, projectType, caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'contacts'}]),
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'contacts'}
+          ]),
           onSuccess:function (resource, result) {
             resource.response.index.contacts.forEach(function(item){result.push(item)});
           }
@@ -179,6 +193,16 @@
             {commands: 'add'}
           ]),
           value);
+      },
+
+      updateContact: function(projectId, projectType, caseId, contactIndex, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'contacts', unsafe: true},
+            {resources: contactIndex, unsafe: true},
+            {commands: 'update'}
+          ]
+        ), value);
       },
 
       getSelectedCaseLog: function(projectId, projectType, caseId) {

@@ -63,10 +63,14 @@
         templateUrl:'modules/views/conversation-detail.html',
         controller: 'ConversationDetailCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/contact/add', {
-        templateUrl:'modules/views/contact-create.html',
-        controller: 'ContactCreateCtrl'
-      })
+        .when('/:projectId/:projectType/:caseId/contact/add', {
+          templateUrl:'modules/views/contact-create.html',
+          controller: 'ContactCreateCtrl'
+        })
+        .when('/:projectId/:projectType/:caseId/contact/:contactIndex/', {
+          templateUrl:'modules/views/contact-edit.html',
+          controller: 'ContactEditCtrl'
+        })
       .when('/:projectId/:projectType/:caseId/formhistory/:formId', {
         templateUrl:'modules/views/form-history.html',
         controller: 'FormHistoryCtrl'

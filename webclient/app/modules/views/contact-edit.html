@@ -1,44 +1,109 @@
-<div class="content-primary" role="main">
-    <form action="#" method="get" class="form-general">
-        <div class="m single-issue">
-            <div class="m-h cf">
-                <h2 class="id">{{case[0].caseId}}</h2>
-                <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
-                <div class="choose-type">
-                    <label class="struct" for="issue-type">Ärendetyp</label>
-                    <select data-ng-model="general[0].caseType.id"
-                            name="entity issue-type" id="issue-type"
-                            data-ng-options="option.value as option.name for option in possibleCaseTypes" sf-simple-field-auto-send data-resource="general" command="casetype">
-                    </select>
-                </div>
-                <div class="set-due-date">
-                    <label class="struct" for="set-due-date">Förfallodatum</label>
-                    <input type="text" sf-date-picker name="date" data-input-type="date" id="set-due-date" placeholder="Förfallodatum" data-ng-model="general[0].dueOnShort" sf-simple-field-auto-send data-resource="general" command="changedueon" />
-                </div>
-            </div>
-            <div class="m-c">
+<!--
 
-                <div class="row cols-1 cf">
-                    <div class="text col full col-1">
-                        <label for="case-description">Beskrivning</label>
-                        <input type="text" sf-simple-field-auto-send data-resource="general" command="changedescription" name="description" id="case-description" data-ng-model="case[0].text">
-                    </div>
-                </div>
 
-                <div class="row cols-1 cf">
-                    <div class="text col full col-1">
-                        <label for="issue-notes">Notering</label>
-                        <textarea name="issue-notes" id="issue-notes" cols="30" rows="5" data-ng-model="notes[0].note"></textarea>
-                    </div>
-                    <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/noteshistory" title="Gamla noteringar" style="float: right; ">Gamla noteringar</a>
-                    <button data-ng-click="addNote($event)" type="submit">Skicka notering</button>
-                </div>
+    Copyright 2009-2012 Jayway Products AB
 
-            </div>
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main" data-ng-controller="ContactEditCtrl">
+    <div class="m m-check-list">
+        <div class="m-h">
+            <h2>Skapa en ny kontakt</h2>
+            <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>
         </div>
-    </form>
+        <div class="contact-input">
+            <form action="#" method="get" class="cf">
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-name">Namn</label>
+                        <input type="text" data-ng-model="contact[0].name" id="contact-name">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-name">Gatuadress</label>
+                        <input type="text" data-ng-model="contact[0].addresses[0].address" id="contact-address">
+                    </div>
+                </div>
+                <div class="row cf cols-2">
+                    <div class="text col small col-1">
+                        <label for="contact-zipcode">Postnummer</label>
+                        <input type="text" data-ng-model="contact[0].addresses[0].zipCode" id="contact-zipcode">
+                    </div>
+                    <div class="text col large col-2">
+                        <label for="contact-city">Postort</label>
+                        <input type="text" data-ng-model="contact[0].addresses[0].city" id="contact-city">
+                    </div>
+                </div>
+                <div class="row cols-2 cf">
+                    <div class="text col medium col-1">
+                        <label for="contact-region">Region</label>
+                        <input type="text" data-ng-model="contact[0].addresses[0].region" id="contact-region">
+                    </div>
+                    <div class="text col medium col-2">
+                        <label for="contact-country">Land</label>
+                        <input type="text" data-ng-model="contact[0].addresses[0].country" id="contact-country">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-phone">Telefon</label>
+                        <input type="text" data-ng-model="contact[0].phoneNumbers[0].phoneNumber" id="contact-phone">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-email">E-post</label>
+                        <input type="text" data-ng-model="contact[0].emailAddresses[0].emailAddress" id="contact-email">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-id">Personnummer <em>&aring;&aring;&aring;&aring;mmdd-xxxx</em></label>
+                        <input type="text" data-ng-model="contact[0].contactId" id="contact-id">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-company">Företag</label>
+                        <input type="text" data-ng-model="contact[0].company" id="contact-company">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-pref">Föredraget kontaktsätt</label>
+                        <select custom-select class="hasCustomSelect" data-ng-model="contact[0].contactPreference" id="contact-pref">
+                            <option value="letter">Brev</option>
+                            <option value="email" selected>E-post</option>
+                            <option value="sms">SMS</option>
+                            <option value="phone">Telefon</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-note">Anteckningar</label>
+                        <textarea data-ng-model="contact[0].note" id="contact-note" cols="30" rows="2" placeholder=""></textarea>
+                    </div>
+                </div>
+                <div class="submit-area">
+                    <button data-ng-click="submitContact($event)" name="contact-submit">Spara</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- Content secondary -->
-<ng-include src="'modules/views/case-sidebar.html'"></ng-include>
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

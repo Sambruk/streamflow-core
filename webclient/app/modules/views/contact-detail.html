@@ -16,175 +16,94 @@
     limitations under the License.
 
 -->
-<div class="content-primary" role="main">
-
-  <!-- Single issue -->
-  <div class="m single-issue">
-
-    <!-- Issue header -->
-    <div class="m-h cf">
-      <h2 class="id">{{case[0].caseId}}</h2>
-      <div class="choose-type">
-        <label class="struct" for="issue-type">Ärendetyp</label>
-        <input type="text" disabled id="issue-type" data-ng-model="general[0].caseType.text">
-      </div>
-      <!-- <a href="xlink-" class="wiki-link">
-        <i class="icon-info"></i><span class="struct">Namn på ärendetyp</span>
-      </a> -->
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
-        <span class="struct">Redigera ärende</span>
-      </a>
-    </div>
-    <!-- /Issue header -->
-
-    <!-- Issue body -->
-    <div class="issue-body">
-      <div class="due-date {{case.index.overdueStatus()}}">
-        <span>{{case[0].overdueDays() | positive}}</span>
-      </div>
-      <div class="issue-description">
-        <h2>{{case[0].text}}</h2>
-        <p>{{notes[0].note}}</p>
-      </div>
-    </div>
-    <!-- /Issue body -->
-
-    <!-- Issue notes -->
-    <!--
-    <div class="issue-notes cf">
-
-      <div class="notes-content">
-
-        <form action="#" method="get" class="input-note cf">
-          <div class="text">
-            <label for="note-text" class="struct">Notering</label>
-            <input type="text" name="note-text" id="note-text" placeholder="Notering">
-          </div>
-          <div class="submit-area">
-            <button type="submit" name="add-note">Lägg till</button>
-          </div>
-        </form>
-
-        <div class="posted-notes">
-          <div class="note-item cf">
-            <div class="note-body">
-              <p>Det här ser ut som ett intressant ärende! Jag tar det!</p>
-            </div>
-            <div class="note-posted-by">
-              <span class="struct">Postad av: </span>Solveig Grankvist
-              <span class="note-timestamp">2 dagar sedan</span>
-            </div>
-          </div>
-          <div class="note-item cf">
-            <div class="note-body">
-              <p>Vi borde byta färg på alla soptunnor till rosa, eller vad säger ni? Då kanske gräsklippningen inte blir så lidande. Låter långsökt, jag vet. Men det är värt ett försök!</p>
-            </div>
-            <div class="note-posted-by">
-              <span class="struct">Postad av: </span>Johannes Pettersson-Jansson
-              <span class="note-timestamp">4 dagar sedan</span>
-            </div>
-          </div>
-          <div class="note-item cf">
-            <div class="note-body">
-              <p>Jag kollade upp detta och det finns inte ens något gräs i parken!</p>
-            </div>
-            <div class="note-posted-by">
-              <span class="struct">Postad av: </span>Ola Persson
-              <span class="note-timestamp">5 dagar sedan</span>
-            </div>
-          </div>
-          <div class="expandable-field">
-            <div class="expandable-content">
-
-              <div class="note-item cf">
-                <div class="note-body">
-                  <p>Ok, fine!</p>
-                </div>
-                <div class="note-posted-by">
-                  <span class="struct">Postad av: </span>Sonja Eriksson
-                  <span class="note-timestamp">8 dagar sedan</span>
-                </div>
-              </div>
-              <div class="note-item cf">
-                <div class="note-body">
-                  <p>Du fixar väl det?</p>
-                </div>
-                <div class="note-posted-by">
-                  <span class="struct">Postad av: </span>Erik Johansson
-                  <span class="note-timestamp">8 dagar sedan</span>
-                </div>
-              </div>
-              <div class="note-item cf">
-                <div class="note-body">
-                  <p>Någon som vill ta detta?</p>
-                </div>
-                <div class="note-posted-by">
-                  <span class="struct">Postad av: </span>Sonja Eriksson
-                  <span class="note-timestamp">8 dagar sedan</span>
-                </div>
-              </div>
-
-            </div>
-          </div>
+<div class="content-primary" role="main" data-ng-controller="ContactDetailCtrl">
+    <div class="m m-check-list">
+        <div class="m-h">
+            <h2>Skapa en ny kontakt</h2>
+            <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>
         </div>
-
-      </div>
-
+        <div class="contact-input">
+            <form action="#" method="get" class="cf">
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-name">Namn</label>
+                        <input type="text" data-ng-model="contact.name" id="contact-name">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-name">Gatuadress</label>
+                        <input type="text" data-ng-model="contact.addresses[0].address" id="contact-address">
+                    </div>
+                </div>
+                <div class="row cf cols-2">
+                    <div class="text col small col-1">
+                        <label for="contact-zipcode">Postnummer</label>
+                        <input type="text" data-ng-model="contact.addresses[0].zipCode" id="contact-zipcode">
+                    </div>
+                    <div class="text col large col-2">
+                        <label for="contact-city">Postort</label>
+                        <input type="text" data-ng-model="contact.addresses[0].city" id="contact-city">
+                    </div>
+                </div>
+                <div class="row cols-2 cf">
+                    <div class="text col medium col-1">
+                        <label for="contact-region">Region</label>
+                        <input type="text" data-ng-model="contact.addresses[0].region" id="contact-region">
+                    </div>
+                    <div class="text col medium col-2">
+                        <label for="contact-country">Land</label>
+                        <input type="text" data-ng-model="contact.addresses[0].country" id="contact-country">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-phone">Telefon</label>
+                        <input type="text" name="contact.phoneNumbers[0].phoneNumber" data-ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-email">E-post</label>
+                        <input type="text" data-ng-model="contact.emailAddresses[0].emailAddress" id="contact-email">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-id">Personnummer <em>&aring;&aring;&aring;&aring;mmdd-xxxx</em></label>
+                        <input type="text" data-ng-model="contact.contactId" id="contact-id">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-company">Företag</label>
+                        <input type="text" data-ng-model="contact.company" id="contact-company">
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-pref">Föredraget kontaktsätt</label>
+                        <select custom-select class="hasCustomSelect" data-ng-model="contact.contactPreference" id="contact-pref">
+                            <option value="letter">Brev</option>
+                            <option value="email" selected>E-post</option>
+                            <option value="sms">SMS</option>
+                            <option value="phone">Telefon</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="contact-note">Anteckningar</label>
+                        <textarea data-ng-model="contact.note" id="contact-note" cols="30" rows="2" placeholder=""></textarea>
+                    </div>
+                </div>
+                <div class="submit-area">
+                    <button data-ng-click="submitContact($event)" name="contact-submit">Skapa</button>
+                </div>
+            </form>
+        </div>
     </div>
-    -->
-    <!-- /Issue notes -->
-
-  </div>
-  <!-- /Single issue -->
-
-  <!-- Module: Check list -->
-  <!--
-  <div class="m m-check-list">
-    <div class="m-h">
-      <h2>Checklista</h2>
-      <a href="xlink-" class="add-item">Lägg till <i class="icon-plus"></i></a>
-    </div>
-    <div class="mc">
-      <form action="#" method="get">
-        <ul class="check-list zebra-list">
-          <li class="odd">
-          <div class="checkbox">
-            <input type="checkbox" name="check1-1" id="check1-1" />
-            <label for="check1-1">Skolplats ansökningsformulär ifyllt</label>
-          </div>
-          </li>
-          <li>
-          <div class="checkbox">
-            <input type="checkbox" name="check1-2" id="check1-2" />
-            <label for="check1-2">Skolplats ansökningsformulär ifyllt</label>
-          </div>
-          </li>
-          <li class="odd">
-          <div class="checkbox">
-            <input type="checkbox" name="check1-3" id="check1-3" />
-            <label for="check1-3">Skolplats ansökningsformulär ifyllt</label>
-          </div>
-          </li>
-        </ul>
-      </form>
-    </div>
-  </div>
-  -->
-  <!-- /Check list -->
-
-  <!-- Issue forms -->
-  <div class="m m-issue-forms">
-    <div class="m-h">
-      <h2>Formulär</h2>
-    </div>
-    <div class="m-c">
-      <data-ng-include class="m-c" src="'modules/views/forms.html'"></data-ng-include>
-    </div>
-  </div>
-  <!-- /Issue forms -->
-
 </div>
-<!-- /Content primary -->
 
 <!-- Content secondary -->
 <data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>
