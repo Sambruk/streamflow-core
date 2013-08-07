@@ -38,6 +38,9 @@
         if (attr.command === "casetype") {
           $scope.commands.invalidate();
           $scope.commands.resolve();
+        } else if (attr.command === "changedueon") {
+          $scope.general.invalidate();
+          $scope.general.resolve();
         }
       });
 

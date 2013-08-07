@@ -27,8 +27,6 @@
       $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
 
       $scope.selectForm = function(formId){
-        $scope.currentFormId = formId;
-
         // TODO Is there a better way than this?
         $scope.$watch("form", function(){
           setTimeout(function(){
@@ -39,6 +37,7 @@
             });
           }, 1000);
 
+          $scope.currentFormId = formId;
         })
 
         $scope.formMessage = "";
