@@ -4,7 +4,7 @@
   <!-- Issue toolbar -->
   <div class="toolbar">
     <ul class="buttons cf" data--ng-show="commands[0]">
-      <li><a href="" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li><a href="" data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
       <li><a href="" data-ng-show="canAssign" data-ng-click="assign()" class="btn">Tilldela</a></li>
       <li><a href="" data-ng-show="canResolve" data-ng-click="resolve()" class="btn">Avsluta</a></li>
       <li><a href="" data-ng-show="canClose" data-ng-click="close()" class="btn">Stäng</a></li>
@@ -21,7 +21,7 @@
 
       <div data-ng-switch on="commandView">
           <div data-ng-switch-when="resolve">
-            <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+            <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
             </select>
             <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
           </div>
@@ -31,7 +31,9 @@
           </div>
 
           <div data-ng-switch-when="sendTo">
-              Send to...
+              <select custom-select data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+              </select>
+              <button data-ng-click="onSendToButtonClicked($event)">Skicka till</button>
           </div>
 
           <div data-ng-switch-when="todo">

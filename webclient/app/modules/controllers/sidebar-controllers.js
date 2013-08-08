@@ -48,6 +48,9 @@
 
         var commands = $scope.commands;
 
+        $scope.canSendTo = _.any(commands, function(command){
+          return command.rel === "sendto";
+        });
         $scope.canResolve = _.any(commands, function(command){
           return command.rel === "resolve";
         });
@@ -97,9 +100,32 @@
       }
 
       $scope.sendTo = function(){
+        $scope.possibleSendTo = caseService.getPossibleSendTo($params.projectId, $params.projectType, $params.caseId);
+        $scope.$watch("possibleSendTo[0]", function(){
+          if ($scope.possibleSendTo[0]) {
+            $scope.sendToId = $scope.possibleSendTo[0].id;
+          }
+        });
+
         $scope.commandView = "sendTo"
       }
 
+      $scope.sendToIdChanged = function(event) {
+        $scope.sendToId = event;
+      }
+
+      $scope.onSendToButtonClicked = function($event){
+        $event.preventDefault();
+
+        var sendToId = $scope.sendToId;
+
+        var callback = function(){
+          // TODO Find a way to invalidate the case list
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.sendCaseTo($params.projectId, $params.projectType, $params.caseId, sendToId, callback)
+      }
       $scope.close = function(){
         $scope.commandView = "close";
       }

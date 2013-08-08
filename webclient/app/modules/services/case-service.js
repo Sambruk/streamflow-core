@@ -71,6 +71,25 @@
           {entity: resolutionId}).then(_.debounce(callback)());
       },
 
+      getPossibleSendTo: function(projectId, projectType, caseId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {queries: 'possiblesendto'}
+          ]),
+          onSuccess:function (resource, result) {
+            resource.response.links.forEach(function(item){result.push(item)});
+          }
+        });
+      },
+
+      sendCaseTo: function(projectId, projectType, caseId, sendToId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'sendto'}
+          ]),
+          {entity: sendToId}).then(_.debounce(callback)());
+      },
+
       closeCase: function(projectId, projectType, caseId, callback) {
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
