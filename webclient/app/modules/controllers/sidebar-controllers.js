@@ -34,6 +34,11 @@
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
       $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
 
+      $scope.$on('conversation-message-created', function(){
+        $scope.conversations.invalidate();
+        $scope.conversations.resolve();
+      });
+
       $scope.$on('case-changed', function(e, attr) {
         if (attr.command === "casetype") {
           $scope.commands.invalidate();
@@ -121,16 +126,18 @@
 
         var callback = function(){
           // TODO Find a way to invalidate the case list
+          alert("Ärendet bytte ägare. Var vänlig ladda om sidan.");
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
         caseService.sendCaseTo($params.projectId, $params.projectType, $params.caseId, sendToId, callback)
       }
+/*
       $scope.close = function(){
         $scope.commandView = "close";
       }
-
-      $scope.onCloseButtonClicked = function($event){
+*/
+      $scope.close = function($event){
         $event.preventDefault();
 
         var callback = function(){

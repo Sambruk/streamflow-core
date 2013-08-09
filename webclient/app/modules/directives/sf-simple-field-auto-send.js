@@ -25,7 +25,8 @@
         var hasRunAtLeastOnce = false;
         scope.$watch(attr.ngModel, function (newValue, oldValue) {
 
-          if (!oldValue || newValue === oldValue) {
+//          if (!oldValue || newValue === oldValue) { <- bug? !oldValue could be null in select boxes, for example.
+          if (!newValue || newValue === oldValue) {
             return;
           }
 

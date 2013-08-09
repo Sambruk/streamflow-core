@@ -88,7 +88,7 @@
             {commands: 'createcase'}
           ],
           {});
-      },
+      }
 
 
     };

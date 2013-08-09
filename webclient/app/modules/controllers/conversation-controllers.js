@@ -44,8 +44,8 @@
 
     }]);
 
-  sfConversation.controller('ConversationDetailCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
-    function($scope, caseService, $params, navigationService) {
+  sfConversation.controller('ConversationDetailCtrl', ['$scope', '$rootScope', 'caseService', '$routeParams','navigationService',
+    function($scope, $rootScope, caseService, $params, navigationService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -73,6 +73,7 @@
           $scope.conversationMessages.invalidate();
           $scope.conversationMessages.resolve();
           $scope.conversationMessageDraft[0] = "";
+          $rootScope.$broadcast('conversation-message-created');
         });
       }
     }]);
