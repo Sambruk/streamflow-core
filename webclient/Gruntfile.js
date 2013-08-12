@@ -11,7 +11,8 @@ module.exports = function (grunt) {
   // configurable paths
   var yeomanConfig = {
     app: 'app',
-    dist: 'dist'
+    dist: 'dist',
+    gui: 'app/design/gui'
   };
 
   try {
@@ -95,7 +96,7 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/{,*/}*.js'
+        '<%= yeoman.app %>/scripts/{,*/}*.js,<%= yeoman.gui %>/js/{,*/}*.js'
       ]
     },
     karma: {
@@ -147,6 +148,10 @@ module.exports = function (grunt) {
           '<%= yeoman.dist %>/scripts/scripts.js': [
             '.tmp/scripts/{,*/}*.js',
             '<%= yeoman.app %>/scripts/{,*/}*.js'
+          ],
+          '<%= yeoman.dist %>/scripts/gui-fwk.js': [
+            '<%= yeoman.gui %>/js/{,*/}*.js',
+            '<%= yeoman.gui %>/vendor/{,*/}*.js'
           ]
         }
       }
@@ -171,6 +176,11 @@ module.exports = function (grunt) {
           cwd: '<%= yeoman.app %>/images',
           src: '{,*/}*.{png,jpg,jpeg}',
           dest: '<%= yeoman.dist %>/images'
+        },{
+          expand: true,
+          cwd: '<%= yeoman.gui %>/i',
+          src: '{,*/}*.{png,jpg,jpeg}',
+          dest: '<%= yeoman.dist %>/images'
         }]
       }
     },
@@ -180,7 +190,12 @@ module.exports = function (grunt) {
           '<%= yeoman.dist %>/styles/main.css': [
             '.tmp/styles/{,*/}*.css',
             '<%= yeoman.app %>/styles/{,*/}*.css'
+          ],
+          '<%= yeoman.dist %>/styles/gui-fwk.css': [
+            '<%= yeoman.gui %>/css/{,*/}*.css',
+            '<%= yeoman.gui %>/vendor/{,*/}*.css'
           ]
+
         }
       }
     },
@@ -225,6 +240,9 @@ module.exports = function (grunt) {
         files: {
           '<%= yeoman.dist %>/scripts/scripts.js': [
             '<%= yeoman.dist %>/scripts/scripts.js'
+          ],
+          '<%= yeoman.dist %>/scripts/gui-fwk.js': [
+            '<%= yeoman.dist %>/scripts/gui-fwk.js'
           ]
         }
       }

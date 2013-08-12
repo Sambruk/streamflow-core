@@ -35,6 +35,7 @@
 
         <link rel="shortcut icon" href="design/gui/i/favicon.ico">
 
+        <!-- build:css styles/gui-fwk.css -->
         <link rel="stylesheet" href="design/gui/css/basic.css">
         <link rel="stylesheet" href="design/gui/css/print.css">
         <link rel="stylesheet" href="design/gui/css/fonts.css">
@@ -42,8 +43,9 @@
         <link rel="stylesheet" href="design/gui/css/retina.css">
 
         <!-- datepicker -->
-        <link rel="stylesheet" href="design/gui/vendor/pickadate.js/themes/default.css">
-        <link rel="stylesheet" href="design/gui/vendor/pickadate.js/themes/default.date.css">
+        <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.css">
+        <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.date.css">
+        <!-- endbuild -->
 
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
         <!--[if lte IE 8]>
@@ -143,11 +145,14 @@
         <script src="modules/models/sf-case.js"></script>
 
         <script src="jquery.customSelect.min.js"></script>
-
-        <!-- datepicker -->
-        <script type="text/javascript" src="design/gui/vendor/pickadate.js/picker.js"></script>
-        <script type="text/javascript" src="design/gui/vendor/pickadate.js/picker.date.js"></script>
-        <script type="text/javascript" src="design/gui/vendor/pickadate.js/translations/sv_SE.js"></script>
         <!-- endbuild -->
+
+        <!-- build:js scripts/gui-fwk.js -->
+        <!-- datepicker -->
+        <script type="text/javascript" src="design/gui/vendor/pickadate/picker.js"></script>
+        <script type="text/javascript" src="design/gui/vendor/pickadate/picker.date.js"></script>
+        <script type="text/javascript" src="design/gui/vendor/pickadate/translations/sv_SE.js"></script>
+        <!-- endbuild -->
+
     </body>
 </html>
