@@ -31,17 +31,17 @@
               </div>
           </div>
           <div class="row cols-1 cf">
-              <div class="text col full">
+          </div>
+          <div class="row cf cols-3">
+              <div class="text col medim col-1">
                   <label for="contact-name">Gatuadress</label>
                   <input type="text" data-ng-model="contact.addresses[0].address" id="contact-address">
               </div>
-          </div>
-          <div class="row cf cols-2">
-              <div class="text col small col-1">
+              <div class="text col small col-2">
                   <label for="contact-zipcode">Postnummer</label>
                   <input type="text" data-ng-model="contact.addresses[0].zipCode" id="contact-zipcode">
               </div>
-              <div class="text col large col-2">
+              <div class="text col small col-3">
                   <label for="contact-city">Postort</label>
                   <input type="text" data-ng-model="contact.addresses[0].city" id="contact-city">
               </div>
@@ -56,39 +56,33 @@
                   <input type="text" data-ng-model="contact.addresses[0].country" id="contact-country">
               </div>
           </div>
-          <div class="row cols-1 cf">
-              <div class="text col full">
+          <div class="row cols-3 cf">
+              <div class="text col small col-1">
                   <label for="contact-phone">Telefon</label>
                   <input type="text" name="contact.phoneNumbers[0].phoneNumber" data-ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone">
               </div>
-          </div>
-          <div class="row cols-1 cf">
-              <div class="text col full">
+              <div class="text col medium col-2">
                   <label for="contact-email">E-post</label>
                   <input type="text" data-ng-model="contact.emailAddresses[0].emailAddress" id="contact-email">
               </div>
-          </div>
-          <div class="row cols-1 cf">
-              <div class="text col full">
-                  <label for="contact-id">Personnummer <em>&aring;&aring;&aring;&aring;mmdd-xxxx</em></label>
-                  <input type="text" data-ng-model="contact.contactId" id="contact-id">
-              </div>
-          </div>
-          <div class="row cols-1 cf">
-              <div class="text col full">
-                  <label for="contact-company">Företag</label>
-                  <input type="text" data-ng-model="contact.company" id="contact-company">
-              </div>
-          </div>
-          <div class="row cols-1 cf">
-              <div class="text col full">
-                  <label for="contact-pref">Föredraget kontaktsätt</label>
+              <div class="text col small col-3">
+                  <label for="contact-pref">Kontaktpreferens</label>
                   <select custom-select class="hasCustomSelect" data-ng-model="contact.contactPreference" id="contact-pref">
                       <option value="letter">Brev</option>
                       <option value="email" selected>E-post</option>
                       <option value="sms">SMS</option>
                       <option value="phone">Telefon</option>
                   </select>
+              </div>
+          </div>
+          <div class="row cols-2 cf">
+              <div class="text col medium col-1">
+                  <label for="contact-id">Kontakt-id <em>(pers.nr / org.nr)</em></label>
+                  <input type="text" data-ng-model="contact.contactId" id="contact-id">
+              </div>
+              <div class="text col medium col-2">
+                  <label for="contact-company">Företag</label>
+                  <input type="text" data-ng-model="contact.company" id="contact-company">
               </div>
           </div>
           <div class="row cols-1 cf">
