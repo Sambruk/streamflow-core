@@ -279,10 +279,20 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,txt}',
             '.htaccess',
+            'design/gui/i/**/*',
             'components/**/*',
-            'modules/**/*',
+            'modules/views/**/*',
             'images/{,*/}*.{gif,webp}',
             'styles/fonts/*'
+          ]
+        },{
+          expand: true,
+          dot: true,
+          cwd: '<%= yeoman.gui %>',
+          dest: '<%= yeoman.dist %>',
+          src: [
+            'fonts/**/*',
+            'i/**/*'
           ]
         }]
       }
