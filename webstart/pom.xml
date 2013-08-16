@@ -17,8 +17,9 @@
         <plugins>
             <!-- Build WebStart package -->
             <plugin>
-                <groupId>org.codehaus.mojo.webstart</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -38,7 +39,7 @@
                         <keystore>${basedir}/src/main/jnlp/keystore</keystore>
                         <keypass>secret</keypass>
                         <storepass>secret</storepass>
-                        <!--sigfile>m2m2m2</sigfile-->
+                        <!-- sigfile>m2m2m2</sigfile-->
                         <alias>streamflowdev</alias>
                         <validity>180</validity>
                         <dnameCn>www.streamsource.se</dnameCn>

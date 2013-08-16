@@ -209,7 +209,7 @@ public class ApplyFilterContext
             
             /*
              * Have commented this piece of code since it's not available to the user in the adminview.
-             * They where inplemented from start by Rickard but have never been in use and has not been tested.
+             * They where implemented from start by Rickard but have never been in use and has not been tested.
              * The usecase are rather complex and reuires some thinking in order to not mess up...
              * 
             if (actionValue instanceof AssignActionValue)
