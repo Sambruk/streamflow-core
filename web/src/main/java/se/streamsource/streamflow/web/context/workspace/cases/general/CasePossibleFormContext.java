@@ -17,11 +17,15 @@
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
@@ -29,34 +33,47 @@ import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 /**
  * JAVADOC
  */
-public class CasePossibleFormContext
+@Mixins(CasePossibleFormContext.Mixin.class)
+@RequiresPermission(PermissionType.write)
+public interface CasePossibleFormContext extends Context
 {
-   @Structure
-   Module module;
 
-   public void create( )
+   @HasFormDraft(false)
+   void create();
+
+   @HasFormDraft(true)
+   LinkValue formdraft();
+
+   abstract class Mixin implements CasePossibleFormContext
    {
-      FormDrafts formDrafts = RoleMap.role( FormDrafts.class );
-      Form form = RoleMap.role( Form.class );
 
-      formDrafts.createFormDraft( form );
-   }
+      @Structure
+      Module module;
+      
+      public void create()
+      {
+         FormDrafts formDrafts = RoleMap.role( FormDrafts.class );
+         Form form = RoleMap.role( Form.class );
 
-   public LinkValue formdraft(  )
-   {
-      Form form = RoleMap.role( Form.class );
+         formDrafts.createFormDraft( form );
+      }
 
-      FormDrafts formDrafts = RoleMap.role( FormDrafts.class );
+      public LinkValue formdraft()
+      {
+         Form form = RoleMap.role( Form.class );
 
-      FormDraft formDraft = formDrafts.getFormDraft( form );
-      if (formDraft == null)
-         throw new IllegalStateException("No form draft available");
+         FormDrafts formDrafts = RoleMap.role( FormDrafts.class );
 
-      ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-      builder.prototype().id().set( formDraft.toString() );
-      builder.prototype().text().set(formDraft.toString());
-      builder.prototype().rel().set( "formdraft" );
-      builder.prototype().href().set( "../../formdrafts/"+formDraft.toString()+"/" );
-      return builder.newInstance();
+         FormDraft formDraft = formDrafts.getFormDraft( form );
+         if (formDraft == null)
+            throw new IllegalStateException( "No form draft available" );
+
+         ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+         builder.prototype().id().set( formDraft.toString() );
+         builder.prototype().text().set( formDraft.toString() );
+         builder.prototype().rel().set( "formdraft" );
+         builder.prototype().href().set( "../../formdrafts/" + formDraft.toString() + "/" );
+         return builder.newInstance();
+      }
    }
 }
