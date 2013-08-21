@@ -42,13 +42,20 @@
 
         $scope.formMessage = "";
 
-        caseService.createSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(response){
-          if (response.data.events.length === 0) {
+        $scope.possibleForm = caseService.getPossibleForm($params.projectId, $params.projectType, $params.caseId, formId);
+
+        $scope.$watch('possibleForm[0]', function (){
+          if (!$scope.possibleForm[0]){
+            return;
+          }
+          if ($scope.possibleForm[0].queries.length !== 0) {
             $scope.form = caseService.getFormDraftFromForm($params.projectId, $params.projectType, $params.caseId, formId)
           }
           else {
-            var draftId = JSON.parse(response.data.events[0].parameters).param1;
-            $scope.form = caseService.getFormDraft($params.projectId, $params.projectType, $params.caseId, draftId);
+            caseService.createSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(response){
+              var draftId = JSON.parse(response.data.events[0].parameters).param1;
+              $scope.form = caseService.getFormDraft($params.projectId, $params.projectType, $params.caseId, draftId);
+            });
           }
 
           $scope.currentFormPage = null;
