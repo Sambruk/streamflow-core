@@ -105,7 +105,10 @@
 
         // select the data we want to find the id in:
         var keys = key.split('.');
-        var data = keys.reduce(function(prev, curr) { return prev[curr]; }, this.response);
+        var data = keys.reduce(
+          function(prev, curr) {
+            return prev[curr];
+        }, this.response);
         var resource = this.createById(data, id, urls);
         return resource.then(function (nextResource) {
           return nextResource.getNested(specs, urls);

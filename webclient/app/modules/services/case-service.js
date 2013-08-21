@@ -279,6 +279,18 @@
         });
       },
 
+      getPossibleForm: function(projectId, projectType, caseId, formId) {
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+            {resources: 'possibleforms'},
+            {'index.links': formId.replace("/", "")}
+          ]),
+          onSuccess:function (resource, result) {
+            result.push(resource.response);
+          }
+        });
+      },
+
       createSelectedForm: function(projectId, projectType, caseId, formId) {
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
@@ -332,7 +344,7 @@
             return backendService.get({
             specs:caseBase(projectId, projectType, caseId).concat([
               {resources: 'formdrafts'},
-              {'index.links': id}
+              {resources: id, unsafe: true}
               ]),
             onSuccess:function (resource) {
               var index = resource.response.index;
