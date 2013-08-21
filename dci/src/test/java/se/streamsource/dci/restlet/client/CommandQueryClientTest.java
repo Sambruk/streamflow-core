@@ -16,6 +16,14 @@
  */
 package se.streamsource.dci.restlet.client;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -55,6 +63,7 @@ import org.restlet.data.Reference;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.api.InteractionValidation;
@@ -75,14 +84,6 @@ import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.Links;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
-
 /**
  * Test for CommandQueryClient
  */
@@ -93,6 +94,7 @@ public class CommandQueryClientTest
    public CommandQueryClient cqc;
 
    public static String command = null; // Commands will set this
+   private ModuleAssembly module;
 
    protected ApplicationModelSPI newApplication()
          throws AssemblyException
@@ -298,7 +300,10 @@ public class CommandQueryClientTest
    {
       ResourceValue result = cqc.query();
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"delete\",\"id\":\"delete\",\"rel\":\"delete\",\"text\":\"Delete\"},{\"classes\":\"command\",\"href\":\"commandwithvalue\",\"id\":\"commandwithvalue\",\"rel\":\"commandwithvalue\",\"text\":\"Command with value\"},{\"classes\":\"command\",\"href\":\"idempotentcommandwithvalue\",\"id\":\"idempotentcommandwithvalue\",\"rel\":\"idempotentcommandwithvalue\",\"text\":\"Idempotent command with value\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithoutvalue\",\"id\":\"querywithoutvalue\",\"rel\":\"querywithoutvalue\",\"text\":\"Query without value\"},{\"classes\":\"query\",\"href\":\"querywithstringresult\",\"id\":\"querywithstringresult\",\"rel\":\"querywithstringresult\",\"text\":\"Query with string result\"},{\"classes\":\"query\",\"href\":\"querywithintegerresult\",\"id\":\"querywithintegerresult\",\"rel\":\"querywithintegerresult\",\"text\":\"Query with integer result\"}],\"resources\":[]}"));
+
+      ResourceValue expected = moduleInstance.valueBuilderFactory().newValueFromJSON(ResourceValue.class, "{\"commands\":[{\"classes\":\"command\",\"href\":\"delete\",\"id\":\"delete\",\"rel\":\"delete\",\"text\":\"Delete\"},{\"classes\":\"command\",\"href\":\"commandwithvalue\",\"id\":\"commandwithvalue\",\"rel\":\"commandwithvalue\",\"text\":\"Command with value\"},{\"classes\":\"command\",\"href\":\"idempotentcommandwithvalue\",\"id\":\"idempotentcommandwithvalue\",\"rel\":\"idempotentcommandwithvalue\",\"text\":\"Idempotent command with value\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithoutvalue\",\"id\":\"querywithoutvalue\",\"rel\":\"querywithoutvalue\",\"text\":\"Query without value\"},{\"classes\":\"query\",\"href\":\"querywithstringresult\",\"id\":\"querywithstringresult\",\"rel\":\"querywithstringresult\",\"text\":\"Query with string result\"},{\"classes\":\"query\",\"href\":\"querywithintegerresult\",\"id\":\"querywithintegerresult\",\"rel\":\"querywithintegerresult\",\"text\":\"Query with integer result\"}],\"resources\":[]}");
+      assertThat( result.commands().get().size(), equalTo( expected.commands().get().size() ));
+      assertThat( result.queries().get().size(), equalTo( expected.queries().get().size() ));
    }
 
    @Test
@@ -307,7 +312,9 @@ public class CommandQueryClientTest
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
       ResourceValue result = cqc2.query();
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"xyz\",\"id\":\"xyz\",\"rel\":\"xyz\",\"text\":\"Xyz\"},{\"classes\":\"command\",\"href\":\"commandwithrolerequirement\",\"id\":\"commandwithrolerequirement\",\"rel\":\"commandwithrolerequirement\",\"text\":\"Command with role requirement\"},{\"classes\":\"command\",\"href\":\"changedescription\",\"id\":\"changedescription\",\"rel\":\"changedescription\",\"text\":\"Change description\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithrolerequirement\",\"id\":\"querywithrolerequirement\",\"rel\":\"querywithrolerequirement\",\"text\":\"Query with role requirement\"},{\"classes\":\"query\",\"href\":\"genericquery\",\"id\":\"genericquery\",\"rel\":\"genericquery\",\"text\":\"Generic query\"},{\"classes\":\"query\",\"href\":\"description\",\"id\":\"description\",\"rel\":\"description\",\"text\":\"Description\"}],\"resources\":[{\"classes\":\"resource\",\"href\":\"subresource1/\",\"id\":\"subresource1\",\"rel\":\"subresource1\",\"text\":\"Subresource 1\"},{\"classes\":\"resource\",\"href\":\"subresource2/\",\"id\":\"subresource2\",\"rel\":\"subresource2\",\"text\":\"Subresource 2\"}]}" ) );
+      ResourceValue expected = moduleInstance.valueBuilderFactory().newValueFromJSON(ResourceValue.class, "{\"commands\":[{\"classes\":\"command\",\"href\":\"xyz\",\"id\":\"xyz\",\"rel\":\"xyz\",\"text\":\"Xyz\"},{\"classes\":\"command\",\"href\":\"commandwithrolerequirement\",\"id\":\"commandwithrolerequirement\",\"rel\":\"commandwithrolerequirement\",\"text\":\"Command with role requirement\"},{\"classes\":\"command\",\"href\":\"changedescription\",\"id\":\"changedescription\",\"rel\":\"changedescription\",\"text\":\"Change description\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithrolerequirement\",\"id\":\"querywithrolerequirement\",\"rel\":\"querywithrolerequirement\",\"text\":\"Query with role requirement\"},{\"classes\":\"query\",\"href\":\"genericquery\",\"id\":\"genericquery\",\"rel\":\"genericquery\",\"text\":\"Generic query\"},{\"classes\":\"query\",\"href\":\"description\",\"id\":\"description\",\"rel\":\"description\",\"text\":\"Description\"}],\"resources\":[{\"classes\":\"resource\",\"href\":\"subresource1/\",\"id\":\"subresource1\",\"rel\":\"subresource1\",\"text\":\"Subresource 1\"},{\"classes\":\"resource\",\"href\":\"subresource2/\",\"id\":\"subresource2\",\"rel\":\"subresource2\",\"text\":\"Subresource 2\"}]}");
+      assertThat( result.commands().get().size(), equalTo( expected.commands().get().size() ));
+      assertThat( result.queries().get().size(), equalTo( expected.queries().get().size() ));
    }
 
    @Test

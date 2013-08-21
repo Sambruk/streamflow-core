@@ -59,6 +59,7 @@
         <module>infrastructure</module>
         <module>fileconfig</module>
         <module>client</module>
+        <module>webclient</module>
         <module>serverplugin</module>
         <module>web</module>
         <module>webstart</module>
