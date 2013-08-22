@@ -50,11 +50,11 @@ public abstract class UpdateCaseCountCacheConcern
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update inbox cache
-      caching.addToCache( caze.owner().get().toString(), -1 );
+      caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
 
       // Update assignments for user
       Assignee assignee = roleMap.get( Assignee.class );
-      caching.addToCache(caze.owner().get().toString()+":"+assignee.toString(), 1 );
+      caching.addToCaseCountCache(caze.owner().get().toString()+":"+assignee.toString(), 1 );
 
       next.assign();
    }
@@ -65,10 +65,10 @@ public abstract class UpdateCaseCountCacheConcern
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update inbox cache
-      caching.addToCache( caze.owner().get().toString(), 1 );
+      caching.addToCaseCountCache( caze.owner().get().toString(), 1 );
 
       // Update drafts for user
-      caching.addToCache( caze.createdBy().get().toString(), -1 );
+      caching.addToCaseCountCache( caze.createdBy().get().toString(), -1 );
 
       next.open();
    }
@@ -82,11 +82,11 @@ public abstract class UpdateCaseCountCacheConcern
       {
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
-         caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+         caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
       } else
       {
          // Update inbox cache
-         caching.addToCache( caze.owner().get().toString(),-1 );
+         caching.addToCaseCountCache( caze.owner().get().toString(),-1 );
       }
 
       next.close();
@@ -101,11 +101,11 @@ public abstract class UpdateCaseCountCacheConcern
       {
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
-         caching.addToCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
+         caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
       } else
       {
          // Update inbox cache
-         caching.addToCache( caze.owner().get().toString(), -1 );
+         caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
       }
 
       next.resolve(resolution);
@@ -120,11 +120,11 @@ public abstract class UpdateCaseCountCacheConcern
       {
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
-         caching.addToCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
+         caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
       } else
       {
          // Update inbox cache
-         caching.addToCache( caze.owner().get().toString(), -1 );
+         caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
       }
 
       next.formonclose();
@@ -143,15 +143,15 @@ public abstract class UpdateCaseCountCacheConcern
          {
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
-            caching.addToCache( owner.toString()+":"+assignee.toString(), -1 );
+            caching.addToCaseCountCache( owner.toString()+":"+assignee.toString(), -1 );
          } else
          {
             // Update inbox cache
-            caching.addToCache( owner.toString(), -1 );
+            caching.addToCaseCountCache( owner.toString(), -1 );
          }
 
          // Update inbox cache on receiving end
-         caching.addToCache( entity.entity().get(), 1 );
+         caching.addToCaseCountCache( entity.entity().get(), 1 );
       }
 
       next.sendto(entity);
@@ -164,7 +164,7 @@ public abstract class UpdateCaseCountCacheConcern
 
       // Update assignments for user
       Assignee assignee = roleMap.get( Assignee.class );
-      caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
+      caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
 
       next.reopen();
    }
@@ -176,10 +176,10 @@ public abstract class UpdateCaseCountCacheConcern
 
       // Update assignments for user
       Assignee assignee = roleMap.get( Assignee.class );
-      caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+      caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
 
       // Update inbox cache
-      caching.addToCache( caze.owner().get().toString(), 1 );
+      caching.addToCaseCountCache( caze.owner().get().toString(), 1 );
 
       next.unassign();
    }
@@ -196,16 +196,16 @@ public abstract class UpdateCaseCountCacheConcern
          {
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
-            caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+            caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
          } else
          {
             // Update inbox cache
-            caching.addToCache( caze.owner().get().toString(), -1 );
+            caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
          }
       } else
       {
          // Update drafts for user
-         caching.addToCache( caze.createdBy().get().toString(), -1 );
+         caching.addToCaseCountCache( caze.createdBy().get().toString(), -1 );
       }
       next.delete();
    }
@@ -221,16 +221,16 @@ public abstract class UpdateCaseCountCacheConcern
          {
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
-            caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
+            caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
          } else
          {
             // Update inbox cache
-            caching.addToCache( caze.owner().get().toString(), 1 );
+            caching.addToCaseCountCache( caze.owner().get().toString(), 1 );
          }
       } else
       {
          // Update drafts for user
-         caching.addToCache( caze.createdBy().get().toString(), 1 );
+         caching.addToCaseCountCache( caze.createdBy().get().toString(), 1 );
       }
       next.reinstate();
    }

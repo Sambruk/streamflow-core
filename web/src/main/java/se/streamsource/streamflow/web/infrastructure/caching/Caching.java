@@ -41,7 +41,7 @@ public class Caching
     * @param id id of the element
     * @param increment how much to increment the value. May be negative for subtraction.
     */
-   public void addToCache( String id, long increment)
+   public void addToCaseCountCache( String id, int increment)
    {
       if (caching != null)
       {
@@ -49,12 +49,34 @@ public class Caching
          Element element = ehcache.get( id );
          if (element != null)
          {
-            element = new Element(id, Long.toString(Long.parseLong((String) element.getValue())+increment));
-            ehcache.put( element );
+            CaseCountItem caseCountItem = (CaseCountItem) element.getObjectValue();
+            caseCountItem.addToCount( increment );
+            ehcache.put( new Element(id, caseCountItem) );
          }
       }
    }
 
+   /**
+    * Increase a cached value identified by "id" with "increment".
+    * If there is no currently cached value, do nothing.
+    *
+    * @param id id of the element
+    * @param increment how much to increment the value. May be negative for subtraction.
+    */
+   public void addToUnreadCache( String id, int increment)
+   {
+      if (caching != null)
+      {
+         Ehcache ehcache = caching.manager().getEhcache( cache.name() );
+         Element element = ehcache.get( id );
+         if (element != null)
+         {
+            CaseCountItem caseCountItem = (CaseCountItem) element.getObjectValue();
+            caseCountItem.addToUnread( increment );
+            ehcache.put( new Element(id, caseCountItem) );
+         }
+      }
+   }
    public void invalidateCache( String id )
    {
       if (caching != null)

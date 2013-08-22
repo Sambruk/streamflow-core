@@ -44,7 +44,7 @@ public abstract class UpdateCaseCountAssignmentsConcern
       Assignee assignee = RoleMap.role(Assignee.class);
 
       // Update assignments for assignee
-      new Caching(caching, Caches.CASECOUNTS).addToCache(owner.toString() + ":" + assignee.toString(), 1);
+      new Caching(caching, Caches.CASECOUNTS).addToCaseCountCache(owner.toString() + ":" + assignee.toString(), 1);
 
       next.createcase();
    }

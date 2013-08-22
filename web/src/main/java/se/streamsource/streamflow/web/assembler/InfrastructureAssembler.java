@@ -16,6 +16,10 @@
  */
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+
+import javax.sql.DataSource;
+
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
@@ -35,6 +39,7 @@ import org.qi4j.migration.MigrationConfiguration;
 import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
+
 import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.infrastructure.database.DataSourceService;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
@@ -53,6 +58,7 @@ import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
+import se.streamsource.streamflow.web.infrastructure.caching.CaseCountCacheService;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
 import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
@@ -67,10 +73,6 @@ import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddres
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
-
-import javax.sql.DataSource;
-
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -135,7 +137,7 @@ public class InfrastructureAssembler
    private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
       moduleAssembly.services( CachingServiceComposite.class ).visibleIn( Visibility.application );
-
+      
  //     moduleAssembly.services( EhCachePoolService.class ).visibleIn( Visibility.layer );
    }
 
