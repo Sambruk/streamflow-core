@@ -31,7 +31,7 @@ public class PossibleFormsModel
       LinkValue formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
 
       // get the form submission value;
-      final CommandQueryClient formDraftClient = client.getClient( formDraftLink );
+      final CommandQueryClient formDraftClient = possibleFormClient.getClient( formDraftLink );
 
       return module.objectBuilderFactory().newObjectBuilder(FormDraftModel.class).use(formDraftClient).newInstance();
    }

@@ -56,7 +56,7 @@ public class CasePossibleFormContext
       builder.prototype().id().set( formDraft.toString() );
       builder.prototype().text().set(formDraft.toString());
       builder.prototype().rel().set( "formdraft" );
-      builder.prototype().href().set( "../formdrafts/"+formDraft.toString()+"/" );
+      builder.prototype().href().set( "../../formdrafts/"+formDraft.toString()+"/" );
       return builder.newInstance();
    }
 }
