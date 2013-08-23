@@ -16,14 +16,21 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.io.Input;
 import org.qi4j.api.structure.Module;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
@@ -36,14 +43,10 @@ import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-
 /**
  * JAVADOC
  */
+@Concerns(UpdateCaseCountSubmittedFormsConcern.class)
 public class CaseSubmittedFormsContext
       implements IndexContext<SubmittedFormsListDTO>
 {

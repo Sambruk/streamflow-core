@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
@@ -46,35 +48,49 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void assign()
    {
+
+      next.assign();
+      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update inbox cache
       caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
-
       // Update assignments for user
       Assignee assignee = roleMap.get( Assignee.class );
       caching.addToCaseCountCache(caze.owner().get().toString()+":"+assignee.toString(), 1 );
+      
+      if (caze.isUnread()) {
+         caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+         caching.addToUnreadCache(caze.owner().get().toString()+":"+assignee.toString(), 1 );
+      }
 
-      next.assign();
    }
 
    public void open()
    {
+      next.open();
+      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update inbox cache
       caching.addToCaseCountCache( caze.owner().get().toString(), 1 );
-
       // Update drafts for user
       caching.addToCaseCountCache( caze.createdBy().get().toString(), -1 );
+    
+      if (caze.isUnread()) {
+         caching.addToUnreadCache( caze.owner().get().toString(), 1 );
+         caching.addToUnreadCache( caze.createdBy().get().toString(), -1 );
+      }
 
-      next.open();
+    
+
    }
 
    public void close()
    {
+      next.close();
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
@@ -83,17 +99,23 @@ public abstract class UpdateCaseCountCacheConcern
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
          caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+         if (caze.isUnread()) {
+            caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+         }
       } else
       {
          // Update inbox cache
          caching.addToCaseCountCache( caze.owner().get().toString(),-1 );
+         if (caze.isUnread()) {
+            caching.addToUnreadCache( caze.owner().get().toString(),-1 );
+         }
       }
 
-      next.close();
    }
 
    public void resolve( EntityValue resolution )
    {
+      next.resolve(resolution);
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
@@ -102,17 +124,23 @@ public abstract class UpdateCaseCountCacheConcern
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
          caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
+         if (caze.isUnread()) {
+            caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
+         }
       } else
       {
          // Update inbox cache
          caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
+         if (caze.isUnread()) {
+            caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+         }
       }
 
-      next.resolve(resolution);
    }
 
    public void formonclose()
    {
+      next.formonclose();
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
@@ -121,17 +149,23 @@ public abstract class UpdateCaseCountCacheConcern
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
          caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
+         if (caze.isUnread()) {
+            caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
+         }
       } else
       {
          // Update inbox cache
          caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
+         if (caze.isUnread()) {
+            caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+         }
       }
-
-      next.formonclose();
    }
 
    public void sendto( EntityValue entity )
    {
+      next.sendto(entity);
+      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
@@ -144,48 +178,62 @@ public abstract class UpdateCaseCountCacheConcern
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
             caching.addToCaseCountCache( owner.toString()+":"+assignee.toString(), -1 );
+            if(caze.isUnread()) {
+               caching.addToUnreadCache( owner.toString()+":"+assignee.toString(), -1 );
+            }
          } else
          {
             // Update inbox cache
             caching.addToCaseCountCache( owner.toString(), -1 );
+            if (caze.isUnread()) {
+               caching.addToUnreadCache( owner.toString(), -1 );
+            }
          }
 
          // Update inbox cache on receiving end
          caching.addToCaseCountCache( entity.entity().get(), 1 );
+         if (caze.isUnread()) {
+            caching.addToUnreadCache( entity.entity().get(), 1 );
+         }
       }
-
-      next.sendto(entity);
    }
 
    public void reopen()
    {
+      next.reopen();
+      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update assignments for user
       Assignee assignee = roleMap.get( Assignee.class );
       caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
-
-      next.reopen();
+      if (caze.isUnread()){
+         caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
+      }
    }
 
    public void unassign()
    {
+      next.unassign();
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update assignments for user
       Assignee assignee = roleMap.get( Assignee.class );
       caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
-
       // Update inbox cache
       caching.addToCaseCountCache( caze.owner().get().toString(), 1 );
-
-      next.unassign();
+      if (caze.isUnread()){
+         caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+         caching.addToUnreadCache( caze.owner().get().toString(), 1 );
+      }
    }
 
    public void delete()
    {
+      next.delete();
+      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
       //String createdBy = caze.createdBy().get().toString();
@@ -197,21 +245,28 @@ public abstract class UpdateCaseCountCacheConcern
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
             caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+            if (caze.isUnread()){
+               caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
+            }
          } else
          {
             // Update inbox cache
             caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
+            if (caze.isUnread()){
+               caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+            }
          }
       } else
       {
          // Update drafts for user
          caching.addToCaseCountCache( caze.createdBy().get().toString(), -1 );
       }
-      next.delete();
    }
    
    public void reinstate()
    {
+      next.reinstate();
+      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
@@ -222,16 +277,72 @@ public abstract class UpdateCaseCountCacheConcern
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
             caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
+            if (caze.isUnread()) {
+               caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
+            }
          } else
          {
             // Update inbox cache
             caching.addToCaseCountCache( caze.owner().get().toString(), 1 );
+            if(caze.isUnread()){
+               caching.addToUnreadCache( caze.owner().get().toString(), 1 );
+            }
          }
       } else
       {
          // Update drafts for user
          caching.addToCaseCountCache( caze.createdBy().get().toString(), 1 );
       }
-      next.reinstate();
+   }
+   
+   public void read()
+   {
+      next.read();
+      CaseEntity caze = role( CaseEntity.class );
+
+      if (caze.isAssigned())
+      {
+         // Update assignments for user
+         Assignee assignee = role( Assignee.class );
+         caching.addToUnreadCache( caze.owner().get().toString() + ":" + assignee.toString(), -1 );
+      } else
+      {
+         // Update inbox cache
+         caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+      }
+      
+   }
+
+   public void markunread()
+   {
+      next.markunread();
+      CaseEntity caze = role( CaseEntity.class );
+
+      if (caze.isAssigned())
+      {
+         // Update assignments for user
+         Assignee assignee = role( Assignee.class );
+         caching.addToUnreadCache( caze.owner().get().toString() + ":" + assignee.toString(), 1 );
+      } else
+      {
+         // Update inbox cache
+         caching.addToUnreadCache( caze.owner().get().toString(), 1 );
+      }
+   }
+
+   public void markread() {
+      next.markread();
+      CaseEntity caze = role( CaseEntity.class );
+
+      if (caze.isAssigned())
+      {
+         // Update assignments for user
+         Assignee assignee = role( Assignee.class );
+         caching.addToUnreadCache( caze.owner().get().toString() + ":" + assignee.toString(), -1 );
+      } else
+      {
+         // Update inbox cache
+         caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+      }
    }
 }

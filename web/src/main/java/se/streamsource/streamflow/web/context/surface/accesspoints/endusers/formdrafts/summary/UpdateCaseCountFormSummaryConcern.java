@@ -45,5 +45,6 @@ public abstract class UpdateCaseCountFormSummaryConcern
 
       // Update project inbox cache
       new Caching( caching, Caches.CASECOUNTS ).addToCaseCountCache( caze.owner().get().toString(), 1 );
+      new Caching( caching, Caches.CASECOUNTS ).addToUnreadCache( caze.owner().get().toString(), 1 );
    }
 }

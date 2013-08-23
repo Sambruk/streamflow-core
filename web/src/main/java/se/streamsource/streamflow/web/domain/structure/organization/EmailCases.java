@@ -100,7 +100,8 @@ public interface EmailCases
          next.sendTo( caze );
 
          // Update inbox cache on receiving end
-         caching.addToCaseCountCache(  ((ProjectEntity)accesspoint.project().get()).identity().get(), 1 );
+         caching.addToCaseCountCache( ((ProjectEntity)accesspoint.project().get()).identity().get(), 1 );
+         caching.addToUnreadCache( ((ProjectEntity)accesspoint.project().get()).identity().get(), 1 );
       }
    }
 }

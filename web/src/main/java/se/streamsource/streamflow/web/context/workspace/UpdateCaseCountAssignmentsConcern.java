@@ -45,7 +45,7 @@ public abstract class UpdateCaseCountAssignmentsConcern
 
       // Update assignments for assignee
       new Caching(caching, Caches.CASECOUNTS).addToCaseCountCache(owner.toString() + ":" + assignee.toString(), 1);
-
+      new Caching(caching, Caches.CASECOUNTS).addToUnreadCache(owner.toString() + ":" + assignee.toString(), 1);
       next.createcase();
    }
 }

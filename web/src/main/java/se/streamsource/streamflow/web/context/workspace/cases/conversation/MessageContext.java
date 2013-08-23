@@ -16,6 +16,12 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,14 +34,10 @@ import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 /**
  *
  */
+@Concerns(UpdateCaseCountMessageContextConcern.class)
 public class MessageContext
    implements IndexContext<MessageDTO>
 {
