@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -74,12 +76,15 @@ public class MessageDraftView
       valueBinder = module.objectBuilderFactory().newObject( ValueBinder.class );
       valueBinder.bind( "string", newMessage );
 
-      JPanel footerPanel = new JPanel( new BorderLayout(  ) );
+      FormLayout formLayout = new FormLayout(  "left:pref, 4dlu, pref:grow", "pref" );
+      PanelBuilder panelBuilder = new PanelBuilder( formLayout );
+
       attachmentsView = module.objectBuilderFactory()
             .newObjectBuilder( MessageDraftAttachmentsView.class )
             .use( model.newMessageDraftAttachmentsModel() ).newInstance();
 
-      footerPanel.add( attachmentsView, BorderLayout.WEST );
+      panelBuilder.add( attachmentsView );
+      panelBuilder.nextColumn(2);
 
       JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       // fetch the send action as proxy action from a parent container
@@ -95,10 +100,10 @@ public class MessageDraftView
       buttonPanel.add( createMessage );
       buttonPanel.add( cancel );
 
-      footerPanel.add( buttonPanel, BorderLayout.EAST );
+      panelBuilder.add( buttonPanel );
 
       add( messageScroll, BorderLayout.CENTER );
-      add( footerPanel, BorderLayout.SOUTH );
+      add( panelBuilder.getPanel(), BorderLayout.SOUTH );
 
       new ActionBinder( getActionMap() ).bind( "changeMessage", newMessage );
 
