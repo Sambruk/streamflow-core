@@ -29,6 +29,7 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -43,7 +44,9 @@ import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
@@ -70,6 +73,7 @@ public class MessageDraftAttachmentsView
    AttachmentsModel model;
 
    JPanel attachmentsPanel;
+   JScrollPane pane;
 
    public MessageDraftAttachmentsView( @Service ApplicationContext context, @Uses AttachmentsModel model )
    {
@@ -81,8 +85,13 @@ public class MessageDraftAttachmentsView
       StreamflowButton addButton = new StreamflowButton(am.get("add"));
       add( addButton );
 
-      attachmentsPanel = new JPanel();
-      add( attachmentsPanel );
+      attachmentsPanel = new JPanel(new ModifiedFlowLayout( FlowLayout.LEFT ));
+      pane = new JScrollPane(  );
+      pane.setBorder( BorderFactory.createEmptyBorder() );
+      pane.setPreferredSize( new Dimension( 1200, 40 ) );
+      pane.setViewportView( attachmentsPanel );
+
+      add( pane );
 
       new RefreshWhenShowing( this, this );
    }
