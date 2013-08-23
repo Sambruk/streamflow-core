@@ -56,8 +56,8 @@
 
     }]);
 
-  sfContact.controller('ContactEditCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
-    function($scope, caseService, $params, navigationService) {
+  sfContact.controller('ContactEditCtrl', ['$scope', '$rootScope', 'caseService', '$routeParams','navigationService',
+    function($scope, $rootScope, caseService, $params, navigationService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -86,6 +86,19 @@
           $scope.contacts.invalidate();
           $scope.contacts.resolve();
           window.location.assign(href);
+        });
+      }
+
+      $scope.updateField = function ($event, $successCallback) {
+        $event.preventDefault();
+        var contact = {};
+        contact[$event.currentTarget.name] = $event.currentTarget.value;
+
+        $scope.contactId = caseService.updateContact($params.projectId, $params.projectType, $params.caseId, $params.contactIndex, contact).then(function(){
+          if ($event.currentTarget.id === 'contact-name') {
+            $rootScope.$broadcast('contact-name-updated');
+          }
+          $successCallback($($event.target));
         });
       }
 
