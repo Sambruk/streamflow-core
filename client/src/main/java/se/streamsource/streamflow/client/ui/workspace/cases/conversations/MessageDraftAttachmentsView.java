@@ -29,11 +29,11 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.WrapLayout;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
@@ -48,7 +48,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -73,7 +72,6 @@ public class MessageDraftAttachmentsView
    AttachmentsModel model;
 
    JPanel attachmentsPanel;
-   JScrollPane pane;
 
    public MessageDraftAttachmentsView( @Service ApplicationContext context, @Uses AttachmentsModel model )
    {
@@ -85,13 +83,15 @@ public class MessageDraftAttachmentsView
       StreamflowButton addButton = new StreamflowButton(am.get("add"));
       add( addButton );
 
-      attachmentsPanel = new JPanel(new ModifiedFlowLayout( FlowLayout.LEFT ));
-      pane = new JScrollPane(  );
-      pane.setBorder( BorderFactory.createEmptyBorder() );
-      pane.setPreferredSize( new Dimension( 1200, 40 ) );
-      pane.setViewportView( attachmentsPanel );
+      attachmentsPanel = new JPanel(new WrapLayout( FlowLayout.LEADING ));
+      //attachmentsPanel.setBorder( BorderFactory.createLineBorder( Color.BLUE ) );
 
-      add( pane );
+      JScrollPane scroll = new JScrollPane(  );
+      scroll.setBorder( BorderFactory.createEmptyBorder() );
+      scroll.setPreferredSize( new Dimension( 800, 40 ) );
+      scroll.setViewportView( attachmentsPanel );
+
+      add( scroll );
 
       new RefreshWhenShowing( this, this );
    }
@@ -168,8 +168,9 @@ public class MessageDraftAttachmentsView
          } );
 
          attachmentPanel.add( removeButton );
-         attachmentPanel.add( new Label( " " ) );
+         //attachmentPanel.add( new Label( " " ) );
 
+         //attachmentPanel.setBorder( BorderFactory.createLineBorder( Color.BLUE ) );
          attachmentsPanel.add( attachmentPanel );
       }
 
@@ -177,7 +178,7 @@ public class MessageDraftAttachmentsView
       {
          public void run()
          {
-            attachmentsPanel.revalidate( );
+            attachmentsPanel.revalidate();
          }
       } );
 
