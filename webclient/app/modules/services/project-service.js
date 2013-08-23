@@ -44,7 +44,7 @@
             _.forEach(projects, function(values, key){
 
               var types = _.map(values, function(item){
-                return {name: item.rel, href: item.href};
+                return {name: item.rel, href: item.href, caseCount: item.caseCount};
               });
 
               result.push({text: key, types: types});
