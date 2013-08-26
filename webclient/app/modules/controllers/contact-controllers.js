@@ -89,7 +89,7 @@
         });
       }
 
-      $scope.updateField = function ($event, $successCallback) {
+      $scope.updateField = function ($event, $success, $error) {
         $event.preventDefault();
         var contact = {};
         contact[$event.currentTarget.name] = $event.currentTarget.value;
@@ -98,7 +98,10 @@
           if ($event.currentTarget.id === 'contact-name') {
             $rootScope.$broadcast('contact-name-updated');
           }
-          $successCallback($($event.target));
+          $success($($event.target));
+        },
+        function (error){
+          $error($($event.target));
         });
       }
 
