@@ -300,17 +300,19 @@ public abstract class UpdateCaseCountCacheConcern
       next.read();
       CaseEntity caze = role( CaseEntity.class );
 
-      if (caze.isAssigned())
+      if (!caze.isUnread())
       {
-         // Update assignments for user
-         Assignee assignee = role( Assignee.class );
-         caching.addToUnreadCache( caze.owner().get().toString() + ":" + assignee.toString(), -1 );
-      } else
-      {
-         // Update inbox cache
-         caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+         if (caze.isAssigned())
+         {
+            // Update assignments for user
+            Assignee assignee = role( Assignee.class );
+            caching.addToUnreadCache( caze.owner().get().toString() + ":" + assignee.toString(), -1 );
+         } else
+         {
+            // Update inbox cache
+            caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+         }
       }
-      
    }
 
    public void markunread()

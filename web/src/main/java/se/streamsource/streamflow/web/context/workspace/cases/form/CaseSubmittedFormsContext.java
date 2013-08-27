@@ -29,8 +29,10 @@ import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.io.Input;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
@@ -47,61 +49,71 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
  * JAVADOC
  */
 @Concerns(UpdateCaseCountSubmittedFormsConcern.class)
-public class CaseSubmittedFormsContext
-      implements IndexContext<SubmittedFormsListDTO>
+@Mixins(CaseSubmittedFormsContext.Mixin.class)
+public interface CaseSubmittedFormsContext extends IndexContext<SubmittedFormsListDTO>, Context
 {
-   @Service
-   AttachmentStore store;
 
-   @Structure
-   Module module;
+   SubmittedFormDTO submittedform(@Name("index") int index);
 
-   @Optional
-   @Service
-   MailSenderService mailSender;
+   Input<ByteBuffer, IOException> download(@Name("id") String id) throws IOException, URISyntaxException;
 
-   public SubmittedFormsListDTO index()
+   void resenddoublesignemail(@Name("secondsigntaskref") String secondsigntaskref);
+
+   void read(@Name("index") int index);
+
+   abstract class Mixin implements CaseSubmittedFormsContext
    {
-      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
-      return forms.getSubmittedForms();
-   }
 
-   public SubmittedFormDTO submittedform( @Name("index") int index )
-   {
-      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
-      return forms.getSubmittedForm( index );
-   }
+      @Service
+      AttachmentStore store;
 
+      @Structure
+      Module module;
 
-   public Input<ByteBuffer, IOException> download( @Name("id") String id ) throws IOException, URISyntaxException
-   {
-      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
-      AttachmentFieldSubmission value = forms.getAttachmentFieldValue( id );
-      if ( value != null )
+      @Optional
+      @Service
+      MailSenderService mailSender;
+
+      public SubmittedFormsListDTO index()
       {
-         AttachedFile.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( AttachedFile.Data.class, id );
-         final String fileId = new URI( data.uri().get() ).getSchemeSpecificPart();
+         SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
+         return forms.getSubmittedForms();
+      }
 
-         return store.attachment(fileId);
-      } else
+      public SubmittedFormDTO submittedform(@Name("index") int index)
       {
-         // 404
-         throw new IllegalArgumentException("No such attached file:"+id);
+         SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
+         return forms.getSubmittedForm( index );
+      }
+
+      public Input<ByteBuffer, IOException> download(@Name("id") String id) throws IOException, URISyntaxException
+      {
+         SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
+         AttachmentFieldSubmission value = forms.getAttachmentFieldValue( id );
+         if (value != null)
+         {
+            AttachedFile.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( AttachedFile.Data.class, id );
+            final String fileId = new URI( data.uri().get() ).getSchemeSpecificPart();
+
+            return store.attachment( fileId );
+         } else
+         {
+            // 404
+            throw new IllegalArgumentException( "No such attached file:" + id );
+         }
+      }
+
+      public void resenddoublesignemail(@Name("secondsigntaskref") String secondsigntaskref)
+      {
+         DoubleSignatureTask task = module.unitOfWorkFactory().currentUnitOfWork()
+               .get( DoubleSignatureTask.class, secondsigntaskref );
+         mailSender.sentEmail( ((DoubleSignatureTask.Data) task).email().get() );
+         task.updateLastReminderSent( new DateTime( DateTimeZone.UTC ) );
+      }
+
+      public void read(@Name("index") int index)
+      {
+         RoleMap.role( SubmittedForms.class ).read( index );
       }
    }
-
-   public void resenddoublesignemail( @Name("secondsigntaskref") String secondsigntaskref )
-   {
-      DoubleSignatureTask task = module.unitOfWorkFactory().currentUnitOfWork()
-            .get( DoubleSignatureTask.class, secondsigntaskref );
-      mailSender.sentEmail( ((DoubleSignatureTask.Data)task).email().get() );
-      task.updateLastReminderSent(  new DateTime( DateTimeZone.UTC ) );
-   }
-
-   public void read( @Name("index") int index )
-   {
-      RoleMap.role( SubmittedForms.class ).read( index );
-   }
-
-
 }
