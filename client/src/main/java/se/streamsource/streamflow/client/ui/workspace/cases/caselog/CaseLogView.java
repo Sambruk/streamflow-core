@@ -30,6 +30,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
@@ -67,6 +68,7 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Arrays;
+import java.util.Locale;
 
 import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -78,7 +80,19 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    private final CaseLogModel model;
 
    private JList filtersList;
-   private JList list = new JXList();
+   private JList list = new JXList(){
+      @Override
+      public Object[] getSelectedValues()
+      {
+         int[] selectedIndexes = getSelectedIndices();
+         Object[] selectedValues = new Object[selectedIndexes.length];
+         for (int i = 0; i < selectedIndexes.length; i++) {
+            CaseLogEntryDTO link = (CaseLogEntryDTO)getElementAt(selectedIndexes[i]);
+            selectedValues[i] = link.creator().get() + "\t" + DateFormats.getFullDateTimeValue( link.creationDate().get(), new Locale( "sv_SE" ) ) + "\n\r" + link.message().get();
+         }
+         return selectedValues;
+      }
+   };
    private JScrollPane newMessagePane;
    private JTextArea newMessageArea;
    private PopupHandler filterPopupHandler;

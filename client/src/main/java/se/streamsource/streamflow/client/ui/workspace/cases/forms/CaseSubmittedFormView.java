@@ -46,6 +46,7 @@ import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.StreamflowSelectableLabel;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -53,13 +54,11 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import java.awt.Color;
@@ -310,24 +309,5 @@ public class CaseSubmittedFormView
             model.read();
          }
       }.execute();
-   }
-
-   class StreamflowSelectableLabel
-      extends JTextPane
-   {
-
-      public StreamflowSelectableLabel()
-      {
-         super();
-         setBorder( BorderFactory.createEmptyBorder() );
-         setEditable( false );
-         setOpaque( false );
-      }
-
-      public StreamflowSelectableLabel( String text )
-      {
-         this();
-         setText( text );
-      }
    }
 }
