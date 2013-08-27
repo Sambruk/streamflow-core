@@ -39,6 +39,11 @@
         $scope.conversations.resolve();
       });
 
+      $scope.$on('contact-name-updated', function(){
+        $scope.contacts.invalidate();
+        $scope.contacts.resolve();
+      });
+
       $scope.$on('case-changed', function(e, attr) {
         if (attr.command === "casetype") {
           $scope.commands.invalidate();

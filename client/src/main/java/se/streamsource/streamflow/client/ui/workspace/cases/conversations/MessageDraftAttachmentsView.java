@@ -84,7 +84,6 @@ public class MessageDraftAttachmentsView
       add( addButton );
 
       attachmentsPanel = new JPanel(new WrapLayout( FlowLayout.LEADING ));
-      //attachmentsPanel.setBorder( BorderFactory.createLineBorder( Color.BLUE ) );
 
       JScrollPane scroll = new JScrollPane(  );
       scroll.setBorder( BorderFactory.createEmptyBorder() );
@@ -168,9 +167,7 @@ public class MessageDraftAttachmentsView
          } );
 
          attachmentPanel.add( removeButton );
-         //attachmentPanel.add( new Label( " " ) );
 
-         //attachmentPanel.setBorder( BorderFactory.createLineBorder( Color.BLUE ) );
          attachmentsPanel.add( attachmentPanel );
       }
 

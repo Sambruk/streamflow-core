@@ -36,7 +36,7 @@
         if (!element.hasClass("ng-invalid") && element.hasClass("ng-dirty")) {
 
           scope.$apply(function() {
-            fn(scope, {$event:event, $successCallback:successCallback});
+            fn(scope, {$event:event, $success:successCallback, $error:errorCallback});
           });
         }
         else {

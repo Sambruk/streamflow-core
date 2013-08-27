@@ -78,7 +78,19 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    private final CaseLogModel model;
 
    private JList filtersList;
-   private JList list = new JXList();
+   private JList list = new JXList(){
+      @Override
+      public Object[] getSelectedValues()
+      {
+         int[] selectedIndexes = getSelectedIndices();
+         Object[] selectedValues = new Object[selectedIndexes.length];
+         for (int i = 0; i < selectedIndexes.length; i++) {
+            CaseLogEntryDTO link = (CaseLogEntryDTO)getElementAt(selectedIndexes[i]);
+            selectedValues[i] = link.message().get();
+         }
+         return selectedValues;
+      }
+   };
    private JScrollPane newMessagePane;
    private JTextArea newMessageArea;
    private PopupHandler filterPopupHandler;
