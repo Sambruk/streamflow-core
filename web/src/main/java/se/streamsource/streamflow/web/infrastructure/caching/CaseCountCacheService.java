@@ -16,11 +16,7 @@
  */
 package se.streamsource.streamflow.web.infrastructure.caching;
 
-import static org.qi4j.api.query.QueryExpressions.and;
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
 import net.sf.ehcache.Element;
-
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -30,12 +26,13 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * Service wrapper CaseCount cache.
@@ -81,6 +78,14 @@ public interface CaseCountCacheService
          for (Case caze : queryBuilder.newQuery( uow ))
          {
             CaseEntity aCase = (CaseEntity) caze;
+            try
+            {
+               aCase.owner().get().toString();
+            } catch ( ClassCastException cc )
+            {
+               System.out.println( aCase.caseId().get() );
+               continue;
+            }
             String key = aCase.owner().get().toString();
             String assignee = (aCase.assignedTo().get() != null) ? aCase.assignedTo().get().toString() : null;
             
