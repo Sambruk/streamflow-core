@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
+package se.streamsource.streamflow.web.context.workspace.cases.conversation;
+
+import static se.streamsource.dci.api.RoleMap.role;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
@@ -22,29 +24,41 @@ import org.qi4j.api.injection.scope.Service;
 
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
-/**
- * Update case counts when submitted from Surface
- */
-public abstract class UpdateCaseCountCaseConcern
-   extends ConcernOf<SurfaceCaseContext>
-   implements SurfaceCaseContext
+public abstract class UpdateCaseCountMessageContextConcern extends ConcernOf<MessageContext> implements MessageContext
 {
-   @Optional
-   @Service
-   CachingService caching;
 
-   public void sendtoproject()
+   Caching caching;
+
+   public void init(@Optional @Service CachingService cache)
    {
-      next.sendtoproject();
-
+      caching = new Caching(cache, Caches.CASECOUNTS);
+   }
+   
+   public void read()
+   {
       CaseEntity caze = RoleMap.role( CaseEntity.class );
+      boolean unreadFromStart = caze.isUnread();
+      
+      next.read( );
 
-      // Update project inbox cache
-      new Caching(caching, Caches.CASECOUNTS).addToCaseCountCache( caze.owner().get().toString(), 1 );
-      new Caching(caching, Caches.CASECOUNTS).addToUnreadCache( caze.owner().get().toString(), 1 );
+      if (unreadFromStart && !caze.isUnread())
+      {
+         if (caze.isAssigned())
+         {
+            // Update assignments for user
+            Assignee assignee = role( Assignee.class );
+            caching.addToUnreadCache( caze.owner().get().toString() + ":" + assignee.toString(), -1 );
+         } else
+         {
+            // Update inbox cache
+            caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+         }
+      }
    }
 }
+

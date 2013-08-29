@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -28,6 +29,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
+
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
@@ -37,6 +39,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 /**
  * JAVADOC
  */
+@Concerns(UpdateCaseCountMessagesConcern.class)
 @Mixins(Messages.Mixin.class)
 public interface Messages
 {

@@ -42,7 +42,7 @@ public abstract class UpdateCaseCountDraftsConcern
       Drafts drafts = RoleMap.role(Drafts.class);
 
       // Update drafts for user
-      new Caching(caching, Caches.CASECOUNTS).addToCache(drafts.toString(), 1);
+      new Caching(caching, Caches.CASECOUNTS).addToCaseCountCache(drafts.toString(), 1);
 
       next.createcase();
    }
