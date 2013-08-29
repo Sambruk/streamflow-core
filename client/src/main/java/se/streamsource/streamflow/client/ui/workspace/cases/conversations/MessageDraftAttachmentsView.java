@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -46,7 +48,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import java.awt.Dimension;
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -77,21 +79,24 @@ public class MessageDraftAttachmentsView
    {
       this.model = model;
       ActionMap am = context.getActionMap( this );
+      setLayout( new BorderLayout(  ) );
 
-      setLayout( new FlowLayout( FlowLayout.LEFT ) );
+      FormLayout formLayout = new FormLayout( "pref,4dlu,pref:grow", "40dlu" );
+      PanelBuilder builder = new PanelBuilder( formLayout );
 
       StreamflowButton addButton = new StreamflowButton(am.get("add"));
-      add( addButton );
+      builder.add( addButton );
+      builder.nextColumn(2);
 
-      attachmentsPanel = new JPanel(new WrapLayout( FlowLayout.LEADING ));
+      attachmentsPanel = new JPanel(new WrapLayout( FlowLayout.LEFT ) );
 
       JScrollPane scroll = new JScrollPane(  );
       scroll.setBorder( BorderFactory.createEmptyBorder() );
-      scroll.setPreferredSize( new Dimension( 800, 40 ) );
       scroll.setViewportView( attachmentsPanel );
 
-      add( scroll );
+      builder.add( scroll );
 
+      add( builder.getPanel(), BorderLayout.CENTER );
       new RefreshWhenShowing( this, this );
    }
 

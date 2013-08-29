@@ -76,7 +76,7 @@ public class MessageDraftView
       valueBinder = module.objectBuilderFactory().newObject( ValueBinder.class );
       valueBinder.bind( "string", newMessage );
 
-      FormLayout formLayout = new FormLayout(  "left:pref, 4dlu, pref:grow", "pref" );
+      FormLayout formLayout = new FormLayout(  "fill:pref:grow, 4dlu, min", "pref" );
       PanelBuilder panelBuilder = new PanelBuilder( formLayout );
 
       attachmentsView = module.objectBuilderFactory()
