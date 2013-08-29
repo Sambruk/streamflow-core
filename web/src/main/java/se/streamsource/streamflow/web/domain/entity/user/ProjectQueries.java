@@ -17,10 +17,13 @@
 package se.streamsource.streamflow.web.domain.entity.user;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.xml.sax.ext.LexicalHandler;
 
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
@@ -75,7 +78,13 @@ public interface ProjectQueries
                   projects.add( groupProject );
             }
          }
+         
+         Collections.sort( projects, new Comparator<Project>() {
 
+            public int compare(Project o1, Project o2)
+            {
+               return o1.getDescription().compareToIgnoreCase( o2.getDescription() );
+            }} );
          return projects;
       }
    }
