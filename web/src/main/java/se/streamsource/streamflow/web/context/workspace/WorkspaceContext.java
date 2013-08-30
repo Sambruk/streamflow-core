@@ -17,19 +17,15 @@
 package se.streamsource.streamflow.web.context.workspace;
 
 import net.sf.ehcache.Element;
-
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.ProjectListValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -39,6 +35,8 @@ import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 import se.streamsource.streamflow.web.infrastructure.caching.CaseCountItem;
+
+import java.security.Principal;
 
 /**
  * JAVADOC
@@ -66,7 +64,8 @@ public class WorkspaceContext
       projectListBuilder.prototype().rel().set("drafts");
       projectListBuilder.prototype().classes().set("drafts");
       projectListBuilder.prototype().text().set( "Drafts" );
-      projectListBuilder.prototype().caseCount().set(draftsCaseCounts());
+      Element element = caching.get( RoleMap.role( Principal.class ).getName() );
+      projectListBuilder.prototype().caseCount().set( element != null ? ((CaseCountItem)element.getObjectValue()).getCount() : 0 );
       projectListBuilder.prototype().unreadCaseCount().set(0);
       linksBuilder.addLink( projectListBuilder.newInstance() );
       
@@ -85,7 +84,7 @@ public class WorkspaceContext
          projectListBuilder.prototype().rel().set("inbox");
          projectListBuilder.prototype().classes().set("inbox");
          projectListBuilder.prototype().text().set( project.getDescription() );
-         Element element = caching.get( project.toString() );
+         element = caching.get( project.toString() );
          projectListBuilder.prototype().caseCount().set(element != null ? ((CaseCountItem)element.getObjectValue()).getCount() : 0);
          projectListBuilder.prototype().unreadCaseCount().set(element != null ? ((CaseCountItem)element.getObjectValue()).getUnread() : 0);
          linksBuilder.addLink( projectListBuilder.newInstance() );
@@ -104,21 +103,6 @@ public class WorkspaceContext
       return linksBuilder.newLinks();
    }
 
-   private Integer draftsCaseCounts() {
-      Caching caching = new Caching(this.caching, Caches.CASECOUNTS);
-      
-      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
-      Element caseCount;
-      DraftsQueries drafts = RoleMap.role(DraftsQueries.class);
-      if ((caseCount = caching.get(drafts.toString())) == null)
-      {
-         caseCount = new Element(drafts.toString(), Long.toString(drafts.drafts(null).newQuery(uow).count()));
-         caching.put(caseCount);
-      }
-      return Integer.parseInt( (String) caseCount.getObjectValue());
-   }
-
    
    /**
     * Calculate casecounts for this user. Uses caching if available.
@@ -132,11 +116,12 @@ public class WorkspaceContext
       
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
 
-      builder.addLink(draftsCaseCounts().toString(), "/drafts");
+      Element element = caching.get( RoleMap.role( Principal.class ).getName() );
+      builder.addLink(element != null ? Integer.toString(((CaseCountItem) element.getObjectValue()).getCount()) : "0" , "/drafts");
 
       for (Project project : RoleMap.role(ProjectQueries.class).allProjects())
       {
-         Element element = caching.get( project.toString() );
+         element = caching.get( project.toString() );
          builder.addLink( (element != null ? Integer.toString(((CaseCountItem) element.getObjectValue()).getCount()) : "0" ), project + "/inbox");
 
          element = caching.get( project.toString() + ":" + RoleMap.role(Assignee.class).toString());

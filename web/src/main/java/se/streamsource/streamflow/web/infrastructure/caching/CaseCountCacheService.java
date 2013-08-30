@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
@@ -109,7 +110,29 @@ public interface CaseCountCacheService
             }
             caching.put( new Element( key, caseCountItem ) );
          }
-         
+
+         // Find all drafts
+         queryBuilder = module.queryBuilderFactory().newQueryBuilder( Case.class );
+         queryBuilder = queryBuilder.where(
+               QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.DRAFT ));
+
+         for (Case caze : queryBuilder.newQuery( uow ))
+         {
+            CaseEntity aCase = (CaseEntity) caze;
+            String key = aCase.createdBy().get().toString();
+
+            CaseCountItem caseCountItem;
+            Element element = caching.get( key );
+            if (element == null)
+            {
+               caseCountItem = new CaseCountItem();
+            } else
+            {
+               caseCountItem = (CaseCountItem) element.getObjectValue();
+            }
+            caseCountItem.addToCount( 1 );
+            caching.put( new Element( key, caseCountItem ) );
+         }
       }
    }
 }
