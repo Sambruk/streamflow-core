@@ -72,6 +72,7 @@ import se.streamsource.streamflow.api.external.ShadowCaseDTO;
 import se.streamsource.streamflow.api.external.ShadowCaseLinkValue;
 import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.api.surface.AccessPointSettingsDTO;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.ProjectListValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
@@ -120,8 +121,14 @@ public class ClientAPIAssembler
       overview(module);
       administration(module);
       external(module);
+      surface(module);
    }
 
+   private void surface( ModuleAssembly surface)
+   {
+      surface.values( AccessPointSettingsDTO.class );
+   }
+   
    private void external( ModuleAssembly external )
    {
       external.values( ShadowCaseLinkValue.class,
