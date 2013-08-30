@@ -32,6 +32,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
+import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
@@ -68,6 +69,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 /**
  * Send and receive notifications. This service
@@ -208,6 +210,18 @@ public interface NotificationService
       //               builder.prototype().replyTo();
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );
                      builder.prototype().subject().set( subject );
+                     if( messageData.messageType().get().equals( MessageType.PLAIN ) )
+                     {
+                        StringBuffer buf = new StringBuffer(  );
+                        Scanner scanner = new Scanner( formattedMsg );
+                        while( scanner.hasNextLine() )
+                        {
+                           buf.append( scanner.nextLine() + "<BR>" + System.getProperty( "line.separator" ) );
+
+                        }
+
+                        formattedMsg = buf.toString();
+                     }
                      builder.prototype().content().set( htmlGenerator.createMailContent( formattedMsg, footer ) );
                      builder.prototype().contentType().set( Translator.HTML );
 
