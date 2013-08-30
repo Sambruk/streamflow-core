@@ -83,7 +83,6 @@ public class MessagesView extends JPanel implements TransactionListener
    private JXTable messageTable;
    private JPanel detailMessagePanel;
    private JPanel sendPanel = new JPanel( new BorderLayout(  ) );
-   //private JTextPane newMessage;
 
    private JPanel messageViewPanel = new JPanel( new BorderLayout(  ) );
    private MessageView messageView;
@@ -223,7 +222,6 @@ public class MessagesView extends JPanel implements TransactionListener
 
       detailMessagePanel = new JPanel(new CardLayout());
 
-
       JPanel createPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       javax.swing.Action writeMessageAction = getActionMap().get("writeMessage");
       writeMessage = new StreamflowButton(writeMessageAction);
@@ -232,7 +230,7 @@ public class MessagesView extends JPanel implements TransactionListener
             JComponent.WHEN_IN_FOCUSED_WINDOW);
       createPanel.add(writeMessage);
 
-      detailMessagePanel.add(createPanel, "INITIAL");
+      detailMessagePanel.add( createPanel, "INITIAL");
       detailMessagePanel.add( sendPanel, "NEW_MESSAGE" );
       detailMessagePanel.add( messageViewPanel, "SHOW_MESSAGE" );
 
@@ -286,6 +284,7 @@ public class MessagesView extends JPanel implements TransactionListener
    public void closeMessageDetails()
    {
       messageTable.getSelectionModel().clearSelection();
+      messageViewPanel.removeAll();
       ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
    }
 

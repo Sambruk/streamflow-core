@@ -59,7 +59,7 @@
         <module>infrastructure</module>
         <module>fileconfig</module>
         <module>client</module>
-        <module>webclient</module>
+        <!--<module>webclient</module>-->
         <module>serverplugin</module>
         <module>web</module>
         <module>webstart</module>
@@ -779,6 +779,12 @@
 
     <profiles>
         <profile>
+            <id>web-client</id>
+            <modules>
+                <module>webclient</module>
+            </modules>
+        </profile>
+        <profile>
             <id>glassfish</id>
             <build>
                 <pluginManagement>
@@ -873,6 +879,11 @@
                     <name>pre-release</name>
                 </property>
             </activation>
+            <modules>
+
+                <module>webclient</module>
+
+            </modules>
             <build>
                 
                     <plugins>
