@@ -210,7 +210,8 @@ public interface NotificationService
       //               builder.prototype().replyTo();
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );
                      builder.prototype().subject().set( subject );
-                     if( messageData.messageType().get().equals( MessageType.PLAIN ) )
+                     if( messageData.messageType().get().equals( MessageType.PLAIN ) ||
+                         messageData.messageType().get().equals( MessageType.SYSTEM ))
                      {
                         StringBuffer buf = new StringBuffer(  );
                         Scanner scanner = new Scanner( formattedMsg );

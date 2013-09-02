@@ -383,22 +383,22 @@ public class ApplyFilterContext
 
          StringBuffer notification = new StringBuffer();
          SimpleDateFormat dateFormat = new SimpleDateFormat( bundle.getString( "date_format" ) );
-         notification.append( bundle.getString( "description" )).append(": ").append(self.getDescription()).append("\n");
+         notification.append( bundle.getString( "description" )).append(": ").append(self.getDescription()).append("<BR>");
          if (self.priority().get() != null)
          {
-            notification.append( bundle.getString( "priority" )).append(": ").append(self.priority().get().getDescription()).append("\n");
+            notification.append( bundle.getString( "priority" )).append(": ").append(self.priority().get().getDescription()).append("<BR>");
          }
-         notification.append( bundle.getString( "createdon" )).append(": ").append( dateFormat.format( self.createdOn().get() )).append("\n");
+         notification.append( bundle.getString( "createdon" )).append(": ").append( dateFormat.format( self.createdOn().get() )).append("<BR>");
          if (self.dueOn().get() != null)
          {
-            notification.append( bundle.getString( "duedate" )).append(": ").append( dateFormat.format( self.dueOn().get())).append("\n");
+            notification.append( bundle.getString( "duedate" )).append(": ").append( dateFormat.format( self.dueOn().get())).append("<BR>");
          }
          if (self.createdBy().get() instanceof User)
          {
-            notification.append( bundle.getString( "createdby" )).append(": ").append(((Describable)self.createdBy().get()).getDescription()).append("\n");
+            notification.append( bundle.getString( "createdby" )).append(": ").append(((Describable)self.createdBy().get()).getDescription()).append("<BR>");
          }
-         notification.append( bundle.getString( "owner" )).append(": ").append(((Describable)self.owner().get()).getDescription()).append("\n");
-         notification.append( bundle.getString( "casetype" )).append(": ").append(self.caseType().get().getDescription()).append("\n");
+         notification.append( bundle.getString( "owner" )).append(": ").append(((Describable)self.owner().get()).getDescription()).append("<BR>");
+         notification.append( bundle.getString( "casetype" )).append(": ").append(self.caseType().get().getDescription()).append("<BR>");
          notification.append( bundle.getString( "labels" )).append(": ");
          boolean first = true;
          for (Label label : self.labels())
@@ -409,6 +409,7 @@ public class ApplyFilterContext
             notification.append(label.getDescription());
             first = false;
          }
+         notification.append( "<BR>" );
 
          ((MessageDraft)conversation).changeDraftMessage(  htmlGenerator.createMailContent( notification.toString(), "" ) );
 
