@@ -881,11 +881,6 @@
                     <name>pre-release</name>
                 </property>
             </activation>
-            <modules>
-
-                <module>webclient</module>
-
-            </modules>
             <build>
                 
                     <plugins>
