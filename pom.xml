@@ -299,6 +299,8 @@
                             <Implementation-BuildKey>${buildKey}</Implementation-BuildKey>
                             <Implementation-Build>${buildNumber}</Implementation-Build>
                             <Implementation-Revision>${svnRevision}</Implementation-Revision>
+                            <Permissions>all-permissions</Permissions>
+                            <Codebase>*</Codebase>
                         </manifestEntries>
                     </archive>
                 </configuration>
