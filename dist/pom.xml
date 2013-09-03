@@ -32,15 +32,22 @@
         </dependency>
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
-            <artifactId>streamflow-webclient</artifactId>
-            <version>${version}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-statistic</artifactId>
             <version>${version}</version>
             <type>war</type>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>web-client</id>
+            <dependencies>
+                <dependency>
+                    <groupId>se.streamsource.streamflow</groupId>
+                    <artifactId>streamflow-webclient</artifactId>
+                    <version>${version}</version>
+                    <type>war</type>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

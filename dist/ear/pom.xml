@@ -35,11 +35,6 @@
                         </webModule>
                         <webModule>
                             <groupId>se.streamsource.streamflow</groupId>
-                            <artifactId>streamflow-webclient</artifactId>
-                            <contextRoot>/webclient</contextRoot>
-                        </webModule>
-                        <webModule>
-                            <groupId>se.streamsource.streamflow</groupId>
                             <artifactId>streamflow-statistic</artifactId>
                             <contextRoot>/statistic</contextRoot>
                         </webModule>
@@ -59,6 +54,25 @@
             </plugin>
         </plugins>
     </build>
-
-
+    <profiles>
+        <profile>
+            <id>web-client</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-ear-plugin</artifactId>
+                        <configuration>
+                            <modules>
+                                <webModule>
+                                    <groupId>se.streamsource.streamflow</groupId>
+                                    <artifactId>streamflow-webclient</artifactId>
+                                    <contextRoot>/webclient</contextRoot>
+                                </webModule>
+                            </modules>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
