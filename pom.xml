@@ -71,8 +71,8 @@
     </modules>
 
     <scm>
-        <connection>scm:git:ssh://gerrit.jayway.com/projects/streamflow-core.git</connection>
-        <developerConnection>scm:git:ssh://gerrit.jayway.com/projects/streamflow-core.git
+        <connection>scm:git:ssh://github.com/jayway/streamflow-core.git</connection>
+        <developerConnection>scm:git:ssh://github.com/jayway/streamflow-core.git
         </developerConnection>
     </scm>
 
