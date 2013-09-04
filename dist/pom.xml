@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.14-SNAPSHOT</version>
+        <version>1.15-SNAPSHOT</version>
     </parent>
     <artifactId>dist</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.14-SNAPSHOT</version>
+    <version>1.15-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Streamflow Distribution</name>
     <description>Streamflow Distribution</description>
@@ -32,15 +32,22 @@
         </dependency>
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
-            <artifactId>streamflow-webclient</artifactId>
-            <version>${version}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-statistic</artifactId>
             <version>${version}</version>
             <type>war</type>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>web-client</id>
+            <dependencies>
+                <dependency>
+                    <groupId>se.streamsource.streamflow</groupId>
+                    <artifactId>streamflow-webclient</artifactId>
+                    <version>${version}</version>
+                    <type>war</type>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
