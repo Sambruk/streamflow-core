@@ -73,6 +73,7 @@ import se.streamsource.streamflow.api.external.ShadowCaseLinkValue;
 import se.streamsource.streamflow.api.interaction.profile.UserProfileDTO;
 import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
+import se.streamsource.streamflow.api.workspace.ProjectListValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
@@ -147,7 +148,8 @@ public class ClientAPIAssembler
               NoteDTO.class,
               ExternalEmailValue.class,
               PermissionsDTO.class,
-              PriorityValue.class);
+              PriorityValue.class,
+              ProjectListValue.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,

@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -33,6 +35,7 @@ import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.WrapLayout;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
@@ -43,9 +46,10 @@ import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -75,15 +79,24 @@ public class MessageDraftAttachmentsView
    {
       this.model = model;
       ActionMap am = context.getActionMap( this );
+      setLayout( new BorderLayout(  ) );
 
-      setLayout( new FlowLayout( FlowLayout.LEFT ) );
+      FormLayout formLayout = new FormLayout( "pref,4dlu,pref:grow", "40dlu" );
+      PanelBuilder builder = new PanelBuilder( formLayout );
 
       StreamflowButton addButton = new StreamflowButton(am.get("add"));
-      add( addButton );
+      builder.add( addButton );
+      builder.nextColumn(2);
 
-      attachmentsPanel = new JPanel();
-      add( attachmentsPanel );
+      attachmentsPanel = new JPanel(new WrapLayout( FlowLayout.LEFT ) );
 
+      JScrollPane scroll = new JScrollPane(  );
+      scroll.setBorder( BorderFactory.createEmptyBorder() );
+      scroll.setViewportView( attachmentsPanel );
+
+      builder.add( scroll );
+
+      add( builder.getPanel(), BorderLayout.CENTER );
       new RefreshWhenShowing( this, this );
    }
 
@@ -159,7 +172,6 @@ public class MessageDraftAttachmentsView
          } );
 
          attachmentPanel.add( removeButton );
-         attachmentPanel.add( new Label( " " ) );
 
          attachmentsPanel.add( attachmentPanel );
       }
@@ -168,7 +180,7 @@ public class MessageDraftAttachmentsView
       {
          public void run()
          {
-            attachmentsPanel.revalidate( );
+            attachmentsPanel.revalidate();
          }
       } );
 

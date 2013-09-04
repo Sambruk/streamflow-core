@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.14-SNAPSHOT</version>
+    <version>1.15-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -59,6 +59,7 @@
         <module>infrastructure</module>
         <module>fileconfig</module>
         <module>client</module>
+        <!--<module>webclient</module>-->
         <module>serverplugin</module>
         <module>web</module>
         <module>webstart</module>
@@ -70,10 +71,11 @@
     </modules>
 
     <scm>
-        <connection>scm:git:ssh://gerrit.jayway.com/projects/streamflow-core.git</connection>
-        <developerConnection>scm:git:ssh://gerrit.jayway.com/projects/streamflow-core.git
+        <connection>scm:git:https://github.com/jayway/streamflow-core.git</connection>
+        <developerConnection>scm:git:https://github.com/jayway/streamflow-core.git
         </developerConnection>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
 
     <distributionManagement>
         <repository>
@@ -225,20 +227,26 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.0</version>
+                <version>2.4.1</version>
                 <configuration>
                     <!-- need install here so that maven-dependency-plugin can find release versions in local repo -->
                     <preparationGoals>clean install</preparationGoals>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
-                <version>1.2</version>
+                <version>1.8.1</version>
                 <configuration>
+                    <connectionType>developerConnection</connectionType>
                     <tag>${build.tag}</tag>
-                    <username>${scm.username}</username>
-                    <password>${scm.password}</password>
                 </configuration>
             </plugin>
             <plugin>
@@ -298,6 +306,8 @@
                             <Implementation-BuildKey>${buildKey}</Implementation-BuildKey>
                             <Implementation-Build>${buildNumber}</Implementation-Build>
                             <Implementation-Revision>${svnRevision}</Implementation-Revision>
+                            <Permissions>all-permissions</Permissions>
+                            <Codebase>*</Codebase>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -777,6 +787,12 @@
     </dependencyManagement>
 
     <profiles>
+        <profile>
+            <id>web-client</id>
+            <modules>
+                <module>webclient</module>
+            </modules>
+        </profile>
         <profile>
             <id>glassfish</id>
             <build>

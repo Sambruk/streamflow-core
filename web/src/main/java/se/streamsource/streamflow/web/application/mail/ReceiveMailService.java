@@ -515,7 +515,14 @@ public interface ReceiveMailService
                      }
 
                      builder.prototype().content().set( content.toString() );
-                     builder.prototype().contentType().set( internalMessage.getContentType() );
+                     // since we create the content of the message our self it's ok to set content type always to text/plain
+                     builder.prototype().contentType().set( "text/plain" );
+
+                     // Make sure to address has some value before vi create a case!!
+                     if( builder.prototype().to().get() == null )
+                     {
+                        builder.prototype().to().set( "n/a" );
+                     }
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      copyToArchive.add( message );
                      if (expunge)

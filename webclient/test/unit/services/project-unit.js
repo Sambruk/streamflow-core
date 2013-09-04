@@ -24,7 +24,7 @@ describe("sf.services.project", function () {
   beforeEach(inject(function(httpService, navigationService) {
     httpService.apiUrl = 'mock/';
     spyOn(navigationService, 'projectId').andReturn('b35873ba-4007-40ac-9936-975eab38395a-3f');
-    spyOn(navigationService, 'caseType').andReturn('inbox');
+    //spyOn(navigationService, 'caseType').andReturn('inbox');
   }));
 
   describe("projectService", function(){
@@ -35,7 +35,6 @@ describe("sf.services.project", function () {
         // Given
         $httpBackend.expectGET('mock/').respond(backend.root);
         $httpBackend.expectGET('mock/workspacev2/').respond(backend.workspacev2);
-        $httpBackend.expectGET('mock/workspacev2/projects/').respond(backend.projects);
 
         // When
         var response = projectService.getAll();
@@ -81,10 +80,12 @@ describe("sf.services.project", function () {
   });
 
   describe('caseMixin', function() {
-    var yesterday, tomorrow, object;
+    var yesterday, tomorrow, SfCaseClass;
 
-    beforeEach(inject(function(projectService) {
-        object = _.extend({}, projectService.caseMixin);
+    beforeEach(inject(function(projectService, SfCase) {
+
+        SfCaseClass = SfCase;
+
         yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         tomorrow = new Date();
@@ -93,17 +94,20 @@ describe("sf.services.project", function () {
 
     describe('overdueDays', function() {
       it('is overdue by 1 if dueDate is yesterday', function() {
-        object.dueDate = yesterday.toString();
+        var object = new SfCaseClass({dueDate: yesterday.toString()});
         expect(object.overdueDays()).toEqual(1);
       });
 
       it('is not overdue (0) if dueDate is tomorrow', function() {
-        object.dueDate = tomorrow.toString();
+        var object = new SfCaseClass({dueDate: tomorrow.toString()});
+        //object.dueDate = tomorrow.toString();
         expect(object.overdueDays()).toEqual(0);
       });
 
       it('is overdue for an old string date', function() {
-        object.dueDate = '2013-01-24T12:04:34.220Z';
+        var object = new SfCaseClass({dueDate: '2013-01-24T12:04:34.220Z'});
+        // var object = SfCaseClass({dueDate: '2013-01-24T12:04:34.220Z'});
+        //object.dueDate = '2013-01-24T12:04:34.220Z';
         expect(object.overdueDays()).toBeGreaterThan(6);
       });
 
@@ -111,31 +115,36 @@ describe("sf.services.project", function () {
 
     describe('overdueStatus', function() {
       it('is unset if dueDate is unset', function() {
-        object.dueDate = null;
+        var object = new SfCaseClass({dueDate: null});
+        //object.dueDate = null;
         expect(object.overdueStatus()).toEqual('unset');
       });
 
       it('is overdue if overdue:)', function() {
-        object.dueDate = yesterday;
+        var object = new SfCaseClass({dueDate: yesterday.toString()});
+        //object.dueDate = yesterday;
         expect(object.overdueStatus()).toEqual('overdue');
       });
 
       it('is set if dueDate is set but not overdue', function() {
-        object.dueDate = tomorrow;
+        var object = new SfCaseClass({dueDate: tomorrow.toString()});
+        //object.dueDate = tomorrow;
         expect(object.overdueStatus()).toEqual('set');
       });
     });
 
     describe('modificationDate', function() {
       it('is lastModifiedDate if it exists', function() {
-        object.lastModifiedDate = 'lmd';
-        object.creationDate = 'cd';
+        var object = new SfCaseClass({lastModifiedDate: 'lmd', creationDate: 'cd'});
+        //object.lastModifiedDate = 'lmd';
+        //object.creationDate = 'cd';
         expect(object.modificationDate()).toEqual('lmd');
       });
 
       it('is creationDate if lastModifiedDate is missing', function() {
-        object.lastModifiedDate = null;
-        object.creationDate = 'cd';
+        var object = new SfCaseClass({lastModifiedDate: null, creationDate: 'cd'});
+        //object.lastModifiedDate = null;
+        //object.creationDate = 'cd';
         expect(object.modificationDate()).toEqual('cd');
       });
     });

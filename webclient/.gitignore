@@ -1,4 +1,10 @@
 node_modules/
+dist
+.tmp
+.sass-cache
+app/components
 test_server/*.jar
 test_server/*.war
-
+libpeerconnection.log
+*.swp
+*.swo

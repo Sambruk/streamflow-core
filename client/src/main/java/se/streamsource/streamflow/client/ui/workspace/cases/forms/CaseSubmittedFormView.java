@@ -46,6 +46,7 @@ import se.streamsource.streamflow.client.util.OpenAttachmentTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.StreamflowSelectableLabel;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -53,16 +54,13 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
-import javax.swing.text.Document;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -173,7 +171,7 @@ public class CaseSubmittedFormView
             JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             StreamflowButton button = new StreamflowButton(context.getActionMap(this).get("resenddoublesignemail"));
             DateTime date = secondSignee.lastReminderSent().get();
-            JLabel lastReminderSent = new JLabel( text( WorkspaceResources.last_reminder_sent ) + ": " + date != null ? DateFormats.getProgressiveDateTimeValue( date, Locale.getDefault() ) : "" );
+            JLabel lastReminderSent = new JLabel( text( WorkspaceResources.last_reminder_sent ) + ": " + (date != null ? DateFormats.getProgressiveDateTimeValue( date, Locale.getDefault() ) : "" ) );
             panel.add( button );
             panel.add( lastReminderSent );
             builder.append( panel );
@@ -231,36 +229,49 @@ public class CaseSubmittedFormView
 
    public JComponent getComponent(String fieldValue, String fieldType)
    {
-      JComponent component;
+      StreamflowSelectableLabel selectableLabel = new StreamflowSelectableLabel();
+      selectableLabel.setContentType( "text/html" );
+      JLabel fontSource = new JLabel( );
+
+      String text = "<html> <font size='3' face='"+ fontSource.getFont().getFontName() +"'>";
+
       if (fieldType.equals(DateFieldValue.class.getName()))
       {
-         component = new StreamflowSelectableLabel(Strings.empty(fieldValue) ? " " : formatter.format(DateFunctions.fromString(fieldValue)));
+         text += Strings.empty(fieldValue) ? " " : formatter.format(DateFunctions.fromString(fieldValue));
       } else if (fieldType.equals(TextAreaFieldValue.class.getName()))
       {
-         component = new StreamflowSelectableLabel("<html>" + fieldValue.replace("\n", "<br/>") + "</html>");
+         text += fieldValue.replace("\n", "<br/>");
       } else if (fieldType.equals(AttachmentFieldValue.class.getName()))
       {
          if( Strings.empty( fieldValue ))
-            return new StreamflowSelectableLabel( fieldValue );
-
-         final AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldValue);
-         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-         panel.add(new StreamflowSelectableLabel(attachment.name().get()));
-         StreamflowButton button = new StreamflowButton(context.getActionMap(this).get("open"));
-         buttons.put(button, attachment);
-         panel.add(button);
-         component = panel;
+         {
+            text += fieldValue;
+         } else
+         {
+            final AttachmentFieldSubmission attachment = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, fieldValue);
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            StreamflowSelectableLabel onPanel = new StreamflowSelectableLabel(  );
+            onPanel.setContentType( "text/html" );
+            onPanel.setText( text + attachment.name().get() + "</font></html>" );
+            panel.add( onPanel );
+            StreamflowButton button = new StreamflowButton(context.getActionMap(this).get("open"));
+            buttons.put(button, attachment);
+            panel.add(button);
+            return panel;
+         }
       } else if (fieldType.equals( CheckboxesFieldValue.class.getName()) || fieldType.equals( ListBoxFieldValue.class.getName() ))
       {
          // replace all [ with " and ] with "
          fieldValue = fieldValue.replaceAll( "\\[", "\"" );
          fieldValue = fieldValue.replaceAll( "\\]", "\"" );
-         component = new StreamflowSelectableLabel( fieldValue );
+         text += fieldValue;
       } else
       {
-         component = new StreamflowSelectableLabel(fieldValue);
+         text += fieldValue;
       }
-      return component;
+      text += "</font></html>";
+      selectableLabel.setText( text );
+      return selectableLabel;
    }
 
    public Task openAttachment(ActionEvent event)
@@ -298,32 +309,5 @@ public class CaseSubmittedFormView
             model.read();
          }
       }.execute();
-   }
-
-   class StreamflowSelectableLabel
-      extends JTextField
-   {
-      public StreamflowSelectableLabel( String text )
-      {
-         this( null, text, 0 );
-      }
-
-      public StreamflowSelectableLabel( int columns )
-      {
-         this( null, null, columns );
-      }
-
-      public StreamflowSelectableLabel( String text, int columns )
-      {
-         this( null, text, columns );
-      }
-
-      public StreamflowSelectableLabel(Document doc, String text, int columns)
-      {
-         super(doc, text, columns );
-         setBorder( BorderFactory.createEmptyBorder() );
-         setOpaque( false );
-         setEditable( false );
-      }
    }
 }

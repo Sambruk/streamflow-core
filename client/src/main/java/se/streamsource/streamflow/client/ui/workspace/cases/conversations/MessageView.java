@@ -31,6 +31,7 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.WrapLayout;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
@@ -104,7 +105,7 @@ public class MessageView extends JPanel
             .newObjectBuilder( MessageAttachmentsView.class )
             .use( model.newMessageAttachmentsModel() )
             .newInstance();
-      attachmentsView.setLayout( new FlowLayout( FlowLayout.LEFT ) );
+      attachmentsView.setLayout( new WrapLayout( FlowLayout.LEFT ) );
 
       authorLabelValue = new JXLabel();
       createdOnLabelValue = new JXLabel();
@@ -119,7 +120,10 @@ public class MessageView extends JPanel
       formBuilder.add( createdOnLabelValue );
 
       messageDetailButtonPanel.add(closeButtonPanel, BorderLayout.EAST);
-      messageDetailButtonPanel.add( attachmentsView, BorderLayout.CENTER );
+      JScrollPane pane = new JScrollPane( attachmentsView );
+      pane.setPreferredSize( new Dimension( 500, 40 ) );
+      pane.setBorder( BorderFactory.createEmptyBorder() );
+      messageDetailButtonPanel.add( pane, BorderLayout.CENTER );
       messageDetailButtonPanel.add(messageDetailsLabelPanel, BorderLayout.WEST);
 
       showMessage = new JTextPane();

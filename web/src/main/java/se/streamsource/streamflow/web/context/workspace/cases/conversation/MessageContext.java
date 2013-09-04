@@ -16,63 +16,76 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 /**
  *
  */
-public class MessageContext
-   implements IndexContext<MessageDTO>
+@Concerns(UpdateCaseCountMessageContextConcern.class)
+@Mixins(MessageContext.Mixin.class)
+public interface MessageContext extends IndexContext<MessageDTO>, Context
 {
-   @Structure
-   Module module;
-
-   public MessageDTO index()
+   void read();
+   
+   abstract class Mixin implements MessageContext
    {
-      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
-      Map<String, String> translations = new HashMap<String, String>();
-      for (String key : bundle.keySet())
+      @Structure
+      Module module;
+
+      public MessageDTO index()
       {
-         translations.put(key, bundle.getString(key));
+         ResourceBundle bundle = ResourceBundle
+               .getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
+         Map<String, String> translations = new HashMap<String, String>();
+         for (String key : bundle.keySet())
+         {
+            translations.put( key, bundle.getString( key ) );
+         }
+
+         Message.Data messageData = RoleMap.current().get( Message.Data.class );
+         Message message = RoleMap.role( Message.class );
+
+         ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
+         Contactable contact = module.unitOfWorkFactory().currentUnitOfWork()
+               .get( Contactable.class, EntityReference.getEntityReference( messageData.sender().get() ).identity() );
+         String sender = contact.getContact().name().get();
+         builder
+               .prototype()
+               .sender()
+               .set( !"".equals( sender ) ? sender : EntityReference.getEntityReference( messageData.sender().get() )
+                     .identity() );
+         builder.prototype().createdOn().set( messageData.createdOn().get() );
+         builder.prototype().id().set( ((Identity) messageData).identity().get() );
+         builder.prototype().href().set( builder.prototype().id().get() );
+         builder.prototype().text().set( message.translateBody( translations ) );
+         builder.prototype().hasAttachments().set( ((Message) messageData).hasAttachments() );
+         builder.prototype().unread().set( ((Message) messageData).isUnread() );
+         builder.prototype().messageType().set( messageData.messageType().get() );
+
+         return builder.newInstance();
       }
 
-      Message.Data messageData = RoleMap.current().get( Message.Data.class );
-      Message message = RoleMap.role( Message.class );
-
-      ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
-      Contactable contact = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, EntityReference.getEntityReference( messageData.sender().get() ).identity() );
-      String sender = contact.getContact().name().get();
-      builder.prototype().sender().set( !"".equals( sender )
-            ? sender
-            : EntityReference.getEntityReference( messageData.sender().get() ).identity() );
-      builder.prototype().createdOn().set( messageData.createdOn().get() );
-      builder.prototype().id().set( ((Identity)messageData).identity().get() );
-      builder.prototype().href().set( builder.prototype().id().get() );
-      builder.prototype().text().set( message.translateBody(translations) );
-      builder.prototype().hasAttachments().set( ((Message)messageData).hasAttachments() );
-      builder.prototype().unread().set( ((Message) messageData).isUnread() );
-      builder.prototype().messageType().set( messageData.messageType().get() );
-
-      return builder.newInstance();
-   }
-
-   public void read()
-   {
-      RoleMap.role( Message.class ).setUnread( false );
+      public void read()
+      {
+         RoleMap.role( Message.class ).setUnread( false );
+      }
    }
 }

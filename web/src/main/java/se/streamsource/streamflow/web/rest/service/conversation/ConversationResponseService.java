@@ -54,6 +54,7 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
@@ -197,6 +198,7 @@ public interface ConversationResponseService
                            RoleMap.newCurrentRoleMap();
                         RoleMap.current().set( from, ConversationParticipant.class );
                         RoleMap.current().set( caze, CaseLoggable.Data.class );
+                        RoleMap.current().set( caze, Case.class );
 
                         Message message = null;
 

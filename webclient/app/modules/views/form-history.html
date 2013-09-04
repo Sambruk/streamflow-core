@@ -1,0 +1,36 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main" data-ng-controller="FormHistoryCtrl">
+  <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
+  <div>Välj ett datum:</div>
+  <select data-ng-options="form.index as form.submissionDate for form in submittedForms" data-ng-model="selectedSubmittedForm">
+  </select>
+  <h1>{{ submittedForm[0].form }}</h1>
+  <div>{{ submittedForm[0].submissionDate | dateTime}}</div>
+  <br />
+  <div data-ng-repeat="page in submittedForm[0].pages">
+    <h2>{{page.name}}</h2>
+    <div data-ng-repeat="field in page.fields">
+      {{ field.field }}: {{ field.value }}
+    </div>
+  </div>
+</div>
+
+<!-- Content secondary -->
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

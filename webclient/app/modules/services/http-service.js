@@ -34,7 +34,8 @@
         case 'production':
           return 'http://localhost:8082/streamflow/';
         default:
-          return baseUrl + "/api/";
+          return 'https://test.sf.streamsource.se/streamflow/';
+          //return baseUrl + "/api/";
       }
     }
 
@@ -111,9 +112,10 @@
 
       postRequest: function (href, data) {
         var params = $.param(data);
+        var url = this.prepareUrl(href)
         return $http({
           method: 'POST',
-          url: this.absApiUrl(href),
+          url: url,
           timeout: this.timeout,
           data: params,
           headers: {'Content-Type': 'application/x-www-form-urlencoded'}

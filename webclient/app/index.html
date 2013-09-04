@@ -20,7 +20,8 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" xmlns="http://www.w3.org/1999/html"> <!--<![endif]-->
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
@@ -35,11 +36,17 @@
 
         <link rel="shortcut icon" href="design/gui/i/favicon.ico">
 
+        <!-- build:css styles/gui-fwk.css -->
         <link rel="stylesheet" href="design/gui/css/basic.css">
         <link rel="stylesheet" href="design/gui/css/print.css">
         <link rel="stylesheet" href="design/gui/css/fonts.css">
         <link rel="stylesheet" href="design/gui/css/main.css">
         <link rel="stylesheet" href="design/gui/css/retina.css">
+
+        <!-- datepicker -->
+        <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.css">
+        <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.date.css">
+        <!-- endbuild -->
 
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
         <!--[if lte IE 8]>
@@ -54,11 +61,11 @@
             document.createElement('ng:view');
           </script>
         <![endif]-->
-        </head>
-    <body ng-app="sf" sf-layout-style>
+    </head>
+    <body data-ng-app="sf" data-sf-layout-style>
 
         <!--[if lt IE 7]>
-            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
         <!--[if lt IE 9]>
@@ -69,54 +76,87 @@
         <!-- Add your site or application content here -->
         <div class='body'>
 
-          <div class='header' role='banner'>
-            <div class='header-body cf'>
-              <div class='header-primary'>
+          <div class="header cf" role="banner">
+
+            <div class="client-name">
                 <h1>Malmö Kommun Kontaktcenter</h1>
+            </div>
+            <!-- /client-name -->
 
-                <form action="#" method="get" class="main-search" role='search'>
-                  <div>
-                    <label for="main-searchtext"></label>
+            <form action="#" method="get" class="main-search" role="search">
+                <div>
+                    <label for="main-searchtext" class="struct">Sök</label>
                     <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
-                    <button type="submit"><i class="glyph icon-search"><span>Sök</span></i></button>
-                  </div>
-                </form>
-              </div> <!-- header-primary -->
+                    <button type="submit"><i class="icon-search"><span>Sök</span></i></button>
+                </div>
+            </form>
+            <!-- /main-search -->
 
-              <div class="header-secondary">
-                <a href="xlink-" class="glyph icon-user logged-in">Solveig Grankvist</a>
-              </div> <!-- header-secondary -->
+            <div class="user-area">
+                <a href="xlink-" class="icon-user logged-in">Solveig Grankvist</a>
+            </div>
+            <!-- /user-area -->
 
-            </div> <!-- header-body -->
-
-          </div> <!-- header -->
+        </div>
 
           <div class="main">
-            <ng-include src="'modules/views/navigation.html'"></ng-include>
+            <data-ng-include src="'modules/views/navigation.html'"></data-ng-include>
             <div class="main-body cf" ng-view>
             </div> <!-- main-body -->
           </div> <!-- main -->
         </div> <!-- body -->
 
         <!-- TODO use CDN in production -->
-        <script src="vendor/angular.js"></script>
-        <script src="vendor/underscore-min.js"></script>
-        <script src="vendor/jquery.js"></script>
+        <script src="components/jquery/jquery.js"></script>
+        <script src="components/angular/angular.js"></script>
+        <script src="components/angular-resource/angular-resource.js"></script>
+        <script src="components/typewatch/jquery.typewatch.js"></script>
+
 
         <!-- build:js scripts/scripts.js -->
-        <script src="vendor/base64.js"></script>
+        <script src="components/base64/base64.js"></script>
+        <script src="components/underscore/underscore-min.js"></script>
         <script src="modules/app.js"></script>
         <script src="modules/filters.js"></script>
-        <script src="modules/controllers/main.js"></script>
+        <script src="modules/controllers/case-controllers.js"></script>
+        <script src="modules/controllers/conversation-controllers.js"></script>
+        <script src="modules/controllers/contact-controllers.js"></script>
+        <script src="modules/controllers/form-controllers.js"></script>
+        <script src="modules/controllers/notes-controllers.js"></script>
+        <script src="modules/controllers/project-controllers.js"></script>
+        <script src="modules/controllers/sidebar-controllers.js"></script>
         <script src="modules/directives/sf-active-link.js"></script>
+        <script src="modules/directives/sf-fixed-toolbar.js"></script>
         <script src="modules/directives/sf-layout-style.js"></script>
+        <script src="modules/directives/sf-on-blur.js"></script>
+        <script src="modules/directives/sf-checkbox-auto-send.js"></script>
+        <script src="modules/directives/sf-multiple-select-auto-send.js"></script>
+        <script src="modules/directives/sf-generic-auto-send.js"></script>
+        <script src="modules/directives/sf-simple-field-auto-send.js"></script>
+        <script src="modules/directives/sf-radio-extended-auto-send.js"></script>
+        <script src="modules/directives/sf-radio-extended-text-field.js"></script>
+        <script src="modules/directives/sf-update-on-blur.js"></script>
+        <script src="modules/directives/jquery-custom-select.js"></script>
+        <script src="modules/directives/sf-date-picker.js"></script>
         <script src="modules/services/navigation-service.js"></script>
         <script src="modules/services/backend-service.js"></script>
         <script src="modules/services/error-handler-service.js"></script>
         <script src="modules/services/http-service.js"></script>
+        <script src="modules/services/perspective-service.js"></script>
         <script src="modules/services/project-service.js"></script>
         <script src="modules/services/case-service.js"></script>
+        <script src="modules/services/form-mapper-service.js"></script>
         <script src="modules/models/sf-case.js"></script>
+
+        <script src="jquery.customSelect.min.js"></script>
         <!-- endbuild -->
+
+        <!-- build:js scripts/gui-fwk.js -->
+        <!-- datepicker -->
+        <script type="text/javascript" src="design/gui/vendor/pickadate/picker.js"></script>
+        <script type="text/javascript" src="design/gui/vendor/pickadate/picker.date.js"></script>
+        <script type="text/javascript" src="design/gui/vendor/pickadate/translations/sv_SE.js"></script>
+        <!-- endbuild -->
+
     </body>
 </html>

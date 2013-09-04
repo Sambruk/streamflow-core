@@ -1,0 +1,54 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main" data-ng-controller="ConversationCreateCtrl">
+  <div class="m m-check-list">
+    <div class="m-h">
+      <h2>Skapa en ny konversation</h2>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>
+    </div>
+    <div class="convo-input">
+      <form action="#" method="get" class="cf">
+        <div class="row cf">
+          <div class="text col full">
+            <label for="conversation-topic">Titel</label>
+            <input type="text" data-ng-model="conversationTopicToCreate" id="conversation-topic">
+          </div>
+        </div>
+        <!--<div class="row cf">
+          <div class="text">
+            <label for="convo-text" class="struct">Meddelande</label>
+            <textarea name="convo-text" id="convo-text" cols="30" rows="2" placeholder="Skriv ditt meddelande här"></textarea>
+          </div>
+          <div class="upload">
+            <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
+          </div>
+          <div class="send">
+              <button ng-click="submitConversation($event)" name="convo-submit">Skicka</button>
+          </div>
+        </div>-->
+        <div class="submit-area">
+          <button data-ng-click="submitConversation($event)" name="convo-submit">Skapa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Content secondary -->
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

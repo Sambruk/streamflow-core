@@ -30,5 +30,30 @@
     };
   }]);
 
+  sf.filters.filter('longDate', ['$filter', function($filter) {
+    return function(input) {
+      return $filter('date')(input, 'yyyy-MM-dd');
+    };
+  }]);
+
+  sf.filters.filter('dateTime', ['$filter', function($filter) {
+    return function(input) {
+      return $filter('date')(input, 'yyyy-MM-dd, hh:mm');
+    };
+  }]);
+
+  sf.filters.filter('translate', ['$filter', function($filter) {
+    return function(input) {
+
+      // So far, we keep it simple by just using a lookup table
+      var translation = {
+        inbox: 'Inkorg',
+        assignments: "Mina ärenden"
+      };
+
+      return translation[input];
+    };
+  }]);
+
 }());
 

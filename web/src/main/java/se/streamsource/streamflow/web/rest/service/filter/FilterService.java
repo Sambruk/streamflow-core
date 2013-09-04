@@ -16,6 +16,8 @@
  */
 package se.streamsource.streamflow.web.rest.service.filter;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
@@ -25,7 +27,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
-
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerMixin;
@@ -37,6 +38,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.project.filter.Filters;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
@@ -71,8 +73,11 @@ public interface FilterService
             {
                CaseEntity caze = module.unitOfWorkFactory().currentUnitOfWork().get(CaseEntity.class, event.entity().get());
 
-               if (!caze.isAssigned() && caze.isStatus(CaseStates.OPEN))
+               if (!caze.isAssigned() && caze.isStatus(CaseStates.OPEN) && lastNotificationInSeconds( caze ) > 10 )
+               {
                   applyFilterContext.rebind((Filters.Data) newOwner, caze).applyFilters();
+                  caze.updateNotificationTrace( new DateTime( ), "changedOwner" );
+               }
             }
          }
       }
@@ -90,8 +95,11 @@ public interface FilterService
             Owner owner = caze.owner().get();
             if (owner instanceof Filters.Data)
             {
-               if (caze.isStatus(CaseStates.OPEN))
+               if (caze.isStatus(CaseStates.OPEN) && lastNotificationInSeconds( caze ) > 10)
+               {
                   applyFilterContext.rebind((Filters.Data) owner, caze).applyFilters();
+                  caze.updateNotificationTrace( new DateTime(  ), "unassigned" );
+               }
             }
          }
       }
@@ -106,11 +114,18 @@ public interface FilterService
          {
             CaseEntity caze = module.unitOfWorkFactory().currentUnitOfWork().get(CaseEntity.class, event.entity().get());
             Owner owner = caze.owner().get();
-            if (owner instanceof Filters.Data)
+            if (owner instanceof Filters.Data && lastNotificationInSeconds( caze ) > 10)
             {
                applyFilterContext.rebind((Filters.Data) owner, caze).applyFilters();
+               caze.updateNotificationTrace( new DateTime( ), "changedStatus" );
             }
          }
+      }
+
+      private int lastNotificationInSeconds( Case caze )
+      {
+         DateTime now = new DateTime(  );
+         return new Duration( caze.getNotifiedOn() != null ? caze.getNotifiedOn() : now.minusSeconds( 60 ) , now ).toStandardSeconds().getSeconds();
       }
    }
 }

@@ -1,0 +1,173 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-secondary" role="complementary" data-ng-controller="SidebarCtrl">
+
+  <h2 class="struct">Verktyg och annan information</h2>
+  <!-- Issue toolbar -->
+  <div class="toolbar" data-sf-fixed-toolbar>
+    <ul class="buttons cf" data-ng-show="commands[0]">
+      <li><a href="" data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li><a href="" data-ng-show="canAssign" data-ng-click="assign()" class="btn">Tilldela</a></li>
+      <li><a href="" data-ng-show="canResolve" data-ng-click="resolve()" class="btn">Avsluta</a></li>
+      <li><a href="" data-ng-show="canClose" data-ng-click="close($event)" class="btn">Stäng</a></li>
+      <li>
+          <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
+          <ul>
+              <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
+              <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread()" href="" class="btn">Markera oläst</a></li>
+              <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+          </ul>
+      </li>
+    </ul>
+    <div class="toolbar-content">
+
+      <div data-ng-switch on="commandView">
+          <div data-ng-switch-when="resolve">
+            <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+            </select>
+            <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
+          </div>
+
+          <div data-ng-switch-when="close">
+            <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
+          </div>
+
+          <div data-ng-switch-when="sendTo">
+              <select custom-select data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+              </select>
+              <button data-ng-click="onSendToButtonClicked($event)">Skicka till</button>
+          </div>
+
+          <div data-ng-switch-when="todo">
+              TODO
+          </div>
+
+          <div data-ng-switch-default>
+          </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Issue toolbar -->
+
+  <!-- Module: Allmänt -->
+  <div class="m m-general">
+    <div class="m-h">
+      <h2>Allmänt</h2>
+      <a href="xlink-" class="edit-module icon-edit" title="Redigera"><span class="struct">Redigera</span></a>
+    </div>
+    <div class="m-c">
+      <div class="m-box">
+        <ul>
+          <li><strong>Ägare:</strong> {{ caze[0].owner }}</li>
+          <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
+          <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
+          <li><strong>Kund:</strong> TODO TODOsson 19760901-4046</li>
+          <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- /Module: Allmänt -->
+
+  <!-- Module: Konversationer -->
+  <div class="m m-convos">
+    <div class="m-h">
+      <h2>Konversationer</h2>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
+    </div>
+    <div class="m-c">
+      <ul>
+        <li data-ng-repeat='conversation in conversations'>
+          <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link">
+            <h3>{{ conversation.text }}</h3>
+            <span class="date">{{ conversation.creationDate | dateTime }}</span>
+            <ul class="convo-status">
+              <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
+              <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
+            </ul>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Konversationer -->
+
+  <!-- Module: Kontakter -->
+  <div class="m m-contacts">
+    <div class="m-h">
+      <h2>Kontakter</h2>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+    </div>
+    <div class="m-c">
+      <ul class="zebra-list">
+        <li data-ng-class-odd="'odd'" ng-repeat='contact in contacts' ng-odd=>
+            <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/{{$index}}/">{{contact.name}}</a>
+            <!--
+            <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
+            -->
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Kontakter -->
+
+  <!-- Module: Bifogade filer -->
+  <div class="m m-attachments">
+    <div class="m-h">
+      <h2>Bifogade filer</h2>
+    </div>
+    <div class="m-c">
+      <ul class="zebra-list">
+        <li data-ng-class-odd="'odd'" ng-repeat="attachment in attachments" ng-odd=>
+        <a data-ng-click="downloadAttachment(attachment.id)" href="">{{ attachment.text }}</a>
+        <a data-ng-click="deleteAttachment(attachment.id)" href="" class="delete" title="Radera fil">Radera fil</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Bifogade filer -->
+
+  <!-- Module: Ärendelogg -->
+  <div class="m m-issuelog">
+    <div class="m-h">
+      <h2>Ärendelogg</h2>
+    </div>
+    <div class="m-c">
+      <table class="log-table">
+        <caption class="struct">Historik för detta ärende</caption>
+        <thead class="struct">
+          <tr>
+            <th>Datum</th>
+            <th>Titel</th>
+            <th>Användare</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr data-ng-repeat="entry in caseLog" data-ng-class-even="'even'">
+          <td>{{ entry.creationDate | shortDate}}</td>
+          <td>{{ entry.text }}</td>
+          <td>{{ entry.creator }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- /Module: Ärendelogg -->
+<!-- <pre><code>{{ form[0] | json }}</code></pre> -->
+</div>

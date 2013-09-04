@@ -1,0 +1,148 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div data-ng-controller="FormCtrl">
+  <ul class="form-tabs cf">
+      <li class="has-versions" data-ng-repeat="possibleForm in possibleForms">
+         <!-- TODO selected element -->
+         <a href="" data-ng-click="selectForm( possibleForm.href )" data-ng-class="{sel: currentFormId==possibleForm.href}">{{ possibleForm.text }}</a>
+         <a href="#/{{ projectId }}/{{ projectType }}/{{ case[0].id }}/formhistory/{{ possibleForm.id }}" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a>
+      </li>
+  </ul>
+  <ol class="form-sections cf">
+      <li class="section-item" data-ng-class="{sel: currentFormPage.title==page.title}" data-ng-repeat="page in form[0].enhancedPages"><a href="" data-ng-click="issueForm.$valid && selectFormPage(page)">{{page.title}}</a></li>
+  </ol>
+
+  <form name="issueForm" method="post" novalidate data-ng-submit="submitForm()">
+    <div>{{ formMessage }}</div>
+    <div data-ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
+      <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextFieldValue">
+            <div class="text col full col-1">
+              <data-ng-form name="{{ field.field.fieldId }}">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <input maxlength="{{ field.field.fieldValue.width }}" data-ng-required="field.field.mandatory" data-ng-pattern="field.field.fieldValue.regularExpression" type="text" data-ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
+                <data-ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></data-ng-include>
+              </data-ng-form>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.DateFieldValue">
+            <div class="text col full col-1">
+              <data-ng-form name="{{ field.field.fieldId }}">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <input maxlength="{{ field.field.fieldValue.width }}" data-required="field.field.mandatory" type="text" date-input-type="date" sf-date-picker data-ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
+                <data-ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></data-ng-include>
+              </data-ng-form>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.NumberFieldValue">
+            <div class="text col full col-1">
+              <data-ng-form name="{{ field.field.fieldId }}">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <input ng-required="field.field.mandatory" data-ng-pattern="field.field.fieldValue.regularExpression" type="text" data-ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-generic-auto-send>
+                <data-ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></data-ng-include>
+              </data-ng-form>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.TextAreaFieldValue">
+            <div class="text col full col-1">
+                <data-ng-form name="{{ field.field.fieldId }}">
+                  <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                  <textarea data-ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" cols="{{ field.field.fieldValue.cols }}" rows="{{ field.field.fieldValue.rows }}" data-ng-required="field.field.mandatory" sf-generic-auto-send></textarea>
+                  <data-ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></data-ng-include>
+                </data-ng-form>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue">
+            <div class="select col medium col-2">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <select custom-select data-ng-model="field.value"
+                name="{{ field.field.field }}" id="{{ field.field.fieldId }}"
+                data-ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
+                </select>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ListBoxFieldValue">
+            <div class="select col medium col-2">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <select multiple data-ng-multiple="true" data-ng-model="field.value"
+                        data-ng-options="option.value as option.name for option in field.field.fieldValue.options" sf-generic-auto-send name="{{ field.field.field }}" data-field-type="{{ field.field.fieldValue._type }}">
+                </select>
+                <data-ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></data-ng-include>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue">
+            <div class="radio col medium col-2">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <span data-ng-repeat="option in field.field.fieldValue.values">
+                  <input data-ng-model="field.value" type="radio" name="{{ field.field.field }}" value="{{ option }}" sf-generic-auto-send>{{ option }}</input>
+                </span>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue">
+            <div class="radio col medium col-2">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <span data-ng-repeat="option in field.field.fieldValue.extendedValues">
+                  <input sf-radio-extended-auto-send="{{ option.value != option.display }}" data-ng-model="field.value" type="radio" name="{{ field.field.fieldId }}"
+                  id="{{ field.field.field }}" value="{{ option.value }}">{{ option.display }}</input>
+                </span>
+                <div data-ng-show="field.field.fieldValue.values.indexOf(field.value) == -1"><input data-ng-model="field.value" sf-radio-extended-text-field="{{ field.field.fieldValue.extendedValues }}" type="text" name="{{ field.field.field }}"></div>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue">
+            <div class="radio col medium col-2">
+                <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <span data-ng-repeat="option in field.field.fieldValue.checkings">
+                  <input type="checkbox" value="{{option.name}}" data-ng-model="option.checked" type="radio" name="{{ field.field.field }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}" data-backing-field="{{ field.field.fieldValue.checkings }}">{{ option.name }}</input>
+                </span>
+            </div>
+          </div>
+
+          <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CommentFieldValue">
+            <div class="col medium col-2" data-ng-bind-html-unsafe="field.field.note"></div>
+          </div>
+
+          <div data-ng-switch-default>
+            <div class="text col full col-1">
+                <b>{{ field.field.description }}</b><br />
+                Not supported form type <i>{{ field.field.fieldValue._type }}</i>
+            </div>
+          </div>
+      </div>
+
+    </div>
+
+    <div data-ng-show="isLastPage(currentFormPage)">
+      <input data-ng-disabled="!issueForm.$valid" type="submit" name="submit" value="Skicka"></input>
+    </div>
+
+  </form>
+
+  <div data-ng-show="currentFormPage">
+    <a href="" class="btn inline" data-ng-class="{inactive: isFirstPage() || !issueForm.$valid}" data-ng-click="!isFirstPage() && issueForm.$valid && previousFormPage()">Tillbaka</a> <a href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
+  </div>
+<div>

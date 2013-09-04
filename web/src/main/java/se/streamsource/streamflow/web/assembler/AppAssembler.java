@@ -79,6 +79,7 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalStruc
 import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitValue;
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
+import se.streamsource.streamflow.web.infrastructure.caching.CaseCountCacheService;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
@@ -182,6 +183,9 @@ public class AppAssembler
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker( 1, 1000 * 60 * 60 * 12 ) );
       configuration().entities( AvailabilityConfiguration.class );
+      
+      system.services( CaseCountCacheService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+      
    }
 
    private void archival(ModuleAssembly archival)

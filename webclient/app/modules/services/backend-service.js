@@ -37,6 +37,10 @@
       return str.substring(0, lastIndex + 1);
     }
 
+    var isId = function(href){
+      return href.split("-").length - 1 === 5
+    }
+
     // The Instance API
     SfResource.prototype = {
 
@@ -53,7 +57,14 @@
           return item.id === trimmedId;
         });
 
+        // Fix for broken API links to entities
+        if (w && isId(w.href) && _.last(w.href) !== "/") {
+          w.href = w.href + "/"
+        }
+
         if (!w) {
+          console.log("Not found: ", trimmedId, " in ", JSON.stringify(resourceData));
+
           var deferred = $q.defer();
           deferred.reject({msg: "Missing key in json " + id, data: resourceData});
           return deferred.promise;
@@ -75,6 +86,18 @@
         }
         var spec = specs.splice(0, 1)[0];
         var key = Object.keys(spec)[0];
+
+        // Override API browsability if needed
+        if (spec.unsafe) {
+          var valueToPush = spec[key];
+
+          this.response[key].push({
+            href: valueToPush + "/",
+            id: valueToPush,
+            rel: valueToPush
+          });
+        }
+
         var id = spec[key];
         if (typeof id === 'function') {
           id = id();
@@ -82,7 +105,10 @@
 
         // select the data we want to find the id in:
         var keys = key.split('.');
-        var data = keys.reduce(function(prev, curr) { return prev[curr]; }, this.response);
+        var data = keys.reduce(
+          function(prev, curr) {
+            return prev[curr];
+        }, this.response);
         var resource = this.createById(data, id, urls);
         return resource.then(function (nextResource) {
           return nextResource.getNested(specs, urls);

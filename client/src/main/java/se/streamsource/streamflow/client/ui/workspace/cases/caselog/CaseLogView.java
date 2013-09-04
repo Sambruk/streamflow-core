@@ -50,22 +50,29 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
 import static se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes.*;
@@ -78,7 +85,19 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    private final CaseLogModel model;
 
    private JList filtersList;
-   private JList list = new JXList();
+   private JList list = new JXList(){
+      @Override
+      public Object[] getSelectedValues()
+      {
+         int[] selectedIndexes = getSelectedIndices();
+         Object[] selectedValues = new Object[selectedIndexes.length];
+         for (int i = 0; i < selectedIndexes.length; i++) {
+            CaseLogEntryDTO link = (CaseLogEntryDTO)getElementAt(selectedIndexes[i]);
+            selectedValues[i] = link.message().get();
+         }
+         return selectedValues;
+      }
+   };
    private JScrollPane newMessagePane;
    private JTextArea newMessageArea;
    private PopupHandler filterPopupHandler;
@@ -93,7 +112,7 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
    private ImageIcon notPublishedIcon;
    private ImageIcon publishedIcon;
 
-   public CaseLogView(@Service ApplicationContext context, @Uses CaseLogModel logmodel)
+   public CaseLogView(@Service final ApplicationContext context, @Uses CaseLogModel logmodel)
    {
       this.model = logmodel;
 
@@ -180,6 +199,41 @@ public class CaseLogView extends JPanel implements TransactionListener, Refresha
       list.setCellRenderer( new CaseLogListCellRenderer() );
       list.setFixedCellHeight( -1 );
       list.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+
+      final JList tmpList = list;
+      list.addMouseListener(new MouseAdapter()
+      {
+         public void mousePressed(MouseEvent e)
+         {
+            if (e.isPopupTrigger())
+            {
+               int index = tmpList.locationToIndex( new Point( e.getX(),e.getY() ) );
+               if( tmpList.getSelectedIndex() != index )
+               {
+                  tmpList.setSelectedIndex( index );
+               }
+
+               final JPopupMenu menu = new JPopupMenu();
+               JMenuItem item = new JMenuItem();
+               item.setAction( context.getActionMap().get( "copy" ) );
+               item.setIcon( null );
+               menu.add( item );
+
+               final int x = e.getX();
+               final int y = e.getY();
+               final Component c = e.getComponent();
+               SwingUtilities.invokeLater( new Runnable()
+               {
+                  public void run()
+                  {
+                     menu.show( c, x, y );
+                  }
+               } );
+
+            }
+         }
+      });
+
       scroll = new JScrollPane( list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
       scroll.setMinimumSize( new Dimension( 250, 100 ) );

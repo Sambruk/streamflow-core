@@ -9,7 +9,7 @@ describe("sf.services.case", function () {
     httpService.baseUrl = '';
     httpService.apiUrl = 'mock/';
     spyOn(navigationService, 'projectId').andReturn('b35873ba-4007-40ac-9936-975eab38395a-3f');
-    spyOn(navigationService, 'caseType').andReturn('inbox');
+    //spyOn(navigationService, 'caseType').andReturn('inbox');
     spyOn(navigationService, 'caseId').andReturn('b35873ba-4007-40ac-9936-975eab38395a-30');
   }));
 
@@ -18,7 +18,7 @@ describe("sf.services.case", function () {
 
     describe("getSelected", function () {
 
-      it("returns the selected project", inject(function (caseService, $httpBackend) {
+      it("returns the selected case", inject(function (caseService, $httpBackend) {
         // Given
         $httpBackend.expectGET('mock/').respond(backend.root);
         $httpBackend.expectGET('mock/workspacev2/').respond(backend.workspacev2);
@@ -27,7 +27,7 @@ describe("sf.services.case", function () {
         $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/').respond(backend.project1Inbox);
         $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/cases?tq=select+*').respond(backend.project1InboxCases);
         $httpBackend.expectGET('/api/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/').respond(backend.case1);
-        
+
         // When
         var response = caseService.getSelected('b35873ba-4007-40ac-9936-975eab38395a-3f',
                                                'inbox',
@@ -40,8 +40,8 @@ describe("sf.services.case", function () {
         $httpBackend.flush();
 
         // Then
-        expect(response.index.id).toEqual('0f0008c2-4d6e-453a-b255-0d6ec86145f9-2');
-        expect(response.index.text).toEqual('formulärstest');
+        expect(response[0].id).toEqual('0f0008c2-4d6e-453a-b255-0d6ec86145f9-2');
+        expect(response[0].text).toEqual('formulärstest');
       }));
     });
 

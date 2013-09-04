@@ -20,22 +20,64 @@
   window.sf = {
     directives: angular.module('sf.directives', []),
     filters: angular.module('sf.filters', []),
-    controllers: angular.module('sf.controllers', []),
+    controllers: angular.module('sf.controllers', 'sf.controllers.case', [])
   };
 
   sf.env = sf.env || 'development';
 
-  angular.module('sf', ['sf.filters', 'sf.controllers', 'sf.directives'])
+  angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation',
+    'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 'sf.controllers.project',
+    'sf.controllers.sidebar', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
       $routeProvider
-      .when('/:projectId/:projectType', {
+      .when('/search', {
+        templateUrl: 'modules/views/case-search.html',
+        controller: 'CaseSearchCtrl'
+      })
+      .when('/perspectives', {
+        templateUrl: 'modules/views/case-overview.html',
+        controller: 'CaseOverviewCtrl'
+      })
+      .when('/projects/:projectId/:projectType', {
         templateUrl: 'modules/views/case-list.html',
         controller: 'CaseListCtrl'
       })
       .when('/:projectId/:projectType/:caseId', {
         templateUrl:'modules/views/case-detail.html',
         controller: 'CaseDetailCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/edit', {
+        templateUrl:'modules/views/case-edit.html',
+        controller: 'CaseEditCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/conversation/create', {
+        templateUrl:'modules/views/conversation-create.html',
+        controller: 'ConversationCreateCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/conversation/:conversationId/participants/create', {
+        templateUrl:'modules/views/conversation-participant-create.html',
+        controller: 'ConversationParticipantCreateCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/conversation/:conversationId', {
+        templateUrl:'modules/views/conversation-detail.html',
+        controller: 'ConversationDetailCtrl'
+      })
+        .when('/:projectId/:projectType/:caseId/contact/add', {
+          templateUrl:'modules/views/contact-create.html',
+          controller: 'ContactCreateCtrl'
+        })
+        .when('/:projectId/:projectType/:caseId/contact/:contactIndex/', {
+          templateUrl:'modules/views/contact-edit.html',
+          controller: 'ContactEditCtrl'
+        })
+      .when('/:projectId/:projectType/:caseId/formhistory/:formId', {
+        templateUrl:'modules/views/form-history.html',
+        controller: 'FormHistoryCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/noteshistory/', {
+        templateUrl:'modules/views/notes-history.html',
+        controller: 'NotesHistoryCtrl'
       })
       .otherwise({
         redirectTo: '/'
