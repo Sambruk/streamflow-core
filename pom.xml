@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.14-SNAPSHOT</version>
+    <version>1.14</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -74,7 +74,8 @@
         <connection>scm:git:git://github.com/jayway/streamflow-core.git</connection>
         <developerConnection>scm:git:git://github.com/jayway/streamflow-core.git
         </developerConnection>
-    </scm>
+      <tag>streamflow-1.14-3</tag>
+  </scm>
 
     <distributionManagement>
         <repository>
