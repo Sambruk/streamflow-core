@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.14</version>
+    <version>1.14-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -71,11 +71,10 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://github.com/jayway/streamflow-core.git</connection>
-        <developerConnection>scm:git:https://github.com/jayway/streamflow-core.git
+        <connection>scm:git:git://github.com/jayway/streamflow-core.git</connection>
+        <developerConnection>scm:git:git://github.com/jayway/streamflow-core.git
         </developerConnection>
-      <tag>streamflow-1.14-3</tag>
-  </scm>
+    </scm>
 
     <distributionManagement>
         <repository>
@@ -232,13 +231,6 @@
                     <!-- need install here so that maven-dependency-plugin can find release versions in local repo -->
                     <preparationGoals>clean install</preparationGoals>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <version>1.8.1</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
