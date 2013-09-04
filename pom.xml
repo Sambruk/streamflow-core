@@ -226,7 +226,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.0</version>
+                <version>2.4.1</version>
                 <configuration>
                     <!-- need install here so that maven-dependency-plugin can find release versions in local repo -->
                     <preparationGoals>clean install</preparationGoals>
@@ -235,11 +235,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
-                <version>1.2</version>
+                <version>1.8.1</version>
                 <configuration>
                     <tag>${build.tag}</tag>
-                    <username>${scm.username}</username>
-                    <password>${scm.password}</password>
                 </configuration>
             </plugin>
             <plugin>
