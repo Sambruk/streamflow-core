@@ -71,8 +71,8 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git://github.com/jayway/streamflow-core.git</connection>
-        <developerConnection>scm:git:git://github.com/jayway/streamflow-core.git
+        <connection>scm:git:https://github.com/jayway/streamflow-core.git</connection>
+        <developerConnection>scm:git:https://github.com/jayway/streamflow-core.git
         </developerConnection>
       <tag>streamflow-1.14-3</tag>
   </scm>
