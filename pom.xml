@@ -232,6 +232,13 @@
                     <!-- need install here so that maven-dependency-plugin can find release versions in local repo -->
                     <preparationGoals>clean install</preparationGoals>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
