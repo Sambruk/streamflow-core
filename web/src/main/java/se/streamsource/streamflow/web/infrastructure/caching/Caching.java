@@ -36,7 +36,7 @@ public class Caching
 
    /**
     * Increase a cached value identified by "id" with "increment".
-    * If there is no currently cached value, do nothing.
+    * If there is no currently cached value, do do create it.
     *
     * @param id id of the element
     * @param increment how much to increment the value. May be negative for subtraction.
@@ -47,18 +47,23 @@ public class Caching
       {
          Ehcache ehcache = caching.manager().getEhcache( cache.name() );
          Element element = ehcache.get( id );
-         if (element != null)
+
+         CaseCountItem caseCountItem;
+         if (element == null)
          {
-            CaseCountItem caseCountItem = (CaseCountItem) element.getObjectValue();
-            caseCountItem.addToCount( increment );
-            ehcache.put( new Element(id, caseCountItem) );
+            caseCountItem = new CaseCountItem();
+         } else
+         {
+            caseCountItem = (CaseCountItem) element.getObjectValue();
          }
+         caseCountItem.addToCount( increment );
+         ehcache.put( new Element(id, caseCountItem) );
       }
    }
 
    /**
     * Increase a cached value identified by "id" with "increment".
-    * If there is no currently cached value, do nothing.
+    * If there is no currently cached value, do create it.
     *
     * @param id id of the element
     * @param increment how much to increment the value. May be negative for subtraction.
@@ -69,14 +74,20 @@ public class Caching
       {
          Ehcache ehcache = caching.manager().getEhcache( cache.name() );
          Element element = ehcache.get( id );
-         if (element != null)
+
+         CaseCountItem caseCountItem;
+         if (element == null)
          {
-            CaseCountItem caseCountItem = (CaseCountItem) element.getObjectValue();
-            caseCountItem.addToUnread( increment );
-            ehcache.put( new Element(id, caseCountItem) );
+            caseCountItem = new CaseCountItem();
+         } else
+         {
+            caseCountItem = (CaseCountItem) element.getObjectValue();
          }
+         caseCountItem.addToUnread( increment );
+         ehcache.put( new Element(id, caseCountItem) );
       }
    }
+
    public void invalidateCache( String id )
    {
       if (caching != null)
