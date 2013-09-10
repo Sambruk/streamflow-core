@@ -54,8 +54,11 @@
 
             <!-- War -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <!--<groupId>org.codehaus.mojo</groupId>
                 <artifactId>dependency-maven-plugin</artifactId>
+                <version>1.0</version> -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.8</version>
                 <executions>
                     <execution>
