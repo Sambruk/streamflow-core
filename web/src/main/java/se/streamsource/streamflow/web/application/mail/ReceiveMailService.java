@@ -677,7 +677,7 @@ public interface ReceiveMailService
       {
          String result = "";
          // No recipients found return n/a
-         if( recipients == null )
+         if( recipients == null || recipients.length == 0 )
             return "n/a";
 
          if (references == null)
