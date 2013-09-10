@@ -21,14 +21,13 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 public abstract class UpdateCaseCountMessagesConcern extends ConcernOf<Messages> implements Messages
 {
@@ -53,7 +52,7 @@ public abstract class UpdateCaseCountMessagesConcern extends ConcernOf<Messages>
          if (caze.isAssigned())
          {
             // Update assignments for user
-            Assignee assignee = role( Assignee.class );
+            Assignee assignee = ((Assignable.Data) caze).assignedTo().get();
             caching.addToUnreadCache( ((Ownable.Data)caze).owner().get().toString() + ":" + assignee.toString(), 1 );
          } else
          {
