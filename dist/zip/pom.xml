@@ -17,7 +17,7 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>streamflow-${version}
+                    <finalName>streamflow-${project.version}
                     </finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
