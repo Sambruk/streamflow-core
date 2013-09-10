@@ -32,6 +32,13 @@
             <artifactId>org.qi4j.library.constraints</artifactId>
         </dependency>
 
+        <!-- Date -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
