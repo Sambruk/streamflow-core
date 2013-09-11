@@ -73,6 +73,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.caze.History;
+import se.streamsource.streamflow.web.domain.structure.caze.Location;
 import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.caze.Origin;
 import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
@@ -157,6 +158,7 @@ public interface CaseEntity
       CasePriority.Data,
       Origin,
       DoubleSignatureTasks.Data,
+      Location.Data,
 
       // Queries
       SubmittedFormsQueries,

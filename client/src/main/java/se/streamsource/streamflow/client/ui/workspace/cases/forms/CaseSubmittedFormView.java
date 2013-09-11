@@ -31,7 +31,9 @@ import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
@@ -265,6 +267,10 @@ public class CaseSubmittedFormView
          fieldValue = fieldValue.replaceAll( "\\[", "\"" );
          fieldValue = fieldValue.replaceAll( "\\]", "\"" );
          text += fieldValue;
+      }  else if (fieldType.equals(GeoLocationFieldValue.class.getName()))
+      {
+         LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, fieldValue );
+         text += "<a href=\"http://maps.google.com/maps?z=12&q=" + locationDTO.location().get() + "\" alt=\"Google Maps\">Klicka här för att visa karta</a>";
       } else
       {
          text += fieldValue;

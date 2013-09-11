@@ -33,6 +33,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
+import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
@@ -44,6 +45,8 @@ import se.streamsource.streamflow.web.domain.util.FormVisibilityRuleValidator;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.Location;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
@@ -163,6 +166,16 @@ public interface SubmittedForms
                      } catch (ConstructionException e)
                      {
                         // ignore
+                     }
+                  }
+                  
+                  // Move Location from draft to Case
+                  if (field.field().get().fieldValue().get() instanceof GeoLocationFieldValue )
+                  {
+                     if (field.value().get() != null)
+                     {
+                        Location location = RoleMap.role( Location.class );
+                        location.changeLocation( field.value().get() );
                      }
                   }
                   pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );

@@ -78,6 +78,7 @@ public interface Case
       CaseLoggable,
       CasePriority,
       DoubleSignatureTasks,
-      Unread
+      Unread,
+      Location
 {
 }
