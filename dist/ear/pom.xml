@@ -65,10 +65,33 @@
                             <modules>
                                 <webModule>
                                     <groupId>se.streamsource.streamflow</groupId>
+                                    <artifactId>streamflow-web</artifactId>
+                                    <contextRoot>/streamflow</contextRoot>
+                                </webModule>
+                                <webModule>
+                                    <groupId>se.streamsource.streamflow</groupId>
+                                    <artifactId>streamflow-war</artifactId>
+                                    <contextRoot>/client</contextRoot>
+                                </webModule>
+                                <webModule>
+                                    <groupId>se.streamsource.streamflow</groupId>
+                                    <artifactId>streamflow-statistic</artifactId>
+                                    <contextRoot>/statistic</contextRoot>
+                                </webModule>
+                                <webModule>
+                                    <groupId>se.streamsource.streamflow</groupId>
                                     <artifactId>streamflow-webclient</artifactId>
                                     <contextRoot>/webclient</contextRoot>
                                 </webModule>
                             </modules>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <configuration>
+                            <fromFile>target/streamflow-${project.version}.ear</fromFile>
+                            <toFile>streamflow-${project.version}.ear</toFile>
                         </configuration>
                     </plugin>
                 </plugins>
