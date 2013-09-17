@@ -90,11 +90,13 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void close()
    {
-      next.close();
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
+      boolean assigned = caze.isAssigned();
 
-      if (caze.isAssigned())
+      next.close();
+      
+      if (assigned)
       {
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
@@ -115,11 +117,13 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void resolve( EntityValue resolution )
    {
-      next.resolve(resolution);
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
+      boolean assigned = caze.isAssigned();
+      
+      next.resolve(resolution);
 
-      if (caze.isAssigned())
+      if (assigned)
       {
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
@@ -140,11 +144,12 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void formonclose()
    {
-      next.formonclose();
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
-
-      if (caze.isAssigned())
+      boolean assigned = caze.isAssigned();
+      next.formonclose();
+      
+      if (assigned)
       {
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
@@ -164,36 +169,38 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void sendto( EntityValue entity )
    {
-      next.sendto(entity);
       
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
-
-      Owner owner = caze.owner().get();
+      Owner oldOwner = caze.owner().get();
+      boolean assigned = caze.isAssigned();
+      
+      next.sendto(entity);
+      
       // If status DRAFT - no cache to fix since case is moved by open command
       if ( !CaseStates.DRAFT.equals( caze.status().get() ))
       {
-         if (caze.isAssigned())
+         if (assigned)
          {
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
-            caching.addToCaseCountCache( owner.toString()+":"+assignee.toString(), -1 );
+            caching.addToCaseCountCache( oldOwner.toString()+":"+assignee.toString(), -1 );
             if(caze.isUnread()) {
-               caching.addToUnreadCache( owner.toString()+":"+assignee.toString(), -1 );
+               caching.addToUnreadCache( oldOwner.toString()+":"+assignee.toString(), -1 );
             }
          } else
          {
             // Update inbox cache
-            caching.addToCaseCountCache( owner.toString(), -1 );
+            caching.addToCaseCountCache( oldOwner.toString(), -1 );
             if (caze.isUnread()) {
-               caching.addToUnreadCache( owner.toString(), -1 );
+               caching.addToUnreadCache( oldOwner.toString(), -1 );
             }
          }
 
          // Update inbox cache on receiving end
-         caching.addToCaseCountCache( entity.entity().get(), 1 );
+         caching.addToCaseCountCache( caze.owner().get().toString(), 1 );
          if (caze.isUnread()) {
-            caching.addToUnreadCache( entity.entity().get(), 1 );
+            caching.addToUnreadCache( caze.owner().get().toString(), 1 );
          }
       }
    }
@@ -232,15 +239,16 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void delete()
    {
-      next.delete();
-      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
-      //String createdBy = caze.createdBy().get().toString();
+      
+      boolean assigned = caze.isAssigned();
+
+      next.delete();
 
       if (caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
       {
-         if (caze.isAssigned())
+         if (assigned)
          {
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );
@@ -265,14 +273,15 @@ public abstract class UpdateCaseCountCacheConcern
    
    public void reinstate()
    {
-      next.reinstate();
-      
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
+      boolean assigned = caze.isAssigned();
+      next.reinstate();
+      
       if (caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
       {
-         if (caze.isAssigned())
+         if (assigned)
          {
             // Update assignments for user
             Assignee assignee = roleMap.get( Assignee.class );

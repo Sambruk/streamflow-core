@@ -39,11 +39,11 @@ public abstract class UpdateCaseCountDraftsConcern
 
    public void createcase()
    {
+      next.createcase();
       Drafts drafts = RoleMap.role(Drafts.class);
 
       // Update drafts for user
       new Caching(caching, Caches.CASECOUNTS).addToCaseCountCache(drafts.toString(), 1);
-
-      next.createcase();
+      
    }
 }
