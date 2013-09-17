@@ -404,8 +404,8 @@
             <plugins>
                 <plugin>
                     <groupId>org.mortbay.jetty</groupId>
-                    <artifactId>maven-jetty-plugin</artifactId>
-                    <version>6.1.26</version>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>8.1.9.v20130131</version>
                     <configuration>
                         <systemProperties>
                             <!--    Uncomment to run in development mode
@@ -430,19 +430,6 @@
                             <artifactId>slf4j-api</artifactId>
                             <version>1.6.1</version>
                             <type>jar</type>
-                        </dependency>
-
-                        <!-- Jetty fixes -->
-                        <dependency>
-                            <groupId>org.mortbay.jetty</groupId>
-                            <artifactId>jetty-naming</artifactId>
-                            <version>6.1.26</version>
-                            <exclusions>
-                                <exclusion>
-                                    <groupId>javax.mail</groupId>
-                                    <artifactId>mail</artifactId>
-                                </exclusion>
-                            </exclusions>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -793,6 +780,11 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>1.5.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
