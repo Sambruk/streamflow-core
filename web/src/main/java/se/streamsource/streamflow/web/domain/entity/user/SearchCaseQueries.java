@@ -374,7 +374,7 @@ public interface
                   {
 
                      includeNotesQuery = " ( _query_:\"{!join from=id to=notes } type:se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity note:"
-                           + search.getValue().toLowerCase() + "\" OR text:" + search.getValue() + ")";
+                           + search.getValue() + "\" OR text:" + search.getValue() + ")";
                      queryBuilder.append( " " );
 
                      //queryBuilder.append( " text:(" + search.getValue() + ") "  );
