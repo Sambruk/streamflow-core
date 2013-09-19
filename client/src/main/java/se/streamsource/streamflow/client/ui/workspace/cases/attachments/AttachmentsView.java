@@ -250,7 +250,7 @@ public class AttachmentsView
          return null;
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.APPLICATION)
    public Task open() throws IOException
    {
       for (int i : attachments.getSelectedRows())
