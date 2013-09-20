@@ -377,45 +377,6 @@ public interface
                            + search.getValue() + "\" OR text:" + search.getValue() + ")";
                      queryBuilder.append( " " );
 
-                     //queryBuilder.append( " text:(" + search.getValue() + ") "  );
-                     //queryBuilder.append(  "_query_:\"type:se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity note:"
-                     //      + search.getValue() + "\"" );
-
-                     /*List<NotesTimeLineEntity> notes = new ArrayList<NotesTimeLineEntity>();
-
-
-                     StringBuilder notesQueryBuilder = new StringBuilder(
-                           "type:se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity" );
-                     notesQueryBuilder.append( " ( note:" ).append( search.getValue() ).append( ")" );
-
-                     Iterables.addAll( notes,
-                           module.queryBuilderFactory().newNamedQuery( NotesTimeLineEntity.class, uow, "solrquery" )
-                                 .setVariable( "query", notesQueryBuilder.toString() ) );
-
-                     if (notes.iterator().hasNext())
-                     {
-                        queryBuilder.append( " ( notes:(" );
-                        int count = 0;LoggerFactory.getLogger(
-                        for (NotesTimeLineEntity note : notes)
-                        {
-                           if (count == 0)
-                           {
-                              queryBuilder.append( note.identity().get() );
-                           } else
-                           {
-                              queryBuilder.append( " OR " ).append( note.identity().get() );
-                           }
-
-                           count++;
-                        }
-                        queryBuilder.append( ") OR text:(" + search.getValue() + ") )" );
-
-                     } else
-                     {
-
-                        queryBuilder.append( search.getValue() );
-                     }
-                     */
                   } else
                   {
 
