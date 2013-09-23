@@ -56,7 +56,7 @@ public class OpenAttachmentTask extends Task<File, Void>
    @Override
    protected File doInBackground() throws Exception
    {
-      setMessage(getResourceMap().getString("description"));
+      setTitle(getResourceMap().getString("title"));
 
       String name = fileName.substring( 0, fileName.lastIndexOf( '.' ) );
       String type = fileName.substring( fileName.lastIndexOf( '.' ) );
@@ -64,6 +64,8 @@ public class OpenAttachmentTask extends Task<File, Void>
       Representation representation = download.download(relativePath);
 
       File file = File.createTempFile( name + "_", type );
+
+      setMessage( getResourceMap().getString( "message" ) + " " + file.getName() );
 
       Inputs.byteBuffer( representation.getStream(), 8192 ).transferTo( Outputs.byteBuffer( file ));
 

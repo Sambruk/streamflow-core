@@ -152,7 +152,6 @@ public interface Messages
 
          // also reset draft message body
          ((MessageDraft)conversation).changeDraftMessage( null );
-
          participants.receiveMessage(message);
 
       }

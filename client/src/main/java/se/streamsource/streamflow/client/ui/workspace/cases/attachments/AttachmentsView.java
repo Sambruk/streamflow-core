@@ -292,10 +292,11 @@ public class AttachmentsView
       public void command()
             throws Exception
       {
-         setMessage(getResourceMap().getString("description"));
-
+         setTitle(getResourceMap().getString("title"));
+         String message = getResourceMap().getString( "message" );
          for (File file : selectedFiles)
          {
+            setMessage( message + " " + file.getName() );
             FileInputStream fin = new FileInputStream(file);
             attachmentsModel.createAttachment(file, fin);
          }
