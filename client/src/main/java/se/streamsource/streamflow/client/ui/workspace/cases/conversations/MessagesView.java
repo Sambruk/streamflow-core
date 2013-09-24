@@ -34,11 +34,14 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.DateFormats;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StreamflowButton;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -78,6 +81,9 @@ public class MessagesView extends JPanel implements TransactionListener
    @Structure
    Module module;
 
+   @Service
+   DialogService dialogs;
+
    private MessagesModel model;
 
    private JXTable messageTable;
@@ -89,6 +95,8 @@ public class MessagesView extends JPanel implements TransactionListener
    private MessageDraftView messageDraftView;
 
    private StreamflowButton writeMessage;
+
+   private javax.swing.Action  createMessage;
 
    public MessagesView(@Service ApplicationContext context, @Uses MessagesModel model )
    {
@@ -105,7 +113,7 @@ public class MessagesView extends JPanel implements TransactionListener
       closeMessageDetails.putValue("proxy", closeMessageDetailsAction);
 
       ApplicationAction createMessageAction = (ApplicationAction)getActionMap().get("createMessage");
-      javax.swing.Action createMessage = context.getActionMap().get("createMessage");
+      createMessage = context.getActionMap().get("createMessage");
       createMessage.putValue("proxy", createMessageAction);
 
       ApplicationAction cancelNewMessageAction = (ApplicationAction)getActionMap().get("cancelNewMessage");
@@ -261,16 +269,23 @@ public class MessagesView extends JPanel implements TransactionListener
    @Action
    public Task createMessage()
    {
-      sendPanel.removeAll();
-      ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
-      return new CommandTask()
+      ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( StreamflowResources.confirmation ) );
+      if( dialog.isConfirmed(  ) )
       {
-         @Override
-         public void command() throws Exception
+         sendPanel.removeAll();
+         ((CardLayout) detailMessagePanel.getLayout()).show( detailMessagePanel, "INITIAL" );
+         return new CommandTask()
          {
-            model.createMessageFromDraft();
-         }
-      };
+            @Override
+            public void command() throws Exception
+            {
+               model.createMessageFromDraft();
+            }
+         };
+      }
+      return null;
    }
 
    @Action

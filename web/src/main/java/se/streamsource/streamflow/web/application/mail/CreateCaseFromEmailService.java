@@ -52,6 +52,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
@@ -212,6 +213,10 @@ public interface CreateCaseFromEmailService
                         attachment.changeSize( attachedFileValue.size().get() );
                         attachment.changeUri( attachedFileValue.uri().get() );
                         message.addAttachment( attachment );
+                        // remove attachment from conversation attachments data so AttachmentEntity does not get
+                        // removed for real - we just moved it to message attachments where it actually belongs after
+                        // message creation.
+                        ((Attachments.Data)conversation).attachments().remove( attachment );
                      }
                   }
 

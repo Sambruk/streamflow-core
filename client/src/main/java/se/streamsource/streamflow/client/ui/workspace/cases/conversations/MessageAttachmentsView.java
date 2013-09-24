@@ -16,7 +16,9 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -31,10 +33,13 @@ import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -49,17 +54,23 @@ public class MessageAttachmentsView
    @Service
    DialogService dialogs;
 
+   Map<StreamflowButton,AttachmentDTO> openFileMap = new HashMap<StreamflowButton,AttachmentDTO>(  );
+
    private AttachmentsModel model;
+
+   ActionMap am;
 
    public MessageAttachmentsView( @Service ApplicationContext context, @Uses AttachmentsModel model )
    {
       this.model = model;
+      am = context.getActionMap( this );
       new RefreshWhenShowing( this, this );
    }
 
    public void refresh()
    {
       this.removeAll();
+      openFileMap.clear();
 
       model.refresh();
       for( AttachmentDTO attachmentIn : model.getEventList() )
@@ -69,14 +80,17 @@ public class MessageAttachmentsView
          StreamflowButton attachmentButton = new StreamflowButton( attachment.text().get(), i18n.icon( Icons.attachments, 14 ) );
          attachmentButton.setBorder( BorderFactory.createEmptyBorder() );
 
-         attachmentButton.addActionListener( new ActionListener()
-         {
-            public void actionPerformed( ActionEvent e )
-            {
-               new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageAttachmentsView.this, model, dialogs ).execute();
-            }
-         } );
+         openFileMap.put( attachmentButton, attachment );
+
+         attachmentButton.addActionListener( am.get( "open" ));
          add( attachmentButton );
       }
+   }
+
+   @Action(block = Task.BlockingScope.APPLICATION)
+   public Task open( ActionEvent e ) throws IOException
+   {
+      AttachmentDTO attachment = openFileMap.get( e.getSource() );
+      return new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageAttachmentsView.this, model, dialogs );
    }
 }

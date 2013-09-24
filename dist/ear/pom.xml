@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>dist</artifactId>
-        <version>1.15-SNAPSHOT</version>
+        <version>1.16-SNAPSHOT</version>
     </parent>
     <artifactId>ear</artifactId>
     <groupId>se.streamsource.streamflow.dist</groupId>
-    <version>1.15-SNAPSHOT</version>
+    <version>1.16-SNAPSHOT</version>
     <packaging>ear</packaging>
     <name>Streamflow Ear</name>
     <description>Streamflow Ear Distribution</description>
@@ -21,7 +21,7 @@
                 <artifactId>maven-ear-plugin</artifactId>
                 <configuration>
                     <displayName>Streamflow EAR</displayName>
-                    <finalName>streamflow-${version}</finalName>
+                    <finalName>streamflow-${project.version}</finalName>
                     <modules>
                         <webModule>
                             <groupId>se.streamsource.streamflow</groupId>
@@ -45,8 +45,8 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>wagon-maven-plugin</artifactId>
                 <configuration>
-                    <fromFile>target/streamflow-${version}.ear</fromFile>
-                    <toFile>streamflow-${version}.ear</toFile>
+                    <fromFile>target/streamflow-${project.version}.ear</fromFile>
+                    <toFile>streamflow-${project.version}.ear</toFile>
                 </configuration>
             </plugin>
             <plugin>
@@ -65,10 +65,33 @@
                             <modules>
                                 <webModule>
                                     <groupId>se.streamsource.streamflow</groupId>
+                                    <artifactId>streamflow-web</artifactId>
+                                    <contextRoot>/streamflow</contextRoot>
+                                </webModule>
+                                <webModule>
+                                    <groupId>se.streamsource.streamflow</groupId>
+                                    <artifactId>streamflow-war</artifactId>
+                                    <contextRoot>/client</contextRoot>
+                                </webModule>
+                                <webModule>
+                                    <groupId>se.streamsource.streamflow</groupId>
+                                    <artifactId>streamflow-statistic</artifactId>
+                                    <contextRoot>/statistic</contextRoot>
+                                </webModule>
+                                <webModule>
+                                    <groupId>se.streamsource.streamflow</groupId>
                                     <artifactId>streamflow-webclient</artifactId>
                                     <contextRoot>/webclient</contextRoot>
                                 </webModule>
                             </modules>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <configuration>
+                            <fromFile>target/streamflow-${project.version}.ear</fromFile>
+                            <toFile>streamflow-${project.version}.ear</toFile>
                         </configuration>
                     </plugin>
                 </plugins>

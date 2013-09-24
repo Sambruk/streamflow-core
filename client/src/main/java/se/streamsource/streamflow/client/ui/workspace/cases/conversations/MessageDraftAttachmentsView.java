@@ -55,6 +55,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -75,10 +77,14 @@ public class MessageDraftAttachmentsView
 
    JPanel attachmentsPanel;
 
+   Map<StreamflowButton,AttachmentDTO> openFileMap = new HashMap<StreamflowButton,AttachmentDTO>();
+
+   ActionMap am;
+
    public MessageDraftAttachmentsView( @Service ApplicationContext context, @Uses AttachmentsModel model )
    {
       this.model = model;
-      ActionMap am = context.getActionMap( this );
+      am = context.getActionMap( this );
       setLayout( new BorderLayout(  ) );
 
       FormLayout formLayout = new FormLayout( "pref,4dlu,pref:grow", "40dlu" );
@@ -121,6 +127,7 @@ public class MessageDraftAttachmentsView
    public void refresh()
    {
       attachmentsPanel.removeAll();
+      openFileMap.clear();
 
       model.refresh();
       for( AttachmentDTO attachmentIn : model.getEventList() )
@@ -131,13 +138,9 @@ public class MessageDraftAttachmentsView
          StreamflowButton openButton = new StreamflowButton( attachment.text().get(), i18n.icon( Icons.attachments, 14 ) );
          openButton.setBorder( BorderFactory.createEmptyBorder() );
 
-         openButton.addActionListener( new ActionListener()
-         {
-            public void actionPerformed( ActionEvent e )
-            {
-               new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageDraftAttachmentsView.this, model, dialogs ).execute();
-            }
-         } );
+         openFileMap.put( openButton, attachment );
+
+         openButton.addActionListener( am.get( "open" ) );
          attachmentPanel.add( openButton );
 
          StreamflowButton removeButton = new StreamflowButton( i18n.icon( Icons.drop, 14 ) );
@@ -180,11 +183,20 @@ public class MessageDraftAttachmentsView
       {
          public void run()
          {
-            attachmentsPanel.revalidate();
+            MessageDraftAttachmentsView.this.revalidate();
+            MessageDraftAttachmentsView.this.repaint();
          }
       } );
 
    }
+
+   @Action(block = Task.BlockingScope.APPLICATION)
+   public Task open( ActionEvent e ) throws IOException
+   {
+      AttachmentDTO attachment = openFileMap.get( e.getSource() );
+      return new OpenAttachmentTask( attachment.text().get(), attachment.href().get(), MessageDraftAttachmentsView.this, model, dialogs );
+   }
+
 
    @Action(block = Task.BlockingScope.APPLICATION)
    public Task add() throws IOException
@@ -215,10 +227,12 @@ public class MessageDraftAttachmentsView
       public void command()
             throws Exception
       {
-         setMessage(getResourceMap().getString("description"));
+         setTitle( getResourceMap().getString( "title" ) );
+         String message = getResourceMap().getString("message");
 
          for (File file : selectedFiles)
          {
+            setMessage( message + " " + file.getName() );
             FileInputStream fin = new FileInputStream(file);
             model.createAttachment(file, fin);
          }

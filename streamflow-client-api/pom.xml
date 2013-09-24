@@ -3,7 +3,7 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.15-SNAPSHOT</version>
+        <version>1.16-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-client-api</artifactId>
     <packaging>jar</packaging>
@@ -30,6 +30,13 @@
         <dependency>
             <groupId>org.qi4j.library</groupId>
             <artifactId>org.qi4j.library.constraints</artifactId>
+        </dependency>
+
+        <!-- Date -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6.2</version>
         </dependency>
 
         <!-- Testing -->

@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.15-SNAPSHOT</version>
+        <version>1.16-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-infrastructure</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.15-SNAPSHOT</version>
+    <version>1.16-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Streamflow Infrastructure</name>
     <description>Streamflow Infrastructure, common code for all streamflow components</description>
@@ -15,7 +15,7 @@
     	<dependency>
     		<groupId>se.streamsource.streamflow</groupId>
     		<artifactId>streamflow-common</artifactId>
-    		<version>${version}</version>
+    		<version>${project.version}</version>
     	</dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>

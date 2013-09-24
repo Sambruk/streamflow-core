@@ -192,8 +192,8 @@ public interface NotificationService
                      subject = "[" + caseId + "] " + conversation.getDescription(); // Default subject format
                   }
 
-                  if (formattedMsg.trim().equals(""))
-                     return; // Don't try to send empty messages
+                  if (formattedMsg.trim().equals("") && !message.hasAttachments())
+                     return; // Don't try to send empty messages that have no attachments
 
                   ContactEmailDTO recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
                   if (recipientEmail != null)

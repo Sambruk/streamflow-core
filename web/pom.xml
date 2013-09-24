@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.15-SNAPSHOT</version>
+        <version>1.16-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-web</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.15-SNAPSHOT</version>
+    <version>1.16-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Streamflow web application</name>
     <description>Streamflow web application</description>
@@ -68,6 +68,14 @@
                         </connector>
                     </connectors>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun.mail</groupId>
+                        <artifactId>javax.mail</artifactId>
+                        <version>1.5.0</version>
+                    </dependency>
+
+                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -211,7 +219,7 @@
             <version>${version.restlet}</version>
         </dependency>
         <dependency>
-            <groupId>beanshell</groupId>
+            <groupId>org.beanshell</groupId>
             <artifactId>bsh</artifactId>
             <version>2.0b4</version>
         </dependency>
@@ -303,10 +311,15 @@
         </dependency>
 
         <!-- Mail -->
-        <dependency>
+        <!-- <dependency>
             <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.5</version>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.5.0</version>
+        </dependency> -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>javax.activation</groupId>
@@ -332,7 +345,7 @@
 				<version>0.3.0-1.0.2b4</version>
 			</dependency>
 			
-        <dependency>
+        <!--<dependency>
             <groupId>org.subethamail</groupId>
             <artifactId>subethasmtp</artifactId>
             <version>3.1.4</version>
@@ -342,7 +355,7 @@
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>cardme</groupId>

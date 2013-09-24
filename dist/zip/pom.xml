@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>dist</artifactId>
-        <version>1.15-SNAPSHOT</version>
+        <version>1.16-SNAPSHOT</version>
     </parent>
     <artifactId>zip</artifactId>
     <groupId>se.streamsource.streamflow.dist</groupId>
-    <version>1.15-SNAPSHOT</version>
+    <version>1.16-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Streamflow Zip</name>
     <description>Streamflow Complete Distribution</description>
@@ -17,7 +17,7 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>streamflow-${version}
+                    <finalName>streamflow-${project.version}
                     </finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>

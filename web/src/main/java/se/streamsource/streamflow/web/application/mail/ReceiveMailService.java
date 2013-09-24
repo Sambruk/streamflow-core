@@ -374,7 +374,7 @@ public interface ReceiveMailService
                      {
                         body = content.toString();
                         builder.prototype().content().set( body );
-                        builder.prototype().contentType().set( internalMessage.getContentType() );
+                        builder.prototype().contentType().set( cleanContentType( internalMessage.getContentType() ) );
                      } else if (content instanceof Multipart)
                      {
                         handleMultipart( (Multipart) content, internalMessage, builder );
@@ -583,11 +583,7 @@ public interface ReceiveMailService
       {
          String body = "";
 
-         String contentType = "";
-         if(multipart.getContentType().indexOf( ';' ) == -1 )
-            contentType = multipart.getContentType();
-         else
-            contentType = multipart.getContentType().substring( 0, multipart.getContentType().indexOf( ';' ) );
+         String contentType = cleanContentType( multipart.getContentType() );
 
          for (int i = 0, n = multipart.getCount(); i < n; i++)
          {
@@ -677,7 +673,7 @@ public interface ReceiveMailService
       {
          String result = "";
          // No recipients found return n/a
-         if( recipients == null )
+         if( recipients == null || recipients.length == 0 )
             return "n/a";
 
          if (references == null)
@@ -710,6 +706,16 @@ public interface ReceiveMailService
          }
 
          return Strings.empty( result ) ? "n/a" : result.toLowerCase();
+      }
+
+      private String cleanContentType( String contentType )
+      {
+         String type = "";
+         if(contentType.indexOf( ';' ) == -1 )
+            type = contentType;
+         else
+            type = contentType.substring( 0, contentType.indexOf( ';' ) );
+         return type;
       }
    }
 }

@@ -32,6 +32,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -119,6 +120,8 @@ public interface CaseCountCacheService
          for (Case caze : queryBuilder.newQuery( uow ))
          {
             CaseEntity aCase = (CaseEntity) caze;
+            if( aCase.createdBy().get() instanceof EndUser )
+               continue;
             String key = aCase.createdBy().get().toString();
 
             CaseCountItem caseCountItem;

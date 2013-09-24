@@ -397,8 +397,15 @@ public class ApplyFilterContext
          {
             notification.append( bundle.getString( "createdby" )).append(": ").append(((Describable)self.createdBy().get()).getDescription()).append("<BR>");
          }
-         notification.append( bundle.getString( "owner" )).append(": ").append(((Describable)self.owner().get()).getDescription()).append("<BR>");
-         notification.append( bundle.getString( "casetype" )).append(": ").append(self.caseType().get().getDescription()).append("<BR>");
+         if( self.owner().get() != null )
+         {
+            notification.append( bundle.getString( "owner" )).append(": ").append(((Describable)self.owner().get()).getDescription()).append("<BR>");
+         }
+         if( self.caseType().get() != null )
+         {
+            notification.append( bundle.getString( "casetype" )).append(": ").append(self.caseType().get().getDescription()).append("<BR>");
+         }
+
          notification.append( bundle.getString( "labels" )).append(": ");
          boolean first = true;
          for (Label label : self.labels())
