@@ -59,7 +59,7 @@
         <module>infrastructure</module>
         <module>fileconfig</module>
         <module>client</module>
-        <!--<module>webclient</module>-->
+        <module>webclient</module>
         <module>serverplugin</module>
         <module>web</module>
         <module>webstart</module>
@@ -798,22 +798,7 @@
         <profile>
             <id>web-client</id>
             <modules>
-                <module>dci</module>
-                <module>common</module>
-                <module>streamflow-surface-api</module>
-                <module>streamflow-client-api</module>
-                <module>infrastructure</module>
-                <module>fileconfig</module>
-                <module>client</module>
                 <module>webclient</module>
-                <module>serverplugin</module>
-                <module>web</module>
-                <module>webstart</module>
-                <module>war</module>
-                <module>referenceplugin</module>
-                <module>help</module>
-                <module>dist</module>
-                <module>statistics</module>
             </modules>
         </profile>
         <profile>
