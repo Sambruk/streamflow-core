@@ -16,6 +16,27 @@
  */
 package se.streamsource.streamflow.web.domain.entity.user;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Iterables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,26 +48,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.util.Iterables;
-
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 /**
  * JAVADOC
@@ -63,6 +64,8 @@ public interface
       @Structure
       Module module;
 
+      private Logger log = LoggerFactory.getLogger( SearchCaseQueries.Mixin.class );
+
       @This
       UserAuthentication.Data user;
 
@@ -70,6 +73,7 @@ public interface
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
+         String includeNotesQuery = "";
          String queryString = query.trim();
 
          if (queryString.length() > 0)
@@ -365,41 +369,14 @@ public interface
                      queryBuilder.append( " " );
                   }
 
+
                   if( includeNotesInSearch )
                   {
-                     List<NotesTimeLineEntity> notes = new ArrayList<NotesTimeLineEntity>();
 
+                     includeNotesQuery = " ( _query_:\"{!join from=id to=notes } type:se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity note:"
+                           + search.getValue() + "\" OR text:" + search.getValue() + ")";
+                     queryBuilder.append( " " );
 
-                     StringBuilder notesQueryBuilder = new StringBuilder(
-                           "type:se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity" );
-                     notesQueryBuilder.append( " ( note:" ).append( search.getValue() ).append( ")" );
-
-                     Iterables.addAll( notes,
-                           module.queryBuilderFactory().newNamedQuery( NotesTimeLineEntity.class, uow, "solrquery" )
-                                 .setVariable( "query", notesQueryBuilder.toString() ) );
-
-                     if (notes.iterator().hasNext())
-                     {
-                        queryBuilder.append( " ( notes:(" );
-                        int count = 0;
-                        for (NotesTimeLineEntity note : notes)
-                        {
-                           if (count == 0)
-                           {
-                              queryBuilder.append( note.identity().get() );
-                           } else
-                           {
-                              queryBuilder.append( " OR " ).append( note.identity().get() );
-                           }
-
-                           count++;
-                        }
-                        queryBuilder.append( ") OR text:(" + search.getValue() + ") )" );
-                     } else
-                     {
-
-                        queryBuilder.append( search.getValue() );
-                     }
                   } else
                   {
 
@@ -412,6 +389,13 @@ public interface
             {
                queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" );
                queryBuilder.append( " !status:DRAFT" );
+
+               if( includeNotesInSearch )
+               {
+                  queryBuilder.append( includeNotesQuery );
+               }
+               log.info( "Executing solr query: " + queryBuilder.toString() );
+
                Query<Case> cases = module.queryBuilderFactory()
                      .newNamedQuery( Case.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
                return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Iterables.filter( new Specification<Case>()
