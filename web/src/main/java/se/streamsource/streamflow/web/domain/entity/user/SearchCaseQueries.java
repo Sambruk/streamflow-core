@@ -394,7 +394,7 @@ public interface
                {
                   queryBuilder.append( includeNotesQuery );
                }
-               log.info( "Executing solr query: " + queryBuilder.toString() );
+               log.debug( "Executing solr query: " + queryBuilder.toString() );
 
                Query<Case> cases = module.queryBuilderFactory()
                      .newNamedQuery( Case.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
