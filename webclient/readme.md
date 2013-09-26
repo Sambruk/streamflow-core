@@ -72,6 +72,10 @@ port:
 Mac OSX:
   alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
   alias chromex="chrome --disable-web-security"
+  
+Windows:
+    chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+http://superuser.com/questions/593726/is-it-possible-to-run-chrome-with-and-without-web-security-at-the-same-time
 
 
 ## Learning AngularJs
