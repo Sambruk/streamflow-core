@@ -83,6 +83,14 @@ Mac OSX:
 * http://www.cheatography.com/proloser/cheat-sheets/angularjs/
 * IRC help: http://webchat.freenode.net/?channels=angularjs&uio=d4
 
+## Get Bower Dependencies
+
+To get the dependencies like jQuery and Angular run the bower install command. 
+This will create and populate the components folder.
+
+    bower install
+
+
 ## Run
 
    ./web-server.js
