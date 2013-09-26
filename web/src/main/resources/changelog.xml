@@ -27,17 +27,14 @@
             <and>
                 <dbms type="mysql"/>
                 <sqlCheck expectedResult="1">select 1</sqlCheck>
-                <runningAs username="streamflow"/>
             </and>
             <and>
                 <dbms type="mssql"/>
                 <sqlCheck expectedResult="1">select 1</sqlCheck>
-                <runningAs username="streamflow"/>
             </and>
             <and>
                 <dbms type="oracle"/>
                 <sqlCheck expectedResult="1">select 1 from dual</sqlCheck>
-                <runningAs username="streamflow"/>
             </and>
         </or>
     </preConditions>
