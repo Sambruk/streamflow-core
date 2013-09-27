@@ -42,9 +42,9 @@
                         <!-- sigfile>m2m2m2</sigfile-->
                         <alias>streamflowdev</alias>
                         <validity>180</validity>
-                        <dnameCn>www.streamsource.se</dnameCn>
-                        <dnameOu>Streamflow Development</dnameOu>
-                        <dnameO>Streamsource AB</dnameO>
+                        <dnameCn>www.jayway.com</dnameCn>
+                        <dnameOu>Streamflow</dnameOu>
+                        <dnameO>Jayway Products AB</dnameO>
                         <dnameC>Sweden</dnameC>
                         <verify>false</verify>
                         <keystoreConfig>
