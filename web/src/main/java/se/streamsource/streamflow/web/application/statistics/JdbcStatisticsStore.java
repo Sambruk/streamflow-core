@@ -16,11 +16,6 @@
  */
 package se.streamsource.streamflow.web.application.statistics;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
@@ -28,8 +23,11 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.infrastructure.database.Databases;
+
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Statistics store that saves data into a JDBC database
@@ -107,7 +105,7 @@ public interface JdbcStatisticsStore
                }
             } );
 
-            databases.update( "INSERT INTO cases VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Databases.StatementVisitor()
+            databases.update( "INSERT INTO cases VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new Databases.StatementVisitor()
             {
                public void visit( PreparedStatement statement ) throws SQLException
                {
@@ -127,7 +125,8 @@ public interface JdbcStatisticsStore
                   statement.setString( idx++, caseStatistics.organizationalUnitId().get() );
                   statement.setString( idx++, caseStatistics.groupId().get() );
                   statement.setTimestamp(  idx++, caseStatistics.dueOn().get() != null ? new java.sql.Timestamp( caseStatistics.dueOn().get().getTime() ) : null );
-                  statement.setString( idx, caseStatistics.priority().get() );
+                  statement.setString( idx++, caseStatistics.priority().get() );
+                  statement.setBoolean( idx, false );
                   
                }
             } );
@@ -190,12 +189,11 @@ public interface JdbcStatisticsStore
             {
                public void visit( PreparedStatement statement ) throws SQLException
                {
-                  statement.setString( 1, id );
+                  statement.setBoolean( 1, true );
+                  statement.setString( 2, id );
                }
             };
-            databases.update( "DELETE FROM cases WHERE id=?", visitor );
-            databases.update( "DELETE FROM labels WHERE id=?", visitor );
-            databases.update( "DELETE FROM fields WHERE id=?", visitor );
+            databases.update( "UPDATE cases SET deleted=? WHERE id=?", visitor );
          } catch (SQLException e)
          {
             throw new StatisticsStoreException("Could not remove case", e);
@@ -239,7 +237,15 @@ public interface JdbcStatisticsStore
             databases.update( "DELETE FROM descriptions" );
             databases.update( "DELETE FROM labels" );
             databases.update( "DELETE FROM fields" );
-            databases.update( "DELETE FROM cases" );
+
+            Databases.StatementVisitor visitor = new Databases.StatementVisitor()
+            {
+               public void visit( PreparedStatement statement ) throws SQLException
+               {
+                  statement.setBoolean( 1, false );
+               }
+            };
+            databases.update( "DELETE FROM cases where deleted=?", visitor );
          } catch (SQLException e)
          {
             log.error( "Could not remove statistics", e );

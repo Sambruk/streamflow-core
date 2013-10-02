@@ -16,25 +16,11 @@
  */
 package se.streamsource.streamflow.web.application.archival;
 
-import static org.qi4j.api.query.QueryExpressions.and;
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.lt;
-import static org.qi4j.api.query.QueryExpressions.notEq;
-import static org.qi4j.api.query.QueryExpressions.or;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Period;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -54,7 +40,6 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -67,6 +52,17 @@ import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * TODO
@@ -165,6 +161,8 @@ public interface ArchivalService
 
       public void performArchival() throws UnitOfWorkCompletionException
       {
+         DateTime start = new DateTime( );
+         logger.info( "Archival started: " + start.toString( "yyyy-MM-dd hh:mm:ss" ) );
          UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(archivalCheck);
 
          try
@@ -206,6 +204,13 @@ public interface ArchivalService
          } finally
          {
             uow.complete();
+            DateTime end = new DateTime(  );
+            Period elapsed = new Duration( start, end ).toPeriod();
+
+            logger.info( "Archival ended: " + end.toString( "yyyy-MM-dd hh:mm:ss" ) + " and took "
+                  + elapsed.getDays() + " days " + elapsed.getHours() + " hours "
+            + elapsed.getMinutes() + " minutes " + elapsed.getSeconds() + " seconds");
+
          }
       }
 
