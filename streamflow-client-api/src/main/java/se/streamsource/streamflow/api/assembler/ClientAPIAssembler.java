@@ -51,6 +51,7 @@ import se.streamsource.streamflow.api.administration.form.FieldValue;
 import se.streamsource.streamflow.api.administration.form.FormValue;
 import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.administration.form.NumberFieldValue;
 import se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.OptionButtonsFieldValue;
@@ -181,6 +182,8 @@ public class ClientAPIAssembler
               StreetsDTO.class,
               StreetSearchDTO.class,
               UserProfileDTO.class);
+      
+      workspace.values(LocationDTO.class);
    }
 
    private void overview(ModuleAssembly overview)

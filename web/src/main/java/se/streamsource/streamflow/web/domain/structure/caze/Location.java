@@ -21,7 +21,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
-import se.streamsource.streamflow.api.workspace.cases.location.CaseAddressDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -32,7 +31,10 @@ public interface Location
 {
    void changeLocation(@Optional String location);
 
-   void changeAdress(CaseAddressDTO address);
+   void changeStreet(String street);
+   void changeZipcode(String zipcode);
+   void changeCity(String city);
+   void changeCountry(String country);
 
    interface Data
    {
@@ -40,11 +42,23 @@ public interface Location
       Property<String> location();
 
       @Optional
-      Property<CaseAddressDTO> address();
+      Property<String> street();
+
+      @Optional
+      Property<String> zipcode();
+
+      @Optional
+      Property<String> city();
+
+      @Optional
+      Property<String> country();
 
       void changedLocation(@Optional DomainEvent event, @Optional String location);
 
-      void changedAddress(@Optional DomainEvent event, CaseAddressDTO address);
+      void changedStreet(@Optional DomainEvent event, String street);
+      void changedZipcode(@Optional DomainEvent event, String zipcode);
+      void changedCity(@Optional DomainEvent event, String city);
+      void changedCountry(@Optional DomainEvent event, String country);
    }
 
    abstract class Mixin implements Location, Data
@@ -67,14 +81,44 @@ public interface Location
          data.location().set( location );
       }
 
-      public void changeAddress(CaseAddressDTO address)
+      public void changeStreet(String street)
       {
-         data.changedAddress( null, address );
+         data.changedStreet( null, street );
       }
 
-      public void changedAddress(DomainEvent event, CaseAddressDTO address)
+      public void changedStreet(DomainEvent event, String street)
       {
-         data.address().set( address );
+         data.street().set( street);
+      }
+
+      public void changeZipcode(String zipcode)
+      {
+         data.changedZipcode( null, zipcode );
+      }
+
+      public void changedZipcode(DomainEvent event, String zipcode)
+      {
+         data.zipcode().set( zipcode);
+      }
+
+      public void changeCity(String city)
+      {
+         data.changedCity( null, city );
+      }
+
+      public void changedCity(DomainEvent event, String city)
+      {
+         data.city().set( city);
+      }
+
+      public void changeCountr(String country)
+      {
+         data.changedCountry( null, country );
+      }
+
+      public void changedCountry(DomainEvent event, String country)
+      {
+         data.country().set( country);
       }
    }
 }
