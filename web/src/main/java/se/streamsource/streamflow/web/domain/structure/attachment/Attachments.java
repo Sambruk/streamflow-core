@@ -24,6 +24,7 @@ import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.net.URI;
@@ -96,7 +97,13 @@ public interface Attachments
          // Remove the attachment entity
          removedAttachment( null, attachment );
 
-         attachment.deleteEntity();
+         try
+         {
+            attachment.deleteEntity();
+         } catch (NoSuchEntityException nse )
+         {
+            //Entity does not exist - ignore
+         }
       }
 
       public Attachment getAttachment( String id )

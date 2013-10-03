@@ -17,11 +17,11 @@
 package se.streamsource.streamflow.web.domain.entity.caze;
 
 import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Inputs;
-
+import org.qi4j.api.util.Function;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLog;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLoggable;
@@ -29,8 +29,13 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+
+import static org.qi4j.api.io.Inputs.iterable;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * JAVADOC
@@ -51,27 +56,49 @@ public class CaseDescriptor
 
    public Input<ContactDTO, RuntimeException> contacts()
    {
-      return Inputs.iterable(((Contacts.Data)caze).contacts().get());
+      return iterable( ((Contacts.Data) caze).contacts().get() );
    }
 
    public Input<SubmittedFormValue, RuntimeException> submittedForms()
    {
-      return Inputs.iterable(((SubmittedForms.Data) caze).submittedForms().get());
+      return iterable( ((SubmittedForms.Data) caze).submittedForms().get() );
    }
 
    public Input<Conversation, RuntimeException> conversations()
    {
-      return Inputs.iterable(((Conversations.Data)caze).conversations());
+      return iterable( ((Conversations.Data) caze).conversations() );
 
    }
 
    public Input<Attachment, RuntimeException> attachments()
    {
-      return Inputs.iterable(((Attachments.Data)caze).attachments());
+      return iterable( ((Attachments.Data) caze).attachments() );
    }
 
    public Input<CaseLogEntryValue, RuntimeException> caselog()
    {
-      return Inputs.iterable(((CaseLog.Data)((CaseLoggable.Data)caze).caselog().get()).entries().get());
+      return iterable( ((CaseLog.Data) ((CaseLoggable.Data) caze).caselog().get()).entries().get() );
+   }
+
+   public Input<Attachment, RuntimeException> everyAttachmentOnCase()
+   {
+
+      Iterable<Attachment> messageAttachments = flatten( map( new Function<Message, Iterable<Attachment>>()
+      {
+         public Iterable<Attachment> map( Message msg )
+         {
+            return ((Attachments.Data) msg).attachments().toList();
+         }
+      }, flatten( map( new Function<Conversation, Iterable<Message>>()
+      {
+         public Iterable<Message> map( Conversation conversation )
+         {
+            return ((Messages.Data) conversation).messages().toList();
+         }
+      }, ((Conversations.Data) caze).conversations().toList() ) ) ) );
+
+      return iterable(
+            flatten( messageAttachments, ((FormAttachments.Data) caze).formAttachments(),
+                  ((Attachments.Data) caze).attachments() ) );
    }
 }

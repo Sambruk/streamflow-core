@@ -25,6 +25,11 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.io.Transforms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
@@ -40,23 +45,34 @@ import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -83,6 +99,9 @@ public interface ArchivalService
 
       @Service
       PdfGeneratorService pfdGenerator;
+
+      @Service
+      AttachmentStoreService attachmentStore;
 
       @This
       Configuration<ArchivalConfiguration> config;
@@ -165,6 +184,10 @@ public interface ArchivalService
          logger.info( "Archival started: " + start.toString( "yyyy-MM-dd hh:mm:ss" ) );
          UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(archivalCheck);
 
+         RoleMap.newCurrentRoleMap();
+         RoleMap.current().set( uow.get( UserAuthentication.class, UserEntity.ADMINISTRATOR_USERNAME ) );
+         RoleMap.current().set( new UserPrincipal( UserEntity.ADMINISTRATOR_USERNAME ) );
+
          try
          {
             for (ArchivalSettings.Data data : archivalSettings())
@@ -191,6 +214,41 @@ public interface ArchivalService
                            // if case is not marked as removed( soft delete ) -  create and export pdf
                            File pdf = exportPdf(caseEntity);
                            logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
+
+                           // archiving attachments
+                           CaseDescriptor caseDescriptor = new CaseDescriptor( caseEntity );
+
+                           final Transforms.Counter<Attachment> counter = new Transforms.Counter<Attachment>();
+                           final CaseEntity theCase = caseEntity;
+                           caseDescriptor.everyAttachmentOnCase().transferTo( Transforms.map( counter, new Output<Attachment, IOException>()
+                           {
+                              public <SenderThrowableType extends Throwable> void receiveFrom( Sender<? extends Attachment, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+                              {
+                                 sender.sendTo( new Receiver<Attachment, IOException>()
+                                 {
+                                    public void receive( Attachment attachment ) throws IOException
+                                    {
+                                       String fileUri = ((AttachedFile.Data) attachment).uri().get();
+                                       try
+                                       {
+                                          final String fileId = new URI( fileUri ).getSchemeSpecificPart();
+                                          attachmentStore.attachment( fileId ).transferTo(
+                                             Outputs.byteBuffer(
+                                                   new File( archiveDir, theCase.caseId().get() + "_"
+                                                         + counter.getCount() + "_"
+                                                         + ((AttachedFile.Data) attachment).name().get() ) ) );
+                                       } catch ( URISyntaxException se )
+                                       {
+                                          logger.error( "Uri is not valid! - " + fileUri );
+                                       } catch ( FileNotFoundException fnf )
+                                       {
+                                          logger.info( "File does not exist in attachment store! " + fnf.getMessage() );
+                                       }
+
+                                    }
+                                 });
+                              }
+                           }));
                         }
                         caseEntity.deleteEntity();
                      } catch (Throwable throwable)
@@ -204,6 +262,8 @@ public interface ArchivalService
          } finally
          {
             uow.complete();
+            RoleMap.clearCurrentRoleMap();
+
             DateTime end = new DateTime(  );
             Period elapsed = new Duration( start, end ).toPeriod();
 
