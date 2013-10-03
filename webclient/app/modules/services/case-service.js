@@ -223,25 +223,20 @@
           ]
         ), value);
       },
-
       getCaseLogDefaultParams: function(projectId, projectType, caseId) {
-
-        //var defaultParams = { "attachment":true,"contact":true,"conversation":true,"custom":true,"form":true,"system":true,"systemTrace":false}; // From API
-       
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
               {resources: 'caselog'},
-              {queries: 'defaultfilters'}
+              {resources: 'defaultfilters', unsafe: true}
             ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
           }
         });
       },
-
       getSelectedCaseLog: function(projectId, projectType, caseId, queryfilters) {
         console.log(queryfilters);
-        //TODO: Look at why this is getting called twice and if no way around it, maybe make sure the results are cached
+        //TODO: Look at why this is getting called twice on the caslog list page and if no way around it, maybe make sure the results are cached
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
               {resources: 'caselog'},
@@ -260,27 +255,14 @@
           }
         });
       },
-
-      getSelectedCaseLog88: function(projectId, projectType, caseId) {
-
-        var defaultParams = { "attachment":true,"contact":true,"conversation":true,"custom":true,"form":true,"system":true,"systemTrace":false}; // From API
-        //var defaultParams = { "attachment":false,"contact":false,"conversation":false,"custom":true,"form":true,"system":false,"systemTrace":false}; // From API
-
-
-//list?system=false&systemTrace=false&form=true&conversation=false&attachment=false&contact=false&custom=true
-        return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
-              {resources: 'caselog'},
-              {queries: 'list?system=true&systemTrace=true&form=true&conversation=true&attachment=true&contact=true&custom=true'}
-            ]),
-          onSuccess:function (resource, result) {
-            _.first(resource.response.links.reverse(), 5).forEach(function(link){
-              result.push(link);
-            });
-          }
-        });
+      createCaseLogEntry: function(projectId, projectType, caseId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'caselog'},
+            {commands: 'addmessage'}
+          ]),
+          {string: value});
       },
-
       getPossibleCaseTypes: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([

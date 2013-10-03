@@ -25,16 +25,40 @@
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
-      $scope.caseId = $params.caseId;
-
+      $scope.caseId = $params.caseId;     
      
-     //TODO: look at using the caselog list already loaded by the sidebar
       var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
         $scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
       });
    
+    }]);
+
+  sfCaselog.controller('CaselogEntryCreateCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
+    function($scope, caseService, $params, navigationService) {
+
+      $scope.projectId = $params.projectId;
+      $scope.projectType = $params.projectType;
+      $scope.caseId = $params.caseId;
+
+      /*
+      // Necessary to get to be able to invalidate and resolve the conversation list after a create
+      $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
+*/
+      $scope.submitCaseLogEntry = function($event){
+        $event.preventDefault();
+
+        var entry = $scope.caseLogEntryToCreate;
+        caseService.createCaseLogEntry($params.projectId, $params.projectType, $params.caseId, entry).then(function(response){
+          /*var conversationId = JSON.parse(response.data.events[0].parameters).param1;*/
+          var href = navigationService.caseHref($params.caseId) + "/caselog";
+          $scope.caseLogs.invalidate();
+          $scope.caseLogs.resolve();
+          window.location.assign(href);
+        });
+      }
+
     }]);
   
 

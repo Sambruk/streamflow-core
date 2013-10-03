@@ -17,11 +17,24 @@
 
 -->
 <!--TODO: Consider if it's a good idea or not tuo use the same controller as for sidebar-->
-<div class="content-primary" role="main" data-ng-controller="SidebarCtrl">
+<div class="content-primary" role="main" data-ng-controller="CaselogListCtrl">
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Ärendelog</h2>
       <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
+    </div>
+    <br />
+      <div class="caselog-input" data-ng-controller="CaselogEntryCreateCtrl">
+      <form action="#" method="get" class="cf">
+        <div class="text">
+          <label for="caselog-entry-text" class="struct">Ärende</label>
+          <textarea name="caselog-entry-text" id="caselog-entry-text" cols="70" rows="3" placeholder="Skriv ditt meddelande här" data-ng-model="caseLogEntryToCreate"></textarea>
+        </div>
+        <div class="send">
+          <button data-ng-click="submitCaseLogEntry($event)" name="caselog-entry-submit">Lägg till</button>
+        </div>
+      </form>
+      <!-- <div class="attached-files">Bifogad fil: <a href="xlink-d6as78">uppladdad-fil.doc</a></div> -->
     </div>
     <br />
     <table class="log-table">
