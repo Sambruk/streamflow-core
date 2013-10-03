@@ -18,10 +18,10 @@
 (function() {
   'use strict';
 
-  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project']);
+  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService',
-    function($scope, projectService, $params, navigationService, caseService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
+    function($scope, projectService, $params, navigationService, caseService, httpService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -32,7 +32,12 @@
       $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
-      $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
+
+     /* var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
+      httpService.getRequest(defaultFiltersUrl, false).then(function(result){
+        var defaultFilters = result.data;
+        $scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
+      });*/
 
       $scope.$on('conversation-message-created', function(){
         $scope.conversations.invalidate();

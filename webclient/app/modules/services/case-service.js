@@ -224,17 +224,57 @@
         ), value);
       },
 
-      getSelectedCaseLog: function(projectId, projectType, caseId) {
+      getCaseLogDefaultParams: function(projectId, projectType, caseId) {
 
-        var defaultParams = { "attachment":false,"contact":false,"conversation":false,"custom":true,"form":true,"system":false,"systemTrace":false}; // From API
-
+        //var defaultParams = { "attachment":true,"contact":true,"conversation":true,"custom":true,"form":true,"system":true,"systemTrace":false}; // From API
+       
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
               {resources: 'caselog'},
-              {queries: 'list?system=false&systemTrace=false&form=true&conversation=false&attachment=false&contact=false&custom=true'}
+              {queries: 'defaultfilters'}
             ]),
           onSuccess:function (resource, result) {
-            _.first(resource.response.links.reverse(), 3).forEach(function(link){
+            result.push(resource.response);
+          }
+        });
+      },
+
+      getSelectedCaseLog: function(projectId, projectType, caseId, queryfilters) {
+        console.log(queryfilters);
+        //TODO: Look at why this is getting called twice and if no way around it, maybe make sure the results are cached
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+              {resources: 'caselog'},
+              {queries: 'list?system='+ queryfilters.system +
+              '&systemTrace='+ queryfilters.systemTrace +
+              '&form='+ queryfilters.form +
+              '&conversation='+ queryfilters.conversation +
+              '&attachment='+ queryfilters.attachment +
+              '&contact='+ queryfilters.contact +
+              '&custom='+ queryfilters.custom +''}
+            ]),
+          onSuccess:function (resource, result) {
+            resource.response.links.reverse().forEach(function(link){
+              result.push(link);
+            });
+          }
+        });
+      },
+
+      getSelectedCaseLog88: function(projectId, projectType, caseId) {
+
+        var defaultParams = { "attachment":true,"contact":true,"conversation":true,"custom":true,"form":true,"system":true,"systemTrace":false}; // From API
+        //var defaultParams = { "attachment":false,"contact":false,"conversation":false,"custom":true,"form":true,"system":false,"systemTrace":false}; // From API
+
+
+//list?system=false&systemTrace=false&form=true&conversation=false&attachment=false&contact=false&custom=true
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+              {resources: 'caselog'},
+              {queries: 'list?system=true&systemTrace=true&form=true&conversation=true&attachment=true&contact=true&custom=true'}
+            ]),
+          onSuccess:function (resource, result) {
+            _.first(resource.response.links.reverse(), 5).forEach(function(link){
               result.push(link);
             });
           }

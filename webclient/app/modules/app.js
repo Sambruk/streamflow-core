@@ -25,7 +25,7 @@
 
   sf.env = sf.env || 'development';
 
-  angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation',
+  angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
     'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 'sf.controllers.project',
     'sf.controllers.sidebar', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
@@ -62,6 +62,10 @@
       .when('/:projectId/:projectType/:caseId/conversation/:conversationId', {
         templateUrl:'modules/views/conversation-detail.html',
         controller: 'ConversationDetailCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/caselog', {
+        templateUrl:'modules/views/caselog-list.html',
+        controller: 'CaselogListCtrl'
       })
         .when('/:projectId/:projectType/:caseId/contact/add', {
           templateUrl:'modules/views/contact-create.html',
