@@ -232,7 +232,7 @@ public class CaseStatisticsServiceTest
 
       Thread.sleep(1000);
 
-      assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("Removed statistics about"));
+      assertThat(appender.getEvents().get(++idx).getMessage().toString(), new ContainsMatcher("Marked statistics for"));
    }
 
    public static class TestAppender

@@ -16,15 +16,20 @@
  */
 package se.streamsource.streamflow.web.domain.entity.conversation;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.This;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
 /**
  * JAVADOC
  */
+@Concerns( MessageEntity.RemovableConcern.class)
 public interface MessageEntity
    extends Message,
       Message.Data,
@@ -33,4 +38,24 @@ public interface MessageEntity
       Removable.Data,
       DomainEntity
 {
+   abstract class RemovableConcern
+      extends ConcernOf<Removable>
+      implements Removable
+   {
+      @This
+      Attachments attachments;
+      @This
+      Attachments.Data attachementsData;
+
+
+      public void deleteEntity()
+      {
+         for( Attachment attachment : attachementsData.attachments().toList() )
+         {
+            attachments.removeAttachment( attachment );
+         }
+
+         next.deleteEntity();
+      }
+   }
 }
