@@ -117,7 +117,7 @@
     <div class="m-c">
       <ul class="zebra-list">
         <li data-ng-class-odd="'odd'" ng-repeat='contact in contacts' ng-odd=>
-            <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/{{$index}}/">{{contact.name}}</a>
+            <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
             <!--
             <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
             -->
@@ -144,9 +144,11 @@
   <!-- /Module: Bifogade filer -->
 
   <!-- Module: Ärendelogg -->
-  <div class="m m-issuelog">
+  <div class="m m-issuelog" data-ng-controller="CaselogListCtrl">
+  <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/caselog" class="block-link">
     <div class="m-h">
       <h2>Ärendelogg</h2>
+      <span style="float:right;"> 3 most recent of {{caseLogs.length}}</span>
     </div>
     <div class="m-c">
       <table class="log-table">
@@ -159,14 +161,17 @@
           </tr>
         </thead>
         <tbody>
-        <tr data-ng-repeat="entry in caseLog" data-ng-class-even="'even'">
+        <tr data-ng-repeat="entry in caseLogs | limitTo:3" data-ng-class-even="'even'">
+        
           <td>{{ entry.creationDate | shortDate}}</td>
           <td>{{ entry.text }}</td>
           <td>{{ entry.creator }}</td>
+          
         </tr>
         </tbody>
       </table>
     </div>
+    </a>
   </div>
   <!-- /Module: Ärendelogg -->
 <!-- <pre><code>{{ form[0] | json }}</code></pre> -->
