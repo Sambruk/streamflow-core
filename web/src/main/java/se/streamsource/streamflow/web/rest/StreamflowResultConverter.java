@@ -211,6 +211,7 @@ public class StreamflowResultConverter
       prototype.hasUnreadConversation().set( aCase.hasUnreadConversation() );
       prototype.hasUnreadForm().set( aCase.hasUnreadForm() );
       prototype.unread().set( aCase.unread().get() );
+      prototype.location().set( aCase.location().get() );
 
       // Labels
       LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).command("delete");

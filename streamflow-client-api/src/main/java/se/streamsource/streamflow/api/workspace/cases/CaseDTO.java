@@ -77,4 +77,9 @@ public interface CaseDTO
 
    @UseDefaults
    Property<Boolean> hasUnreadForm();
+   
+   @Optional
+   @UseDefaults
+   Property<String> location();
+   
 }

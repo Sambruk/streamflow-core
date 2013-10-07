@@ -14,20 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.administration.form;
+package se.streamsource.streamflow.api.surface;
 
-public enum FieldTypes
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+
+public interface AccessPointSettingsDTO extends ValueComposite
 {
-   checkboxes,
-   combobox,
-   comment,
-   date,
-   listbox,
-   number,
-   attachment,
-   optionbuttons,
-   openselection,
-   textarea,
-   text,
-   geolocation
+
+   @Optional
+   Property<String> cssfile();
+   
+   @Optional
+   Property<String> location();
+   
+   @Optional
+   Property<Integer> zoomLevel();
 }
