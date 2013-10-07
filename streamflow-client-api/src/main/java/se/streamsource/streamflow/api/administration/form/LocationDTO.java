@@ -16,18 +16,24 @@
  */
 package se.streamsource.streamflow.api.administration.form;
 
-public enum FieldTypes
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+public interface LocationDTO extends ValueComposite
 {
-   checkboxes,
-   combobox,
-   comment,
-   date,
-   listbox,
-   number,
-   attachment,
-   optionbuttons,
-   openselection,
-   textarea,
-   text,
-   geolocation
+   @UseDefaults
+   Property<String> location();
+   
+   @UseDefaults
+   Property<String> street();
+
+   @UseDefaults
+   Property<String> zipcode();
+
+   @UseDefaults
+   Property<String> city();
+
+   @UseDefaults
+   Property<String> country();
 }

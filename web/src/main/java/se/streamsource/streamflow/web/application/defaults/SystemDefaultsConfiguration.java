@@ -53,6 +53,12 @@ public interface SystemDefaultsConfiguration
    @UseDefaults
    Property<Boolean> caseLogAttachmentVisible();
 
+   @UseDefaults
+   Property<String> mapDefaultStartLocation();
+   
+   @UseDefaults
+   Property<Integer> mapDefaultZoomLevel();
+   
    /**
     * The name of the organizational unit responsible for mail receiver support.
     * @return A string property

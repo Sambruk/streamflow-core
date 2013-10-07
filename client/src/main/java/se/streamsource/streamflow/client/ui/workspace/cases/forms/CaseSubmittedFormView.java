@@ -16,8 +16,32 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.date_time_format;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.SwingConstants;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -28,10 +52,13 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
+
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.ListBoxFieldValue;
+import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.api.workspace.cases.form.FieldDTO;
@@ -47,31 +74,15 @@ import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.StreamflowSelectableLabel;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.SwingConstants;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -233,6 +244,27 @@ public class CaseSubmittedFormView
       selectableLabel.setContentType( "text/html" );
       JLabel fontSource = new JLabel( );
 
+
+      final Desktop desktop = Desktop.getDesktop(); 
+      
+      selectableLabel.addHyperlinkListener(new HyperlinkListener()
+      {
+         public void hyperlinkUpdate(HyperlinkEvent hle) {
+             if (HyperlinkEvent.EventType.ACTIVATED.equals(hle.getEventType())) {
+                 try {
+                     try {
+                         desktop.browse(new URI(hle.getURL().toString()));
+                     } catch (URISyntaxException ex) {
+                         System.out.println( ex.getMessage());
+                     }
+                 } catch (IOException ex) {
+                    System.out.println( ex.getMessage());
+                 }
+
+             }
+         }
+     });
+      
       String text = "<html> <font size='3' face='"+ fontSource.getFont().getFontName() +"'>";
 
       if (fieldType.equals(DateFieldValue.class.getName()))
@@ -265,6 +297,19 @@ public class CaseSubmittedFormView
          fieldValue = fieldValue.replaceAll( "\\[", "\"" );
          fieldValue = fieldValue.replaceAll( "\\]", "\"" );
          text += fieldValue;
+      }  else if (fieldType.equals(GeoLocationFieldValue.class.getName()))
+      {
+         LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, fieldValue );
+         text += locationDTO.street().get() + ", " + locationDTO.zipcode().get() + ", " + locationDTO.city().get() + "<br>";
+         String locationString = locationDTO.location().get();
+         if (locationString != null) {
+            locationString = locationString.replace( ' ', '+' );
+            if (locationString.contains( "(" )) {
+               String[] positions = locationString.split( "\\),\\(");
+               locationString = positions[0].substring( 1, positions[0].length() -1 );
+            }
+         }
+         text += "<a href=\"http://maps.google.com/maps?z=13&t=m&q=" + locationString + "\" alt=\"Google Maps\">Klicka här för att visa karta</a>";
       } else
       {
          text += fieldValue;
