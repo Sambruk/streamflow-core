@@ -25,6 +25,8 @@ import org.qi4j.api.io.Inputs;
 
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
@@ -43,6 +45,7 @@ public class FormAttachmentsContext
       return RoleMap.role( FormAttachments.Data.class ).formAttachments();
    }
 
+   @RequiresPermission(PermissionType.write)
    public Attachment createFormAttachment( InputStream inputStream ) throws IOException, URISyntaxException
    {
       String id = store.storeAttachment( Inputs.byteBuffer(inputStream, 4096) );

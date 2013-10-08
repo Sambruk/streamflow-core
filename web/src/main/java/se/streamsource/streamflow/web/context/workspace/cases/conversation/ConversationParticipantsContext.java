@@ -25,12 +25,14 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ExternalEmailValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
@@ -55,6 +57,7 @@ public class ConversationParticipantsContext
 
    @RequiresRemoved(false)
    @RequiresStatus(OPEN)
+   @RequiresPermission(PermissionType.write)
    public void addexternalparticipant( ExternalEmailValue mailUser )
    {
 
@@ -66,6 +69,7 @@ public class ConversationParticipantsContext
 
    @RequiresRemoved(false)
    @RequiresStatus(OPEN)
+   @RequiresPermission(PermissionType.write)
    public void addparticipant( EntityValue participantId )
    {
       UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
@@ -77,6 +81,7 @@ public class ConversationParticipantsContext
       participants.addParticipant( participant );
    }
 
+   @RequiresPermission(PermissionType.write)
    public LinksValue possibleparticipants()
    {
       Ownable.Data ownable = RoleMap.role( Ownable.Data.class );
