@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.application.statistics;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Period;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
@@ -24,9 +27,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
@@ -47,7 +47,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.util.HierarchicalVisitor;
-import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -55,7 +54,6 @@ import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
-import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -66,22 +64,18 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
-import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormId;
-import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.note.NotesTimeLine;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -284,17 +278,42 @@ public interface CaseStatisticsService
 
       public void refreshStatistics() throws StatisticsStoreException
       {
-         log.info("Refresh all statistics");
+         DateTime dateTimeStart = new DateTime(  );
+         log.info("Refresh all statistics started at: " + dateTimeStart.toString( "YYYY-MM-dd HH:mm" ) );
 
-         // First clear the statistics stores of all their existing data
-         log.debug("Clear all statistics stores");
-         for (StatisticsStore statisticsStore : statisticsStores)
+         try
          {
-            statisticsStore.clearAll();
+            // stop service
+            passivate();
+
+            // First clear the statistics stores of all their existing data
+            log.debug("Clear all statistics stores");
+            for (StatisticsStore statisticsStore : statisticsStores)
+            {
+               statisticsStore.clearAll();
+            }
+
+            // reset configuration
+            config.configuration().lastEventDate().set( 0L );
+            config.save();
+
+            // start service
+            activate();
+
+            DateTime dateTimeEnd = new DateTime(  );
+            log.info( "Refresh all statistics stoped at: " + dateTimeEnd.toString( "YYYY-MM-dd HH:mm" ));
+            Period period = new Duration( dateTimeStart, dateTimeEnd ).toPeriod();
+            log.info(  "Time elapsed: " + period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds." );
+
+         } catch (Exception e)
+         {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new StatisticsStoreException( "Refresh statistics failed.", e  );
          }
 
+
          // Update all related entities
-         {
+         /*{
             UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
             try
             {
@@ -437,7 +456,7 @@ public interface CaseStatisticsService
                }
             }
             log.debug("Finished refreshing case statistics");
-         }
+         }*/
 
       }
 

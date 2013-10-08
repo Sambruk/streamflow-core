@@ -175,8 +175,12 @@ public class CasesDetailView
             else if (matches( withUsecases( "open" ), transactions ) )
             {
                clear();
-            } else if (matches( withNames( "changedAccess" ), transactions )
+            /*} else if (matches( withNames( "changedAccess" ), transactions )
                   && matches( withUsecases( "sendto" ), transactions ))
+            {
+               clear();
+               */
+            } else if (matches( withUsecases( "sendto" ), transactions ))
             {
                clear();
             }

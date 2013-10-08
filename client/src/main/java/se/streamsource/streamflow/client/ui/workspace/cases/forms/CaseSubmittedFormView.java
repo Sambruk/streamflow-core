@@ -219,7 +219,7 @@ public class CaseSubmittedFormView
       }
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.APPLICATION)
    public Task open(ActionEvent event)
    {
       return openAttachment(event);

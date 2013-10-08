@@ -74,7 +74,7 @@ public interface LoggingStatisticsStore
 
       public void removedCase( String id ) throws StatisticsStoreException
       {
-         log.info("Removed statistics about "+id);
+         log.info("Marked statistics for " + id + " as deleted." );
       }
 
       public void structure(OrganizationalStructureValue structureValue)
@@ -84,7 +84,7 @@ public interface LoggingStatisticsStore
 
       public void clearAll()
       {
-         log.info("Cleared statistics");
+         log.info("Cleared statistics for non deleted cases");
       }
    }
 }
