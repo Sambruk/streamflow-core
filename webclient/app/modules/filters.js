@@ -55,5 +55,34 @@
     };
   }]);
 
+  sf.filters.filter('caseLogFilter', function ($filter) {
+      return function (logEntries, filterArray) {
+          var i, j, matchingItems = [];
+
+          if (logEntries && filterArray) {
+              // loop through the items
+              for (i = 0; i < logEntries.length; i++) {   
+              
+                // for each item, loop through the filter values
+                for (j = 0; j < filterArray.length; j++) {
+
+                    //If the caseLogType is the same as the name of the filter
+                    if (logEntries[i].caseLogType === filterArray[j].filterName) {
+                        //Check the value of the filter
+                        if (filterArray[j].filterValue) {
+                            matchingItems.push(logEntries[i]);
+                        }
+                        break;
+                    }
+                }
+              }
+          }
+
+          return matchingItems;
+      }
+  });
+
+
+
 }());
 

@@ -234,19 +234,34 @@
           }
         });
       },
-      getSelectedCaseLog: function(projectId, projectType, caseId, queryfilters) {
-        console.log(queryfilters);
+      getSelectedCaseLog: function(projectId, projectType, caseId) {
+ 
+          //TODO: Look at why this is getting called twice on the caslog list page and if no way around it, maybe make sure the results are cached
+          return backendService.get({
+              specs:caseBase(projectId, projectType, caseId).concat([
+                  {resources: 'caselog'},
+                  {queries: 'list?system=true&systemTrace=true&form=true&conversation=true&attachment=true&contact=true&custom=true'}
+              ]),
+              onSuccess:function (resource, result) {
+                  resource.response.links.reverse().forEach(function(link){
+                      result.push(link);
+                  });
+              }
+          });
+      },
+      getSelectedFilteredCaseLog: function(projectId, projectType, caseId, queryfilter) {
+        //console.log(queryfilter);
         //TODO: Look at why this is getting called twice on the caslog list page and if no way around it, maybe make sure the results are cached
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
               {resources: 'caselog'},
-              {queries: 'list?system='+ queryfilters.system +
-              '&systemTrace='+ queryfilters.systemTrace +
-              '&form='+ queryfilters.form +
-              '&conversation='+ queryfilters.conversation +
-              '&attachment='+ queryfilters.attachment +
-              '&contact='+ queryfilters.contact +
-              '&custom='+ queryfilters.custom +''}
+              {queries: 'list?system='+ queryfilter.system +
+              '&systemTrace='+ queryfilter.systemTrace +
+              '&form='+ queryfilter.form +
+              '&conversation='+ queryfilter.conversation +
+              '&attachment='+ queryfilter.attachment +
+              '&contact='+ queryfilter.contact +
+              '&custom='+ queryfilter.custom +''}
             ]),
           onSuccess:function (resource, result) {
             resource.response.links.reverse().forEach(function(link){

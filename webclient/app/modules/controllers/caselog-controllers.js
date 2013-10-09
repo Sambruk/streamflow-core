@@ -29,8 +29,17 @@
      
       var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
-        var defaultFilters = result.data;
-        $scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
+          
+          var filterObj = result.data;
+          var filterArray = [];
+          for (var prop in filterObj) {
+              filterArray.push({ "filterName": prop, "filterValue": filterObj[prop] });
+          }
+          $scope.caseLogFilters = filterArray;
+
+        $scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
+        //$scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
+        console.log($scope.caseLogs);
       });
    
     }]);
@@ -42,16 +51,12 @@
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
 
-      /*
-      // Necessary to get to be able to invalidate and resolve the conversation list after a create
-      $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
-*/
       $scope.submitCaseLogEntry = function($event){
         $event.preventDefault();
 
         var entry = $scope.caseLogEntryToCreate;
         caseService.createCaseLogEntry($params.projectId, $params.projectType, $params.caseId, entry).then(function(response){
-          /*var conversationId = JSON.parse(response.data.events[0].parameters).param1;*/
+          
           var href = navigationService.caseHref($params.caseId) + "/caselog";
           $scope.caseLogs.invalidate();
           $scope.caseLogs.resolve();

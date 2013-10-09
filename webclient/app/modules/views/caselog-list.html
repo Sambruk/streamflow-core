@@ -31,27 +31,38 @@
           <textarea name="caselog-entry-text" id="caselog-entry-text" cols="70" rows="3" placeholder="Skriv ditt meddelande här" data-ng-model="caseLogEntryToCreate"></textarea>
         </div>
         <div class="send">
-          <button data-ng-click="submitCaseLogEntry($event)" name="caselog-entry-submit">Lägg till</button>
+          <button data-ng-click="submitCaseLogEntry($event)" name="caselog-entry-submit">Lägg till loggpost</button>
         </div>
       </form>
-      <!-- <div class="attached-files">Bifogad fil: <a href="xlink-d6as78">uppladdad-fil.doc</a></div> -->
     </div>
+
+<div class="caselog-filter-options" style="margin:15px 0 35px 0;"><br />
+<br />
+    <span>Visa loggposter av typ:</span><br />
+    <label data-ng-repeat="filter in caseLogFilters">
+        <input type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName }}
+    </label>     
+    
+</div>
+
     <br />
     <table class="log-table">
         <caption class="struct">Historik för detta ärende</caption>
-        <thead class="struct">
+        <thead>
           <tr>
             <th>Datum</th>
             <th>Titel</th>
             <th>Användare</th>
+            <th>Loggpost typ</th>
           </tr>
         </thead>
         <tbody>
-        <tr data-ng-repeat="entry in caseLogs" data-ng-class-even="'even'">        
-          <td>{{ entry.creationDate | shortDate}}</td>
-          <td>{{ entry.text }}</td>
-          <td>{{ entry.creator }}</td>          
-        </tr>
+            <tr data-ng-repeat="entry in caseLogs | caseLogFilter:caseLogFilters" data-ng-class-even="'even'">
+                <td>{{ entry.creationDate | shortDate}}</td>
+                <td>{{ entry.text }}</td>
+                <td>{{ entry.creator }}</td>
+                <td>{{ entry.caseLogType }}</td>
+            </tr>
         </tbody>
       </table>
 
