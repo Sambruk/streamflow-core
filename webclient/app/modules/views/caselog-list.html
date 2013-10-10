@@ -36,11 +36,10 @@
       </form>
     </div>
 
-<div class="caselog-filter-options" style="margin:15px 0 35px 0;"><br />
-<br />
+<div class="caselog-filter-options">
     <span>Visa loggposter av typ:</span><br />
     <label data-ng-repeat="filter in caseLogFilters">
-        <input type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName }}
+        <input type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName | translate }}
     </label>     
     
 </div>
@@ -57,15 +56,15 @@
           </tr>
         </thead>
         <tbody>
-            <tr data-ng-repeat="entry in caseLogs | caseLogFilter:caseLogFilters" data-ng-class-even="'even'">
+            <tr data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate')  " data-ng-class-even="'even'">
                 <td>{{ entry.creationDate | shortDate}}</td>
                 <td>{{ entry.text }}</td>
                 <td>{{ entry.creator }}</td>
-                <td>{{ entry.caseLogType }}</td>
+                <td>{{ entry.caseLogType | translate }}</td>
             </tr>
         </tbody>
       </table>
-
+      <p ng-hide="filteredCaseLogs.length">Inga loggposter att visa med det angivna filtret.</p>
   </div>
 </div>
 

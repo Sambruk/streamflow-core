@@ -48,7 +48,14 @@
       // So far, we keep it simple by just using a lookup table
       var translation = {
         inbox: 'Inkorg',
-        assignments: "Mina ärenden"
+        assignments: "Mina ärenden",
+        attachment: 'Bifogande',
+        contact: 'Kontakt',
+        conversation: "Konversation",
+        custom: 'custom',
+        form: 'Formulär',
+        system: 'System',
+        systemTrace: 'systemTrace'
       };
 
       return translation[input];

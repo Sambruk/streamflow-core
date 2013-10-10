@@ -236,16 +236,18 @@
       },
       getSelectedCaseLog: function(projectId, projectType, caseId) {
  
-          //TODO: Look at why this is getting called twice on the caslog list page and if no way around it, maybe make sure the results are cached
+          //TODO: Look at why this is getting called twice on the caselog list page and if no way around it, maybe make sure the results are cached
           return backendService.get({
               specs:caseBase(projectId, projectType, caseId).concat([
                   {resources: 'caselog'},
                   {queries: 'list?system=true&systemTrace=true&form=true&conversation=true&attachment=true&contact=true&custom=true'}
               ]),
               onSuccess:function (resource, result) {
-                  resource.response.links.reverse().forEach(function(link){
-                      result.push(link);
+                  resource.response.links.forEach(function(link){
+                      result.push(link);                      
                   });
+                  console.log("Result from case service: ");
+                      console.log(result);
               }
           });
       },

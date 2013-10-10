@@ -39,13 +39,13 @@
 
         $scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
         //$scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
-        console.log($scope.caseLogs);
+        //console.log($scope.caseLogs);
       });
    
     }]);
 
-  sfCaselog.controller('CaselogEntryCreateCtrl', ['$scope', 'caseService', '$routeParams','navigationService',
-    function($scope, caseService, $params, navigationService) {
+  sfCaselog.controller('CaselogEntryCreateCtrl', ['$scope', '$rootScope', 'caseService', '$routeParams','navigationService',
+    function($scope, $rootScope, caseService, $params, navigationService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -56,10 +56,10 @@
 
         var entry = $scope.caseLogEntryToCreate;
         caseService.createCaseLogEntry($params.projectId, $params.projectType, $params.caseId, entry).then(function(response){
-          
           var href = navigationService.caseHref($params.caseId) + "/caselog";
           $scope.caseLogs.invalidate();
           $scope.caseLogs.resolve();
+          $rootScope.$broadcast('caselog-message-created');
           window.location.assign(href);
         });
       }

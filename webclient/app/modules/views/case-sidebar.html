@@ -148,7 +148,7 @@
   <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/caselog" class="block-link">
     <div class="m-h">
       <h2>Ärendelogg</h2>
-      <span style="float:right;"> 3 most recent of {{caseLogs.length}}</span>
+      <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
     </div>
     <div class="m-c">
       <table class="log-table">
@@ -161,7 +161,7 @@
           </tr>
         </thead>
         <tbody>
-        <tr data-ng-repeat="entry in caseLogs" data-ng-class-even="'even'">
+        <tr data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'">
         
           <td>{{ entry.creationDate | shortDate}}</td>
           <td>{{ entry.text }}</td>
