@@ -181,9 +181,6 @@
         };
 
         result.resolve();
-
-        //console.log("Result from backendService: ");
-        //console.log(result);
         return result;
       },
 

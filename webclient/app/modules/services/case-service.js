@@ -246,8 +246,6 @@
                   resource.response.links.forEach(function(link){
                       result.push(link);                      
                   });
-                  console.log("Result from case service: ");
-                      console.log(result);
               }
           });
       },
