@@ -125,7 +125,8 @@ public class AttachmentsView
       toolbar.add(addButton);
       StreamflowButton removeButton = new StreamflowButton(am.get("remove"));
       toolbar.add(removeButton);
-      toolbar.add(new StreamflowButton(am.get("open")));
+      final StreamflowButton openButton = new StreamflowButton( am.get( "open" ) );
+      toolbar.add( openButton );
       attachments.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "open" ) ) );
       attachments.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")){
 
@@ -150,7 +151,7 @@ public class AttachmentsView
             if (obj == -1) return;
             if (me.getClickCount() == 2)
             {
-               am.get("open").actionPerformed(new ActionEvent(this,
+               am.get("open").actionPerformed(new ActionEvent(openButton,
                      ActionEvent.ACTION_PERFORMED,
                      "open"));
                me.consume();

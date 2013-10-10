@@ -51,7 +51,7 @@
 		</repository>
 	</repositories> -->
 
-    <modules>
+    <!-- <modules>
         <module>dci</module>
         <module>common</module>
         <module>streamflow-surface-api</module>
@@ -68,7 +68,7 @@
         <module>help</module>
         <module>dist</module>
         <module>statistics</module>
-    </modules>
+    </modules> -->
 
     <scm>
         <connection>scm:git:https://github.com/jayway/streamflow-core.git</connection>
@@ -796,9 +796,48 @@
 
     <profiles>
         <profile>
+            <id>all-modules</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>dci</module>
+                <module>common</module>
+                <module>streamflow-surface-api</module>
+                <module>streamflow-client-api</module>
+                <module>infrastructure</module>
+                <module>fileconfig</module>
+                <module>client</module>
+                <!-- <module>webclient</module> -->
+                <module>serverplugin</module>
+                <module>web</module>
+                <module>webstart</module>
+                <module>war</module>
+                <module>referenceplugin</module>
+                <module>help</module>
+                <module>dist</module>
+                <module>statistics</module>
+            </modules>
+        </profile>
+        <profile>
             <id>web-client</id>
             <modules>
+                <module>dci</module>
+                <module>common</module>
+                <module>streamflow-surface-api</module>
+                <module>streamflow-client-api</module>
+                <module>infrastructure</module>
+                <module>fileconfig</module>
+                <module>client</module>
                 <module>webclient</module>
+                <module>serverplugin</module>
+                <module>web</module>
+                <module>webstart</module>
+                <module>war</module>
+                <module>referenceplugin</module>
+                <module>help</module>
+                <module>dist</module>
+                <module>statistics</module>
             </modules>
         </profile>
         <profile>

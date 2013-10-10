@@ -25,6 +25,8 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.conversation.MessageDraft;
 
 /**
@@ -44,6 +46,7 @@ public class MessageDraftContext
       return builder.newInstance();
    }
 
+   @RequiresPermission(PermissionType.write)
    public void changemessage( @Optional @Name( "message" ) String message )
    {
       MessageDraft draft = RoleMap.role( MessageDraft.class );

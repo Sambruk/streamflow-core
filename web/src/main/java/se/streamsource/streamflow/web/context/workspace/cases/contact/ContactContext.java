@@ -38,6 +38,8 @@ import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
@@ -68,7 +70,8 @@ public class ContactContext
       
       return contacts.contacts().get().get( index );
    }
-   
+
+   @RequiresPermission(PermissionType.write)
    public void delete()
    {
       Contacts contacts = RoleMap.role( Contacts.class );
@@ -77,6 +80,7 @@ public class ContactContext
       contacts.deleteContact( index );
    }
 
+   @RequiresPermission(PermissionType.write)
    public void update(@Optional @Name("name") String name,
                       @Optional @Name("contactId") String contactId,
                       @Optional @Name("company") String company,
@@ -136,6 +140,7 @@ public class ContactContext
 
    @ServiceAvailable( service = ContactLookupService.class, availability = true )
    @SkipResourceValidityCheck
+   @RequiresPermission(PermissionType.write)
    public ContactsDTO searchcontacts()
    {
       // This method has to convert between the internal ContactDTO and the plugin API ContactDTO,
@@ -171,6 +176,7 @@ public class ContactContext
 
    @ServiceAvailable( service = StreetAddressLookupService.class, availability = true )
    @SkipResourceValidityCheck
+   @RequiresPermission(PermissionType.write)
    public StreetsDTO searchstreets(StreetSearchDTO search)
    {
 

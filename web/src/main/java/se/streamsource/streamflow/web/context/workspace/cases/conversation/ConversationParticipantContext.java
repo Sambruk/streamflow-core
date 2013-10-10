@@ -18,8 +18,10 @@ package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 
@@ -33,6 +35,7 @@ public class ConversationParticipantContext
 {
    @RequiresRemoved(false)
    @RequiresStatus(OPEN)
+   @RequiresPermission(PermissionType.write)
    public void delete()
    {
       ConversationParticipant participant = RoleMap.role( ConversationParticipant.class );

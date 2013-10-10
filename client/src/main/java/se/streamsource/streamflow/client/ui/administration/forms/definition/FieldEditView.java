@@ -100,8 +100,7 @@ public class
       editors.put(TextFieldValue.class, FieldEditorTextFieldValueView.class);
       editors.put( AttachmentFieldValue.class, FieldEditorAttachmentFieldValueView.class);
       editors.put(FieldGroupFieldValue.class, FieldEditorFieldGroupValueView.class );
-      // Postpone to release 1.12
-      // editors.put(GeoLocationFieldValue.class, FieldEditorGeoLocationFieldValueView.class );
+      editors.put(GeoLocationFieldValue.class, FieldEditorGeoLocationFieldValueView.class );
    }
 
    private FieldValueEditModel model;

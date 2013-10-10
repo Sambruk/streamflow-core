@@ -54,7 +54,15 @@ public interface AccessPointDTO
    @Optional
    Property<RequiredSignatureValue> secondarysign();
 
-
+   @Optional
+   Property<String> cssfile();
+   
+   @Optional
+   Property<String> location();
+   
+   @Optional
+   Property<Integer> zoomLevel();
+   
    @UseDefaults
    Property<String> subject();
 
