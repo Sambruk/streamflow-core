@@ -32,13 +32,18 @@
       $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
-
-     /* var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
+     
+     var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
-        $scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
-      });*/
+        $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
+      });
 
+      $scope.$on('caselog-message-created', function(){
+        $scope.sideBarCaseLogs.invalidate();
+        $scope.sideBarCaseLogs.resolve();
+      });
+ 
       $scope.$on('conversation-message-created', function(){
         $scope.conversations.invalidate();
         $scope.conversations.resolve();
