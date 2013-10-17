@@ -70,7 +70,7 @@ public class FieldEditorGeoLocationFieldValueView
       JPanel fieldPanel = new JPanel();
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, pref, pref, pref, top:70dlu, pref" );
+            "pref, pref, pref, pref, pref, pref, pref, top:70dlu, pref" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
@@ -109,6 +109,11 @@ public class FieldEditorGeoLocationFieldValueView
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.polygon ) ) );
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldValueBinder.bind( CHECKBOX.newField(), fieldValueTemplate.polygon() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.name_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
       formBuilder.nextLine();
 
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.description_label ) ) );

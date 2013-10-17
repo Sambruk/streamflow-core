@@ -51,7 +51,6 @@ public class FormAttachmentContext
    @Service
    AttachmentStore store;
 
-   @RequiresPermission(PermissionType.write)
    public void delete() //throws IOException
    {
       FormAttachments attachments = role( FormAttachments.class );
@@ -60,7 +59,6 @@ public class FormAttachmentContext
       attachments.removeFormAttachment( attachment );
    }
 
-   @RequiresPermission(PermissionType.write)
    public void update( UpdateAttachmentDTO updateDTO)
    {
       AttachedFile.Data fileData = role( AttachedFile.Data.class );

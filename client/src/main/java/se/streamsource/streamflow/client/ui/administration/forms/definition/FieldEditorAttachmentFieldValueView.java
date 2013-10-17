@@ -69,7 +69,7 @@ public class FieldEditorAttachmentFieldValueView
       StateBinder fieldValueBinder = module.objectBuilderFactory().newObject(StateBinder.class);
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
-      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text ) ) );
+      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.attachment ) ) );
       formBuilder.nextLine();
 
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.mandatory ) ) );
