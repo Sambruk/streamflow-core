@@ -91,9 +91,27 @@
                 </div>
             </form>
             <!-- /main-search -->
+           
 
-            <div class="user-area">
-                <a href="xlink-" class="icon-user logged-in">Solveig Grankvist</a>
+            
+
+            <div class="user-area" data-ng-controller="ProfileCtrl">
+                <ul class="buttons cf logged-in">
+                <li>
+                    <a href="" class="btn dropdown icon-user"> {{profile[0].name}} <i class="icon-arrow-down"></i></a>
+                      <ul>
+                        <li>
+                            <a href="#/profile" class="btn">Profil</a>
+                        </li>
+                        <li>
+                            <a href="" data-ng-click="logout()" class="btn">Logga Ut</a>
+                        </li>                       
+                      </ul>
+                  </li>
+                </ul>
+
+
+               <!--  <a href="xlink-" class="icon-user logged-in">Solveig Grankvist</a> -->
             </div>
             <!-- /user-area -->
 
@@ -126,6 +144,7 @@
         <script src="modules/controllers/notes-controllers.js"></script>
         <script src="modules/controllers/project-controllers.js"></script>
         <script src="modules/controllers/sidebar-controllers.js"></script>
+        <script src="modules/controllers/profile-controllers.js"></script>
         <script src="modules/directives/sf-active-link.js"></script>
         <script src="modules/directives/sf-fixed-toolbar.js"></script>
         <script src="modules/directives/sf-layout-style.js"></script>
@@ -147,6 +166,7 @@
         <script src="modules/services/project-service.js"></script>
         <script src="modules/services/case-service.js"></script>
         <script src="modules/services/form-mapper-service.js"></script>
+        <script src="modules/services/profile-service.js"></script>
         <script src="modules/models/sf-case.js"></script>
 
         <script src="jquery.customSelect.min.js"></script>
