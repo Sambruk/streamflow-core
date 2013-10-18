@@ -41,6 +41,9 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectOrganizationalUnitQueries;
+import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
@@ -89,7 +92,9 @@ import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -101,6 +106,7 @@ import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -213,6 +219,30 @@ public interface CaseEntity
                      Project project = (Project) aCase.owner().get();
 
                      return actor.isMember( project );
+                  }
+                  
+                  case sameoubranch:
+                  {
+                     // Find all top ou for the projects that the user is member in
+                     ArrayList<OrganizationalUnit> topUnits = new ArrayList<OrganizationalUnit>();
+                     for (Project project : ((ProjectQueries)actor).allProjects())
+                     {
+                        topUnits.add(((ProjectOrganizationalUnitQueries)((ProjectEntity)project)).topOU());
+                     }
+                     
+                     // Find the top Ou for the owner to the case
+                     OwningOrganizationalUnit.Data owningOU = (OwningOrganizationalUnit.Data) aCase.owner().get();
+                     OrganizationalUnit ou = owningOU.organizationalUnit().get();
+                     
+                     Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
+                     Organization organization = organizations.organization().get();
+                     
+                     while (!ou.isOwnedBy( organization )) {
+                        ou = (OrganizationalUnit) ((Ownable.Data)ou).owner().get();
+                     }
+                     
+                     return topUnits.contains( ou );
+                        
                   }
                }
             }

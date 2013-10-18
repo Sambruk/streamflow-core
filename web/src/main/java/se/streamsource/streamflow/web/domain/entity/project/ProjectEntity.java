@@ -100,7 +100,9 @@ public interface ProjectEntity
         // Queries
         AssignmentsQueries,
         InboxQueries,
-        ProjectLabelsQueries
+        ProjectLabelsQueries,
+        ProjectOrganizationalUnitQueries
+        
 {
    class ProjectIdGeneratorMixin
            implements IdGenerator
