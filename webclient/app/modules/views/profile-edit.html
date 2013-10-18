@@ -1,0 +1,73 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<div class="content-primary" role="main">
+	<h2>Profil information</h2>
+
+	<div data-ng-controller="ProfileEditCtrl">
+		
+	<div class="profile-input">
+            <form action="#" method="get" name="editProfileForm" class="form-general cf">
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="profile-name">Namn</label>
+                        <input type="text" data-ng-model="profile[0].name" id="profile-name" name="name" data-sf-update-on-blur="updateField($event, $success, $error)">
+                    </div>
+                </div>                
+                <div class="row cols-1 cf">
+                </div>
+                <div class="row cols-3 cf">
+                    <div class="text col small col-1">
+                        <label for="profile-phone">Telefon</label>
+                        <input type="text" data-ng-model="profile[0].phoneNumbers[0].phoneNumber" id="profile-phone" name="phone" data-sf-update-on-blur="updateField($event, $success, $error)">
+                    </div>
+                    <div class="text col medium col-2">
+                        <label for="profile-email">E-post</label>
+                        <input type="text" data-ng-model="profile[0].emailAddresses[0].emailAddress" id="profile-email" name="email" data-sf-update-on-blur="updateField($event, $success, $error)">
+                    </div>
+                    <div class="text col small col-3">
+                        <label for="profile-message-delivery-type">Medelande notifiering</label>
+                        <select custom-select class="hasCustomSelect" data-ng-model="profile[0].messageDeliveryType" id="profile-message-delivery-type" name="messagedeliverytype" data-sf-update-on-blur="changeMessageDeliveryType($event, $success, $error)">
+                        	<option value="none">Ingen</option>
+                            <option value="email" selected>E-post</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row cols-1 cf">
+					<div class="text col small col-1">
+                        <label for="profile-markreadtimeoutsec">Markera som läst efter: (sekunder)</label>
+                        <input type="text" data-ng-model="profile[0].markReadTimeout" id="profile-markreadtimeoutsec" name="markreadtimeoutsec" data-sf-update-on-blur="changeMarkReadTimeout($event, $success, $error)">
+                    </div>
+                </div>               
+                <div class="row cols-1 cf">
+                    <div class="text col full">
+                        <label for="profile-mail-footer">Epost-signatur.</label>
+                        <textarea data-ng-model="profile[0].mailFooter" id="profile-mail-footer" name="mailfooter" cols="30" rows="17" placeholder="" data-sf-update-on-blur="changeMailFooter($event, $success, $error)"></textarea>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+
+
+	</div>
+
+
+    </form>
+</div>
