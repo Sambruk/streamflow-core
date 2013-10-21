@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
@@ -27,8 +30,17 @@ public class PossibleFormsModel
    {
       CommandQueryClient possibleFormClient = client.getSubClient( id );
 
-      possibleFormClient.postCommand( "create" );
-      LinkValue formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
+      LinkValue formDraftLink = null;
+      try {
+         formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
+      } catch (ResourceException e) {
+         if (e.getStatus().getCode() == Status.CLIENT_ERROR_NOT_FOUND.getCode()) {
+            possibleFormClient.postCommand( "create" );
+            formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
+         } else {
+            throw e;
+         }
+      }
 
       // get the form submission value;
       final CommandQueryClient formDraftClient = possibleFormClient.getClient( formDraftLink );

@@ -16,31 +16,9 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import ca.odell.glazedlists.EventList;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.netbeans.api.wizard.WizardDisplayer;
-import org.netbeans.spi.wizard.Wizard;
-import org.netbeans.spi.wizard.WizardException;
-import org.netbeans.spi.wizard.WizardPage;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.structure.Module;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.api.ErrorResources;
-import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
-import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -50,7 +28,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+
+import org.jdesktop.swingx.util.WindowUtils;
+import org.netbeans.api.wizard.WizardDisplayer;
+import org.netbeans.spi.wizard.Wizard;
+import org.netbeans.spi.wizard.WizardException;
+import org.netbeans.spi.wizard.WizardPage;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.structure.Module;
+
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.api.ErrorResources;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import ca.odell.glazedlists.EventList;
 
 public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable, TransactionListener
@@ -159,15 +162,15 @@ public class PossibleFormsView extends JPanel
 
                public boolean cancel( Map map )
                {
-                  new CommandTask()
-                  {
-                     @Override
-                     public void command()
-                        throws Exception
-                     {
-                        formDraftModel.delete();
-                     }
-                  }.execute();
+//                  new CommandTask()
+//                  {
+//                     @Override
+//                     public void command()
+//                        throws Exception
+//                     {
+//                        formDraftModel.delete();
+//                     }
+//                  }.execute();
                   return true;
                }
             } );

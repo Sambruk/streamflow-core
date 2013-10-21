@@ -145,7 +145,7 @@ public class FormSubmissionWizardPageView
       panel.setScrollableHeightHint( ScrollableSizeHint.VERTICAL_STRETCH );
 
       fieldBinders = new HashMap<StateBinder, EntityReference>( page.fields().get().size() );
-      FormLayout formLayout = new FormLayout( "200dlu", "" );
+      FormLayout formLayout = new FormLayout( "200dlu, 70dlu:grow", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 
@@ -179,7 +179,7 @@ public class FormSubmissionWizardPageView
             commentPane.setOpaque( false );
             commentPane.setBorder( null );
             commentPane.setEditable( false );
-            commentPane.setFocusable( false );
+            commentPane.setFocusable( true );
             commentPane.addHyperlinkListener( new HyperlinkListener()
             {
                public void hyperlinkUpdate( HyperlinkEvent e )
