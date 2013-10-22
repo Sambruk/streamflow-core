@@ -104,10 +104,10 @@ public class CaseActionsView extends JPanel
       open,
       sendto,
       assign,
+      assignto,
       unassign,
       onhold,
       resume,
-      close,
       resolve,
       formonclose,
       formondelete,
@@ -119,7 +119,7 @@ public class CaseActionsView extends JPanel
       unrestrict,
       markunread,
       markread,
-      assignto
+      close
    }
 
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
