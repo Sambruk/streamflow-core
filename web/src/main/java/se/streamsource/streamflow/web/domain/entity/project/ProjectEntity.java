@@ -101,7 +101,8 @@ public interface ProjectEntity
         AssignmentsQueries,
         InboxQueries,
         ProjectLabelsQueries,
-        ProjectOrganizationalUnitQueries
+        ProjectOrganizationalUnitQueries,
+        ProjectMembersQueries
         
 {
    class ProjectIdGeneratorMixin

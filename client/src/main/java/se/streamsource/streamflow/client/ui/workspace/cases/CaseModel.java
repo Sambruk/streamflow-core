@@ -16,14 +16,17 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Outputs;
 import org.qi4j.api.structure.Module;
 import org.restlet.representation.Representation;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
@@ -38,10 +41,8 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 
 /**
  * Model for the info and actions on a case.
@@ -71,6 +72,11 @@ public class CaseModel
    {
       client.command( "assign" );
    }
+   
+   public void assignTo( LinkValue link)
+   {
+      client.postLink( link );
+   }
 
    public void close()
    {
@@ -90,6 +96,16 @@ public class CaseModel
    public void unrestrict()
    {
       client.command( "unrestrict" );
+   }
+
+   public EventList<TitledLinkValue> getPossibleAssignTo()
+   {
+      BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
+
+      LinksValue linksValue = client.query( "possibleassignees", LinksValue.class );
+      list.addAll( (Collection) linksValue.links().get() );
+
+      return list;
    }
 
    public EventList<TitledLinkValue> getPossibleSendTo()
