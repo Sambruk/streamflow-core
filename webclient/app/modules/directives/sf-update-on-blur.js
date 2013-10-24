@@ -23,10 +23,25 @@
       var form = scope[element.closest('form').attr('name')];
 
       var successCallback = function (element){
-        element.parent().addClass('saved');
+        //console.log(element[0].type);
+      if (element[0].type === 'select-one') {
+        element.parent().addClass('saved saved-select');
+      }else{
+        element.parent().addClass('saved');       
+      }
+
+        //Talk of removing the saved icon after a while, whis coule be one way.
+        //Looked at fading it in and out however you cannot fade the "content" in a :after pseudo element
+        //it triggers a remove of the last one and add of a new element and that can not be transitioned
+        //setTimeout(removeIt,2000);
+
         setPristine(form, element);
         $("[class^=error]", element.parent()).hide();
       };
+
+      function removeIt(){
+        element.parent().removeClass('saved');
+      }
 
       var errorCallback = function (element){
         element.parent().addClass('error');
@@ -57,6 +72,7 @@
           element.$pristine = true;
         }
       };
+
 
       if (element[0].type === 'text' || element[0].type === 'textarea') {
         var resetFieldState = function (value){
