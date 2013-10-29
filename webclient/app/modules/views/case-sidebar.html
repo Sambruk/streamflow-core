@@ -32,6 +32,7 @@
               <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
               <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread()" href="" class="btn">Markera oläst</a></li>
               <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+              <li><a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
           </ul>
       </li>
     </ul>

@@ -58,7 +58,32 @@
     $scope.$on('case-changed', function() {
       $scope.caze.invalidate();
       $scope.caze.resolve();
+    });   
+  }]);
+
+  sfCase.controller('PrintCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
+    function($scope, $params, caseService, navigationService){
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+
+    $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.$on('case-created', function() {
+        $scope.caze.invalidate();
     });
+
+    $scope.$on('case-changed', function() {
+      $scope.caze.invalidate();
+      $scope.caze.resolve();
+    });
+
+    $scope.$watch('caze + general + notes', function() {
+      setTimeout(function(){
+         window.print();
+      }, 500);
+    })
   }]);
 
   sfCase.controller('CaseEditCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
