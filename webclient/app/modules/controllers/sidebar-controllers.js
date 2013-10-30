@@ -80,6 +80,9 @@
         $scope.canDelete = _.any(commands, function(command){
           return command.rel === "delete";
         });
+        $scope.canAssign = _.any(commands, function(command){
+          return command.rel === "assign";
+        });
         $scope.canUnassign = _.any(commands, function(command){
           return command.rel === "unassign";
         });
@@ -165,8 +168,26 @@
         caseService.closeCase($params.projectId, $params.projectType, $params.caseId, callback)
       }
 
-      $scope.assign = function(){
-        $scope.commandView = "todo";
+      $scope.assign = function($event){
+        $event.preventDefault();
+
+        var callback = function(){
+          alert("Ärendet tilldelat. Var vänlig ladda om sidan.");
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.assignCase($params.projectId, $params.projectType, $params.caseId, callback);
+      }
+
+      $scope.unassign = function($event){
+        $event.preventDefault();
+        alert("Tilldelning borttagen. Var vänlig ladda om sidan.");
+        
+        var callback = function(){
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.unassignCase($params.projectId, $params.projectType, $params.caseId, callback);
       }
 
       $scope.markUnread = function(){
