@@ -106,6 +106,22 @@
           {}).then(_.debounce(callback)());
       },
 
+      assignCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'assign'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      unassignCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'unassign'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
       getSelectedNote: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'note'}]),
