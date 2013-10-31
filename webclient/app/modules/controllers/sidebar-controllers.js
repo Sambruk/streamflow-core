@@ -20,8 +20,8 @@
 
   var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
-    function($scope, projectService, $params, navigationService, caseService, httpService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 'commonService',
+    function($scope, projectService, $params, navigationService, caseService, httpService, commonService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -32,6 +32,9 @@
       $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.common = commonService.common;
+    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
      
      var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -113,7 +116,6 @@
         var resolutionId = $scope.resolution;
 
         var callback = function(){
-          alert("Ärendet avslutades. Var vänlig ladda om sidan.");
 
           // TODO Find a way to invalidate the case list
           var href = navigationService.caseListHref();
@@ -143,8 +145,8 @@
         var sendToId = $scope.sendToId;
 
         var callback = function(){
+          
           // TODO Find a way to invalidate the case list
-          alert("Ärendet bytte ägare. Var vänlig ladda om sidan.");
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -159,7 +161,9 @@
         $event.preventDefault();
 
         var callback = function(){
-          alert("Ärendet stängdes. Var vänlig ladda om sidan.");
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
 
           // TODO Find a way to invalidate the case list
           var href = navigationService.caseListHref();
@@ -172,7 +176,6 @@
         $event.preventDefault();
 
         var callback = function(){
-          alert("Ärendet tilldelat. Var vänlig ladda om sidan.");
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -181,7 +184,6 @@
 
       $scope.unassign = function($event){
         $event.preventDefault();
-        alert("Tilldelning borttagen. Var vänlig ladda om sidan.");
         
         var callback = function(){
           var href = navigationService.caseListHref();
@@ -198,8 +200,6 @@
         $scope.commandView = undefined;
 
         var callback = function(){
-
-          alert("Ärendet är nu borttaget. Var vänlig ladda om sidan.");
 
           // TODO Find a way to invalidate the case list
           var href = navigationService.caseListHref();

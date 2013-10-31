@@ -33,30 +33,27 @@
 
     }]);
 
-  sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService',
-    function($scope, $params, projectService) {
+  sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService', 'commonService', function($scope, $params, projectService, commonService) {
 
-      // TODO This is a bit nasty, could it be done in a better way?
-      $scope.cases = projectService.getSelected($params.projectId, $params.projectType, function(){
-        $scope.cases.invalidate();
-        $scope.cases.resolve();
-
-        $scope.cases = projectService.getSelected($params.projectId, $params.projectType);
-    });
+    $scope.common = commonService.common;
+    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
     
     $scope.$on('case-created', function() {
       $scope.cases.invalidate();
     });
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
-    function($scope, $params, caseService, navigationService){
+  sfCase.controller('CaseDetailCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService',
+    function($scope, $params, caseService, navigationService, commonService, projectService){
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
 
     $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.common = commonService.common;
+    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
 
     $scope.$on('case-created', function() {
         $scope.caze.invalidate();
