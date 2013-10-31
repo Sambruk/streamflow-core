@@ -35,8 +35,15 @@
 
   sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService',
     function($scope, $params, projectService) {
-    $scope.cases = projectService.getSelected($params.projectId, $params.projectType);
 
+      // TODO This is a bit nasty, could it be done in a better way?
+      $scope.cases = projectService.getSelected($params.projectId, $params.projectType, function(){
+        $scope.cases.invalidate();
+        $scope.cases.resolve();
+
+        $scope.cases = projectService.getSelected($params.projectId, $params.projectType);
+    });
+    
     $scope.$on('case-created', function() {
       $scope.cases.invalidate();
     });
