@@ -117,7 +117,9 @@
 
         var callback = function(){
 
-          // TODO Find a way to invalidate the case list
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -145,8 +147,10 @@
         var sendToId = $scope.sendToId;
 
         var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
           
-          // TODO Find a way to invalidate the case list
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -165,7 +169,6 @@
           $scope.common.currentCases.invalidate();
           $scope.common.currentCases.resolve();
 
-          // TODO Find a way to invalidate the case list
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -176,6 +179,10 @@
         $event.preventDefault();
 
         var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -186,6 +193,10 @@
         $event.preventDefault();
         
         var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -201,7 +212,9 @@
 
         var callback = function(){
 
-          // TODO Find a way to invalidate the case list
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         }
