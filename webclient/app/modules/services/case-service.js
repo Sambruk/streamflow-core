@@ -20,6 +20,14 @@
 
   var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.forms']);
 
+  sfServices.factory('commonService', [function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
+    return {
+      common: {
+        currentCases: []
+      }
+    };
+ }]);
+
   sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
     var caseBase = function(projectId, projectType, caseId){
@@ -102,6 +110,22 @@
         return backendService.postNested(
           caseBase(projectId, projectType, caseId).concat([
             {commands: 'delete'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      assignCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'assign'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      unassignCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'unassign'}
             ]),
           {}).then(_.debounce(callback)());
       },

@@ -53,7 +53,7 @@
         });
       },
       //http://localhost:3501/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0
-      getSelected: function(projectId, projectType) {
+      getSelected: function(projectId, projectType, callback) {
         var self = this;
         return backendService.get({
           specs:[
@@ -67,6 +67,8 @@
             resource.response.links.forEach(function(item){
               result.push(self.sfCaseFactory(item));
             });
+
+            if (callback) callback();
           }
         });
       },

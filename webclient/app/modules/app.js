@@ -87,6 +87,10 @@
         templateUrl:'modules/views/notes-history.html',
         controller: 'NotesHistoryCtrl'
       })
+      .when('/:projectId/:projectType/:caseId/print', {
+        templateUrl:'modules/views/print.html',
+        controller: 'PrintCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

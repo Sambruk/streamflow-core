@@ -33,16 +33,39 @@
 
     }]);
 
-  sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService',
-    function($scope, $params, projectService) {
-    $scope.cases = projectService.getSelected($params.projectId, $params.projectType);
+  sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService', 'commonService', function($scope, $params, projectService, commonService) {
 
+    $scope.common = commonService.common;
+    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+    
     $scope.$on('case-created', function() {
       $scope.cases.invalidate();
     });
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
+  sfCase.controller('CaseDetailCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService',
+    function($scope, $params, caseService, navigationService, commonService, projectService){
+    $scope.projectId = $params.projectId;
+    $scope.projectType = $params.projectType;
+
+    $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.common = commonService.common;
+    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+
+    $scope.$on('case-created', function() {
+        $scope.caze.invalidate();
+    });
+
+    $scope.$on('case-changed', function() {
+      $scope.caze.invalidate();
+      $scope.caze.resolve();
+    });   
+  }]);
+
+  sfCase.controller('PrintCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
     function($scope, $params, caseService, navigationService){
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
@@ -59,6 +82,12 @@
       $scope.caze.invalidate();
       $scope.caze.resolve();
     });
+
+    $scope.$watch('caze + general + notes', function() {
+      setTimeout(function(){
+         window.print();
+      }, 500);
+    })
   }]);
 
   sfCase.controller('CaseEditCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',

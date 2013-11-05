@@ -23,7 +23,8 @@
   <div class="toolbar" data-sf-fixed-toolbar>
     <ul class="buttons cf" data-ng-show="commands[0]">
       <li><a href="" data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
-      <li><a href="" data-ng-show="canAssign" data-ng-click="assign()" class="btn">Tilldela</a></li>
+      <li><a href="" data-ng-show="canAssign" data-ng-click="assign($event)" class="btn">Tilldela &#43;</a></li>
+      <li><a href="" data-ng-show="canUnassign" data-ng-click="unassign($event)" class="btn">Tilldela &#45;</a></li>
       <li><a href="" data-ng-show="canResolve" data-ng-click="resolve()" class="btn">Avsluta</a></li>
       <li><a href="" data-ng-show="canClose" data-ng-click="close($event)" class="btn">Stäng</a></li>
       <li>
@@ -32,6 +33,7 @@
               <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
               <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread()" href="" class="btn">Markera oläst</a></li>
               <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+              <li><a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
           </ul>
       </li>
     </ul>

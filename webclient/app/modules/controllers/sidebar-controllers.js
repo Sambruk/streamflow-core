@@ -20,8 +20,8 @@
 
   var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
-    function($scope, projectService, $params, navigationService, caseService, httpService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 'commonService',
+    function($scope, projectService, $params, navigationService, caseService, httpService, commonService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -32,6 +32,9 @@
       $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
+
+    $scope.common = commonService.common;
+    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
      
      var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -80,6 +83,9 @@
         $scope.canDelete = _.any(commands, function(command){
           return command.rel === "delete";
         });
+        $scope.canAssign = _.any(commands, function(command){
+          return command.rel === "assign";
+        });
         $scope.canUnassign = _.any(commands, function(command){
           return command.rel === "unassign";
         });
@@ -110,9 +116,10 @@
         var resolutionId = $scope.resolution;
 
         var callback = function(){
-          alert("Ärendet avslutades. Var vänlig ladda om sidan.");
 
-          // TODO Find a way to invalidate the case list
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -140,8 +147,10 @@
         var sendToId = $scope.sendToId;
 
         var callback = function(){
-          // TODO Find a way to invalidate the case list
-          alert("Ärendet bytte ägare. Var vänlig ladda om sidan.");
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+          
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -156,17 +165,42 @@
         $event.preventDefault();
 
         var callback = function(){
-          alert("Ärendet stängdes. Var vänlig ladda om sidan.");
 
-          // TODO Find a way to invalidate the case list
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
         caseService.closeCase($params.projectId, $params.projectType, $params.caseId, callback)
       }
 
-      $scope.assign = function(){
-        $scope.commandView = "todo";
+      $scope.assign = function($event){
+        $event.preventDefault();
+
+        var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.assignCase($params.projectId, $params.projectType, $params.caseId, callback);
+      }
+
+      $scope.unassign = function($event){
+        $event.preventDefault();
+        
+        var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.unassignCase($params.projectId, $params.projectType, $params.caseId, callback);
       }
 
       $scope.markUnread = function(){
@@ -178,9 +212,9 @@
 
         var callback = function(){
 
-          alert("Ärendet är nu borttaget. Var vänlig ladda om sidan.");
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
 
-          // TODO Find a way to invalidate the case list
           var href = navigationService.caseListHref();
           window.location.replace(href);
         }
