@@ -94,14 +94,6 @@ public class MessagesContext
       return links.newLinks();
    }
 
-   /*@RequiresRemoved(false)
-   @RequiresStatus( OPEN )
-   public void createmessage( StringValue message )
-   {
-      Messages messages = RoleMap.role( Messages.class );
-      messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
-   }*/
-
    @RequiresRemoved(false)
    @RequiresStatus( OPEN )
    @RequiresPermission(PermissionType.write)

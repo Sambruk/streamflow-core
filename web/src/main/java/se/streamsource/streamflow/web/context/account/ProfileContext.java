@@ -68,7 +68,12 @@ public class ProfileContext
 
    public void changemarkreadtimeout( @Name("markreadtimeoutsec") String timeoutsec )
    {
-      markReadTimeout.changeTimeout( new Long( timeoutsec ) );
+      Long timeout = new Long(timeoutsec);
+      if ( timeout <= 0 )
+      {
+         timeout = 0L;
+      }
+      markReadTimeout.changeTimeout( timeout );
    }
 
    public void changemailfooter( @Name("mailfooter") String mailfooter )
@@ -116,7 +121,7 @@ public class ProfileContext
 
 
       Long systemDefault = systemDefaults.config().configuration().defaultMarkReadTimeout().get();
-      Long timeout = systemDefault.compareTo( markReadTimeoutData.timeout().get() ) > 0 ? systemDefault : markReadTimeoutData.timeout().get();
+      Long timeout = markReadTimeoutData.timeout().get() == 0 ? systemDefault : markReadTimeoutData.timeout().get() ;
 
       builder.prototype().markReadTimeout().set( timeout );
       builder.prototype().messageDeliveryType().set( recipientData.delivery().get().name() );
