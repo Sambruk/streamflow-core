@@ -33,9 +33,12 @@
       $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
 
-    $scope.common = commonService.common;
-    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
-     
+      $scope.common = commonService.common;
+      $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+
+      $scope.common.currentCase = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
+      $scope.common.currentCase.command = caseService.getSelectedCommands($params.projectId, $params.projectType, $params.caseId);   
+    
      var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
@@ -179,6 +182,8 @@
         $event.preventDefault();
 
         var callback = function(){
+          $scope.commands.invalidate();
+          $scope.commands.resolve();
 
           $scope.common.currentCases.invalidate();
           $scope.common.currentCases.resolve();
@@ -193,6 +198,8 @@
         $event.preventDefault();
         
         var callback = function(){
+          $scope.commands.invalidate();
+          $scope.commands.resolve();
 
           $scope.common.currentCases.invalidate();
           $scope.common.currentCases.resolve();
