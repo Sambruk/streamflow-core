@@ -43,14 +43,17 @@
     });
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService',
-    function($scope, $params, caseService, navigationService, commonService, projectService){
+  sfCase.controller('CaseDetailCtrl', ['$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
+    function($scope, $timeout, $params, caseService, navigationService, commonService, projectService, profileService){
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
 
     $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
     $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+    
+    $scope.commands = caseService.getSelectedCommands($params.projectId, $params.projectType, $params.caseId);
+    $scope.profile = profileService.getCurrent();
 
     $scope.common = commonService.common;
     $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
@@ -62,7 +65,25 @@
     $scope.$on('case-changed', function() {
       $scope.caze.invalidate();
       $scope.caze.resolve();
-    });   
+    });
+
+    // Mark the case as Read after the ammount of time selected in profile.
+    // TODO <before uncomment>. Find a way to update possible commands after post.
+    /*$scope.$watch("commands[0] + profile[0]", function(){   
+      var commands = $scope.commands;
+      var profile = $scope.profile[0];
+
+      $scope.canRead = _.any(commands, function(command){
+        return command.rel === "read";
+      });
+
+      if ($scope.canRead) {
+        $timeout(function() { 
+          caseService.Read($params.projectId, $params.projectType, $params.caseId);
+        }, profile.markReadTimeout * 1000)
+
+      }
+    });*/
   }]);
 
   sfCase.controller('PrintCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
