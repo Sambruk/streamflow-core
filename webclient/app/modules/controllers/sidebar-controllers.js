@@ -95,7 +95,9 @@
         $scope.canMarkUnread = _.any(commands, function(command){
           return command.rel === "markunread";
         });
-
+        $scope.canMarkRead = _.any(commands, function(command){
+          return command.rel === "markread";
+        });
       });
 
       $scope.resolve = function(){
@@ -179,7 +181,7 @@
         $event.preventDefault();
 
         var callback = function(){
-
+          // TODO. Find a way to update possible commands after post.
           $scope.common.currentCases.invalidate();
           $scope.common.currentCases.resolve();
 
@@ -193,7 +195,7 @@
         $event.preventDefault();
         
         var callback = function(){
-
+          // TODO. Find a way to update possible commands after post.
           $scope.common.currentCases.invalidate();
           $scope.common.currentCases.resolve();
 
@@ -203,8 +205,32 @@
         caseService.unassignCase($params.projectId, $params.projectType, $params.caseId, callback);
       }
 
-      $scope.markUnread = function(){
-        $scope.commandView = "todo";
+      $scope.markUnread = function($event){
+        $event.preventDefault();
+        // TODO. Find a way to update possible commands after post.        
+        var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.markUnread($params.projectId, $params.projectType, $params.caseId, callback);
+      }
+
+      $scope.markRead = function($event){
+        $event.preventDefault();
+        // TODO. Find a way to update possible commands after post.        
+        var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.markRead($params.projectId, $params.projectType, $params.caseId, callback);
       }
 
       $scope.deleteCase = function(){
