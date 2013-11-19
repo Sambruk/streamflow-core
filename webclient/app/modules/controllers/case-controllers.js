@@ -43,8 +43,8 @@
     });
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
-    function($scope, $timeout, $params, caseService, navigationService, commonService, projectService, profileService){
+  sfCase.controller('CaseDetailCtrl', ['$scope', '$timeout', '$routeParams', 'growl', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
+    function($scope, $timeout, $params, growl, caseService, navigationService, commonService, projectService, profileService){
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
 
@@ -66,6 +66,13 @@
       $scope.caze.invalidate();
       $scope.caze.resolve();
     });
+
+    console.log(growl);
+
+      $scope.addWarning = function(){alert("warning")}
+      $scope.addSpecialWarnMessage = function() {
+        growl.addWarnMessage("oaeuaoeuaoeua");
+      }
 
     // Mark the case as Read after the ammount of time selected in profile.
     // TODO <before uncomment>. Find a way to update possible commands after post.

@@ -43,6 +43,11 @@
         <link rel="stylesheet" href="design/gui/css/main.css">
         <link rel="stylesheet" href="design/gui/css/retina.css">
 
+        <!-- Angular growl -->
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+        <!--<link rel="stylesheet" type="text/css" href="components/angular-growl/build/angular-growl.min.css">-->
+
+
         <!-- datepicker -->
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.css">
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.date.css">
@@ -75,6 +80,7 @@
 
         <!-- Add your site or application content here -->
         <div class='body'>
+        
 
           <div class="header cf" role="banner">
 
@@ -119,8 +125,9 @@
 
           <div class="main">
             <data-ng-include src="'modules/views/navigation.html'"></data-ng-include>
-            <div class="main-body cf" ng-view>
+            <div class="main-body cf" ng-view> 
             </div> <!-- main-body -->
+            
           </div> <!-- main -->
         </div> <!-- body -->
 
@@ -129,6 +136,10 @@
         <script src="components/angular/angular.js"></script>
         <script src="components/angular-resource/angular-resource.js"></script>
         <script src="components/typewatch/jquery.typewatch.js"></script>
+
+        <!-- Angular-growl -->
+        <script src="components/angular-growl/build/angular-growl.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
 
         <!-- build:js scripts/scripts.js -->
