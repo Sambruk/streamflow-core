@@ -713,7 +713,7 @@ public interface CaseEntity
                   variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
                   variables.put( "subject", caze.getDescription() );
 
-                  conversation.createMessage( Translator.translate("{received,caseid=" + ((CaseId.Data) caze).caseId().get() + "}", origin.accesspoint().get().emailTemplates().get(), variables  ),
+                  conversation.createMessage( Translator.translate("{received,caseid=" + ((CaseId.Data) caze).caseId().get() + ",subject=" + caze.getDescription() + "}", origin.accesspoint().get().emailTemplates().get(), variables  ),
                         MessageType.SYSTEM, administrator, false );
                }
             }
@@ -739,7 +739,7 @@ public interface CaseEntity
                   variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
                   variables.put( "subject", caze.getDescription() );
 
-                  conversation.createMessage( Translator.translate( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + "}", origin.accesspoint().get().emailTemplates().get(), variables ),
+                  conversation.createMessage( Translator.translate( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + ",subject=" + caze.getDescription() + "}", origin.accesspoint().get().emailTemplates().get(), variables ),
                         MessageType.SYSTEM, administrator, false );
                }
             }
