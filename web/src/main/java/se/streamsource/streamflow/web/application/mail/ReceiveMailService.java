@@ -374,7 +374,13 @@ public interface ReceiveMailService
                      {
                         body = content.toString();
                         builder.prototype().content().set( body );
-                        builder.prototype().contentType().set( cleanContentType( internalMessage.getContentType() ) );
+                        String contentTypeString = cleanContentType( internalMessage.getContentType() );
+                        builder.prototype().contentType().set( contentTypeString );
+                        if( Translator.HTML.equalsIgnoreCase( contentTypeString ))
+                        {
+                           builder.prototype().contentHtml().set( body );
+                        }
+
                      } else if (content instanceof Multipart)
                      {
                         handleMultipart( (Multipart) content, internalMessage, builder );

@@ -130,6 +130,30 @@
           {}).then(_.debounce(callback)());
       },
 
+      markUnread: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'markunread'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      markRead: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'markread'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      Read: function(projectId, projectType, caseId) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'read'}
+            ]),
+          {});
+      },
+
       getSelectedNote: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([{resources: 'note'}]),

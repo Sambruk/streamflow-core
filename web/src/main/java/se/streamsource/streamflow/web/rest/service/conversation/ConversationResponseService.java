@@ -61,6 +61,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -250,7 +251,7 @@ public interface ConversationResponseService
                            builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
 
                            systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
-                           throw new IllegalStateException("Could not open case through new message.", e);
+                           //throw new IllegalStateException("Could not open case through new message.", e);
                         }
                      }
                   }
@@ -263,9 +264,27 @@ public interface ConversationResponseService
                String subj = "Conversation Response Error: " + builder.prototype().subject().get();
                builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
 
+               StringBuilder content = new StringBuilder();
+               content.append( "Error Message: " + ex.getMessage() );
+               content.append( "\n\rStackTrace:\n\r" );
+               for (StackTraceElement trace : Arrays.asList( ex.getStackTrace() ))
+               {
+                  content.append( trace.toString() + "\n\r" );
+               }
+
+               builder.prototype().content().set( content.toString() );
+               // since we create the content of the message our self it's ok to set content type always to text/plain
+               builder.prototype().contentType().set( "text/plain" );
+
+               // Make sure to address has some value before vi create a case!!
+               if( builder.prototype().to().get() == null )
+               {
+                  builder.prototype().to().set( "n/a" );
+               }
+
                systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                uow.discard();
-               throw new ApplicationEventReplayException(event, ex);
+               //throw new ApplicationEventReplayException(event, ex);
             }
          }
       }
