@@ -40,7 +40,7 @@
         {links: caseId}
       ];
     };
-
+    //TODO: Fix the errors
     $scope.message = '';
 
     return {
