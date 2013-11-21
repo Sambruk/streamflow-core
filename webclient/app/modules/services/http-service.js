@@ -92,7 +92,7 @@
 
       makeRequest: function(href) {
         var url = this.prepareUrl(href);
-        var request = $http({ method:'GET', url: url, cache: false });
+        var request = $http({ method:'GET', url: url, cache: false});
         // Bind href parameter to cacheResponse.
         var cacheResponse = _.bind(this.cacheResponse, null, href);
         return request.then(cacheResponse, errorHandlerService);

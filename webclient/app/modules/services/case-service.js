@@ -18,7 +18,7 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.forms']);
+  var sfServices = angular.module('sf.services.case', ['angular-growl','sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.forms']);
 
   sfServices.factory('commonService', [function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
     return {
@@ -28,7 +28,7 @@
     };
  }]);
 
-  sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
+  sfServices.factory('caseService', ['growl','backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function (growl, backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
     var caseBase = function(projectId, projectType, caseId){
      return [
@@ -47,6 +47,10 @@
           specs: caseBase(projectId, projectType, caseId),
           onSuccess:function (resource, result) {
             result.push(new SfCase(resource.response.index));
+            growl.addSuccessMessage("Successfully fetched case " + result[0].caseId);
+          },
+          onFailure:function(err){
+            growl.addWarnMessage(err);
           }
         });
       },

@@ -67,12 +67,10 @@
       $scope.caze.resolve();
     });
 
-    console.log(growl);
-
-      $scope.addWarning = function(){alert("warning")}
-      $scope.addSpecialWarnMessage = function() {
-        growl.addWarnMessage("oaeuaoeuaoeua");
-      }
+    $scope.addWarning = function(){alert("warning")}
+    $scope.addSpecialWarnMessage = function(message) {
+      growl.addWarnMessage(message);
+    }
 
     // Mark the case as Read after the ammount of time selected in profile.
     // TODO <before uncomment>. Find a way to update possible commands after post.
