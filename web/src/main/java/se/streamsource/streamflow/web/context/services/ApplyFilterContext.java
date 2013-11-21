@@ -296,7 +296,7 @@ public class ApplyFilterContext
             }
          }
 
-         ((MessageDraft)conversation).changeDraftMessage(  htmlGenerator.createMailContent( bundle.getString( "message" ), "" ));
+         ((MessageDraft)conversation).changeDraftMessage(  bundle.getString( "message" ));
 
          try
          {
@@ -418,7 +418,7 @@ public class ApplyFilterContext
          }
          notification.append( "<BR>" );
 
-         ((MessageDraft)conversation).changeDraftMessage(  htmlGenerator.createMailContent( notification.toString(), "" ) );
+         ((MessageDraft)conversation).changeDraftMessage(  notification.toString() );
 
          conversation.createMessageFromDraft( administrator, MessageType.HTML );
       }

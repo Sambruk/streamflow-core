@@ -81,7 +81,7 @@ public class SurfaceSubmittedFormResource
       };
 
       Disposition disposition = new Disposition();
-      disposition.setFilename(form.getDescription() + ".pdf");
+      disposition.setFilename(new String((form.getDescription() + ".pdf").getBytes("UTF-8"), "UTF-8"));
       disposition.setType(Disposition.TYPE_ATTACHMENT);
       representation.setDisposition(disposition);
 

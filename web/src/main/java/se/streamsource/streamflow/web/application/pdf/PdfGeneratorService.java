@@ -33,6 +33,8 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
+import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
+import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -180,6 +182,11 @@ public interface PdfGeneratorService
                {
                   Date date = DateFunctions.fromString( submittedFieldValue.value().get() );
                   document.print(DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( date ), valueFont);
+               } else if ( field.fieldValue().get() instanceof GeoLocationFieldValue ) 
+               {
+                  LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, submittedFieldValue.value().get() );
+                  document.print( locationDTO.street().get() + ", " + locationDTO.zipcode().get() + ", " + locationDTO.city().get(), valueFont);
+
                } else if (field.fieldValue().get() instanceof AttachmentFieldValue)
                {
                   try
