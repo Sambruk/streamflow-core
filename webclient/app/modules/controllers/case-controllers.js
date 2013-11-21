@@ -18,7 +18,7 @@
 (function() {
   'use strict';
 
-  var sfCase = angular.module('sf.controllers.case', ['sf.services.case', 'sf.services.navigation', 'sf.services.perspective', 'sf.services.project']);
+  var sfCase = angular.module('sf.controllers.case', ['angular-growl','sf.services.case', 'sf.services.navigation', 'sf.services.perspective', 'sf.services.project']);
 
   sfCase.controller('CaseOverviewCtrl', ['$scope', '$routeParams', 'perspectiveService', 'navigationService',
     function($scope, $params, perspectiveService, navigationService) {
@@ -67,10 +67,9 @@
       $scope.caze.resolve();
     });
 
-    $scope.addWarning = function(){alert("warning")}
-    $scope.addSpecialWarnMessage = function(message) {
-      growl.addWarnMessage(message);
-    }
+    $scope.$on('getMessage', function(){
+      $scope.growl.addSuccessMessage(caseService.message);
+    });
 
     // Mark the case as Read after the ammount of time selected in profile.
     // TODO <before uncomment>. Find a way to update possible commands after post.
