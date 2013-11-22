@@ -28,7 +28,7 @@
     };
  }]);
 
-  sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
+  sfServices.factory('caseService', ['$rootScope','backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
     var caseBase = function(projectId, projectType, caseId){
      return [
@@ -41,18 +41,21 @@
       ];
     };
     //TODO: Fix the errors
-    $scope.message = '';
+    caseBase.message = '';
+
+    caseBase.broadcastMessage = function(msg){
+      caseBase.message = msg;
+      caseBase.initBroadcastMessage();
+    };
+
+    caseBase.initBroadcastMessage = function(){
+      $rootScope.$broadcast('broadcastMessage');
+    };
 
     return {
-    broadcastMessage: function(msg){
-      $scope.message = msg;
-      this.initBroadcastMessage();
-    },
-
-    initBroadcastMessage: function($rootScope){
-      $rootScope.$broadcast('getMessage', message); 
-    },
-
+      getMessage: function(){
+        return caseBase.message;
+      },
       getSelected: function(projectId, projectType, caseId) {
         var message;
         return backendService.get({
@@ -60,10 +63,11 @@
           onSuccess:function (resource, result) {
             result.push(new SfCase(resource.response.index));
             console.log(resource);
-            broadcastMessage("Message sent");
+            caseBase.broadcastMessage("Success");
             //growl.addSuccessMessage("Successfully fetched case " + result[0].caseId);
           },
           onFailure:function(err){
+            caseBase.broadcastMessage("Error");
             //growl.addWarnMessage(err);
           }
         });

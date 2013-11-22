@@ -43,8 +43,8 @@
     });
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['$scope', '$timeout', '$routeParams', 'growl', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
-    function($scope, $timeout, $params, growl, caseService, navigationService, commonService, projectService, profileService){
+  sfCase.controller('CaseDetailCtrl', ['growl','$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
+    function(growl, $scope, $timeout, $params, caseService, navigationService, commonService, projectService, profileService){
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
 
@@ -67,8 +67,14 @@
       $scope.caze.resolve();
     });
 
-    $scope.$on('getMessage', function(){
-      $scope.growl.addSuccessMessage(caseService.message);
+    //error-handler
+    $scope.$on('broadcastMessage', function(){
+      if(caseService.getMessage() === "Success"){
+        growl.addSuccessMessage(caseService.getMessage());
+      }
+      else{
+        growl.addWarnMessage(caseService.getMessage());
+     } 
     });
 
     // Mark the case as Read after the ammount of time selected in profile.
