@@ -16,11 +16,17 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.note;
 
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
+import java.util.Date;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -34,10 +40,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Notes;
 import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
-
-import java.util.Date;
-
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
 
 /**
  * The context for a note.
@@ -64,6 +66,7 @@ public interface NoteContext
       {
          Notes notes = RoleMap.role( Notes.class );
          ValueBuilder<NoteDTO> builder = module.valueBuilderFactory().newValueBuilder( NoteDTO.class );
+
          builder.prototype().note().set( notes.getLastNote() != null ? notes.getLastNote().note().get() : "" );
          builder.prototype().createdOn().set( notes.getLastNote() != null ? notes.getLastNote().createdOn().get() : new Date() );
          builder.prototype().creator().set( notes.getLastNote() != null ?

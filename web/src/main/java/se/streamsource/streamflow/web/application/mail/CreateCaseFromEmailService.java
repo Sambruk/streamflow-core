@@ -19,6 +19,9 @@ package se.streamsource.streamflow.web.application.mail;
 import info.ineighborhood.cardme.engine.VCardEngine;
 import info.ineighborhood.cardme.vcard.VCard;
 import info.ineighborhood.cardme.vcard.features.AddressFeature;
+
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -179,7 +182,8 @@ public interface CreateCaseFromEmailService
 
                   if (Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
                   {
-                     caze.addNote( Translator.cleanHtml( email.content().get() ), Translator.HTML );
+                     caze.addNote( Jsoup.clean(email.content().get(), Whitelist.basic()), Translator.HTML );
+                     //caze.addNote( Translator.cleanHtml( email.content().get() ), Translator.HTML );
 
                   } else
                   {
