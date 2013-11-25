@@ -35,11 +35,25 @@
                         <outputFile>streamflow.jnlp</outputFile>
                         <mainClass>se.streamsource.streamflow.client.MainClient</mainClass>
                     </jnlp>
+					
+					<sign>
+                        <keystore>/Volumes/Secure/streamflow/JaywayProductsAB.jks</keystore>
+                        <keypass>A123456b</keypass>
+                        <storepass>A123456b</storepass>                        
+                        <alias>server</alias>    
+                        <validity>180</validity>            
+                        <verify>false</verify>
+                        <keystoreConfig>
+                            <delete>false</delete>
+                            <gen>false</gen>
+                        </keystoreConfig>
+                    </sign>
+                   
+		<!-- 
                     <sign>
                         <keystore>${basedir}/src/main/jnlp/keystore</keystore>
                         <keypass>secret</keypass>
-                        <storepass>secret</storepass>
-                        <!-- sigfile>m2m2m2</sigfile-->
+                        <storepass>secret</storepass>                       
                         <alias>streamflowdev</alias>
                         <validity>180</validity>
                         <dnameCn>www.jayway.com</dnameCn>
@@ -52,7 +66,7 @@
                             <gen>false</gen>
                         </keystoreConfig>
                     </sign>
-<!--
+		
                     <pack200>true</pack200>
                     <gzip>true</gzip>
 -->

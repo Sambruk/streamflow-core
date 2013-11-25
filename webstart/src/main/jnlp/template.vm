@@ -15,7 +15,7 @@
 
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp
-    spec="1.5+"
+    spec="6.0+"
     codebase="$$codebase"
     href="$outputFile">
   <information>
@@ -44,10 +44,12 @@
      <all-permissions/>
   </security>
   <resources>
-    <j2se version="1.5+"
-     java-vm-args=""
-     initial-heap-size="64m"
-     max-heap-size="300m"
+     <j2se 
+     	version="1.6.10+" 
+     	href="http://java.sun.com/products/autodl/j2se" 
+     	java-vm-args="-Djava.net.preferIPv4Stack=true" 
+     	initial-heap-size="64m"
+     	max-heap-size="300m"
      />
     #set($start = '<jar href=\"streamflow-help-sv_gov-')
     #set($middle = ${project.version})

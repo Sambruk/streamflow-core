@@ -93,6 +93,7 @@
                     <webApp>
                         <contextPath>/client</contextPath>
                     </webApp>
+        			<war>${project.build.directory}/${project.build.finalName}</war>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <port>8088</port>
