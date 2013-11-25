@@ -30,6 +30,7 @@ import org.restlet.representation.OutputRepresentation;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 
@@ -80,8 +81,9 @@ public class SurfaceSubmittedFormResource
          }
       };
 
+      CaseId.Data idData = role( CaseId.Data.class);
       Disposition disposition = new Disposition();
-      disposition.setFilename(new String((form.getDescription() + ".pdf").getBytes("UTF-8"), "UTF-8"));
+      disposition.setFilename(idData.caseId().get());
       disposition.setType(Disposition.TYPE_ATTACHMENT);
       representation.setDisposition(disposition);
 
