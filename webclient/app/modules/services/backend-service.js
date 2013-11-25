@@ -158,6 +158,8 @@
         // invalidates the HTTP Cache
         result.invalidate = function() { httpService.invalidate(urls); };
 
+        result.status = null;
+
         // calls the Server (again)
         result.resolve =  function() {
           // The dsl can provide a 'guard' condition preventing the calls to the server
@@ -174,9 +176,10 @@
           return httpService.getRequest("").
             then(function (response) {
               var resource = new SfResource("", response);
+              result.status = response.status;
               return resource.getNested(angular.copy(dsl.specs), urls);}).
             then(function(resource){
-              dsl.onSuccess(resource, result, urls)
+              dsl.onSuccess(resource, result, urls);
             });
         };
 

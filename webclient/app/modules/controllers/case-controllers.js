@@ -20,6 +20,10 @@
 
   var sfCase = angular.module('sf.controllers.case', ['angular-growl','sf.services.case', 'sf.services.navigation', 'sf.services.perspective', 'sf.services.project']);
 
+  sfCase.config(['growlProvider', function(growlProvider) {
+    growlProvider.globalTimeToLive(5000);
+  }]);
+
   sfCase.controller('CaseOverviewCtrl', ['$scope', '$routeParams', 'perspectiveService', 'navigationService',
     function($scope, $params, perspectiveService, navigationService) {
       $scope.perspectives = perspectiveService.getPerspectives();
@@ -43,7 +47,7 @@
     });
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['growl','$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
+  sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
     function(growl, $scope, $timeout, $params, caseService, navigationService, commonService, projectService, profileService){
     $scope.projectId = $params.projectId;
     $scope.projectType = $params.projectType;
@@ -67,15 +71,20 @@
       $scope.caze.resolve();
     });
 
+    //TODO: Implement error handler listener on other controllers where needed
+
+    $scope.errorHandler = function(){;
+      var statusCode = caseService.getMessage();
+      var caseId = $scope.caze[0].caseId;
+      if(statusCode === 200)  {
+        growl.addSuccessMessage("Successfully fetched case " + caseId);
+      }else {
+        growl.addWarnMessage("Could not fetch case from server: \n Server error: " + statusCode);
+      }  
+    };
+
     //error-handler
-    $scope.$on('broadcastMessage', function(){
-      if(caseService.getMessage() === "Success"){
-        growl.addSuccessMessage(caseService.getMessage());
-      }
-      else{
-        growl.addWarnMessage(caseService.getMessage());
-     } 
-    });
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
 
     // Mark the case as Read after the ammount of time selected in profile.
     // TODO <before uncomment>. Find a way to update possible commands after post.

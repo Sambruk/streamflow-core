@@ -40,16 +40,16 @@
         {links: caseId}
       ];
     };
-    //TODO: Fix the errors
-    caseBase.message = '';
+    //TODO: Integrate with backend service for http requests
+    caseBase.message = null;
 
-    caseBase.broadcastMessage = function(msg){
-      caseBase.message = msg;
+    caseBase.broadcastMessage = function(statusCode){
+      caseBase.message = statusCode;
       caseBase.initBroadcastMessage();
     };
 
     caseBase.initBroadcastMessage = function(){
-      $rootScope.$broadcast('broadcastMessage');
+      $rootScope.$broadcast('httpRequestInitiated');
     };
 
     return {
@@ -62,14 +62,13 @@
           specs: caseBase(projectId, projectType, caseId),
           onSuccess:function (resource, result) {
             result.push(new SfCase(resource.response.index));
-            console.log(resource);
-            caseBase.broadcastMessage("Success");
+            caseBase.broadcastMessage(result.status);
             //growl.addSuccessMessage("Successfully fetched case " + result[0].caseId);
-          },
-          onFailure:function(err){
-            caseBase.broadcastMessage("Error");
-            //growl.addWarnMessage(err);
           }
+          //onFailure:function(err){
+            //caseBase.broadcastMessage("Error");
+            //growl.addWarnMessage(err);
+          //}
         });
       },
 

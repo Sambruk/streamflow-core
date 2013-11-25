@@ -19,7 +19,7 @@
 
   var sfServices = angular.module('sf.services.error-handler', []);
 
-  sfServices.factory('errorHandlerService', ['$window', '$q', function ($window, $q) {
+  sfServices.factory('errorHandlerService', ['$rootScope','$window', '$q', function ($rootScope, $window, $q) {
     return function(error) {
       console.log("ERROR -------------", error);
       // TODO - this works for the mycases web application, should it work the same in this application
