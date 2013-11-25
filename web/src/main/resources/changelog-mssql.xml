@@ -200,4 +200,11 @@
             from cases
         </createView>
     </changeSet>
+    
+    <changeSet id="4" dbms="mssql" author="henrikreinhold">
+    	<modifyDataType 
+            columnName="value"
+            newDataType="varchar(1000)"
+            tableName="fields"/>
+    </changeSet>
 </databaseChangeLog>
