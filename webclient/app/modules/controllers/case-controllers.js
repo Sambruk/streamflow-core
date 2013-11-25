@@ -71,11 +71,13 @@
       $scope.caze.resolve();
     });
 
+    /**
+    * ERROR HANDLER
+    **/
     //TODO: Implement error handler listener on other controllers where needed
-
     $scope.errorHandler = function(){;
       var statusCode = caseService.getMessage();
-      var caseId = $scope.caze[0].caseId;
+      var caseId = $params.caseId;
       if(statusCode === 200)  {
         growl.addSuccessMessage("Successfully fetched case " + caseId);
       }else {

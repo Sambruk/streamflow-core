@@ -40,11 +40,10 @@
         {links: caseId}
       ];
     };
-    //TODO: Integrate with backend service for http requests
-    caseBase.message = null;
+    caseBase.bcMessage = null;
 
-    caseBase.broadcastMessage = function(statusCode){
-      caseBase.message = statusCode;
+    caseBase.broadcastMessage = function(msg){
+      caseBase.bcMessage = msg;
       caseBase.initBroadcastMessage();
     };
 
@@ -54,7 +53,7 @@
 
     return {
       getMessage: function(){
-        return caseBase.message;
+        return caseBase.bcMessage;
       },
       getSelected: function(projectId, projectType, caseId) {
         var message;
@@ -63,12 +62,10 @@
           onSuccess:function (resource, result) {
             result.push(new SfCase(resource.response.index));
             caseBase.broadcastMessage(result.status);
-            //growl.addSuccessMessage("Successfully fetched case " + result[0].caseId);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
-          //onFailure:function(err){
-            //caseBase.broadcastMessage("Error");
-            //growl.addWarnMessage(err);
-          //}
         });
       },
 
