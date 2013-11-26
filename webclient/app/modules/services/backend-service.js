@@ -48,7 +48,7 @@
         return httpService.absApiUrl(this.basehref + href);
       },
 
-      createById:function (resourceData, id, urls) {
+      createById:function (resourceData, id, urls, skipCache) {
         var values = id.split('?');
         var trimmedId = values[0];
         var query = values[1];
@@ -73,7 +73,7 @@
         var abshref = (w.href[0] === '/') ? w.href : this.basehref + w.href;
         if (query)
           abshref += '?' + query;
-        return httpService.getRequest(abshref).then(function (response) {
+        return httpService.getRequest(abshref, skipCache).then(function (response) {
           urls && urls.push(abshref);
           return new SfResource(abshref, response);
         });
@@ -109,7 +109,10 @@
           function(prev, curr) {
             return prev[curr];
         }, this.response);
-        var resource = this.createById(data, id, urls);
+        
+        var skipCache = specs.length === 1;
+
+        var resource = this.createById(data, id, urls, skipCache);
         return resource.then(function (nextResource) {
           return nextResource.getNested(specs, urls);
         });
