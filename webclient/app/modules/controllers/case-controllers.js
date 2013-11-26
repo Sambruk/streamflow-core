@@ -77,11 +77,10 @@
     //TODO: Implement error handler listener on other controllers where needed
     $scope.errorHandler = function(){;
       var statusCode = caseService.getMessage();
-      var caseId = $params.caseId;
       if(statusCode === 200)  {
-        growl.addSuccessMessage("Successfully fetched case " + caseId);
+        growl.addSuccessMessage('successMsg', "aoeuaoeua");
       }else {
-        growl.addWarnMessage("Could not fetch case from server: \n Server error: " + statusCode);
+        growl.addWarnMessage('errorMsg');
       }  
     };
 

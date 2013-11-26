@@ -55,7 +55,9 @@
         custom: 'custom',
         form: 'Formulär',
         system: 'System',
-        systemTrace: 'systemTrace'
+        systemTrace: 'systemTrace',
+        successMsg: 'Ärendet hämtat',
+        errorMsg: 'Kunde inte hämta ärendet'
       };
 
       return translation[input];
