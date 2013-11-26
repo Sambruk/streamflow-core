@@ -33,11 +33,8 @@
     var caseBase = function(projectId, projectType, caseId){
      return [
         {resources:'workspacev2'},
-        {resources: 'projects'},
-        {'index.links': projectId},
-        {resources: projectType },
-        {queries: 'cases?tq=select+*'},
-        {links: caseId}
+        {resources: 'cases', unsafe: true},
+        {resources: caseId, unsafe: true}
       ];
     };
 
