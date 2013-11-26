@@ -78,9 +78,9 @@
     $scope.errorHandler = function(){;
       var statusCode = caseService.getMessage();
       if(statusCode === 200)  {
-        growl.addSuccessMessage('successMsg', "aoeuaoeua");
+        growl.addSuccessMessage('successMsg', null, " hämta ärende: " + $scope.caze[0].caseId);
       }else {
-        growl.addWarnMessage('errorMsg');
+        growl.addWarnMessage('errorMsg', null, " hämta ärende: " + $scope.caze[0].caseId);
       }  
     };
 

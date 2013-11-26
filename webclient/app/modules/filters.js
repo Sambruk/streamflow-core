@@ -56,8 +56,8 @@
         form: 'Formulär',
         system: 'System',
         systemTrace: 'systemTrace',
-        successMsg: 'Ärendet hämtat',
-        errorMsg: 'Kunde inte hämta ärendet'
+        successMsg: 'Lyckades',
+        errorMsg: 'Kunde inte'
       };
 
       return translation[input];

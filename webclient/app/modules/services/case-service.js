@@ -47,8 +47,8 @@
       caseBase.initBroadcastMessage();
     };
 
-    caseBase.initBroadcastMessage = function(){
-      $rootScope.$broadcast('httpRequestInitiated');
+    caseBase.initBroadcastMessage = function(message){
+      $rootScope.$broadcast('httpRequestInitiated');      
     };
 
     return {
