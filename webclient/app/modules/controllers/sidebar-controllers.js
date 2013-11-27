@@ -183,6 +183,8 @@
 
         var callback = function(){
           // TODO. Find a way to update possible commands after post.
+          // NOTE We can probably just do a redirect back to the case, which will refresh the commands
+          // NOTE I also think we can remove the solution with common.currentCases and use a redirect instead
           $scope.common.currentCases.invalidate();
           $scope.common.currentCases.resolve();
 
@@ -197,6 +199,8 @@
         
         var callback = function(){
           // TODO. Find a way to update possible commands after post.
+          // NOTE We can probably just do a redirect back to the case, which will refresh the commands
+          // NOTE I also think we can remove the solution with common.currentCases and use a redirect instead
           $scope.common.currentCases.invalidate();
           $scope.common.currentCases.resolve();
 
