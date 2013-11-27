@@ -17,7 +17,7 @@
 
 -->
 <div class="content-primary" role="main" data-ng-controller="FormHistoryCtrl">
-  <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
+  <a href="#/cases/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
   <div>Välj ett datum:</div>
   <select data-ng-options="form.index as form.submissionDate for form in submittedForms" data-ng-model="selectedSubmittedForm">
   </select>

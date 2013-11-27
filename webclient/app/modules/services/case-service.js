@@ -30,7 +30,7 @@
 
   sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
-    var caseBase = function(projectId, projectType, caseId){
+    var caseBase = function(caseId){
      return [
         {resources:'workspacev2'},
         {resources: 'cases', unsafe: true},
@@ -39,25 +39,25 @@
     };
 
     return {
-      getSelected: function(projectId, projectType, caseId) {
+      getSelected: function(caseId) {
         return backendService.get({
-          specs: caseBase(projectId, projectType, caseId),
+          specs: caseBase(caseId),
           onSuccess:function (resource, result) {
             result.push(new SfCase(resource.response.index));
           }
         });
       },
 
-      getSelectedCommands: function(projectId, projectType, caseId) {
+      getSelectedCommands: function(caseId) {
         return backendService.get({
-          specs: caseBase(projectId, projectType, caseId),
+          specs: caseBase(caseId),
           onSuccess:function (resource, result) {
             resource.response.commands.forEach(function(item){result.push(item)});
           }
         });
       },
 
-      getPossibleResolutions: function(projectId, projectType, caseId) {
+      getPossibleResolutions: function(caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
             {queries: 'possibleresolutions'}
@@ -68,17 +68,17 @@
         });
       },
 
-      resolveCase: function(projectId, projectType, caseId, resolutionId, callback) {
+      resolveCase: function(caseId, resolutionId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'resolve'}
             ]),
           {entity: resolutionId}).then(_.debounce(callback)());
       },
 
-      getPossibleSendTo: function(projectId, projectType, caseId) {
+      getPossibleSendTo: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {queries: 'possiblesendto'}
           ]),
           onSuccess:function (resource, result) {
@@ -87,91 +87,91 @@
         });
       },
 
-      sendCaseTo: function(projectId, projectType, caseId, sendToId, callback) {
+      sendCaseTo: function(caseId, sendToId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'sendto'}
           ]),
           {entity: sendToId}).then(_.debounce(callback)());
       },
 
-      closeCase: function(projectId, projectType, caseId, callback) {
+      closeCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'close'}
             ]),
           {}).then(_.debounce(callback)());
       },
 
-      deleteCase: function(projectId, projectType, caseId, callback) {
+      deleteCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'delete'}
             ]),
           {}).then(_.debounce(callback)());
       },
 
-      assignCase: function(projectId, projectType, caseId, callback) {
+      assignCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'assign'}
             ]),
           {}).then(_.debounce(callback)());
       },
 
-      unassignCase: function(projectId, projectType, caseId, callback) {
+      unassignCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'unassign'}
             ]),
           {}).then(_.debounce(callback)());
       },
 
-      markUnread: function(projectId, projectType, caseId, callback) {
+      markUnread: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'markunread'}
             ]),
           {}).then(_.debounce(callback)());
       },
 
-      markRead: function(projectId, projectType, caseId, callback) {
+      markRead: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'markread'}
             ]),
           {}).then(_.debounce(callback)());
       },
 
-      Read: function(projectId, projectType, caseId) {
+      Read: function(caseId) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'read'}
             ]),
           {});
       },
 
-      getSelectedNote: function(projectId, projectType, caseId) {
+      getSelectedNote: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'note'}]),
+          specs:caseBase(caseId).concat([{resources: 'note'}]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
           }
         });
       },
 
-      addNote: function(projectId, projectType, caseId, value) {
+      addNote: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'note'},
             {commands: 'addnote'}
             ]),
           value);
       },
 
-      getAllNotes: function(projectId, projectType, caseId) {
+      getAllNotes: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'note'},
             {queries: 'allnotes'}
             ]),
@@ -181,9 +181,9 @@
         });
       },
 
-      getSelectedGeneral: function(projectId, projectType, caseId) {
+      getSelectedGeneral: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'general'}]),
+          specs:caseBase(caseId).concat([{resources: 'general'}]),
           onSuccess:function (resource, result) {
             var index = resource.response.index;
 
@@ -195,9 +195,9 @@
         });
       },
 
-      getSelectedConversations: function(projectId, projectType, caseId) {
+      getSelectedConversations: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'conversations'}]),
+          specs:caseBase(caseId).concat([{resources: 'conversations'}]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(link){
               result.push(link);
@@ -206,9 +206,9 @@
         });
       },
 
-      getSelectedAttachments: function(projectId, projectType, caseId) {
+      getSelectedAttachments: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'attachments'}]),
+          specs:caseBase(caseId).concat([{resources: 'attachments'}]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(link){
               result.push(link);
@@ -217,9 +217,9 @@
         });
       },
 
-      deleteAttachment: function(projectId, projectType, caseId, attachmentId, callback) {
+      deleteAttachment: function(caseId, attachmentId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'attachments'},
             {'index.links': attachmentId},
             {commands: 'delete'}
@@ -227,9 +227,9 @@
           {}).then(_.debounce(callback)());
       },
 
-      getSelectedContact: function(projectId, projectType, caseId, contactIndex) {
+      getSelectedContact: function(caseId, contactIndex) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'contacts', unsafe: true},
             {resources: contactIndex, unsafe: true}
           ]),
@@ -239,9 +239,9 @@
         });
       },
 
-      getSelectedContacts: function(projectId, projectType, caseId) {
+      getSelectedContacts: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'contacts'}
           ]),
           onSuccess:function (resource, result) {
@@ -250,27 +250,27 @@
         });
       },
 
-      addContact: function(projectId, projectType, caseId, value) {
+      addContact: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'contacts', unsafe: true},
             {commands: 'add'}
           ]),
           value);
       },
 
-      updateContact: function(projectId, projectType, caseId, contactIndex, value) {
+      updateContact: function(caseId, contactIndex, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'contacts', unsafe: true},
             {resources: contactIndex, unsafe: true},
             {commands: 'update'}
           ]
         ), value);
       },
-      getCaseLogDefaultParams: function(projectId, projectType, caseId) {
+      getCaseLogDefaultParams: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
               {resources: 'caselog'},
               {resources: 'defaultfilters', unsafe: true}
             ]),
@@ -279,11 +279,11 @@
           }
         });
       },
-      getSelectedCaseLog: function(projectId, projectType, caseId) {
+      getSelectedCaseLog: function(caseId) {
  
           //TODO: Look at why this is getting called twice on the caselog list page and if no way around it, maybe make sure the results are cached
           return backendService.get({
-              specs:caseBase(projectId, projectType, caseId).concat([
+              specs:caseBase(caseId).concat([
                   {resources: 'caselog'},
                   {queries: 'list?system=true&systemTrace=true&form=true&conversation=true&attachment=true&contact=true&custom=true'}
               ]),
@@ -294,11 +294,11 @@
               }
           });
       },
-      getSelectedFilteredCaseLog: function(projectId, projectType, caseId, queryfilter) {
+      getSelectedFilteredCaseLog: function(caseId, queryfilter) {
         //console.log(queryfilter);
         //TODO: Look at why this is getting called twice on the caslog list page and if no way around it, maybe make sure the results are cached
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
               {resources: 'caselog'},
               {queries: 'list?system='+ queryfilter.system +
               '&systemTrace='+ queryfilter.systemTrace +
@@ -315,17 +315,17 @@
           }
         });
       },
-      createCaseLogEntry: function(projectId, projectType, caseId, value) {
+      createCaseLogEntry: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'caselog'},
             {commands: 'addmessage'}
           ]),
           {string: value});
       },
-      getPossibleCaseTypes: function(projectId, projectType, caseId) {
+      getPossibleCaseTypes: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'general'},
             {queries: 'possiblecasetypes'}
             ]),
@@ -339,31 +339,31 @@
         });
       },
 
-      updateSimpleValue: debounce(function(projectId, projectType, caseId, resource, command, property, value, callback) {
+      updateSimpleValue: debounce(function(caseId, resource, command, property, value, callback) {
 
         var toSend = {};
         toSend[property] = value;
 
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: resource},
             {commands: command}
             ]),
           toSend).then(_.debounce(callback)());
       }, 1000),
 
-      getSelectedPossibleForms: function(projectId, projectType, caseId) {
+      getSelectedPossibleForms: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'possibleforms'}]),
+          specs:caseBase(caseId).concat([{resources: 'possibleforms'}]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
           }
         });
       },
 
-      getPossibleForm: function(projectId, projectType, caseId, formId) {
+      getPossibleForm: function(caseId, formId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")}
           ]),
@@ -373,9 +373,9 @@
         });
       },
 
-      createSelectedForm: function(projectId, projectType, caseId, formId) {
+      createSelectedForm: function(caseId, formId) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")},
             {commands: 'create'}
@@ -392,10 +392,10 @@
         });
       },
 
-      getFormDraft: function(projectId, projectType, caseId, draftId) {
+      getFormDraft: function(caseId, draftId) {
         var that = this;
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'formdrafts'},
             {'index.links': draftId}
             ]),
@@ -412,10 +412,10 @@
         });
       },
 
-      getFormDraftFromForm: function(projectId, projectType, caseId, formId) {
+      getFormDraftFromForm: function(caseId, formId) {
         var that = this;
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")},
             {queries: 'formdraft'}
@@ -424,7 +424,7 @@
             var id = resource.response.id;
 
             return backendService.get({
-            specs:caseBase(projectId, projectType, caseId).concat([
+            specs:caseBase(caseId).concat([
               {resources: 'formdrafts'},
               {resources: id, unsafe: true}
               ]),
@@ -443,9 +443,9 @@
         });
       },
 
-      updateField: debounce(function(projectId, projectType, caseId, formId, fieldId, value) {
+      updateField: debounce(function(caseId, formId, fieldId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'formdrafts'},
             {'index.links': formId},
             {commands: 'updatefield'}
@@ -453,9 +453,9 @@
           {field: fieldId, value: value});
       }, 1000),
 
-      submitForm: function(projectId, projectType, caseId, formId) {
+      submitForm: function(caseId, formId) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'formdrafts'},
             {'index.links': formId},
             {commands: 'submit'}
@@ -463,9 +463,9 @@
           {});
       },
 
-      getSubmittedForms: function(projectId, projectType, caseId, formId) {
+      getSubmittedForms: function(caseId, formId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{
+          specs:caseBase(caseId).concat([{
             resources: 'submittedforms'
           }]),
           onSuccess:function (resource, result) {
@@ -489,9 +489,9 @@
         });
       },
 
-      getSubmittedForm: function(projectId, projectType, caseId, index) {
+      getSubmittedForm: function(caseId, index) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'submittedforms'},
             {queries: 'submittedform?index=' + index}
           ]),
@@ -502,17 +502,17 @@
       },
 
       // Conversations
-      createConversation: function(projectId, projectType, caseId, value) {
+      createConversation: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {commands: 'create'}
           ]),
           {topic: value});
       },
-      getConversationMessages: function(projectId, projectType, caseId, conversationId) {
+      getConversationMessages: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'}
@@ -522,9 +522,9 @@
           }
         });
       },
-      getMessageDraft: function(projectId, projectType, caseId, conversationId) {
+      getMessageDraft: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
@@ -535,9 +535,9 @@
           }
         });
       },
-      updateMessageDraft: debounce(function(projectId, projectType, caseId, conversationId, value) {
+      updateMessageDraft: debounce(function(caseId, conversationId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
@@ -546,9 +546,9 @@
             ]),
           {message: value});
       }, 500),
-      createMessage: function(projectId, projectType, caseId, conversationId, value) {
+      createMessage: function(caseId, conversationId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
@@ -556,9 +556,9 @@
             ]),
           {});
       },
-     getConversationParticipants: function(projectId, projectType, caseId, conversationId) {
+     getConversationParticipants: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'}
@@ -568,9 +568,9 @@
           }
         });
       },
-      getPossibleConversationParticipants: function(projectId, projectType, caseId, conversationId) {
+      getPossibleConversationParticipants: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'},
@@ -581,9 +581,9 @@
           }
         });
       },
-      addParticipantToConversation: function(projectId, projectType, caseId, conversationId, participant) {
+      addParticipantToConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'},
@@ -591,9 +591,9 @@
             ]),
           {entity: participant});
       },
-      deleteParticipantFromConversation: function(projectId, projectType, caseId, conversationId, participant) {
+      deleteParticipantFromConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'},

@@ -27,7 +27,7 @@
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
 
-      $scope.notesHistory = caseService.getAllNotes($params.projectId, $params.projectType, $params.caseId);
+      $scope.notesHistory = caseService.getAllNotes($params.caseId);
     }]);
 
 })();

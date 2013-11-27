@@ -42,7 +42,7 @@
 
 
             var value = formMapper.getValue(newValue, attr);
-            caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, value);
+            caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, value);
           }
 
           hasRunAtLeastOnce = true;
