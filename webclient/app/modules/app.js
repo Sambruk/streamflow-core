@@ -51,6 +51,10 @@
         templateUrl:'modules/views/case-detail.html',
         controller: 'CaseDetailCtrl'
       })
+      .when('/cases/:caseId', {
+        templateUrl:'modules/views/case-detail.html',
+        controller: 'CaseDetailCtrl'
+      })
       .when('/:projectId/:projectType/:caseId/edit', {
         templateUrl:'modules/views/case-edit.html',
         controller: 'CaseEditCtrl'

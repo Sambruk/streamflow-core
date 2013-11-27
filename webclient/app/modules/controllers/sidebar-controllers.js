@@ -34,9 +34,10 @@
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
 
     $scope.common = commonService.common;
-    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+    // TODO Use projectId and projectType from case
+    // $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
      
-     var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
+     var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
         $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);

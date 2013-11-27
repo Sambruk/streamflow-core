@@ -26,8 +26,8 @@
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;     
-     
-      var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
+
+      var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
           
           var filterObj = result.data;

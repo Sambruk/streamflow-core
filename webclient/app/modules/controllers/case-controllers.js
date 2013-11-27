@@ -56,7 +56,14 @@
     $scope.profile = profileService.getCurrent();
 
     $scope.common = commonService.common;
-    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+
+    $scope.$watch('caze[0]', function(){
+      // TODO Get projectId and projectType from the case
+      if ($scope.caze.length !== 0) {
+        $scope.caze[0];
+        //$scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+      }
+    })
 
     $scope.$on('case-created', function() {
         $scope.caze.invalidate();
