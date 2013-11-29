@@ -72,6 +72,10 @@ port:
 Mac OSX:
   alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
   alias chromex="chrome --disable-web-security"
+  
+Windows:
+    chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+http://superuser.com/questions/593726/is-it-possible-to-run-chrome-with-and-without-web-security-at-the-same-time
 
 
 ## Learning AngularJs
@@ -82,6 +86,14 @@ Mac OSX:
 * http://vxtindia.com/blog/8-tips-for-angular-js-beginners/
 * http://www.cheatography.com/proloser/cheat-sheets/angularjs/
 * IRC help: http://webchat.freenode.net/?channels=angularjs&uio=d4
+
+## Get Bower Dependencies
+
+To get the dependencies like jQuery and Angular run the bower install command. 
+This will create and populate the components folder.
+
+    bower install
+
 
 ## Run
 
