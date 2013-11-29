@@ -34,7 +34,7 @@
               <li><a data-ng-show="canMarkRead" data-ng-click="markRead($event)" href="" class="btn">Markera läst</a></li>
               <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread($event)" href="" class="btn">Markera oläst</a></li>
               <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
-              <li><a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
+              <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
           </ul>
       </li>
     </ul>
@@ -92,12 +92,12 @@
   <div class="m m-convos">
     <div class="m-h">
       <h2>Konversationer</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
+      <a href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul>
         <li data-ng-repeat='conversation in conversations'>
-          <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link">
+          <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
             <ul class="convo-status">
@@ -115,12 +115,12 @@
   <div class="m m-contacts">
     <div class="m-h">
       <h2>Kontakter</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+      <a href="#/cases/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul class="zebra-list">
         <li data-ng-class-odd="'odd'" ng-repeat='contact in contacts' ng-odd=>
-            <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
+            <a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
             <!--
             <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
             -->
@@ -148,7 +148,7 @@
 
   <!-- Module: Ärendelogg -->
   <div class="m m-issuelog" data-ng-controller="CaselogListCtrl">
-  <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/caselog" class="block-link">
+  <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
     <div class="m-h">
       <h2>Ärendelogg</h2>
       <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>

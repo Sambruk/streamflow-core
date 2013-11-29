@@ -26,8 +26,11 @@
       caseHref: function(caseId) {
         return "#/" + this.projectId() + '/' + this.projectType() + '/' + caseId;
       },
-      caseListHref: function(){
-        return "#/" + "projects/" + this.projectId() + '/' + this.projectType() + '/';
+      caseHrefSimple: function(caseId) {
+        return '#/cases/' + caseId;
+      },
+      caseListHrefFromCase: function(caze) {
+        return "#/" + "projects/" + caze[0].ownerId + '/' + caze[0].listType + '/';
       },
       projectId: function() {
         return $routeParams.projectId;

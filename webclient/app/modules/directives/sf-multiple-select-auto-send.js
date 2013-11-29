@@ -31,7 +31,7 @@
             });
 
             var valueToSend = espacedValues.join(", ");
-            caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, valueToSend);
+            caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, valueToSend);
           }
 
           hasRunAtLeastOnce = true;

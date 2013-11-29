@@ -22,6 +22,7 @@
 
     <!-- Issue header -->
     <div class="m-h cf">
+      <!-- <div><a href="{{ caseListUrl }}">Back (for debug)</a></div> -->
       <h2 class="id">{{caze[0].caseId}}</h2>
         <div class="choose-type">
             <label class="struct" for="issue-type">Ärendetyp</label>
@@ -36,7 +37,7 @@
       <!-- <a href="xlink-" class="wiki-link">
         <i class="icon-info"></i><span class="struct">Namn på ärendetyp</span>
       </a> -->
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
+      <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
         <span class="struct">Redigera ärende</span>
       </a>
     </div>
