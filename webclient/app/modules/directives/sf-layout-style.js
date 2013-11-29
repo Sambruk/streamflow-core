@@ -30,10 +30,12 @@
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
           clearLayoutClasses(element);
-          if (location.path().split('/').length <= 3 || location.path().indexOf('/projects') === 0)
+          if (location.path().indexOf('/projects') === 0) {
             element.addClass('layout-1');
-          else
+          }
+          else {
             element.addClass('layout-2');
+          }
         });
       }
     };

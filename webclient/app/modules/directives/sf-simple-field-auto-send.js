@@ -45,7 +45,7 @@
               $rootScope.$broadcast('case-changed', {command: command, value: value});
           };
 
-          caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value, callback);
+          caseService.updateSimpleValue($params.caseId, resource, command, name, value, callback);
         });
       }
     }

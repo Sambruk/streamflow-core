@@ -20,13 +20,13 @@
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Detaljer om ansökan (TODO)</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
+      <a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
     </div>
     <div class="mc">
       <div class="participants">
         <h3 class="struct">Deltagare i denna konversation</h3>
         <span data-ng-repeat="participant in conversationParticipants">{{ participant.text }}<a data-ng-click="removeParticipant(participant.id)" href="" class="icon-close" title="Ta bort från konversationen"><span class="struct">Ta bort från konversationen</span></a></span>
-        <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/conversation/{{ conversationId }}/participants/create" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
+        <a href="#/cases/{{ caseId }}/conversation/{{ conversationId }}/participants/create" class="add-participant" title="Lägg till deltagare"><i class="icon-user"></i><i class="icon-plus"></i><span class="struct">Lägg till deltagare</span></a>
       </div>
     </div>
     <div class="convo-input">
