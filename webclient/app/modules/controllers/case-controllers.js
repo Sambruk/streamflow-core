@@ -37,7 +37,8 @@
 
     $scope.common = commonService.common;
     $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
-    
+
+    // TODO Shouldn't this invalidate the same collection as $scope.common.currentCases
     $scope.$on('case-created', function() {
       $scope.cases.invalidate();
     });
@@ -52,6 +53,11 @@
     
     $scope.commands = caseService.getSelectedCommands($params.caseId);
     $scope.profile = profileService.getCurrent();
+
+    $scope.$watch('caze[0]', function(){
+      if ($scope.caze.length === 1)
+        $scope.caseListUrl = navigationService.caseListHrefFromCase($scope.caze);
+    });
 
     $scope.common = commonService.common;
 

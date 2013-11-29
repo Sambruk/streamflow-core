@@ -120,10 +120,7 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
         caseService.resolveCase($params.caseId, resolutionId, callback)
@@ -151,10 +148,7 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-          
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
         caseService.sendCaseTo($params.caseId, sendToId, callback)
@@ -169,10 +163,7 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
         caseService.closeCase($params.caseId, callback)
@@ -182,13 +173,7 @@
         $event.preventDefault();
 
         var callback = function(){
-          // TODO. Find a way to update possible commands after post.
-          // NOTE We can probably just do a redirect back to the case, which will refresh the commands
-          // NOTE I also think we can remove the solution with common.currentCases and use a redirect instead
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
         caseService.assignCase($params.caseId, callback);
@@ -198,13 +183,7 @@
         $event.preventDefault();
         
         var callback = function(){
-          // TODO. Find a way to update possible commands after post.
-          // NOTE We can probably just do a redirect back to the case, which will refresh the commands
-          // NOTE I also think we can remove the solution with common.currentCases and use a redirect instead
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
         caseService.unassignCase($params.caseId, callback);
@@ -215,10 +194,8 @@
         // TODO. Find a way to update possible commands after post.        
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          // TODO This is probably the wrong redirect
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
         caseService.markUnread($params.caseId, callback);
@@ -229,10 +206,8 @@
         // TODO. Find a way to update possible commands after post.        
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          // TODO This is probably the wrong redirect
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
         caseService.markRead($params.caseId, callback);
@@ -243,10 +218,7 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         }
 

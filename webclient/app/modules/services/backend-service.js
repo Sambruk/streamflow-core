@@ -110,7 +110,11 @@
             return prev[curr];
         }, this.response);
         
-        var skipCache = specs.length === 1;
+        var skipCache = specs.length === 0;
+
+        if (skipCache){
+          var x = 0;
+        }
 
         var resource = this.createById(data, id, urls, skipCache);
         return resource.then(function (nextResource) {

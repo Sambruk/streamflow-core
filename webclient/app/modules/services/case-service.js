@@ -100,7 +100,7 @@
           caseBase(caseId).concat([
             {commands: 'close'}
             ]),
-          {}).then(_.debounce(callback)());
+          {}).then(callback);
       },
 
       deleteCase: function(caseId, callback) {
@@ -108,7 +108,7 @@
           caseBase(caseId).concat([
             {commands: 'delete'}
             ]),
-          {}).then(_.debounce(callback)());
+          {}).then(callback);
       },
 
       assignCase: function(caseId, callback) {
@@ -116,7 +116,7 @@
           caseBase(caseId).concat([
             {commands: 'assign'}
             ]),
-          {}).then(_.debounce(callback)());
+          {}).then(callback);
       },
 
       unassignCase: function(caseId, callback) {
@@ -124,7 +124,7 @@
           caseBase(caseId).concat([
             {commands: 'unassign'}
             ]),
-          {}).then(_.debounce(callback)());
+          {}).then(callback);
       },
 
       markUnread: function(caseId, callback) {
@@ -132,7 +132,7 @@
           caseBase(caseId).concat([
             {commands: 'markunread'}
             ]),
-          {}).then(_.debounce(callback)());
+          {}).then(callback);
       },
 
       markRead: function(caseId, callback) {
@@ -140,7 +140,7 @@
           caseBase(caseId).concat([
             {commands: 'markread'}
             ]),
-          {}).then(_.debounce(callback)());
+          {}).then(callback);
       },
 
       Read: function(caseId) {
