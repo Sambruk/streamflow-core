@@ -21,11 +21,14 @@ import static se.streamsource.dci.api.RoleMap.role;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
@@ -41,6 +44,9 @@ public abstract class UpdateCaseCountCacheConcern
 {
    Caching caching;
 
+   @Structure
+   Module module;
+   
    public void init(@Optional @Service CachingService cache)
    {
       caching = new Caching(cache, Caches.CASECOUNTS);
@@ -65,6 +71,25 @@ public abstract class UpdateCaseCountCacheConcern
          caching.addToUnreadCache(caze.owner().get().toString()+":"+assignee.toString(), 1 );
       }
 
+   }
+   
+   public void assignto( EntityValue assigneeDTO)
+   {
+      next.assignto( assigneeDTO );
+      
+      RoleMap roleMap = RoleMap.current();
+      CaseEntity caze = roleMap.get( CaseEntity.class );
+      
+
+      // Update inbox cache
+      caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
+      // Update assignments for user
+      caching.addToCaseCountCache(caze.owner().get().toString()+":"+assigneeDTO.entity().get(), 1 );
+      
+      if (caze.isUnread()) {
+         caching.addToUnreadCache( caze.owner().get().toString(), -1 );
+         caching.addToUnreadCache(caze.owner().get().toString()+":"+assigneeDTO.entity().get(), 1 );
+      }
    }
 
    public void open()

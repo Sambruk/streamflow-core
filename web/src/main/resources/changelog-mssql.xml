@@ -173,4 +173,38 @@
             from cases
         </createView>
 	</changeSet>
+
+    <changeSet id="3" dbms="mssql" author="arvidhuss">
+        <addColumn tableName="cases">
+            <column name="deleted" type="boolean" defaultValueBoolean="false" valueBoolean="false">
+            </column>
+        </addColumn>
+        <dropView viewName="casesdescriptions"/>
+        <createView viewName="casesdescriptions">
+            select
+            cases.case_id,
+            cases.description,
+            cases.created_on,
+            cases.closed_on,
+            cases.duration,
+            cases.due_on,
+            cases.priority,
+            cases.deleted,
+            (select descriptions.description from descriptions where descriptions.id = cases.resolution) as resolution,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned) as assigned,
+            (select descriptions.description from descriptions where descriptions.id = cases.casetype) as casetype,
+            (select descriptions.description from descriptions where descriptions.id = cases.casetype_owner) as casetype_owner,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_project) as assigned_project,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_organization) as assigned_organization,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_group) as assigned_group
+            from cases
+        </createView>
+    </changeSet>
+    
+    <changeSet id="4" dbms="mssql" author="henrikreinhold">
+    	<modifyDataType 
+            columnName="value"
+            newDataType="varchar(1000)"
+            tableName="fields"/>
+    </changeSet>
 </databaseChangeLog>

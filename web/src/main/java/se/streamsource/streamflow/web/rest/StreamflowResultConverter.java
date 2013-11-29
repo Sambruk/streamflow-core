@@ -21,6 +21,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.specification.Specification;
@@ -166,8 +167,10 @@ public class StreamflowResultConverter
       prototype.rel().set("case");
       try
       {
-         if (aCase.owner().get() != null)
+         if (aCase.owner().get() != null) {
             prototype.owner().set(((Describable) aCase.owner().get()).getDescription());
+            prototype.ownerId().set( aCase.owner().toString());
+         }
       } catch (Exception e)
       {
          // Ignore
@@ -198,8 +201,12 @@ public class StreamflowResultConverter
          prototype.caseType().set(linkBuilder.newInstance());
       }
 
-      if (aCase.isAssigned())
+      if (aCase.isAssigned()) {
          prototype.assignedTo().set(((Describable) aCase.assignedTo().get()).getDescription());
+         prototype.listType().set( "assignments" );
+      } else {
+         prototype.listType().set( "inbox" );
+      }
 
       if (aCase.isStatus(CaseStates.CLOSED) && aCase.resolution().get() != null)
          prototype.resolution().set(aCase.resolution().get().getDescription());
@@ -211,6 +218,7 @@ public class StreamflowResultConverter
       prototype.hasUnreadConversation().set( aCase.hasUnreadConversation() );
       prototype.hasUnreadForm().set( aCase.hasUnreadForm() );
       prototype.unread().set( aCase.unread().get() );
+      prototype.location().set( aCase.location().get() );
 
       // Labels
       LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).command("delete");

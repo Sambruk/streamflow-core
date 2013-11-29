@@ -16,6 +16,17 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases;
 
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.CLOSED;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.DRAFT;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.ON_HOLD;
+import static se.streamsource.streamflow.api.workspace.cases.CaseStates.OPEN;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Service;
@@ -24,6 +35,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
@@ -35,11 +47,13 @@ import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectMembersQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -74,14 +88,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.dci.api.RoleMap.*;
-import static se.streamsource.streamflow.api.workspace.cases.CaseStates.*;
-
 /**
  * JAVADOC
  */
@@ -97,6 +103,12 @@ public interface CaseCommandsContext
 
    public LinksValue possibleresolutions();
 
+
+   @RequiresStatus( OPEN )
+   @RequiresAssigned(false)
+   @RequiresRemoved(false)
+   public LinksValue possibleassignees();
+
    /**
     * Assign the case to the user invoking the method
     */
@@ -105,6 +117,15 @@ public interface CaseCommandsContext
    @RequiresRemoved(false)
    public void assign();
 
+
+   /**
+    * Assign the case to the given user
+    */
+   @RequiresStatus( OPEN )
+   @RequiresAssigned(false)
+   @RequiresRemoved(false)
+   public void assignto( EntityValue assignee);
+   
    /**
     * Mark the draft case as open
     */
@@ -258,6 +279,18 @@ public interface CaseCommandsContext
          return builder.newLinks();
       }
 
+      public LinksValue possibleassignees()
+      {
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "assignto" );
+         Owner owner = RoleMap.role( Ownable.Data.class ).owner().get();
+         
+         for (Assignee assignee : ((ProjectMembersQueries)owner).possibleAssignees())
+         {
+            builder.addDescribable( (Describable)assignee );
+         }
+         return builder.newLinks();
+      }
+
       // Commands
       public void assign()
       {
@@ -266,6 +299,20 @@ public interface CaseCommandsContext
          Assignee assignee = RoleMap.role( Actor.class );
 
          assignable.assignTo( assignee );
+      }
+      
+      public void assignto( EntityValue assigneeDTO)
+      {
+         Assignee assignee = module.unitOfWorkFactory().currentUnitOfWork().get( Actor.class, assigneeDTO.entity().get() );
+
+         Assignable assignable = RoleMap.role( Assignable.class );
+
+         Owner owner = RoleMap.role( Ownable.Data.class ).owner().get();
+         
+         if (((ProjectMembersQueries)owner).possibleAssignees().contains( assignee ))
+         {
+            assignable.assignTo( assignee );
+         }
       }
 
       public void open()

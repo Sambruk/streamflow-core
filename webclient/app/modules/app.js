@@ -25,9 +25,9 @@
 
   sf.env = sf.env || 'development';
 
-  angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation',
-    'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 'sf.controllers.project',
-    'sf.controllers.sidebar', 'sf.directives'])
+  angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
+    'sf.controllers.profile', 'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 
+    'sf.controllers.project', 'sf.controllers.sidebar', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
       $routeProvider
@@ -38,6 +38,10 @@
       .when('/perspectives', {
         templateUrl: 'modules/views/case-overview.html',
         controller: 'CaseOverviewCtrl'
+      })
+      .when('/profile', {
+        templateUrl: 'modules/views/profile-edit.html',
+        controller: 'ProfileCtrl'
       })
       .when('/projects/:projectId/:projectType', {
         templateUrl: 'modules/views/case-list.html',
@@ -63,6 +67,10 @@
         templateUrl:'modules/views/conversation-detail.html',
         controller: 'ConversationDetailCtrl'
       })
+      .when('/:projectId/:projectType/:caseId/caselog', {
+        templateUrl:'modules/views/caselog-list.html',
+        controller: 'CaselogListCtrl'
+      })
         .when('/:projectId/:projectType/:caseId/contact/add', {
           templateUrl:'modules/views/contact-create.html',
           controller: 'ContactCreateCtrl'
@@ -78,6 +86,10 @@
       .when('/:projectId/:projectType/:caseId/noteshistory/', {
         templateUrl:'modules/views/notes-history.html',
         controller: 'NotesHistoryCtrl'
+      })
+      .when('/:projectId/:projectType/:caseId/print', {
+        templateUrl:'modules/views/print.html',
+        controller: 'PrintCtrl'
       })
       .otherwise({
         redirectTo: '/'

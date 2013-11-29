@@ -32,6 +32,8 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;

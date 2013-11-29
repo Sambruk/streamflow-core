@@ -1,0 +1,72 @@
+<!--
+
+
+    Copyright 2009-2012 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!--TODO: Consider if it's a good idea or not tuo use the same controller as for sidebar-->
+<div class="content-primary" role="main" data-ng-controller="CaselogListCtrl">
+  <div class="m m-check-list">
+    <div class="m-h">
+      <h2>Ärendelog</h2>
+      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
+    </div>
+    <br />
+      <div class="caselog-input" data-ng-controller="CaselogEntryCreateCtrl">
+      <form action="#" method="get" class="cf">
+        <div class="text">
+          <label for="caselog-entry-text" class="struct">Ärende</label>
+          <textarea name="caselog-entry-text" id="caselog-entry-text" cols="70" rows="3" placeholder="Skriv ditt meddelande här" data-ng-model="caseLogEntryToCreate"></textarea>
+        </div>
+        <div class="send">
+          <button data-ng-click="submitCaseLogEntry($event)" name="caselog-entry-submit">Lägg till loggpost</button>
+        </div>
+      </form>
+    </div>
+
+<div class="caselog-filter-options">
+    <span>Visa loggposter av typ:</span><br />
+    <label data-ng-repeat="filter in caseLogFilters">
+        <input type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName | translate }}
+    </label>     
+    
+</div>
+
+    <br />
+    <table class="log-table">
+        <caption class="struct">Historik för detta ärende</caption>
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Titel</th>
+            <th>Användare</th>
+            <th>Loggpost typ</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate')  " data-ng-class-even="'even'">
+                <td>{{ entry.creationDate | shortDate}}</td>
+                <td>{{ entry.text }}</td>
+                <td>{{ entry.creator }}</td>
+                <td>{{ entry.caseLogType | translate }}</td>
+            </tr>
+        </tbody>
+      </table>
+      <p ng-hide="filteredCaseLogs.length">Inga loggposter att visa med det angivna filtret.</p>
+  </div>
+</div>
+
+<!-- Content secondary -->
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

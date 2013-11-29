@@ -8,3 +8,4 @@ test_server/*.war
 libpeerconnection.log
 *.swp
 *.swo
+.idea

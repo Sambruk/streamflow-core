@@ -18,10 +18,10 @@
 (function() {
   'use strict';
 
-  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project']);
+  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService',
-    function($scope, projectService, $params, navigationService, caseService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 'commonService',
+    function($scope, projectService, $params, navigationService, caseService, httpService, commonService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -32,8 +32,21 @@
       $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
-      $scope.caseLog = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
 
+    $scope.common = commonService.common;
+    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+     
+     var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
+      httpService.getRequest(defaultFiltersUrl, false).then(function(result){
+        var defaultFilters = result.data;
+        $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
+      });
+
+      $scope.$on('caselog-message-created', function(){
+        $scope.sideBarCaseLogs.invalidate();
+        $scope.sideBarCaseLogs.resolve();
+      });
+ 
       $scope.$on('conversation-message-created', function(){
         $scope.conversations.invalidate();
         $scope.conversations.resolve();
@@ -70,6 +83,9 @@
         $scope.canDelete = _.any(commands, function(command){
           return command.rel === "delete";
         });
+        $scope.canAssign = _.any(commands, function(command){
+          return command.rel === "assign";
+        });
         $scope.canUnassign = _.any(commands, function(command){
           return command.rel === "unassign";
         });
@@ -79,7 +95,9 @@
         $scope.canMarkUnread = _.any(commands, function(command){
           return command.rel === "markunread";
         });
-
+        $scope.canMarkRead = _.any(commands, function(command){
+          return command.rel === "markread";
+        });
       });
 
       $scope.resolve = function(){
@@ -100,9 +118,10 @@
         var resolutionId = $scope.resolution;
 
         var callback = function(){
-          alert("Ärendet avslutades. Var vänlig ladda om sidan.");
 
-          // TODO Find a way to invalidate the case list
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -130,8 +149,10 @@
         var sendToId = $scope.sendToId;
 
         var callback = function(){
-          // TODO Find a way to invalidate the case list
-          alert("Ärendet bytte ägare. Var vänlig ladda om sidan.");
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+          
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
@@ -146,21 +167,70 @@
         $event.preventDefault();
 
         var callback = function(){
-          alert("Ärendet stängdes. Var vänlig ladda om sidan.");
 
-          // TODO Find a way to invalidate the case list
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
           var href = navigationService.caseListHref();
           window.location.replace(href);
         };
         caseService.closeCase($params.projectId, $params.projectType, $params.caseId, callback)
       }
 
-      $scope.assign = function(){
-        $scope.commandView = "todo";
+      $scope.assign = function($event){
+        $event.preventDefault();
+
+        var callback = function(){
+          // TODO. Find a way to update possible commands after post.
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.assignCase($params.projectId, $params.projectType, $params.caseId, callback);
       }
 
-      $scope.markUnread = function(){
-        $scope.commandView = "todo";
+      $scope.unassign = function($event){
+        $event.preventDefault();
+        
+        var callback = function(){
+          // TODO. Find a way to update possible commands after post.
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.unassignCase($params.projectId, $params.projectType, $params.caseId, callback);
+      }
+
+      $scope.markUnread = function($event){
+        $event.preventDefault();
+        // TODO. Find a way to update possible commands after post.        
+        var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.markUnread($params.projectId, $params.projectType, $params.caseId, callback);
+      }
+
+      $scope.markRead = function($event){
+        $event.preventDefault();
+        // TODO. Find a way to update possible commands after post.        
+        var callback = function(){
+
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
+
+          var href = navigationService.caseListHref();
+          window.location.replace(href);
+        };
+        caseService.markRead($params.projectId, $params.projectType, $params.caseId, callback);
       }
 
       $scope.deleteCase = function(){
@@ -168,9 +238,9 @@
 
         var callback = function(){
 
-          alert("Ärendet är nu borttaget. Var vänlig ladda om sidan.");
+          $scope.common.currentCases.invalidate();
+          $scope.common.currentCases.resolve();
 
-          // TODO Find a way to invalidate the case list
           var href = navigationService.caseListHref();
           window.location.replace(href);
         }

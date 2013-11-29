@@ -30,6 +30,8 @@ import org.qi4j.api.io.Input;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.api.workspace.cases.attachment.UpdateAttachmentDTO;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -44,6 +46,7 @@ public class AttachmentContext
    @Service
    AttachmentStore store;
 
+   @RequiresPermission(PermissionType.write)
    public void delete()
    {
       Attachments attachments = role( Attachments.class );
@@ -52,6 +55,7 @@ public class AttachmentContext
       attachments.removeAttachment( attachment );
    }
 
+   @RequiresPermission(PermissionType.write)
    public void update( UpdateAttachmentDTO updateDTO)
    {
       AttachedFile.Data fileData = role( AttachedFile.Data.class );

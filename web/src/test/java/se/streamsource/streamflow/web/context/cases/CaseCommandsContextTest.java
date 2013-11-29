@@ -261,7 +261,7 @@ public class CaseCommandsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "delete", "resolve", "read", "markread", "sendto", "restrict", "assign" );
+         checkActions( caze, "delete", "resolve", "read", "markread", "sendto", "restrict", "assign", "assignto" );
       }
 
       // Assign case

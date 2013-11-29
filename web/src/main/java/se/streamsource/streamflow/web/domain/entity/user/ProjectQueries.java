@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.xml.sax.ext.LexicalHandler;
 
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
@@ -87,5 +86,6 @@ public interface ProjectQueries
             }} );
          return projects;
       }
+
    }
 }

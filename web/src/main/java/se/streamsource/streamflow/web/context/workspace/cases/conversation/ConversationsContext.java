@@ -28,10 +28,12 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.conversation.ConversationDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
@@ -77,6 +79,7 @@ public class ConversationsContext
 
    @RequiresRemoved(false)
    @RequiresStatus( OPEN )
+   @RequiresPermission(PermissionType.write)
    public Conversation create( @MaxLength(50) @Name("topic") String topic )
    {
       Conversations conversations = RoleMap.role( Conversations.class );

@@ -23,5 +23,6 @@ public enum CaseAccessType
 {
    all, // All users can access - the default
    organization, // All users in the OU of the function that owns the case can access
+   sameoubranch, // All user a function that exists somewhere in the tree under the same top ou.
    project // All users in the function that owns the case can access
 }

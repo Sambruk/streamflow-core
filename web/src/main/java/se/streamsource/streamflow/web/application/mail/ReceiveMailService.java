@@ -374,7 +374,13 @@ public interface ReceiveMailService
                      {
                         body = content.toString();
                         builder.prototype().content().set( body );
-                        builder.prototype().contentType().set( cleanContentType( internalMessage.getContentType() ) );
+                        String contentTypeString = cleanContentType( internalMessage.getContentType() );
+                        builder.prototype().contentType().set( contentTypeString );
+                        if( Translator.HTML.equalsIgnoreCase( contentTypeString ))
+                        {
+                           builder.prototype().contentHtml().set( body );
+                        }
+
                      } else if (content instanceof Multipart)
                      {
                         handleMultipart( (Multipart) content, internalMessage, builder );
@@ -676,7 +682,7 @@ public interface ReceiveMailService
          if( recipients == null || recipients.length == 0 )
             return "n/a";
 
-         if (references == null)
+         if (!hasStreamflowReference( references ))
          {
             Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
             EmailAccessPoints.Data emailAccessPoints = (EmailAccessPoints.Data) organizations.organization().get();

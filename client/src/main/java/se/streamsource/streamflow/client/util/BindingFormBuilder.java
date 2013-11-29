@@ -23,6 +23,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.swing.Action;
+
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -206,7 +208,13 @@ public class BindingFormBuilder
                                      StateBinder stateBinderIn )
    {
       stateBinderIn.bind( component, property );
-      formBuilder.append( component );
+      if (component instanceof TextAreaFieldPanel)
+      {
+         formBuilder.append( component, 2 );
+      } else
+      {
+         formBuilder.append( component );
+      }
 
       if (component instanceof JXDatePicker)
       {
@@ -236,6 +244,12 @@ public class BindingFormBuilder
    public BindingFormBuilder append( Component component )
    {
       formBuilder.append( component );
+      return this;
+   }
+
+   public BindingFormBuilder append( Component component, int columnSpan )
+   {
+      formBuilder.append( component, columnSpan );
       return this;
    }
 

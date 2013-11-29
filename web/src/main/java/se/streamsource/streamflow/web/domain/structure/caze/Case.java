@@ -79,6 +79,7 @@ public interface Case
       CasePriority,
       DoubleSignatureTasks,
       Unread,
-      NotificationTrace
+      NotificationTrace,
+      Location
 {
 }

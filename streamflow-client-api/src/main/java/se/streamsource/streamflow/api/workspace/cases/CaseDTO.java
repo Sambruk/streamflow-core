@@ -42,6 +42,12 @@ public interface CaseDTO
 
    @Optional
    Property<String> owner();
+   
+   @Optional
+   Property<String> ownerId();
+   
+   @Optional
+   Property<String> listType();
 
    Property<LinksValue> labels();
 
@@ -77,4 +83,9 @@ public interface CaseDTO
 
    @UseDefaults
    Property<Boolean> hasUnreadForm();
+   
+   @Optional
+   @UseDefaults
+   Property<String> location();
+   
 }

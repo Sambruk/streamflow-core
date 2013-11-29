@@ -3,12 +3,12 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.16-SNAPSHOT</version>
+        <version>1.17-SNAPSHOT</version>
     </parent>
 
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-war</artifactId>
-    <version>1.16-SNAPSHOT</version>
+    <version>1.17-SNAPSHOT</version>
 
     <packaging>war</packaging>
     <name>Streamflow war</name>
@@ -93,6 +93,7 @@
                     <webApp>
                         <contextPath>/client</contextPath>
                     </webApp>
+        			<war>${project.build.directory}/${project.build.finalName}</war>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <port>8088</port>

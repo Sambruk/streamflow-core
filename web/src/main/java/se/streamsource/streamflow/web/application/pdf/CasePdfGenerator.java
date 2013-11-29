@@ -35,6 +35,8 @@ import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
 import se.streamsource.streamflow.api.administration.form.DateFieldValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
+import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
+import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
@@ -493,6 +495,19 @@ public class CasePdfGenerator implements CaseOutput
                      {
                         value = new SimpleDateFormat( bundle.getString( "date_format" ) ).format( DateFunctions
                               .fromString( submittedFieldValue.value().get() ) );
+                     } else if ( fieldValue instanceof GeoLocationFieldValue ) 
+                     {
+                        LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, submittedFieldValue.value().get() );
+                        value = locationDTO.street().get() + ", " + locationDTO.zipcode().get() + ", " + locationDTO.city().get();
+//                        String locationString = locationDTO.location().get();
+//                        if (locationString != null) {
+//                           locationString = locationString.replace( ' ', '+' );
+//                           if (locationString.contains( "(" )) {
+//                              String[] positions = locationString.split( "\\),\\(");
+//                              locationString = positions[0].substring( 1, positions[0].length() -1 );
+//                           }
+//                        }
+//                        text += "<a href=\"http://maps.google.com/maps?z=13&t=m&q=" + locationString + "\" alt=\"Google Maps\">Klicka här för att visa karta</a>";
                      } else
                      {
                         value = submittedFieldValue.value().get();

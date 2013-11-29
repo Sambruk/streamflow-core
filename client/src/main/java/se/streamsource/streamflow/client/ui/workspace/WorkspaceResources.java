@@ -102,6 +102,7 @@ public enum WorkspaceResources
    choose_message_delivery_type,
    choose_project,
    choose_form,
+   choose_assignee_title,
    save_perspective,
    query_label,
    incomplete_data,

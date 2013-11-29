@@ -138,7 +138,7 @@ public interface FormDrafts
          return null;
       }
 
-      private FormDraft createDraft( Form form )
+      private FormDraft  createDraft( Form form )
       {
          SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
 
@@ -259,7 +259,8 @@ public interface FormDrafts
          valueBuilder.prototype().rule().set( field.getRule() );
 
          fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
-         fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
+         String submittedValue = getSubmittedValue( field, submittedFormValue );
+         fieldBuilder.prototype().value().set("".equals( submittedValue ) ? null : submittedValue );
          fieldBuilder.prototype().enabled().set( true );
 
 

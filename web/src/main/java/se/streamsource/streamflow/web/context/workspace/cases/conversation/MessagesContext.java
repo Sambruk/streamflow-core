@@ -27,10 +27,12 @@ import se.streamsource.streamflow.api.workspace.cases.conversation.MessageDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
@@ -92,16 +94,9 @@ public class MessagesContext
       return links.newLinks();
    }
 
-   /*@RequiresRemoved(false)
-   @RequiresStatus( OPEN )
-   public void createmessage( StringValue message )
-   {
-      Messages messages = RoleMap.role( Messages.class );
-      messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
-   }*/
-
    @RequiresRemoved(false)
    @RequiresStatus( OPEN )
+   @RequiresPermission(PermissionType.write)
    public void createmessagefromdraft()
    {
       RoleMap.role( Messages.class ).createMessageFromDraft( RoleMap.role(ConversationParticipant.class) );

@@ -20,6 +20,14 @@
 
   var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.forms']);
 
+  sfServices.factory('commonService', [function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
+    return {
+      common: {
+        currentCases: []
+      }
+    };
+ }]);
+
   sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
     var caseBase = function(projectId, projectType, caseId){
@@ -104,6 +112,46 @@
             {commands: 'delete'}
             ]),
           {}).then(_.debounce(callback)());
+      },
+
+      assignCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'assign'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      unassignCase: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'unassign'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      markUnread: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'markunread'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      markRead: function(projectId, projectType, caseId, callback) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'markread'}
+            ]),
+          {}).then(_.debounce(callback)());
+      },
+
+      Read: function(projectId, projectType, caseId) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {commands: 'read'}
+            ]),
+          {});
       },
 
       getSelectedNote: function(projectId, projectType, caseId) {
@@ -223,24 +271,61 @@
           ]
         ), value);
       },
-
-      getSelectedCaseLog: function(projectId, projectType, caseId) {
-
-        var defaultParams = { "attachment":false,"contact":false,"conversation":false,"custom":true,"form":true,"system":false,"systemTrace":false}; // From API
-
+      getCaseLogDefaultParams: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
               {resources: 'caselog'},
-              {queries: 'list?system=false&systemTrace=false&form=true&conversation=false&attachment=false&contact=false&custom=true'}
+              {resources: 'defaultfilters', unsafe: true}
             ]),
           onSuccess:function (resource, result) {
-            _.first(resource.response.links.reverse(), 3).forEach(function(link){
+            result.push(resource.response);
+          }
+        });
+      },
+      getSelectedCaseLog: function(projectId, projectType, caseId) {
+ 
+          //TODO: Look at why this is getting called twice on the caselog list page and if no way around it, maybe make sure the results are cached
+          return backendService.get({
+              specs:caseBase(projectId, projectType, caseId).concat([
+                  {resources: 'caselog'},
+                  {queries: 'list?system=true&systemTrace=true&form=true&conversation=true&attachment=true&contact=true&custom=true'}
+              ]),
+              onSuccess:function (resource, result) {
+                  resource.response.links.forEach(function(link){
+                      result.push(link);                      
+                  });
+              }
+          });
+      },
+      getSelectedFilteredCaseLog: function(projectId, projectType, caseId, queryfilter) {
+        //console.log(queryfilter);
+        //TODO: Look at why this is getting called twice on the caslog list page and if no way around it, maybe make sure the results are cached
+        return backendService.get({
+          specs:caseBase(projectId, projectType, caseId).concat([
+              {resources: 'caselog'},
+              {queries: 'list?system='+ queryfilter.system +
+              '&systemTrace='+ queryfilter.systemTrace +
+              '&form='+ queryfilter.form +
+              '&conversation='+ queryfilter.conversation +
+              '&attachment='+ queryfilter.attachment +
+              '&contact='+ queryfilter.contact +
+              '&custom='+ queryfilter.custom +''}
+            ]),
+          onSuccess:function (resource, result) {
+            resource.response.links.reverse().forEach(function(link){
               result.push(link);
             });
           }
         });
       },
-
+      createCaseLogEntry: function(projectId, projectType, caseId, value) {
+        return backendService.postNested(
+          caseBase(projectId, projectType, caseId).concat([
+            {resources: 'caselog'},
+            {commands: 'addmessage'}
+          ]),
+          {string: value});
+      },
       getPossibleCaseTypes: function(projectId, projectType, caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
