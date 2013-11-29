@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.16-SNAPSHOT</version>
+        <version>1.16</version>
     </parent>
     <artifactId>streamflow-server-plugin-spi</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.16-SNAPSHOT</version>
+    <version>1.16</version>
     <packaging>jar</packaging>
     <name>Streamflow server plugin SPI</name>
     <description>Streamflow server plugin SPI</description>
