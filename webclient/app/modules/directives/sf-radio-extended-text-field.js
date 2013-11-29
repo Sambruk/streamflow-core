@@ -36,7 +36,7 @@
                 $(input).prop('checked',true);
               });
 
-              caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, newValue);
+              caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, newValue);
             }
 
           }
