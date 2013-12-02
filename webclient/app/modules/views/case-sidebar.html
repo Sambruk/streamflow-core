@@ -111,6 +111,29 @@
   </div>
   <!-- /Module: Ärende -->
 
+  <div class="m m-issue-forms">
+    <div class="m-h">
+      <h2>Formulär</h2>
+    </div>
+    <div class="m-c">
+      
+      <div class="accordion">
+        <div class="accordion-item">
+          <h3><a href="#" class="open-acc">Värde 1</a></h3>
+        </div>
+        <div class="accordion-item">
+          <h3><a href="#" class="open-acc">Värde 2</a></h3>
+        </div>
+        <div class="accordion-item">
+          <h3><a href="#" class="open-acc">Värde 3</a></h3>
+        </div>
+        <!-- end accordion-item -->
+      </div>
+      <!-- end accordion -->
+
+    </div>
+  </div>
+  <!-- /m-issue-forms -->
 
   <!-- Module: Konversationer -->
   <div class="m m-convos">
@@ -143,7 +166,7 @@
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li data-ng-class-odd="'odd'" ng-repeat='contact in contacts' ng-odd=>
+        <li data-ng-repeat='contact in contacts'>
             <a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
             <!--
             <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
@@ -161,7 +184,7 @@
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li data-ng-class-odd="'odd'" ng-repeat="attachment in attachments" ng-odd=>
+        <li data-ng-repeat="attachment in attachments">
         <a data-ng-click="downloadAttachment(attachment.id)" href="">{{ attachment.text }}</a>
         <a data-ng-click="deleteAttachment(attachment.id)" href="" class="delete" title="Radera fil">Radera fil</a>
         </li>
