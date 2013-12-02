@@ -24,10 +24,15 @@
     <div class="m-h cf">
       <!-- <div><a href="{{ caseListUrl }}">Back (for debug)</a></div> -->
       <h2 class="id">{{caze[0].caseId}}</h2>
-        <div class="choose-type">
-            <label class="struct" for="issue-type">Ärendetyp</label>
-            <input type="text" disabled id="issue-type" data-ng-model="general[0].caseType.text">
-        </div>
+      <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
+        <span class="struct">Redigera ärende</span>
+      </a>
+    </div>
+
+<!--     <div class="choose-type">
+        <label class="struct" for="issue-type">Ärendetyp</label>
+        <input type="text" id="issue-type" data-ng-model="general[0].caseType.text">
+    </div> -->
         <!--
         <div class="choose-type">
             <label class="struct" for="set-due-date">Förfallodatum</label>
@@ -37,17 +42,17 @@
       <!-- <a href="xlink-" class="wiki-link">
         <i class="icon-info"></i><span class="struct">Namn på ärendetyp</span>
       </a> -->
-      <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
-        <span class="struct">Redigera ärende</span>
-      </a>
-    </div>
     <!-- /Issue header -->
-
+    <div class="issue-body">
+      <div class="issue-type">
+        <p>Ärendetyp: {{general[0].caseType.text}}</p>
+      </div>
+    </div>
     <!-- Issue body -->
     <div class="issue-body">
-      <div class="due-date {{caze.index.overdueStatus()}}">
+<!--  <div class="due-date {{caze.index.overdueStatus()}}">
         <span>{{caze[0].overdueDays() | positive}}</span>
-      </div>
+      </div> -->
       <div class="issue-description">
         <h2>{{caze[0].text}}</h2>
         <p>{{notes[0].note}}</p>
