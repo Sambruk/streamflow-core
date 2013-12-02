@@ -22,7 +22,7 @@
   <!-- Issue toolbar -->
   <div class="toolbar" data-sf-fixed-toolbar>
     <ul class="buttons cf" data-ng-show="commands[0]">
-      <li><a href="" data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li><a href="" sf-open-toolbar-content data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
       <li><a href="" data-ng-show="canAssign" data-ng-click="assign($event)" class="btn">Tilldela &#43;</a></li>
       <li><a href="" data-ng-show="canUnassign" data-ng-click="unassign($event)" class="btn">Tilldela &#45;</a></li>
       <li><a href="" data-ng-show="canResolve" data-ng-click="resolve()" class="btn">Avsluta</a></li>
@@ -38,7 +38,7 @@
           </ul>
       </li>
     </ul>
-    <div class="toolbar-content">
+    <div class="toolbar-content" ng-hide="true">
 
       <div data-ng-switch on="commandView">
           <div data-ng-switch-when="resolve">
@@ -52,9 +52,18 @@
           </div>
 
           <div data-ng-switch-when="sendTo">
-              <select custom-select data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
-              </select>
-              <button data-ng-click="onSendToButtonClicked($event)">Skicka till</button>
+            <div class="row cf">
+              <div class="select">
+                <label for="issue-owner">Byt ägare</label>
+                <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="submit-area cf">
+                <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+              </div>
+            </div>
           </div>
 
           <div data-ng-switch-when="todo">
@@ -72,7 +81,6 @@
   <div class="m m-general">
     <div class="m-h">
       <h2>Allmänt</h2>
-      <a href="xlink-" class="edit-module icon-edit" title="Redigera"><span class="struct">Redigera</span></a>
     </div>
     <div class="m-c">
       <div class="m-box">
@@ -80,7 +88,6 @@
           <li><strong>Ägare:</strong> {{ caze[0].owner }}</li>
           <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
           <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
-          <li><strong>Kund:</strong> TODO TODOsson 19760901-4046</li>
           <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
         </ul>
       </div>

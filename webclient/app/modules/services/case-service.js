@@ -92,7 +92,7 @@
           caseBase(caseId).concat([
             {commands: 'sendto'}
           ]),
-          {entity: sendToId}).then(_.debounce(callback)());
+          {entity: sendToId}).then(callback);
       },
 
       closeCase: function(caseId, callback) {
