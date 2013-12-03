@@ -31,6 +31,13 @@
       $scope.toggleToolbar = toggleToolbar;
 
       $scope.createCase = function(){
+        if ($params.projectType === 'inbox') {
+          return;
+        }
+        if (!$params.projectType) {
+          return;
+        }
+
         $rootScope.$broadcast('case-created');
 
         projectService.createCase($params.projectId, $params.projectType).then(function(response){
