@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@
 
 
             var value = formMapper.getValue(newValue, attr);
-            caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, value);
+            caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, value);
           }
 
           hasRunAtLeastOnce = true;

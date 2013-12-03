@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,12 @@
 
   sf.env = sf.env || 'development';
 
-  angular.module('sf', ['sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
+  angular.module('sf', ['angular-growl','sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
     'sf.controllers.profile', 'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 
     'sf.controllers.project', 'sf.controllers.sidebar', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
+
       $routeProvider
       .when('/search', {
         templateUrl: 'modules/views/case-search.html',
@@ -47,47 +48,51 @@
         templateUrl: 'modules/views/case-list.html',
         controller: 'CaseListCtrl'
       })
-      .when('/:projectId/:projectType/:caseId', {
+      .when('/:cases/:caseId', {
         templateUrl:'modules/views/case-detail.html',
         controller: 'CaseDetailCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/edit', {
+      .when('/cases/:caseId/edit', {
         templateUrl:'modules/views/case-edit.html',
         controller: 'CaseEditCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/conversation/create', {
+      .when('/cases/:caseId', {
+        templateUrl:'modules/views/case-detail.html',
+        controller: 'CaseDetailCtrl'
+      })
+      .when('/cases/:caseId/conversation/create', {
         templateUrl:'modules/views/conversation-create.html',
         controller: 'ConversationCreateCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/conversation/:conversationId/participants/create', {
+      .when('/cases/:caseId/conversation/:conversationId/participants/create', {
         templateUrl:'modules/views/conversation-participant-create.html',
         controller: 'ConversationParticipantCreateCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/conversation/:conversationId', {
+      .when('/cases/:caseId/conversation/:conversationId', {
         templateUrl:'modules/views/conversation-detail.html',
         controller: 'ConversationDetailCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/caselog', {
+      .when('/cases/:caseId/caselog', {
         templateUrl:'modules/views/caselog-list.html',
         controller: 'CaselogListCtrl'
       })
-        .when('/:projectId/:projectType/:caseId/contact/add', {
+        .when('/cases/:caseId/contact/add', {
           templateUrl:'modules/views/contact-create.html',
           controller: 'ContactCreateCtrl'
         })
-        .when('/:projectId/:projectType/:caseId/contact/:contactIndex/', {
+        .when('/cases/:caseId/contact/:contactIndex/', {
           templateUrl:'modules/views/contact-edit.html',
           controller: 'ContactEditCtrl'
         })
-      .when('/:projectId/:projectType/:caseId/formhistory/:formId', {
+      .when('/cases/:caseId/formhistory/:formId', {
         templateUrl:'modules/views/form-history.html',
         controller: 'FormHistoryCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/noteshistory/', {
+      .when('/cases/:caseId/noteshistory/', {
         templateUrl:'modules/views/notes-history.html',
         controller: 'NotesHistoryCtrl'
       })
-      .when('/:projectId/:projectType/:caseId/print', {
+      .when('/cases/:caseId/print', {
         templateUrl:'modules/views/print.html',
         controller: 'PrintCtrl'
       })

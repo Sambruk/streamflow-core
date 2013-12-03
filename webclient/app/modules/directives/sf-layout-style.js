@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,12 @@
         scope.location = location;
         scope.$watch('location.path()', function (newPath) {
           clearLayoutClasses(element);
-          if (location.path().split('/').length <= 3 || location.path().indexOf('/projects') === 0)
+          if (location.path().indexOf('/projects') === 0) {
             element.addClass('layout-1');
-          else
+          }
+          else {
             element.addClass('layout-2');
+          }
         });
       }
     };

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 (function() {
   'use strict';
 
@@ -23,8 +22,10 @@
   sfForm.controller('FormCtrl', ['$scope', 'caseService', '$routeParams',
     function($scope, caseService, $params) {
 
+      $scope.caseId = $params.caseId;
+      
       $scope.currentFormId;
-      $scope.possibleForms = caseService.getSelectedPossibleForms($params.projectId, $params.projectType, $params.caseId);
+      $scope.possibleForms = caseService.getSelectedPossibleForms($params.caseId);
 
       $scope.selectForm = function(formId){
         // TODO Is there a better way than this?
@@ -42,19 +43,19 @@
 
         $scope.formMessage = "";
 
-        $scope.possibleForm = caseService.getPossibleForm($params.projectId, $params.projectType, $params.caseId, formId);
+        $scope.possibleForm = caseService.getPossibleForm($params.caseId, formId);
 
         $scope.$watch('possibleForm[0]', function (){
           if (!$scope.possibleForm[0]){
             return;
           }
           if ($scope.possibleForm[0].queries.length !== 0) {
-            $scope.form = caseService.getFormDraftFromForm($params.projectId, $params.projectType, $params.caseId, formId)
+            $scope.form = caseService.getFormDraftFromForm($params.caseId, formId)
           }
           else {
-            caseService.createSelectedForm($params.projectId, $params.projectType, $params.caseId, formId).then(function(response){
+            caseService.createSelectedForm($params.caseId, formId).then(function(response){
               var draftId = JSON.parse(response.data.events[0].parameters).param1;
-              $scope.form = caseService.getFormDraft($params.projectId, $params.projectType, $params.caseId, draftId);
+              $scope.form = caseService.getFormDraft($params.caseId, draftId);
             });
           }
 
@@ -67,7 +68,7 @@
       }
 
       $scope.submitForm = function(){
-        caseService.submitForm($params.projectId, $params.projectType, $params.caseId, $scope.form[0].draftId);
+        caseService.submitForm($params.caseId, $scope.form[0].draftId);
         $scope.formMessage = "Skickat!";
 
         $scope.form = [];
@@ -98,16 +99,14 @@
   sfForm.controller('FormHistoryCtrl', ['$scope', 'caseService', '$routeParams',
     function($scope, caseService, $params) {
 
-      $scope.projectId = $params.projectId;
-      $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
 
-      $scope.submittedForms = caseService.getSubmittedForms($params.projectId, $params.projectType, $params.caseId, $params.formId);
+      $scope.submittedForms = caseService.getSubmittedForms($params.caseId, $params.formId);
 
       $scope.$watch("selectedSubmittedForm", function(){
         var index = $scope.selectedSubmittedForm;
         if (_.isNumber(index))
-          $scope.submittedForm = caseService.getSubmittedForm($params.projectId, $params.projectType, $params.caseId, index);
+          $scope.submittedForm = caseService.getSubmittedForm($params.caseId, index);
       });
 
     }]);

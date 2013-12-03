@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 (function() {
   'use strict';
 
@@ -27,7 +26,7 @@
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
 
-      $scope.notesHistory = caseService.getAllNotes($params.projectId, $params.projectType, $params.caseId);
+      $scope.notesHistory = caseService.getAllNotes($params.caseId);
     }]);
 
 })();

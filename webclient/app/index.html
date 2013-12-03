@@ -43,6 +43,9 @@
         <link rel="stylesheet" href="design/gui/css/main.css">
         <link rel="stylesheet" href="design/gui/css/retina.css">
 
+        <!-- Angular growl -->
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+
         <!-- datepicker -->
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.css">
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.date.css">
@@ -75,9 +78,9 @@
 
         <!-- Add your site or application content here -->
         <div class='body'>
-
+        
+        <div growl role="banner"></div>
           <div class="header cf" role="banner">
-
             <div class="client-name">
                 <h1>Malmö Kommun Kontaktcenter</h1>
             </div>
@@ -119,16 +122,22 @@
 
           <div class="main">
             <data-ng-include src="'modules/views/navigation.html'"></data-ng-include>
-            <div class="main-body cf" ng-view>
+            <div class="main-body cf" ng-view> 
             </div> <!-- main-body -->
+            
           </div> <!-- main -->
         </div> <!-- body -->
 
         <!-- TODO use CDN in production -->
         <script src="components/jquery/jquery.js"></script>
-        <script src="components/angular/angular.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
+        <!--<script src="components/angular/angular.min.js"></script>-->
         <script src="components/angular-resource/angular-resource.js"></script>
         <script src="components/typewatch/jquery.typewatch.js"></script>
+
+        <!-- Angular-growl -->
+        <script src="components/angular-growl/build/angular-growl.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
 
         <!-- build:js scripts/scripts.js -->

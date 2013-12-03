@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@
       //http://localhost:3501/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0
       getSelected: function(projectId, projectType, callback) {
         var self = this;
+
         return backendService.get({
           specs:[
             {resources:'workspacev2'},
@@ -74,7 +75,7 @@
       },
 
       sfCaseFactory: function(model) {
-        var href = navigationService.caseHref(model.id);
+        var href = navigationService.caseHrefSimple(model.id);
         var o = new SfCase(model, href);
         return o;
       },

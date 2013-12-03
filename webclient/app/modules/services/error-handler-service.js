@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 
   var sfServices = angular.module('sf.services.error-handler', []);
 
-  sfServices.factory('errorHandlerService', ['$window', '$q', function ($window, $q) {
+  sfServices.factory('errorHandlerService', ['$rootScope','$window', '$q', function ($rootScope, $window, $q) {
     return function(error) {
       console.log("ERROR -------------", error);
       // TODO - this works for the mycases web application, should it work the same in this application
