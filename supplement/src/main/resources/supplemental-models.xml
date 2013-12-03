@@ -54,7 +54,7 @@
     </supplement>
     <supplement>
         <project>
-            <groupId>beanshell</groupId>
+            <groupId>org.beanshell</groupId>
             <artifactId>bsh</artifactId>
             <name>Beanshell</name>
             <organization>

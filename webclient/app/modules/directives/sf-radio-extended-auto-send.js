@@ -42,7 +42,7 @@
                 value = newValue;
               }
 
-              caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.id, value);
+              caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.id, value);
             }
           }
 

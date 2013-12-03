@@ -42,6 +42,12 @@ public interface CaseDTO
 
    @Optional
    Property<String> owner();
+   
+   @Optional
+   Property<String> ownerId();
+   
+   @Optional
+   Property<String> listType();
 
    Property<LinksValue> labels();
 

@@ -23,11 +23,9 @@
   sfCaselog.controller('CaselogListCtrl', ['$scope', 'caseService', '$routeParams','navigationService', 'httpService',
     function($scope, caseService, $params, navigationService, httpService) {
 
-      $scope.projectId = $params.projectId;
-      $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;     
-     
-      var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
+
+      var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
           
           var filterObj = result.data;
@@ -37,7 +35,7 @@
           }
           $scope.caseLogFilters = filterArray;
 
-        $scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId);
+        $scope.caseLogs = caseService.getSelectedCaseLog($params.caseId);
         //$scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
         //console.log($scope.caseLogs);
       });
@@ -47,15 +45,13 @@
   sfCaselog.controller('CaselogEntryCreateCtrl', ['$scope', '$rootScope', 'caseService', '$routeParams','navigationService',
     function($scope, $rootScope, caseService, $params, navigationService) {
 
-      $scope.projectId = $params.projectId;
-      $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
 
       $scope.submitCaseLogEntry = function($event){
         $event.preventDefault();
 
         var entry = $scope.caseLogEntryToCreate;
-        caseService.createCaseLogEntry($params.projectId, $params.projectType, $params.caseId, entry).then(function(response){
+        caseService.createCaseLogEntry($params.caseId, entry).then(function(response){
           var href = navigationService.caseHref($params.caseId) + "/caselog";
           $scope.caseLogs.invalidate();
           $scope.caseLogs.resolve();
