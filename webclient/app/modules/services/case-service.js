@@ -113,63 +113,103 @@
           caseBase(caseId).concat([
             {commands: 'sendto'}
           ]),
-          {entity: sendToId}).then(_.debounce(callback)());
+          {entity: sendToId}).then(_.debounce(callback)()).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       closeCase: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'close'}
-            ]),
-          {}).then(callback);
+          ]),
+          {}).then(callback).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(result.status);
+          };
       },
 
       deleteCase: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'delete'}
-            ]),
-          {}).then(callback);
+          ]),
+          {}).then(callback).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       assignCase: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'assign'}
-            ]),
-          {}).then(callback);
+          ]),
+          {}).then(callback).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       unassignCase: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'unassign'}
-            ]),
-          {}).then(callback);
+          ]),
+          {}).then(callback).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       markUnread: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'markunread'}
-            ]),
-          {}).then(callback);
+          ]),
+          {}).then(callback).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       markRead: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'markread'}
-            ]),
-          {}).then(callback);
+          ]),
+          {}).then(callback).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       Read: function(caseId) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'read'}
-            ]),
-          {});
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       getSelectedNote: function(caseId) {
@@ -177,6 +217,10 @@
           specs:caseBase(caseId).concat([{resources: 'note'}]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -186,8 +230,13 @@
           caseBase(caseId).concat([
             {resources: 'note'},
             {commands: 'addnote'}
-            ]),
-          value);
+          ]),
+          value).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       getAllNotes: function(caseId) {
@@ -198,6 +247,10 @@
             ]),
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -212,6 +265,10 @@
               index.dueOnShort = index.dueOn.split("T")[0]
 
             result.push(index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -222,7 +279,11 @@
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(link){
               result.push(link);
+              caseBase.broadcastMessage(result.status);
             });
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -234,6 +295,10 @@
             resource.response.index.links.forEach(function(link){
               result.push(link);
             });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -256,6 +321,10 @@
           ]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -267,6 +336,10 @@
           ]),
           onSuccess:function (resource, result) {
             resource.response.index.contacts.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -277,7 +350,12 @@
             {resources: 'contacts', unsafe: true},
             {commands: 'add'}
           ]),
-          value);
+          value).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       updateContact: function(caseId, contactIndex, value) {
@@ -286,8 +364,13 @@
             {resources: 'contacts', unsafe: true},
             {resources: contactIndex, unsafe: true},
             {commands: 'update'}
-          ]
-        ), value);
+          ]), 
+          value).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
       getCaseLogDefaultParams: function(caseId) {
         return backendService.get({
@@ -297,6 +380,10 @@
             ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -312,6 +399,10 @@
                   resource.response.links.forEach(function(link){
                       result.push(link);                      
                   });
+                  caseBase.broadcastMessage(result.status);
+              },
+              onFailure:function(err){
+                caseBase.broadcastMessage(err);      
               }
           });
       },
@@ -333,6 +424,10 @@
             resource.response.links.reverse().forEach(function(link){
               result.push(link);
             });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -342,7 +437,12 @@
             {resources: 'caselog'},
             {commands: 'addmessage'}
           ]),
-          {string: value});
+          {string: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
       getPossibleCaseTypes: function(caseId) {
         return backendService.get({
@@ -356,6 +456,10 @@
             });
 
             caseTypeOptions.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -369,8 +473,13 @@
           caseBase(caseId).concat([
             {resources: resource},
             {commands: command}
-            ]),
-          toSend).then(_.debounce(callback)());
+          ]),
+          toSend).then(_.debounce(callback)()).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }, 1000),
 
       getSelectedPossibleForms: function(caseId) {
@@ -378,6 +487,10 @@
           specs:caseBase(caseId).concat([{resources: 'possibleforms'}]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -390,6 +503,10 @@
           ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -400,8 +517,13 @@
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")},
             {commands: 'create'}
-            ]),
-          {});
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       addViewModelProperties: function(pages){
@@ -429,6 +551,10 @@
             that.addViewModelProperties(index.enhancedPages);
 
             result.push(index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -458,8 +584,18 @@
               index.draftId = id;
 
               result.push(index);
+              caseBase.broadcastMessage(result.status);
+            },
+            onFailure:function(err){
+              caseBase.broadcastMessage(err);      
             }
           });
+          //This might cause nestling issues with the error handler
+          // to test, if the topmost error broadcaster overrides the nestled one
+          caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -470,8 +606,13 @@
             {resources: 'formdrafts'},
             {'index.links': formId},
             {commands: 'updatefield'}
-            ]),
-          {field: fieldId, value: value});
+          ]),
+          {field: fieldId, value: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }, 1000),
 
       submitForm: function(caseId, formId) {
@@ -480,8 +621,13 @@
             {resources: 'formdrafts'},
             {'index.links': formId},
             {commands: 'submit'}
-            ]),
-          {});
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       getSubmittedForms: function(caseId, formId) {
@@ -506,6 +652,10 @@
               item.submissionDate = item.submissionDate.split("T")[0];
               result.push(item)
             });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -518,6 +668,10 @@
           ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -529,7 +683,12 @@
             {resources: 'conversations'},
             {commands: 'create'}
           ]),
-          {topic: value});
+          {topic: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
       getConversationMessages: function(caseId, conversationId) {
         return backendService.get({
@@ -540,6 +699,10 @@
             ]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -553,6 +716,10 @@
             ]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index.string);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -565,7 +732,12 @@
             {resources: 'messagedraft', unsafe: true},
             {commands: 'changemessage'}
             ]),
-          {message: value});
+          {message: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }, 500),
       createMessage: function(caseId, conversationId, value) {
         return backendService.postNested(
@@ -575,7 +747,12 @@
             {resources: 'messages'},
             {commands: 'createmessagefromdraft'}
             ]),
-          {});
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
      getConversationParticipants: function(caseId, conversationId) {
         return backendService.get({
@@ -586,6 +763,10 @@
             ]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -599,6 +780,10 @@
             ]),
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
@@ -610,7 +795,12 @@
             {resources: 'participants'},
             {commands: 'addparticipant'}
             ]),
-          {entity: participant});
+          {entity: participant}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
       deleteParticipantFromConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
@@ -621,7 +811,12 @@
             {'index.links': participant},
             {commands: 'delete'}
             ]),
-          {});
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }
 
     }
