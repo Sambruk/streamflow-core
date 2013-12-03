@@ -37,15 +37,10 @@
 
     }]);
 
-  sfCase.controller('CaseListCtrl', ['growl','$scope', '$routeParams', 'projectService', 'commonService', function(growl, $scope, $params, projectService, commonService) {
+  sfCase.controller('CaseListCtrl', ['growl','$scope', '$routeParams', 'projectService', function(growl, $scope, $params, projectService) {
 
-    $scope.common = commonService.common;
-    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+    $scope.currentCases = projectService.getSelected($params.projectId, $params.projectType);
 
-    // TODO Shouldn't this invalidate the same collection as $scope.common.currentCases
-    $scope.$on('case-created', function() {
-      $scope.cases.invalidate();
-    });
     /**
     * ERROR HANDLER
     **/
@@ -63,8 +58,8 @@
     $scope.$on('httpRequestInitiated', $scope.errorHandler);
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
-    function(growl, $scope, $timeout, $params, caseService, navigationService, commonService, projectService, profileService){
+  sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'projectService', 'profileService',
+    function(growl, $scope, $timeout, $params, caseService, navigationService, projectService, profileService){
 
     $scope.caze = caseService.getSelected($params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.caseId);
@@ -77,16 +72,6 @@
       if ($scope.caze.length === 1)
         $scope.caseListUrl = navigationService.caseListHrefFromCase($scope.caze);
     });
-
-    $scope.common = commonService.common;
-
-    $scope.$watch('caze[0]', function(){
-      // TODO Get projectId and projectType from the case
-      if ($scope.caze.length !== 0) {
-        $scope.caze[0];
-        //$scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
-      }
-    })
 
     $scope.$on('case-created', function() {
         $scope.caze.invalidate();

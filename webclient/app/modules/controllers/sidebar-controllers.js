@@ -20,8 +20,8 @@
 
   var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 'commonService',
-    function($scope, projectService, $params, navigationService, caseService, httpService, commonService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 
+    function($scope, projectService, $params, navigationService, caseService, httpService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -33,10 +33,6 @@
       $scope.conversations = caseService.getSelectedConversations($params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
 
-    $scope.common = commonService.common;
-    // TODO Use projectId and projectType from case
-    // $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
-     
      var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
