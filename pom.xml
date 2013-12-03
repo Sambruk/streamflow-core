@@ -207,7 +207,7 @@
         </contributor>
     </contributors>
 
-    <inceptionYear>2009-2012</inceptionYear>
+    <inceptionYear>2009-2013</inceptionYear>
     <url>http://www.jayway.com/streamflow/</url>
 
     <organization>
@@ -875,7 +875,7 @@
                                     <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
                                     <resourceBundles>
                                         <resourceBundle>
-                                            se.streamsource.streamflow:streamflow-jar-resource-bundle:1.3
+                                            se.streamsource.streamflow:streamflow-jar-resource-bundle:1.4
                                         </resourceBundle>
                                     </resourceBundles>
                                     <supplementalModelArtifacts>
