@@ -37,7 +37,7 @@
 
     }]);
 
-  sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService', 'commonService', function($scope, $params, projectService, commonService) {
+  sfCase.controller('CaseListCtrl', ['growl','$scope', '$routeParams', 'projectService', 'commonService', function(growl, $scope, $params, projectService, commonService) {
 
     $scope.common = commonService.common;
     $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
@@ -46,6 +46,21 @@
     $scope.$on('case-created', function() {
       $scope.cases.invalidate();
     });
+    /**
+    * ERROR HANDLER
+    **/
+    //TODO: Implement error handler listener on other controllers where needed
+    $scope.errorHandler = function(){;
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
+      }else {
+        growl.addWarnMessage('errorMessage');
+      }  
+    };
+
+    //error-handler
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
   }]);
 
   sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
@@ -87,11 +102,11 @@
     **/
     //TODO: Implement error handler listener on other controllers where needed
     $scope.errorHandler = function(){;
-      var statusCode = caseService.getMessage();
-      if(statusCode === 200)  {
-        growl.addSuccessMessage('successMsg', null, " hämta ärende: " + $scope.caze[0].caseId);
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
       }else {
-        growl.addWarnMessage('errorMsg', null, " hämta ärende: " + $scope.caze[0].caseId);
+        growl.addWarnMessage('errorMessage');
       }  
     };
 
@@ -117,8 +132,8 @@
     });*/
   }]);
 
-  sfCase.controller('PrintCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
-    function($scope, $params, caseService, navigationService){
+  sfCase.controller('PrintCtrl', ['growl','$scope', '$routeParams', 'caseService', 'navigationService',
+    function(growl, $scope, $params, caseService, navigationService){
 
     $scope.caze = caseService.getSelected($params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.caseId);
@@ -133,6 +148,22 @@
       $scope.caze.resolve();
     });
 
+    /**
+    * ERROR HANDLER
+    **/
+    //TODO: Implement error handler listener on other controllers where needed
+    $scope.errorHandler = function(){;
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
+      }else {
+        growl.addWarnMessage('errorMessage');
+      }  
+    };
+
+    //error-handler
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
+
     $scope.$watch('caze + general + notes', function() {
       setTimeout(function(){
          window.print();
@@ -140,8 +171,8 @@
     })
   }]);
 
-  sfCase.controller('CaseEditCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
-    function($scope, $params, caseService, navigationService) {
+  sfCase.controller('CaseEditCtrl', ['growl','$scope', '$routeParams', 'caseService', 'navigationService',
+    function(growl, $scope, $params, caseService, navigationService) {
 
       $scope.caze = caseService.getSelected($params.caseId);
       $scope.general = caseService.getSelectedGeneral($params.caseId);
@@ -150,6 +181,22 @@
       $scope.cachedNote = caseService.getSelectedNote($params.caseId);
 
       $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
+
+    /**
+    * ERROR HANDLER
+    **/
+    //TODO: Implement error handler listener on other controllers where needed
+    $scope.errorHandler = function(){;
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
+      }else {
+        growl.addWarnMessage('errorMessage');
+      }  
+    };
+
+    //error-handler
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
 
       $scope.addNote = function($event){
         $event.preventDefault();

@@ -56,8 +56,8 @@
         form: 'Formulär',
         system: 'System',
         systemTrace: 'systemTrace',
-        successMsg: 'Lyckades',
-        errorMsg: 'Kunde inte'
+        successMessage: 'Hämtning lyckades',
+        errorMessage: 'Hämtning misslyckades'
       };
 
       return translation[input];
