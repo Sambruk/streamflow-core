@@ -30,13 +30,24 @@
       $scope.projects = projectService.getAll();
       $scope.toggleToolbar = toggleToolbar;
 
-      $scope.createCase = function(){
+      function canCreateCase() {
+
         if ($params.projectType === 'inbox') {
-          return;
+          return false;
         }
         if (!$params.projectType) {
-          return;
+          return false;
         }
+
+        return true;
+      } 
+
+      $scope.canCreateCase = canCreateCase;
+
+      $scope.createCase = function(){
+
+        if (!canCreateCase())
+          return;
 
         $rootScope.$broadcast('case-created');
 
