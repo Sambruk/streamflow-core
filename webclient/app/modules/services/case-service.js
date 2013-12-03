@@ -118,12 +118,11 @@
           caseBase(caseId).concat([
             {commands: 'close'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       deleteCase: function(caseId, callback) {
@@ -131,12 +130,11 @@
           caseBase(caseId).concat([
             {commands: 'delete'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       assignCase: function(caseId, callback) {
@@ -168,12 +166,11 @@
           caseBase(caseId).concat([
             {commands: 'markunread'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       markRead: function(caseId, callback) {
@@ -181,12 +178,11 @@
           caseBase(caseId).concat([
             {commands: 'markread'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       Read: function(caseId) {
@@ -194,12 +190,11 @@
           caseBase(caseId).concat([
             {commands: 'read'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       getSelectedNote: function(caseId) {
