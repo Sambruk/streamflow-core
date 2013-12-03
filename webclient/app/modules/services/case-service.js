@@ -130,7 +130,7 @@
             caseBase.broadcastMessage(result.status);
           }),
           function(error){
-            caseBase.broadcastMessage(result.status);
+            caseBase.broadcastMessage(error);
           };
       },
 
@@ -152,12 +152,11 @@
           caseBase(caseId).concat([
             {commands: 'assign'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       unassignCase: function(caseId, callback) {
@@ -165,12 +164,11 @@
           caseBase(caseId).concat([
             {commands: 'unassign'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       markUnread: function(caseId, callback) {
@@ -204,7 +202,7 @@
           caseBase(caseId).concat([
             {commands: 'read'}
           ]),
-          {}).then(function(result){
+          {}).then(callback).then(function(result){
             caseBase.broadcastMessage(result.status);
           }),
           function(error){
