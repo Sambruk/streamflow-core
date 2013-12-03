@@ -35,7 +35,7 @@
 
         projectService.createCase($params.projectId, $params.projectType).then(function(response){
           var caseId = response.data.events[1].entity;
-          var href = navigationService.caseHref(caseId);
+          var href = navigationService.caseHrefSimple(caseId);
 
           window.location.replace(href + "/edit");
         });
