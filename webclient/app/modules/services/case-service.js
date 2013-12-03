@@ -20,14 +20,6 @@
 
   var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.forms']);
 
-  sfServices.factory('commonService', [function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
-    return {
-      common: {
-        currentCases: []
-      }
-    };
- }]);
-
   sfServices.factory('caseService', ['$rootScope','backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
     var caseBase = function(caseId){
