@@ -187,24 +187,17 @@
 
       $scope.markUnread = function($event){
         $event.preventDefault();
-        // TODO. Find a way to update possible commands after post.        
-        var callback = function(){
 
-          // TODO This is probably the wrong redirect
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
+        var callback = function(){
+          $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
         caseService.markUnread($params.caseId, callback);
       }
 
       $scope.markRead = function($event){
         $event.preventDefault();
-        // TODO. Find a way to update possible commands after post.        
         var callback = function(){
-
-          // TODO This is probably the wrong redirect
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
+          $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
         caseService.markRead($params.caseId, callback);
       }
