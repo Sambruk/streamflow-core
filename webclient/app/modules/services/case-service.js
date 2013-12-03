@@ -37,13 +37,13 @@
         {resources: caseId, unsafe: true}
       ];
     };
-    caseBase.bcMessage = null;
+    //caseBase.bcMessage = null;
     //TODO: Refactor (use a var instead of property)
-    //var bcMessage = null;
+    var bcMessage = null;
 
     caseBase.broadcastMessage = function(msg){
-      caseBase.bcMessage = msg;
-      //bcMessage = msg;
+      //caseBase.bcMessage = msg;
+      bcMessage = msg;
       caseBase.initBroadcastMessage();
     };
 
@@ -53,6 +53,7 @@
 
     return {
       getMessage: function(){
+        //return caseBase.bcMessage;
         return bcMessage;
       },
       getSelected: function(caseId) {
