@@ -24,7 +24,7 @@
 
       $scope.caseId = $params.caseId;     
 
-      var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
+      var defaultFiltersUrl = caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
           
           var filterObj = result.data;

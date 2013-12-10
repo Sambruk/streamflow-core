@@ -31,8 +31,9 @@
       $scope.contacts = caseService.getSelectedContacts($params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
+      $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
 
-     var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
+     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
         $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.caseId, defaultFilters);
@@ -214,7 +215,7 @@
       }
 
       $scope.downloadAttachment = function(attachmentId){
-        alert("Not supported - need absolute url in API.");
+        //alert("Not supported - need absolute url in API.");
       }
 
       $scope.deleteAttachment = function(attachmentId){

@@ -18,18 +18,18 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation', 'sf.models']);
+  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.case']);
 
   sfServices.factory(
     'projectService',
-    ['backendService', 'navigationService', 'SfCase',
-      function (backendService, navigationService, SfCase) {
+    ['backendService', 'navigationService', 'SfCase', 'caseService',
+      function (backendService, navigationService, SfCase, caseService) {
 
     return {
       getAll:function () {
         return backendService.get({
           specs:[
-            {resources:'workspacev2'}
+            {resources: caseService.getWorkspace()}
             //{resources: 'projects'}
           ],
           onSuccess:function (resource, result) {
@@ -58,7 +58,7 @@
 
         return backendService.get({
           specs:[
-            {resources:'workspacev2'},
+            {resources:caseService.getWorkspace()},
             {resources: 'projects'},
             {'index.links': projectId},
             {resources: projectType},
@@ -81,10 +81,9 @@
       },
 
       createCase: function(projectId, projectType) {
-
         return backendService.postNested(
           [
-            {resources:'workspacev2'},
+            {resources: caseService.getWorkspace()},
             {resources: 'projects'},
             {'index.links': projectId},
             {resources: projectType },

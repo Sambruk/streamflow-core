@@ -18,13 +18,13 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.services.perspective', ['sf.services.backend', 'sf.services.navigation', 'sf.models']);
+  var sfServices = angular.module('sf.services.perspective', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.case']);
 
-  sfServices.factory('perspectiveService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', function (backendService, navigationService, SfCase, $http, debounce) {
+  sfServices.factory('perspectiveService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'caseService', function (backendService, navigationService, SfCase, $http, debounce, caseService) {
 
     var perspectiveBase = function(){
      return [
-       {resources:'workspacev2'},
+       {resources: caseService.getWorkspace()},
        {resources:'perspectives'}
       ];
     };

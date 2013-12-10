@@ -22,13 +22,16 @@
 
   sfServices.factory('caseService', ['$rootScope','backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
+    var workspaceId = 'workspacev2';
+
     var caseBase = function(caseId){
      return [
-        {resources:'workspacev2'},
+        {resources: workspaceId},
         {resources: 'cases', unsafe: true},
         {resources: caseId, unsafe: true}
       ];
     };
+
     //caseBase.bcMessage = null;
     //TODO: Refactor (use a var instead of property)
     var bcMessage = null;
@@ -44,6 +47,9 @@
     };
 
     return {
+      getWorkspace: function(){
+        return workspaceId;
+      },
       getMessage: function(){
         //return caseBase.bcMessage;
         return bcMessage;
