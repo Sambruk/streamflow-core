@@ -215,11 +215,16 @@
       }
 
       $scope.downloadAttachment = function(attachmentId){
-        //alert("Not supported - need absolute url in API.");
+        var attachments = $scope.attachments;
+
+        if(attachments[0].rel === 'conversation'){
+          attachments[0].href  = $scope.apiUrl + '/cases/' + $params.caseId + "/" + attachments[0].href.substring(3) + 'download';
+        }else if(attachments[0].rel === 'attachment'){
+          attachments[0].href = $scope.apiUrl + '/cases/' + $params.caseId + '/attachments/' + attachments[0].id + '/download';
+        }        
       }
 
       $scope.deleteAttachment = function(attachmentId){
-
         var callback = function(){
           $scope.attachments.invalidate();
           $scope.attachments.resolve();
