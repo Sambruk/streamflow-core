@@ -36,10 +36,10 @@
 
     }]);
 
-  sfCase.controller('CaseListCtrl', ['growl','$scope', '$routeParams', 'projectService', function(growl, $scope, $params, projectService) {
+  sfCase.controller('CaseListCtrl', ['growl','$scope', '$routeParams', 'projectService','$rootScope', 
+    function(growl, $scope, $params, projectService, $rootScope) {
 
     $scope.currentCases = projectService.getSelected($params.projectId, $params.projectType);
-
     /**
     * ERROR HANDLER
     **/
@@ -53,12 +53,14 @@
       }  
     };
 
+    $rootScope.$broadcast('breadcrumb-updated', [{projectId: $params.projectId}, {projectType: $params.projectType}]);
+
     //error-handler
     $scope.$on('httpRequestInitiated', $scope.errorHandler);
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'projectService', 'profileService',
-    function(growl, $scope, $timeout, $params, caseService, navigationService, projectService, profileService){
+  sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'projectService', 'profileService', '$rootScope',
+    function(growl, $scope, $timeout, $params, caseService, navigationService, projectService, profileService, $rootScope){
 
     $scope.caze = caseService.getSelected($params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.caseId);
@@ -68,8 +70,10 @@
     $scope.profile = profileService.getCurrent();
 
     $scope.$watch('caze[0]', function(){
-      if ($scope.caze.length === 1)
+      if ($scope.caze.length === 1){
         $scope.caseListUrl = navigationService.caseListHrefFromCase($scope.caze);
+        $rootScope.$broadcast('breadcrumb-updated', [{projectId: $scope.caze[0].owner}, {projectType: $scope.caze[0].listType}, {caseId: $scope.caze[0].caseId}]);
+      }
     });
 
     $scope.$on('case-created', function() {

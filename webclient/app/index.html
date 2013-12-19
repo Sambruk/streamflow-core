@@ -105,8 +105,13 @@
               <!-- /main-search -->
             </div>
             <!-- /header-body -->
-            <div class="issue-banner">
-                <h2>Kontaktcenter <span>&rarr;</span> Inkorg <span>&rarr;</span> 20121061-1 (Konversation)</h2>
+            
+            <!-- Issue banner -->
+            <div class="issue-banner" data-ng-controller="BreadcrumbCtrl">
+                <span data-ng-repeat="bread in breadcrumbList">
+                    {{ bread }} 
+                    <span ng-hide="$last == true">&rarr;</span>
+                </span>
             </div>
             <!-- /issue-banner -->
           </div>
