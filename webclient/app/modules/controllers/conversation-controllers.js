@@ -34,7 +34,7 @@
         var topic = $scope.conversationTopicToCreate;
         caseService.createConversation($params.caseId, topic).then(function(response){
           var conversationId = JSON.parse(response.data.events[0].parameters).param1;
-          var href = navigationService.caseHref($params.caseId) + "/conversation/" + conversationId;
+          var href = navigationService.caseHrefSimple($params.caseId + "/conversation/" + conversationId);
           $scope.conversations.invalidate();
           $scope.conversations.resolve();
           window.location.assign(href);
