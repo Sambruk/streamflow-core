@@ -676,10 +676,11 @@
           ]),
           {topic: value}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
-            caseBase.broadcastMessage(error);
-          };
+            return result;
+          });
+          // function(error){
+          //   caseBase.broadcastMessage(error);
+          // };
       },
       getConversationMessages: function(caseId, conversationId) {
         return backendService.get({
