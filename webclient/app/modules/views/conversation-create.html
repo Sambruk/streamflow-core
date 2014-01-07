@@ -24,12 +24,22 @@
     </div>
     <div class="convo-input">
       <form action="#" method="get" class="cf">
-        <div class="row cf">
+
+<!-- Issue description -->
+            <div class="issue-messageEdit">
+                <div class="text">
+                    <label for="conversation-topic">Titel</label>
+                    <input type="text" data-ng-model="conversationTopicToCreate" id="conversation-topic">
+                </div>
+            </div>
+
+
+<!--         <div class="row cf">
           <div class="text col full">
             <label for="conversation-topic">Titel</label>
             <input type="text" data-ng-model="conversationTopicToCreate" id="conversation-topic">
           </div>
-        </div>
+        </div> -->
         <!--<div class="row cf">
           <div class="text">
             <label for="convo-text" class="struct">Meddelande</label>
