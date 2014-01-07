@@ -107,19 +107,24 @@
     function($scope, profileService, $params, navigationService, httpService, $rootScope) {
       
       $rootScope.$on('breadcrumb-updated', function(scope, breadcrumbList) {  
-            var breadcrumb = [];
-            for (var i=0;i<breadcrumbList.length;i++)
-            {
-              if(breadcrumbList[i].projectId){ 
-                breadcrumb.push(breadcrumbList[i].projectId);
-              }if(breadcrumbList[i].projectType){ 
-                breadcrumb.push(breadcrumbList[i].projectType.charAt(0).toUpperCase() + breadcrumbList[i].projectType.slice(1));
-              }if(breadcrumbList[i].caseId){ 
-                breadcrumb.push(breadcrumbList[i].caseId);
-              }
+        var breadcrumb = [];
+        for (var i=0;i<breadcrumbList.length;i++)
+        {
+          if(breadcrumbList[i].projectId){ 
+            breadcrumb.push(breadcrumbList[i].projectId);
+          }if(breadcrumbList[i].projectType){ 
+            // translate didn't work
+            if(breadcrumbList[i].projectType == 'inbox'){
+              breadcrumb.push('Inkorg');
+            }if(breadcrumbList[i].projectType == 'assignments'){
+              breadcrumb.push('Mina ärenden');
             }
-            $scope.breadcrumbList = breadcrumb;
-        });
+          }if(breadcrumbList[i].caseId){ 
+            breadcrumb.push(breadcrumbList[i].caseId);
+          }
+        }
+        $scope.breadcrumbList = breadcrumb;
+      });
     }]);
 
 })();
