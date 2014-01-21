@@ -54,10 +54,7 @@ public class DatePanel
       setLayout( new BorderLayout() );
 
       datePicker = new JXDatePicker();
-      datePicker.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
       final DateFormat dateFormat =  DateFormat.getDateInstance( DateFormat.SHORT );
-      dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-
       datePicker.getEditor().setFormatterFactory( new DefaultFormatterFactory(new DatePickerFormatter( new DateFormat[]{dateFormat} ){
 
          @Override
