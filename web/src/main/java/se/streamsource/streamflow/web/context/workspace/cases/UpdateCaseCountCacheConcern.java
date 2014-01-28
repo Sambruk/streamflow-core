@@ -269,10 +269,10 @@ public abstract class UpdateCaseCountCacheConcern
       
       boolean assigned = caze.isAssigned();
 
-      next.delete();
-
-      if (caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
+      if ( caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
       {
+         // will result in a removable flag true
+         next.delete();
          if (assigned)
          {
             // Update assignments for user
@@ -293,6 +293,8 @@ public abstract class UpdateCaseCountCacheConcern
       {
          // Update drafts for user
          caching.addToCaseCountCache( caze.createdBy().get().toString(), -1 );
+         //will result in a deleted entity!
+         next.delete();
       }
    }
    

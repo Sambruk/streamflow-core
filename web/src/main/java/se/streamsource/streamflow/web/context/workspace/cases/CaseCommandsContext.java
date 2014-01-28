@@ -469,10 +469,13 @@ public interface CaseCommandsContext
       {
          Removable caze = RoleMap.role( Removable.class );
          if( (CaseStates.DRAFT.equals( ((Status.Data) caze ).status().get() )) )
+         {
             caze.deleteEntity();
-         else
+         } else
+         {
             // just mark the case as removed
             caze.removeEntity();
+         }
       }
 
       public void reinstate()
