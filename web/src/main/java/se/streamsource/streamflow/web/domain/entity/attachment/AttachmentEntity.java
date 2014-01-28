@@ -69,48 +69,51 @@ public interface AttachmentEntity
          // Remove all usages of this attachment
          if (removed)
          {
-            {
-               // Remove all default pdf template usage of this attachement
-               Association<Attachment> defaultPdfTemplate = templateFor( DefaultPdfTemplate.Data.class ).defaultPdfTemplate();
-               Query<DefaultPdfTemplate> defaultPdfTemplateQuery = module.queryBuilderFactory().newQueryBuilder(DefaultPdfTemplate.class).
-                     where(QueryExpressions.eq(defaultPdfTemplate, api.dereference(attachment))).
-                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
-
-               for (DefaultPdfTemplate defaultPdfTemplateUsage : defaultPdfTemplateQuery)
-               {
-                  defaultPdfTemplateUsage.setDefaultPdfTemplate( null );
-               }
-
-               // Remove all form template usage of this attachement
-               Association<Attachment> formPdfTemplate = templateFor( FormPdfTemplate.Data.class ).formPdfTemplate();
-               Query<FormPdfTemplate> formPdfTemplateQuery = module.queryBuilderFactory().newQueryBuilder(FormPdfTemplate.class).
-                     where(QueryExpressions.eq(formPdfTemplate, api.dereference(attachment))).
-                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
-
-               for (FormPdfTemplate formPdfTemplateUsage : formPdfTemplateQuery)
-               {
-                  formPdfTemplateUsage.setFormPdfTemplate( null );
-               }
-
-               // Remove all case template usage of this attachement
-               Association<Attachment> casePdfTemplate = templateFor( CasePdfTemplate.Data.class ).casePdfTemplate();
-               Query<CasePdfTemplate> casePdfTemplateUsages = module.queryBuilderFactory().newQueryBuilder(CasePdfTemplate.class).
-                     where(QueryExpressions.eq(casePdfTemplate, api.dereference(attachment))).
-                     newQuery(module.unitOfWorkFactory().currentUnitOfWork());
-
-               for (CasePdfTemplate casePdfTemplateUsage : casePdfTemplateUsages)
-               {
-                  casePdfTemplateUsage.setCasePdfTemplate( null );
-               }
-            }
+            removeTemplateUsage();
          }
 
          return removed;
       }
 
-      public void deleteEntity()
+       private void removeTemplateUsage() {
+           // Remove all default pdf template usage of this attachement
+           Association<Attachment> defaultPdfTemplate = templateFor( DefaultPdfTemplate.Data.class ).defaultPdfTemplate();
+           Query<DefaultPdfTemplate> defaultPdfTemplateQuery = module.queryBuilderFactory().newQueryBuilder(DefaultPdfTemplate.class).
+                 where(QueryExpressions.eq(defaultPdfTemplate, api.dereference(attachment))).
+                 newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+
+           for (DefaultPdfTemplate defaultPdfTemplateUsage : defaultPdfTemplateQuery)
+           {
+              defaultPdfTemplateUsage.setDefaultPdfTemplate( null );
+           }
+
+           // Remove all form template usage of this attachement
+           Association<Attachment> formPdfTemplate = templateFor( FormPdfTemplate.Data.class ).formPdfTemplate();
+           Query<FormPdfTemplate> formPdfTemplateQuery = module.queryBuilderFactory().newQueryBuilder(FormPdfTemplate.class).
+                 where(QueryExpressions.eq(formPdfTemplate, api.dereference(attachment))).
+                 newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+
+           for (FormPdfTemplate formPdfTemplateUsage : formPdfTemplateQuery)
+           {
+              formPdfTemplateUsage.setFormPdfTemplate( null );
+           }
+
+           // Remove all case template usage of this attachement
+           Association<Attachment> casePdfTemplate = templateFor( CasePdfTemplate.Data.class ).casePdfTemplate();
+           Query<CasePdfTemplate> casePdfTemplateUsages = module.queryBuilderFactory().newQueryBuilder(CasePdfTemplate.class).
+                 where(QueryExpressions.eq(casePdfTemplate, api.dereference(attachment))).
+                 newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+
+           for (CasePdfTemplate casePdfTemplateUsage : casePdfTemplateUsages)
+           {
+              casePdfTemplateUsage.setCasePdfTemplate( null );
+           }
+       }
+
+       public void deleteEntity()
       {
          attachment.deleteFile();
+         removeTemplateUsage();
          next.deleteEntity();
       }
    }
