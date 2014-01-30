@@ -42,8 +42,9 @@
     // TODO Remove this, not needed ?
     function makeBaseAuth(user, password) {
       var tok = user + ':' + password;
-      var hash = Base64.encode(tok);
-      return "Basic " + hash;
+      // var hash = Base64.encode(tok);
+      // return "Basic " + hash;
+      return tok;
     }
 
     var baseUrl = prepareBaseUrl();
