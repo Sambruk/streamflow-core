@@ -47,19 +47,26 @@ public @interface FirstFieldInFirstPage
 
       public boolean isValid( FirstFieldInFirstPage firstFieldInFirstPage, RoleMap roleMap )
       {
-         Pages.Data pages = roleMap.get( Pages.Data.class );
-         Page page = roleMap.get( Page.class );
-         Fields.Data fields = roleMap.get( Fields.Data.class );
-         Field field = roleMap.get( Field.class );
-         if( firstFieldInFirstPage.value() && pages.pages().toList().indexOf( page ) == 0)
+         try
          {
-            return ((Fields.Data)page).fields().toList().indexOf( field ) == 0;
-         } else
+             Pages.Data pages = roleMap.get( Pages.Data.class );
+             Page page = roleMap.get( Page.class );
+             Fields.Data fields = roleMap.get( Fields.Data.class );
+             Field field = roleMap.get( Field.class );
+             if( firstFieldInFirstPage.value() && pages.pages().toList().indexOf( page ) == 0)
+             {
+                return ((Fields.Data)page).fields().toList().indexOf( field ) == 0;
+             } else
+             {
+                if( pages.pages().toList().indexOf( page ) == 0 )
+                   return fields.fields().toList().indexOf( field ) != 0;
+                else
+                   return true;
+             }
+         } catch ( IllegalArgumentException e )
          {
-            if( pages.pages().toList().indexOf( page ) == 0 )
-               return fields.fields().toList().indexOf( field ) != 0;
-            else
-               return true;
+             // no pages i rolemap so we cannot be first field in first page!
+             return false;
          }
       }
    }

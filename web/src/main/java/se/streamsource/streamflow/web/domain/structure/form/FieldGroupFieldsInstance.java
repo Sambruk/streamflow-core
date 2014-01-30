@@ -121,6 +121,7 @@ public interface FieldGroupFieldsInstance
          fieldBuilder.instanceFor(Notable.Data.class).note().set( fieldGroupField.getNote() );
          fieldBuilder.instanceFor(Describable.Data.class).description().set( fieldGroupField.getDescription() );
          fieldBuilder.instanceFor(Datatype.Data.class).datatype().set( ((Datatype.Data)fieldGroupField).datatype().get() );
+         fieldBuilder.instanceFor(Statistical.Data.class).statistical().set( ((Statistical.Data)fieldGroupField).statistical().get() );
          
          FieldValue fieldValue = definition.fieldValue().get();
          fieldBuilder.instanceFor(FieldValueDefinition.Data.class).fieldValue().set( fieldValue );
