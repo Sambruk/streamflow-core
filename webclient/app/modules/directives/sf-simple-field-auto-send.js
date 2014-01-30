@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@
               $rootScope.$broadcast('case-changed', {command: command, value: value});
           };
 
-          caseService.updateSimpleValue($params.projectId, $params.projectType, $params.caseId, resource, command, name, value, callback);
+          caseService.updateSimpleValue($params.caseId, resource, command, name, value, callback);
         });
       }
     }

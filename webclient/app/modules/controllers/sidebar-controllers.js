@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 (function() {
   'use strict';
 
   var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 'commonService',
-    function($scope, projectService, $params, navigationService, caseService, httpService, commonService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 
+    function($scope, projectService, $params, navigationService, caseService, httpService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
 
-      $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
-      $scope.commands = caseService.getSelectedCommands($params.projectId, $params.projectType, $params.caseId);
-      $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
-      $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
-      $scope.conversations = caseService.getSelectedConversations($params.projectId, $params.projectType, $params.caseId);
-      $scope.attachments = caseService.getSelectedAttachments($params.projectId, $params.projectType, $params.caseId);
+      $scope.caze = caseService.getSelected($params.caseId);
+      $scope.commands = caseService.getSelectedCommands($params.caseId);
+      $scope.general = caseService.getSelectedGeneral($params.caseId);
+      $scope.contacts = caseService.getSelectedContacts($params.caseId);
+      $scope.conversations = caseService.getSelectedConversations($params.caseId);
+      $scope.attachments = caseService.getSelectedAttachments($params.caseId);
+      $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
 
-    $scope.common = commonService.common;
-    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
-     
-     var defaultFiltersUrl = 'workspacev2/cases/' + $params.projectId + '/caselog/defaultfilters';      
+     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
-        $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
+        $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.caseId, defaultFilters);
       });
 
       $scope.$on('caselog-message-created', function(){
@@ -102,7 +99,7 @@
 
       $scope.resolve = function(){
 
-        $scope.possibleResolutions = caseService.getPossibleResolutions($params.projectId, $params.projectType, $params.caseId);
+        $scope.possibleResolutions = caseService.getPossibleResolutions($params.caseId);
         $scope.$watch("possibleResolutions[0]", function(){
           if ($scope.possibleResolutions[0]) {
             $scope.resolution = $scope.possibleResolutions[0].id;
@@ -119,17 +116,14 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.resolveCase($params.projectId, $params.projectType, $params.caseId, resolutionId, callback)
+        caseService.resolveCase($params.caseId, resolutionId, callback)
       }
 
       $scope.sendTo = function(){
-        $scope.possibleSendTo = caseService.getPossibleSendTo($params.projectId, $params.projectType, $params.caseId);
+        $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
         $scope.$watch("possibleSendTo[0]", function(){
           if ($scope.possibleSendTo[0]) {
             $scope.sendToId = $scope.possibleSendTo[0].id;
@@ -150,13 +144,10 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-          
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.sendCaseTo($params.projectId, $params.projectType, $params.caseId, sendToId, callback)
+        caseService.sendCaseTo($params.caseId, sendToId, callback)
       }
 /*
       $scope.close = function(){
@@ -168,69 +159,47 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.closeCase($params.projectId, $params.projectType, $params.caseId, callback)
+        caseService.closeCase($params.caseId, callback)
       }
 
       $scope.assign = function($event){
         $event.preventDefault();
 
         var callback = function(){
-          // TODO. Find a way to update possible commands after post.
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.assignCase($params.projectId, $params.projectType, $params.caseId, callback);
+        caseService.assignCase($params.caseId, callback);
       }
 
       $scope.unassign = function($event){
         $event.preventDefault();
         
         var callback = function(){
-          // TODO. Find a way to update possible commands after post.
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.unassignCase($params.projectId, $params.projectType, $params.caseId, callback);
+        caseService.unassignCase($params.caseId, callback);
       }
 
       $scope.markUnread = function($event){
         $event.preventDefault();
-        // TODO. Find a way to update possible commands after post.        
+
         var callback = function(){
-
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
-          window.location.replace(href);
+          $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
-        caseService.markUnread($params.projectId, $params.projectType, $params.caseId, callback);
+        caseService.markUnread($params.caseId, callback);
       }
 
       $scope.markRead = function($event){
         $event.preventDefault();
-        // TODO. Find a way to update possible commands after post.        
         var callback = function(){
-
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
-          window.location.replace(href);
+          $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
-        caseService.markRead($params.projectId, $params.projectType, $params.caseId, callback);
+        caseService.markRead($params.caseId, callback);
       }
 
       $scope.deleteCase = function(){
@@ -238,27 +207,29 @@
 
         var callback = function(){
 
-          $scope.common.currentCases.invalidate();
-          $scope.common.currentCases.resolve();
-
-          var href = navigationService.caseListHref();
+          var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         }
 
-        caseService.deleteCase($params.projectId, $params.projectType, $params.caseId, callback);
+        caseService.deleteCase($params.caseId, callback);
       }
 
       $scope.downloadAttachment = function(attachmentId){
-        alert("Not supported - need absolute url in API.");
+        var attachments = $scope.attachments;
+
+        if(attachments[0].rel === 'conversation'){
+          attachments[0].href  = $scope.apiUrl + '/cases/' + $params.caseId + "/" + attachments[0].href.substring(3) + 'download';
+        }else if(attachments[0].rel === 'attachment'){
+          attachments[0].href = $scope.apiUrl + '/cases/' + $params.caseId + '/attachments/' + attachments[0].id + '/download';
+        }        
       }
 
       $scope.deleteAttachment = function(attachmentId){
-
         var callback = function(){
           $scope.attachments.invalidate();
           $scope.attachments.resolve();
         }
-        caseService.deleteAttachment($params.projectId, $params.projectType, $params.caseId, attachmentId, callback);
+        caseService.deleteAttachment($params.caseId, attachmentId, callback);
       }
 
       $scope.showContact = function(contactId){

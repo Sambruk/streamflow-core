@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2012 Jayway Products AB
+    Copyright 2009-2013 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,16 +20,26 @@
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Skapa en ny konversation</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>
+      <a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>
     </div>
     <div class="convo-input">
       <form action="#" method="get" class="cf">
-        <div class="row cf">
+
+<!-- Issue description -->
+            <div class="issue-messageEdit">
+                <div class="text">
+                    <label for="conversation-topic">Titel</label>
+                    <input type="text" data-ng-model="conversationTopicToCreate" id="conversation-topic">
+                </div>
+            </div>
+
+
+<!--         <div class="row cf">
           <div class="text col full">
             <label for="conversation-topic">Titel</label>
             <input type="text" data-ng-model="conversationTopicToCreate" id="conversation-topic">
           </div>
-        </div>
+        </div> -->
         <!--<div class="row cf">
           <div class="text">
             <label for="convo-text" class="struct">Meddelande</label>

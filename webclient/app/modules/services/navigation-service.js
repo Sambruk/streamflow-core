@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,11 @@
       caseHref: function(caseId) {
         return "#/" + this.projectId() + '/' + this.projectType() + '/' + caseId;
       },
-      caseListHref: function(){
-        return "#/" + "projects/" + this.projectId() + '/' + this.projectType() + '/';
+      caseHrefSimple: function(caseId) {
+        return '#/cases/' + caseId;
+      },
+      caseListHrefFromCase: function(caze) {
+        return "#/" + "projects/" + caze[0].ownerId + '/' + caze[0].listType + '/';
       },
       projectId: function() {
         return $routeParams.projectId;

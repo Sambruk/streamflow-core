@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,47 +20,63 @@
 
   var sfServices = angular.module('sf.services.case', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.forms']);
 
-  sfServices.factory('commonService', [function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
-    return {
-      common: {
-        currentCases: []
-      }
-    };
- }]);
+  sfServices.factory('caseService', ['$rootScope','backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
-  sfServices.factory('caseService', ['backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
+    var workspaceId = 'workspacev2';
 
-    var caseBase = function(projectId, projectType, caseId){
+    var caseBase = function(caseId){
      return [
-        {resources:'workspacev2'},
-        {resources: 'projects'},
-        {'index.links': projectId},
-        {resources: projectType },
-        {queries: 'cases?tq=select+*'},
-        {links: caseId}
+        {resources: workspaceId},
+        {resources: 'cases', unsafe: true},
+        {resources: caseId, unsafe: true}
       ];
     };
 
+    //caseBase.bcMessage = null;
+    //TODO: Refactor (use a var instead of property)
+    var bcMessage = null;
+
+    caseBase.broadcastMessage = function(msg){
+      //caseBase.bcMessage = msg;
+      bcMessage = msg;
+      caseBase.initBroadcastMessage();
+    };
+
+    caseBase.initBroadcastMessage = function(message){
+      $rootScope.$broadcast('httpRequestInitiated');      
+    };
+
     return {
-      getSelected: function(projectId, projectType, caseId) {
+      getWorkspace: function(){
+        return workspaceId;
+      },
+      getMessage: function(){
+        //return caseBase.bcMessage;
+        return bcMessage;
+      },
+      getSelected: function(caseId) {
         return backendService.get({
-          specs: caseBase(projectId, projectType, caseId),
+          specs: caseBase(caseId),
           onSuccess:function (resource, result) {
             result.push(new SfCase(resource.response.index));
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getSelectedCommands: function(projectId, projectType, caseId) {
+      getSelectedCommands: function(caseId) {
         return backendService.get({
-          specs: caseBase(projectId, projectType, caseId),
+          specs: caseBase(caseId),
           onSuccess:function (resource, result) {
             resource.response.commands.forEach(function(item){result.push(item)});
           }
         });
       },
 
-      getPossibleResolutions: function(projectId, projectType, caseId) {
+      getPossibleResolutions: function(caseId) {
         return backendService.get({
           specs:caseBase(projectId, projectType, caseId).concat([
             {queries: 'possibleresolutions'}
@@ -71,17 +87,17 @@
         });
       },
 
-      resolveCase: function(projectId, projectType, caseId, resolutionId, callback) {
+      resolveCase: function(caseId, resolutionId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'resolve'}
             ]),
           {entity: resolutionId}).then(_.debounce(callback)());
       },
 
-      getPossibleSendTo: function(projectId, projectType, caseId) {
+      getPossibleSendTo: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {queries: 'possiblesendto'}
           ]),
           onSuccess:function (resource, result) {
@@ -90,103 +106,149 @@
         });
       },
 
-      sendCaseTo: function(projectId, projectType, caseId, sendToId, callback) {
+      sendCaseTo: function(caseId, sendToId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'sendto'}
           ]),
-          {entity: sendToId}).then(_.debounce(callback)());
+          {entity: sendToId}).then(_.debounce(callback)()).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
-      closeCase: function(projectId, projectType, caseId, callback) {
+      closeCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'close'}
-            ]),
-          {}).then(_.debounce(callback)());
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
-      deleteCase: function(projectId, projectType, caseId, callback) {
+      deleteCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'delete'}
-            ]),
-          {}).then(_.debounce(callback)());
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
-      assignCase: function(projectId, projectType, caseId, callback) {
+      assignCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'assign'}
-            ]),
-          {}).then(_.debounce(callback)());
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
-      unassignCase: function(projectId, projectType, caseId, callback) {
+      unassignCase: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'unassign'}
-            ]),
-          {}).then(_.debounce(callback)());
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
-      markUnread: function(projectId, projectType, caseId, callback) {
+      markUnread: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'markunread'}
-            ]),
-          {}).then(_.debounce(callback)());
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
-      markRead: function(projectId, projectType, caseId, callback) {
+      markRead: function(caseId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'markread'}
-            ]),
-          {}).then(_.debounce(callback)());
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
-      Read: function(projectId, projectType, caseId) {
+      Read: function(caseId) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {commands: 'read'}
-            ]),
-          {});
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
-      getSelectedNote: function(projectId, projectType, caseId) {
+      getSelectedNote: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'note'}]),
+          specs:caseBase(caseId).concat([{resources: 'note'}]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      addNote: function(projectId, projectType, caseId, value) {
+      addNote: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'note'},
             {commands: 'addnote'}
-            ]),
-          value);
+          ]),
+          value).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
-      getAllNotes: function(projectId, projectType, caseId) {
+      getAllNotes: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'note'},
             {queries: 'allnotes'}
             ]),
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getSelectedGeneral: function(projectId, projectType, caseId) {
+      getSelectedGeneral: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'general'}]),
+          specs:caseBase(caseId).concat([{resources: 'general'}]),
           onSuccess:function (resource, result) {
             var index = resource.response.index;
 
@@ -194,35 +256,47 @@
               index.dueOnShort = index.dueOn.split("T")[0]
 
             result.push(index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getSelectedConversations: function(projectId, projectType, caseId) {
+      getSelectedConversations: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'conversations'}]),
+          specs:caseBase(caseId).concat([{resources: 'conversations'}]),
+          onSuccess:function (resource, result) {
+            resource.response.index.links.forEach(function(link){
+              result.push(link);
+              caseBase.broadcastMessage(result.status);
+            });
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
+          }
+        });
+      },
+
+      getSelectedAttachments: function(caseId) {
+        return backendService.get({
+          specs:caseBase(caseId).concat([{resources: 'attachments'}]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(link){
               result.push(link);
             });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getSelectedAttachments: function(projectId, projectType, caseId) {
-        return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'attachments'}]),
-          onSuccess:function (resource, result) {
-            resource.response.index.links.forEach(function(link){
-              result.push(link);
-            });
-          }
-        });
-      },
-
-      deleteAttachment: function(projectId, projectType, caseId, attachmentId, callback) {
+      deleteAttachment: function(caseId, attachmentId, callback) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'attachments'},
             {'index.links': attachmentId},
             {commands: 'delete'}
@@ -230,63 +304,85 @@
           {}).then(_.debounce(callback)());
       },
 
-      getSelectedContact: function(projectId, projectType, caseId, contactIndex) {
+      getSelectedContact: function(caseId, contactIndex) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'contacts', unsafe: true},
             {resources: contactIndex, unsafe: true}
           ]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getSelectedContacts: function(projectId, projectType, caseId) {
+      getSelectedContacts: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'contacts'}
           ]),
           onSuccess:function (resource, result) {
             resource.response.index.contacts.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      addContact: function(projectId, projectType, caseId, value) {
+      addContact: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'contacts', unsafe: true},
             {commands: 'add'}
           ]),
-          value);
+          value).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
-      updateContact: function(projectId, projectType, caseId, contactIndex, value) {
+      updateContact: function(caseId, contactIndex, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'contacts', unsafe: true},
             {resources: contactIndex, unsafe: true},
             {commands: 'update'}
-          ]
-        ), value);
+          ]), 
+          value).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
-      getCaseLogDefaultParams: function(projectId, projectType, caseId) {
+      getCaseLogDefaultParams: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
               {resources: 'caselog'},
               {resources: 'defaultfilters', unsafe: true}
             ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
-      getSelectedCaseLog: function(projectId, projectType, caseId) {
+      getSelectedCaseLog: function(caseId) {
  
           //TODO: Look at why this is getting called twice on the caselog list page and if no way around it, maybe make sure the results are cached
           return backendService.get({
-              specs:caseBase(projectId, projectType, caseId).concat([
+              specs:caseBase(caseId).concat([
                   {resources: 'caselog'},
                   {queries: 'list?system=true&systemTrace=true&form=true&conversation=true&attachment=true&contact=true&custom=true'}
               ]),
@@ -294,14 +390,18 @@
                   resource.response.links.forEach(function(link){
                       result.push(link);                      
                   });
+                  caseBase.broadcastMessage(result.status);
+              },
+              onFailure:function(err){
+                caseBase.broadcastMessage(err);      
               }
           });
       },
-      getSelectedFilteredCaseLog: function(projectId, projectType, caseId, queryfilter) {
+      getSelectedFilteredCaseLog: function(caseId, queryfilter) {
         //console.log(queryfilter);
         //TODO: Look at why this is getting called twice on the caslog list page and if no way around it, maybe make sure the results are cached
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
               {resources: 'caselog'},
               {queries: 'list?system='+ queryfilter.system +
               '&systemTrace='+ queryfilter.systemTrace +
@@ -315,20 +415,29 @@
             resource.response.links.reverse().forEach(function(link){
               result.push(link);
             });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
-      createCaseLogEntry: function(projectId, projectType, caseId, value) {
+      createCaseLogEntry: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'caselog'},
             {commands: 'addmessage'}
           ]),
-          {string: value});
+          {string: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
-      getPossibleCaseTypes: function(projectId, projectType, caseId) {
+      getPossibleCaseTypes: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'general'},
             {queries: 'possiblecasetypes'}
             ]),
@@ -338,52 +447,74 @@
             });
 
             caseTypeOptions.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      updateSimpleValue: debounce(function(projectId, projectType, caseId, resource, command, property, value, callback) {
+      updateSimpleValue: debounce(function(caseId, resource, command, property, value, callback) {
 
         var toSend = {};
         toSend[property] = value;
 
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: resource},
             {commands: command}
-            ]),
-          toSend).then(_.debounce(callback)());
+          ]),
+          toSend).then(_.debounce(callback)()).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }, 1000),
 
-      getSelectedPossibleForms: function(projectId, projectType, caseId) {
+      getSelectedPossibleForms: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{resources: 'possibleforms'}]),
+          specs:caseBase(caseId).concat([{resources: 'possibleforms'}]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getPossibleForm: function(projectId, projectType, caseId, formId) {
+      getPossibleForm: function(caseId, formId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")}
           ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      createSelectedForm: function(projectId, projectType, caseId, formId) {
+      createSelectedForm: function(caseId, formId) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")},
             {commands: 'create'}
-            ]),
-          {});
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
       addViewModelProperties: function(pages){
@@ -395,10 +526,10 @@
         });
       },
 
-      getFormDraft: function(projectId, projectType, caseId, draftId) {
+      getFormDraft: function(caseId, draftId) {
         var that = this;
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'formdrafts'},
             {'index.links': draftId}
             ]),
@@ -411,14 +542,18 @@
             that.addViewModelProperties(index.enhancedPages);
 
             result.push(index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getFormDraftFromForm: function(projectId, projectType, caseId, formId) {
+      getFormDraftFromForm: function(caseId, formId) {
         var that = this;
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")},
             {queries: 'formdraft'}
@@ -427,7 +562,7 @@
             var id = resource.response.id;
 
             return backendService.get({
-            specs:caseBase(projectId, projectType, caseId).concat([
+            specs:caseBase(caseId).concat([
               {resources: 'formdrafts'},
               {resources: id, unsafe: true}
               ]),
@@ -440,35 +575,55 @@
               index.draftId = id;
 
               result.push(index);
+              caseBase.broadcastMessage(result.status);
+            },
+            onFailure:function(err){
+              caseBase.broadcastMessage(err);      
             }
           });
+          //This might cause nestling issues with the error handler
+          // to test, if the topmost error broadcaster overrides the nestled one
+          caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      updateField: debounce(function(projectId, projectType, caseId, formId, fieldId, value) {
+      updateField: debounce(function(caseId, formId, fieldId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'formdrafts'},
             {'index.links': formId},
             {commands: 'updatefield'}
-            ]),
-          {field: fieldId, value: value});
+          ]),
+          {field: fieldId, value: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }, 1000),
 
-      submitForm: function(projectId, projectType, caseId, formId) {
+      submitForm: function(caseId, formId) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'formdrafts'},
             {'index.links': formId},
             {commands: 'submit'}
-            ]),
-          {});
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
 
-      getSubmittedForms: function(projectId, projectType, caseId, formId) {
+      getSubmittedForms: function(caseId, formId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([{
+          specs:caseBase(caseId).concat([{
             resources: 'submittedforms'
           }]),
           onSuccess:function (resource, result) {
@@ -488,46 +643,64 @@
               item.submissionDate = item.submissionDate.split("T")[0];
               result.push(item)
             });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
-      getSubmittedForm: function(projectId, projectType, caseId, index) {
+      getSubmittedForm: function(caseId, index) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'submittedforms'},
             {queries: 'submittedform?index=' + index}
           ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
 
       // Conversations
-      createConversation: function(projectId, projectType, caseId, value) {
+      createConversation: function(caseId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {commands: 'create'}
           ]),
-          {topic: value});
+          {topic: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+            return result;
+          });
+          // function(error){
+          //   caseBase.broadcastMessage(error);
+          // };
       },
-      getConversationMessages: function(projectId, projectType, caseId, conversationId) {
+      getConversationMessages: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'}
             ]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
-      getMessageDraft: function(projectId, projectType, caseId, conversationId) {
+      getMessageDraft: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
@@ -535,45 +708,63 @@
             ]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index.string);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
-      updateMessageDraft: debounce(function(projectId, projectType, caseId, conversationId, value) {
+      updateMessageDraft: debounce(function(caseId, conversationId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
             {resources: 'messagedraft', unsafe: true},
             {commands: 'changemessage'}
             ]),
-          {message: value});
+          {message: value}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }, 500),
-      createMessage: function(projectId, projectType, caseId, conversationId, value) {
+      createMessage: function(caseId, conversationId, value) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'messages'},
             {commands: 'createmessagefromdraft'}
             ]),
-          {});
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
-     getConversationParticipants: function(projectId, projectType, caseId, conversationId) {
+     getConversationParticipants: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'}
             ]),
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
-      getPossibleConversationParticipants: function(projectId, projectType, caseId, conversationId) {
+      getPossibleConversationParticipants: function(caseId, conversationId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'},
@@ -581,29 +772,43 @@
             ]),
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){result.push(item)});
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);      
           }
         });
       },
-      addParticipantToConversation: function(projectId, projectType, caseId, conversationId, participant) {
+      addParticipantToConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'},
             {commands: 'addparticipant'}
             ]),
-          {entity: participant});
+          {entity: participant}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       },
-      deleteParticipantFromConversation: function(projectId, projectType, caseId, conversationId, participant) {
+      deleteParticipantFromConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
-          caseBase(projectId, projectType, caseId).concat([
+          caseBase(caseId).concat([
             {resources: 'conversations'},
             {'index.links': conversationId},
             {resources: 'participants'},
             {'index.links': participant},
             {commands: 'delete'}
             ]),
-          {});
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }),
+          function(error){
+            caseBase.broadcastMessage(error);
+          };
       }
 
     }

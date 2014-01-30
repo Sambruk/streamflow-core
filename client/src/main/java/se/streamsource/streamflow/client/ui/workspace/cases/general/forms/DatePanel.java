@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,7 @@ public class DatePanel
       setLayout( new BorderLayout() );
 
       datePicker = new JXDatePicker();
-      datePicker.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
       final DateFormat dateFormat =  DateFormat.getDateInstance( DateFormat.SHORT );
-      dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-
       datePicker.getEditor().setFormatterFactory( new DefaultFormatterFactory(new DatePickerFormatter( new DateFormat[]{dateFormat} ){
 
          @Override

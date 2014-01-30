@@ -43,6 +43,9 @@
         <link rel="stylesheet" href="design/gui/css/main.css">
         <link rel="stylesheet" href="design/gui/css/retina.css">
 
+        <!-- Angular growl -->
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+
         <!-- datepicker -->
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.css">
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.date.css">
@@ -75,60 +78,63 @@
 
         <!-- Add your site or application content here -->
         <div class='body'>
-
+        
+        <div growl role="banner"></div>
           <div class="header cf" role="banner">
 
-            <div class="client-name">
-                <h1>Malmö Kommun Kontaktcenter</h1>
-            </div>
-            <!-- /client-name -->
+            <div class="header-body cf">
 
-            <form action="#" method="get" class="main-search" role="search">
-                <div>
-                    <label for="main-searchtext" class="struct">Sök</label>
-                    <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
-                    <button type="submit"><i class="icon-search"><span>Sök</span></i></button>
+              <div class="client-name" data-ng-controller="ProfileCtrl">
+                <div class="user-area">
+                  <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
+                    <!-- Need a btn to log out. <a href="" data-ng-click="logout()" class="btn">Logga Ut</a> -->
                 </div>
-            </form>
-            <!-- /main-search -->
-           
+                <!-- /user-area -->
+                  <h1>Malmö Kommun Kontaktcenter</h1>
+              </div>
 
-            
+              <!-- /client-name -->
 
-            <div class="user-area" data-ng-controller="ProfileCtrl">
-                <ul class="buttons cf logged-in">
-                <li>
-                    <a href="" class="btn dropdown icon-user"> {{profile[0].name}} <i class="icon-arrow-down"></i></a>
-                      <ul>
-                        <li>
-                            <a href="#/profile" class="btn">Profil</a>
-                        </li>
-                        <li>
-                            <a href="" data-ng-click="logout()" class="btn">Logga Ut</a>
-                        </li>                       
-                      </ul>
-                  </li>
-                </ul>
-
-
-               <!--  <a href="xlink-" class="icon-user logged-in">Solveig Grankvist</a> -->
+              <form action="#" method="get" class="main-search" role="search">
+                  <div>
+                      <label for="main-searchtext" class="struct">Sök</label>
+                      <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
+                      <button type="submit"><i class="icon-search"><span>Sök</span></i></button>
+                  </div>
+              </form>
+              <!-- /main-search -->
             </div>
-            <!-- /user-area -->
-
-        </div>
+            <!-- /header-body -->
+            
+            <!-- Issue banner -->
+            <div class="issue-banner" data-ng-controller="BreadcrumbCtrl">
+                <span data-ng-repeat="bread in breadcrumbList">
+                    {{ bread }} 
+                    <span ng-hide="$last == true">&rarr;</span>
+                </span>
+            </div>
+            <!-- /issue-banner -->
+          </div>
+          <!-- /header -->
 
           <div class="main">
             <data-ng-include src="'modules/views/navigation.html'"></data-ng-include>
-            <div class="main-body cf" ng-view>
+            <div class="main-body cf" ng-view> 
             </div> <!-- main-body -->
+            
           </div> <!-- main -->
         </div> <!-- body -->
 
         <!-- TODO use CDN in production -->
         <script src="components/jquery/jquery.js"></script>
-        <script src="components/angular/angular.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
+        <!--<script src="components/angular/angular.min.js"></script>-->
         <script src="components/angular-resource/angular-resource.js"></script>
         <script src="components/typewatch/jquery.typewatch.js"></script>
+
+        <!-- Angular-growl -->
+        <script src="components/angular-growl/build/angular-growl.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
 
         <!-- build:js scripts/scripts.js -->
@@ -158,6 +164,7 @@
         <script src="modules/directives/sf-update-on-blur.js"></script>
         <script src="modules/directives/jquery-custom-select.js"></script>
         <script src="modules/directives/sf-date-picker.js"></script>
+        <script src="modules/directives/sf-open-toolbar-content.js"></script>
         <script src="modules/services/navigation-service.js"></script>
         <script src="modules/services/backend-service.js"></script>
         <script src="modules/services/error-handler-service.js"></script>

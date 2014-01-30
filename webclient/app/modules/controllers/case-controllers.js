@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 (function() {
   'use strict';
 
-  var sfCase = angular.module('sf.controllers.case', ['sf.services.case', 'sf.services.navigation', 'sf.services.perspective', 'sf.services.project']);
+  var sfCase = angular.module('sf.controllers.case', ['angular-growl','sf.services.case', 'sf.services.navigation', 'sf.services.perspective', 'sf.services.project']);
+
+  sfCase.config(['growlProvider', function(growlProvider) {
+    growlProvider.globalTimeToLive(5000);
+  }]);
 
   sfCase.controller('CaseOverviewCtrl', ['$scope', '$routeParams', 'perspectiveService', 'navigationService',
     function($scope, $params, perspectiveService, navigationService) {
@@ -33,30 +36,45 @@
 
     }]);
 
-  sfCase.controller('CaseListCtrl', ['$scope', '$routeParams', 'projectService', 'commonService', function($scope, $params, projectService, commonService) {
+  sfCase.controller('CaseListCtrl', ['growl','$scope', '$routeParams', 'projectService','$rootScope', 
+    function(growl, $scope, $params, projectService, $rootScope) {
 
-    $scope.common = commonService.common;
-    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
-    
-    $scope.$on('case-created', function() {
-      $scope.cases.invalidate();
-    });
+    $scope.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+    /**
+    * ERROR HANDLER
+    **/
+    //TODO: Implement error handler listener on other controllers where needed
+    $scope.errorHandler = function(){;
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
+      }else {
+        growl.addWarnMessage('errorMessage');
+      }  
+    };
+
+    $rootScope.$broadcast('breadcrumb-updated', [{projectId: $params.projectId}, {projectType: $params.projectType}]);
+
+    //error-handler
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
   }]);
 
-  sfCase.controller('CaseDetailCtrl', ['$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'commonService', 'projectService', 'profileService',
-    function($scope, $timeout, $params, caseService, navigationService, commonService, projectService, profileService){
-    $scope.projectId = $params.projectId;
-    $scope.projectType = $params.projectType;
+  sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'projectService', 'profileService', '$rootScope',
+    function(growl, $scope, $timeout, $params, caseService, navigationService, projectService, profileService, $rootScope){
 
-    $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
-    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
-    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+    $scope.caze = caseService.getSelected($params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.caseId);
+    $scope.notes = caseService.getSelectedNote($params.caseId);
     
-    $scope.commands = caseService.getSelectedCommands($params.projectId, $params.projectType, $params.caseId);
+    $scope.commands = caseService.getSelectedCommands($params.caseId);
     $scope.profile = profileService.getCurrent();
 
-    $scope.common = commonService.common;
-    $scope.common.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+    $scope.$watch('caze[0]', function(){
+      if ($scope.caze.length === 1){
+        $scope.caseListUrl = navigationService.caseListHrefFromCase($scope.caze);
+        $rootScope.$broadcast('breadcrumb-updated', [{projectId: $scope.caze[0].owner}, {projectType: $scope.caze[0].listType}, {caseId: $scope.caze[0].caseId}]);
+      }
+    });
 
     $scope.$on('case-created', function() {
         $scope.caze.invalidate();
@@ -66,6 +84,22 @@
       $scope.caze.invalidate();
       $scope.caze.resolve();
     });
+
+    /**
+    * ERROR HANDLER
+    **/
+    //TODO: Implement error handler listener on other controllers where needed
+    $scope.errorHandler = function(){;
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
+      }else {
+        growl.addWarnMessage('errorMessage');
+      }  
+    };
+
+    //error-handler
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
 
     // Mark the case as Read after the ammount of time selected in profile.
     // TODO <before uncomment>. Find a way to update possible commands after post.
@@ -86,14 +120,12 @@
     });*/
   }]);
 
-  sfCase.controller('PrintCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
-    function($scope, $params, caseService, navigationService){
-    $scope.projectId = $params.projectId;
-    $scope.projectType = $params.projectType;
+  sfCase.controller('PrintCtrl', ['growl','$scope', '$routeParams', 'caseService', 'navigationService',
+    function(growl, $scope, $params, caseService, navigationService){
 
-    $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
-    $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
-    $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+    $scope.caze = caseService.getSelected($params.caseId);
+    $scope.general = caseService.getSelectedGeneral($params.caseId);
+    $scope.notes = caseService.getSelectedNote($params.caseId);
 
     $scope.$on('case-created', function() {
         $scope.caze.invalidate();
@@ -104,6 +136,22 @@
       $scope.caze.resolve();
     });
 
+    /**
+    * ERROR HANDLER
+    **/
+    //TODO: Implement error handler listener on other controllers where needed
+    $scope.errorHandler = function(){;
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
+      }else {
+        growl.addWarnMessage('errorMessage');
+      }  
+    };
+
+    //error-handler
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
+
     $scope.$watch('caze + general + notes', function() {
       setTimeout(function(){
          window.print();
@@ -111,26 +159,41 @@
     })
   }]);
 
-  sfCase.controller('CaseEditCtrl', ['$scope', '$routeParams', 'caseService', 'navigationService',
-    function($scope, $params, caseService, navigationService) {
-      $scope.projectId = $params.projectId;
-      $scope.projectType = $params.projectType;
+  sfCase.controller('CaseEditCtrl', ['growl','$scope', '$routeParams', 'caseService', 'navigationService',
+    function(growl, $scope, $params, caseService, navigationService) {
 
-      $scope.caze = caseService.getSelected($params.projectId, $params.projectType, $params.caseId);
-      $scope.general = caseService.getSelectedGeneral($params.projectId, $params.projectType, $params.caseId);
+      $scope.caze = caseService.getSelected($params.caseId);
+      $scope.general = caseService.getSelectedGeneral($params.caseId);
 
-      $scope.notes = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
-      $scope.cachedNote = caseService.getSelectedNote($params.projectId, $params.projectType, $params.caseId);
+      $scope.notes = caseService.getSelectedNote($params.caseId);
+      $scope.cachedNote = caseService.getSelectedNote($params.caseId);
 
-      $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.projectId, $params.projectType, $params.caseId);
+      $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
+
+    /**
+    * ERROR HANDLER
+    **/
+    //TODO: Implement error handler listener on other controllers where needed
+    $scope.errorHandler = function(){;
+      var bcMessage = caseService.getMessage();
+      if(bcMessage === 200)  {
+        growl.addSuccessMessage('successMessage');
+      }else {
+        growl.addWarnMessage('errorMessage');
+      }  
+    };
+
+    //error-handler
+    $scope.$on('httpRequestInitiated', $scope.errorHandler);
 
       $scope.addNote = function($event){
         $event.preventDefault();
         if ($scope.notes[0].note !== $scope.cachedNote[0].note)
-          caseService.addNote($params.projectId, $params.projectType, $params.caseId, $scope.notes[0]).then(function(){
+          caseService.addNote($params.caseId, $scope.notes[0]).then(function(){
             var href = navigationService.caseHref($params.caseId);
             $scope.notes.invalidate();
             $scope.notes.resolve();
+            // TODO Fix redirection bug
             window.location.assign(href);
           });
       }

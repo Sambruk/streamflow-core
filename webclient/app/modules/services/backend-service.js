@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@
         return httpService.absApiUrl(this.basehref + href);
       },
 
-      createById:function (resourceData, id, urls) {
+      createById:function (resourceData, id, urls, skipCache) {
         var values = id.split('?');
         var trimmedId = values[0];
         var query = values[1];
@@ -73,7 +73,7 @@
         var abshref = (w.href[0] === '/') ? w.href : this.basehref + w.href;
         if (query)
           abshref += '?' + query;
-        return httpService.getRequest(abshref).then(function (response) {
+        return httpService.getRequest(abshref, skipCache).then(function (response) {
           urls && urls.push(abshref);
           return new SfResource(abshref, response);
         });
@@ -109,7 +109,14 @@
           function(prev, curr) {
             return prev[curr];
         }, this.response);
-        var resource = this.createById(data, id, urls);
+        
+        var skipCache = specs.length === 0;
+
+        if (skipCache){
+          var x = 0;
+        }
+
+        var resource = this.createById(data, id, urls, skipCache);
         return resource.then(function (nextResource) {
           return nextResource.getNested(specs, urls);
         });
@@ -158,6 +165,8 @@
         // invalidates the HTTP Cache
         result.invalidate = function() { httpService.invalidate(urls); };
 
+        result.status = null;
+
         // calls the Server (again)
         result.resolve =  function() {
           // The dsl can provide a 'guard' condition preventing the calls to the server
@@ -174,9 +183,10 @@
           return httpService.getRequest("").
             then(function (response) {
               var resource = new SfResource("", response);
+              result.status = response.status;
               return resource.getNested(angular.copy(dsl.specs), urls);}).
             then(function(resource){
-              dsl.onSuccess(resource, result, urls)
+              dsl.onSuccess(resource, result, urls);
             });
         };
 

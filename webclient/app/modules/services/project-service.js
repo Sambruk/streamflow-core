@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,18 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation', 'sf.models']);
+  var sfServices = angular.module('sf.services.project', ['sf.services.backend', 'sf.services.navigation', 'sf.models', 'sf.services.case']);
 
   sfServices.factory(
     'projectService',
-    ['backendService', 'navigationService', 'SfCase',
-      function (backendService, navigationService, SfCase) {
+    ['backendService', 'navigationService', 'SfCase', 'caseService',
+      function (backendService, navigationService, SfCase, caseService) {
 
     return {
       getAll:function () {
         return backendService.get({
           specs:[
-            {resources:'workspacev2'}
+            {resources: caseService.getWorkspace()}
             //{resources: 'projects'}
           ],
           onSuccess:function (resource, result) {
@@ -55,9 +55,10 @@
       //http://localhost:3501/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/f9d9a7f7-b8ef-4c56-99a8-3b9b5f2e7159-0
       getSelected: function(projectId, projectType, callback) {
         var self = this;
+
         return backendService.get({
           specs:[
-            {resources:'workspacev2'},
+            {resources:caseService.getWorkspace()},
             {resources: 'projects'},
             {'index.links': projectId},
             {resources: projectType},
@@ -74,16 +75,15 @@
       },
 
       sfCaseFactory: function(model) {
-        var href = navigationService.caseHref(model.id);
+        var href = navigationService.caseHrefSimple(model.id);
         var o = new SfCase(model, href);
         return o;
       },
 
       createCase: function(projectId, projectType) {
-
         return backendService.postNested(
           [
-            {resources:'workspacev2'},
+            {resources: caseService.getWorkspace()},
             {resources: 'projects'},
             {'index.links': projectId},
             {resources: projectType },

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 (function() {
   'use strict';
 
@@ -30,12 +29,30 @@
       $scope.projects = projectService.getAll();
       $scope.toggleToolbar = toggleToolbar;
 
+      function canCreateCase() {
+
+        if ($params.projectType === 'inbox') {
+          return false;
+        }
+        if (!$params.projectType) {
+          return false;
+        }
+
+        return true;
+      } 
+
+      $scope.canCreateCase = canCreateCase;
+
       $scope.createCase = function(){
+
+        if (!canCreateCase())
+          return;
+
         $rootScope.$broadcast('case-created');
 
         projectService.createCase($params.projectId, $params.projectType).then(function(response){
           var caseId = response.data.events[1].entity;
-          var href = navigationService.caseHref(caseId);
+          var href = navigationService.caseHrefSimple(caseId);
 
           window.location.replace(href + "/edit");
         });

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@
 
             var valueToSend = checked.join(", ");
 
-            caseService.updateField($params.projectId, $params.projectType, $params.caseId, scope.$parent.form[0].draftId, attr.name, valueToSend);
+            caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, valueToSend);
           }
 
           hasRunAtLeastOnce = true;

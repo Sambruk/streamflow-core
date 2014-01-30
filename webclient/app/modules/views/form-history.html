@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2012 Jayway Products AB
+    Copyright 2009-2013 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 -->
 <div class="content-primary" role="main" data-ng-controller="FormHistoryCtrl">
-  <a href="#/{{ projectId }}/{{ projectType }}/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
+  <a href="#/cases/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
   <div>Välj ett datum:</div>
   <select data-ng-options="form.index as form.submissionDate for form in submittedForms" data-ng-model="selectedSubmittedForm">
   </select>

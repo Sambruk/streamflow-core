@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2012 Jayway Products AB
+    Copyright 2009-2013 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,23 +22,23 @@
   <!-- Issue toolbar -->
   <div class="toolbar" data-sf-fixed-toolbar>
     <ul class="buttons cf" data-ng-show="commands[0]">
-      <li><a href="" data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
-      <li><a href="" data-ng-show="canAssign" data-ng-click="assign($event)" class="btn">Tilldela &#43;</a></li>
-      <li><a href="" data-ng-show="canUnassign" data-ng-click="unassign($event)" class="btn">Tilldela &#45;</a></li>
+      <li><a href="" sf-open-toolbar-content data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li><a href="" data-ng-show="canAssign" data-ng-click="assign($event)" class="btn">Tilldela</a></li>
+      <li><a href="" data-ng-show="canUnassign" data-ng-click="unassign($event)" class="btn">Tilldela</a></li>
       <li><a href="" data-ng-show="canResolve" data-ng-click="resolve()" class="btn">Avsluta</a></li>
       <li><a href="" data-ng-show="canClose" data-ng-click="close($event)" class="btn">Stäng</a></li>
       <li>
-          <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
-          <ul>
-              <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
-              <li><a data-ng-show="canMarkRead" data-ng-click="markRead($event)" href="" class="btn">Markera läst</a></li>
-              <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread($event)" href="" class="btn">Markera oläst</a></li>
-              <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
-              <li><a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
-          </ul>
+        <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
+        <ul>
+            <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
+            <li><a data-ng-show="canMarkRead" data-ng-click="markRead($event)" href="" class="btn">Markera läst</a></li>
+            <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread($event)" href="" class="btn">Markera oläst</a></li>
+            <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+            <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
+        </ul>
       </li>
     </ul>
-    <div class="toolbar-content">
+    <div class="toolbar-content" ng-hide="true">
 
       <div data-ng-switch on="commandView">
           <div data-ng-switch-when="resolve">
@@ -52,9 +52,18 @@
           </div>
 
           <div data-ng-switch-when="sendTo">
-              <select custom-select data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
-              </select>
-              <button data-ng-click="onSendToButtonClicked($event)">Skicka till</button>
+            <div class="row cf">
+              <div class="select">
+                <label for="issue-owner">Byt ägare</label>
+                <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="submit-area cf">
+                <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+              </div>
+            </div>
           </div>
 
           <div data-ng-switch-when="todo">
@@ -72,7 +81,6 @@
   <div class="m m-general">
     <div class="m-h">
       <h2>Allmänt</h2>
-      <a href="xlink-" class="edit-module icon-edit" title="Redigera"><span class="struct">Redigera</span></a>
     </div>
     <div class="m-c">
       <div class="m-box">
@@ -80,7 +88,6 @@
           <li><strong>Ägare:</strong> {{ caze[0].owner }}</li>
           <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
           <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
-          <li><strong>Kund:</strong> TODO TODOsson 19760901-4046</li>
           <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
         </ul>
       </div>
@@ -88,16 +95,56 @@
   </div>
   <!-- /Module: Allmänt -->
 
+  <!-- Module: Ärende -->
+  <div class="m m-general">
+    <div class="m-h">
+      <h2>Ärende</h2>
+    </div>
+    <div class="m-c">
+      <div class="m-box">
+        <ul>
+          <li><h3>{{caze[0].text}}</h3></li>
+          <li class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- /Module: Ärende -->
+
+  <!-- m-issue-forms -->
+  <div class="m m-issue-forms">
+    <div class="m-h">
+      <h2>Formulär</h2>
+    </div>
+    <div class="m-c">      
+      <div class="accordion">
+        <div class="accordion-item" style="margin-bottom:0px;">
+          <h3><a href="#" class="open-acc">Värde 1</a></h3>
+        </div>
+        <div class="accordion-item">
+          <h3><a href="#" class="open-acc">Värde 2</a></h3>
+        </div>
+        <div class="accordion-item">
+          <h3><a href="#" class="open-acc">Värde 3</a></h3>
+        </div>
+        <!-- end accordion-item -->
+      </div>
+      <!-- end accordion -->
+
+    </div>
+  </div>
+  <!-- /m-issue-forms -->
+
   <!-- Module: Konversationer -->
   <div class="m m-convos">
     <div class="m-h">
       <h2>Konversationer</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
+      <a href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul>
         <li data-ng-repeat='conversation in conversations'>
-          <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link">
+          <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
             <ul class="convo-status">
@@ -115,12 +162,12 @@
   <div class="m m-contacts">
     <div class="m-h">
       <h2>Kontakter</h2>
-      <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+      <a href="#/cases/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li data-ng-class-odd="'odd'" ng-repeat='contact in contacts' ng-odd=>
-            <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
+        <li data-ng-repeat='contact in contacts'>
+            <a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
             <!--
             <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
             -->
@@ -137,9 +184,9 @@
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li data-ng-class-odd="'odd'" ng-repeat="attachment in attachments" ng-odd=>
-        <a data-ng-click="downloadAttachment(attachment.id)" href="">{{ attachment.text }}</a>
-        <a data-ng-click="deleteAttachment(attachment.id)" href="" class="delete" title="Radera fil">Radera fil</a>
+        <li ng-repeat="attachment in attachments">
+        <a data-ng-click="downloadAttachment(attachment.id)" ng-href="{{ attachment.href}}">{{ attachment.text }}</a>
+        <a data-ng-click="deleteAttachment(attachment.id)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
         </li>
       </ul>
     </div>
@@ -148,7 +195,7 @@
 
   <!-- Module: Ärendelogg -->
   <div class="m m-issuelog" data-ng-controller="CaselogListCtrl">
-  <a href="#/{{ projectId }}/{{ projectType }}/{{ caze[0].id }}/caselog" class="block-link">
+  <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
     <div class="m-h">
       <h2>Ärendelogg</h2>
       <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
@@ -165,11 +212,9 @@
         </thead>
         <tbody>
         <tr data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'">
-        
           <td>{{ entry.creationDate | shortDate}}</td>
           <td>{{ entry.text }}</td>
-          <td>{{ entry.creator }}</td>
-          
+          <td>{{ entry.creator }}</td>  
         </tr>
         </tbody>
       </table>
@@ -177,5 +222,6 @@
     </a>
   </div>
   <!-- /Module: Ärendelogg -->
+
 <!-- <pre><code>{{ form[0] | json }}</code></pre> -->
 </div>

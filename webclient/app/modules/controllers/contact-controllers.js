@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 (function() {
   'use strict';
 
@@ -26,7 +25,7 @@
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
-      $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
+      $scope.contacts = caseService.getSelectedContacts($params.caseId);
 
       // TODO: Initialise contact in another way
       $scope.contact = {
@@ -46,7 +45,7 @@
         $scope.contact.phoneNumbers = angular.toJson($scope.contact.phoneNumbers);
         $scope.contact.addresses = angular.toJson($scope.contact.addresses);
         $scope.contact.emailAddresses = angular.toJson($scope.contact.emailAddresses);
-        $scope.contactId = caseService.addContact($params.projectId, $params.projectType, $params.caseId, $scope.contact).then(function(){
+        $scope.contactId = caseService.addContact($params.caseId, $scope.contact).then(function(){
           var href = navigationService.caseHref($params.caseId);
           $scope.contacts.invalidate();
           $scope.contacts.resolve();
@@ -63,8 +62,8 @@
       $scope.projectType = $params.projectType;
       $scope.caseId = $params.caseId;
       $scope.contactIndex = $params.contactIndex;
-      $scope.contact = caseService.getSelectedContact($params.projectId, $params.projectType, $params.caseId, $params.contactIndex);
-      $scope.contacts = caseService.getSelectedContacts($params.projectId, $params.projectType, $params.caseId);
+      $scope.contact = caseService.getSelectedContact($params.caseId, $params.contactIndex);
+      $scope.contacts = caseService.getSelectedContacts($params.caseId);
 
       $scope.submitContact = function($event){
         $event.preventDefault();
@@ -79,7 +78,7 @@
         $scope.contact[0].phone = $scope.contact[0].phoneNumbers[0].phoneNumber;
         $scope.contact[0].contactpreference = $scope.contact[0].contactPreference;
 
-        $scope.contactId = caseService.updateContact($params.projectId, $params.projectType, $params.caseId, $params.contactIndex, $scope.contact[0]).then(function(){
+        $scope.contactId = caseService.updateContact($params.caseId, $params.contactIndex, $scope.contact[0]).then(function(){
           var href = navigationService.caseHref($params.caseId);
           $scope.contact.invalidate();
           $scope.contact.resolve();
@@ -94,7 +93,7 @@
         var contact = {};
         contact[$event.currentTarget.name] = $event.currentTarget.value;
 
-        $scope.contactId = caseService.updateContact($params.projectId, $params.projectType, $params.caseId, $params.contactIndex, contact).then(function(){
+        $scope.contactId = caseService.updateContact($params.caseId, $params.contactIndex, contact).then(function(){
           if ($event.currentTarget.id === 'contact-name') {
             $rootScope.$broadcast('contact-name-updated');
           }

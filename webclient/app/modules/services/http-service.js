@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2012 Jayway Products AB
+ * Copyright 2009-2013 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,13 +50,11 @@
     var baseUrl = prepareBaseUrl();
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');
-
-
+  
     return {
 
       baseUrl: baseUrl,
       apiUrl: apiUrl,
-
 
       info: function() {
         return cache.info();
@@ -92,10 +90,12 @@
       },
 
       makeRequest: function(href) {
+        var that = this;
         var url = this.prepareUrl(href);
-        var request = $http({ method:'GET', url: url, cache: false });
         // Bind href parameter to cacheResponse.
         var cacheResponse = _.bind(this.cacheResponse, null, href);
+        var request = $http({ method:'GET', url: url, cache: false});
+        
         return request.then(cacheResponse, errorHandlerService);
       },
 
