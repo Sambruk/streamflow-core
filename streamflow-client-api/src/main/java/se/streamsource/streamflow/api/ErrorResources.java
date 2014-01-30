@@ -42,5 +42,6 @@ public enum ErrorResources
    form_move_page_rule_violation,
    invalid_value,
    prohibited_by_visibility_rule,
-   information
+   information,
+   attachment_remove_failed_template_usage;
 }

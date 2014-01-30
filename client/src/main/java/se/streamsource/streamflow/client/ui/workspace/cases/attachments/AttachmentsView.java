@@ -235,16 +235,12 @@ public class AttachmentsView
             public void command()
                   throws Exception
             {
-               try
-               {
-                  for (AttachmentDTO removedAttachment : removedAttachments)
-                  {
-                     attachmentsModel.removeAttachment(removedAttachment);
-                  }
-               } catch (Throwable e)
-               {
-                  e.printStackTrace();
-               }
+
+          for (AttachmentDTO removedAttachment : removedAttachments)
+          {
+             attachmentsModel.removeAttachment(removedAttachment);
+          }
+
             }
          };
       } else
