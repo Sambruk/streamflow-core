@@ -58,15 +58,23 @@ public interface DueOnNotificationService extends ServiceComposite, Configuratio
       {
          if (config.configuration().enabled().get())
          {
-            // define the job and tie it to our HelloJob class
-            job = newJob( DueOnNotificationJob.class ).withIdentity( "dueOnJob", "schedulergroup" ).build();
+            try
+            {
+                // define the job and tie it to our HelloJob class
+                job = newJob( DueOnNotificationJob.class ).withIdentity( "dueOnJob", "schedulergroup" ).build();
 
-            // Trigger the job to run now, and then repeat every 40 seconds
-            Trigger trigger = newTrigger().withIdentity( "dueontrigger", "schedulergroup" ).startNow()
-                  .withSchedule( cronSchedule( config.configuration().schedule().get() ) ).build();
+                // Trigger the job to run now, and then repeat every 40 seconds
+                Trigger trigger = newTrigger().withIdentity( "dueontrigger", "schedulergroup" ).startNow()
+                      .withSchedule( cronSchedule( config.configuration().schedule().get() ) ).build();
 
-            // Tell quartz to schedule the job using our trigger
-            scheduler.scheduleJob( job, trigger );
+                // Tell quartz to schedule the job using our trigger
+                scheduler.scheduleJob( job, trigger );
+            } catch ( Exception e )
+            {
+                job = null;
+                logger.error( "Unable to start DueOnNotificationService: " + e.getMessage() );
+            }
+            logger.info( "Activated: " + config.configuration().schedule().get() );
          }
       }
 

@@ -17,7 +17,9 @@
 package se.streamsource.streamflow.web.application.dueon;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
@@ -26,12 +28,12 @@ public class DueOnNotification
 
    private Contactable recipient;
 
-   private List<DueOnItem> personalOverdueCases = new ArrayList<DueOnItem>();
-   private List<DueOnItem> personalThresholdCases = new ArrayList<DueOnItem>();
-   private List<DueOnItem> functionOverdueCases = new ArrayList<DueOnItem>();
-   private List<DueOnItem> functionThresholdCases = new ArrayList<DueOnItem>();
-   private List<DueOnItem> monitoredOverdueCases = new ArrayList<DueOnItem>();
-   private List<DueOnItem> monitoredThresholdCases = new ArrayList<DueOnItem>();
+   private Set<DueOnItem> personalOverdueCases = new HashSet<DueOnItem>();
+   private Set<DueOnItem> personalThresholdCases = new HashSet<DueOnItem>();
+   private Set<DueOnItem> functionOverdueCases = new HashSet<DueOnItem>();
+   private Set<DueOnItem> functionThresholdCases = new HashSet<DueOnItem>();
+   private Set<DueOnItem> monitoredOverdueCases = new HashSet<DueOnItem>();
+   private Set<DueOnItem> monitoredThresholdCases = new HashSet<DueOnItem>();
    
    public DueOnNotification(Contactable recipient) 
    {
@@ -43,32 +45,32 @@ public class DueOnNotification
       return recipient;
    }
 
-   public List<DueOnItem> getPersonalOverdueCases()
+   public Set<DueOnItem> getPersonalOverdueCases()
    {
       return personalOverdueCases;
    }
 
-   public List<DueOnItem> getPersonalThresholdCases()
+   public Set<DueOnItem> getPersonalThresholdCases()
    {
       return personalThresholdCases;
    }
 
-   public List<DueOnItem> getFunctionOverdueCases()
+   public Set<DueOnItem> getFunctionOverdueCases()
    {
       return functionOverdueCases;
    }
 
-   public List<DueOnItem> getFunctionThresholdCases()
+   public Set<DueOnItem> getFunctionThresholdCases()
    {
       return functionThresholdCases;
    }
 
-   public List<DueOnItem> getMonitoredOverdueCases()
+   public Set<DueOnItem> getMonitoredOverdueCases()
    {
       return monitoredOverdueCases;
    }
 
-   public List<DueOnItem> getMonitoredThresholdCases()
+   public Set<DueOnItem> getMonitoredThresholdCases()
    {
       return monitoredThresholdCases;
    }

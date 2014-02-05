@@ -107,6 +107,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
       
       public void performNotification() throws UnitOfWorkCompletionException
       {
+         logger.info( "Performing due on notifictation" );
          final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(dueOnCheck);
          try
          {
@@ -115,6 +116,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
          } finally
          {
             uow.complete();
+            logger.info( "Due on notification done." );
          }
       }
 
@@ -132,18 +134,18 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                   if (caze.assignedTo().get() != null) {
                      getNotification((Contactable) caze.assignedTo().get(), contactablesMap).getPersonalOverdueCases().add( new DueOnItem(caze, locale) );
                   } else {
-                     List<Contactable> recipients = resolveFunctionRecipients(((Members.Data)caze.owner().get()).members().toList());
+                     List<Contactable> recipients = resolveRecipients(((Members.Data) caze.owner().get()).members().toList());
                      for (Contactable recipient : recipients)
                      {
                         getNotification(recipient, contactablesMap).getFunctionOverdueCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
                   if (settings.additionalrecipients().get() != null && !settings.additionalrecipients().get().isEmpty()) {
-                     for (EntityReference contactableRef : settings.additionalrecipients().get())
-                     {
-                        Contactable contactable = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, contactableRef.identity());
-                        getNotification( contactable, contactablesMap).getMonitoredOverdueCases().add( new DueOnItem(caze, locale)  );
-                     }
+                      List<Contactable> recipients = resolveAdditionalRecipients(contactablesMap, settings, caze);
+                      for (Contactable recipient : recipients)
+                      {
+                          getNotification(recipient, contactablesMap).getFunctionOverdueCases().add( new DueOnItem(caze, locale)  );
+                      }
                   }
                }
             }
@@ -159,18 +161,18 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
                   if (caze.assignedTo().get() != null) {
                      getNotification((Contactable) caze.assignedTo().get(), contactablesMap).getPersonalThresholdCases().add( new DueOnItem(caze, locale)  );
                   } else {
-                     List<Contactable> recipients = resolveFunctionRecipients(((Members.Data)caze.owner().get()).members().toList());
+                     List<Contactable> recipients = resolveRecipients(((Members.Data) caze.owner().get()).members().toList());
                      for (Contactable recipient : recipients)
                      {
                         getNotification(recipient, contactablesMap).getFunctionThresholdCases().add( new DueOnItem(caze, locale)  );
                      }
                   }
                   if (settings.additionalrecipients().get() != null && !settings.additionalrecipients().get().isEmpty()) {
-                     for (EntityReference contactableRef : settings.additionalrecipients().get())
-                     {
-                        Contactable contactable = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, contactableRef.identity());
-                        getNotification( contactable, contactablesMap).getMonitoredThresholdCases().add( new DueOnItem(caze, locale)  );
-                     }
+                      List<Contactable> recipients = resolveAdditionalRecipients(contactablesMap, settings, caze);
+                      for (Contactable recipient : recipients)
+                      {
+                          getNotification(recipient, contactablesMap).getFunctionThresholdCases().add( new DueOnItem(caze, locale)  );
+                      }
                   }
                }
             }
@@ -179,7 +181,17 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
          return new ArrayList<DueOnNotification>(contactablesMap.values());
       }
 
-      private DueOnNotification getNotification(Contactable recipient, Map<Contactable,DueOnNotification> contactablesMap)
+       private List<Contactable> resolveAdditionalRecipients(Map<Contactable, DueOnNotification> contactablesMap, DueOnNotificationSettingsDTO settings, CaseEntity caze) {
+           List<Member> members = new ArrayList<Member>();
+           for (EntityReference contactableRef : settings.additionalrecipients().get())
+           {
+               members.add(module.unitOfWorkFactory().currentUnitOfWork().get(Member.class, contactableRef.identity()));
+           }
+
+          return resolveRecipients( members );
+       }
+
+       private DueOnNotification getNotification(Contactable recipient, Map<Contactable,DueOnNotification> contactablesMap)
       {
          DueOnNotification notification = contactablesMap.get( recipient );
          if (notification == null)
@@ -224,7 +236,7 @@ public interface DueOnNotificationJob extends MailSender, Job, TransientComposit
          }
       }
 
-      private List<Contactable> resolveFunctionRecipients(List<Member> members)
+      private List<Contactable> resolveRecipients(List<Member> members)
       {
          List<Contactable> contacts = new ArrayList<Contactable>();
          for (Member member : members)
