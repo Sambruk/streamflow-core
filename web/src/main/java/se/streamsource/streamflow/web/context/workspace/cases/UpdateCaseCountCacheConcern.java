@@ -167,31 +167,6 @@ public abstract class UpdateCaseCountCacheConcern
 
    }
 
-   public void formonclose()
-   {
-      RoleMap roleMap = RoleMap.current();
-      CaseEntity caze = roleMap.get( CaseEntity.class );
-      boolean assigned = caze.isAssigned();
-      next.formonclose();
-      
-      if (assigned)
-      {
-         // Update assignments for user
-         Assignee assignee = roleMap.get( Assignee.class );
-         caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
-         if (caze.isUnread()) {
-            caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
-         }
-      } else
-      {
-         // Update inbox cache
-         caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
-         if (caze.isUnread()) {
-            caching.addToUnreadCache( caze.owner().get().toString(), -1 );
-         }
-      }
-   }
-
    public void sendto( EntityValue entity )
    {
       
