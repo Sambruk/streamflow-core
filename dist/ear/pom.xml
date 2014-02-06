@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>dist</artifactId>
-        <version>1.17</version>
+        <version>1.18-SNAPSHOT</version>
     </parent>
     <artifactId>ear</artifactId>
     <groupId>se.streamsource.streamflow.dist</groupId>
-    <version>1.17</version>
+    <version>1.18-SNAPSHOT</version>
     <packaging>ear</packaging>
     <name>Streamflow Ear</name>
     <description>Streamflow Ear Distribution</description>
