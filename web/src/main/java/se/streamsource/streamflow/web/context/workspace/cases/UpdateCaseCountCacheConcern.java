@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,31 +165,6 @@ public abstract class UpdateCaseCountCacheConcern
          }
       }
 
-   }
-
-   public void formonclose()
-   {
-      RoleMap roleMap = RoleMap.current();
-      CaseEntity caze = roleMap.get( CaseEntity.class );
-      boolean assigned = caze.isAssigned();
-      next.formonclose();
-      
-      if (assigned)
-      {
-         // Update assignments for user
-         Assignee assignee = roleMap.get( Assignee.class );
-         caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
-         if (caze.isUnread()) {
-            caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
-         }
-      } else
-      {
-         // Update inbox cache
-         caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
-         if (caze.isUnread()) {
-            caching.addToUnreadCache( caze.owner().get().toString(), -1 );
-         }
-      }
    }
 
    public void sendto( EntityValue entity )

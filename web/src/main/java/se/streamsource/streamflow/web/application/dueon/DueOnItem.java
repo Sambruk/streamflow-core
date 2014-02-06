@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,32 @@ public class DueOnItem
    {
       this.assignedTo = assignedTo;
    }
-   
-   
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DueOnItem dueOnItem = (DueOnItem) o;
+
+        if (assignedTo != null ? !assignedTo.equals(dueOnItem.assignedTo) : dueOnItem.assignedTo != null) return false;
+        if (caseId != null ? !caseId.equals(dueOnItem.caseId) : dueOnItem.caseId != null) return false;
+        if (description != null ? !description.equals(dueOnItem.description) : dueOnItem.description != null)
+            return false;
+        if (dueOn != null ? !dueOn.equals(dueOnItem.dueOn) : dueOnItem.dueOn != null) return false;
+        if (owner != null ? !owner.equals(dueOnItem.owner) : dueOnItem.owner != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = caseId != null ? caseId.hashCode() : 0;
+        result = 31 * result + (dueOn != null ? dueOn.hashCode() : 0);
+        result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (assignedTo != null ? assignedTo.hashCode() : 0);
+        return result;
+    }
+
 }
