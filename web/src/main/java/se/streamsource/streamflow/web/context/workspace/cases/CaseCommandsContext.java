@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -469,10 +469,13 @@ public interface CaseCommandsContext
       {
          Removable caze = RoleMap.role( Removable.class );
          if( (CaseStates.DRAFT.equals( ((Status.Data) caze ).status().get() )) )
+         {
             caze.deleteEntity();
-         else
+         } else
+         {
             // just mark the case as removed
             caze.removeEntity();
+         }
       }
 
       public void reinstate()

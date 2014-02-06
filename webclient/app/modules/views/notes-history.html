@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2013 Jayway Products AB
+    Copyright 2009-2014 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -17,6 +17,38 @@
 
 -->
 <div class="content-primary" role="main" data-ng-controller="NotesHistoryCtrl">
+<div>
+
+  <h2>Ärendebeskrivning, historik</h2>
+<a href="#/cases/{{ caseId }}/edit" title="Tillbaka" style="float: right;">Tillbaka</a>
+  <br /><br />
+  <div class="posted-notes">
+    <div data-ng-repeat="note in notesHistory">
+      <div class="note-item cf">
+
+        <div class="note-posted-by">
+          <span class="struct">Postad av: </span>{{ note.creator }} 
+          <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
+        </div>
+        <div class="note-body">
+          <p>{{ note.note }}</p>
+        </div>
+
+      <!-- <div><em>{{ note.creator }} {{ note.createdOn | dateTime }}</em></div> -->
+      <!-- <div>{{ note.note }}</div> -->
+      <!-- <hr /> -->
+      <br/>
+    </div>
+  </div>
+</div>
+</div></div>
+
+
+<!-- Content secondary -->
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>
+
+
+<!-- <div class="content-primary" role="main" data-ng-controller="NotesHistoryCtrl">
 
 <a href="#/cases/{{ caseId }}/edit" title="Tillbaka" style="float: right;">Tillbaka</a>
   <h2>Noteringar, historik</h2>
@@ -29,7 +61,7 @@
     <hr />
     <br/>
   </div>
-</div>
+</div> -->
 
 <!-- Content secondary -->
-<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>
+<!-- <data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include> -->

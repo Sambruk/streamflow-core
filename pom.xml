@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.17-SNAPSHOT</version>
+    <version>1.18-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -207,7 +207,7 @@
         </contributor>
     </contributors>
 
-    <inceptionYear>2009-2013</inceptionYear>
+    <inceptionYear>2009-2014</inceptionYear>
     <url>http://www.jayway.com/streamflow/</url>
 
     <organization>
@@ -772,6 +772,12 @@
                 <groupId>org.markdownj</groupId>
                 <artifactId>markdownj</artifactId>
                 <version>0.3.0-1.0.2b4</version>
+            </dependency>
+            <dependency>
+                <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.7.3</version>
             </dependency>
 
             <!-- Test -->

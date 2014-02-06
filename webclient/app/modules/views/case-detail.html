@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2013 Jayway Products AB
+    Copyright 2009-2014 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,11 +22,16 @@
     <!-- Issue header -->
     <div class="m-h cf">
       <!-- <div><a href="{{ caseListUrl }}">Back (for debug)</a></div> -->
-      <h2 class="id">{{caze[0].caseId}}</h2>
-        <div class="choose-type">
-            <label class="struct" for="issue-type">Ärendetyp</label>
-            <input type="text" disabled id="issue-type" data-ng-model="general[0].caseType.text">
-        </div>
+      <!--<h2 class="id">{{caze[0].caseId}}</h2>-->
+      <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
+        <span class="struct">Redigera ärende</span>
+      </a>
+    </div>
+
+<!--     <div class="choose-type">
+        <label class="struct" for="issue-type">Ärendetyp</label>
+        <input type="text" id="issue-type" data-ng-model="general[0].caseType.text">
+    </div> -->
         <!--
         <div class="choose-type">
             <label class="struct" for="set-due-date">Förfallodatum</label>
@@ -36,17 +41,18 @@
       <!-- <a href="xlink-" class="wiki-link">
         <i class="icon-info"></i><span class="struct">Namn på ärendetyp</span>
       </a> -->
-      <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
-        <span class="struct">Redigera ärende</span>
-      </a>
-    </div>
     <!-- /Issue header -->
-
+    
+    <div class="issue-body">
+      <div class="issue-title"> 
+        Ärendetyp: {{general[0].caseType.text}}
+      </div>
+    </div>
     <!-- Issue body -->
     <div class="issue-body">
-      <div class="due-date {{caze.index.overdueStatus()}}">
+<!--  <div class="due-date {{caze.index.overdueStatus()}}">
         <span>{{caze[0].overdueDays() | positive}}</span>
-      </div>
+      </div> -->
       <div class="issue-description">
         <h2>{{caze[0].text}}</h2>
         <p>{{notes[0].note}}</p>
@@ -54,91 +60,38 @@
     </div>
     <!-- /Issue body -->
 
-    <!-- Issue notes -->
-    <!--
-    <div class="issue-notes cf">
 
+    <!-- Issue create -->
+<!--     <div class="issue-notes cf">     
       <div class="notes-content">
-
-        <form action="#" method="get" class="input-note cf">
-          <div class="text">
-            <label for="note-text" class="struct">Notering</label>
-            <input type="text" name="note-text" id="note-text" placeholder="Notering">
-          </div>
-          <div class="submit-area">
-            <button type="submit" name="add-note">Lägg till</button>
+          <form action="#" method="get" class="input-note cf">
+            <div class="text">
+              <label for="issue-notes" class="struct">Notering</label>
+              <input type="text" name="issue-notes" id="issue-notes" placeholder="Notering">
+            </div>
+            <div class="submit-area">
+              <button data-ng-click="addNote($event)" type="submit">Lägg tilll</button>
+            </div>
+          </form>
+        </div>
+      </div> -->
+<!--       <div class="m-c">
+        <form action="#" method="get" class="form-general">
+          <div class="row cols-1 cf">
+            <div class="text col full col-1">
+              <label for="issue-notes">Notering</label>
+              <textarea name="issue-notes" id="issue-notes" cols="30" rows="5" data-ng-model="notes[0].note"></textarea>
+            </div>
+            <button data-ng-click="addNote($event)" type="submit">Skicka notering</button>
           </div>
         </form>
+      </div> -->
+    <!-- /Issue create -->
 
-        <div class="posted-notes">
-          <div class="note-item cf">
-            <div class="note-body">
-              <p>Det här ser ut som ett intressant ärende! Jag tar det!</p>
-            </div>
-            <div class="note-posted-by">
-              <span class="struct">Postad av: </span>Solveig Grankvist
-              <span class="note-timestamp">2 dagar sedan</span>
-            </div>
-          </div>
-          <div class="note-item cf">
-            <div class="note-body">
-              <p>Vi borde byta färg på alla soptunnor till rosa, eller vad säger ni? Då kanske gräsklippningen inte blir så lidande. Låter långsökt, jag vet. Men det är värt ett försök!</p>
-            </div>
-            <div class="note-posted-by">
-              <span class="struct">Postad av: </span>Johannes Pettersson-Jansson
-              <span class="note-timestamp">4 dagar sedan</span>
-            </div>
-          </div>
-          <div class="note-item cf">
-            <div class="note-body">
-              <p>Jag kollade upp detta och det finns inte ens något gräs i parken!</p>
-            </div>
-            <div class="note-posted-by">
-              <span class="struct">Postad av: </span>Ola Persson
-              <span class="note-timestamp">5 dagar sedan</span>
-            </div>
-          </div>
-          <div class="expandable-field">
-            <div class="expandable-content">
-
-              <div class="note-item cf">
-                <div class="note-body">
-                  <p>Ok, fine!</p>
-                </div>
-                <div class="note-posted-by">
-                  <span class="struct">Postad av: </span>Sonja Eriksson
-                  <span class="note-timestamp">8 dagar sedan</span>
-                </div>
-              </div>
-              <div class="note-item cf">
-                <div class="note-body">
-                  <p>Du fixar väl det?</p>
-                </div>
-                <div class="note-posted-by">
-                  <span class="struct">Postad av: </span>Erik Johansson
-                  <span class="note-timestamp">8 dagar sedan</span>
-                </div>
-              </div>
-              <div class="note-item cf">
-                <div class="note-body">
-                  <p>Någon som vill ta detta?</p>
-                </div>
-                <div class="note-posted-by">
-                  <span class="struct">Postad av: </span>Sonja Eriksson
-                  <span class="note-timestamp">8 dagar sedan</span>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-      </div>
-
+      <!-- Issue notes -->
+      <!--<data-ng-include class="m-c" src="'modules/views/notes-history.html'"></data-ng-include>-->
     </div>
-    -->
-    <!-- /Issue notes -->
-
+      <!-- /Issue notes -->
   </div>
   <!-- /Single issue -->
 
@@ -178,14 +131,14 @@
   <!-- /Check list -->
 
   <!-- Issue forms -->
-  <div class="m m-issue-forms">
+<!--   <div class="m m-issue-forms">
     <div class="m-h">
       <h2>Formulär</h2>
     </div>
     <div class="m-c">
       <data-ng-include class="m-c" src="'modules/views/forms.html'"></data-ng-include>
     </div>
-  </div>
+  </div> -->
   <!-- /Issue forms -->
 
 </div>

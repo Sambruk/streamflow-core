@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 
       $scope.caseId = $params.caseId;     
 
-      var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
+      var defaultFiltersUrl = caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
           
           var filterObj = result.data;

@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2013 Jayway Products AB
+    Copyright 2009-2014 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,7 +19,11 @@
 <div class="content-primary" role="main" data-ng-controller="ConversationDetailCtrl">
   <div class="m m-check-list">
     <div class="m-h">
-      <h2>Detaljer om ansökan (TODO)</h2>
+      <div  data-ng-controller="SidebarCtrl">
+        <div data-ng-repeat="conversation in conversations | filter: conversationId">
+          <h2>{{ conversation.text }}</h2>
+        </div>
+      </div>
       <a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
     </div>
     <div class="mc">
@@ -33,16 +37,20 @@
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
-          <textarea name="convo-text" id="convo-text" cols="30" rows="2" placeholder="Skriv ditt meddelande här" data-ng-model="conversationMessageDraft[0]"></textarea>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="5" placeholder="Skriv ditt meddelande här" data-ng-model="conversationMessageDraft[0]"></textarea>
         </div>
-        <div class="upload">
-          <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
-        </div>        <!-- <div class="upload">
-          <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
-        </div> -->
         <div class="send">
           <button data-ng-click="submitMessage($event)" name="convo-submit">Skicka</button>
         </div>
+        <div class="upload">
+          <a href="xlink-dsa890d" class="icon-camera upload-file">
+            <span class="struct">Ladda upp en fil</span>
+          </a>
+        </div>        
+        <!-- <div class="upload">
+          <a href="xlink-dsa890d" class="icon-camera upload-file"><span class="struct">Ladda upp en fil</span></a>
+        </div> -->
+        
       </form>
       <!-- <div class="attached-files">Bifogad fil: <a href="xlink-d6as78">uppladdad-fil.doc</a></div> -->
     </div>
@@ -50,8 +58,13 @@
       <ul class="convo-messages">
         <li class="msg-item" data-ng-repeat="message in conversationMessages">
           <div class="msg-head cf">
-            <div class="msg-author">{{ message.sender }}</div>
-            <!-- <div class="msg-attachment"><strong>Bifogad fil:</strong> <a href="xlink-ddsa789">en-bild.jpeg</a></div> -->
+            <div class="msg-author">{{ message.sender }} </div>
+              <div data-ng-controller="SidebarCtrl">
+                <div class="msg-attachment" ng-repeat="attachment in attachments | filter: message.id"> 
+                    <strong>Bifogad fil:</strong>
+                    <a data-ng-click="downloadAttachment(attachment.id)" ng-href="{{ attachment.href}}">{{ attachment.text }}</a>
+                </div>
+              </div>
           </div>
           <div class="msg-body">
             <p>{{ message.text }}</p>

@@ -1,7 +1,7 @@
 <!--
 
 
-    Copyright 2009-2013 Jayway Products AB
+    Copyright 2009-2014 Jayway Products AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 -->
 <div class="navigation" role='navigation' data-ng-controller="ProjectListCtrl">
 
-  <a href="" data-ng-click="createCase()" class="add-new-issue"><i class="icon-plus"></i><span class="struct">Lägg till nytt ärende</span></a>
+  <a href="" ng-show="canCreateCase()" data-ng-click="createCase()" class="add-new-issue"><i class="icon-plus"></i><span class="struct">Lägg till nytt ärende</span></a>
 
   <div class="functions-menu">
     <div class="functions-header cf">

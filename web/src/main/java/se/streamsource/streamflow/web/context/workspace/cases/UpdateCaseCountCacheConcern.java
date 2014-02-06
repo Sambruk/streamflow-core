@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,31 +167,6 @@ public abstract class UpdateCaseCountCacheConcern
 
    }
 
-   public void formonclose()
-   {
-      RoleMap roleMap = RoleMap.current();
-      CaseEntity caze = roleMap.get( CaseEntity.class );
-      boolean assigned = caze.isAssigned();
-      next.formonclose();
-      
-      if (assigned)
-      {
-         // Update assignments for user
-         Assignee assignee = roleMap.get( Assignee.class );
-         caching.addToCaseCountCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
-         if (caze.isUnread()) {
-            caching.addToUnreadCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
-         }
-      } else
-      {
-         // Update inbox cache
-         caching.addToCaseCountCache( caze.owner().get().toString(), -1 );
-         if (caze.isUnread()) {
-            caching.addToUnreadCache( caze.owner().get().toString(), -1 );
-         }
-      }
-   }
-
    public void sendto( EntityValue entity )
    {
       
@@ -269,10 +244,10 @@ public abstract class UpdateCaseCountCacheConcern
       
       boolean assigned = caze.isAssigned();
 
-      next.delete();
-
-      if (caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
+      if ( caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
       {
+         // will result in a removable flag true
+         next.delete();
          if (assigned)
          {
             // Update assignments for user
@@ -293,6 +268,8 @@ public abstract class UpdateCaseCountCacheConcern
       {
          // Update drafts for user
          caching.addToCaseCountCache( caze.createdBy().get().toString(), -1 );
+         //will result in a deleted entity!
+         next.delete();
       }
    }
    

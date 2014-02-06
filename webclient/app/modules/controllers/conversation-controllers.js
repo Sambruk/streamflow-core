@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@
         var topic = $scope.conversationTopicToCreate;
         caseService.createConversation($params.caseId, topic).then(function(response){
           var conversationId = JSON.parse(response.data.events[0].parameters).param1;
-          var href = navigationService.caseHref($params.caseId) + "/conversation/" + conversationId;
+          var href = navigationService.caseHrefSimple($params.caseId + "/conversation/" + conversationId);
           $scope.conversations.invalidate();
           $scope.conversations.resolve();
           window.location.assign(href);

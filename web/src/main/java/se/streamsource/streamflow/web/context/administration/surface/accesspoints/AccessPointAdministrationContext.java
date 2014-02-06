@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
@@ -364,10 +365,19 @@ public interface AccessPointAdministrationContext
             @Override
             public boolean visitOrganization( Organization org )
             {
+                // STREAMFLOW-843  make fetch of possible templates fail save against missing attachment reference
+                Attachment existingFormTemplate = null;
+                try
+                {
+                   existingFormTemplate = accessPoint.formPdfTemplate().get();
+                } catch( EntityNotFoundException enf )
+                {
+                    //do nothing
+                }
                List<Attachment> allAttachments = ((Attachments.Data) org).attachments().toList();
                for (Attachment attachment : allAttachments)
                {
-                  if (!attachment.equals( accessPoint.formPdfTemplate().get() )
+                  if (!attachment.equals( existingFormTemplate )
                         && ((AttachedFile.Data) attachment).mimeType().get().endsWith( filteron ))
                   {
                      possibleFormPdfTemplates.add( attachment );

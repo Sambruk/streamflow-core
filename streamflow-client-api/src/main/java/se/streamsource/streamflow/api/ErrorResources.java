@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,5 +42,6 @@ public enum ErrorResources
    form_move_page_rule_violation,
    invalid_value,
    prohibited_by_visibility_rule,
-   information
+   information,
+   attachment_remove_failed_template_usage;
 }

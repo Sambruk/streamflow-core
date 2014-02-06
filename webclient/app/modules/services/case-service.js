@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,16 @@
 
   sfServices.factory('caseService', ['$rootScope','backendService', 'navigationService', 'SfCase', '$http', 'debounce', 'formMapperService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
 
+    var workspaceId = 'workspacev2';
+
     var caseBase = function(caseId){
      return [
-        {resources:'workspacev2'},
+        {resources: workspaceId},
         {resources: 'cases', unsafe: true},
         {resources: caseId, unsafe: true}
       ];
     };
+
     //caseBase.bcMessage = null;
     //TODO: Refactor (use a var instead of property)
     var bcMessage = null;
@@ -44,6 +47,9 @@
     };
 
     return {
+      getWorkspace: function(){
+        return workspaceId;
+      },
       getMessage: function(){
         //return caseBase.bcMessage;
         return bcMessage;
@@ -118,12 +124,11 @@
           caseBase(caseId).concat([
             {commands: 'close'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
-            caseBase.broadcastMessage(result.status);
-          };
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
       },
 
       deleteCase: function(caseId, callback) {
@@ -131,12 +136,11 @@
           caseBase(caseId).concat([
             {commands: 'delete'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       assignCase: function(caseId, callback) {
@@ -144,12 +148,11 @@
           caseBase(caseId).concat([
             {commands: 'assign'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       unassignCase: function(caseId, callback) {
@@ -157,12 +160,11 @@
           caseBase(caseId).concat([
             {commands: 'unassign'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       markUnread: function(caseId, callback) {
@@ -170,12 +172,11 @@
           caseBase(caseId).concat([
             {commands: 'markunread'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       markRead: function(caseId, callback) {
@@ -183,12 +184,11 @@
           caseBase(caseId).concat([
             {commands: 'markread'}
           ]),
-          {}).then(callback).then(function(result){
+          {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       Read: function(caseId) {
@@ -198,10 +198,9 @@
           ]),
           {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
+          }, function(error){
             caseBase.broadcastMessage(error);
-          };
+          }).then(callback);
       },
 
       getSelectedNote: function(caseId) {
@@ -677,10 +676,11 @@
           ]),
           {topic: value}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
-            caseBase.broadcastMessage(error);
-          };
+            return result;
+          });
+          // function(error){
+          //   caseBase.broadcastMessage(error);
+          // };
       },
       getConversationMessages: function(caseId, conversationId) {
         return backendService.get({

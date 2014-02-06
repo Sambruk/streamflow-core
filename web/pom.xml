@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.17-SNAPSHOT</version>
+        <version>1.18-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-web</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.17-SNAPSHOT</version>
+    <version>1.18-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Streamflow web application</name>
     <description>Streamflow web application</description>
@@ -400,7 +400,6 @@
 		  <!-- jsoup HTML parser library @ http://jsoup.org/ -->
 		  <groupId>org.jsoup</groupId>
 		  <artifactId>jsoup</artifactId>
-		  <version>1.7.3</version>
 		</dependency>
 		
         <!-- Admin -->

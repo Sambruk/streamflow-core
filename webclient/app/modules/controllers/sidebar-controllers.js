@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,9 @@
       $scope.contacts = caseService.getSelectedContacts($params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
+      $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
 
-     var defaultFiltersUrl = 'workspacev2/cases/' + $params.caseId + '/caselog/defaultfilters';      
+     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';      
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
         $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.caseId, defaultFilters);
@@ -186,24 +187,17 @@
 
       $scope.markUnread = function($event){
         $event.preventDefault();
-        // TODO. Find a way to update possible commands after post.        
-        var callback = function(){
 
-          // TODO This is probably the wrong redirect
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
+        var callback = function(){
+          $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
         caseService.markUnread($params.caseId, callback);
       }
 
       $scope.markRead = function($event){
         $event.preventDefault();
-        // TODO. Find a way to update possible commands after post.        
         var callback = function(){
-
-          // TODO This is probably the wrong redirect
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
+          $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
         caseService.markRead($params.caseId, callback);
       }
@@ -221,11 +215,16 @@
       }
 
       $scope.downloadAttachment = function(attachmentId){
-        alert("Not supported - need absolute url in API.");
+        var attachments = $scope.attachments;
+
+        if(attachments[0].rel === 'conversation'){
+          attachments[0].href  = $scope.apiUrl + '/cases/' + $params.caseId + "/" + attachments[0].href.substring(3) + 'download';
+        }else if(attachments[0].rel === 'attachment'){
+          attachments[0].href = $scope.apiUrl + '/cases/' + $params.caseId + '/attachments/' + attachments[0].id + '/download';
+        }        
       }
 
       $scope.deleteAttachment = function(attachmentId){
-
         var callback = function(){
           $scope.attachments.invalidate();
           $scope.attachments.resolve();

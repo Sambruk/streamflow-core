@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.dci.value.EntityValue;
@@ -51,48 +52,54 @@ public class SelectedTemplatesContext
       ValueBuilder<SelectedTemplatesDTO> builder = module.valueBuilderFactory().newValueBuilder( SelectedTemplatesDTO.class );
 
       DefaultPdfTemplate.Data defaultTemplate = role( DefaultPdfTemplate.Data.class );
-      if (defaultTemplate.defaultPdfTemplate().get() != null)
+       FormPdfTemplate.Data formTemplate = role( FormPdfTemplate.Data.class );
+       CasePdfTemplate.Data caseTemplate = role( CasePdfTemplate.Data.class );
+
+       // STREAMFLOW-843  make fetch of possible templates fail save against missing attachment reference
+       Attachment existingDefaultTemplate = null;
+       Attachment existingFormTemplate = null;
+       Attachment existingCaseTemplate = null;
+       try{
+           existingDefaultTemplate = defaultTemplate.defaultPdfTemplate().get();
+           existingFormTemplate = formTemplate.formPdfTemplate().get();
+           existingCaseTemplate = caseTemplate.casePdfTemplate().get();
+
+       } catch (NoSuchEntityException nee)
+       {
+           // do nothing
+       }
+
+      if (existingDefaultTemplate != null)
       {
-         Attachment attachment = defaultTemplate.defaultPdfTemplate().get();
-         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-         EntityReference ref = EntityReference.getEntityReference( attachment );
-         linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
-         linkBuilder.prototype().id().set( ref.identity() );
-         linkBuilder.prototype().href().set( ref.identity() );
-         linkBuilder.prototype().rel().set( "pdftemplate" );
-         builder.prototype().defaultPdfTemplate().set( linkBuilder.newInstance() );
+          builder.prototype().defaultPdfTemplate().set( buildAttachementLinkValue(existingDefaultTemplate) );
       }
 
-      FormPdfTemplate.Data formTemplate = role( FormPdfTemplate.Data.class );
-      if (formTemplate.formPdfTemplate().get() != null)
+
+      if ( existingFormTemplate != null)
       {
-         Attachment attachment = formTemplate.formPdfTemplate().get();
-         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-         EntityReference ref = EntityReference.getEntityReference( attachment );
-         linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
-         linkBuilder.prototype().id().set( ref.identity() );
-         linkBuilder.prototype().href().set( ref.identity() );
-         linkBuilder.prototype().rel().set( "pdftemplate" );
-         builder.prototype().formPdfTemplate().set( linkBuilder.newInstance() );
+          builder.prototype().formPdfTemplate().set( buildAttachementLinkValue( existingFormTemplate ) );
       }
 
-      CasePdfTemplate.Data caseTemplate = role( CasePdfTemplate.Data.class );
-      if (caseTemplate.casePdfTemplate().get() != null)
+
+      if ( existingCaseTemplate != null)
       {
-         Attachment attachment = caseTemplate.casePdfTemplate().get();
-         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-         EntityReference ref = EntityReference.getEntityReference( attachment );
-         linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
-         linkBuilder.prototype().id().set( ref.identity() );
-         linkBuilder.prototype().href().set( ref.identity() );
-         linkBuilder.prototype().rel().set( "pdftemplate" );
-         builder.prototype().casePdfTemplate().set( linkBuilder.newInstance() );
+          builder.prototype().casePdfTemplate().set( buildAttachementLinkValue( existingCaseTemplate ) );
       }
 
       return builder.newInstance();
    }
 
-   public void setdefaulttemplate( EntityValue dto )
+    private LinkValue buildAttachementLinkValue( Attachment attachment) {
+        ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+        EntityReference ref = EntityReference.getEntityReference(attachment);
+        linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
+        linkBuilder.prototype().id().set( ref.identity() );
+        linkBuilder.prototype().href().set( ref.identity() );
+        linkBuilder.prototype().rel().set( "pdftemplate" );
+        return linkBuilder.newInstance();
+    }
+
+    public void setdefaulttemplate( EntityValue dto )
    {
       DefaultPdfTemplate template = role( DefaultPdfTemplate.class );
 
@@ -126,9 +133,18 @@ public class SelectedTemplatesContext
       Attachments.Data attachments = (Attachments.Data) role( Attachments.Data.class );
       DefaultPdfTemplate.Data template = role( DefaultPdfTemplate.Data.class );
 
+       // STREAMFLOW-843  make fetch of possible templates fail save against missing attachment reference
+       Attachment existingTemplate = null;
+       try{
+           existingTemplate = template.defaultPdfTemplate().get();
+       } catch (NoSuchEntityException nee)
+       {
+           // do nothing
+       }
+
       for (Attachment attachment : attachments.attachments())
       {
-         if (!attachment.equals( template.defaultPdfTemplate().get() )
+          if (!attachment.equals(existingTemplate)
                && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
          {
             possibleAttachments.add( attachment );
@@ -144,9 +160,17 @@ public class SelectedTemplatesContext
       Attachments.Data attachments = (Attachments.Data) role( Attachments.Data.class );
       FormPdfTemplate.Data template = role( FormPdfTemplate.Data.class );
 
+       // STREAMFLOW-843  make fetch of possible templates fail save against missing attachment reference
+       Attachment existingTemplate = null;
+       try{
+           existingTemplate = template.formPdfTemplate().get();
+       } catch (NoSuchEntityException nee)
+       {
+           // do nothing
+       }
       for (Attachment attachment : attachments.attachments())
       {
-         if (!attachment.equals( template.formPdfTemplate().get() )
+         if (!attachment.equals( existingTemplate )
                && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
          {
             possibleAttachments.add( attachment );
@@ -162,9 +186,18 @@ public class SelectedTemplatesContext
       Attachments.Data attachments = (Attachments.Data) role( Attachments.Data.class );
       CasePdfTemplate.Data template = role( CasePdfTemplate.Data.class );
 
+       // STREAMFLOW-843  make fetch of possible templates fail save against missing attachment reference
+       Attachment existingTemplate = null;
+       try{
+           existingTemplate = template.casePdfTemplate().get();
+       } catch (NoSuchEntityException nee)
+       {
+           // do nothing
+       }
+
       for (Attachment attachment : attachments.attachments())
       {
-         if (!attachment.equals( template.casePdfTemplate().get() )
+         if (!attachment.equals( existingTemplate )
                && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
          {
             possibleAttachments.add( attachment );

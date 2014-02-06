@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 
   sf.env = sf.env || 'development';
 
-  angular.module('sf', ['angular-growl','sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
+  var app = angular.module('sf', ['angular-growl','sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
     'sf.controllers.profile', 'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 
     'sf.controllers.project', 'sf.controllers.sidebar', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
@@ -99,8 +99,33 @@
       .otherwise({
         redirectTo: '/'
       });
+
+
   }]);
 
+  app.controller('BreadcrumbCtrl', ['$scope', 'profileService', '$routeParams','navigationService', 'httpService', '$rootScope',
+    function($scope, profileService, $params, navigationService, httpService, $rootScope) {
+      
+      $rootScope.$on('breadcrumb-updated', function(scope, breadcrumbList) {  
+        var breadcrumb = [];
+        for (var i=0;i<breadcrumbList.length;i++)
+        {
+          if(breadcrumbList[i].projectId){ 
+            breadcrumb.push(breadcrumbList[i].projectId);
+          }if(breadcrumbList[i].projectType){ 
+            // translate didn't work
+            if(breadcrumbList[i].projectType == 'inbox'){
+              breadcrumb.push('Inkorg');
+            }if(breadcrumbList[i].projectType == 'assignments'){
+              breadcrumb.push('Mina ärenden');
+            }
+          }if(breadcrumbList[i].caseId){ 
+            breadcrumb.push(breadcrumbList[i].caseId);
+          }
+        }
+        $scope.breadcrumbList = breadcrumb;
+      });
+    }]);
 
 })();
 

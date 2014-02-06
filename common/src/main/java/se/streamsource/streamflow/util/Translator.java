@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2013 Jayway Products AB
+ * Copyright 2009-2014 Jayway Products AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,11 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.mozilla.universalchardet.UniversalDetector;
+import org.restlet.engine.http.header.ContentType;
 import org.xml.sax.ContentHandler;
 
 import java.io.IOException;
@@ -76,16 +80,35 @@ public class Translator
    {
       String result = html;
 
-         ContentHandler handler = new BodyContentHandler( );
-         Metadata metadata = new Metadata();
-         try
+      String encoding = "";
+
+      // if HTML contains encoding information we do not have to guess encoding!
+      Document doc = Jsoup.parse( result );
+      Element meta = doc.select("meta[http-equiv]").first();
+      if( meta != null )
+      {
+        ContentType contentType = new ContentType( meta.attr("content") );
+        encoding = contentType.getCharacterSet().getName();
+      }
+
+      ContentHandler handler = new BodyContentHandler( );
+      Metadata metadata = new Metadata();
+      try
+      {
+         // if we already found an encoding - don't guess
+         new HtmlParser().parse( IOUtils.toInputStream( result, (!Strings.empty(encoding) ? encoding : guessEncoding( result )) ), handler, metadata, new ParseContext());
+         result = handler.toString();
+
+         // replace "EN DASH" unicode char with  -
+         // since Pdfbox COSString would interpret a string containing dash as UTF-16
+         if( result.indexOf("\u2013") != 1 )
          {
-            new HtmlParser().parse( IOUtils.toInputStream( result, guessEncoding( result ) ), handler, metadata, new ParseContext());
-            result = handler.toString();
-         } catch (Exception e)
-         {
-            //do nothing
+             result = result.replace("\u2013", "-" );
          }
+      } catch (Exception e)
+      {
+        //do nothing
+      }
       return result;
    }
 
