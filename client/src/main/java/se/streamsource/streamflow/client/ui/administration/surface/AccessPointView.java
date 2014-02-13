@@ -29,47 +29,27 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
+import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
-import se.streamsource.streamflow.client.util.ActionBinder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkValueConverter;
-import se.streamsource.streamflow.client.util.RefreshComponents;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.ActionMap;
-import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
+import java.awt.*;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -84,6 +64,9 @@ public class AccessPointView
    @Structure
    Module module;
 
+   @Structure
+    ObjectBuilderFactory obf;
+
    private CaseLabelsView labels;
    private JLabel selectedCaseType = new JLabel();
    private StreamflowButton caseTypeButton;
@@ -91,6 +74,7 @@ public class AccessPointView
    private StreamflowButton projectButton;
    private JLabel selectedProject = new JLabel();
    private StreamflowButton formButton;
+    private StreamflowButton replaceSelectionFieldValueEditButton;
    private JLabel selectedForm = new JLabel();
 
    private JLabel mailSelectionLabel = new JLabel();
@@ -226,7 +210,22 @@ public class AccessPointView
 
       builder.add( formButton, cc.xy( 1, 7, CellConstraints.FILL, CellConstraints.TOP ) );
 
-      builder.add( valueBinder.bind( "form", selectedForm, linkValueConverter ),
+       // Open replace selection field value editor
+       javax.swing.Action replaceSelectionFieldValueAction = am.get( "openReplaceSelectionFieldValueEditor" );
+       replaceSelectionFieldValueEditButton = new StreamflowButton( replaceSelectionFieldValueAction );
+
+       /*replaceSelectionFieldValueEditButton.registerKeyboardAction( replaceSelectionFieldValueAction, (KeyStroke) replaceSelectionFieldValueAction
+               .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+               JComponent.WHEN_IN_FOCUSED_WINDOW ); */
+
+       replaceSelectionFieldValueEditButton.setHorizontalAlignment( SwingConstants.RIGHT );
+      PanelBuilder panelBuilder = new PanelBuilder(new FormLayout( "150dlu,5dlu,250:grow","pref" ));
+       panelBuilder.add(valueBinder.bind( "form", selectedForm, linkValueConverter ) );
+       panelBuilder.nextColumn(2);
+       panelBuilder.add( replaceSelectionFieldValueEditButton, new CellConstraints( 3, 1, 1, 1, CellConstraints.RIGHT, CellConstraints.CENTER, new Insets( 0, 0, 0, 0 ) ) );
+       //panelBuilder.setBorder(BorderFactory.createLineBorder(Color.RED));
+
+      builder.add( panelBuilder.getPanel()/*valueBinder.bind( "form", selectedForm, linkValueConverter )*/,
             new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
       // Select template
@@ -426,7 +425,6 @@ public class AccessPointView
 
       builder.add( templatePanel, new CellConstraints( 1, 15, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
       add( new JScrollPane( panel ), BorderLayout.CENTER );
-
 
       new RefreshWhenShowing( this, this );
    }
@@ -685,6 +683,14 @@ public class AccessPointView
       };
    }
 
+   @Action
+   public void openReplaceSelectionFieldValueEditor()
+   {
+       ReplacementSelectionFieldValuesView view = obf.newObjectBuilder(ReplacementSelectionFieldValuesView.class).use( model.getReplacementSelectionFieldValuesModel() ).newInstance();
+       AdministrationView adminView = (AdministrationView) SwingUtilities.getAncestorOfClass( AdministrationView.class, this );
+       adminView.show( view );
+   }
+
    private void updateEnabled()
    {
       if (model.getAccessPointValue().project().get() == null)
@@ -731,6 +737,7 @@ public class AccessPointView
       }
       emailTemplateList.setModel(emailTemplateListModel);
       emailTemplateList.setSelectedIndex( selectedIndex );
+      replaceSelectionFieldValueEditButton.setIcon( model.getAccessPointValue().replacementValues().get() ? i18n.icon( Icons.optionsok, ICON_16 ) : i18n.icon( Icons.options, ICON_16 ));
    }
 
    @org.jdesktop.application.Action
