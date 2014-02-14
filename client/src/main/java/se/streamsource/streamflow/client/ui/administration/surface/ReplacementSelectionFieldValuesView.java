@@ -27,10 +27,15 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.forms.FormView;
 import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsView;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.TabbedResourceView;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
@@ -43,18 +48,77 @@ public class ReplacementSelectionFieldValuesView
     @Structure
     Module module;
 
+    DetailFactory factory;
+
     public ReplacementSelectionFieldValuesView(@Service ApplicationContext context, @Uses final ReplacementSelectionFieldValuesModel model)
     {
-
-        initMaster( new EventListModel<LinkValue>( model.getList()),null, new javax.swing.Action[]{}, new DetailFactory()
+        factory = new DetailFactory()
         {
             public Component createDetail( LinkValue detailLink )
             {
                 return module.objectBuilderFactory().newObjectBuilder( SelectionElementsView.class).use( model.newResourceModel(detailLink)).newInstance();
             }
-        });
+        };
 
-        list.setPreferredSize(new Dimension(250,300));
+        initMaster( new EventListModel<LinkValue>( model.getUnsortedList()),null, new javax.swing.Action[]{}, factory , new LinkListCellRenderer() {
+                    @Override
+                    public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
+                    {
+                        if ( value instanceof LinkValue )
+                        {
+                            LinkValue link = (LinkValue) value;
+                            String val = link.text().get();
+
+                            if (link.rel().get().equals("page"))
+                            {
+                                Component component = super.getListCellRendererComponent(list, val, index, isSelected, cellHasFocus);
+                                setFont( getFont().deriveFont( Font.ITALIC ));
+                                component.setEnabled( false );
+                                component.setFocusable( false );
+                                return component;
+                            }else
+                            {
+                                Component component = super.getListCellRendererComponent(list, "   " + val, index, isSelected, cellHasFocus);
+                                if (link.rel().get().equals("none"))
+                                {
+                                    component.setEnabled( false );
+                                    component.setFocusable( false );
+                                }
+                                return component;
+                            }
+
+                        }
+                        return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    }
+                });
+
+        list.setPreferredSize(new Dimension(250, 300));
+
+        for( ListSelectionListener listener : list.getListSelectionListeners() )
+        {
+            list.removeListSelectionListener( listener );
+        }
+
+        list.addListSelectionListener( new ListSelectionListener()
+        {
+            public void valueChanged( ListSelectionEvent e )
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    LinkValue detailLink = (LinkValue) list.getSelectedValue();
+                    if (detailLink != null)
+                    {
+                        if( "selectionfieldvalue".equals( detailLink.rel().get() ) )
+                        {
+                            setRightComponent( factory.createDetail( detailLink ) );
+                        }
+                    } else
+                    {
+                        setRightComponent( new JPanel() );
+                    }
+                }
+            }
+        } );
 
         new RefreshWhenShowing(this, model);
     }

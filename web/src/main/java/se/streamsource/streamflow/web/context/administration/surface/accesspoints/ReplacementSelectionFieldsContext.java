@@ -43,30 +43,27 @@ public class ReplacementSelectionFieldsContext
     Module module;
 
     public LinksValue index() {
-        LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).rel( "selectionfieldvalue" );
+        LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
         SelectedForms.Data forms = RoleMap.role( SelectedForms.Data.class );
         Form form = forms.selectedForms().get(0);
         if( form != null )
         {
-            Iterable<Field> possiblefields = Iterables.filter( new Specification<Field>()
+            for( Page page : ((Pages.Data)form).pages() )
             {
-                public boolean satisfiedBy( Field field )
-                {
-                    FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
-                    return fieldValue instanceof SelectionFieldValue;
-                }
-            }, Iterables.flatten( Iterables.map(new Function<Page, Iterable<Field>>() {
-                public Iterable<Field> map(Page page) {
-                    return ((Fields.Data) page).fields().toList();
-                }
-            },  ((Pages.Data)form).pages())) );
+               builder.addLink( page.getDescription(), page.toString(), "page", page.toString(),null );
 
-            for(Field field : possiblefields )
-            {
-                builder.addDescribable((Describable) field);
+               for( Field field : ((Fields.Data)page).fields() )
+               {
+                   if( ((FieldValueDefinition.Data)field).fieldValue().get() instanceof SelectionFieldValue )
+                   {
+                       builder.addLink( field.getDescription(), field.toString(), "selectionfieldvalue", field.toString() + "/", null, page.getDescription() );
+                   } else
+                   {
+                       builder.addLink( field.getDescription(), field.toString(), "none", field.toString(), null, page.getDescription() );
+                   }
+               }
             }
         }
-
         return builder.newLinks();
     }
 }
