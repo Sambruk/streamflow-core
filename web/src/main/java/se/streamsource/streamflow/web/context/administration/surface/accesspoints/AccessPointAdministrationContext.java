@@ -17,6 +17,8 @@
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -58,12 +60,7 @@ import se.streamsource.streamflow.web.domain.structure.form.MailSelectionMessage
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.organization.WebAPMailTemplates;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
@@ -75,6 +72,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 /**
  * JAVADOC
  */
+@Concerns(AccessPointAdministrationContext.SetFormConcern.class)
 @Mixins(AccessPointAdministrationContext.Mixin.class)
 public interface AccessPointAdministrationContext
       extends IndexContext<AccessPointDTO>, Context, DeleteContext, InteractionValidation
@@ -205,6 +203,7 @@ public interface AccessPointAdministrationContext
 
          builder.prototype().subject().set( messages.subject().get() );
          builder.prototype().messages().set( messages.emailTemplates().get() );
+         builder.prototype().replacementValues().set( accessPoint.hasReplacements() );
 
          return builder.newInstance();
       }
@@ -558,4 +557,17 @@ public interface AccessPointAdministrationContext
          role(WebAPMailTemplates.class).changeTemplate(key, template);
       }
    }
+
+    abstract class SetFormConcern extends
+        ConcernOf<AccessPointAdministrationContext>
+        implements AccessPointAdministrationContext
+    {
+
+        public void setform(EntityValue id)
+        {
+            next.setform(id);
+            WebAPReplacedSelectionFieldValues.Data replacements = RoleMap.role( WebAPReplacedSelectionFieldValues.Data.class );
+            replacements.replacements().get().clear();
+        }
+    }
 }

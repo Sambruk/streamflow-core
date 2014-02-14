@@ -73,12 +73,7 @@ import se.streamsource.streamflow.client.ui.administration.projectsettings.Recip
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointModel;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
-import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointModel;
-import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
-import se.streamsource.streamflow.client.ui.administration.surface.FormLabelsModel;
-import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
+import se.streamsource.streamflow.client.ui.administration.surface.*;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
 import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationDetailModel;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationListModel;
@@ -258,6 +253,7 @@ public class ModelAssembler
       addModels(module,
             AccessPointsModel.class,
             AccessPointModel.class,
+            ReplacementSelectionFieldValuesModel.class,
             EmailAccessPointModel.class,
             EmailAccessPointsModel.class,
             ProxyUsersModel.class);

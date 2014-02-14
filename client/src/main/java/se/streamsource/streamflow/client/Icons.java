@@ -26,6 +26,7 @@ public enum Icons
    remove,
    drop,
    options,
+   optionsok,
    refresh,
    cancel,
 

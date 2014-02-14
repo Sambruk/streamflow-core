@@ -23,25 +23,7 @@ import se.streamsource.streamflow.util.MultiFieldHelper;
 /**
  * JAVADOC
  */
-@Mixins( CheckboxesFieldValue.Mixin.class )
 public interface CheckboxesFieldValue
       extends SelectionFieldValue
 {
-
-   abstract class Mixin
-      implements FieldValue
-   {
-      @This CheckboxesFieldValue definition;
-
-      public Boolean validate( String value )
-      {
-         if ("".equals( value )) return true;
-         for (String selection : MultiFieldHelper.options( value ))
-         {
-            if (!definition.values().get().contains( selection ))
-               return false;
-         }
-         return true;
-      }
-   }
 }

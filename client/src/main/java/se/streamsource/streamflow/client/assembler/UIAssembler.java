@@ -93,13 +93,7 @@ import se.streamsource.streamflow.client.ui.administration.projectsettings.Recip
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointView;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
-import se.streamsource.streamflow.client.ui.administration.surface.CreateProxyUserDialog;
-import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointView;
-import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
-import se.streamsource.streamflow.client.ui.administration.surface.FormLabelsView;
-import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
+import se.streamsource.streamflow.client.ui.administration.surface.*;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.CreateUserDialog;
@@ -387,6 +381,7 @@ public class UIAssembler
             ProxyUsersView.class,
             AccessPointsView.class,
             AccessPointView.class,
+            ReplacementSelectionFieldValuesView.class,
             TemplatesView.class,
             SelectedTemplatesView.class,
             TabbedResourceView.class,

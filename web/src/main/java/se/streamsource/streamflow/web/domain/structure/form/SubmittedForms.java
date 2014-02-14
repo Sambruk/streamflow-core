@@ -155,6 +155,10 @@ public interface SubmittedForms
                   {
                      fieldBuilder.prototype().value().set( field.value().get() );
                   }
+                   // SF-846 from now on we save original FieldValue layout with the submission to be able to
+                   // provide the same replacement SelectionFieldValue elements that are possibly provided by
+                   // an access point.
+                   fieldBuilder.prototype().origFieldValue().set( field.field().get().fieldValue().get() );
 
                   // move current attachment from draft to case
                   if( field.field().get().fieldValue().get() instanceof AttachmentFieldValue )

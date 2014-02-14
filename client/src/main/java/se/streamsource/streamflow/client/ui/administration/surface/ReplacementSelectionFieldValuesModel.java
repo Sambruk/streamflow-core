@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.administration.form;
+package se.streamsource.streamflow.client.ui.administration.surface;
 
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.util.MultiFieldHelper;
+import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.SelectionElementsModel;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 /**
- * JAVADOC
+ *
  */
-public interface ListBoxFieldValue
-      extends SelectionFieldValue
+public class ReplacementSelectionFieldValuesModel
+    extends LinkValueListModel
 {
+    public ReplacementSelectionFieldValuesModel()
+    {
+        relationModelMapping("selectionfieldvalue", SelectionElementsModel.class);
+    }
 }

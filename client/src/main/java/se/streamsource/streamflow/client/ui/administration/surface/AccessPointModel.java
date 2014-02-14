@@ -312,4 +312,8 @@ public class AccessPointModel extends Observable
       form.set("template", template);
       client.postCommand("changetemplate", form.getWebRepresentation());
    }
+
+    public ReplacementSelectionFieldValuesModel getReplacementSelectionFieldValuesModel() {
+        return module.objectBuilderFactory().newObjectBuilder(ReplacementSelectionFieldValuesModel.class).use(client.getSubClient( "replacementselectionfields" )).newInstance();
+    }
 }
