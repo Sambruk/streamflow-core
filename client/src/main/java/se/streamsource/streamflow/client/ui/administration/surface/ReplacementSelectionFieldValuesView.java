@@ -74,7 +74,6 @@ public class ReplacementSelectionFieldValuesView
                                 Component component = super.getListCellRendererComponent(list, val, index, isSelected, cellHasFocus);
                                 setFont( getFont().deriveFont( Font.ITALIC ));
                                 component.setEnabled( false );
-                                component.setFocusable( false );
                                 return component;
                             }else
                             {
@@ -82,7 +81,6 @@ public class ReplacementSelectionFieldValuesView
                                 if (link.rel().get().equals("none"))
                                 {
                                     component.setEnabled( false );
-                                    component.setFocusable( false );
                                 }
                                 return component;
                             }
@@ -111,6 +109,8 @@ public class ReplacementSelectionFieldValuesView
                         if( "selectionfieldvalue".equals( detailLink.rel().get() ) )
                         {
                             setRightComponent( factory.createDetail( detailLink ) );
+                        } else {
+                            setRightComponent( new JPanel() );
                         }
                     } else
                     {
