@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
+import se.streamsource.streamflow.web.domain.structure.organization.WebAPReplacedSelectionFieldValues;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
@@ -61,7 +62,8 @@ public interface AccessPointEntity
       FormPdfTemplate.Data,
       MailSelectionMessage.Data,
       Removable.Data,
-      RequiredSignatures.Data
+      RequiredSignatures.Data,
+      WebAPReplacedSelectionFieldValues.Data
 {
    abstract class AddProjectConcern
          extends ConcernOf<AccessPoint>

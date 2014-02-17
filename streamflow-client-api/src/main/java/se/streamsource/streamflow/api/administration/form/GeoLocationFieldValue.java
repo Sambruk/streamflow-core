@@ -25,7 +25,6 @@ import org.qi4j.api.property.Property;
  * Handles map coordinates. Single point, polyline or polygon.
  * 
  */
-@Mixins( GeoLocationFieldValue.Mixin.class )
 public interface GeoLocationFieldValue
       extends SelectionFieldValue
 {
@@ -38,17 +37,5 @@ public interface GeoLocationFieldValue
 
    @UseDefaults
    Property<Boolean> polygon();
-   
-   abstract class Mixin
-      implements FieldValue
-   {
-      @This GeoLocationFieldValue definition;
 
-      public Boolean validate( String value)
-      {
-         
-         // TODO: How is data represented here?
-         return true;
-      }
-   }
 }

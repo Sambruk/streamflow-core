@@ -68,4 +68,7 @@ public interface AccessPointDTO
 
    @UseDefaults
    Property<Map<String, String>> messages();
+
+   @UseDefaults
+    Property<Boolean> replacementValues();
 }
