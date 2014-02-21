@@ -107,4 +107,10 @@ public class AccessPointAdministrationResource
    {
       subResource( AccessPointLabelableResource.class );
    }
+
+    @SubResource
+    public void replacementselectionfields()
+    {
+        subResource( ReplacementSelectionFieldsResource.class );
+    }
 }

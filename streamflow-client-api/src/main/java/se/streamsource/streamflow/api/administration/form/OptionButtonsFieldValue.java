@@ -22,19 +22,7 @@ import org.qi4j.api.mixin.Mixins;
 /**
  * JAVADOC
  */
-@Mixins( OptionButtonsFieldValue.Mixin.class )
 public interface OptionButtonsFieldValue
       extends SelectionFieldValue
 {
-
-   abstract class Mixin
-      implements FieldValue
-   {
-      @This OptionButtonsFieldValue definition;
-
-      public Boolean validate( String value )
-      {
-         return "".equals( value) ? true : definition.values().get().contains( value );
-      }
-   }
 }

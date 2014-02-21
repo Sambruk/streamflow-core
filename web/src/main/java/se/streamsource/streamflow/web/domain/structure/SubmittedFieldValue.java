@@ -16,9 +16,11 @@
  */
 package se.streamsource.streamflow.web.domain.structure;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
 
 /**
  * JAVADOC
@@ -29,4 +31,7 @@ public interface SubmittedFieldValue
    Property<EntityReference> field();
 
    Property<String> value();
+
+   @Optional
+   Property<FieldValue> origFieldValue();
 }

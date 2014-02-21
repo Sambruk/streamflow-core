@@ -40,6 +40,7 @@ public interface AccessPoint
       AccessPointSettings,
       RequiredSignatures,
       WebAPMailTemplates,
-      WebAPMailTemplates.Data
+      WebAPMailTemplates.Data,
+      WebAPReplacedSelectionFieldValues
 {
 }

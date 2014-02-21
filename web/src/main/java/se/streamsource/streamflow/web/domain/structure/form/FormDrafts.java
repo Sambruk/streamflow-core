@@ -31,12 +31,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.ErrorResources;
-import se.streamsource.streamflow.api.administration.form.CommentFieldValue;
-import se.streamsource.streamflow.api.administration.form.FieldDefinitionValue;
-import se.streamsource.streamflow.api.administration.form.FieldGroupFieldValue;
-import se.streamsource.streamflow.api.administration.form.FieldValue;
-import se.streamsource.streamflow.api.administration.form.TextFieldValue;
+import se.streamsource.streamflow.api.administration.form.*;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
@@ -52,6 +49,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.FormOnClose;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.organization.FormOnRemove;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.organization.WebAPReplacedSelectionFieldValues;
 
 import java.util.ArrayList;
 
@@ -221,24 +219,56 @@ public interface FormDrafts
          return fieldSubmissionBuilder( field, fieldValue, submittedFormValue, fieldBuilder, valueBuilder ).newInstance();
       }
 
+       /**
+        * Create a field submission builder and try to determine whether to set the FieldValue from
+        * any AccessPoint replacement or from a already done field submission.
+        * SubmittedFieldValue has precedence before WebAPReplacedSelectionFieldValues.
+        *
+        * @param field - The form field
+        * @param fieldValue - The original FieldValue from FieldDefintionValue
+        * @param submittedFormValue - The SubmittedFormValue from last form submission.
+        * @param fieldBuilder - The FieldSubmissionDTO builder.
+        * @param definitionValueBuilder - The FieldDefinitionValue builder.
+        * @return The visiting FieldSubmissionDTO builder.
+        */
       private ValueBuilder<FieldSubmissionDTO> fieldSubmissionBuilder(Field field, FieldValue fieldValue,
             SubmittedFormValue submittedFormValue, ValueBuilder<FieldSubmissionDTO> fieldBuilder,
-            ValueBuilder<FieldDefinitionValue> valueBuilder)
+            ValueBuilder<FieldDefinitionValue> definitionValueBuilder)
       {
-         valueBuilder.prototype().description().set( field.getDescription() );
+          // SF-846 Try to establish if there is an AccessPoint in the role map.
+          WebAPReplacedSelectionFieldValues replacedSelectionFieldValues = null;
+          try
+          {
+              replacedSelectionFieldValues = RoleMap.role(WebAPReplacedSelectionFieldValues.class );
+          } catch( IllegalArgumentException e )
+          {
+              // do nothing - no AccessPoint found in role map.
+          }
+
+          SubmittedFieldValue submittedFieldValue = getSubmittedValue( field, submittedFormValue );
+          if( submittedFieldValue == null )
+          {
+              fieldBuilder.prototype().value().set( null );
+          } else
+          {
+              fieldBuilder.prototype().value().set("".equals( submittedFieldValue.value().get() ) ? null : submittedFieldValue.value().get() );
+          }
+          fieldBuilder.prototype().enabled().set( true );
+
+         definitionValueBuilder.prototype().description().set( field.getDescription() );
          if (fieldValue instanceof CommentFieldValue) 
          {
-            valueBuilder.prototype().note().set( (new MarkdownProcessor()).markdown( field.getNote()) );
+            definitionValueBuilder.prototype().note().set( (new MarkdownProcessor()).markdown( field.getNote()) );
          } else
          {
-            valueBuilder.prototype().note().set( field.getNote() );
+            definitionValueBuilder.prototype().note().set( field.getNote() );
          }
-         valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
-         valueBuilder.prototype().fieldId().set( ((FieldId.Data) field).fieldId().get() );
+         definitionValueBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
+         definitionValueBuilder.prototype().fieldId().set( ((FieldId.Data) field).fieldId().get() );
          DatatypeDefinition datatypeDefinition = ((Datatype.Data) field).datatype().get();
          if (datatypeDefinition != null)
          {
-            valueBuilder.prototype().datatypeUrl().set( datatypeDefinition.getUrl() );
+            definitionValueBuilder.prototype().datatypeUrl().set( datatypeDefinition.getUrl() );
             if (fieldValue instanceof TextFieldValue)
             {
                TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
@@ -254,15 +284,62 @@ public interface FormDrafts
             }
 
          }
-         valueBuilder.prototype().mandatory().set( field.isMandatory() );
-         valueBuilder.prototype().fieldValue().set( fieldValue );
-         valueBuilder.prototype().rule().set( field.getRule() );
+         definitionValueBuilder.prototype().mandatory().set( field.isMandatory() );
+         // SF-846 Replace FieldValue with saved one if there is one saved in last submission.
+         if( submittedFieldValue == null )
+         {
+             if( replacedSelectionFieldValues != null && replacedSelectionFieldValues.getReplacementFieldValue( field.toString()) != null )
+             {
+                 SelectionFieldValue replacementValue = replacedSelectionFieldValues.getReplacementFieldValue( field.toString() );
+                 if( fieldValue instanceof OpenSelectionFieldValue)
+                 {
+                     ValueBuilder<OpenSelectionFieldValue> valueBuilder = ((OpenSelectionFieldValue) fieldValue).buildWith();
+                     valueBuilder.prototype().values().set( replacementValue.values().get() );
+                     definitionValueBuilder.prototype().fieldValue().set( valueBuilder.newInstance() );
 
-         fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
-         String submittedValue = getSubmittedValue( field, submittedFormValue );
-         fieldBuilder.prototype().value().set("".equals( submittedValue ) ? null : submittedValue );
-         fieldBuilder.prototype().enabled().set( true );
+                 } else if( fieldValue instanceof CheckboxesFieldValue )
+                 {
+                     ValueBuilder<CheckboxesFieldValue> valueBuilder = ((CheckboxesFieldValue) fieldValue).buildWith();
+                     valueBuilder.prototype().values().set( replacementValue.values().get() );
+                     definitionValueBuilder.prototype().fieldValue().set(valueBuilder.newInstance());
 
+                 } else if( fieldValue instanceof ListBoxFieldValue)
+                 {
+                     ValueBuilder<ListBoxFieldValue> valueBuilder = ((ListBoxFieldValue) fieldValue).buildWith();
+                     valueBuilder.prototype().values().set( replacementValue.values().get() );
+                     definitionValueBuilder.prototype().fieldValue().set(valueBuilder.newInstance());
+
+                 } else if( fieldValue instanceof GeoLocationFieldValue )
+                 {
+                     ValueBuilder<GeoLocationFieldValue> valueBuilder = ((GeoLocationFieldValue) fieldValue).buildWith();
+                     valueBuilder.prototype().values().set( replacementValue.values().get() );
+                     definitionValueBuilder.prototype().fieldValue().set(valueBuilder.newInstance());
+
+                 } else if( fieldValue instanceof ComboBoxFieldValue )
+                 {
+                     ValueBuilder<ComboBoxFieldValue> valueBuilder = ((ComboBoxFieldValue) fieldValue).buildWith();
+                     valueBuilder.prototype().values().set( replacementValue.values().get() );
+                     definitionValueBuilder.prototype().fieldValue().set(valueBuilder.newInstance());
+
+                 } else if( fieldValue instanceof OptionButtonsFieldValue )
+                 {
+                     ValueBuilder<OptionButtonsFieldValue> valueBuilder = ((OptionButtonsFieldValue) fieldValue).buildWith();
+                     valueBuilder.prototype().values().set( replacementValue.values().get() );
+                     definitionValueBuilder.prototype().fieldValue().set(valueBuilder.newInstance());
+
+                 }
+
+             } else
+             {
+                definitionValueBuilder.prototype().fieldValue().set( fieldValue );
+             }
+         } else
+         {
+            definitionValueBuilder.prototype().fieldValue().set( submittedFieldValue.origFieldValue().get() == null ? fieldValue : submittedFieldValue.origFieldValue().get() );
+         }
+         definitionValueBuilder.prototype().rule().set( field.getRule() );
+
+         fieldBuilder.prototype().field().set(definitionValueBuilder.newInstance());
 
          return fieldBuilder;
       }
@@ -278,7 +355,7 @@ public interface FormDrafts
          return formSubmission;
       }
 
-      private String getSubmittedValue(Field field, SubmittedFormValue submittedFormValue)
+      private SubmittedFieldValue getSubmittedValue(Field field, SubmittedFormValue submittedFormValue)
       {
          if (submittedFormValue == null)
             return null;
@@ -289,7 +366,7 @@ public interface FormDrafts
             {
                if (submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field ) ))
                {
-                  return submittedFieldValue.value().get();
+                  return submittedFieldValue;
                }
             }
          }
