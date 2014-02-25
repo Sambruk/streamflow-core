@@ -92,7 +92,7 @@
     $scope.errorHandler = function(){;
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
-        growl.addSuccessMessage('successMessage');
+        //growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
       }  
@@ -143,7 +143,7 @@
     $scope.errorHandler = function(){;
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
-        growl.addSuccessMessage('successMessage');
+        //growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
       }  
@@ -177,7 +177,7 @@
     $scope.errorHandler = function(){;
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
-        growl.addSuccessMessage('successMessage');
+        //growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
       }  
