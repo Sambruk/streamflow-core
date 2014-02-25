@@ -44,19 +44,19 @@
     * ERROR HANDLER
     **/
     //TODO: Implement error handler listener on other controllers where needed
-    $scope.errorHandler = function(){;
+    /*$scope.errorHandler = function(){;
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
         growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
       }  
-    };
+    };*/
 
     $rootScope.$broadcast('breadcrumb-updated', [{projectId: $params.projectId}, {projectType: $params.projectType}]);
 
     //error-handler
-    $scope.$on('httpRequestInitiated', $scope.errorHandler);
+    //$scope.$on('httpRequestInitiated', $scope.errorHandler);
   }]);
 
   sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'projectService', 'profileService', '$rootScope',
