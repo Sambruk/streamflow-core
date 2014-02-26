@@ -176,7 +176,7 @@
             $scope.notes.invalidate();
             $scope.notes.resolve();
             // TODO Fix redirection bug
-            window.location.assign(href);
+            window.location.assign(href + '/edit');
           });
       }
 

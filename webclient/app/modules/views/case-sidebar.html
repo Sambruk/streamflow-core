@@ -97,18 +97,22 @@
   <!-- /Module: Allmänt -->
 
   <!-- Module: Ärende -->
-  <div class="m m-general">
+  <div class="m m-convos">
     <div class="m-h">
       <h2>Ärende</h2>
     </div>
     <div class="m-c">
-      <div class="m-box">
-        <ul>
-          <li><h3>{{caze[0].text}}</h3></li>
-          <li class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</li>
-          <a href="#/cases/{{ caze[0].id }}/noteshistory" title="Gamla noteringar">Gamla noteringar</a>
-        </ul>
-      </div>
+      <ul>
+        <li>
+          <a href="#/cases/{{ caze[0].id }}" class="block-link convCaseSidebar">
+            <h3>{{caze[0].text}}</h3>
+            <p class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</p>
+            <ul class="convo-status">
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+            </ul>
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
   <!-- /Module: Ärende -->
