@@ -208,11 +208,7 @@
           specs:caseBase(caseId).concat([{resources: 'note'}]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
-            caseBase.broadcastMessage(result.status);
           },
-          onFailure:function(err){
-            caseBase.broadcastMessage(err);      
-          }
         });
       },
 
@@ -221,13 +217,8 @@
           caseBase(caseId).concat([
             {resources: 'note'},
             {commands: 'addnote'}
-          ]),
-          value).then(function(result){
-            caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
-            caseBase.broadcastMessage(error);
-          };
+          ]), 
+          value)
       },
 
       getAllNotes: function(caseId) {

@@ -40,8 +40,6 @@
           }
 
           var callback = function(){
-              scope.caze.invalidate();
-              scope.general.invalidate();
               $rootScope.$broadcast('case-changed', {command: command, value: value});
           };
 

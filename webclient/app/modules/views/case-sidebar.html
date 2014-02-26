@@ -89,6 +89,7 @@
           <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
           <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
           <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
+          <li><strong>Ärendetyp:</strong> {{general[0].caseType.text}}</li>
         </ul>
       </div>
     </div>
@@ -105,6 +106,7 @@
         <ul>
           <li><h3>{{caze[0].text}}</h3></li>
           <li class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</li>
+          <a href="#/cases/{{ caze[0].id }}/noteshistory" title="Gamla noteringar">Gamla noteringar</a>
         </ul>
       </div>
     </div>
