@@ -16,6 +16,7 @@
     limitations under the License.
 
 -->
+
 <div class="content-secondary" role="complementary" data-ng-controller="SidebarCtrl">
 
   <h2 class="struct">Verktyg och annan information</h2>
@@ -38,33 +39,44 @@
         </ul>
       </li>
     </ul>
+
     <div class="toolbar-content" ng-hide="true">
-
       <div data-ng-switch on="commandView">
-          <div data-ng-switch-when="resolve">
-            <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
-            </select>
-            <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
-          </div>
+              <div class="toolbar-content-style" data-ng-switch-when="resolve">
+                <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+                </select>
+                <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
+              </div>
 
-          <div data-ng-switch-when="close">
+          <div class="toolbar-content-style" data-ng-switch-when="close">
             <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
           </div>
 
-          <div data-ng-switch-when="sendTo">
-            <div class="row cf">
-              <div class="select">
-                <label for="issue-owner">Byt ägare</label>
-                <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
-                </select>
+
+          <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
+
+              <div class='ng-modal' ng-show='show'>
+                  <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
+                  <div class='ng-modal-dialog' ng-style='dialogStyle'>
+                  <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+                  <div class="row cf">
+                      <div class="select">
+                          <label for="issue-owner">Byt ägare</label>
+                          <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="submit-area cf">
+                          <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+                      </div>
+                  </div>
+                      <div ng-transclude></div>
+                  </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="submit-area cf">
-                <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
-              </div>
-            </div>
           </div>
+
+
 
           <div data-ng-switch-when="todo">
               TODO
@@ -122,7 +134,7 @@
     <div class="m-h">
       <h2>Formulär</h2>
     </div>
-    <div class="m-c">      
+    <div class="m-c">
       <div class="accordion">
         <div class="accordion-item" style="margin-bottom:0px;">
           <h3><a href="#" class="open-acc">Värde 1</a></h3>
@@ -149,7 +161,7 @@
     </div>
     <div class="m-c">
       <ul>
-        <li data-ng-repeat='conversation in conversations'>
+        <li data-ng-repeat='conversation in conversations' class="convo-li">
           <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
