@@ -66,8 +66,9 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
             }
             System.setProperty( "solr.solr.home", directory.getAbsolutePath() );
 
-            CoreContainer.Initializer initializer = new CoreContainer.Initializer();
-            coreContainer = initializer.initialize();
+            coreContainer = CoreContainer.createAndLoad( directory.getAbsolutePath(), new File( directory.getAbsolutePath() + "/solr.xml" ) );
+            //CoreContainer.Initializer initializer = new CoreContainer.Initializer();
+            //coreContainer = initializer.initialize();
             coreServer = new EmbeddedSolrServer( coreContainer, "sf-core" );
             streetServer = new EmbeddedSolrServer( coreContainer, "sf-streetcache" );
 

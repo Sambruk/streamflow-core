@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 
 import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
+import se.streamsource.infrastructure.index.elasticsearch.assembly.ESFilesystemIndexQueryAssembler;
 
 /**
  * Assembly of the Streamflow Server

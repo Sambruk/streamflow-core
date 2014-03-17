@@ -17,12 +17,13 @@
 package se.streamsource.streamflow.web.management;
 
 import org.apache.solr.common.SolrException;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormat;
-import org.openrdf.repository.Repository;
 import org.qi4j.api.Qi4j;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
@@ -52,6 +53,8 @@ import org.quartz.JobKey;
 import org.quartz.UnableToInterruptJobException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchIndexer;
+import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactory;
@@ -155,13 +158,13 @@ public interface
       ServiceReference<EntityStore> entityStore;
 
       @Service
-      ServiceReference<Repository> repository;
-
-      @Service
       ServiceReference<EmbeddedSolrService> solr;
 
       @Service
       ServiceReference<SolrQueryService> solrIndexer;
+
+      @Service
+      ServiceReference<ESFilesystemIndexQueryService>  esIndex;
 
       @Service
       CaseStatistics statistics;
@@ -220,9 +223,9 @@ public interface
          DateTime startDateTime = new DateTime( );
          logger.info( "Starting reindex at " + startDateTime.toString() );
 
-         logger.info( "Remove RDF index." );
+         logger.info( "Remove ES index." );
          // Delete current index
-         removeRdfRepository();
+          removeESIndexContent();
 
          logger.info( "Remove Solr index." );
          // Remove Lucene index contents
@@ -288,7 +291,7 @@ public interface
                reindex();
             } catch (Exception e)
             {
-               throw new RuntimeException("Could not reindex rdf-repository", e);
+               throw new RuntimeException("Could not reindex", e);
             }
          }
 
@@ -539,6 +542,12 @@ public interface
             ((Activatable) api.getModule((Composite) entityFinder)).activate();
          }
       }
+
+       private void removeESIndexContent()
+               throws Exception
+       {
+            ((ElasticSearchIndexer.Mixin)api.dereference( esIndex.get() )).emptyIndex();
+       }
 
       private void removeSolrLuceneIndexContents()
               throws Exception

@@ -16,7 +16,9 @@
  */
 package se.streamsource.streamflow.web.infrastructure.index;
 
+import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.util.TokenizerFactory;
+import org.apache.lucene.util.AttributeSource;
 
 import java.io.Reader;
 import java.util.Map;
@@ -27,14 +29,15 @@ import java.util.Map;
 public class SingleTokenTokenizerFactory
       extends TokenizerFactory
 {
-   @Override
-   public void init(Map<String,String> args) {
-      super.init(args);
-      assureMatchVersion();
-   }
+    /**
+     * Initialize this factory via a set of key-value pairs.
+     */
+    public SingleTokenTokenizerFactory(Map<String, String> args) {
+        super(args);
+    }
 
-   @Override
-   public SingleTokenTokenizer create(Reader input) {
-      return new SingleTokenTokenizer(luceneMatchVersion,input);
-   }
+    @Override
+    public Tokenizer create(AttributeSource.AttributeFactory factory, Reader input) {
+        return new SingleTokenTokenizer( luceneMatchVersion, factory, input );
+    }
 }

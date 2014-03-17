@@ -33,7 +33,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.index.rdf.query.NamedSparqlDescriptor;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
@@ -274,7 +273,7 @@ public class AppAssembler
 
       configuration().entities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       configuration().entities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
-
+/*
       NamedQueries namedQueries = new NamedQueries();
       namedQueries.addQuery(      new NamedSparqlDescriptor("finduserwithemail",
                       "PREFIX ns0: <urn:qi4j:type:org.qi4j.api.entity.Identity#>\n" +
@@ -291,7 +290,7 @@ public class AppAssembler
               importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
               setMetaInfo(namedQueries).
               setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService")).visibleIn( layer );
-
+*/
       module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
       configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
    }

@@ -28,13 +28,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.index.rdf.RdfIndexingEngineService;
-import org.qi4j.index.rdf.query.RdfQueryParserFactory;
-import org.qi4j.library.rdf.entity.EntityStateSerializer;
-import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.library.rdf.repository.MemoryRepositoryService;
-import org.qi4j.library.rdf.repository.NativeConfiguration;
-import org.qi4j.library.rdf.repository.NativeRepositoryService;
 import org.qi4j.migration.MigrationConfiguration;
 import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.spi.service.importer.NewObjectImporter;
@@ -42,6 +36,10 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.infrastructure.database.DataSourceService;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.assembly.ESFilesystemIndexQueryAssembler;
+import se.streamsource.infrastructure.index.elasticsearch.assembly.ESMemoryIndexQueryAssembler;
+import se.streamsource.infrastructure.index.elasticsearch.memory.ESMemoryIndexQueryService;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
@@ -72,6 +70,7 @@ import se.streamsource.streamflow.web.infrastructure.logging.LoggingService;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
+import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
 /**
@@ -155,7 +154,7 @@ public class InfrastructureAssembler
          module.services( SolrQueryService.class ).visibleIn( Visibility.application ).identifiedBy( "solr" ).instantiateOnStartup();
             //.withConcerns( SolrPerformanceLogConcern.class );
 
-         module.objects( EntityStateSerializer.class );
+         //module.objects( EntityStateSerializer.class );
       }
    }
 
@@ -184,22 +183,32 @@ public class InfrastructureAssembler
    private void entityFinder( ModuleAssembly module ) throws AssemblyException
    {
       Application.Mode mode = module.layer().application().mode();
+
       if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
       {
          // In-memory store
-         module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+         //module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+          new ESMemoryIndexQueryAssembler().withVisibility(Visibility.application)
+                  .withConfigModule( module ).withConfigVisibility(Visibility.application).assemble(module);
       } else if (mode.equals( Application.Mode.production ))
       {
          // Native storage
-         module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
-         configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
+         //module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+         //configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
+          new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
+                  .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
       }
-
-      module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
-      module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+       //configuration().entities( ElasticSearchConfiguration.class ).visibleIn( Visibility.application );
+       configuration().forMixin( ElasticSearchConfiguration.class).declareDefaults().clusterName().set("qi4j_cluster");
+       configuration().forMixin( ElasticSearchConfiguration.class).declareDefaults().index().set("qi4j_index");
+       configuration().forMixin( ElasticSearchConfiguration.class).declareDefaults().indexNonAggregatedAssociations().set(Boolean.FALSE);
+      //module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
+      //module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
             //.withConcerns( RdfPerformanceLogConcern.class );
-      module.services( RdfQueryParserFactory.class );
+
+       //module.services( RdfQueryParserFactory.class );
    }
+
 
    private void entityStore( ModuleAssembly module ) throws AssemblyException
    {

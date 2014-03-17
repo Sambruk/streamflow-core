@@ -18,6 +18,11 @@
     		<version>${project.version}</version>
     	</dependency>
         <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-fileconfig</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.qi4j.core</groupId>
             <artifactId>org.qi4j.core.api</artifactId>
         </dependency>
@@ -32,6 +37,11 @@
         <dependency>
             <groupId>org.qi4j.library</groupId>
             <artifactId>org.qi4j.library.jmx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- Testing -->
