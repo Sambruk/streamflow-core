@@ -51,5 +51,15 @@ public interface ElasticSearchConfiguration
     @UseDefaults
     Property<Boolean> indexNonAggregatedAssociations();
 
+
+    /**
+     * Set to true if ES should open the http port 9200 to be able to post queries
+     * in json fomr directly to ES.
+     * i.e.  curl -X GET "http://localhost:9200/qi4j_index/_search?from=0&load=true&size=10&pretty=true" -d '{<json/query/filter>}'
+     * @return
+     */
+    @UseDefaults
+    Property<Boolean> httpEnabled();
+
 }
 

@@ -37,4 +37,6 @@ public interface ElasticSearchSupport
 
     boolean indexNonAggregatedAssociations();
 
+    void emptyIndex();
+
 }

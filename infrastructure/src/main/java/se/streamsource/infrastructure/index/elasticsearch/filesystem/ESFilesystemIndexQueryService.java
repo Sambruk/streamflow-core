@@ -16,12 +16,10 @@
  */
 package se.streamsource.infrastructure.index.elasticsearch.filesystem;
 
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchFinder;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchIndexExporter;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchIndexer;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
+import se.streamsource.infrastructure.index.elasticsearch.*;
 
 /**
  * Back ported from Qi4j 2.0
@@ -30,7 +28,12 @@ import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
  */
 @Mixins( ESFilesystemSupport.class )
 public interface ESFilesystemIndexQueryService
-        extends ElasticSearchIndexer, ElasticSearchFinder, ElasticSearchSupport, ElasticSearchIndexExporter, ServiceComposite
+        extends ElasticSearchIndexer,
+        ElasticSearchFinder,
+        ElasticSearchSupport,
+        ElasticSearchIndexExporter,
+        ServiceComposite,
+        Configuration<ElasticSearchConfiguration>
 {
 }
 

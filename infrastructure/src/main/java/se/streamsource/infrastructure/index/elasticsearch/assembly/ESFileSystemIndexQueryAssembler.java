@@ -17,11 +17,14 @@
 package se.streamsource.infrastructure.index.elasticsearch.assembly;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
 import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.infrastructure.index.elasticsearch.internal.AbstractElasticSearchAssembler;
+
+import java.lang.reflect.Method;
 
 /**
  * Back ported from Qi4j 2.0
@@ -42,9 +45,29 @@ public class ESFilesystemIndexQueryAssembler
                 identifiedBy( identity ).
                 visibleIn( visibility ).
                 instantiateOnStartup();
+        //.withConcerns(ESPerformanceLogConcern.class);
 
         configModule.entities( ElasticSearchConfiguration.class ).
                 visibleIn( configVisibility );
+    }
+
+    public static class ESPerformanceLogConcern
+            extends GenericConcern
+    {
+        public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+        {
+            long start = System.nanoTime();
+            try
+            {
+                return next.invoke( proxy, method, args );
+            } finally
+            {
+                long end = System.nanoTime();
+                long timeMicro = (end - start) / 1000;
+                double timeMilli = timeMicro / 1000.0;
+                System.out.println("ES." + method.getName()+":"+ timeMilli );
+            }
+        }
     }
 
 }

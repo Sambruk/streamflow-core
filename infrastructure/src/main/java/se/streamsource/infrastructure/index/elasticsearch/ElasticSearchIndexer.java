@@ -46,9 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.util.Primitives;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Back ported from Qi4j 2.0
@@ -185,11 +184,7 @@ public interface ElasticSearchIndexer
 
                 json.put( "_identity", state.identity().identity() );
 
-                json.put( "_types", Iterables.iterable(Iterables.map(new Function<Class,String>(){
-                    public String map(Class aClass) {
-                        return Classes.toClassName(aClass.getName());
-                    }
-                }, state.entityDescriptor().mixinTypes())) );
+                json.put( "_types", Iterables.addAll( new ArrayList<String>(), Iterables.map( toClassName(), state.entityDescriptor().mixinTypes()) ) );
 
                 EntityType entityType = state.entityDescriptor().entityType();
                 EntityDescriptor entityDesc = state.entityDescriptor();
@@ -297,6 +292,50 @@ public interface ElasticSearchIndexer
                 throw new ElasticSearchIndexException( "Could not index EntityState", e );
             }
         }
+
+        private Function<Type, String> toClassName()
+        {
+            return new Function<Type, String>()
+            {
+                public String map( Type type )
+                {
+                    return RAW_CLASS.map( type ).getName();
+                }
+            };
+        }
+
+        /**
+         * Function that extract the raw class of a type.
+         */
+        private final Function<Type, Class<?>> RAW_CLASS = new Function<Type, Class<?>>()
+        {
+            public Class<?> map( Type genericType )
+            {
+                // Calculate raw type
+                if( genericType instanceof Class )
+                {
+                    return (Class<?>) genericType;
+                }
+                else if( genericType instanceof ParameterizedType)
+                {
+                    return (Class<?>) ( (ParameterizedType) genericType ).getRawType();
+                }
+                else if( genericType instanceof TypeVariable)
+                {
+                    return (Class<?>) ( (TypeVariable) genericType ).getGenericDeclaration();
+                }
+                else if( genericType instanceof WildcardType)
+                {
+                    return (Class<?>) ( (WildcardType) genericType ).getUpperBounds()[ 0 ];
+                }
+                else if( genericType instanceof GenericArrayType)
+                {
+                    Object temp = Array.newInstance( (Class<?>) ( (GenericArrayType) genericType ).getGenericComponentType(), 0 );
+                    return temp.getClass();
+                }
+                throw new IllegalArgumentException( "Could not extract the raw class of " + genericType );
+            }
+        };
     }
 
 }

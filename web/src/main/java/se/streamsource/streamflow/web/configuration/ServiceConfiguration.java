@@ -31,6 +31,9 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 
+import org.qi4j.library.rdf.repository.NativeRepositoryService;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
@@ -65,7 +68,9 @@ public interface ServiceConfiguration
 
          try
          {
+
             uow.get( NativeConfiguration.class, "rdf-repository" );
+
          } catch (NoSuchEntityException e)
          {
             String rdfPath = new File( config.dataDirectory(), "rdf-repository" ).getAbsolutePath();
@@ -74,6 +79,20 @@ public interface ServiceConfiguration
             builder.instance().tripleIndexes().set( "spoc,cspo,ospc" );
             builder.newInstance();
          }
+
+          try
+          {
+              uow.get(ElasticSearchConfiguration.class, "es-indexing" );
+
+          } catch (NoSuchEntityException e )
+          {
+             EntityBuilder<ElasticSearchConfiguration> builder = uow.newEntityBuilder( ElasticSearchConfiguration.class, "es-indexing");
+             builder.instance().clusterName().set("qi4j_cluster");
+              builder.instance().index().set("qi4j_index");
+              builder.instance().indexNonAggregatedAssociations().set(Boolean.FALSE);
+              builder.newInstance();
+
+          }
 
          uow.complete();
       }

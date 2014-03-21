@@ -24,6 +24,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
@@ -89,7 +90,7 @@ public class StreamflowWebContextTestAssembler
       ModuleAssembly system = appLayer.module( "System" );
       system.services( SystemDefaultsService.class ).identifiedBy( "system" ).visibleIn( Visibility.application);
       ModuleAssembly configurationModule = module.layer().application().layer("Configuration").module("Configuration");
-      configurationModule.entities( KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class ).visibleIn( Visibility.application );
+      configurationModule.entities( KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class).visibleIn( Visibility.application );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( Boolean.TRUE );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface" );

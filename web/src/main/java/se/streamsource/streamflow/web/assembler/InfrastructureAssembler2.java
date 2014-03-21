@@ -28,7 +28,9 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.repository.MemoryRepositoryService;
+import org.qi4j.library.rdf.repository.NativeConfiguration;
 import org.qi4j.migration.MigrationConfiguration;
 import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.spi.service.importer.NewObjectImporter;
@@ -76,7 +78,7 @@ import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 /**
  * JAVADOC
  */
-public class InfrastructureAssembler
+public class InfrastructureAssembler2
    extends AbstractLayerAssembler
 {
    public void assemble( LayerAssembly layer )
@@ -88,7 +90,7 @@ public class InfrastructureAssembler
       caching( layer.module( "Caching" ) );
       database( layer.module( "Database" ) );
       entityStore( layer.module( "Entity store" ) );
-      entityFinder( layer.module( "Entity finder" ) );
+      //entityFinder( layer.module( "Entity finder" ) );
       events( layer.module( "Events" ) );
       searchEngine( layer.module( "Search engine" ) );
       attachments( layer.module( "Attachments store" ) );
@@ -154,7 +156,7 @@ public class InfrastructureAssembler
          module.services( SolrQueryService.class ).visibleIn( Visibility.application ).identifiedBy( "solr" ).instantiateOnStartup();
             //.withConcerns( SolrPerformanceLogConcern.class );
 
-         //module.objects( EntityStateSerializer.class );
+         module.objects( EntityStateSerializer.class );
       }
    }
 
@@ -182,29 +184,27 @@ public class InfrastructureAssembler
 
    private void entityFinder( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layer().application().mode();
+             Application.Mode mode = module.layer().application().mode();
 
-      if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
-      {
-         // In-memory store
-         //module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
-          new ESMemoryIndexQueryAssembler().withVisibility(Visibility.application)
-                  .withConfigModule( module ).withConfigVisibility(Visibility.application).assemble(module);
-      } else if (mode.equals( Application.Mode.production ))
-      {
-         // Native storage
-         //module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
-         //configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
-          new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
-                  .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
-      }
+       if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
+       {
+           // In-memory store
+           //module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+           new ESMemoryIndexQueryAssembler().withVisibility(Visibility.application)
+                   .withConfigModule( module ).withConfigVisibility(Visibility.application).assemble(module);
+       } else if (mode.equals( Application.Mode.production ))
+       {
+           // Native storage
+           //module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+           configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
+           configuration().entities( ElasticSearchConfiguration.class ).visibleIn(Visibility.application);
+           new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
+                   .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
+       }
        //configuration().entities( ElasticSearchConfiguration.class ).visibleIn( Visibility.application );
-       configuration().forMixin( ElasticSearchConfiguration.class).declareDefaults().clusterName().set("qi4j_cluster");
-       configuration().forMixin( ElasticSearchConfiguration.class).declareDefaults().index().set("qi4j_index");
-       configuration().forMixin( ElasticSearchConfiguration.class).declareDefaults().indexNonAggregatedAssociations().set(Boolean.FALSE);
-      //module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
-      //module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
-            //.withConcerns( RdfPerformanceLogConcern.class );
+       //module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
+       //module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+       //.withConcerns( RdfPerformanceLogConcern.class );
 
        //module.services( RdfQueryParserFactory.class );
    }

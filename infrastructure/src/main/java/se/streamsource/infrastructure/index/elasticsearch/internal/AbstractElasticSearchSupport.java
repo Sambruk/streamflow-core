@@ -103,27 +103,32 @@ public abstract class AbstractElasticSearchSupport
     }
 
 
-    public final Client client()
+    public Client client()
     {
         return client;
     }
 
 
-    public final String index()
+    public String index()
     {
         return index;
     }
 
 
-    public final String entitiesType()
+    public String entitiesType()
     {
         return ENTITIES_TYPE;
     }
 
 
-    public final boolean indexNonAggregatedAssociations()
+    public boolean indexNonAggregatedAssociations()
     {
         return indexNonAggregatedAssociations;
+    }
+
+    public void emptyIndex()
+    {
+        client.admin().indices().prepareDelete( index ).execute().actionGet();
     }
 
 }

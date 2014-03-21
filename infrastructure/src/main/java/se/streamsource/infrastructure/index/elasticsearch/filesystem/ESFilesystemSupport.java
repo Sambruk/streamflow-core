@@ -16,6 +16,7 @@
  */
 package se.streamsource.infrastructure.index.elasticsearch.filesystem;
 
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
@@ -25,6 +26,7 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
 import se.streamsource.infrastructure.index.elasticsearch.internal.AbstractElasticSearchSupport;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
@@ -35,8 +37,9 @@ import java.io.File;
  *
  * courtesy of Paul Merlin
  */
-public class ESFilesystemSupport
+public abstract class ESFilesystemSupport
         extends AbstractElasticSearchSupport
+        implements ESFilesystemIndexQueryService
 {
 
     @This
@@ -68,7 +71,7 @@ public class ESFilesystemSupport
                 put( "path.data", new File( fileConfig.dataDirectory(), identity ).getAbsolutePath() ).
                 put( "path.conf", new File( fileConfig.configurationDirectory(), identity ).getAbsolutePath() ).
                 put( "gateway.type", "local" ).
-                put( "http.enabled", false ).
+                put( "http.enabled", true ).
                 put( "index.cache.type", "weak" ).
                 put( "index.number_of_shards", 1 ).
                 put( "index.number_of_replicas", 0 ).
@@ -90,4 +93,23 @@ public class ESFilesystemSupport
         node = null;
     }
 
+    @Override
+    public Client client() {
+        return super.client();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String index() {
+        return super.index();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String entitiesType() {
+        return super.entitiesType();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean indexNonAggregatedAssociations() {
+        return super.indexNonAggregatedAssociations();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

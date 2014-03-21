@@ -25,6 +25,7 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.composite.Composite;
@@ -100,8 +101,11 @@ public interface ElasticSearchFinder
             }
             if ( orderBySegments != null ) {
                 for ( OrderBy order : orderBySegments ) {
-                    request.addSort( order.propertyReference().toString(),
-                            order.order() == OrderBy.Order.ASCENDING ? SortOrder.ASC : SortOrder.DESC );
+                    FieldSortBuilder sortBuilder = new FieldSortBuilder(order.propertyReference().propertyName());
+                    sortBuilder.order( order.order() == OrderBy.Order.ASCENDING ? SortOrder.ASC : SortOrder.DESC );
+                    sortBuilder.ignoreUnmapped( true );
+                    sortBuilder.missing( "_first" );
+                    request.addSort( sortBuilder );
                 }
             }
 

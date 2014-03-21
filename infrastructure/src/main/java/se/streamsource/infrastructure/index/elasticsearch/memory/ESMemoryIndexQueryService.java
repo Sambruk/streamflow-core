@@ -16,15 +16,18 @@
  */
 package se.streamsource.infrastructure.index.elasticsearch.memory;
 
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchFinder;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchIndexExporter;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchIndexer;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
+import se.streamsource.infrastructure.index.elasticsearch.*;
 
 @Mixins( ESMemorySupport.class )
 public interface ESMemoryIndexQueryService
-        extends ElasticSearchIndexer, ElasticSearchFinder, ElasticSearchSupport, ElasticSearchIndexExporter, ServiceComposite
+        extends ElasticSearchIndexer,
+        ElasticSearchFinder,
+        ElasticSearchSupport,
+        ElasticSearchIndexExporter,
+        ServiceComposite,
+        Configuration<ElasticSearchConfiguration>
 {
 }

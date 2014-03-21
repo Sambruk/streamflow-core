@@ -546,21 +546,12 @@ public interface
        private void removeESIndexContent()
                throws Exception
        {
-            ((ElasticSearchIndexer.Mixin)api.dereference( esIndex.get() )).emptyIndex();
+           esIndex.get().emptyIndex();
        }
 
       private void removeSolrLuceneIndexContents()
               throws Exception
       {
-         /*((Activatable) api.getModule((Composite) solr.get())).passivate();
-
-         try
-         {
-            removeDirectory(new File(fileConfig.dataDirectory(), "solr"));
-         } finally
-         {
-            ((Activatable) api.getModule((Composite) solr.get())).activate();
-         }*/
          try{
             solr.get().getSolrServer( "sf-core" ).deleteByQuery( "*:*" );
          } catch (SolrException se )

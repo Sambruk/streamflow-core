@@ -33,12 +33,20 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.library.rdf.repository.NativeConfiguration;
+import org.qi4j.spi.entitystore.StateChangeListener;
+import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 
+import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.assembly.ESFilesystemIndexQueryAssembler;
+import se.streamsource.infrastructure.index.elasticsearch.assembly.ESMemoryIndexQueryAssembler;
+import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
@@ -110,7 +118,9 @@ public class AppAssembler
          throws AssemblyException
    {
       super.assemble( layer );
-      
+
+      //esindex( layer.module( "ESIndex" ));
+
       system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
@@ -153,7 +163,38 @@ public class AppAssembler
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }
 
-   private void external( ModuleAssembly external )
+    private void esindex(ModuleAssembly module) throws AssemblyException
+    {
+       /* module.importedServices(EntityFinder.class).
+                importedBy(ServiceSelectorImporter.class).
+                setMetaInfo(ServiceQualifier.withId("es-indexing")).visibleIn( Visibility.layer );  */
+
+        Application.Mode mode = module.layer().application().mode();
+
+        if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
+        {
+            // In-memory store
+            //module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+            new ESMemoryIndexQueryAssembler().withVisibility(Visibility.application)
+                    .withConfigModule( module ).withConfigVisibility(Visibility.application).assemble(module);
+        } else if (mode.equals( Application.Mode.production ))
+        {
+            // Native storage
+            //module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+            configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
+            configuration().entities( ElasticSearchConfiguration.class ).visibleIn(Visibility.application);
+            new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
+                    .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
+        }
+        //configuration().entities( ElasticSearchConfiguration.class ).visibleIn( Visibility.application );
+        //module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
+        //module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+        //.withConcerns( RdfPerformanceLogConcern.class );
+
+        //module.services( RdfQueryParserFactory.class );
+    }
+
+    private void external( ModuleAssembly external )
    {
       external.services( IntegrationService.class )
             .identifiedBy( "integration" ).instantiateOnStartup().visibleIn( Visibility.application );
@@ -191,7 +232,7 @@ public class AppAssembler
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker( 1, 1000 * 60 * 60 * 12 ) );
       configuration().entities( AvailabilityConfiguration.class );
-      
+
       system.services( CaseCountCacheService.class ).instantiateOnStartup().visibleIn( Visibility.application );
       
    }

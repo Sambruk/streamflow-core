@@ -37,6 +37,7 @@ import java.util.*;
 
 import static java.lang.String.format;
 import static org.elasticsearch.index.query.FilterBuilders.*;
+import static org.elasticsearch.index.query.FilterBuilders.termFilter;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 /**
@@ -82,8 +83,7 @@ public class ElasticSearchQueryParserImpl
             processFilter( andFilterBuilder, conjunction.rightSideExpression() );
             addFilter(andFilterBuilder, filterBuilder);
 
-        }
-        if( expression instanceof Disjunction )
+        } else if( expression instanceof Disjunction )
         {
             final Disjunction disjunction = (Disjunction) expression;
             OrFilterBuilder orFilterBuilder = new OrFilterBuilder();
@@ -91,40 +91,33 @@ public class ElasticSearchQueryParserImpl
             processFilter(orFilterBuilder, disjunction.leftSideExpression());
             processFilter(orFilterBuilder, disjunction.rightSideExpression());
             addFilter(orFilterBuilder, filterBuilder);
-        }
-        if( expression instanceof Negation )
+        } else if( expression instanceof Negation )
         {
             processNegation(filterBuilder, ((Negation) expression).expression()) ;
-        }
-        if( expression instanceof MatchesPredicate )
+        } else if( expression instanceof MatchesPredicate )
         {
             processMatchesPredicate(filterBuilder, (MatchesPredicate) expression);
-        }
-        if( expression instanceof ComparisonPredicate )
+        } else if( expression instanceof ComparisonPredicate )
         {
             processComparisonPredicate(filterBuilder, (ComparisonPredicate) expression);
-        }
-        if( expression instanceof ManyAssociationContainsPredicate )
+        } else if( expression instanceof ManyAssociationContainsPredicate )
         {
             processManyAssociationContainsPredicate(filterBuilder, (ManyAssociationContainsPredicate) expression);
-        }
-        if( expression instanceof PropertyNullPredicate )
+        } else if( expression instanceof PropertyNullPredicate )
         {
             processNullPredicate(filterBuilder, (PropertyNullPredicate) expression);
-        }
-        if( expression instanceof AssociationNullPredicate )
+        } else if( expression instanceof AssociationNullPredicate )
         {
             processNullPredicate(filterBuilder, (AssociationNullPredicate) expression);
-        }
-        if( expression instanceof ContainsPredicate<?, ?> )
+        } else if( expression instanceof ContainsPredicate<?, ?> )
         {
             processContainsPredicate( filterBuilder, (ContainsPredicate<?, ?>) expression );
-        }
-        if( expression instanceof ContainsAllPredicate<?, ?> )
+        } else if( expression instanceof ContainsAllPredicate<?, ?> )
         {
             processContainsAllPredicate( filterBuilder, (ContainsAllPredicate<?, ?>) expression );
+        } else {
+            throw new UnsupportedOperationException( "Expression " + expression + " is not supported" );
         }
-        throw new UnsupportedOperationException( "Expression " + expression + " is not supported" );
     }
 
     private void processNegation(FilterBuilder filterBuilder, BooleanExpression expression )
@@ -192,10 +185,10 @@ public class ElasticSearchQueryParserImpl
     private void processMatchesPredicate( FilterBuilder filterBuilder, final MatchesPredicate predicate )
     {
         LOGGER.trace( "Processing MatchesSpecification {}", predicate );
-        // https://github.com/elasticsearch/elasticsearch/issues/988
-        // http://elasticsearch-users.115913.n3.nabble.com/Regex-Query-td3301347.html
-        throw new UnsupportedOperationException( "Query specification unsupported by Elastic Search: "
-                + predicate.getClass() + ": " + predicate );
+        String name = predicate.propertyReference().propertyName();
+        String value = toString( ((SingleValueExpression)predicate.valueExpression()).value() ).replace( '^', '.' );
+
+        addFilter( regexpFilter( name, value), filterBuilder );
     }
 
     private void processComparisonPredicate( FilterBuilder filterBuilder, final ComparisonPredicate predicate )
@@ -204,13 +197,17 @@ public class ElasticSearchQueryParserImpl
         String name = predicate.propertyReference().propertyName();
         String value = toString( ((SingleValueExpression)predicate.valueExpression()).value() );
 
-        if ( predicate instanceof GreaterOrEqualPredicate ) {
+        if( predicate instanceof EqualsPredicate ) {
 
-            addFilter( rangeFilter( name ).from( value ).includeLower( true ), filterBuilder );
+            addFilter( termFilter(name, value ), filterBuilder  );
+
+        }else if ( predicate instanceof GreaterOrEqualPredicate ) {
+
+            addFilter( rangeFilter( name ).from(value).includeLower(true), filterBuilder );
 
         } else if ( predicate instanceof GreaterThanPredicate ) {
 
-            addFilter( rangeFilter( name ).from( value ).includeLower( false ), filterBuilder );
+            addFilter( rangeFilter( name ).from(value).includeLower(false), filterBuilder );
 
         } else if ( predicate instanceof LessOrEqualPredicate ) {
 
@@ -269,10 +266,6 @@ public class ElasticSearchQueryParserImpl
         if( value instanceof Date )
         {
             return ISO8601_UTC.get().format( (Date) value );
-        }
-        else if( value instanceof Entity)
-        {
-            return "urn:qi4j:entity:" + value.toString();
         }
         else
         {

@@ -16,6 +16,7 @@
  */
 package se.streamsource.infrastructure.index.elasticsearch.memory;
 
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
@@ -24,14 +25,17 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.service.Activatable;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
 import se.streamsource.infrastructure.index.elasticsearch.internal.AbstractElasticSearchSupport;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 import java.io.File;
 
-public class ESMemorySupport
+public abstract class ESMemorySupport
         extends AbstractElasticSearchSupport
+        implements ESMemoryIndexQueryService
 {
 
     @This
@@ -84,6 +88,26 @@ public class ESMemorySupport
     {
         node.close();
         node = null;
+    }
+
+    @Override
+    public Client client() {
+        return super.client();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String index() {
+        return super.index();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String entitiesType() {
+        return super.entitiesType();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean indexNonAggregatedAssociations() {
+        return super.indexNonAggregatedAssociations();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
 }
