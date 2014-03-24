@@ -185,7 +185,6 @@ public interface ElasticSearchIndexer
                 json.put( "_identity", state.identity().identity() );
 
                 json.put( "_types", Iterables.addAll( new ArrayList<String>(), Iterables.map( toClassName(), state.entityDescriptor().mixinTypes()) ) );
-
                 EntityType entityType = state.entityDescriptor().entityType();
                 EntityDescriptor entityDesc = state.entityDescriptor();
                 // Properties

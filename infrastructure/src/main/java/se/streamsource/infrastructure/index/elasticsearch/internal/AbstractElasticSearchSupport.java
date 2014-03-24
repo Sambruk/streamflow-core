@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
 
+import java.io.IOException;
+
 /**
  * Back ported from Qi4j 2.0
  *
@@ -55,6 +57,12 @@ public abstract class AbstractElasticSearchSupport
         // Wait for yellow status: the primary shard is allocated but replicas are not
         client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
 
+        createIndexWithSettings();
+
+        LOGGER.info( "Index/Query connected to Elastic Search" );
+    }
+
+    private void createIndexWithSettings() throws IOException {
         if ( !client.admin().indices().prepareExists( index ).setIndices( index ).execute().actionGet().isExists() ) {
             // Create empty index
             LOGGER.info( "Will create '{}' index as it does not exists.", index );
@@ -78,8 +86,6 @@ public abstract class AbstractElasticSearchSupport
                     actionGet();
             LOGGER.info( "Index '{}' created.", index );
         }
-
-        LOGGER.info( "Index/Query connected to Elastic Search" );
     }
 
     protected abstract void activateElasticSearch()
@@ -126,9 +132,9 @@ public abstract class AbstractElasticSearchSupport
         return indexNonAggregatedAssociations;
     }
 
-    public void emptyIndex()
-    {
+    public void emptyIndex() throws IOException {
         client.admin().indices().prepareDelete( index ).execute().actionGet();
+        createIndexWithSettings();
     }
 
 }

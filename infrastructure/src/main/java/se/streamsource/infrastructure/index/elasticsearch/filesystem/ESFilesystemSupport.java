@@ -71,7 +71,7 @@ public abstract class ESFilesystemSupport
                 put( "path.data", new File( fileConfig.dataDirectory(), identity ).getAbsolutePath() ).
                 put( "path.conf", new File( fileConfig.configurationDirectory(), identity ).getAbsolutePath() ).
                 put( "gateway.type", "local" ).
-                put( "http.enabled", true ).
+                put( "http.enabled", config.httpEnabled().get() ).
                 put( "index.cache.type", "weak" ).
                 put( "index.number_of_shards", 1 ).
                 put( "index.number_of_replicas", 0 ).

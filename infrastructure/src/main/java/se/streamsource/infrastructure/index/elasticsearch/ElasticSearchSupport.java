@@ -20,6 +20,8 @@ import org.elasticsearch.client.Client;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.service.Activatable;
 
+import java.io.IOException;
+
 /**
  * Back ported from Qi4j 2.0
  *
@@ -37,6 +39,6 @@ public interface ElasticSearchSupport
 
     boolean indexNonAggregatedAssociations();
 
-    void emptyIndex();
+    void emptyIndex() throws IOException;
 
 }

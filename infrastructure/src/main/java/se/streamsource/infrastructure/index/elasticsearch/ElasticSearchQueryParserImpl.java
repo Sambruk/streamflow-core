@@ -185,7 +185,14 @@ public class ElasticSearchQueryParserImpl
     private void processMatchesPredicate( FilterBuilder filterBuilder, final MatchesPredicate predicate )
     {
         LOGGER.trace( "Processing MatchesSpecification {}", predicate );
-        String name = predicate.propertyReference().propertyName();
+        String name = "";
+        if( predicate.propertyReference().traversedAssociation() != null )
+        {
+            name = predicate.propertyReference().traversedAssociation().associationName()
+                    + ".identity";
+        } else {
+            name = predicate.propertyReference().propertyName();
+        }
         String value = toString( ((SingleValueExpression)predicate.valueExpression()).value() ).replace( '^', '.' );
 
         addFilter( regexpFilter( name, value), filterBuilder );
@@ -194,7 +201,14 @@ public class ElasticSearchQueryParserImpl
     private void processComparisonPredicate( FilterBuilder filterBuilder, final ComparisonPredicate predicate )
     {
         LOGGER.trace( "Processing ComparisonPredicate {}", predicate );
-        String name = predicate.propertyReference().propertyName();
+        String name = "";
+        if( predicate.propertyReference().traversedAssociation() != null )
+        {
+            name = predicate.propertyReference().traversedAssociation().associationName()
+                    + ".identity";
+        } else {
+            name = predicate.propertyReference().propertyName();
+        }
         String value = toString( ((SingleValueExpression)predicate.valueExpression()).value() );
 
         if( predicate instanceof EqualsPredicate ) {
