@@ -795,10 +795,10 @@
             ]),
           {entity: participant}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          );
+          });
       },
       deleteParticipantFromConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
@@ -811,10 +811,10 @@
             ]),
           {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       }
 
     }
