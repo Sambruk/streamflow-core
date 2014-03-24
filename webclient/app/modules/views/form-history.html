@@ -16,20 +16,32 @@
     limitations under the License.
 
 -->
+
 <div class="content-primary" role="main" data-ng-controller="FormHistoryCtrl">
-  <a href="#/cases/{{ caseId }}/" title="Tillbaka" style="float: right; ">Tillbaka</a>
-  <div>Välj ett datum:</div>
-  <select data-ng-options="form.index as form.submissionDate for form in submittedForms" data-ng-model="selectedSubmittedForm">
-  </select>
-  <h1>{{ submittedForm[0].form }}</h1>
-  <div>{{ submittedForm[0].submissionDate | dateTime}}</div>
-  <br />
-  <div data-ng-repeat="page in submittedForm[0].pages">
-    <h2>{{page.name}}</h2>
-    <div data-ng-repeat="field in page.fields">
-      {{ field.field }}: {{ field.value }}
+    <div class="m-h m">
+        <h2>{{submittedForms[0].form}}</h2>
     </div>
-  </div>
+
+    <span>Välj ett datum:</span>
+    <span>
+        <select data-ng-options="form.index as form.submissionDate for form in submittedForms" id="selectedSubmittedForm" data-ng-model="selectedSubmittedForm"></select>
+    </span>
+    <br />
+    <div class="form-history" data-ng-repeat="page in submittedForm[0].pages">
+        <div class="form-history-sections cf row">
+            <div class="section-history-item">{{page.name}}</div>
+        </div>
+        <div class="form-history-field">
+            <div data-ng-repeat="field in page.fields">
+                    <div class="form-field"><em>{{ field.field }}</em>: {{ field.value  | dateTime}}</div>
+            </div>
+        </div>
+        <div ng-show="$last == true">
+            <div class="form-history-submitted" style="float:left;">Submitted: {{ submittedForm[0].submissionDate | dateTime}}</div>
+        </div>
+    </div>
+
+
 </div>
 
 <!-- Content secondary -->

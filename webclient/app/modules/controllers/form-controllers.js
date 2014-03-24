@@ -23,8 +23,12 @@
     function($scope, caseService, $params) {
 
       $scope.caseId = $params.caseId;
-      
-      $scope.currentFormId;
+
+      $scope.currentFormId = $params.formId;
+      $scope.currentFormDescription;
+
+
+
       $scope.possibleForms = caseService.getSelectedPossibleForms($params.caseId);
 
       $scope.selectForm = function(formId){
@@ -33,6 +37,7 @@
           setTimeout(function(){
             $scope.$apply(function () {
               if ($scope.form && $scope.form[0]) {
+                $scope.currentFormDescription = $scope.form[0].description;
                 $scope.currentFormPage = $scope.form[0].enhancedPages[0];
               };
             });
@@ -50,7 +55,7 @@
             return;
           }
           if ($scope.possibleForm[0].queries.length !== 0) {
-            $scope.form = caseService.getFormDraftFromForm($params.caseId, formId)
+            $scope.form = caseService.getFormDraftFromForm($params.caseId, formId);
           }
           else {
             caseService.createSelectedForm($params.caseId, formId).then(function(response){
@@ -102,6 +107,8 @@
       $scope.caseId = $params.caseId;
 
       $scope.submittedForms = caseService.getSubmittedForms($params.caseId, $params.formId);
+
+      $scope.submittedFormList = caseService.getSubmittedFormList($params.caseId);
 
       $scope.$watch("selectedSubmittedForm", function(){
         var index = $scope.selectedSubmittedForm;

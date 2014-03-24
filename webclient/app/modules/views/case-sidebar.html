@@ -129,29 +129,29 @@
   </div>
   <!-- /Module: Ärende -->
 
-  <!-- m-issue-forms -->
-  <div class="m m-issue-forms">
+<!-- Module: Formulär -->
+  <div  class="m m-convos" data-ng-controller="FormCtrl">
     <div class="m-h">
       <h2>Formulär</h2>
     </div>
     <div class="m-c">
-      <div class="accordion">
-        <div class="accordion-item" style="margin-bottom:0px;">
-          <h3><a href="#" class="open-acc">Värde 1</a></h3>
-        </div>
-        <div class="accordion-item">
-          <h3><a href="#" class="open-acc">Värde 2</a></h3>
-        </div>
-        <div class="accordion-item">
-          <h3><a href="#" class="open-acc">Värde 3</a></h3>
-        </div>
-        <!-- end accordion-item -->
-      </div>
-      <!-- end accordion -->
-
+      <ul>
+        <li data-ng-repeat="form in possibleForms">
+          <a href="#/cases/{{ caseId }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
+            <h3>{{form.text}}</h3>
+            <div data-ng-controller="FormHistoryCtrl">
+              <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)">
+              </span>
+              <ul class="form-status">
+                <li><a href="#/cases/{{ caseId }}/formhistory/{{ form.id }}"><span class="icon-chat" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
+              </ul>
+            </div>
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
-  <!-- /m-issue-forms -->
+<!-- /Module: Formulär -->
 
   <!-- Module: Konversationer -->
   <div class="m m-convos">

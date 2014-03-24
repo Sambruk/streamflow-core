@@ -16,17 +16,19 @@
     limitations under the License.
 
 -->
-<div data-ng-controller="FormCtrl">
-  <ul class="form-tabs cf">
-      <li class="has-versions" data-ng-repeat="possibleForm in possibleForms">
-         <!-- TODO selected element -->
-         <a href="" data-ng-click="selectForm( possibleForm.href )" data-ng-class="{sel: currentFormId==possibleForm.href}">{{ possibleForm.text }}</a>
-         <a href="#/cases/{{ caseId }}/formhistory/{{ possibleForm.id }}" class="icon-arrow-down versions-drop"><span class="struct">Visa tidigare versioner</span></a>
-      </li>
-  </ul>
-  <ol class="form-sections cf">
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>
+
+
+<div class="content-primary" role="main" data-ng-controller="FormCtrl">
+  <div class="form-content">
+
+    <div ng-init="selectForm(currentFormId)"></div>
+    <div class="m m-c">
+        <h3>{{ currentFormDescription }}</h3>
+    </div>
+    <ul class="form-sections cf row">
       <li class="section-item" data-ng-class="{sel: currentFormPage.title==page.title}" data-ng-repeat="page in form[0].enhancedPages"><a href="" data-ng-click="issueForm.$valid && selectFormPage(page)">{{page.title}}</a></li>
-  </ol>
+    </ul>
 
   <form name="issueForm" method="post" novalidate data-ng-submit="submitForm()">
     <div>{{ formMessage }}</div>
@@ -57,7 +59,7 @@
             <div class="text col full col-1">
               <data-ng-form name="{{ field.field.fieldId }}">
                 <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
-                <input ng-required="field.field.mandatory" data-ng-pattern="field.field.fieldValue.regularExpression" type="text" data-ng-model="field.value" name="{{ field.field.fieldId }}" id="{{ field.field.field }}" sf-generic-auto-send>
+                <input ng-required="field.field.mandatory" data-ng-pattern="field.field.fieldValue.regularExpression" type="text" data-ng-model="field.value" name="{{ field.field.field }}" id="{{ field.field.fieldId }}" sf-generic-auto-send>
                 <data-ng-include class="m-c" src="'modules/views/form-validation-errors.html'"></data-ng-include>
               </data-ng-form>
             </div>
@@ -74,7 +76,7 @@
           </div>
 
           <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue">
-            <div class="select col medium col-2">
+            <div class="select col medium col-2 form-comboBox">
                 <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
                 <select custom-select data-ng-model="field.value"
                 name="{{ field.field.field }}" id="{{ field.field.fieldId }}"
@@ -114,10 +116,11 @@
           </div>
 
           <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue">
-            <div class="radio col medium col-2">
+            <div class="radio col-2 form">
                 <data-ng-include class="m-c" src="'modules/views/form-label.html'"></data-ng-include>
+                <br />
                 <span data-ng-repeat="option in field.field.fieldValue.checkings">
-                  <input type="checkbox" value="{{option.name}}" data-ng-model="option.checked" type="radio" name="{{ field.field.field }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}" data-backing-field="{{ field.field.fieldValue.checkings }}">{{ option.name }}</input>
+                  <input class="form-checkbox" type="checkbox" value="{{option.name}}" data-ng-model="option.checked" type="radio" id="{{ field.field.field }}" name="{{ field.field.field }}" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}" data-backing-field="{{ field.field.fieldValue.checkings }}"><label for="{{ field.field.field }}">{{ option.name }}</label></input>
                 </span>
             </div>
           </div>
@@ -136,13 +139,15 @@
 
     </div>
 
-    <div data-ng-show="isLastPage(currentFormPage)">
-      <input data-ng-disabled="!issueForm.$valid" type="submit" name="submit" value="Skicka"></input>
+    <div data-ng-show="currentFormPage" class="row">
+      <a href="" class="btn inline" data-ng-class="{inactive: isFirstPage() || !issueForm.$valid}" data-ng-click="!isFirstPage() && issueForm.$valid && previousFormPage()">Tillbaka</a>
+      <a data-ng-hide=isLastPage(currentFormPage) href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
+      <input data-ng-show="isLastPage(currentFormPage)" type="submit" id="submitForm" value="Submit" class="btn inline" data-ng-class="{inactive: !issueForm.$valid}" data-ng-disabled="!issueForm.$valid" /></input>
+      <!--<a data-ng-hide=isLastPage(currentFormPage) href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>-->
     </div>
 
-  </form>
-
-  <div data-ng-show="currentFormPage">
-    <a href="" class="btn inline" data-ng-class="{inactive: isFirstPage() || !issueForm.$valid}" data-ng-click="!isFirstPage() && issueForm.$valid && previousFormPage()">Tillbaka</a> <a href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
-  </div>
+    </form>
+  </div> <!-- /form-content -->
 <div>
+
+
