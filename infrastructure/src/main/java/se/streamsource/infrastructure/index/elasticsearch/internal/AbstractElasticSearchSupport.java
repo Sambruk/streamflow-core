@@ -42,6 +42,8 @@ public abstract class AbstractElasticSearchSupport
 
     protected static final String ENTITIES_TYPE = "qi4j_entities";
 
+    protected static final int DEFAULT_INDEX_BUFFER_SIZE = 10;
+
     protected Client client;
 
     protected String index;

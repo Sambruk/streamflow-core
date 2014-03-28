@@ -33,7 +33,7 @@
         <level value="DEBUG"/>
     </logger>
     <logger name="se.streamsource.infrastructure.index">
-        <level value="ALL"/>
+        <level value="INFO"/>
     </logger>
 
     <!-- Monitors -->

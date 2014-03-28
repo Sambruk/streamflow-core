@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Classes;
@@ -87,7 +88,11 @@ public interface DomainEventPlayerService
          } catch (Exception e)
          {
             uow.discard();
-            if (e instanceof EventReplayException)
+            if( e instanceof NoSuchEntityException)
+            {
+                // nothing to do here - entity is missing
+                logger.warn( new EventReplayException( currentEvent, e ).getMessage());
+            } else if (e instanceof EventReplayException)
                throw ((EventReplayException) e);
             else
                throw new EventReplayException( currentEvent, e );

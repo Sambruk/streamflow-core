@@ -25,6 +25,9 @@ import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesyste
 import se.streamsource.infrastructure.index.elasticsearch.internal.AbstractElasticSearchAssembler;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Back ported from Qi4j 2.0
@@ -44,8 +47,8 @@ public class ESFilesystemIndexQueryAssembler
         module.services( ESFilesystemIndexQueryService.class ).
                 identifiedBy( identity ).
                 visibleIn( visibility ).
-                instantiateOnStartup();
-        //.withConcerns(ESPerformanceLogConcern.class);
+                instantiateOnStartup()
+        .withConcerns(ESPerformanceLogConcern.class);
 
         configModule.entities( ElasticSearchConfiguration.class ).
                 visibleIn( configVisibility );
@@ -57,6 +60,7 @@ public class ESFilesystemIndexQueryAssembler
         public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
         {
             long start = System.nanoTime();
+            List<String> methodsOfInterest = Arrays.asList("notifyChanges", "findEntity", "findEntities", "countEntities");
             try
             {
                 return next.invoke( proxy, method, args );
@@ -65,7 +69,10 @@ public class ESFilesystemIndexQueryAssembler
                 long end = System.nanoTime();
                 long timeMicro = (end - start) / 1000;
                 double timeMilli = timeMicro / 1000.0;
-                System.out.println("ES." + method.getName()+":"+ timeMilli );
+                if(methodsOfInterest.contains(method.getName()))
+                {
+                    System.out.println("ES." + method.getName()+":"+ timeMilli );
+                }
             }
         }
     }

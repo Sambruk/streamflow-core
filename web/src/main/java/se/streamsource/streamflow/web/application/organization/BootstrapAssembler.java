@@ -34,10 +34,10 @@ public class BootstrapAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-       module.importedServices(EntityFinder.class).
+       /*module.importedServices(EntityFinder.class).
                importedBy(ServiceSelectorImporter.class).
-               setMetaInfo(ServiceQualifier.withId("es-indexing")).visibleIn( Visibility.application );
-
+               setMetaInfo(ServiceQualifier.withId("es-indexing"));//.visibleIn( Visibility.application );
+       */
       module.services( BootstrapDataService.class ).instantiateOnStartup();
 
       if (module.layer().application().mode() == Application.Mode.development)

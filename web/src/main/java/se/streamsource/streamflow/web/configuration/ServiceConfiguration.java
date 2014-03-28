@@ -31,9 +31,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 
-import org.qi4j.library.rdf.repository.NativeRepositoryService;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
-import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
@@ -86,7 +84,7 @@ public interface ServiceConfiguration
 
           } catch (NoSuchEntityException e )
           {
-             EntityBuilder<ElasticSearchConfiguration> builder = uow.newEntityBuilder( ElasticSearchConfiguration.class, "es-indexing");
+             EntityBuilder<ElasticSearchConfiguration> builder = uow.newEntityBuilder( ElasticSearchConfiguration.class, "es-indexing2");
              builder.instance().clusterName().set("qi4j_cluster");
               builder.instance().index().set("qi4j_index");
               builder.instance().indexNonAggregatedAssociations().set(Boolean.FALSE);

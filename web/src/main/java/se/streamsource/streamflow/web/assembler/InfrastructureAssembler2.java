@@ -198,8 +198,8 @@ public class InfrastructureAssembler2
            //module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
            configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
            configuration().entities( ElasticSearchConfiguration.class ).visibleIn(Visibility.application);
-           new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
-                   .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
+           //new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
+           //        .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
        }
        //configuration().entities( ElasticSearchConfiguration.class ).visibleIn( Visibility.application );
        //module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );

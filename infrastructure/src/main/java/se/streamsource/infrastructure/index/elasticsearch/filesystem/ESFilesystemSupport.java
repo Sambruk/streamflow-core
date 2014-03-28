@@ -63,6 +63,9 @@ public abstract class ESFilesystemSupport
         String clusterName = config.clusterName().get() == null ? DEFAULT_CLUSTER_NAME : config.clusterName().get();
         index = config.index().get() == null ? DEFAULT_INDEX_NAME : config.index().get();
         indexNonAggregatedAssociations = config.indexNonAggregatedAssociations().get();
+        int indexBufferSize = config.indexBufferSizePercent().get() == null ||
+                config.indexBufferSizePercent().get() <= 0
+                ? DEFAULT_INDEX_BUFFER_SIZE : config.indexBufferSizePercent().get();
 
         String identity = hasIdentity.identity().get();
         Settings settings = ImmutableSettings.settingsBuilder().
@@ -73,6 +76,7 @@ public abstract class ESFilesystemSupport
                 put( "gateway.type", "local" ).
                 put( "http.enabled", config.httpEnabled().get() ).
                 put( "index.cache.type", "weak" ).
+                put( "indices.memory.index_buffer_size", indexBufferSize ).
                 put( "index.number_of_shards", 1 ).
                 put( "index.number_of_replicas", 0 ).
                 put( "index.refresh_interval", -1 ). // Controlled by ElasticSearchIndexer
@@ -95,21 +99,21 @@ public abstract class ESFilesystemSupport
 
     @Override
     public Client client() {
-        return super.client();    //To change body of overridden methods use File | Settings | File Templates.
+        return super.client();
     }
 
     @Override
     public String index() {
-        return super.index();    //To change body of overridden methods use File | Settings | File Templates.
+        return super.index();
     }
 
     @Override
     public String entitiesType() {
-        return super.entitiesType();    //To change body of overridden methods use File | Settings | File Templates.
+        return super.entitiesType();
     }
 
     @Override
     public boolean indexNonAggregatedAssociations() {
-        return super.indexNonAggregatedAssociations();    //To change body of overridden methods use File | Settings | File Templates.
+        return super.indexNonAggregatedAssociations();
     }
 }

@@ -44,6 +44,7 @@ import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.NamedESDescriptor;
 import se.streamsource.infrastructure.index.elasticsearch.assembly.ESFilesystemIndexQueryAssembler;
 import se.streamsource.infrastructure.index.elasticsearch.assembly.ESMemoryIndexQueryAssembler;
 import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
@@ -119,8 +120,6 @@ public class AppAssembler
    {
       super.assemble( layer );
 
-      //esindex( layer.module( "ESIndex" ));
-
       system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
@@ -162,37 +161,6 @@ public class AppAssembler
       // All configurations must be visible in the Application scope
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }
-
-    private void esindex(ModuleAssembly module) throws AssemblyException
-    {
-       /* module.importedServices(EntityFinder.class).
-                importedBy(ServiceSelectorImporter.class).
-                setMetaInfo(ServiceQualifier.withId("es-indexing")).visibleIn( Visibility.layer );  */
-
-        Application.Mode mode = module.layer().application().mode();
-
-        if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
-        {
-            // In-memory store
-            //module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
-            new ESMemoryIndexQueryAssembler().withVisibility(Visibility.application)
-                    .withConfigModule( module ).withConfigVisibility(Visibility.application).assemble(module);
-        } else if (mode.equals( Application.Mode.production ))
-        {
-            // Native storage
-            //module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
-            configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
-            configuration().entities( ElasticSearchConfiguration.class ).visibleIn(Visibility.application);
-            new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
-                    .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
-        }
-        //configuration().entities( ElasticSearchConfiguration.class ).visibleIn( Visibility.application );
-        //module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
-        //module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
-        //.withConcerns( RdfPerformanceLogConcern.class );
-
-        //module.services( RdfQueryParserFactory.class );
-    }
 
     private void external( ModuleAssembly external )
    {
@@ -332,6 +300,14 @@ public class AppAssembler
               setMetaInfo(namedQueries).
               setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService")).visibleIn( layer );
 */
+
+       NamedQueries namedQueries = new NamedQueries();
+       namedQueries.addQuery( new NamedESDescriptor("esquery", ""));
+       module.importedServices(NamedEntityFinder.class).
+               importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
+               setMetaInfo(namedQueries).
+               setMetaInfo(ServiceQualifier.withId("es-indexing"));
+
       module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
       configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
    }
