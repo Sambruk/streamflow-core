@@ -43,6 +43,7 @@ import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.GlobalCaseIdStateEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
@@ -108,14 +109,31 @@ public interface ProjectEntity
    class ProjectIdGeneratorMixin
            implements IdGenerator
    {
-      @This
-      OwningOrganizationalUnit.Data state;
+      @Structure
+      Module module;
 
       public void assignId(CaseId aCase)
       {
-         Organization organization = ((OwningOrganization) state.organizationalUnit().get()).organization().get();
-         ((IdGenerator) organization).assignId(aCase);
+          GlobalCaseIdStateEntity caseIdState = module.unitOfWorkFactory().currentUnitOfWork()
+                  .get( GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
+          caseIdState.assignId( aCase );
       }
+
+       public void setCounter(Long current) {
+           //NOOP
+       }
+
+       public long getCounter() {
+           return 0;
+       }
+
+       public void changeDate(Long timeInMillis) {
+          //NOOP
+       }
+
+       public long getDate() {
+           return 0;
+       }
    }
 
    abstract class RemoveMemberSideEffect

@@ -68,5 +68,13 @@ public interface ElasticSearchConfiguration
      */
     @Optional
     Property<Integer> indexBufferSizePercent();
+
+    /**
+     * The index refresh interval. Set to "-1" to switch off automatic refresh is the default, "1s" is the default setting
+     * for ElasticSearch automatic search.
+     * @return An Integer
+     */
+    @Optional
+    Property<String> indexRefreshInterval();
 }
 

@@ -72,15 +72,7 @@ import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.IntegrationPointEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.PriorityEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
 import se.streamsource.streamflow.web.domain.entity.task.DoubleSignatureTaskEntity;
@@ -475,7 +467,7 @@ public class DomainAssembler
    {
       module.entities(OrganizationsEntity.class, OrganizationEntity.class,
               OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class,
-            PriorityEntity.class, IntegrationPointEntity.class).visibleIn( application );
+            PriorityEntity.class, IntegrationPointEntity.class, GlobalCaseIdStateEntity.class).visibleIn( application );
       module.values(ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 

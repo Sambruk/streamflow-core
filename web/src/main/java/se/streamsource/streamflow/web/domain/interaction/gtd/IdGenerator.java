@@ -36,6 +36,12 @@ public interface IdGenerator
 {
    void assignId( CaseId aCase );
 
+   void setCounter( Long current );
+   long getCounter();
+
+   void changeDate( Long timeInMillis);
+   long getDate();
+
    interface Data
    {
       @UseDefaults
@@ -55,8 +61,6 @@ public interface IdGenerator
       @This
       Data state;
 
-      @Structure
-      Module module;
       // Commands
 
       public void assignId( CaseId aCase )
@@ -89,6 +93,25 @@ public interface IdGenerator
          aCase.assignId( caseId );
       }
 
+      public void setCounter( Long current )
+      {
+          this.setCounter( null, current );
+      }
+
+      public long getCounter()
+      {
+          return state.current().get();
+      }
+
+      public void changeDate( Long timeInMillis )
+      {
+          this.changedDate( null, timeInMillis );
+      }
+
+      public long getDate()
+      {
+          return state.lastIdDate().get();
+      }
       // Events
 
       public void changedDate( @Optional DomainEvent create, long timeInMillis )

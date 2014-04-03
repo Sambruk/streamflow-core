@@ -21,6 +21,7 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -62,6 +63,7 @@ public interface ElasticSearchIndexer
         extends StateChangeListener
 {
 
+
     class Mixin
             implements StateChangeListener
     {
@@ -75,6 +77,9 @@ public interface ElasticSearchIndexer
         @This
         private ElasticSearchSupport support;
 
+        @This
+        Configuration<ElasticSearchConfiguration> config;
+
         public void emptyIndex()
         {
             support.client().admin().indices().prepareDelete( support.index() ).execute().actionGet();
@@ -82,6 +87,8 @@ public interface ElasticSearchIndexer
 
         public void notifyChanges( Iterable<EntityState> changedStates )
         {
+            long start1 = System.nanoTime();
+
             // All updated or new states
             Map<String, EntityState> newStates = new HashMap<String, EntityState>();
             for( EntityState eState : changedStates )
@@ -132,6 +139,11 @@ public interface ElasticSearchIndexer
 
             uow.discard();
 
+            long end1 = System.nanoTime();
+            long timeMicro1 = (end1 - start1) / 1000;
+            double timeMilli1 = timeMicro1 / 1000.0;
+            LOGGER.trace( "NotifyChanges first part took {}ms", timeMilli1 );
+
             if( bulkBuilder.numberOfActions() > 0 )
             {
 
@@ -144,10 +156,21 @@ public interface ElasticSearchIndexer
                     throw new ElasticSearchIndexException( bulkResponse.buildFailureMessage() );
                 }
 
-                LOGGER.debug( "Indexing changed Entity states took {}ms", bulkResponse.getTookInMillis() );
+                LOGGER.trace( "Indexing changed Entity states took {}ms", bulkResponse.getTookInMillis() );
 
-                // Refresh index
-                support.client().admin().indices().prepareRefresh( support.index() ).execute().actionGet();
+                if( config.configuration().indexRefreshInterval().get() == null
+                        || "-1".equals( config.configuration().indexRefreshInterval().get() ) )
+                {
+                    // Refresh index  manually if automatic is switched off
+                    long start2 = System.nanoTime();
+
+                    support.client().admin().indices().prepareRefresh( support.index() ).execute().actionGet();
+
+                    long end2 = System.nanoTime();
+                    long timeMicro2 = (end2 - start2) / 1000;
+                    double timeMilli2 = timeMicro2 / 1000.0;
+                    LOGGER.trace( "Indexing refresh index took {}ms", timeMilli2 );
+                }
 
             }
         }
@@ -178,9 +201,11 @@ public interface ElasticSearchIndexer
          */
         private String toJSON( EntityState state, Map<String, EntityState> newStates, EntityStoreUnitOfWork uow )
         {
+            long start = System.nanoTime();
+            JSONObject json = null;
             try
             {
-                JSONObject json = new JSONObject();
+                json = new JSONObject();
 
                 json.put( "_identity", state.identity().identity() );
 

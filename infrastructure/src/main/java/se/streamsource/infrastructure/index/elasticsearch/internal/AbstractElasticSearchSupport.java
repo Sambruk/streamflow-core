@@ -44,6 +44,8 @@ public abstract class AbstractElasticSearchSupport
 
     protected static final int DEFAULT_INDEX_BUFFER_SIZE = 10;
 
+    protected static final String DEFAULT_INDEX_REFRESH_INTERVAL = "-1";
+
     protected Client client;
 
     protected String index;

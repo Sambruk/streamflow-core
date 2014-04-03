@@ -36,13 +36,11 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -267,6 +265,15 @@ public interface BootstrapDataService
                }, Specifications.<Class>TRUE());
             }
 
+            // check if a global case id generator state entity exists
+            try{
+                uow.get(GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
+            } catch( NoSuchEntityException ne ){
+                //create one and feed it with id generator state from organization entity.
+                GlobalCaseIdStateEntity caseIdStateEntity = uow.newEntity( GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
+                caseIdStateEntity.setCounter( ((IdGenerator)organizations.organization().get()).getCounter());
+                caseIdStateEntity.changeDate( ((IdGenerator)organizations.organization().get()).getDate());
+            }
             uow.complete();
             logger.info( "Bootstrap of domain model complete" );
 

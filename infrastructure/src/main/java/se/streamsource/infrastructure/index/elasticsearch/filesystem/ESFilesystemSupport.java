@@ -66,6 +66,8 @@ public abstract class ESFilesystemSupport
         int indexBufferSize = config.indexBufferSizePercent().get() == null ||
                 config.indexBufferSizePercent().get() <= 0
                 ? DEFAULT_INDEX_BUFFER_SIZE : config.indexBufferSizePercent().get();
+        String indexRefreshInterval = config.indexRefreshInterval().get() == null  ? DEFAULT_INDEX_REFRESH_INTERVAL
+                : config.indexRefreshInterval().get();
 
         String identity = hasIdentity.identity().get();
         Settings settings = ImmutableSettings.settingsBuilder().
@@ -79,7 +81,7 @@ public abstract class ESFilesystemSupport
                 put( "indices.memory.index_buffer_size", indexBufferSize ).
                 put( "index.number_of_shards", 1 ).
                 put( "index.number_of_replicas", 0 ).
-                put( "index.refresh_interval", -1 ). // Controlled by ElasticSearchIndexer
+                put( "index.refresh_interval", indexRefreshInterval ). // Controlled by ElasticSearchIndexer if set to -1
                 build();
         node = NodeBuilder.nodeBuilder().
                 clusterName( clusterName ).
