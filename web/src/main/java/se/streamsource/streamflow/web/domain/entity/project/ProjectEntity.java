@@ -115,7 +115,7 @@ public interface ProjectEntity
       public void assignId(CaseId aCase)
       {
           GlobalCaseIdStateEntity caseIdState = module.unitOfWorkFactory().currentUnitOfWork()
-                  .get( GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
+                  .get(GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID);
           caseIdState.assignId( aCase );
       }
 
@@ -123,16 +123,16 @@ public interface ProjectEntity
            //NOOP
        }
 
-       public long getCounter() {
-           return 0;
+       public Long getCounter() {
+           return new Long(0);
        }
 
        public void changeDate(Long timeInMillis) {
           //NOOP
        }
 
-       public long getDate() {
-           return 0;
+       public Long getDate() {
+           return new Long(0);
        }
    }
 

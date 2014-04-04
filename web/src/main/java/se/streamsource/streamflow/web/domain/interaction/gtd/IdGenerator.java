@@ -37,10 +37,10 @@ public interface IdGenerator
    void assignId( CaseId aCase );
 
    void setCounter( Long current );
-   long getCounter();
+   Long getCounter();
 
    void changeDate( Long timeInMillis);
-   long getDate();
+   Long getDate();
 
    interface Data
    {
@@ -98,7 +98,7 @@ public interface IdGenerator
           this.setCounter( null, current );
       }
 
-      public long getCounter()
+      public Long getCounter()
       {
           return state.current().get();
       }
@@ -108,7 +108,7 @@ public interface IdGenerator
           this.changedDate( null, timeInMillis );
       }
 
-      public long getDate()
+      public Long getDate()
       {
           return state.lastIdDate().get();
       }

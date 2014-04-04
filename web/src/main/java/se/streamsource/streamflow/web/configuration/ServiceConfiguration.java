@@ -84,10 +84,13 @@ public interface ServiceConfiguration
 
           } catch (NoSuchEntityException e )
           {
-             EntityBuilder<ElasticSearchConfiguration> builder = uow.newEntityBuilder( ElasticSearchConfiguration.class, "es-indexing2");
+             EntityBuilder<ElasticSearchConfiguration> builder = uow.newEntityBuilder( ElasticSearchConfiguration.class, "es-indexing");
              builder.instance().clusterName().set("qi4j_cluster");
               builder.instance().index().set("qi4j_index");
               builder.instance().indexNonAggregatedAssociations().set(Boolean.FALSE);
+              builder.instance().httpEnabled().set(Boolean.FALSE);
+              builder.instance().indexBufferSizePercent().set(10);
+              builder.instance().indexRefreshInterval().set("-1");
               builder.newInstance();
 
           }

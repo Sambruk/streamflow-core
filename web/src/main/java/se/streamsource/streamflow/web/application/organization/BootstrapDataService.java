@@ -46,6 +46,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
@@ -270,9 +271,10 @@ public interface BootstrapDataService
                 uow.get(GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
             } catch( NoSuchEntityException ne ){
                 //create one and feed it with id generator state from organization entity.
+                OrganizationsEntity orgz = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
                 GlobalCaseIdStateEntity caseIdStateEntity = uow.newEntity( GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
-                caseIdStateEntity.setCounter( ((IdGenerator)organizations.organization().get()).getCounter());
-                caseIdStateEntity.changeDate( ((IdGenerator)organizations.organization().get()).getDate());
+                caseIdStateEntity.setCounter( ((IdGenerator)orgz.organization().get()).getCounter());
+                caseIdStateEntity.changeDate( ((IdGenerator)orgz.organization().get()).getDate());
             }
             uow.complete();
             logger.info( "Bootstrap of domain model complete" );
