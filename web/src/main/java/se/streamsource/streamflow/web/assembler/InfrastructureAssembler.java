@@ -76,9 +76,12 @@ import se.streamsource.streamflow.web.management.jmxconnector.JmxConnectorConfig
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
 /**
- * JAVADOC
+ * Content was moved to DomainAssembler during migration to ElasticSearch - entity finder
+ * for elastic search needs to have access to DomainEntities. Do not use or add to layer assembly!!
+ * Documentation purpose only.
  */
-public class InfrastructureAssembler2
+@Deprecated
+public class InfrastructureAssembler
    extends AbstractLayerAssembler
 {
    public void assemble( LayerAssembly layer )

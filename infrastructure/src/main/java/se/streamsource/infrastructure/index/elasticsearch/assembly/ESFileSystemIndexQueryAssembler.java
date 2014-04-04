@@ -20,6 +20,8 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
 import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.infrastructure.index.elasticsearch.internal.AbstractElasticSearchAssembler;
@@ -47,8 +49,8 @@ public class ESFilesystemIndexQueryAssembler
         module.services( ESFilesystemIndexQueryService.class ).
                 identifiedBy( identity ).
                 visibleIn( visibility ).
-                instantiateOnStartup()
-        .withConcerns(ESPerformanceLogConcern.class);
+                instantiateOnStartup();
+        //.withConcerns(ESPerformanceLogConcern.class);
 
         configModule.entities( ElasticSearchConfiguration.class ).
                 visibleIn( configVisibility );
@@ -57,6 +59,7 @@ public class ESFilesystemIndexQueryAssembler
     public static class ESPerformanceLogConcern
             extends GenericConcern
     {
+        static Logger LOGGER = LoggerFactory.getLogger(ESPerformanceLogConcern.class.getName() );
         public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
         {
             long start = System.nanoTime();
@@ -71,7 +74,7 @@ public class ESFilesystemIndexQueryAssembler
                 double timeMilli = timeMicro / 1000.0;
                 if(methodsOfInterest.contains(method.getName()))
                 {
-                    System.out.println("ES." + method.getName()+":"+ timeMilli );
+                    LOGGER.info("ElasticSearch." + method.getName()+":"+ timeMilli );
                 }
             }
         }
