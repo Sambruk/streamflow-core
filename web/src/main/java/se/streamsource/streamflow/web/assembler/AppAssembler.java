@@ -171,6 +171,13 @@ public class AppAssembler
 
    private void system( ModuleAssembly system )
    {
+       NamedQueries namedQueries = new NamedQueries();
+       namedQueries.addQuery( new NamedESDescriptor("esquery", ""));
+       system.importedServices(NamedEntityFinder.class).
+               importedBy(ServiceSelectorImporter.class).
+               setMetaInfo(namedQueries).
+               setMetaInfo(ServiceQualifier.withId("es-indexing"));
+
       system.services( SystemDefaultsService.class )
             .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
 
@@ -282,31 +289,6 @@ public class AppAssembler
 
       configuration().entities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       configuration().entities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
-/*
-      NamedQueries namedQueries = new NamedQueries();
-      namedQueries.addQuery(      new NamedSparqlDescriptor("finduserwithemail",
-                      "PREFIX ns0: <urn:qi4j:type:org.qi4j.api.entity.Identity#>\n" +
-                              "        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                              "        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                              "        SELECT DISTINCT ?identity\n" +
-                              "        WHERE {\n" +
-                              "        ?entity rdf:type <urn:qi4j:type:se.streamsource.streamflow.web.domain.entity.user.UserEntity>.\n" +
-                              "        ?entity ns0:identity ?identity.\n" +
-                              "        ?entity <urn:qi4j:type:se.streamsource.streamflow.web.domain.structure.user.Contactable-Data#contact> ?v0.\n" +
-                              "        ?v0 <urn:qi4j:type:se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO#emailAddresses> ?email\n" +
-                              "        }"));
-      module.importedServices(NamedEntityFinder.class).
-              importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
-              setMetaInfo(namedQueries).
-              setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService")).visibleIn( layer );
-*/
-
-       NamedQueries namedQueries = new NamedQueries();
-       namedQueries.addQuery( new NamedESDescriptor("esquery", ""));
-       module.importedServices(NamedEntityFinder.class).
-               importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
-               setMetaInfo(namedQueries).
-               setMetaInfo(ServiceQualifier.withId("es-indexing"));
 
       module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
       configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);

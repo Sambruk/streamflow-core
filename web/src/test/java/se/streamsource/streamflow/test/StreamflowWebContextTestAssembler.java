@@ -33,6 +33,7 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
+import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 
 import java.util.Properties;
 
@@ -64,11 +65,11 @@ public class StreamflowWebContextTestAssembler
       LayerAssembly layer1 = applicationAssembly.layer( "Layer 1" );
       layer1.uses(
             applicationAssembly.layer( "Context" ),
-            applicationAssembly.layer( "Domain infrastructure" ),
+            applicationAssembly.layer( "Configuration" ),
             applicationAssembly.layer( "Domain" ) );
       ModuleAssembly module = layer1.module( "Module 1" );
       module.values( EntityValue.class );
-      applicationAssembly.layer( "Domain infrastructure" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
+      applicationAssembly.layer( "Domain" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
 
       ModuleAssembly knowledgebase = appLayer.module("Knowledgebase");
       Properties props = new Properties();

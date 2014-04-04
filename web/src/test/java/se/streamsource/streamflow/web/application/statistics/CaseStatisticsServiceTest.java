@@ -33,15 +33,19 @@ import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.assembly.ESMemoryIndexQueryAssembler;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.web.context.administration.GroupsContext;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
@@ -52,12 +56,7 @@ import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEnt
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.note.NotesTimeLineEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.PriorityEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
@@ -90,9 +89,7 @@ public class CaseStatisticsServiceTest
 {
    public void assemble(ModuleAssembly module) throws AssemblyException
    {
-      new RdfMemoryStoreAssembler().assemble(module);
-
-      module.services(MemoryEntityStoreService.class);
+      module.services(MemoryEntityStoreService.class, FileConfiguration.class);
 
       module.services( CaseStatisticsService.class,
             MemoryEventStoreService.class,
@@ -122,7 +119,8 @@ public class CaseStatisticsServiceTest
               MessageEntity.class,
               AttachmentEntity.class,
               CaseLogEntity.class,
-              PriorityEntity.class );
+              PriorityEntity.class,
+              GlobalCaseIdStateEntity.class);
       
       module.values(ContactDTO.class, ParticipantRolesValue.class, CaseLogEntryDTO.class, NoteValue.class, CaseLogEntryValue.class, PriorityValue.class );
 
@@ -170,6 +168,8 @@ public class CaseStatisticsServiceTest
       Organizations orgs = uow.newEntity(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       Organization org = orgs.createOrganization("Organization1");
       OrganizationalUnit ou1 = org.createOrganizationalUnit("OU1");
+
+      uow.newEntity( GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
 
       Group group1 = ou1.createGroup( "Group1" );
       group1.addParticipant( user1 );
