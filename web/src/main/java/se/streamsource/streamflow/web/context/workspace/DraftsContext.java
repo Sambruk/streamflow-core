@@ -44,10 +44,13 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEn
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
@@ -73,9 +76,9 @@ public interface DraftsContext
 
    void createcase();
 
-   Query<LabelEntity> possibleLabels();
+   LinksValue possibleLabels();
 
-   Query<CaseTypeEntity> possibleCaseTypes();
+   LinksValue possibleCaseTypes();
 
    LinksValue possibleProjects();
 
@@ -142,22 +145,56 @@ public interface DraftsContext
          drafts.createDraft();
       }
 
-      public Query<LabelEntity> possibleLabels()
+      public LinksValue possibleLabels()
       {
+          Query<Labels> labelsList = module.queryBuilderFactory().newQueryBuilder( Labels.class )
+                  .where( QueryExpressions.eq( QueryExpressions.templateFor( Removable.Data.class ).removed(), false ) )
+                  .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+          se.streamsource.streamflow.web.context.LinksBuilder builder = new se.streamsource.streamflow.web.context.LinksBuilder( module.valueBuilderFactory() );
+
+          for( Labels labels : labelsList )
+          {
+              for( Label label : ((Labels.Data)labels).labels() )
+              {
+                  builder.addDescribable( (Describable) label, ((Describable) labels).getDescription() );
+              }
+          }
+          return builder.newLinks();
+          /*
          QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class);
          queryBuilder = queryBuilder.where(
                  eq(templateFor(Removable.Data.class).removed(), false));
          return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
                  orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+                 */
       }
 
-      public Query<CaseTypeEntity> possibleCaseTypes()
+      public LinksValue possibleCaseTypes()
       {
+          QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class);
+          queryBuilder = queryBuilder.where(
+                  eq(templateFor(Removable.Data.class).removed(), false));
+          Query<CaseTypeEntity> query = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+                  orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+
+          se.streamsource.streamflow.web.context.LinksBuilder linksBuilder = new se.streamsource.streamflow.web.context.LinksBuilder( module.valueBuilderFactory() );
+
+          for( CaseTypeEntity caseTypeEntity : query )
+          {
+              Owner owner = ((Ownable.Data)caseTypeEntity).owner().get();
+
+              String title = owner != null ? ((Describable)owner).getDescription() : "";
+              linksBuilder.addLink( caseTypeEntity.getDescription(), caseTypeEntity.identity().get(),"","","", title );
+          }
+          return linksBuilder.newLinks();
+          /*
          QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class);
          queryBuilder = queryBuilder.where(
                  eq(templateFor(Removable.Data.class).removed(), false));
          return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
                  orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+                 */
       }
 
       public LinksValue possibleProjects()
