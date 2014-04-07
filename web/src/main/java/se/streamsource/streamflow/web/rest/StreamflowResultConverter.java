@@ -21,7 +21,6 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.specification.Specification;
@@ -454,9 +453,9 @@ public class StreamflowResultConverter
             {
                public Object map( CaseEntity caseEntity )
                {
-                  if( caseEntity.priority().get() != null )
+                  if( caseEntity.casepriority().get() != null )
                   {
-                     Priority priority = caseEntity.priority().get();
+                     Priority priority = caseEntity.casepriority().get();
                      ValueBuilder<PriorityValue> builder = module.valueBuilderFactory().newValueBuilder( PriorityValue.class );
                      builder.prototype().id().set( EntityReference.getEntityReference( priority ).identity() );
                      builder.prototype().priority().set( ((PrioritySettings.Data)priority).priority().get() );

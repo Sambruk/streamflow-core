@@ -51,6 +51,9 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Ensure that the most basic entities are always created. This includes:
  * 1) an UsersEntity
@@ -274,7 +277,9 @@ public interface BootstrapDataService
                 OrganizationsEntity orgz = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
                 GlobalCaseIdStateEntity caseIdStateEntity = uow.newEntity( GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
                 caseIdStateEntity.setCounter( ((IdGenerator)orgz.organization().get()).getCounter());
-                caseIdStateEntity.changeDate( ((IdGenerator)orgz.organization().get()).getDate());
+
+                Long date = ((IdGenerator) orgz.organization().get()).getDate();
+                caseIdStateEntity.changeDate( date != null ? date : Calendar.getInstance().getTimeInMillis() );
             }
             uow.complete();
             logger.info( "Bootstrap of domain model complete" );

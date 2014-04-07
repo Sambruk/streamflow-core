@@ -39,7 +39,6 @@ public interface PrioritySettings
       Property<String> color();
 
       @Optional
-      @Queryable(false)
       Property<Integer> priority();
 
       void changedColor( @Optional DomainEvent event, String newColor );

@@ -92,7 +92,6 @@ import se.streamsource.streamflow.web.domain.structure.form.SearchableForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -321,11 +320,11 @@ public interface CaseEntity
          {
             Priority defaultPriority = ((PriorityOnCase.Data) newCaseType).defaultPriority().get();
 
-            if (((CasePriority.Data) priority).priority().get() == null)
+            if (((CasePriority.Data) priority).casepriority().get() == null)
             {
                if (defaultPriority != null)
                {
-                  // Set default priority if priority is missing and there is a
+                  // Set default casepriority if casepriority is missing and there is a
                   // default setting
                   priority.changePriority( ((PriorityOnCase.Data) newCaseType).defaultPriority().get() );
 

@@ -25,7 +25,7 @@ import org.qi4j.api.constraint.Constraints;
 import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 
 /**
- * Check if case priority should bes mandatory.
+ * Check if case casepriority should bes mandatory.
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)

@@ -103,12 +103,18 @@ public class ElasticSearchQueryParserImpl
         } else if( expression instanceof ManyAssociationContainsPredicate )
         {
             processManyAssociationContainsPredicate(filterBuilder, (ManyAssociationContainsPredicate) expression);
-        } else if( expression instanceof PropertyNullPredicate )
+        } else if( expression instanceof PropertyIsNullPredicate )
         {
-            processNullPredicate(filterBuilder, (PropertyNullPredicate) expression);
-        } else if( expression instanceof AssociationNullPredicate )
+            processIsNullPredicate(filterBuilder, (PropertyIsNullPredicate) expression);
+        } else if( expression instanceof PropertyIsNotNullPredicate )
         {
-            processNullPredicate(filterBuilder, (AssociationNullPredicate) expression);
+            processIsNotNullPredicate(filterBuilder, (PropertyIsNotNullPredicate) expression);
+        } else if( expression instanceof AssociationIsNullPredicate )
+        {
+            processIsNullPredicate(filterBuilder, (AssociationIsNullPredicate) expression);
+        } else if( expression instanceof AssociationIsNotNullPredicate )
+        {
+            processIsNotNullPredicate(filterBuilder, (AssociationIsNotNullPredicate) expression);
         } else if( expression instanceof ContainsPredicate<?, ?> )
         {
             processContainsPredicate( filterBuilder, (ContainsPredicate<?, ?>) expression );
@@ -247,16 +253,28 @@ public class ElasticSearchQueryParserImpl
         addFilter( termFilter( name, value ), filterBuilder );
     }
 
-    private void processNullPredicate( FilterBuilder filterBuilder, final PropertyNullPredicate predicate )
+    private void processIsNullPredicate( FilterBuilder filterBuilder, final PropertyIsNullPredicate predicate )
     {
         LOGGER.trace( "Processing PropertyNullSpecification {}", predicate );
         addFilter( missingFilter( predicate.propertyReference().propertyName() ), filterBuilder );
     }
 
-    private void processNullPredicate( FilterBuilder filterBuilder, final AssociationNullPredicate predicate )
+    private void processIsNullPredicate( FilterBuilder filterBuilder, final AssociationIsNullPredicate predicate )
     {
         LOGGER.trace( "Processing AssociationNullSpecification {}", predicate );
         addFilter( missingFilter( predicate.associationReference().associationName() + ".identity" ), filterBuilder );
+    }
+
+    private void processIsNotNullPredicate( FilterBuilder filterBuilder, final PropertyIsNotNullPredicate predicate )
+    {
+        LOGGER.trace( "Processing PropertyNullSpecification {}", predicate );
+        addFilter( existsFilter( predicate.propertyReference().propertyName() ), filterBuilder );
+    }
+
+    private void processIsNotNullPredicate( FilterBuilder filterBuilder, final AssociationIsNotNullPredicate predicate )
+    {
+        LOGGER.trace( "Processing AssociationNullSpecification {}", predicate );
+        addFilter( existsFilter( predicate.associationReference().associationName() + ".identity" ), filterBuilder );
     }
 
     private void addFilter( FilterBuilder filter, FilterBuilder into )
