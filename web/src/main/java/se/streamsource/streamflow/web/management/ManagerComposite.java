@@ -17,7 +17,6 @@
 package se.streamsource.streamflow.web.management;
 
 import org.apache.solr.common.SolrException;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Duration;
@@ -66,7 +65,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
 import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -100,8 +102,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * should be put here for convenience.
  */
 @Mixins(ManagerComposite.ManagerMixin.class)
-public interface
-        ManagerComposite
+public interface ManagerComposite
         extends Manager, TransientComposite
 {
    void start()
@@ -181,6 +182,12 @@ public interface
       @Service
       QuartzSchedulerService scheduler;
 
+       @Service
+       AvailabilityService availabilityService;
+
+       @Service
+       ReceiveMailService receiveMailService; 
+
       private int failedLogins;
 
       public File exports;
@@ -258,6 +265,9 @@ public interface
 
       public String importDatabase(@Name("Filename") String name) throws IOException
       {
+         DateTime startDateTime = new DateTime();
+          logger.info( "Starting db import at " + startDateTime.toString() );
+
          File importFile = new File(name);
          if (!importFile.isAbsolute())
             importFile = new File(exports, name);
@@ -286,6 +296,7 @@ public interface
             logger.info("Imported " + importFile);
          } finally
          {
+             logger.info( "Import db done in " + PeriodFormat.getDefault().print( new Duration( startDateTime, new DateTime( ) ).toPeriod() ) );
             try
             {
                reindex();
@@ -364,8 +375,9 @@ public interface
          return backupResult;
       }
 
-      public String restore() throws Exception
+      public String restore( @Name("IncludeEventRestore") boolean includeEventRestore ) throws Exception
       {
+         turnOffAccessibilityAndMailReceiver();
          try
          {
             DateTime startDateTime = new DateTime(  );
@@ -384,49 +396,60 @@ public interface
             // contains already a call to reindex
             importDatabase( latestBackup.getAbsolutePath() );
 
-            logger.info( "Import database and reindex done. Clearing event database." );
+            logger.info( "Import database and reindex done." );
 
-            // Add events from backup files
-            eventManagement.removeAll();
-
-            logger.info( "Replaying backup event files from time of snapshot backup." );
-            File[] eventFiles = getBackupEventFiles();
-
-            // Replay events from time of snapshot backup
-            Date latestBackupDate = latestBackup == null ? new Date(0) : getBackupDate(latestBackup);
-
-            Inputs.combine(Iterables.map(new Function<File, Input<String, IOException>>()
+            if( includeEventRestore )
             {
-               public Input<String, IOException> map(File file)
-               {
-                  return Inputs.text(file);
-               }
-            }, Arrays.asList(eventFiles))).transferTo(eventManagement.restore());
+                DateTime clearEventStart = new DateTime();
+                logger.info( "Clearing event database and restore start at " + clearEventStart.toString() );
 
-            {
-               // Replay transactions
-               final EventReplayException[] ex = new EventReplayException[1];
-               eventSource.transactionsAfter(latestBackupDate.getTime() - 60000, new TransactionVisitor()
-               {
-                  public boolean visit(TransactionDomainEvents transactionDomain)
-                  {
-                     try
-                     {
-                        eventPlayer.playTransaction(transactionDomain);
-                        return true;
-                     } catch (EventReplayException e)
-                     {
-                        ex[0] = e;
-                        return false;
-                     }
-                  }
-               });
+                // Add events from backup files
+                eventManagement.removeAll();
+                File[] eventFiles = getBackupEventFiles();
 
-               if (ex[0] != null)
-                  throw ex[0];
+                // Replay events from time of snapshot backup
+                Date latestBackupDate = latestBackup == null ? new Date(0) : getBackupDate(latestBackup);
+
+                Inputs.combine(Iterables.map(new Function<File, Input<String, IOException>>()
+                {
+                   public Input<String, IOException> map(File file)
+                   {
+                      return Inputs.text(file);
+                   }
+                }, Arrays.asList(eventFiles))).transferTo(eventManagement.restore());
+
+                 logger.info( "Restore event backup done in: " + PeriodFormat.getDefault().print( new Duration(clearEventStart, new DateTime( ) ).toPeriod() ) );
+
+
+                 DateTime eventReplayStart = new DateTime();
+                logger.info( "Starting event replay at " + eventReplayStart.toString() );
+                {
+                   // Replay transactions
+                   final EventReplayException[] ex = new EventReplayException[1];
+                   eventSource.transactionsAfter(latestBackupDate.getTime() - 60000, new TransactionVisitor()
+                   {
+                      public boolean visit(TransactionDomainEvents transactionDomain)
+                      {
+                         try
+                         {
+                            eventPlayer.playTransaction(transactionDomain);
+                            return true;
+                         } catch (EventReplayException e)
+                         {
+                            ex[0] = e;
+                            return false;
+                         }
+                      }
+                   });
+
+                   if (ex[0] != null)
+                      throw ex[0];
+                }
+                 logger.info( "Event replay done in: " + PeriodFormat.getDefault().print( new Duration(eventReplayStart, new DateTime( ) ).toPeriod() ) );
             }
+             logger.info( "Restore done successfully in: " + PeriodFormat.getDefault().print( new Duration(startDateTime, new DateTime( ) ).toPeriod() ) );
 
-            logger.info( "Restore done successfully in: " + PeriodFormat.getDefault().print( new Duration(startDateTime, new DateTime( ) ).toPeriod() ) );
+             turnOnAccessibilityAndMailReceiver();
 
             return "Backup restored successfully";
          } catch (Exception ex)
@@ -879,6 +902,25 @@ public interface
                return failedLogins;
             }
          };
+      }
+
+      private void turnOffAccessibilityAndMailReceiver()
+      {
+         availabilityService.getCircuitBreaker().trip();
+         if( receiveMailService.getCircuitBreaker().isOn() )
+         {
+            receiveMailService.getCircuitBreaker().trip();
+         }
+      }
+
+      private void turnOnAccessibilityAndMailReceiver()
+              throws Exception
+      {
+          if( !receiveMailService.getCircuitBreaker().isOn() )
+          {
+            receiveMailService.getCircuitBreaker().turnOn();
+          }
+          availabilityService.getCircuitBreaker().turnOn();
       }
    }
 }
