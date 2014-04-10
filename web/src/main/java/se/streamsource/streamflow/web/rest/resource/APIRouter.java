@@ -65,9 +65,9 @@ public class APIRouter
 
       Restlet cqr = factory.newObjectBuilder(CommandQueryRestlet.class).use(getContext()).newInstance();
 
-      Filter authenticationFilter = factory.newObjectBuilder(AuthenticationFilter.class).use(getContext(), cqr, this.filterService).newInstance();
-      Filter availabilityFilter = factory.newObjectBuilder( AvailabilityFilter.class ).use( getContext(), authenticationFilter, availabilityService ).newInstance();
-      Filter noCacheFilter = new NoCacheFilter(context, availabilityFilter);
+      Filter availabilityFilter = factory.newObjectBuilder( AvailabilityFilter.class ).use( getContext(), cqr, availabilityService ).newInstance();
+      Filter authenticationFilter = factory.newObjectBuilder(AuthenticationFilter.class).use(getContext(), availabilityFilter, this.filterService).newInstance();
+      Filter noCacheFilter = new NoCacheFilter(context, authenticationFilter);
       Filter performanceLoggingFilter = new PerformanceLoggingFilter(context, noCacheFilter);
 
       attachDefault(new ExtensionMediaTypeFilter(getContext(), performanceLoggingFilter));
