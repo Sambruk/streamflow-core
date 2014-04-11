@@ -20,17 +20,9 @@
 
     <!-- Module: Ärendebeskrivning & taggar -->
     <div class="m single-issue">
-        <form action="#" method="get" class="form-general">
-            <div class="m-h cf">
                 <!-- <h2>{{caze[0].caseId}}</h2>  -->
-                <a href="#/cases/{{ caze[0].id }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</i></a>
-            </div>
             <!-- Issue header -->
             <div class="issue-body">
-              <div class="issue-title"> 
-                Ärendetyp: {{general[0].caseType.text}}
-              </div>
-            </div>
 
         <!--<div class="choose-type new-create-issue">
                 <label class="struct" for="issue-type">Ärendetyp</label>
@@ -42,50 +34,29 @@
                  <div class="set-due-date">
                     <label class="struct" for="set-due-date">Förfallodatum</label>
                     <input type="text" sf-date-picker name="date" data-input-type="date" id="set-due-date" placeholder="Förfallodatum" data-ng-model="general[0].dueOnShort" sf-simple-field-auto-send data-resource="general" command="changedueon" />
-                </div> -->
-        <!--</div>
-
-            <!-- Issue description -->
-            <div class="issue-messageEdit">
-                <div class="text">
-                    <label for="case-description">Beskrivning</label>
-                    <input type="text" sf-simple-field-auto-send data-resource="general" command="changedescription" name="description" id="case-description" data-ng-model="caze[0].text">
-                </div>
-            </div>
-
-
-            <!-- Issue message-->
-            <div class="issue-messageEdit">
-                <div class="text">
-                    <label for="issue-notes">Meddelande</label>
-                    <textarea name="issue-notes" id="issue-notes" cols="30" rows="5" data-ng-model="notes[0].note"></textarea>
-                </div>
-                <a href="#/cases/{{ caze[0].id }}/noteshistory" title="Gamla noteringar" style="float: right; ">Historik</a>
-                <button data-ng-click="addNote($event)" type="submit">Spara</button>
-            </div>
+                </div> 
+        </div>-->
                 
 
-        <!-- <div class="m-c">
+            <div class="m-c">
                 <div class="row cols-1 cf">
                     <div class="text col full col-1">
                         <label for="case-description">Beskrivning</label>
                         <input type="text" sf-simple-field-auto-send data-resource="general" command="changedescription" name="description" id="case-description" data-ng-model="caze[0].text">
                     </div>
-                </div>
+                </div>  
 
                 <div class="row cols-1 cf">
                     <div class="text col full col-1">
                         <label for="issue-notes">Notering</label>
                         <textarea name="issue-notes" id="issue-notes" cols="30" rows="5" data-ng-model="notes[0].note"></textarea>
                     </div>
-                    <a href="#/cases/{{ caze[0].id }}/noteshistory" title="Gamla noteringar" style="float: right; ">Gamla noteringar</a>
-                    <button data-ng-click="addNote($event)" type="submit">Skicka notering</button>
+                    <button data-ng-click="addNote($event)" type="">Spara</button>
                 </div>
-
-            </div> -->
-        </form>
-
-    </div> <!-- /single-issue -->
+            </div>
+        </div>
+    </div> 
+    <!-- /single-issue -->
     <!-- /Module: Ärendebeskrivning & taggar -->
     
 </div>

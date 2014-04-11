@@ -44,19 +44,19 @@
     * ERROR HANDLER
     **/
     //TODO: Implement error handler listener on other controllers where needed
-    $scope.errorHandler = function(){;
+    /*$scope.errorHandler = function(){;
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
         growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
       }  
-    };
+    };*/
 
     $rootScope.$broadcast('breadcrumb-updated', [{projectId: $params.projectId}, {projectType: $params.projectType}]);
 
     //error-handler
-    $scope.$on('httpRequestInitiated', $scope.errorHandler);
+    //$scope.$on('httpRequestInitiated', $scope.errorHandler);
   }]);
 
   sfCase.controller('CaseDetailCtrl', ['growl', '$scope', '$timeout', '$routeParams', 'caseService', 'navigationService', 'projectService', 'profileService', '$rootScope',
@@ -92,7 +92,7 @@
     $scope.errorHandler = function(){;
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
-        growl.addSuccessMessage('successMessage');
+        //growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
       }  
@@ -143,7 +143,7 @@
     $scope.errorHandler = function(){;
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
-        growl.addSuccessMessage('successMessage');
+        //growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
       }  
@@ -168,33 +168,15 @@
       $scope.notes = caseService.getSelectedNote($params.caseId);
       $scope.cachedNote = caseService.getSelectedNote($params.caseId);
 
-      $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
-
-    /**
-    * ERROR HANDLER
-    **/
-    //TODO: Implement error handler listener on other controllers where needed
-    $scope.errorHandler = function(){;
-      var bcMessage = caseService.getMessage();
-      if(bcMessage === 200)  {
-        growl.addSuccessMessage('successMessage');
-      }else {
-        growl.addWarnMessage('errorMessage');
-      }  
-    };
-
-    //error-handler
-    $scope.$on('httpRequestInitiated', $scope.errorHandler);
-
       $scope.addNote = function($event){
         $event.preventDefault();
         if ($scope.notes[0].note !== $scope.cachedNote[0].note)
           caseService.addNote($params.caseId, $scope.notes[0]).then(function(){
-            var href = navigationService.caseHref($params.caseId);
+            var href = navigationService.caseHrefSimple($params.caseId);
             $scope.notes.invalidate();
             $scope.notes.resolve();
             // TODO Fix redirection bug
-            window.location.assign(href);
+            window.location.assign(href + '/edit');
           });
       }
 

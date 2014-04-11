@@ -147,7 +147,7 @@
           var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.sendCaseTo($params.caseId, sendToId, callback)
+        caseService.sendCaseTo($params.caseId, sendToId, callback);
       }
 /*
       $scope.close = function(){

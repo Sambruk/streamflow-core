@@ -22,11 +22,11 @@
   <!-- Issue toolbar -->
   <div class="toolbar" data-sf-fixed-toolbar>
     <ul class="buttons cf" data-ng-show="commands[0]">
-      <li><a href="" sf-open-toolbar-content data-ng-show="canSendTo" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
-      <li><a href="" data-ng-show="canAssign" data-ng-click="assign($event)" class="btn">Tilldela</a></li>
-      <li><a href="" data-ng-show="canUnassign" data-ng-click="unassign($event)" class="btn">Tilldela</a></li>
-      <li><a href="" data-ng-show="canResolve" data-ng-click="resolve()" class="btn">Avsluta</a></li>
-      <li><a href="" data-ng-show="canClose" data-ng-click="close($event)" class="btn">Stäng</a></li>
+      <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content  data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li data-ng-show="canAssign"><a href="" data-ng-click="assign($event)" class="btn">Tilldela</a></li>
+      <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign($event)" class="btn">Tilldela &#45;</a></li>
+      <li data-ng-show="canResolve"><a href="" data-ng-click="resolve()" class="btn">Avsluta</a></li>
+      <li data-ng-show="canClose"><a href="" data-ng-click="close($event)" class="btn">Stäng</a></li>
       <li>
         <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
         <ul>
@@ -89,6 +89,7 @@
           <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
           <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
           <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
+          <li><strong>Ärendetyp:</strong> {{general[0].caseType.text}}</li>
         </ul>
       </div>
     </div>
@@ -96,17 +97,22 @@
   <!-- /Module: Allmänt -->
 
   <!-- Module: Ärende -->
-  <div class="m m-general">
+  <div class="m m-convos">
     <div class="m-h">
       <h2>Ärende</h2>
     </div>
     <div class="m-c">
-      <div class="m-box">
-        <ul>
-          <li><h3>{{caze[0].text}}</h3></li>
-          <li class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</li>
-        </ul>
-      </div>
+      <ul>
+        <li>
+          <a href="#/cases/{{ caze[0].id }}" class="block-link convCaseSidebar">
+            <h3>{{caze[0].text}}</h3>
+            <p class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</p>
+            <ul class="convo-status">
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+            </ul>
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
   <!-- /Module: Ärende -->

@@ -20,6 +20,7 @@ import ca.odell.glazedlists.SortedList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -30,6 +31,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.Links;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.util.BottomBorder;
 import se.streamsource.streamflow.client.util.StreamflowButton;
 import se.streamsource.streamflow.client.util.StreamflowToggleButton;
@@ -47,12 +49,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -367,9 +364,37 @@ public class PerspectiveView extends JPanel implements Observer
          popup.dispose();
          popup = null;
       }
-      model.refresh();
+
+       // only do active update if we are not connected to SearchView
+       if (!windowContainsSearchView(WindowUtils.findWindow( this )))
+       {
+            model.refresh();
+       } else
+       {
+           this.update( null, null );
+       }
    }
 
+   private boolean windowContainsSearchView( Container container )
+   {
+       boolean result = false;
+       for (Component c : container.getComponents())
+       {
+           if (c instanceof Container)
+           {
+               if (c instanceof SearchView)
+               {
+
+                   result = c.isShowing();
+               } else
+               {
+                   result |= windowContainsSearchView((Container) c);
+               }
+           }
+       }
+       return result;
+
+   }
 
    public JDialog getCurrentPopup()
    {
