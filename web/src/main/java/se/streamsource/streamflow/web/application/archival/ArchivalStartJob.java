@@ -110,12 +110,14 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
         Logger logger = LoggerFactory.getLogger(ArchivalStartJob.class);
 
         boolean interruptRequest = false;
+        int toArchive = 0;
+        int forDelete = 0;
 
         public String performArchivalCheck()
         {
             UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(performArchival);
-            int toArchive = 0;
-            int markedForDelete = 0;
+            toArchive = 0;
+            forDelete = 0;
             try
             {
                 for (CaseEntity caseEntity : archivableCases(archivalSettings()))
@@ -123,11 +125,11 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                     CaseType caseType = caseEntity.caseType().get();
                     if( ((Removable.Data)caseEntity).removed().get() )
                     {
-                        logger.info( "Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", "+caseType.getDescription())+"), created on " + caseEntity.createdOn().get() + ",is marked for remove and can be deleted" );
-                        markedForDelete++;
+                        logger.debug("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", " + caseType.getDescription()) + "), created on " + caseEntity.createdOn().get() + ",is marked for remove and can be deleted");
+                        forDelete++;
                     } else
                     {
-                        logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", "+caseType.getDescription())+"), created on " + caseEntity.createdOn().get() + ", can be archived");
+                        logger.debug("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + (caseType == null ? "" : ", " + caseType.getDescription()) + "), created on " + caseEntity.createdOn().get() + ", can be archived");
                         toArchive++;
                     }
                 }
@@ -136,7 +138,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                 uow.discard();
             }
 
-            return "" + toArchive + " cases can be archived.\r\n" + markedForDelete + " cases are marked for delete.";
+            return "" + toArchive + " cases can be archived.\r\n" + forDelete + " cases are marked for delete.";
         }
 
         public void performArchival() throws UnitOfWorkCompletionException
@@ -147,6 +149,8 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
 
             // reset interruption
             interruptRequest = false;
+            toArchive = 0;
+            forDelete = 0;
 
             DateTime start = new DateTime( );
             logger.info( "Archival started: " + start.toString( "yyyy-MM-dd hh:mm:ss" ) );
@@ -208,8 +212,9 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                         {
                             try
                             {
-                                logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was deleted");
+                                logger.debug("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was deleted");
                                 caseEntity.deleteEntity();
+                                forDelete++;
                             } catch (Exception e)
                             {
                                 logger.warn("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", could not be archived", e);
@@ -222,7 +227,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                                 {
                                     // if case is not marked as removed( soft delete ) -  create and export pdf
                                     File pdf = exportPdf(caseEntity);
-                                    logger.info("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
+                                    logger.debug("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
 
                                     // archiving attachments
                                     CaseDescriptor caseDescriptor = new CaseDescriptor( caseEntity );
@@ -251,7 +256,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                                                         logger.error( "Uri is not valid! - " + fileUri );
                                                     } catch ( FileNotFoundException fnf )
                                                     {
-                                                        logger.info( "File does not exist in attachment store! " + fnf.getMessage() );
+                                                        logger.warn("File does not exist in attachment store! " + fnf.getMessage());
                                                     }
 
                                                 }
@@ -260,6 +265,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                                     }));
                                 }
                                 caseEntity.deleteEntity();
+                                toArchive++;
                             } catch (Throwable throwable)
                             {
                                 logger.warn("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", could not be archived", throwable);
@@ -285,6 +291,9 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                 logger.info( "Archival ended: " + end.toString( "yyyy-MM-dd hh:mm:ss" ) + " and took "
                         + elapsed.getDays() + " days " + elapsed.getHours() + " hours "
                         + elapsed.getMinutes() + " minutes " + elapsed.getSeconds() + " seconds");
+                logger.info( toArchive + forDelete + " Cases where processed." );
+                logger.info( toArchive + " cases where removed and archived." );
+                logger.info( forDelete + " cases where removed without archiving." );
 
                 // reset interruption
                 interruptRequest = false;

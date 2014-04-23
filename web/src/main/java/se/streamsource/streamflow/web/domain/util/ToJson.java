@@ -17,6 +17,7 @@ import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
 import org.qi4j.spi.property.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.util.Primitives;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
