@@ -24,11 +24,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +39,8 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
    Date scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException;
    
    boolean deleteJob(JobKey jobKey) throws SchedulerException;
+
+   boolean interruptJob( JobKey jobKey ) throws UnableToInterruptJobException;
    
    abstract class Mixin implements QuartzSchedulerService, Activatable
    {
@@ -79,6 +77,9 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
       public boolean deleteJob(JobKey jobKey) throws SchedulerException {
          return scheduler.deleteJob( jobKey );
       }
-      
+
+      public boolean interruptJob( JobKey jobKey ) throws UnableToInterruptJobException {
+          return scheduler.interrupt( jobKey );
+      }
    }
 }

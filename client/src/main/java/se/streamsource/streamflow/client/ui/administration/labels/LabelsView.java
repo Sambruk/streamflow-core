@@ -33,19 +33,11 @@ import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.ResourceActionEnabler;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.SeparatorListCellRenderer;
-import se.streamsource.streamflow.client.util.StreamflowButton;
-import se.streamsource.streamflow.client.util.TitledLinkGroupingComparator;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
@@ -55,9 +47,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,8 +58,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  * Admin of labels.
  */
 public class LabelsView
-      extends JPanel
-   implements TransactionListener
+      extends ListDetailView
 {
    LabelsModel model;
 
@@ -79,50 +68,38 @@ public class LabelsView
    @Service
    DialogService dialogs;
 
-   public JList list;
 
    public LabelsView( @Service ApplicationContext context,
                               @Uses final LabelsModel model)
    {
-      super( new BorderLayout() );
       this.model = model;
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      ActionMap am = context.getActionMap( this );
+      final ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      JPopupMenu options = new JPopupMenu();
-      options.add( am.get( "rename" ) );
-      options.add( am.get( "move" ) );
-      options.add( am.get( "showUsages" ) );
-      options.add( am.get( "knowledgeBase" ) );
-      options.add( am.get( "remove" ) );
 
-      JScrollPane scrollPane = new JScrollPane();
-      EventList<LinkValue> itemValueEventList = model.getList();
-      list = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
-      list.setCellRenderer( new LinkListCellRenderer() );
-      scrollPane.setViewportView( list );
-      add( scrollPane, BorderLayout.CENTER );
-
-      JPanel toolbar = new JPanel();
-      toolbar.add( new StreamflowButton( am.get( "add" ) ) );
-      toolbar.add( new StreamflowButton( new OptionsAction(options) ) );
-      add( toolbar, BorderLayout.SOUTH );
-
-      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "move" ), am.get("knowledgeBase"), am.get( "showUsages" ) ) );
-
-      new RefreshWhenShowing( this, model );
-
-      new RefreshWhenShowing(options, new ResourceActionEnabler(am.get("knowledgeBase"))
+       initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get("move"), am.get( "rename" ), am.get("showUsages"), am.get("knowledgeBase"), am.get( "remove" )}, new DetailFactory()
       {
-         @Override
-         protected ResourceValue getResource()
+         public Component createDetail( LinkValue detailLink )
          {
-            model.refresh();
-            return model.getResourceValue();
+            final LabelModel labelModel = (LabelModel) model.newResourceModel(detailLink);
+
+            new ResourceActionEnabler(am.get("knowledgeBase"))
+            {
+               @Override
+               protected ResourceValue getResource()
+               {
+                  labelModel.refresh();
+                  return labelModel.getResourceValue();
+               }
+            }.refresh();
+
+            TabbedResourceView view = module.objectBuilderFactory().newObjectBuilder(TabbedResourceView.class).use( labelModel ).newInstance();
+            return view;
          }
       });
+
+      new RefreshWhenShowing( this, model );
    }
 
    @Action
@@ -244,6 +221,8 @@ public class LabelsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      model.notifyTransactions( transactions );
+       model.notifyTransactions( transactions );
+
+       super.notifyTransactions( transactions );
    }
 }

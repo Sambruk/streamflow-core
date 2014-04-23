@@ -48,6 +48,7 @@ import org.qi4j.spi.entitystore.BackupRestore;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.quartz.UnableToInterruptJobException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
@@ -60,8 +61,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
+import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
-import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -94,7 +95,8 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * should be put here for convenience.
  */
 @Mixins(ManagerComposite.ManagerMixin.class)
-public interface ManagerComposite
+public interface
+        ManagerComposite
         extends Manager, TransientComposite
 {
    void start()
@@ -163,16 +165,13 @@ public interface ManagerComposite
       CaseStatistics statistics;
 
       @Service
-      ArchivalService archival;
-
-      @Service
-      DueOnNotificationService dueOnNotificationService;
-
-      @Service
       LdapImporterService ldapImporterService;
       
       @Structure
       ModuleSPI module;
+
+      @Service
+      ArchivalService archivalService;
 
       private int failedLogins;
 
@@ -180,6 +179,8 @@ public interface ManagerComposite
       public File backup;
 
       public TransactionListener failedLoginListener;
+
+      private ArchivalStartJob archivalJob;
 
       public void start() throws Exception
       {
@@ -585,9 +586,11 @@ public interface ManagerComposite
       public String performArchivalCheck()
       {
          logger.info("Start archival check");
-         String result = archival.performArchivalCheck();
-         logger.info("Finished archival check");
-         return result;
+          TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
+          archivalJob = newJobBuilder.newInstance();
+          logger.info("Finished archival check");
+
+          return archivalJob.performArchivalCheck();
       }
 
       public void performArchival()
@@ -595,12 +598,29 @@ public interface ManagerComposite
          try
          {
             logger.info("Start archival");
-            archival.performArchival();
+             TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
+             archivalJob = newJobBuilder.newInstance();
+             archivalJob.performArchival();
             logger.info("Finished archival");
          } catch (UnitOfWorkCompletionException e)
          {
             logger.warn("Could not perform archival", e);
          }
+      }
+
+      public void interruptArchival()
+      {
+          if( archivalJob != null )
+          {
+              try {
+                  logger.info( "Interrupting archival" );
+                  archivalJob.interrupt();
+
+              } catch (UnableToInterruptJobException e)
+              {
+                  logger.error( "Could not interrupt archival", e);
+              }
+          }
       }
 
       public void sendDueOnNotifications()

@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.assembler;
 
 import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.module;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 import java.util.Properties;
@@ -48,6 +49,8 @@ import se.streamsource.streamflow.server.plugin.ldapimport.GroupMemberDetailValu
 import se.streamsource.streamflow.server.plugin.ldapimport.UserListValue;
 import se.streamsource.streamflow.web.application.archival.ArchivalConfiguration;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
+import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
+import se.streamsource.streamflow.web.application.archival.ArchivalStopJob;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsService;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
@@ -196,6 +199,14 @@ public class AppAssembler
    {
       archival.services(ArchivalService.class).identifiedBy("archival").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(ArchivalConfiguration.class);
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().maxTimeToLive().set( -1 );
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().startScheduledArchival().set(false);
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().modulo().set(1000);
+      // default schedule - between 19:00 - 23:30 every day
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().startSchedule().set("0 0 19 * * ?");
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().stopSchedule().set("0 30 23 * * ?");
+
+      archival.transients(ArchivalStartJob.class, ArchivalStopJob.class).visibleIn(application);
    }
 
    private void dueOnNotifiation(ModuleAssembly module)

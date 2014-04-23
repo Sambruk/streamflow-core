@@ -58,6 +58,7 @@ import se.streamsource.streamflow.client.ui.administration.forms.definition.Visi
 import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsModel;
+import se.streamsource.streamflow.client.ui.administration.labels.LabelModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersModel;
@@ -214,6 +215,7 @@ public class ModelAssembler
             GroupsModel.class,
             GroupModel.class,
             LabelsModel.class,
+            LabelModel.class,
             MembersModel.class,
             OrganizationsModel.class,
             OrganizationUsersModel.class,
