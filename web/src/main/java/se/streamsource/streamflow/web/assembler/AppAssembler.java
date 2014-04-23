@@ -90,6 +90,7 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalStruc
 import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitValue;
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
+import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.caching.CaseCountCacheService;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
@@ -207,6 +208,7 @@ public class AppAssembler
       configuration().forMixin(ArchivalConfiguration.class).declareDefaults().stopSchedule().set("0 30 23 * * ?");
 
       archival.transients(ArchivalStartJob.class, ArchivalStopJob.class).visibleIn(application);
+      archival.objects(ToJson.class);
    }
 
    private void dueOnNotifiation(ModuleAssembly module)

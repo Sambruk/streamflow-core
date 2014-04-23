@@ -1,26 +1,52 @@
+/**
+ *
+ * Copyright 2009-2014 Jayway Products AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package se.streamsource.streamflow.web.domain.util;
 
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
+import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.spi.entity.association.AssociationDescriptor;
 import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
+import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
 import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.util.Primitives;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -29,6 +55,19 @@ import java.util.Map;
 public class ToJson {
 
     private static Logger logger = LoggerFactory.getLogger( ToJson.class.getName() );
+
+    ModuleSPI module;
+
+    EntityStore entityStore;
+
+    EntityStoreUnitOfWork uow;
+
+    public ToJson(@Structure ModuleSPI module, @Service EntityStore entityStore )
+    {
+        this.module = module;
+        this.entityStore = entityStore;
+        this.uow = entityStore.newUnitOfWork( UsecaseBuilder.newUsecase("toJson"), module );
+    }
     /**
      * <pre>
      * {
@@ -40,7 +79,7 @@ public class ToJson {
      * }
      * </pre>
      */
-    public static String toJSON( EntityState state, Map<String, EntityState> newStates, EntityStoreUnitOfWork uow )
+    public  String toJSON( EntityState state )
     {
         long start = System.nanoTime();
         JSONObject json = null;
@@ -48,11 +87,13 @@ public class ToJson {
         {
             json = new JSONObject();
 
-            json.put( "_identity", state.identity().identity() );
+            json.put("_identity", state.identity());
 
-            json.put( "_types", state.entityDescriptor().entityType().toString() );
-            EntityType entityType = state.entityDescriptor().entityType();
             EntityDescriptor entityDesc = state.entityDescriptor();
+            EntityType entityType = entityDesc.entityType();
+
+            json.put("_types", entityType.toString());
+
             // Properties
             for( PropertyType propType : entityType.properties() )
             {
@@ -98,17 +139,16 @@ public class ToJson {
                     }
                     else
                     {
-
-                        if( newStates.containsKey( associated.identity() ) )
+                        if( assocDesc.isAggregated() )
                         {
-                            value = new JSONObject( toJSON( newStates.get( associated.identity() ), newStates, uow ) );
+
+                            EntityState assocState = uow.getEntityState( EntityReference.parseEntityReference( associated.identity() ) );
+                            value = new JSONObject( toJSON( assocState ) );
                         }
                         else
                         {
-                            EntityState assocState = uow.getEntityState( EntityReference.parseEntityReference( associated.identity() ) );
-                            value = new JSONObject( toJSON( assocState, newStates, uow ) );
+                            value = new JSONObject( Collections.singletonMap("identity", associated.identity()) );
                         }
-
                     }
                     json.put( key, value );
                 }
@@ -124,17 +164,16 @@ public class ToJson {
                     ManyAssociationState associateds = state.getManyAssociation(manyAssocDesc.qualifiedName());
                     for( EntityReference associated : associateds )
                     {
-
-                        if( newStates.containsKey( associated.identity() ) )
+                        if( manyAssocDesc.isAggregated()  )
                         {
-                            array.put( new JSONObject( toJSON( newStates.get( associated.identity() ), newStates, uow ) ) );
+
+                            EntityState assocState = uow.getEntityState(EntityReference.parseEntityReference(associated.identity()));
+                            array.put( new JSONObject( toJSON( assocState ) ) );
                         }
                         else
                         {
-                            EntityState assocState = uow.getEntityState(EntityReference.parseEntityReference(associated.identity()));
-                            array.put( new JSONObject( toJSON( assocState, newStates, uow ) ) );
+                            array.put( new JSONObject( Collections.singletonMap( "identity", associated.identity() ) ) );
                         }
-
                     }
                     json.put( key, array );
                 }
@@ -144,8 +183,8 @@ public class ToJson {
         }
         catch( JSONException e )
         {
-            logger.info( "Faild to convert Entity to Json: " + state.identity().identity(), e);
-            throw new RuntimeException("Faild to convert Entity to Json: " + state.identity().identity(), e);
+            logger.info("Faild to convert Entity to Json: " + state.identity(), e);
+            throw new RuntimeException("Faild to convert Entity to Json: " + state.identity(), e);
         }
     }
 

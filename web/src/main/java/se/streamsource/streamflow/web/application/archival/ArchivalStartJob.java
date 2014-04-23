@@ -40,6 +40,9 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entitystore.EntityStore;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +69,7 @@ import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 
 import java.io.*;
@@ -88,6 +92,13 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
     public void performArchival() throws UnitOfWorkCompletionException;
 
     abstract class Mixin implements ArchivalStartJob {
+
+        @Structure
+        ModuleSPI moduleSPI;
+
+        @Service
+        EntityStore entityStore;
+
         @Service
         FileConfiguration fileConfiguration;
 
@@ -101,6 +112,9 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
 
         @Structure
         Module module;
+
+        @Structure
+        Qi4jSPI api;
 
         @Service
         ArchivalService archivalService;
@@ -226,7 +240,8 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                                 if( !((Removable.Data)caseEntity).removed().get() )
                                 {
                                     // if case is not marked as removed( soft delete ) -  create and export pdf
-                                    File pdf = exportPdf(caseEntity);
+                                    exportPdf(caseEntity);
+                                    //exportJson( caseEntity );
                                     logger.debug("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
 
                                     // archiving attachments
@@ -344,10 +359,21 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
         }
 
         // TODO Json export
-        private File exportJson( CaseEntity caseEntity )
+        private File exportJson( final CaseEntity caseEntity ) throws Throwable
         {
             File file = new File(archiveDir, caseEntity.caseId().get()+".json");
-
+            final ToJson toJson = module.objectBuilderFactory().newObjectBuilder(ToJson.class).use( moduleSPI, entityStore ).newInstance();
+            try {
+                Outputs.text(file, "UTF-8").receiveFrom(new Sender<String, Throwable>() {
+                    @Override
+                    public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super String, ReceiverThrowableType> receiver) throws ReceiverThrowableType, Throwable {
+                        receiver.receive(toJson.toJSON( api.getEntityState(caseEntity) ));
+                    }
+                });
+            } catch (Throwable throwable) {
+                file.delete();
+                throw throwable;
+            }
             return file;
         }
 

@@ -56,6 +56,8 @@ public interface Manager
    public String performArchivalCheck();
 
    public void performArchival();
+
+   public void interruptArchival();
    
    public void sendDueOnNotifications();
 
