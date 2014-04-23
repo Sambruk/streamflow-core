@@ -210,7 +210,8 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                             settings = data.archivalSettings().get();
                             caseEntity = uow.get(caseEntity);
                             try {
-                                Thread.sleep(2000);
+                                long sleep = archivalService.configuration().sleepInMillis().get();
+                                Thread.sleep(sleep < 1 ? 2000 : sleep );
                             } catch (InterruptedException e)
                             {
                             }

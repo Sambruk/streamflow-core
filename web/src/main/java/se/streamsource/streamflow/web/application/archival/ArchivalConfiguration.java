@@ -66,4 +66,11 @@ public interface ArchivalConfiguration
      */
     @UseDefaults
     Property<String> stopSchedule();
+
+    /**
+     * The amount of milliseconds the executing job should sleep between intervals.
+     * @return
+     */
+    @UseDefaults
+    Property<Long> sleepInMillis();
 }
