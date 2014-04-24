@@ -48,6 +48,7 @@ import org.qi4j.spi.entitystore.BackupRestore;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.quartz.JobKey;
 import org.quartz.UnableToInterruptJobException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +73,7 @@ import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupC
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
+import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -172,6 +174,9 @@ public interface
 
       @Service
       ArchivalService archivalService;
+
+      @Service
+      QuartzSchedulerService scheduler;
 
       private int failedLogins;
 
@@ -610,16 +615,24 @@ public interface
 
       public void interruptArchival()
       {
-          if( archivalJob != null )
+          JobKey jobKey =  JobKey.jobKey( "archivalstartjob", "archivalgroup" );
+          try
           {
-              try {
-                  logger.info( "Interrupting archival" );
-                  archivalJob.interrupt();
-
-              } catch (UnableToInterruptJobException e)
+              // if started by Quartz let it handle interruption
+              if( scheduler.isExecuting(jobKey ) )
               {
-                  logger.error( "Could not interrupt archival", e);
+                scheduler.interruptJob( jobKey );
+              } else
+              {
+                if( archivalJob != null )
+                {
+                      logger.info( "Interrupting manual archival" );
+                      archivalJob.interrupt();
+                }
               }
+          }catch ( Exception e )
+          {
+              logger.error( "Could not interrupt archival", e);
           }
       }
 

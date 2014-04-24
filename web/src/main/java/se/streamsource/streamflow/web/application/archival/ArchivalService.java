@@ -83,7 +83,8 @@ public interface ArchivalService
                }
                if( config.configuration().startScheduledArchival().get() )
                {
-                    logger.info("Activated: " + config.configuration().startSchedule().get());
+                    logger.info( "Start activated: " + config.configuration().startSchedule().get() );
+                    logger.info( "Stop activated: " + config.configuration().stopSchedule().get() );
                } else
                {
                    logger.info( "Activated: Manual mode only. " );
@@ -93,10 +94,16 @@ public interface ArchivalService
 
        public void passivate() throws Exception
        {
-           if( scheduler != null && startJob != null && stopJob != null )
+           if( scheduler != null )
            {
-               scheduler.deleteJob(startJob.getKey());
-               scheduler.deleteJob( stopJob.getKey() );
+               if( startJob != null )
+               {
+                    scheduler.deleteJob(startJob.getKey());
+               }
+               if( stopJob != null )
+               {
+                    scheduler.deleteJob( stopJob.getKey() );
+               }
            }
            logger.info( "Passivated" );
        }

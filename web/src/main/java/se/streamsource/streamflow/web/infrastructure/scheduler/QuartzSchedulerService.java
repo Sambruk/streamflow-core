@@ -41,6 +41,8 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
    boolean deleteJob(JobKey jobKey) throws SchedulerException;
 
    boolean interruptJob( JobKey jobKey ) throws UnableToInterruptJobException;
+
+   boolean isExecuting( JobKey jobKey ) throws SchedulerException;
    
    abstract class Mixin implements QuartzSchedulerService, Activatable
    {
@@ -79,7 +81,20 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
       }
 
       public boolean interruptJob( JobKey jobKey ) throws UnableToInterruptJobException {
+          logger.info( "Interrupting job: " + jobKey.toString() );
           return scheduler.interrupt( jobKey );
+      }
+
+      public boolean isExecuting( JobKey jobKey) throws SchedulerException
+      {
+          for( JobExecutionContext executionContext : scheduler.getCurrentlyExecutingJobs() )
+          {
+              if ( executionContext.getJobDetail().getKey().equals( jobKey) )
+              {
+                  return true;
+              }
+          }
+          return false;
       }
    }
 }
