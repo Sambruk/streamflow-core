@@ -36,15 +36,6 @@ public interface ArchivalConfiguration
     Property<Boolean> startScheduledArchival();
 
     /**
-     * The maximum time to live in days for a case.
-     * After that the case will be archived as Pdf.
-     * A value of -1 indicates for ever.
-      * @return  The time to live in days for a case.
-     */
-   @UseDefaults
-   Property<Integer> maxTimeToLive();
-
-    /**
      * Amount of cases to process before making a 2 seconds wait.
      * @return
      */
