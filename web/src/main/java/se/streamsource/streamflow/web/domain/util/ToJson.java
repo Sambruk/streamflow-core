@@ -36,6 +36,7 @@ import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.spi.entity.association.AssociationDescriptor;
 import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
+import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
 import org.qi4j.spi.property.PropertyType;
@@ -79,7 +80,7 @@ public class ToJson {
      * }
      * </pre>
      */
-    public  String toJSON( EntityState state )
+    public  String toJSON( EntityState state, boolean aggregateAssociations )
     {
         long start = System.nanoTime();
         JSONObject json = null;
@@ -92,7 +93,7 @@ public class ToJson {
             EntityDescriptor entityDesc = state.entityDescriptor();
             EntityType entityType = entityDesc.entityType();
 
-            json.put("_types", entityType.toString());
+            json.put("_type", entityType.toString());
 
             // Properties
             for( PropertyType propType : entityType.properties() )
@@ -139,11 +140,17 @@ public class ToJson {
                     }
                     else
                     {
-                        if( assocDesc.isAggregated() )
+                        if( aggregateAssociations )
                         {
 
-                            EntityState assocState = uow.getEntityState( EntityReference.parseEntityReference( associated.identity() ) );
-                            value = new JSONObject( toJSON( assocState ) );
+                            try
+                            {
+                                EntityState assocState = uow.getEntityState( EntityReference.parseEntityReference( associated.identity() ) );
+                                value = new JSONObject( toJSON( assocState, false ) );
+                            } catch ( EntityNotFoundException e )
+                            {
+                                value = new JSONObject( Collections.singletonMap("identity", associated.identity() + " aggregation impossible") );
+                            }
                         }
                         else
                         {
@@ -164,11 +171,16 @@ public class ToJson {
                     ManyAssociationState associateds = state.getManyAssociation(manyAssocDesc.qualifiedName());
                     for( EntityReference associated : associateds )
                     {
-                        if( manyAssocDesc.isAggregated()  )
+                        if( aggregateAssociations  )
                         {
-
-                            EntityState assocState = uow.getEntityState(EntityReference.parseEntityReference(associated.identity()));
-                            array.put( new JSONObject( toJSON( assocState ) ) );
+                            try
+                            {
+                                EntityState assocState = uow.getEntityState(EntityReference.parseEntityReference(associated.identity()));
+                                array.put( new JSONObject( toJSON( assocState, false ) ) );
+                            } catch ( EntityNotFoundException e )
+                            {
+                                array.put( new JSONObject( Collections.singletonMap("identity", associated.identity() + " aggregation impossible") ) );
+                            }
                         }
                         else
                         {

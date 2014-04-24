@@ -242,7 +242,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                                 {
                                     // if case is not marked as removed( soft delete ) -  create and export pdf
                                     exportPdf(caseEntity);
-                                    //exportJson( caseEntity );
+                                    exportJson( caseEntity );
                                     logger.debug("Case " + caseEntity.getDescription() + "(" + caseEntity.caseId() + "), created on " + caseEntity.createdOn().get() + ", was archived");
 
                                     // archiving attachments
@@ -368,7 +368,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                 Outputs.text(file, "UTF-8").receiveFrom(new Sender<String, Throwable>() {
                     @Override
                     public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super String, ReceiverThrowableType> receiver) throws ReceiverThrowableType, Throwable {
-                        receiver.receive(toJson.toJSON( api.getEntityState(caseEntity) ));
+                        receiver.receive(toJson.toJSON( api.getEntityState(caseEntity), true ));
                     }
                 });
             } catch (Throwable throwable) {
