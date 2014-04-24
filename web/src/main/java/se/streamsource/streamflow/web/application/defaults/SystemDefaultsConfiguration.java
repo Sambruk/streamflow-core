@@ -96,4 +96,12 @@ public interface SystemDefaultsConfiguration
 
    @UseDefaults
    Property<Long> defaultMarkReadTimeout();
+
+    /**
+     * The map url as a MessageFormat pattern
+     * f.ex. <a href=\"http://maps.google.com/maps?z=13&t=m&q={0}\" alt=\"Google Maps\">Klicka här för att visa karta</a>
+     * @return
+     */
+    @UseDefaults
+    Property<String> mapDefaultUrlPattern();
 }

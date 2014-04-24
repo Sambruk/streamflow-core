@@ -184,6 +184,7 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().defaultMarkReadTimeout().set( 15L );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultStartLocation().set( "59.324258,18.070450" );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultZoomLevel().set( 6 );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultUrlPattern().set( "<a href=\"http://maps.google.com/maps?z=13&t=m&q={0}\" alt=\"Google Maps\">Klicka här för att visa karta</a>" );
 
       // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
       system.services( AvailabilityService.class ).identifiedBy( "availability" ).
@@ -200,7 +201,6 @@ public class AppAssembler
    {
       archival.services(ArchivalService.class).identifiedBy("archival").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(ArchivalConfiguration.class);
-      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().maxTimeToLive().set( -1 );
       configuration().forMixin(ArchivalConfiguration.class).declareDefaults().startScheduledArchival().set(false);
       configuration().forMixin(ArchivalConfiguration.class).declareDefaults().modulo().set(1000);
       // default schedule - between 19:00 - 23:30 every day

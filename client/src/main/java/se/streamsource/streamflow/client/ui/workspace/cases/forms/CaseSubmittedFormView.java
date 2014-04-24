@@ -299,7 +299,7 @@ public class CaseSubmittedFormView
          text += fieldValue;
       }  else if (fieldType.equals(GeoLocationFieldValue.class.getName()))
       {
-         LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, fieldValue );
+         /*LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, fieldValue );
          text += locationDTO.street().get() + ", " + locationDTO.zipcode().get() + ", " + locationDTO.city().get() + "<br>";
          String locationString = locationDTO.location().get();
          if (locationString != null) {
@@ -310,6 +310,8 @@ public class CaseSubmittedFormView
             }
          }
          text += "<a href=\"http://maps.google.com/maps?z=13&t=m&q=" + locationString + "\" alt=\"Google Maps\">Klicka här för att visa karta</a>";
+         */
+          text += fieldValue;
       } else
       {
          text += fieldValue;
