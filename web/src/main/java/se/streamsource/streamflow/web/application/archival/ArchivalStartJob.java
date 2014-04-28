@@ -220,7 +220,8 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                         // uow complete is called in the finally clause!!
                         if( interruptRequest )
                         {
-                            break;
+                            logger.info( "Archival interruptRequest = " + interruptRequest );
+                            return;
                         }
 
                         if (settings.archivalType().get().equals(ArchivalSettingsDTO.ArchivalType.delete))
