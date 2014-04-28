@@ -591,11 +591,15 @@ public interface
       public String performArchivalCheck()
       {
          logger.info("Start archival check");
-          TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
-          archivalJob = newJobBuilder.newInstance();
+          if( archivalJob == null )
+          {
+            TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
+            archivalJob = newJobBuilder.newInstance();
+          }
+          String result = archivalJob.performArchivalCheck();
           logger.info("Finished archival check");
 
-          return archivalJob.performArchivalCheck();
+          return result;
       }
 
       public void performArchival()
@@ -603,8 +607,11 @@ public interface
          try
          {
             logger.info("Start archival");
-             TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
-             archivalJob = newJobBuilder.newInstance();
+             if( archivalJob == null )
+             {
+                TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
+                archivalJob = newJobBuilder.newInstance();
+             }
              archivalJob.performArchival();
             logger.info("Finished archival");
          } catch (UnitOfWorkCompletionException e)
@@ -613,30 +620,33 @@ public interface
          }
       }
 
-      public void interruptArchival()
+      public String interruptArchival()
       {
+          String result = "Sending interrupt: \r\n";
           JobKey jobKey =  JobKey.jobKey( "archivalstartjob", "archivalgroup" );
           try
           {
-              // make sure that even transient instances are stopped!
+              // make sure that even transient instance is stopped!
               if( archivalJob != null )
               {
                   logger.info( "Interrupting manual archival" );
                   archivalJob.interrupt();
+                  result += "Sent interrupt request to manual archival\r\n";
               }
 
               // if started by Quartz let it handle interruption
               if( scheduler.isExecuting(jobKey ) )
               {
                 scheduler.interruptJob( jobKey );
+                result += "Sent interruptJob to Quartz scheduler";
               }
-
-
 
           }catch ( Exception e )
           {
               logger.error( "Could not interrupt archival", e);
+              return "Interrupt archival failed: " + e.getMessage();
           }
+          return result;
       }
 
       public void sendDueOnNotifications()
