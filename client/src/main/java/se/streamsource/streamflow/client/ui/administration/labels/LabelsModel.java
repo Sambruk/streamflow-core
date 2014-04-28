@@ -31,6 +31,8 @@ public class LabelsModel
    public LabelsModel( )
    {
       super( "create" );
+
+       relationModelMapping("resource", LabelModel.class );
    }
 
    public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)

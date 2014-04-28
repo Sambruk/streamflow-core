@@ -48,6 +48,8 @@ import org.qi4j.spi.entitystore.BackupRestore;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.quartz.JobKey;
+import org.quartz.UnableToInterruptJobException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
@@ -60,8 +62,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
+import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
-import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -71,6 +73,7 @@ import se.streamsource.streamflow.web.infrastructure.plugin.StreetAddressLookupC
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImportJob;
 import se.streamsource.streamflow.web.infrastructure.plugin.ldap.LdapImporterService;
+import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -94,7 +97,8 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * should be put here for convenience.
  */
 @Mixins(ManagerComposite.ManagerMixin.class)
-public interface ManagerComposite
+public interface
+        ManagerComposite
         extends Manager, TransientComposite
 {
    void start()
@@ -163,16 +167,16 @@ public interface ManagerComposite
       CaseStatistics statistics;
 
       @Service
-      ArchivalService archival;
-
-      @Service
-      DueOnNotificationService dueOnNotificationService;
-
-      @Service
       LdapImporterService ldapImporterService;
       
       @Structure
       ModuleSPI module;
+
+      @Service
+      ArchivalService archivalService;
+
+      @Service
+      QuartzSchedulerService scheduler;
 
       private int failedLogins;
 
@@ -180,6 +184,8 @@ public interface ManagerComposite
       public File backup;
 
       public TransactionListener failedLoginListener;
+
+      private ArchivalStartJob archivalJob;
 
       public void start() throws Exception
       {
@@ -585,9 +591,15 @@ public interface ManagerComposite
       public String performArchivalCheck()
       {
          logger.info("Start archival check");
-         String result = archival.performArchivalCheck();
-         logger.info("Finished archival check");
-         return result;
+          if( archivalJob == null )
+          {
+            TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
+            archivalJob = newJobBuilder.newInstance();
+          }
+          String result = archivalJob.performArchivalCheck();
+          logger.info("Finished archival check");
+
+          return result;
       }
 
       public void performArchival()
@@ -595,12 +607,46 @@ public interface ManagerComposite
          try
          {
             logger.info("Start archival");
-            archival.performArchival();
+             if( archivalJob == null )
+             {
+                TransientBuilder<? extends ArchivalStartJob> newJobBuilder = module.transientBuilderFactory().newTransientBuilder(ArchivalStartJob.class);
+                archivalJob = newJobBuilder.newInstance();
+             }
+             archivalJob.performArchival();
             logger.info("Finished archival");
          } catch (UnitOfWorkCompletionException e)
          {
             logger.warn("Could not perform archival", e);
          }
+      }
+
+      public String interruptArchival()
+      {
+          String result = "Sending interrupt: \r\n";
+          JobKey jobKey =  JobKey.jobKey( "archivalstartjob", "archivalgroup" );
+          try
+          {
+              // make sure that even transient instance is stopped!
+              if( archivalJob != null )
+              {
+                  logger.info( "Interrupting manual archival" );
+                  archivalJob.interrupt();
+                  result += "Sent interrupt request to manual archival\r\n";
+              }
+
+              // if started by Quartz let it handle interruption
+              if( scheduler.isExecuting(jobKey ) )
+              {
+                scheduler.interruptJob( jobKey );
+                result += "Sent interruptJob to Quartz scheduler";
+              }
+
+          }catch ( Exception e )
+          {
+              logger.error( "Could not interrupt archival", e);
+              return "Interrupt archival failed: " + e.getMessage();
+          }
+          return result;
       }
 
       public void sendDueOnNotifications()

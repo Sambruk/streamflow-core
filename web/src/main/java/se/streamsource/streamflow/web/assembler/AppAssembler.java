@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.assembler;
 
 import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.module;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 import java.util.Properties;
@@ -48,6 +49,8 @@ import se.streamsource.streamflow.server.plugin.ldapimport.GroupMemberDetailValu
 import se.streamsource.streamflow.server.plugin.ldapimport.UserListValue;
 import se.streamsource.streamflow.web.application.archival.ArchivalConfiguration;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
+import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
+import se.streamsource.streamflow.web.application.archival.ArchivalStopJob;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsService;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
@@ -87,6 +90,7 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalStruc
 import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitValue;
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
+import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.caching.CaseCountCacheService;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
@@ -180,6 +184,7 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().defaultMarkReadTimeout().set( 15L );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultStartLocation().set( "59.324258,18.070450" );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultZoomLevel().set( 6 );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultUrlPattern().set( "<a href=\"http://maps.google.com/maps?z=13&t=m&q={0}\" alt=\"Google Maps\">Klicka här för att visa karta</a>" );
 
       // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
       system.services( AvailabilityService.class ).identifiedBy( "availability" ).
@@ -196,6 +201,14 @@ public class AppAssembler
    {
       archival.services(ArchivalService.class).identifiedBy("archival").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(ArchivalConfiguration.class);
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().startScheduledArchival().set(false);
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().modulo().set(1000);
+      // default schedule - between 19:00 - 23:30 every day
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().startSchedule().set("0 0 19 * * ?");
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().stopSchedule().set("0 30 23 * * ?");
+
+      archival.transients(ArchivalStartJob.class, ArchivalStopJob.class).visibleIn(application);
+      archival.objects(ToJson.class);
    }
 
    private void dueOnNotifiation(ModuleAssembly module)

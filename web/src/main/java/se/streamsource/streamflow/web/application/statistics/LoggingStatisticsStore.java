@@ -69,12 +69,12 @@ public interface LoggingStatisticsStore
             }
          });
 
-         log.info( str.toString() );
+         log.debug( str.toString() );
       }
 
       public void removedCase( String id ) throws StatisticsStoreException
       {
-         log.info("Marked statistics for " + id + " as deleted." );
+         log.debug("Marked statistics for " + id + " as deleted." );
       }
 
       public void structure(OrganizationalStructureValue structureValue)
