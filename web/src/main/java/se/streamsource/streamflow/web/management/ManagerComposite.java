@@ -618,18 +618,20 @@ public interface
           JobKey jobKey =  JobKey.jobKey( "archivalstartjob", "archivalgroup" );
           try
           {
-              // if started by Quartz let it handle interruption
-              if( scheduler.isExecuting(jobKey ) )
-              {
-                scheduler.interruptJob( jobKey );
-              }
-
               // make sure that even transient instances are stopped!
               if( archivalJob != null )
               {
                   logger.info( "Interrupting manual archival" );
                   archivalJob.interrupt();
               }
+
+              // if started by Quartz let it handle interruption
+              if( scheduler.isExecuting(jobKey ) )
+              {
+                scheduler.interruptJob( jobKey );
+              }
+
+
 
           }catch ( Exception e )
           {
