@@ -622,14 +622,15 @@ public interface
               if( scheduler.isExecuting(jobKey ) )
               {
                 scheduler.interruptJob( jobKey );
-              } else
-              {
-                if( archivalJob != null )
-                {
-                      logger.info( "Interrupting manual archival" );
-                      archivalJob.interrupt();
-                }
               }
+
+              // make sure that even transient instances are stopped!
+              if( archivalJob != null )
+              {
+                  logger.info( "Interrupting manual archival" );
+                  archivalJob.interrupt();
+              }
+
           }catch ( Exception e )
           {
               logger.error( "Could not interrupt archival", e);
