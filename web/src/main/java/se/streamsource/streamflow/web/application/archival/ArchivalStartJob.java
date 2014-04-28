@@ -435,6 +435,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
         public void interrupt() throws UnableToInterruptJobException
         {
             interruptRequest = true;
+            logger.info( "Interrupt request received." );
         }
     }
 }
