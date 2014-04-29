@@ -384,9 +384,9 @@ public class ApplyFilterContext
          StringBuffer notification = new StringBuffer();
          SimpleDateFormat dateFormat = new SimpleDateFormat( bundle.getString( "date_format" ) );
          notification.append( bundle.getString( "description" )).append(": ").append(self.getDescription()).append("<BR>");
-         if (self.priority().get() != null)
+         if (self.casepriority().get() != null)
          {
-            notification.append( bundle.getString( "priority" )).append(": ").append(self.priority().get().getDescription()).append("<BR>");
+            notification.append( bundle.getString( "priority" )).append(": ").append(self.casepriority().get().getDescription()).append("<BR>");
          }
          notification.append( bundle.getString( "createdon" )).append(": ").append( dateFormat.format( self.createdOn().get() )).append("<BR>");
          if (self.dueOn().get() != null)

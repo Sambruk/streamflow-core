@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;

@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.20-SNAPSHOT</version>
+    <version>1.21-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -265,7 +265,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -606,7 +606,7 @@
             <dependency>
                 <groupId>org.qi4j.core</groupId>
                 <artifactId>org.qi4j.core.runtime</artifactId>
-                <version>${version.qi4j-ext}</version>
+                <version>${version.qi4j-core}</version>
             </dependency>
             <dependency>
                 <groupId>org.qi4j.core</groupId>
@@ -695,16 +695,18 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!--
             <dependency>
                 <groupId>org.qi4j.extension</groupId>
                 <artifactId>org.qi4j.extension.indexing-rdf</artifactId>
-                <version>${version.qi4j-ext}</version>
+                 <version>${version.qi4j-ext}</version>
             </dependency>
             <dependency>
                 <groupId>org.qi4j.library</groupId>
                 <artifactId>org.qi4j.library.rdf</artifactId>
                 <version>${version.qi4j-lib}</version>
             </dependency>
+            -->
             <dependency>
                 <groupId>org.restlet.jee</groupId>
                 <artifactId>org.restlet</artifactId>

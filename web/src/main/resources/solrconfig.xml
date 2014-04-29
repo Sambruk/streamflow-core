@@ -36,7 +36,8 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>LUCENE_42</luceneMatchVersion>
+  <luceneMatchVersion>4.6</luceneMatchVersion>
+
 
   <!-- <lib/> directives can be used to instruct Solr to load an Jars
        identified and use them to resolve any "plugins" specified in
@@ -69,7 +70,7 @@
 
        The examples below can be used to load some solr-contribs along 
        with their external dependencies.
-    -->
+
   <lib dir="../../../contrib/extraction/lib" regex=".*\.jar" />
   <lib dir="../../../dist/" regex="solr-cell-\d.*\.jar" />
 
@@ -81,12 +82,12 @@
 
   <lib dir="../../../contrib/velocity/lib" regex=".*\.jar" />
   <lib dir="../../../dist/" regex="solr-velocity-\d.*\.jar" />
-
+   -->
   <!-- If a 'dir' option (with or without a regex) is used and nothing
        is found that matches, it will be ignored
-    -->
-  <lib dir="/total/crap/dir/ignored" /> 
 
+  <lib dir="/total/crap/dir/ignored" /> 
+   -->
   <!-- an exact 'path' can be used instead of a 'dir' to specify a 
        specific jar file.  This will cause a serious error to be logged 
        if it can't be loaded.
@@ -118,19 +119,22 @@
 
        solr.RAMDirectoryFactory is memory based, not
        persistent, and doesn't work with replication.
-    -->
-  <directoryFactory name="DirectoryFactory" 
-                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/> 
 
-  <!-- The CodecFactory for defining the format of the inverted index.
-       The default implementation is SchemaCodecFactory, which is the official Lucene
-       index format, but hooks into the schema to provide per-field customization of
-       the postings lists and per-document values in the fieldType element
-       (postingsFormat/docValuesFormat). Note that most of the alternative implementations
-       are experimental, so if you choose to customize the index format, its a good
-       idea to convert back to the official format e.g. via IndexWriter.addIndexes(IndexReader)
-       before upgrading to a newer version to avoid unnecessary reindexing.
-  -->
+  <directoryFactory name="DirectoryFactory" 
+                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
+    -->
+    <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
+
+
+    <!-- The CodecFactory for defining the format of the inverted index.
+         The default implementation is SchemaCodecFactory, which is the official Lucene
+         index format, but hooks into the schema to provide per-field customization of
+         the postings lists and per-document values in the fieldType element
+         (postingsFormat/docValuesFormat). Note that most of the alternative implementations
+         are experimental, so if you choose to customize the index format, its a good
+         idea to convert back to the official format e.g. via IndexWriter.addIndexes(IndexReader)
+         before upgrading to a newer version to avoid unnecessary reindexing.
+    -->
   <codecFactory class="solr.SchemaCodecFactory"/>
 
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -987,12 +991,12 @@
   </requestHandler>
 
   <!-- for back compat with clients using /update/json and /update/csv -->  
-  <requestHandler name="/update/json" class="solr.JsonUpdateRequestHandler">
+  <requestHandler name="/update/json" class="solr.UpdateRequestHandler">
         <lst name="defaults">
          <str name="stream.contentType">application/json</str>
        </lst>
   </requestHandler>
-  <requestHandler name="/update/csv" class="solr.CSVRequestHandler">
+  <requestHandler name="/update/csv" class="solr.UpdateRequestHandler">
         <lst name="defaults">
          <str name="stream.contentType">application/csv</str>
        </lst>

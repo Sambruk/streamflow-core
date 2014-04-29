@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.20-SNAPSHOT</version>
+        <version>1.21-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-infrastructure</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.20-SNAPSHOT</version>
+    <version>1.21-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Streamflow Infrastructure</name>
     <description>Streamflow Infrastructure, common code for all streamflow components</description>
@@ -17,6 +17,11 @@
     		<artifactId>streamflow-common</artifactId>
     		<version>${project.version}</version>
     	</dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-fileconfig</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>
             <artifactId>org.qi4j.core.api</artifactId>
@@ -32,6 +37,11 @@
         <dependency>
             <groupId>org.qi4j.library</groupId>
             <artifactId>org.qi4j.library.jmx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- Testing -->

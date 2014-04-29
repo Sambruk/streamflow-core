@@ -105,7 +105,7 @@ public interface AssignmentsContext
             }else if( orderByValue[0].equals( "priority" ))
             {
                query.orderBy(  QueryExpressions.orderBy(
-                     QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).priority().get() ).priority(), revertSortOrder( order ) ) );
+                     QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).casepriority().get() ).priority(), revertSortOrder( order ) ) );
             }
          }
          return query;

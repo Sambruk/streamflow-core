@@ -24,12 +24,15 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.MixinDeclaration;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.index.reindexer.ReindexerConfiguration;
 
+import org.qi4j.library.rdf.repository.NativeConfiguration;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorConfiguration;
@@ -58,8 +61,10 @@ public class ConfigurationAssembler
       module.services( FileConfiguration.class).visibleIn( Visibility.application ).instantiateOnStartup();
 
       Application.Mode mode = module.layer().application().mode();
-      if (mode.equals( Application.Mode.production ))
-         module.services( ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
+
+      module.services( ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
+      module.entities(JdbmConfiguration.class, NativeConfiguration.class, ElasticSearchConfiguration.class ).visibleIn( Visibility.application );
+       if (mode.equals( Application.Mode.production ))
 
       // Configuration entities are registered in this module by using AbstractLayerAssembler.configuration()
 
@@ -68,8 +73,8 @@ public class ConfigurationAssembler
 
       // Plugin configurations
       module.entities(
-            ContactLookupServiceConfiguration.class,
-            KartagoPluginConfiguration.class ).visibleIn( Visibility.application );
+              ContactLookupServiceConfiguration.class,
+              KartagoPluginConfiguration.class).visibleIn(Visibility.application);
    }
 
    private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException

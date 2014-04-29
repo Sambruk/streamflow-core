@@ -18,7 +18,6 @@ package se.streamsource.streamflow.web.assembler;
 
 import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.api.common.Visibility.layer;
-import static org.qi4j.api.common.Visibility.module;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 import java.util.Properties;
@@ -30,16 +29,15 @@ import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.index.rdf.query.NamedSparqlDescriptor;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.index.elasticsearch.NamedESDescriptor;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
@@ -111,7 +109,7 @@ public class AppAssembler
          throws AssemblyException
    {
       super.assemble( layer );
-      
+
       system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
@@ -154,7 +152,7 @@ public class AppAssembler
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }
 
-   private void external( ModuleAssembly external )
+    private void external( ModuleAssembly external )
    {
       external.services( IntegrationService.class )
             .identifiedBy( "integration" ).instantiateOnStartup().visibleIn( Visibility.application );
@@ -163,6 +161,13 @@ public class AppAssembler
 
    private void system( ModuleAssembly system )
    {
+       NamedQueries namedQueries = new NamedQueries();
+       namedQueries.addQuery( new NamedESDescriptor("esquery", ""));
+       system.importedServices(NamedEntityFinder.class).
+               importedBy(ServiceSelectorImporter.class).
+               setMetaInfo(namedQueries).
+               setMetaInfo(ServiceQualifier.withId("es-indexing"));
+
       system.services( SystemDefaultsService.class )
             .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
 
@@ -192,7 +197,7 @@ public class AppAssembler
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker( 1, 1000 * 60 * 60 * 12 ) );
       configuration().entities( AvailabilityConfiguration.class );
-      
+
       system.services( CaseCountCacheService.class ).instantiateOnStartup().visibleIn( Visibility.application );
       
    }
@@ -274,23 +279,6 @@ public class AppAssembler
 
       configuration().entities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       configuration().entities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
-
-      NamedQueries namedQueries = new NamedQueries();
-      namedQueries.addQuery(      new NamedSparqlDescriptor("finduserwithemail",
-                      "PREFIX ns0: <urn:qi4j:type:org.qi4j.api.entity.Identity#>\n" +
-                              "        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                              "        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                              "        SELECT DISTINCT ?identity\n" +
-                              "        WHERE {\n" +
-                              "        ?entity rdf:type <urn:qi4j:type:se.streamsource.streamflow.web.domain.entity.user.UserEntity>.\n" +
-                              "        ?entity ns0:identity ?identity.\n" +
-                              "        ?entity <urn:qi4j:type:se.streamsource.streamflow.web.domain.structure.user.Contactable-Data#contact> ?v0.\n" +
-                              "        ?v0 <urn:qi4j:type:se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO#emailAddresses> ?email\n" +
-                              "        }"));
-      module.importedServices(NamedEntityFinder.class).
-              importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
-              setMetaInfo(namedQueries).
-              setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService")).visibleIn( layer );
 
       module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
       configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);

@@ -50,6 +50,7 @@ import se.streamsource.streamflow.web.context.workspace.WorkspaceProjectsContext
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
+import se.streamsource.streamflow.web.domain.entity.organization.GlobalCaseIdStateEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
@@ -363,8 +364,8 @@ public class CaseCommandsContextTest
          DraftsContext drafts = context( DraftsContext.class );
          drafts.createcase();
 
-         Organizations.Data organizations = uow.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
-         currentId = ((IdGenerator.Data)((OrganizationEntity)organizations.organization().get())).current().get();
+         GlobalCaseIdStateEntity globalCaseId = uow.get(GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID);
+         currentId = globalCaseId.getCounter();
 
          uow.complete();
          eventsOccurred( "createdCase", "addedContact" );

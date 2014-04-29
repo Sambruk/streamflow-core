@@ -93,7 +93,7 @@ public abstract class ContextTest
       }
       application = applicationModel.newInstance( qi4j.spi() );
       api = spi = qi4j.spi();
-      application.activate();
+           application.activate();
 
       // Use the Context/Context module
       moduleInstance = (ModuleSPI) application.findModule( "Context", "Context" );

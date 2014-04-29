@@ -280,8 +280,11 @@ public interface ReceiveMailService
             return; // Don't try - circuit breaker is off
 
          boolean expunge = config.configuration().deleteMailOnInboxClose().get();
-         logger.debug("Checking email");
-         logger.debug( "Delete mail on close - " + expunge );
+         if( config.configuration().debug().get() )
+         {
+            logger.info("Checking email");
+            logger.info( "Delete mail on close - " + expunge );
+         }
 
          Session session = javax.mail.Session.getInstance(props, authenticator);
          session.setDebug(config.configuration().debug().get());
@@ -553,7 +556,10 @@ public interface ReceiveMailService
 
             store.close();
 
-            logger.debug("Checked email");
+            if( config.configuration().debug().get() )
+            {
+                logger.info("Checked email");
+            }
 
             circuitBreaker.success();
          } catch (Throwable e)

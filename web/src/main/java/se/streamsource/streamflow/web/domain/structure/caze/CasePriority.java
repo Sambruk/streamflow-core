@@ -34,7 +34,7 @@ public interface CasePriority
    interface Data
    {
       @Optional
-      Association<Priority> priority();
+      Association<Priority> casepriority();
       void changedPriority( @Optional DomainEvent event, @Optional Priority priority );
    }
 
@@ -46,8 +46,8 @@ public interface CasePriority
       public void changePriority( @Optional Priority priority )
       {
          // check if there would actually be a change before changing
-         if( ( data.priority().get() == null && priority == null) ||
-               ( priority != null && priority.equals( data.priority().get() )))
+         if( ( data.casepriority().get() == null && priority == null) ||
+               ( priority != null && priority.equals( data.casepriority().get() )))
             return;
          
          data.changedPriority( null, priority );
@@ -55,7 +55,7 @@ public interface CasePriority
 
       public void changedPriority( DomainEvent event, Priority priority )
       {
-         data.priority().set( priority );
+         data.casepriority().set(priority);
       }
    }
 }

@@ -28,13 +28,8 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.index.rdf.RdfIndexingEngineService;
-import org.qi4j.index.rdf.query.RdfQueryParserFactory;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
-import org.qi4j.library.rdf.entity.EntityTypeSerializer;
-import org.qi4j.library.rdf.repository.MemoryRepositoryService;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
-import org.qi4j.library.rdf.repository.NativeRepositoryService;
 import org.qi4j.migration.MigrationConfiguration;
 import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.spi.service.importer.NewObjectImporter;
@@ -42,6 +37,8 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.infrastructure.database.DataSourceService;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
+import se.streamsource.infrastructure.index.elasticsearch.assembly.ESMemoryIndexQueryAssembler;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
@@ -58,7 +55,6 @@ import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
-import se.streamsource.streamflow.web.infrastructure.caching.CaseCountCacheService;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
 import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
@@ -75,8 +71,11 @@ import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapServic
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
 /**
- * JAVADOC
+ * Content was moved to DomainAssembler during migration to ElasticSearch - entity finder
+ * for elastic search needs to have access to DomainEntities. Do not use or add to layer assembly!!
+ * Documentation purpose only.
  */
+@Deprecated
 public class InfrastructureAssembler
    extends AbstractLayerAssembler
 {
@@ -89,7 +88,7 @@ public class InfrastructureAssembler
       caching( layer.module( "Caching" ) );
       database( layer.module( "Database" ) );
       entityStore( layer.module( "Entity store" ) );
-      entityFinder( layer.module( "Entity finder" ) );
+      //entityFinder( layer.module( "Entity finder" ) );
       events( layer.module( "Events" ) );
       searchEngine( layer.module( "Search engine" ) );
       attachments( layer.module( "Attachments store" ) );
@@ -183,23 +182,31 @@ public class InfrastructureAssembler
 
    private void entityFinder( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layer().application().mode();
-      if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
-      {
-         // In-memory store
-         module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
-      } else if (mode.equals( Application.Mode.production ))
-      {
-         // Native storage
-         module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
-         configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
-      }
+             Application.Mode mode = module.layer().application().mode();
 
-      module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
-      module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
-            //.withConcerns( RdfPerformanceLogConcern.class );
-      module.services( RdfQueryParserFactory.class );
+       if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
+       {
+           // In-memory store
+           //module.services( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+           new ESMemoryIndexQueryAssembler().withVisibility(Visibility.application)
+                   .withConfigModule( module ).withConfigVisibility(Visibility.application).assemble(module);
+       } else if (mode.equals( Application.Mode.production ))
+       {
+           // Native storage
+           //module.services( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+           configuration().entities( NativeConfiguration.class ).visibleIn( Visibility.application );
+           configuration().entities( ElasticSearchConfiguration.class ).visibleIn(Visibility.application);
+           //new ESFilesystemIndexQueryAssembler().withVisibility(Visibility.application)
+           //        .withConfigModule(module).withConfigVisibility(Visibility.application).assemble(module);
+       }
+       //configuration().entities( ElasticSearchConfiguration.class ).visibleIn( Visibility.application );
+       //module.objects( EntityStateSerializer.class, EntityTypeSerializer.class );
+       //module.services( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+       //.withConcerns( RdfPerformanceLogConcern.class );
+
+       //module.services( RdfQueryParserFactory.class );
    }
+
 
    private void entityStore( ModuleAssembly module ) throws AssemblyException
    {

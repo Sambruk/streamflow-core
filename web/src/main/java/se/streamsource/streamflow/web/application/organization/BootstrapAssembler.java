@@ -16,11 +16,13 @@
  */
 package se.streamsource.streamflow.web.application.organization;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 
@@ -32,6 +34,10 @@ public class BootstrapAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
+       /*module.importedServices(EntityFinder.class).
+               importedBy(ServiceSelectorImporter.class).
+               setMetaInfo(ServiceQualifier.withId("es-indexing"));//.visibleIn( Visibility.application );
+       */
       module.services( BootstrapDataService.class ).instantiateOnStartup();
 
       if (module.layer().application().mode() == Application.Mode.development)

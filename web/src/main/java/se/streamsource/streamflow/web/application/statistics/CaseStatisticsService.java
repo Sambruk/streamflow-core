@@ -407,9 +407,9 @@ public interface CaseStatisticsService
          prototype.closedOn().set(new Date(closeDate.getTime()));
          prototype.duration().set(closeDate.getTime() - aCase.createdOn().get().getTime());
          prototype.dueOn().set(aCase.dueOn().get());
-         if (aCase.priority().get() != null)
+         if (aCase.casepriority().get() != null)
          {
-            prototype.priority().set(aCase.priority().get().getDescription());
+            prototype.priority().set(aCase.casepriority().get().getDescription());
          }
 
          CaseType caseType = aCase.caseType().get();

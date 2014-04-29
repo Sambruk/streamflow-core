@@ -74,11 +74,11 @@ public class CaseGeneralContext
       builder.prototype().dueOn().set( aCase.dueOn().get() );
       builder.prototype().status().set( aCase.status().get() );
 
-      if( aCase.priority().get() != null )
+      if( aCase.casepriority().get() != null )
       {
          ValueBuilder<LinkValue> priorityBuilder = vbf.newValueBuilder( LinkValue.class );
-         priorityBuilder.prototype().text().set( aCase.priority().get().getDescription() );
-         priorityBuilder.prototype().id().set( EntityReference.getEntityReference( aCase.priority().get() ).identity() );
+         priorityBuilder.prototype().text().set( aCase.casepriority().get().getDescription() );
+         priorityBuilder.prototype().id().set( EntityReference.getEntityReference( aCase.casepriority().get() ).identity() );
          priorityBuilder.prototype().href().set( "default" );
          builder.prototype().priority().set( priorityBuilder.newInstance() );
       }

@@ -79,7 +79,7 @@ public class SolrEntityIndexerMixin
          return;
       try
       {
-         indexedFields = solrCore.getSchema().getFields();
+         indexedFields = solrCore.getLatestSchema().getFields();
       } finally
       {
          solrCore.close();
