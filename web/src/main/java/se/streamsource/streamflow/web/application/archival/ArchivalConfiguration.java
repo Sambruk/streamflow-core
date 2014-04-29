@@ -27,6 +27,41 @@ import org.qi4j.api.property.Property;
 public interface ArchivalConfiguration
    extends ConfigurationComposite, Enabled
 {
-   @UseDefaults
-   Property<Boolean> archiveDaily();
+    /**
+     * Tells whether the scheduled archival job should be run automatically
+     * or if we rely on manual archival.
+     * @return
+     */
+    @UseDefaults
+    Property<Boolean> startScheduledArchival();
+
+    /**
+     * Amount of cases to process before making a 2 seconds wait.
+     * @return
+     */
+    @UseDefaults
+    Property<Integer> modulo();
+
+    /**
+     * A crontab schedule string for starting archival.
+     *
+     * @return
+     */
+    @UseDefaults
+    Property<String> startSchedule();
+
+    /**
+     * A crontab schedule string for stopping archival.
+     *
+     * @return
+     */
+    @UseDefaults
+    Property<String> stopSchedule();
+
+    /**
+     * The amount of milliseconds the executing job should sleep between intervals.
+     * @return
+     */
+    @UseDefaults
+    Property<Long> sleepInMillis();
 }

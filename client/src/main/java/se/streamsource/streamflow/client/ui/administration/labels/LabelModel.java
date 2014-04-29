@@ -14,20 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.domain.structure.label;
+package se.streamsource.streamflow.client.ui.administration.labels;
 
-import se.streamsource.streamflow.web.domain.Describable;
-import se.streamsource.streamflow.web.domain.Notable;
-import se.streamsource.streamflow.web.domain.Removable;
-import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
+import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArchivalSettingModel;
 
 /**
- * JAVADOC
+ *
  */
-public interface Label
-      extends Describable,
-        Notable,
-        Removable,
-        ArchivalSettings
+public class LabelModel
+        extends ResourceModel
 {
+    public LabelModel()
+    {
+        relationModelMapping("archival", CaseArchivalSettingModel.class);
+    }
 }

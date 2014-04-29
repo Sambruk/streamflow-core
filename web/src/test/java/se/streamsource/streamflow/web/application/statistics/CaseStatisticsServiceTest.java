@@ -154,6 +154,7 @@ public class CaseStatisticsServiceTest
    {
       TestAppender appender = new TestAppender();
       Logger.getRootLogger().addAppender(appender);
+      Logger.getRootLogger().setLevel(Level.DEBUG);
 
       final UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
 
@@ -243,7 +244,7 @@ public class CaseStatisticsServiceTest
       @Override
       protected void append(LoggingEvent event)
       {
-         if (event.getLevel().isGreaterOrEqual(Level.INFO))
+         if (event.getLevel().isGreaterOrEqual(Level.DEBUG))
             events.add(event);
       }
 
