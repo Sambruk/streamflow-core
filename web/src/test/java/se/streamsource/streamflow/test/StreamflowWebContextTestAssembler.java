@@ -24,6 +24,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsConfiguration;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
@@ -32,6 +33,7 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.PdfGeneratorService;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
+import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 
 import java.util.Properties;
 
@@ -63,11 +65,11 @@ public class StreamflowWebContextTestAssembler
       LayerAssembly layer1 = applicationAssembly.layer( "Layer 1" );
       layer1.uses(
             applicationAssembly.layer( "Context" ),
-            applicationAssembly.layer( "Domain infrastructure" ),
+            applicationAssembly.layer( "Configuration" ),
             applicationAssembly.layer( "Domain" ) );
       ModuleAssembly module = layer1.module( "Module 1" );
       module.values( EntityValue.class );
-      applicationAssembly.layer( "Domain infrastructure" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
+      applicationAssembly.layer( "Domain" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
 
       ModuleAssembly knowledgebase = appLayer.module("Knowledgebase");
       Properties props = new Properties();
@@ -89,7 +91,7 @@ public class StreamflowWebContextTestAssembler
       ModuleAssembly system = appLayer.module( "System" );
       system.services( SystemDefaultsService.class ).identifiedBy( "system" ).visibleIn( Visibility.application);
       ModuleAssembly configurationModule = module.layer().application().layer("Configuration").module("Configuration");
-      configurationModule.entities( KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class ).visibleIn( Visibility.application );
+      configurationModule.entities( KnowledgebaseConfiguration.class, SystemDefaultsConfiguration.class).visibleIn( Visibility.application );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().enabled().set( Boolean.TRUE );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
       configurationModule.forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface" );

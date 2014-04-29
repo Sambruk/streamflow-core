@@ -26,7 +26,7 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.PriorityOnCase;
 
 /**
- * Check if case priority should be visible.
+ * Check if case casepriority should be visible.
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
@@ -38,7 +38,7 @@ public @interface RequiresCasePriorityVisible
    {
       public boolean isValid( RequiresCasePriorityVisible visible, CaseEntity value )
       {
-         if (value.priority().get() != null)
+         if (value.casepriority().get() != null)
             return true;
          
          if( value.caseType().get() == null )

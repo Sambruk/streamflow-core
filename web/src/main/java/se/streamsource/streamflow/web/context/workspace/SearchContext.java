@@ -113,7 +113,7 @@ public class SearchContext
          }else if( orderByValue[0].equals( "priority" ))
          {
             caseQuery.orderBy( QueryExpressions.orderBy(
-                  QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).priority().get() ).priority(), revertSortOrder( order ) ) );
+                  QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).casepriority().get() ).priority(), revertSortOrder( order ) ) );
          }
       }
       return caseQuery;

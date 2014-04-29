@@ -157,10 +157,10 @@ public class CasePdfGenerator implements CaseOutput
       document.printLabelAndTextWithTabStop( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription() == null ? "" : caze.getDescription(), valueFont,
             tabStop );
 
-      if (((CasePriority.Data)caze).priority().get() != null)
+      if (((CasePriority.Data)caze).casepriority().get() != null)
       {
          document.printLabelAndTextWithTabStop( bundle.getString( "priority" ) + ": ", valueFontBold,
-               ((CasePriority.Data)caze).priority().get().getDescription(),
+               ((CasePriority.Data)caze).casepriority().get().getDescription(),
                valueFont, tabStop );
       }
       

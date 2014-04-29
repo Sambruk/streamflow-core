@@ -57,28 +57,25 @@ public class StreamflowWebAssembler
       assembly.setMetaInfo(new RoleInjectionProviderFactory());
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion("1.8.0.1");
+      assembly.setVersion("1.19.0.0");
 
       LayerAssembly configurationLayer = assembly.layer("Configuration");
-      LayerAssembly domainInfrastructureLayer = assembly.layer("Domain infrastructure");
       LayerAssembly domainLayer = assembly.layer("Domain");
       LayerAssembly contextLayer = assembly.layer("Context");
       LayerAssembly appLayer = assembly.layer("Application");
       LayerAssembly webLayer = assembly.layer("Web");
       LayerAssembly managementLayer = assembly.layer("Management");
 
-      managementLayer.uses(webLayer, appLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
-      webLayer.uses(appLayer, contextLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
-      appLayer.uses(domainLayer, domainInfrastructureLayer, configurationLayer);
-      contextLayer.uses(domainLayer, appLayer, domainInfrastructureLayer);
-      domainLayer.uses(domainInfrastructureLayer);
-      domainInfrastructureLayer.uses(configurationLayer);
+      managementLayer.uses(webLayer, appLayer, domainLayer, configurationLayer);
+      webLayer.uses(appLayer, contextLayer, domainLayer, configurationLayer);
+      appLayer.uses(domainLayer, configurationLayer);
+      contextLayer.uses(domainLayer, appLayer );
+      domainLayer.uses(configurationLayer);
 
       assembleWebLayer(webLayer);
       assembleApplicationLayer(appLayer);
       new ContextAssembler().assemble(contextLayer);
       new DomainAssembler().assemble(domainLayer);
-      new InfrastructureAssembler().assemble(domainInfrastructureLayer);
       new ConfigurationAssembler().assemble(configurationLayer);
       assembleManagementLayer(managementLayer);
 

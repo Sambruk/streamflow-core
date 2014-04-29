@@ -21,8 +21,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormat;
-import org.openrdf.repository.Repository;
 import org.qi4j.api.Qi4j;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
@@ -52,6 +52,8 @@ import org.quartz.JobKey;
 import org.quartz.UnableToInterruptJobException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchIndexer;
+import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactory;
@@ -63,7 +65,10 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
 import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
+import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -97,8 +102,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * should be put here for convenience.
  */
 @Mixins(ManagerComposite.ManagerMixin.class)
-public interface
-        ManagerComposite
+public interface ManagerComposite
         extends Manager, TransientComposite
 {
    void start()
@@ -155,13 +159,13 @@ public interface
       ServiceReference<EntityStore> entityStore;
 
       @Service
-      ServiceReference<Repository> repository;
-
-      @Service
       ServiceReference<EmbeddedSolrService> solr;
 
       @Service
       ServiceReference<SolrQueryService> solrIndexer;
+
+      @Service
+      ServiceReference<ESFilesystemIndexQueryService>  esIndex;
 
       @Service
       CaseStatistics statistics;
@@ -177,6 +181,12 @@ public interface
 
       @Service
       QuartzSchedulerService scheduler;
+
+       @Service
+       AvailabilityService availabilityService;
+
+       @Service
+       ReceiveMailService receiveMailService; 
 
       private int failedLogins;
 
@@ -220,9 +230,9 @@ public interface
          DateTime startDateTime = new DateTime( );
          logger.info( "Starting reindex at " + startDateTime.toString() );
 
-         logger.info( "Remove RDF index." );
+         logger.info( "Remove ES index." );
          // Delete current index
-         removeRdfRepository();
+          removeESIndexContent();
 
          logger.info( "Remove Solr index." );
          // Remove Lucene index contents
@@ -255,6 +265,9 @@ public interface
 
       public String importDatabase(@Name("Filename") String name) throws IOException
       {
+         DateTime startDateTime = new DateTime();
+          logger.info( "Starting db import at " + startDateTime.toString() );
+
          File importFile = new File(name);
          if (!importFile.isAbsolute())
             importFile = new File(exports, name);
@@ -283,12 +296,13 @@ public interface
             logger.info("Imported " + importFile);
          } finally
          {
+             logger.info( "Import db done in " + PeriodFormat.getDefault().print( new Duration( startDateTime, new DateTime( ) ).toPeriod() ) );
             try
             {
                reindex();
             } catch (Exception e)
             {
-               throw new RuntimeException("Could not reindex rdf-repository", e);
+               throw new RuntimeException("Could not reindex", e);
             }
          }
 
@@ -361,8 +375,9 @@ public interface
          return backupResult;
       }
 
-      public String restore() throws Exception
+      public String restore( @Name("IncludeEventRestore") boolean includeEventRestore ) throws Exception
       {
+         turnOffAccessibilityAndMailReceiver();
          try
          {
             DateTime startDateTime = new DateTime(  );
@@ -381,49 +396,60 @@ public interface
             // contains already a call to reindex
             importDatabase( latestBackup.getAbsolutePath() );
 
-            logger.info( "Import database and reindex done. Clearing event database." );
+            logger.info( "Import database and reindex done." );
 
-            // Add events from backup files
-            eventManagement.removeAll();
-
-            logger.info( "Replaying backup event files from time of snapshot backup." );
-            File[] eventFiles = getBackupEventFiles();
-
-            // Replay events from time of snapshot backup
-            Date latestBackupDate = latestBackup == null ? new Date(0) : getBackupDate(latestBackup);
-
-            Inputs.combine(Iterables.map(new Function<File, Input<String, IOException>>()
+            if( includeEventRestore )
             {
-               public Input<String, IOException> map(File file)
-               {
-                  return Inputs.text(file);
-               }
-            }, Arrays.asList(eventFiles))).transferTo(eventManagement.restore());
+                DateTime clearEventStart = new DateTime();
+                logger.info( "Clearing event database and restore start at " + clearEventStart.toString() );
 
-            {
-               // Replay transactions
-               final EventReplayException[] ex = new EventReplayException[1];
-               eventSource.transactionsAfter(latestBackupDate.getTime() - 60000, new TransactionVisitor()
-               {
-                  public boolean visit(TransactionDomainEvents transactionDomain)
-                  {
-                     try
-                     {
-                        eventPlayer.playTransaction(transactionDomain);
-                        return true;
-                     } catch (EventReplayException e)
-                     {
-                        ex[0] = e;
-                        return false;
-                     }
-                  }
-               });
+                // Add events from backup files
+                eventManagement.removeAll();
+                File[] eventFiles = getBackupEventFiles();
 
-               if (ex[0] != null)
-                  throw ex[0];
+                // Replay events from time of snapshot backup
+                Date latestBackupDate = latestBackup == null ? new Date(0) : getBackupDate(latestBackup);
+
+                Inputs.combine(Iterables.map(new Function<File, Input<String, IOException>>()
+                {
+                   public Input<String, IOException> map(File file)
+                   {
+                      return Inputs.text(file);
+                   }
+                }, Arrays.asList(eventFiles))).transferTo(eventManagement.restore());
+
+                 logger.info( "Restore event backup done in: " + PeriodFormat.getDefault().print( new Duration(clearEventStart, new DateTime( ) ).toPeriod() ) );
+
+
+                 DateTime eventReplayStart = new DateTime();
+                logger.info( "Starting event replay at " + eventReplayStart.toString() );
+                {
+                   // Replay transactions
+                   final EventReplayException[] ex = new EventReplayException[1];
+                   eventSource.transactionsAfter(latestBackupDate.getTime() - 60000, new TransactionVisitor()
+                   {
+                      public boolean visit(TransactionDomainEvents transactionDomain)
+                      {
+                         try
+                         {
+                            eventPlayer.playTransaction(transactionDomain);
+                            return true;
+                         } catch (EventReplayException e)
+                         {
+                            ex[0] = e;
+                            return false;
+                         }
+                      }
+                   });
+
+                   if (ex[0] != null)
+                      throw ex[0];
+                }
+                 logger.info( "Event replay done in: " + PeriodFormat.getDefault().print( new Duration(eventReplayStart, new DateTime( ) ).toPeriod() ) );
             }
+             logger.info( "Restore done successfully in: " + PeriodFormat.getDefault().print( new Duration(startDateTime, new DateTime( ) ).toPeriod() ) );
 
-            logger.info( "Restore done successfully in: " + PeriodFormat.getDefault().print( new Duration(startDateTime, new DateTime( ) ).toPeriod() ) );
+             turnOnAccessibilityAndMailReceiver();
 
             return "Backup restored successfully";
          } catch (Exception ex)
@@ -540,18 +566,15 @@ public interface
          }
       }
 
+       private void removeESIndexContent()
+               throws Exception
+       {
+           esIndex.get().emptyIndex();
+       }
+
       private void removeSolrLuceneIndexContents()
               throws Exception
       {
-         /*((Activatable) api.getModule((Composite) solr.get())).passivate();
-
-         try
-         {
-            removeDirectory(new File(fileConfig.dataDirectory(), "solr"));
-         } finally
-         {
-            ((Activatable) api.getModule((Composite) solr.get())).activate();
-         }*/
          try{
             solr.get().getSolrServer( "sf-core" ).deleteByQuery( "*:*" );
          } catch (SolrException se )
@@ -879,6 +902,25 @@ public interface
                return failedLogins;
             }
          };
+      }
+
+      private void turnOffAccessibilityAndMailReceiver()
+      {
+         availabilityService.getCircuitBreaker().trip();
+         if( receiveMailService.getCircuitBreaker().isOn() )
+         {
+            receiveMailService.getCircuitBreaker().trip();
+         }
+      }
+
+      private void turnOnAccessibilityAndMailReceiver()
+              throws Exception
+      {
+          if( !receiveMailService.getCircuitBreaker().isOn() )
+          {
+            receiveMailService.getCircuitBreaker().turnOn();
+          }
+          availabilityService.getCircuitBreaker().turnOn();
       }
    }
 }
