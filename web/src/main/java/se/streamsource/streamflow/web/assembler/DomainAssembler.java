@@ -39,7 +39,6 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.infrastructure.database.DataSourceService;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
-import se.streamsource.infrastructure.index.elasticsearch.assembly.ESFilesystemIndexQueryAssembler;
 import se.streamsource.infrastructure.index.elasticsearch.assembly.ESMemoryIndexQueryAssembler;
 import se.streamsource.streamflow.api.assembler.ClientAPIAssembler;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;

@@ -18,7 +18,6 @@ package se.streamsource.streamflow.web.assembler;
 
 import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.api.common.Visibility.layer;
-import static org.qi4j.api.common.Visibility.module;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
 import java.util.Properties;
@@ -30,24 +29,15 @@ import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.library.rdf.repository.NativeConfiguration;
-import org.qi4j.spi.entitystore.StateChangeListener;
-import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 
-import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchConfiguration;
 import se.streamsource.infrastructure.index.elasticsearch.NamedESDescriptor;
-import se.streamsource.infrastructure.index.elasticsearch.assembly.ESFilesystemIndexQueryAssembler;
-import se.streamsource.infrastructure.index.elasticsearch.assembly.ESMemoryIndexQueryAssembler;
-import se.streamsource.infrastructure.index.elasticsearch.filesystem.ESFilesystemIndexQueryService;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
