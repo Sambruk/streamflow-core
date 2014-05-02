@@ -349,10 +349,10 @@
           ]), 
           value).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       },
       getCaseLogDefaultParams: function(caseId) {
         return backendService.get({
