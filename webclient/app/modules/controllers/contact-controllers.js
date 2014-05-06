@@ -46,7 +46,7 @@
         $scope.contact.addresses = angular.toJson($scope.contact.addresses);
         $scope.contact.emailAddresses = angular.toJson($scope.contact.emailAddresses);
         $scope.contactId = caseService.addContact($params.caseId, $scope.contact).then(function(){
-          var href = navigationService.caseHref($params.caseId);
+          var href = navigationService.caseHrefSimple($params.caseId);
           $scope.contacts.invalidate();
           $scope.contacts.resolve();
           window.location.assign(href);
