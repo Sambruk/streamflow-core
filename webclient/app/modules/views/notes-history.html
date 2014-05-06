@@ -26,11 +26,15 @@
 
         <div class="note-posted-by">
           <span class="struct">Postad av: </span>{{ note.creator }} 
-          <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
+          <!--<span class="note-timestamp">{{ note.createdOn | dateTime }}</span>-->
         </div>
         <div class="note-body">
           <p>{{ note.note }}</p>
         </div>
+        <div class="msg-timestamp">
+          <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
+        </div>
+
 
       <!-- <div><em>{{ note.creator }} {{ note.createdOn | dateTime }}</em></div> -->
       <!-- <div>{{ note.note }}</div> -->
