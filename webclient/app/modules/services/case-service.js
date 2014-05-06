@@ -334,10 +334,10 @@
           ]),
           value).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       },
 
       updateContact: function(caseId, contactIndex, value) {
