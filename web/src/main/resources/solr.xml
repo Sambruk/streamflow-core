@@ -16,7 +16,7 @@
     limitations under the License.
 
 -->
-<solr persistent="fale" sharedLib="lib">
+<solr persistent="false">
  <cores adminPath="/admin/cores">
   <core name="sf-core" instanceDir="sf-core" />
   <core name="sf-streetcache" instanceDir="sf-streetcache" schema="streetcacheschema.xml" config="streetcachesolrconfig.xml"/>

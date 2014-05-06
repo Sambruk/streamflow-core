@@ -3,15 +3,15 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.19-SNAPSHOT</version>
+    <version>1.21-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-        <version.qi4j-core>1.3</version.qi4j-core>
-        <version.qi4j-lib>1.3</version.qi4j-lib>
-        <version.qi4j-ext>1.3</version.qi4j-ext>
-        <version.qi4j-tools>1.3</version.qi4j-tools>
+        <version.qi4j-core>1.3-sf856</version.qi4j-core>
+        <version.qi4j-lib>1.3-sf856</version.qi4j-lib>
+        <version.qi4j-ext>1.3-sf856</version.qi4j-ext>
+        <version.qi4j-tools>1.3-sf856</version.qi4j-tools>
         <version.restlet>2.0.3</version.restlet>
         <version.slf4j>1.6.4</version.slf4j>
         <application.header>Streamflow</application.header>
@@ -265,7 +265,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -594,7 +594,7 @@
             <dependency>
                 <groupId>org.qi4j.core</groupId>
                 <artifactId>org.qi4j.core.spi</artifactId>
-                <version>1.3-sf788</version>
+                <version>${version.qi4j-core}</version>
             </dependency>
 
             <dependency>
@@ -687,7 +687,7 @@
             <dependency>
                 <groupId>org.qi4j.library</groupId>
                 <artifactId>org.qi4j.library.rest</artifactId>
-                <version>${version.qi4j-ext}</version>
+                <version>${version.qi4j-lib}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.qi4j.extension</groupId>
@@ -695,16 +695,18 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!--
             <dependency>
                 <groupId>org.qi4j.extension</groupId>
                 <artifactId>org.qi4j.extension.indexing-rdf</artifactId>
-                <version>1.3-sf637</version>
+                 <version>${version.qi4j-ext}</version>
             </dependency>
             <dependency>
                 <groupId>org.qi4j.library</groupId>
                 <artifactId>org.qi4j.library.rdf</artifactId>
                 <version>${version.qi4j-lib}</version>
             </dependency>
+            -->
             <dependency>
                 <groupId>org.restlet.jee</groupId>
                 <artifactId>org.restlet</artifactId>
@@ -728,8 +730,7 @@
             <dependency>
                 <groupId>org.qi4j.extension</groupId>
                 <artifactId>org.qi4j.extension.entitystore-jdbm</artifactId>
-                <!-- <version>${version.qi4j-ext}</version> -->
-                <version>1.3-sf774</version>
+                <version>${version.qi4j-ext}</version>
             </dependency>
             <dependency>
                 <groupId>org.qi4j.extension</groupId>

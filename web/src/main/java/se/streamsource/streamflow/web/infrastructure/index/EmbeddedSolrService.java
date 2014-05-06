@@ -58,7 +58,8 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
             File directory = new File( fileConfig.dataDirectory() + "/solr" );
             if( directory.mkdir() || !new File( directory + "/solr.xml").exists() )
             {
-
+               // since solr 4.6.1 requires a lib folder
+               new File( directory.getAbsolutePath() + "/lib" ).mkdir();
                // multicore solr.xml
                Inputs.text( Thread.currentThread().getContextClassLoader().getResource( "solr.xml" ) )
                      .transferTo( Outputs.text( new File( directory.getAbsolutePath() + "/solr.xml" ) ) );
@@ -66,8 +67,9 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
             }
             System.setProperty( "solr.solr.home", directory.getAbsolutePath() );
 
-            CoreContainer.Initializer initializer = new CoreContainer.Initializer();
-            coreContainer = initializer.initialize();
+            coreContainer = CoreContainer.createAndLoad( directory.getAbsolutePath(), new File( directory.getAbsolutePath() + "/solr.xml" ) );
+            //CoreContainer.Initializer initializer = new CoreContainer.Initializer();
+            //coreContainer = initializer.initialize();
             coreServer = new EmbeddedSolrServer( coreContainer, "sf-core" );
             streetServer = new EmbeddedSolrServer( coreContainer, "sf-streetcache" );
 

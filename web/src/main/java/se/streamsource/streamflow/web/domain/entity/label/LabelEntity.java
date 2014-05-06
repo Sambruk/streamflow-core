@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -41,7 +42,10 @@ public interface LabelEntity
       Label,
       Describable.Data,
       Notable.Data,
-      Removable.Data
+      Removable.Data,
+        ArchivalSettings.Data,
+        ArchivalSettings.Events
+
 {
    abstract class RemovableConcern
       extends ConcernOf<Removable>

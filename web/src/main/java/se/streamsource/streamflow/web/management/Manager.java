@@ -47,7 +47,7 @@ public interface Manager
 
    public String backup() throws Exception;
 
-   public String restore() throws Exception;
+   public String restore( @Name("Dbonly") boolean dbOnly ) throws Exception;
 
    public String databaseSize();
 
@@ -56,6 +56,8 @@ public interface Manager
    public String performArchivalCheck();
 
    public void performArchival();
+
+   public String interruptArchival();
    
    public void sendDueOnNotifications();
 

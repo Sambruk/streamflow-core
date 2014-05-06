@@ -19,11 +19,15 @@ package se.streamsource.streamflow.web.domain.structure.label;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Notable;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.structure.casetype.ArchivalSettings;
 
 /**
  * JAVADOC
  */
 public interface Label
-      extends Describable, Notable, Removable
+      extends Describable,
+        Notable,
+        Removable,
+        ArchivalSettings
 {
 }

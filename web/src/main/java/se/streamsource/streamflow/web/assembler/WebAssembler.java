@@ -76,12 +76,12 @@ public class WebAssembler
    private void rest(ModuleAssembly module) throws AssemblyException
    {
       module.objects(StreamflowRestApplication.class,
-              ResourceFinder.class,
+              ResourceFinder.class /*,
               EntityStateSerializer.class,
-              EntityTypeSerializer.class);
+              EntityTypeSerializer.class */);
 
-      module.objects(SPARQLResource.class,
-              IndexResource.class,
+      module.objects(//SPARQLResource.class,
+              //IndexResource.class,
               EntitiesResource.class,
               EntityResource.class);
 

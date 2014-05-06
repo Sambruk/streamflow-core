@@ -19,9 +19,11 @@ package se.streamsource.streamflow.web.rest.resource.organizations;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.ArchivalSettingsContext;
 import se.streamsource.streamflow.web.context.administration.labels.LabelContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
@@ -36,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
  */
 public class LabelResource
    extends CommandQueryResource
-   implements SubResources
+   //implements SubResources
 {
    public LabelResource()
    {
@@ -63,9 +65,15 @@ public class LabelResource
 
    }
 
-   public void resource( String segment ) throws ResourceException
+   /*public void resource( String segment ) throws ResourceException
    {
       setRole( SelectedLabels.class, segment );
       subResourceContexts( SelectedLabelContext.class );
-   }
+   }*/
+
+    @SubResource
+    public void archival()
+    {
+        subResourceContexts(ArchivalSettingsContext.class);
+    }
 }

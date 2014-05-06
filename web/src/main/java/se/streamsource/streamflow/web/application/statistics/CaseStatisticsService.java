@@ -310,154 +310,6 @@ public interface CaseStatisticsService
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             throw new StatisticsStoreException( "Refresh statistics failed.", e  );
          }
-
-
-         // Update all related entities
-         /*{
-            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
-            try
-            {
-               // Labels
-               {
-                  log.debug("Update all labels");
-                  Query<LabelEntity> labels = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class).newQuery(uow);
-                  for (LabelEntity label : labels)
-                  {
-                     notifyStores(createRelated(label, RelatedEnum.label));
-                  }
-               }
-               uow.discard();
-               uow = module.unitOfWorkFactory().newUnitOfWork();
-
-               // Users
-               {
-                  log.debug("Update all users");
-                  Query<UserEntity> users = module.queryBuilderFactory().newQueryBuilder(UserEntity.class).newQuery(uow);
-                  for (UserEntity user : users)
-                  {
-                     notifyStores(createRelated(user, RelatedEnum.user));
-                  }
-               }
-               uow.discard();
-               uow = module.unitOfWorkFactory().newUnitOfWork();
-
-               // Groups
-               {
-                  log.debug("Update all groups");
-                  Query<GroupEntity> groups = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class).newQuery(uow);
-                  for (GroupEntity group : groups)
-                  {
-                     notifyStores(createRelated(group, RelatedEnum.group));
-                  }
-               }
-               uow.discard();
-               uow = module.unitOfWorkFactory().newUnitOfWork();
-
-               // Projects
-               {
-                  log.debug("Update all projects");
-                  Query<ProjectEntity> projects = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class).newQuery(uow);
-                  for (ProjectEntity project : projects)
-                  {
-                     notifyStores(createRelated(project, RelatedEnum.project));
-                  }
-               }
-               uow.discard();
-               uow = module.unitOfWorkFactory().newUnitOfWork();
-
-               // Organizations
-               {
-                  log.debug("Update all organizations");
-                  Query<OrganizationEntity> org = module.queryBuilderFactory().newQueryBuilder(OrganizationEntity.class).newQuery(uow);
-                  for (OrganizationEntity organization : org)
-                  {
-                     notifyStores(createRelated(organization, RelatedEnum.organization));
-                  }
-               }
-
-               // OU
-               {
-                  log.debug("Update all OUs");
-                  Query<OrganizationalUnitEntity> ous = module.queryBuilderFactory().newQueryBuilder(OrganizationalUnitEntity.class).newQuery(uow);
-                  for (OrganizationalUnitEntity ou : ous)
-                  {
-                     notifyStores(createRelated(ou, RelatedEnum.organizationalUnit));
-                  }
-               }
-
-               // Resolutions
-               {
-                  log.debug("Update all resolutions");
-                  Query<ResolutionEntity> resolutions = module.queryBuilderFactory().newQueryBuilder(ResolutionEntity.class).newQuery(uow);
-                  for (ResolutionEntity resolution : resolutions)
-                  {
-                     notifyStores(createRelated(resolution, RelatedEnum.resolution));
-                  }
-               }
-
-               // Forms
-               {
-                  log.debug("Update all forms");
-                  Query<FormEntity> forms = module.queryBuilderFactory().newQueryBuilder(FormEntity.class).newQuery(uow);
-                  for (FormEntity form : forms)
-                  {
-                     notifyStores(createRelated(form, RelatedEnum.form));
-
-                     for (Page page : form.pages())
-                     {
-                        for (Field field : ((PageEntity) page).fields())
-                        {
-                           notifyStores(createRelated((EntityComposite) field, RelatedEnum.field));
-                        }
-                     }
-                  }
-               }
-
-               // Casetypes
-               {
-                  log.debug("Update all Casetypes");
-                  Query<CaseTypeEntity> caseTypes = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class).newQuery(uow);
-                  for (CaseTypeEntity caseType : caseTypes)
-                  {
-                     notifyStores(createRelated(caseType, RelatedEnum.caseType));
-                  }
-               }
-
-               // Organizational structure
-               {
-                  log.debug("Update structure");
-                  notifyStores(createStructure());
-               }
-
-            } finally
-            {
-               uow.discard();
-            }
-         }
-
-         // Update all case statistics
-         {
-            log.debug("Update all case statistics");
-            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork();
-            QueryBuilder<CaseEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseEntity.class);
-            Query<CaseEntity> cases = queryBuilder.where(QueryExpressions.eq(QueryExpressions.templateFor(Status.Data.class).status(), CaseStates.CLOSED)).newQuery(uow);
-            for (CaseEntity aCase : cases)
-            {
-               if (aCase.caseId().get() != null && aCase.isAssigned())
-               {
-                  UnitOfWork caseUoW = module.unitOfWorkFactory().newUnitOfWork();
-                  try
-                  {
-                     notifyStores(createStatistics(caseUoW.get(aCase)));
-                  } finally
-                  {
-                     caseUoW.discard();
-                  }
-               }
-            }
-            log.debug("Finished refreshing case statistics");
-         }*/
-
       }
 
       public boolean visit(TransactionDomainEvents transactionDomain)
@@ -555,9 +407,9 @@ public interface CaseStatisticsService
          prototype.closedOn().set(new Date(closeDate.getTime()));
          prototype.duration().set(closeDate.getTime() - aCase.createdOn().get().getTime());
          prototype.dueOn().set(aCase.dueOn().get());
-         if (aCase.priority().get() != null)
+         if (aCase.casepriority().get() != null)
          {
-            prototype.priority().set(aCase.priority().get().getDescription());
+            prototype.priority().set(aCase.casepriority().get().getDescription());
          }
 
          CaseType caseType = aCase.caseType().get();

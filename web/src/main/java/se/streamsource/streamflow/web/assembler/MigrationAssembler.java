@@ -636,7 +636,11 @@ public class
                {
                   return false;
                }
-            } ).end();
+            } ).end().
+              toVersion( "1.19.0.0" ).
+              forEntities( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
+              renameAssociation( "priority", "casepriority" ).
+              end();
 
       module.services( MigrationService.class ).setMetaInfo( migrationBuilder );
    }

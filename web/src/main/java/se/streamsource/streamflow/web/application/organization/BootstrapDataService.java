@@ -36,21 +36,23 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.customer.CustomersEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Ensure that the most basic entities are always created. This includes:
@@ -267,6 +269,18 @@ public interface BootstrapDataService
                }, Specifications.<Class>TRUE());
             }
 
+            // check if a global case id generator state entity exists
+            try{
+                uow.get(GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
+            } catch( NoSuchEntityException ne ){
+                //create one and feed it with id generator state from organization entity.
+                OrganizationsEntity orgz = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+                GlobalCaseIdStateEntity caseIdStateEntity = uow.newEntity( GlobalCaseIdStateEntity.class, GlobalCaseIdStateEntity.GLOBALCASEIDSTATE_ID );
+                caseIdStateEntity.setCounter( ((IdGenerator)orgz.organization().get()).getCounter());
+
+                Long date = ((IdGenerator) orgz.organization().get()).getDate();
+                caseIdStateEntity.changeDate( date != null ? date : Calendar.getInstance().getTimeInMillis() );
+            }
             uow.complete();
             logger.info( "Bootstrap of domain model complete" );
 

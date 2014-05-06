@@ -87,7 +87,9 @@ public class Translator
       Element meta = doc.select("meta[http-equiv]").first();
       if( meta != null )
       {
-        ContentType contentType = new ContentType( meta.attr("content") );
+        String contentString = meta.attr("content");
+        contentString = contentString.indexOf(' ') != -1 ? contentString.replace(' ', ';' ) : contentString;
+        ContentType contentType = new ContentType( contentString );
         encoding = contentType.getCharacterSet().getName();
       }
 

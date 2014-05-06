@@ -41,7 +41,6 @@ public interface Qi4JQuartzJobFactory extends ServiceComposite, JobFactory
          TransientBuilder<? extends Job> newJobBuilder = module.transientBuilderFactory().newTransientBuilder( bundle.getJobDetail().getJobClass() );
          return newJobBuilder.newInstance();
       }
-      
    }
 
 }

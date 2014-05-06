@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.19-SNAPSHOT</version>
+        <version>1.21-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-web</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.19-SNAPSHOT</version>
+    <version>1.21-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Streamflow web application</name>
     <description>Streamflow web application</description>
@@ -178,19 +178,23 @@
         </dependency>
 
         <!-- REST -->
+        <!--
         <dependency>
             <groupId>org.qi4j.library</groupId>
             <artifactId>org.qi4j.library.rdf</artifactId>
             <version>${version.qi4j-lib}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.qi4j.library</groupId>
             <artifactId>org.qi4j.library.rest</artifactId>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>org.qi4j.extension.indexing-rdf</artifactId>
         </dependency>
+        -->
         <dependency>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet</artifactId>
@@ -226,7 +230,7 @@
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
-            <version>4.2.1</version>
+            <version>4.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -241,13 +245,22 @@
         <dependency>
             <artifactId>solr-core</artifactId>
             <groupId>org.apache.solr</groupId>
-            <version>4.2.1</version>
+            <version>4.6.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-jdk14</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>13.0.1</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

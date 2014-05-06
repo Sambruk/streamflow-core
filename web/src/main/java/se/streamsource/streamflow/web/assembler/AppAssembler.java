@@ -29,16 +29,15 @@ import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.index.rdf.query.NamedSparqlDescriptor;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.index.elasticsearch.NamedESDescriptor;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
@@ -48,6 +47,8 @@ import se.streamsource.streamflow.server.plugin.ldapimport.GroupMemberDetailValu
 import se.streamsource.streamflow.server.plugin.ldapimport.UserListValue;
 import se.streamsource.streamflow.web.application.archival.ArchivalConfiguration;
 import se.streamsource.streamflow.web.application.archival.ArchivalService;
+import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
+import se.streamsource.streamflow.web.application.archival.ArchivalStopJob;
 import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsService;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
@@ -87,6 +88,7 @@ import se.streamsource.streamflow.web.application.statistics.OrganizationalStruc
 import se.streamsource.streamflow.web.application.statistics.OrganizationalUnitValue;
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
+import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.caching.CaseCountCacheService;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.infrastructure.plugin.LdapImporterServiceConfiguration;
@@ -107,7 +109,7 @@ public class AppAssembler
          throws AssemblyException
    {
       super.assemble( layer );
-      
+
       system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
@@ -150,7 +152,7 @@ public class AppAssembler
       configuration().layer().entities(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
    }
 
-   private void external( ModuleAssembly external )
+    private void external( ModuleAssembly external )
    {
       external.services( IntegrationService.class )
             .identifiedBy( "integration" ).instantiateOnStartup().visibleIn( Visibility.application );
@@ -159,6 +161,13 @@ public class AppAssembler
 
    private void system( ModuleAssembly system )
    {
+       NamedQueries namedQueries = new NamedQueries();
+       namedQueries.addQuery( new NamedESDescriptor("esquery", ""));
+       system.importedServices(NamedEntityFinder.class).
+               importedBy(ServiceSelectorImporter.class).
+               setMetaInfo(namedQueries).
+               setMetaInfo(ServiceQualifier.withId("es-indexing"));
+
       system.services( SystemDefaultsService.class )
             .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
 
@@ -180,6 +189,7 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().defaultMarkReadTimeout().set( 15L );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultStartLocation().set( "59.324258,18.070450" );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultZoomLevel().set( 6 );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultUrlPattern().set( "<a href=\"http://maps.google.com/maps?z=13&t=m&q={0}\" alt=\"Google Maps\">Klicka här för att visa karta</a>" );
 
       // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
       system.services( AvailabilityService.class ).identifiedBy( "availability" ).
@@ -187,7 +197,7 @@ public class AppAssembler
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker( 1, 1000 * 60 * 60 * 12 ) );
       configuration().entities( AvailabilityConfiguration.class );
-      
+
       system.services( CaseCountCacheService.class ).instantiateOnStartup().visibleIn( Visibility.application );
       
    }
@@ -196,6 +206,14 @@ public class AppAssembler
    {
       archival.services(ArchivalService.class).identifiedBy("archival").instantiateOnStartup().visibleIn(Visibility.application);
       configuration().entities(ArchivalConfiguration.class);
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().startScheduledArchival().set(false);
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().modulo().set(1000);
+      // default schedule - between 19:00 - 23:30 every day
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().startSchedule().set("0 0 19 * * ?");
+      configuration().forMixin(ArchivalConfiguration.class).declareDefaults().stopSchedule().set("0 30 23 * * ?");
+
+      archival.transients(ArchivalStartJob.class, ArchivalStopJob.class).visibleIn(application);
+      archival.objects(ToJson.class);
    }
 
    private void dueOnNotifiation(ModuleAssembly module)
@@ -261,23 +279,6 @@ public class AppAssembler
 
       configuration().entities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       configuration().entities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
-
-      NamedQueries namedQueries = new NamedQueries();
-      namedQueries.addQuery(      new NamedSparqlDescriptor("finduserwithemail",
-                      "PREFIX ns0: <urn:qi4j:type:org.qi4j.api.entity.Identity#>\n" +
-                              "        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                              "        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                              "        SELECT DISTINCT ?identity\n" +
-                              "        WHERE {\n" +
-                              "        ?entity rdf:type <urn:qi4j:type:se.streamsource.streamflow.web.domain.entity.user.UserEntity>.\n" +
-                              "        ?entity ns0:identity ?identity.\n" +
-                              "        ?entity <urn:qi4j:type:se.streamsource.streamflow.web.domain.structure.user.Contactable-Data#contact> ?v0.\n" +
-                              "        ?v0 <urn:qi4j:type:se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO#emailAddresses> ?email\n" +
-                              "        }"));
-      module.importedServices(NamedEntityFinder.class).
-              importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
-              setMetaInfo(namedQueries).
-              setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService")).visibleIn( layer );
 
       module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
       configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
