@@ -16,7 +16,7 @@
     limitations under the License.
 
 -->
-<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>
+
 
 
 <div class="content-primary" role="main" data-ng-controller="FormCtrl">
@@ -111,7 +111,9 @@
                   <input sf-radio-extended-auto-send="{{ option.value != option.display }}" data-ng-model="field.value" type="radio" name="{{ field.field.fieldId }}"
                   id="{{ field.field.field }}" value="{{ option.value }}">{{ option.display }}</input>
                 </span>
-                <div data-ng-show="field.field.fieldValue.values.indexOf(field.value) == -1"><input data-ng-model="field.value" sf-radio-extended-text-field="{{ field.field.fieldValue.extendedValues }}" type="text" name="{{ field.field.field }}"></div>
+                <div data-ng-show="field.field.fieldValue.values.indexOf(field.value) == -1">
+                  <input data-ng-model="field.value" sf-radio-extended-text-field="{{ field.field.fieldValue.extendedValues }}" type="text" name="{{ field.field.field }}">
+                </div>
             </div>
           </div>
 
@@ -135,19 +137,23 @@
                 Not supported form type <i>{{ field.field.fieldValue._type }}</i>
             </div>
           </div>
-      </div>
 
+      </div>
     </div>
 
     <div data-ng-show="currentFormPage" class="row">
       <a href="" class="btn inline" data-ng-class="{inactive: isFirstPage() || !issueForm.$valid}" data-ng-click="!isFirstPage() && issueForm.$valid && previousFormPage()">Tillbaka</a>
       <a data-ng-hide=isLastPage(currentFormPage) href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
-      <input data-ng-show="isLastPage(currentFormPage)" type="submit" id="submitForm" value="Submit" class="btn inline" data-ng-class="{inactive: !issueForm.$valid}" data-ng-disabled="!issueForm.$valid" /></input>
+      <input data-ng-show="isLastPage(currentFormPage)" type="submit" id="submitForm" value="Submit" class="btn inline" data-ng-class="{inactive: !issueForm.$valid}" data-ng-disabled="!issueForm.$valid" style="padding-left: 3,5px;"/></input>
       <!--<a data-ng-hide=isLastPage(currentFormPage) href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>-->
     </div>
 
     </form>
+
   </div> <!-- /form-content -->
 <div>
+</div>
+    </div>
 
-
+<!-- Content secondary -->
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>
