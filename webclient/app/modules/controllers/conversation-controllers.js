@@ -62,6 +62,7 @@
 
       $scope.removeParticipant = function(participant){
         caseService.deleteParticipantFromConversation($params.caseId, $params.conversationId, participant).then(function(){
+            $rootScope.$broadcast('participant-removed');
 //          alert("Deltagare borttagen!");
         });
       }

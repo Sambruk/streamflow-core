@@ -19,7 +19,7 @@
 
   var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
     function($scope, projectService, $params, navigationService, caseService, httpService) {
 
       $scope.projectId = $params.projectId;
@@ -33,7 +33,7 @@
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
       $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
 
-     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';      
+     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
         $scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($params.caseId, defaultFilters);
@@ -43,7 +43,7 @@
         $scope.sideBarCaseLogs.invalidate();
         $scope.sideBarCaseLogs.resolve();
       });
- 
+
       $scope.$on('conversation-message-created', function(){
         $scope.conversations.invalidate();
         $scope.conversations.resolve();
@@ -62,6 +62,10 @@
           $scope.general.invalidate();
           $scope.general.resolve();
         }
+      });
+
+      $scope.$on('participant-removed', function(){
+     	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });
 
       $scope.$watch("commands[0]", function(){
@@ -177,7 +181,7 @@
 
       $scope.unassign = function($event){
         $event.preventDefault();
-        
+
         var callback = function(){
           var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
@@ -221,7 +225,7 @@
           attachments[0].href  = $scope.apiUrl + '/cases/' + $params.caseId + "/" + attachments[0].href.substring(3) + 'download';
         }else if(attachments[0].rel === 'attachment'){
           attachments[0].href = $scope.apiUrl + '/cases/' + $params.caseId + '/attachments/' + attachments[0].id + '/download';
-        }        
+        }
       }
 
       $scope.deleteAttachment = function(attachmentId){
