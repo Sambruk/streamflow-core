@@ -92,16 +92,25 @@
         $event.preventDefault();
         var contact = {};
         contact[$event.currentTarget.name] = $event.currentTarget.value;
+        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^\d+$/))  {
+            //handle no number error
+            $error($($event.target));
+        }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+            //handle no email error
+            $error($($event.target));
+        }
+        else{
+            $scope.contactId = caseService.updateContact($params.caseId, $params.contactIndex, contact).then(function(){
+                if ($event.currentTarget.id === 'contact-name') {
+                    $rootScope.$broadcast('contact-name-updated');
+                }
+                $success($($event.target));
+            },
+            function (error){
+                $error($($event.target));
+            });
+        }
 
-        $scope.contactId = caseService.updateContact($params.caseId, $params.contactIndex, contact).then(function(){
-          if ($event.currentTarget.id === 'contact-name') {
-            $rootScope.$broadcast('contact-name-updated');
-          }
-          $success($($event.target));
-        },
-        function (error){
-          $error($($event.target));
-        });
       }
 
     }]);
