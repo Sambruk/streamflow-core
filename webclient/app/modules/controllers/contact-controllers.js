@@ -53,6 +53,26 @@
         });
       }
 
+    $scope.updateField = function ($event, $success, $error) {
+        $event.preventDefault();
+        var contact = {};
+        contact[$event.currentTarget.name] = $event.currentTarget.value;
+        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^$|^([0-9\(\)\/\+ \-]*)$/))   {
+            //handle no number error
+            $error($($event.target));
+
+        }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^$|^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+            //handle no email error
+            $error($($event.target));
+        }
+        else{
+            if($success){
+                $success($($event.target));
+            }else if($error) {
+                $error($($event.target));
+            }
+        }
+      }
     }]);
 
   sfContact.controller('ContactEditCtrl', ['$scope', '$rootScope', 'caseService', '$routeParams','navigationService',
@@ -92,7 +112,7 @@
         $event.preventDefault();
         var contact = {};
         contact[$event.currentTarget.name] = $event.currentTarget.value;
-        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^\d+$/))  {
+        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^([0-9\(\)\/\+ \-]*)$/))  {
             //handle no number error
             $error($($event.target));
         }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){

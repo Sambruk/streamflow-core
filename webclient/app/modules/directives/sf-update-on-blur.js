@@ -23,6 +23,7 @@
       var form = scope[element.closest('form').attr('name')];
 
       var successCallback = function (element){
+
           if (element[0].type === 'select-one') {
             element.parent().addClass('saved saved-select');
           }else{

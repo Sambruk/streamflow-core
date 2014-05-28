@@ -23,7 +23,7 @@
       <!--<a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>-->
     </div>
     <div class="contact-input">
-      <form action="#" method="get" class="cf">
+      <form action="#" method="get" class="cf" name="createContactForm">
           <div class="row cols-1 cf">
               <div class="text col full">
                   <label for="contact-name">Namn</label>
@@ -59,11 +59,11 @@
           <div class="row cols-3 cf">
               <div class="text col medium-small col-1">
                   <label for="contact-phone">Telefon</label>
-                  <input type="text" name="contact.phoneNumbers[0].phoneNumber" data-ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone">
+                  <input type="text" name="contact.phoneNumbers[0].phoneNumber" data-ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone" name="phone" data-sf-update-on-blur="updateField($event, $success, $error)">
               </div>
               <div class="text col medium col-2">
                   <label for="contact-email">E-post</label>
-                  <input type="text" data-ng-model="contact.emailAddresses[0].emailAddress" id="contact-email">
+                  <input type="text" data-ng-model="contact.emailAddresses[0].emailAddress" id="contact-email" name="email" autocomplete="off" data-sf-update-on-blur="updateField($event, $success, $error)">
               </div>
               <div class="text col medium-small col-3">
                   <label for="contact-pref">Kontaktpreferens</label>
