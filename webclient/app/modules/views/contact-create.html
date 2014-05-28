@@ -26,8 +26,8 @@
       <form action="#" method="get" class="cf" name="createContactForm">
           <div class="row cols-1 cf">
               <div class="text col full">
-                  <label for="contact-name">Namn</label>
-                  <input type="text" data-ng-model="contact.name" id="contact-name">
+                  <label for="contact-name">Namn *</label>
+                  <input type="text" data-ng-model="contact.name" id="contact-name" placeholder="Namn är obligatoriskt" data-sf-update-on-blur="updateField($event, $success, $error)">
               </div>
           </div>
           <!--<div class="row cols-1 cf">-->
@@ -92,7 +92,7 @@
               </div>
           </div>
         <!--<div class="submit-area row">-->
-            <button data-ng-click="submitContact($event)" name="contact-submit" class="row">Skapa</button>
+            <input type="submit" data-ng-click="submitContact($event)" id="contact-submit-button" name="contact-submit"  class="row" disabled="disabled"/>
         <!--</div>-->
       </form>
     </div>
