@@ -143,8 +143,8 @@
 
     <div data-ng-show="currentFormPage" class="row">
       <a href="" class="btn inline" data-ng-class="{inactive: isFirstPage() || !issueForm.$valid}" data-ng-click="!isFirstPage() && issueForm.$valid && previousFormPage()">Tillbaka</a>
-      <a data-ng-hide=isLastPage(currentFormPage) href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
-      <input data-ng-show="isLastPage(currentFormPage)" type="submit" id="submitForm" value="Submit" class="btn inline" data-ng-class="{inactive: !issueForm.$valid}" data-ng-disabled="!issueForm.$valid" style="padding-left: 3,5px;"/></input>
+      <a data-ng-hide="isLastPage(currentFormPage)" href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
+      <input data-ng-show="isLastPage(currentFormPage)" type="submit" id="submitForm" value="Submit" class="btn inline" data-ng-class="{inactive: !issueForm.$valid}" data-ng-disabled="!issueForm.$valid" /></input>
       <!--<a data-ng-hide=isLastPage(currentFormPage) href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>-->
     </div>
 

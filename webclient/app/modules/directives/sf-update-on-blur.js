@@ -30,12 +30,11 @@
         }else{
           element.parent().addClass('saved');
         }
-
         if(element.parent().hasClass('error')){
           element.parent().removeClass('error');
         }
 
-        if ($("#createContactForm div").not('.error')){
+        if ($("#createContactForm div").not('.error')&&$("#contact-name").val()!=""){
             $('#contact-submit-button').attr('disabled', false);
         }
         else{
