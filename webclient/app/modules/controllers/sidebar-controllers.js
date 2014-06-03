@@ -45,6 +45,7 @@
       });
 
       $scope.$on('conversation-message-created', function(){
+        $scope.conversations = caseService.getSelectedConversations($params.caseId);
         $scope.conversations.invalidate();
         $scope.conversations.resolve();
       });
