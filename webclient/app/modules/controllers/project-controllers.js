@@ -22,6 +22,13 @@
   function toggleToolbar($event) {
     $event.preventDefault();
     $('.functions-menu').toggleClass('open');
+
+    if ( $('.functions-menu').hasClass('open') ) {
+        $('.sub-category').show();
+    }else {
+        $('.sub-category').hide();
+    }
+
   }
 
   sfProject.controller('ProjectListCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', '$rootScope',

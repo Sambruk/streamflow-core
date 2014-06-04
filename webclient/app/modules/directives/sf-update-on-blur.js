@@ -22,13 +22,24 @@
       var fn = $parse(attr['sfUpdateOnBlur']);
       var form = scope[element.closest('form').attr('name')];
 
+
       var successCallback = function (element){
-        //console.log(element[0].type);
-      if (element[0].type === 'select-one') {
-        element.parent().addClass('saved saved-select');
-      }else{
-        element.parent().addClass('saved');       
-      }
+
+        if (element[0].type === 'select-one') {
+          element.parent().addClass('saved saved-select');
+        }else{
+          element.parent().addClass('saved');
+        }
+        if(element.parent().hasClass('error')){
+          element.parent().removeClass('error');
+        }
+
+        if ($("#createContactForm div").not('.error')&&$("#contact-name").val()!=""){
+            $('#contact-submit-button').attr('disabled', false);
+        }
+        else{
+            $('#contact-submit-button').attr('disabled', true);
+        }
 
         //Talk of removing the saved icon after a while, whis coule be one way.
         //Looked at fading it in and out however you cannot fade the "content" in a :after pseudo element
@@ -45,6 +56,8 @@
 
       var errorCallback = function (element){
         element.parent().addClass('error');
+        $('#contact-submit-button').attr('disabled', true);
+
       };
 
       element.bind('blur', function(event) {
@@ -73,6 +86,11 @@
         }
       };
 
+      $("select").change(function () {
+          $(this).parent().removeClass('saved');
+          $(this).parent().removeClass('saved-select');
+          $("[class^=error]", $(this).parent()).hide()
+      })
 
       if (element[0].type === 'text' || element[0].type === 'textarea') {
         var resetFieldState = function (value){

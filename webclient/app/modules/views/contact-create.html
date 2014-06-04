@@ -20,28 +20,28 @@
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Skapa en ny kontakt</h2>
-      <a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>
+      <!--<a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>-->
     </div>
     <div class="contact-input">
-      <form action="#" method="get" class="cf">
+      <form action="#" method="get" class="cf" name="createContactForm">
           <div class="row cols-1 cf">
               <div class="text col full">
-                  <label for="contact-name">Namn</label>
-                  <input type="text" data-ng-model="contact.name" id="contact-name">
+                  <label for="contact-name">Namn *</label>
+                  <input type="text" data-ng-model="contact.name" id="contact-name" placeholder="Namn är obligatoriskt"  data-sf-update-on-blur="updateField($event, $success, $error)">
               </div>
           </div>
-          <div class="row cols-1 cf">
-          </div>
+          <!--<div class="row cols-1 cf">-->
+          <!--</div>-->
           <div class="row cf cols-3">
-              <div class="text col medim col-1">
+              <div class="text col medium col-1">
                   <label for="contact-name">Gatuadress</label>
                   <input type="text" data-ng-model="contact.addresses[0].address" id="contact-address">
               </div>
-              <div class="text col small col-2">
+              <div class="text col medium-small col-2">
                   <label for="contact-zipcode">Postnummer</label>
                   <input type="text" data-ng-model="contact.addresses[0].zipCode" id="contact-zipcode">
               </div>
-              <div class="text col small col-3">
+              <div class="text col medium-small col-3">
                   <label for="contact-city">Postort</label>
                   <input type="text" data-ng-model="contact.addresses[0].city" id="contact-city">
               </div>
@@ -57,15 +57,15 @@
               </div>
           </div>
           <div class="row cols-3 cf">
-              <div class="text col small col-1">
+              <div class="text col medium-small col-1">
                   <label for="contact-phone">Telefon</label>
-                  <input type="text" name="contact.phoneNumbers[0].phoneNumber" data-ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone">
+                  <input type="text" name="contact.phoneNumbers[0].phoneNumber" data-ng-model="contact.phoneNumbers[0].phoneNumber" id="contact-phone" name="phone" data-sf-update-on-blur="updateField($event, $success, $error)">
               </div>
               <div class="text col medium col-2">
                   <label for="contact-email">E-post</label>
-                  <input type="text" data-ng-model="contact.emailAddresses[0].emailAddress" id="contact-email">
+                  <input type="text" data-ng-model="contact.emailAddresses[0].emailAddress" id="contact-email" name="email" autocomplete="off" data-sf-update-on-blur="updateField($event, $success, $error)">
               </div>
-              <div class="text col small col-3">
+              <div class="text col medium-small col-3">
                   <label for="contact-pref">Kontaktpreferens</label>
                   <select custom-select class="hasCustomSelect" data-ng-model="contact.contactPreference" id="contact-pref">
                       <option value="letter">Brev</option>
@@ -91,13 +91,12 @@
                   <textarea data-ng-model="contact.note" id="contact-note" cols="30" rows="2" placeholder=""></textarea>
               </div>
           </div>
-        <div class="submit-area">
-          <button data-ng-click="submitContact($event)" name="contact-submit">Skapa</button>
-        </div>
+        <!--<div class="submit-area row">-->
+            <input type="submit" data-ng-click="submitContact($event)" id="contact-submit-button" name="contact-submit" value="Submit"  disabled="disabled" class="btn inline" />
+        <!--</div>-->
       </form>
     </div>
   </div>
 </div>
-
 <!-- Content secondary -->
 <data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>

@@ -35,7 +35,7 @@
   sfProfile.controller('ProfileEditCtrl', ['$scope', 'profileService', '$rootScope', '$routeParams','navigationService',
     function($scope, profileService, $rootScope, $params, navigationService) {
 
-      
+
       $scope.profile = profileService.getCurrent();
 
       $scope.changeMessageDeliveryType = function ($event, $success, $error) {
@@ -71,26 +71,36 @@
       }
 
       $scope.updateField = function ($event, $success, $error) {
-        $event.preventDefault();
-        var profile = {};
-        profile[$event.currentTarget.name] = $event.currentTarget.value;
+          $event.preventDefault();
+          var profile = {};
+          profile[$event.currentTarget.name] = $event.currentTarget.value;
 
-        profileService.updateCurrent(profile).then(function(){
-        	/*console.log("profileService.updateCurrent: ");
-        	console.log(profile);*/
-          if ($event.currentTarget.id === 'profile-name') {
-            $rootScope.$broadcast('profile-name-updated');
+
+          if ($event.currentTarget.id === 'profile-phone' && !$event.currentTarget.value.match(/^([0-9\(\)\/\+ \-]*)$/)) {
+              //handle no number error
+              $error($($event.target));
+          } else if ($event.currentTarget.id === 'profile-email' && !$event.currentTarget.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
+              //handle no email error
+              $error($($event.target));
+          } else {
+
+              profileService.updateCurrent(profile).then(function () {
+                      /*console.log("profileService.updateCurrent: ");
+                       console.log(profile);*/
+                      if ($event.currentTarget.id === 'profile-name') {
+                          $rootScope.$broadcast('profile-name-updated');
+                      }
+                      $success($($event.target));
+
+                      $scope.profile.invalidate();
+                      $scope.profile.resolve();
+                  },
+                  function (error) {
+                      $error($($event.target));
+                  });
           }
-          $success($($event.target));
-
-          $scope.profile.invalidate();
-	      $scope.profile.resolve();
-        },
-        function (error){
-          $error($($event.target));
-        });
       }
-      
+
 
       $scope.changeMarkReadTimeout = function ($event, $success, $error) {
 		$event.preventDefault();

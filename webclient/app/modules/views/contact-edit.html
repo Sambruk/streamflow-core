@@ -20,7 +20,7 @@
     <div class="m m-check-list">
         <div class="m-h">
             <h2>Redigera kontakt</h2>
-            <a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>
+            <!--<a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>-->
         </div>
         <div class="contact-input">
             <form action="#" method="get" class="form-general cf" name="editContactForm">
@@ -37,11 +37,11 @@
                         <label for="contact-name">Gatuadress</label>
                         <input type="text" data-ng-model="contact[0].addresses[0].address" id="contact-address" name="address" data-sf-update-on-blur="updateField($event, $success, $error)">
                     </div>
-                    <div class="text col small col-2">
+                    <div class="text col medium-small col-2">
                         <label for="contact-zipcode">Postnummer</label>
                         <input type="text" data-ng-model="contact[0].addresses[0].zipCode" id="contact-zipcode" name="zipcode" data-sf-update-on-blur="updateField($event, $success, $error)">
                     </div>
-                    <div class="text col small col-3">
+                    <div class="text col medium-small col-3">
                         <label for="contact-city">Postort</label>
                         <input type="text" data-ng-model="contact[0].addresses[0].city" id="contact-city" name="city" data-sf-update-on-blur="updateField($event, $success, $error)">
                     </div>
@@ -59,7 +59,7 @@
                 <div class="row cols-1 cf">
                 </div>
                 <div class="row cols-3 cf">
-                    <div class="text col small col-1">
+                    <div class="text col medium-small col-1">
                         <label for="contact-phone">Telefon</label>
                         <input type="text" data-ng-model="contact[0].phoneNumbers[0].phoneNumber" id="contact-phone" name="phone" data-sf-update-on-blur="updateField($event, $success, $error)">
                     </div>
@@ -67,7 +67,7 @@
                         <label for="contact-email">E-post</label>
                         <input type="text" data-ng-model="contact[0].emailAddresses[0].emailAddress" id="contact-email" name="email" data-sf-update-on-blur="updateField($event, $success, $error)">
                     </div>
-                    <div class="text col small col-3">
+                    <div class="text col medium-small col-3">
                         <label for="contact-pref">Kontaktpreferens</label>
                         <select custom-select class="hasCustomSelect" data-ng-model="contact[0].contactPreference" id="contact-pref" name="contactpreference" data-sf-update-on-blur="updateField($event, $success, $error)">
                             <option value="letter">Brev</option>
