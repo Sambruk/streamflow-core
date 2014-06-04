@@ -616,8 +616,8 @@ public interface CaseEntity
       }
 
       public void deleteContact( int index ){
-         next.deleteContact( index );
          caseLoggable.caselog().get().addTypedEntry( "{deleteContact,name=" + contacts.contacts().get().get( index ).name().get()+"}" , CaseLogEntryTypes.contact);
+         next.deleteContact( index );
       }
    }
    

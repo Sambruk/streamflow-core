@@ -40,6 +40,8 @@
     function(growl, $scope, $params, projectService, $rootScope) {
 
     $scope.currentCases = projectService.getSelected($params.projectId, $params.projectType);
+    $scope.projectType = $params.projectType;
+
     /**
     * ERROR HANDLER
     **/
@@ -65,7 +67,7 @@
     $scope.caze = caseService.getSelected($params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.caseId);
     $scope.notes = caseService.getSelectedNote($params.caseId);
-    
+
     $scope.commands = caseService.getSelectedCommands($params.caseId);
     $scope.profile = profileService.getCurrent();
 
@@ -85,6 +87,10 @@
       $scope.caze.resolve();
     });
 
+    $scope.$on('note-changed', function() {
+      $scope.notes = caseService.getSelectedNote($params.caseId);
+    });
+
     /**
     * ERROR HANDLER
     **/
@@ -95,7 +101,7 @@
         //growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
-      }  
+      }
     };
 
     //error-handler
@@ -103,7 +109,7 @@
 
     // Mark the case as Read after the ammount of time selected in profile.
     // TODO <before uncomment>. Find a way to update possible commands after post.
-    /*$scope.$watch("commands[0] + profile[0]", function(){   
+    /*$scope.$watch("commands[0] + profile[0]", function(){
       var commands = $scope.commands;
       var profile = $scope.profile[0];
 
@@ -112,7 +118,7 @@
       });
 
       if ($scope.canRead) {
-        $timeout(function() { 
+        $timeout(function() {
           caseService.Read($params.projectId, $params.projectType, $params.caseId);
         }, profile.markReadTimeout * 1000)
 
@@ -146,7 +152,7 @@
         //growl.addSuccessMessage('successMessage');
       }else {
         growl.addWarnMessage('errorMessage');
-      }  
+      }
     };
 
     //error-handler
@@ -159,8 +165,8 @@
     })
   }]);
 
-  sfCase.controller('CaseEditCtrl', ['growl','$scope', '$routeParams', 'caseService', 'navigationService',
-    function(growl, $scope, $params, caseService, navigationService) {
+  sfCase.controller('CaseEditCtrl', ['growl','$scope', '$rootScope', '$routeParams', 'caseService', 'navigationService',
+    function(growl, $scope, $rootScope, $params, caseService, navigationService) {
 
       $scope.caze = caseService.getSelected($params.caseId);
       $scope.general = caseService.getSelectedGeneral($params.caseId);
@@ -175,6 +181,8 @@
             var href = navigationService.caseHrefSimple($params.caseId);
             $scope.notes.invalidate();
             $scope.notes.resolve();
+
+            $rootScope.$broadcast('note-changed');
             // TODO Fix redirection bug
             window.location.assign(href + '/edit');
           });

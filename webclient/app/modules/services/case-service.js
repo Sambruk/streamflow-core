@@ -334,10 +334,10 @@
           ]),
           value).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       },
 
       updateContact: function(caseId, contactIndex, value) {
@@ -349,10 +349,10 @@
           ]), 
           value).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       },
       getCaseLogDefaultParams: function(caseId) {
         return backendService.get({
@@ -495,17 +495,18 @@
 
       createSelectedForm: function(caseId, formId) {
         return backendService.postNested(
-          caseBase(caseId).concat([
-            {resources: 'possibleforms'},
-            {'index.links': formId.replace("/", "")},
-            {commands: 'create'}
-          ]),
-          {}).then(function(result){
-            caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
-            caseBase.broadcastMessage(error);
-          };
+            caseBase(caseId).concat([
+                {resources: 'possibleforms'},
+                {'index.links': formId.replace("/", "")},
+                {commands: 'create'}
+            ]),
+            {}).then(function(result){
+                caseBase.broadcastMessage(result.status);
+                return result;
+            },
+            function(error){
+                caseBase.broadcastMessage(error);
+            });
       },
 
       addViewModelProperties: function(pages){
@@ -521,8 +522,7 @@
         var that = this;
         return backendService.get({
           specs:caseBase(caseId).concat([
-            {resources: 'formdrafts'},
-            {'index.links': draftId}
+            {resources: 'formdrafts/' + draftId, unsafe: true}
             ]),
           onSuccess:function (resource, result) {
             var index = resource.response.index;
@@ -585,31 +585,29 @@
       updateField: debounce(function(caseId, formId, fieldId, value) {
         return backendService.postNested(
           caseBase(caseId).concat([
-            {resources: 'formdrafts'},
-            {'index.links': formId},
+            {resources: 'formdrafts/' + formId, unsafe: true},
             {commands: 'updatefield'}
           ]),
           {field: fieldId, value: value}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
-      }, 1000),
+          });
+          }, 1000),
 
       submitForm: function(caseId, formId) {
         return backendService.postNested(
           caseBase(caseId).concat([
-            {resources: 'formdrafts'},
-            {'index.links': formId},
+            {resources: 'formdrafts/' + formId, unsafe: true},
             {commands: 'submit'}
           ]),
           {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       },
 
       getSubmittedForms: function(caseId, formId) {
@@ -629,7 +627,6 @@
             var forms = _.filter(resource.response.index.forms, function(form){
               return form.id === formId;
             });
-
             forms.reverse().forEach(function(item, index){
               item.submissionDate = item.submissionDate.split("T")[0];
               result.push(item)
@@ -637,8 +634,26 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
+        });
+      },
+
+      getSubmittedFormList: function(caseId) {
+        return backendService.get({
+            specs:caseBase(caseId).concat([{
+                resources: 'submittedforms'
+            }]),
+            onSuccess:function (resource, result){
+                resource.response.index.forms.forEach(function(item, index){
+                    item.index = index;
+                    result.push(item);
+                });
+                caseBase.broadcastMessage(result.status);
+            },
+            onFailure:function(err){
+                caseBase.broadcastMessage(err);
+            }
         });
       },
 
@@ -732,10 +747,10 @@
             ]),
           {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       },
      getConversationParticipants: function(caseId, conversationId) {
         return backendService.get({
@@ -780,10 +795,10 @@
             ]),
           {entity: participant}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       },
       deleteParticipantFromConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
@@ -796,10 +811,10 @@
             ]),
           {}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          });
       }
 
     }

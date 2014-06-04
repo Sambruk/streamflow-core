@@ -88,6 +88,10 @@
         templateUrl:'modules/views/form-history.html',
         controller: 'FormHistoryCtrl'
       })
+      .when('/cases/:caseId/formdrafts/:formId', {
+              templateUrl:'modules/views/forms.html',
+              controller: 'FormCtrl'
+      })
       .when('/cases/:caseId/noteshistory/', {
         templateUrl:'modules/views/notes-history.html',
         controller: 'NotesHistoryCtrl'

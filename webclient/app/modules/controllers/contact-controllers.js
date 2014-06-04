@@ -46,13 +46,33 @@
         $scope.contact.addresses = angular.toJson($scope.contact.addresses);
         $scope.contact.emailAddresses = angular.toJson($scope.contact.emailAddresses);
         $scope.contactId = caseService.addContact($params.caseId, $scope.contact).then(function(){
-          var href = navigationService.caseHref($params.caseId);
+          var href = navigationService.caseHrefSimple($params.caseId);
           $scope.contacts.invalidate();
           $scope.contacts.resolve();
           window.location.assign(href);
         });
       }
 
+    $scope.updateField = function ($event, $success, $error) {
+        $event.preventDefault();
+        var contact = {};
+        contact[$event.currentTarget.name] = $event.currentTarget.value;
+        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^$|^([0-9\(\)\/\+ \-]*)$/))   {
+            //handle no number error
+            $error($($event.target));
+
+        }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^$|^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+            //handle no email error
+            $error($($event.target));
+        }
+        else{
+            if($success){
+                $success($($event.target));
+            }else if($error) {
+                $error($($event.target));
+            }
+        }
+      }
     }]);
 
   sfContact.controller('ContactEditCtrl', ['$scope', '$rootScope', 'caseService', '$routeParams','navigationService',
@@ -92,16 +112,25 @@
         $event.preventDefault();
         var contact = {};
         contact[$event.currentTarget.name] = $event.currentTarget.value;
+        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^([0-9\(\)\/\+ \-]*)$/))  {
+            //handle no number error
+            $error($($event.target));
+        }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+            //handle no email error
+            $error($($event.target));
+        }
+        else{
+            $scope.contactId = caseService.updateContact($params.caseId, $params.contactIndex, contact).then(function(){
+                if ($event.currentTarget.id === 'contact-name') {
+                    $rootScope.$broadcast('contact-name-updated');
+                }
+                $success($($event.target));
+            },
+            function (error){
+                $error($($event.target));
+            });
+        }
 
-        $scope.contactId = caseService.updateContact($params.caseId, $params.contactIndex, contact).then(function(){
-          if ($event.currentTarget.id === 'contact-name') {
-            $rootScope.$broadcast('contact-name-updated');
-          }
-          $success($($event.target));
-        },
-        function (error){
-          $error($($event.target));
-        });
       }
 
     }]);

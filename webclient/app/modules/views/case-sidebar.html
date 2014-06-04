@@ -16,6 +16,7 @@
     limitations under the License.
 
 -->
+
 <div class="content-secondary" role="complementary" data-ng-controller="SidebarCtrl">
 
   <h2 class="struct">Verktyg och annan information</h2>
@@ -38,33 +39,44 @@
         </ul>
       </li>
     </ul>
+
     <div class="toolbar-content" ng-hide="true">
-
       <div data-ng-switch on="commandView">
-          <div data-ng-switch-when="resolve">
-            <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
-            </select>
-            <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
-          </div>
+              <div class="toolbar-content-style" data-ng-switch-when="resolve">
+                <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+                </select>
+                <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
+              </div>
 
-          <div data-ng-switch-when="close">
+          <div class="toolbar-content-style" data-ng-switch-when="close">
             <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
           </div>
 
-          <div data-ng-switch-when="sendTo">
-            <div class="row cf">
-              <div class="select">
-                <label for="issue-owner">Byt ägare</label>
-                <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
-                </select>
+
+          <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
+
+              <div class='ng-modal' ng-show='show'>
+                  <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
+                  <div class='ng-modal-dialog' ng-style='dialogStyle'>
+                  <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+                  <div class="row cf">
+                      <div class="select">
+                          <label for="issue-owner">Byt ägare</label>
+                          <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="submit-area cf">
+                          <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+                      </div>
+                  </div>
+                      <div ng-transclude></div>
+                  </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="submit-area cf">
-                <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
-              </div>
-            </div>
           </div>
+
+
 
           <div data-ng-switch-when="todo">
               TODO
@@ -108,7 +120,7 @@
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</p>
             <ul class="convo-status">
-              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
             </ul>
           </a>
         </li>
@@ -117,29 +129,29 @@
   </div>
   <!-- /Module: Ärende -->
 
-  <!-- m-issue-forms -->
-  <div class="m m-issue-forms">
+<!-- Module: Formulär -->
+  <div  class="m m-convos" data-ng-controller="FormCtrl">
     <div class="m-h">
       <h2>Formulär</h2>
     </div>
-    <div class="m-c">      
-      <div class="accordion">
-        <div class="accordion-item" style="margin-bottom:0px;">
-          <h3><a href="#" class="open-acc">Värde 1</a></h3>
-        </div>
-        <div class="accordion-item">
-          <h3><a href="#" class="open-acc">Värde 2</a></h3>
-        </div>
-        <div class="accordion-item">
-          <h3><a href="#" class="open-acc">Värde 3</a></h3>
-        </div>
-        <!-- end accordion-item -->
-      </div>
-      <!-- end accordion -->
-
+    <div class="m-c">
+      <ul>
+        <li data-ng-repeat="form in possibleForms">
+          <a href="#/cases/{{ caseId }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
+            <h3>{{form.text}}</h3>
+            <div data-ng-controller="FormHistoryCtrl">
+              <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)">
+              </span>
+              <ul class="form-status">
+                <li><a href="#/cases/{{ caseId }}/formhistory/{{ form.id }}"><span class="icon-chat" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
+              </ul>
+            </div>
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
-  <!-- /m-issue-forms -->
+<!-- /Module: Formulär -->
 
   <!-- Module: Konversationer -->
   <div class="m m-convos">
@@ -149,7 +161,7 @@
     </div>
     <div class="m-c">
       <ul>
-        <li data-ng-repeat='conversation in conversations'>
+        <li data-ng-repeat='conversation in conversations' class="convo-li">
           <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
@@ -200,34 +212,56 @@
   <!-- /Module: Bifogade filer -->
 
   <!-- Module: Ärendelogg -->
-  <div class="m m-issuelog" data-ng-controller="CaselogListCtrl">
-  <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
-    <div class="m-h">
-      <h2>Ärendelogg</h2>
-      <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
-    </div>
-    <div class="m-c">
-      <table class="log-table">
-        <caption class="struct">Historik för detta ärende</caption>
-        <thead class="struct">
-          <tr>
-            <th>Datum</th>
-            <th>Titel</th>
-            <th>Användare</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'">
-          <td>{{ entry.creationDate | shortDate}}</td>
-          <td>{{ entry.text }}</td>
-          <td>{{ entry.creator }}</td>  
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    </a>
+  <div class="m m-convos" data-ng-controller="CaselogListCtrl">
+      <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
+      <div class="m-h">
+          <h2>Ärendelogg</h2>
+          <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
+      </div>
+      <div class="m-c">
+          <ul>
+              <li data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'" class="convo-li">
+                 <!-- <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">-->
+                      <h3>{{ entry.text }} by {{ entry.creator }}</h3>
+                      <span class="date">{{ entry.creationDate | dateTime}}</span>
+              </li>
+          </ul>
+        </div>
+      </a>
   </div>
   <!-- /Module: Ärendelogg -->
 
-<!-- <pre><code>{{ form[0] | json }}</code></pre> -->
+  <!-- Module: Ärendelogg -->
+  <!--
+  <div class="m m-issuelog" data-ng-controller="CaselogListCtrl">
+      <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
+          <div class="m-h">
+              <h2>Ärendelogg</h2>
+              <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
+          </div>
+          <div class="m-c">
+              <table class="log-table">
+                  <caption class="struct">Historik för detta ärende</caption>
+                  <thead class="struct">
+                  <tr>
+                      <th>Datum</th>
+                      <th>Titel</th>
+                      <th>Användare</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'">
+                      <td>{{ entry.creationDate | shortDate}}</td>
+                      <td>{{ entry.text }}</td>
+                      <td>{{ entry.creator }}</td>
+                  </tr>
+                  </tbody>
+              </table>
+          </div>
+      </a>
+  </div> -->
+  <!-- /Module: Ärendelogg -->
+
+
+  <!-- <pre><code>{{ form[0] | json }}</code></pre> -->
 </div>

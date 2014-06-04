@@ -62,7 +62,8 @@
 
       $scope.removeParticipant = function(participant){
         caseService.deleteParticipantFromConversation($params.caseId, $params.conversationId, participant).then(function(){
-          alert("Deltagare borttagen!")
+            $rootScope.$broadcast('participant-removed');
+//          alert("Deltagare borttagen!");
         });
       }
 
@@ -93,7 +94,7 @@
         var participant = $scope.participant;
 
         caseService.addParticipantToConversation($params.caseId, $params.conversationId, participant).then(function(){
-          var href = navigationService.caseHref($params.caseId) + "/conversation/" + $params.conversationId;
+          var href = navigationService.caseHrefSimple($params.caseId) + "/conversation/" + $params.conversationId;
           $scope.possibleParticipants.invalidate();
           $scope.possibleParticipants.resolve();
           window.location.assign(href);

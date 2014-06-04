@@ -3,15 +3,15 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.21-SNAPSHOT</version>
+    <version>1.22-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-        <version.qi4j-core>1.3-sf856</version.qi4j-core>
-        <version.qi4j-lib>1.3-sf856</version.qi4j-lib>
-        <version.qi4j-ext>1.3-sf856</version.qi4j-ext>
-        <version.qi4j-tools>1.3-sf856</version.qi4j-tools>
+        <version.qi4j-core>1.3-sf864</version.qi4j-core>
+        <version.qi4j-lib>1.3-sf864</version.qi4j-lib>
+        <version.qi4j-ext>1.3-sf864</version.qi4j-ext>
+        <version.qi4j-tools>1.3-sf864</version.qi4j-tools>
         <version.restlet>2.0.3</version.restlet>
         <version.slf4j>1.6.4</version.slf4j>
         <application.header>Streamflow</application.header>
