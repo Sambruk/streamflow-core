@@ -109,23 +109,26 @@ public interface Users
       {
          // Check if user already exist
          EmailUserEntity user;
+         String emailString =  email.from().get().trim();
+         emailString = emailString.replaceAll("[\\s\\u00A0]", "");
+
          try
          {
-            user = module.unitOfWorkFactory().currentUnitOfWork().get( EmailUserEntity.class, "email:"+email.from().get() );
+            user = module.unitOfWorkFactory().currentUnitOfWork().get( EmailUserEntity.class, "email:"+emailString );
          } catch (NoSuchEntityException e)
          {
             // Create new email user
-            user = createdEmailUser(null, email.from().get());
+            user = createdEmailUser(null, emailString);
          }
 
          // Update contact info
-         String userFromName = email.fromName().get() != null ? email.fromName().get() : email.from().get() ;
+         String userFromName = email.fromName().get() != null ? email.fromName().get() : emailString ;
 
          ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
          contactBuilder.prototype().name().set( userFromName );
 
          ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
-         emailBuilder.prototype().emailAddress().set(email.from().get());
+         emailBuilder.prototype().emailAddress().set(emailString);
 
          contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
 
@@ -141,21 +144,24 @@ public interface Users
       {
          // Check if user already exist
          EmailUserEntity user;
-         try
+         String emailString = emailAddress.trim();
+          emailString = emailString.replaceAll( "[\\s\\u00A0]", "" );
+
+          try
          {
-            user = module.unitOfWorkFactory().currentUnitOfWork().get( EmailUserEntity.class, "email:"+ emailAddress );
+            user = module.unitOfWorkFactory().currentUnitOfWork().get( EmailUserEntity.class, "email:"+ emailString );
          } catch (NoSuchEntityException e)
          {
             // Create new email user
-            user = createdEmailUser(null, emailAddress);
+            user = createdEmailUser(null, emailString );
          }
 
          // Update contact info
          ValueBuilder<ContactDTO> contactBuilder = module.valueBuilderFactory().newValueBuilder(ContactDTO.class);
-         contactBuilder.prototype().name().set( emailAddress );
+         contactBuilder.prototype().name().set( emailString );
 
          ValueBuilder<ContactEmailDTO> emailBuilder = module.valueBuilderFactory().newValueBuilder(ContactEmailDTO.class);
-         emailBuilder.prototype().emailAddress().set( emailAddress );
+         emailBuilder.prototype().emailAddress().set( emailString );
 
          contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
 
