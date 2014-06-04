@@ -382,7 +382,12 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
         private Iterable<ArchivalSettings.Data> archivalSettings()
         {
             Property<Integer> maxAge = templateFor(ArchivalSettings.Data.class).archivalSettings().get().maxAge();
-            Query<ArchivalSettings.Data> settings = module.queryBuilderFactory().newQueryBuilder(ArchivalSettings.Data.class).where(notEq(maxAge, 0)).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
+            Query<ArchivalSettings.Data> settings = module.queryBuilderFactory()
+                    .newQueryBuilder(ArchivalSettings.Data.class)
+                    .where(
+                            and(    isNotNull(templateFor(ArchivalSettings.Data.class).archivalSettings()),
+                                    gt(maxAge, 0))
+                    ).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
             return settings;
         }
 

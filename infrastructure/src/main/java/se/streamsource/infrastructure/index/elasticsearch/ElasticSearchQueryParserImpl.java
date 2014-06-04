@@ -196,6 +196,9 @@ public class ElasticSearchQueryParserImpl
         {
             name = predicate.propertyReference().traversedAssociation().associationName()
                     + ".identity";
+        } else if( predicate.propertyReference().traversedProperty() != null ) {
+            name = predicate.propertyReference().traversedProperty().propertyName() + "."
+                    + predicate.propertyReference().propertyName();
         } else {
             name = predicate.propertyReference().propertyName();
         }
@@ -212,6 +215,9 @@ public class ElasticSearchQueryParserImpl
         {
             name = predicate.propertyReference().traversedAssociation().associationName()
                     + ".identity";
+        } else if( predicate.propertyReference().traversedProperty() != null ) {
+            name = predicate.propertyReference().traversedProperty().propertyName() + "."
+            + predicate.propertyReference().propertyName();
         } else {
             name = predicate.propertyReference().propertyName();
         }
@@ -220,6 +226,10 @@ public class ElasticSearchQueryParserImpl
         if( predicate instanceof EqualsPredicate ) {
 
             addFilter( termFilter(name, value ), filterBuilder  );
+
+        }else if ( predicate instanceof NotEqualsPredicate ) {
+
+            addFilter( notFilter( termFilter(name, value) ), filterBuilder );
 
         }else if ( predicate instanceof GreaterOrEqualPredicate ) {
 
