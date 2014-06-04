@@ -202,15 +202,22 @@ public class ContactsView
    {
       if (Events.matches( Events.withNames("changedStatus", "addedContact", "deletedContact", "updatedContact" ), transactions ))
       {
-         model.refresh();
+         refresh();
 
          if (Events.matches( Events.withNames("addedContact" ), transactions ))
+         {
             contacts.setSelectedIndex( contacts.getModel().getSize()-1 );
-         if (Events.matches( Events.withNames("updatedContact" ), transactions ))
+         } else if (Events.matches( Events.withNames("updatedContact" ), transactions ))
+         {
             model.getCurrentContact().setContact( model.createInitialValues(model.getEventList().get( contacts.getSelectedIndex() ) ) );
-
+         } else if (Events.matches( Events.withNames("deletedContact" ), transactions ))
+         {
+             if (model.getEventList().size() >= 0 )
+             {
+                 contacts.setSelectedIndex( 0 );
+             }
+         }
       }
-
    }
 
    public ContactsModel getModel()
