@@ -36,9 +36,12 @@
 
         if ($("#createContactForm div").not('.error')&&$("#contact-name").val()!=""){
             $('#contact-submit-button').attr('disabled', false);
+            $('#contact-submit-button').removeClass('inactive');
         }
         else{
             $('#contact-submit-button').attr('disabled', true);
+            $('#contact-submit-button').addClass('inactive');
+
         }
 
         //Talk of removing the saved icon after a while, whis coule be one way.
@@ -57,7 +60,7 @@
       var errorCallback = function (element){
         element.parent().addClass('error');
         $('#contact-submit-button').attr('disabled', true);
-
+        $('#contact-submit-button').addClass('inactive');
       };
 
       element.bind('blur', function(event) {
