@@ -24,22 +24,27 @@
 
       var successCallback = function (element){
 
-        if (element[0].type === 'select-one') {
-          element.parent().addClass('saved saved-select');
-        }else{
-          element.parent().addClass('saved');
-        }
         if(element.parent().hasClass('error')){
           element.parent().removeClass('error');
         }
 
-        if ($("#createContactForm div").not('.error')&&$("#contact-name").val()!=""){
-            $('#contact-submit-button').attr('disabled', false);
-            $('#contact-submit-button').removeClass('inactive');
+        if (element[0].type === 'select-one') {
+          element.parent().addClass('saved saved-select');
+        }else{
+            if( element[0].id == 'contact-name' && !$("#contact-name").val()){
+                $("#contact-name").parent().addClass('error');
+            }else {
+                element.parent().addClass('saved');
+            }
         }
-        else{
+
+        if ( $('form div').hasClass('error') || !$("#contact-name").val()){
             $('#contact-submit-button').attr('disabled', true);
             $('#contact-submit-button').addClass('inactive');
+        }
+        else{
+            $('#contact-submit-button').attr('disabled', false);
+            $('#contact-submit-button').removeClass('inactive');
         }
 
         element.parent()[0].addEventListener('webkitAnimationEnd', function(){
