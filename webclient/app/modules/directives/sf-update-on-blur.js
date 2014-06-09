@@ -31,9 +31,9 @@
         if (element[0].type === 'select-one') {
           element.parent().addClass('saved saved-select');
         }else{
-            if( element[0].id == 'contact-name' && !$("#contact-name").val()){
-                $("#contact-name").parent().addClass('error');
-            }else {
+                if( element[0].id == 'contact-name' && !$("#contact-name").val()){
+                    $("#contact-name").parent().addClass('error');
+                }else {
                 element.parent().addClass('saved');
             }
         }
