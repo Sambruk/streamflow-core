@@ -56,11 +56,12 @@
     $scope.updateField = function ($event, $success, $error) {
         $event.preventDefault();
         var contact = {};
+
         contact[$event.currentTarget.name] = $event.currentTarget.value;
+
         if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^$|^([0-9\(\)\/\+ \-]*)$/))   {
             //handle no number error
             $error($($event.target));
-
         }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^$|^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
             //handle no email error
             $error($($event.target));
@@ -111,15 +112,16 @@
       $scope.updateField = function ($event, $success, $error) {
         $event.preventDefault();
         var contact = {};
+
         contact[$event.currentTarget.name] = $event.currentTarget.value;
-        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^([0-9\(\)\/\+ \-]*)$/))  {
-            //handle no number error
+
+        if ($event.currentTarget.id === 'contact-phone' &&  !$event.currentTarget.value.match(/^$|^([0-9\(\)\/\+ \-]*)$/))  {
             $error($($event.target));
-        }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
-            //handle no email error
+        }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^$|^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
             $error($($event.target));
-        }
-        else{
+        }else if($event.currentTarget.id === 'contact-id' && !$event.currentTarget.value.match(/^$|^19\d{10}$/)) {
+            $error($($event.target));
+        }else {
             $scope.contactId = caseService.updateContact($params.caseId, $params.contactIndex, contact).then(function(){
                 if ($event.currentTarget.id === 'contact-name') {
                     $rootScope.$broadcast('contact-name-updated');
