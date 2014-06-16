@@ -65,8 +65,9 @@
         }else if($event.currentTarget.id ==='contact-email' && !$event.currentTarget.value.match(/^$|^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
             //handle no email error
             $error($($event.target));
-        }
-        else{
+        }else if($event.currentTarget.id === 'contact-id' && !$event.currentTarget.value.match(/^$|^19\d{10}$/)) {
+            $error($($event.target));
+        }else{
             if($success){
                 $success($($event.target));
             }else if($error) {

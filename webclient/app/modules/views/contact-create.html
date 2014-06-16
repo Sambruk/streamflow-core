@@ -77,8 +77,8 @@
           </div>
           <div class="row cols-2 cf">
               <div class="text col medium col-1">
-                  <label for="contact-id">Kontakt-id <em>(pers.nr / org.nr)</em></label>
-                  <input type="text" data-ng-model="contact.contactId" id="contact-id">
+                  <label for="contact-id">Kontakt-id <em>(pers.nr)</em><!--<em>(pers.nr / org.nr)</em>--></label>
+                  <input type="text" data-ng-model="contact.contactId" id="contact-id" data-sf-update-on-blur="updateField($event, $success, $error)">
               </div>
               <div class="text col medium col-2">
                   <label for="contact-company">Företag</label>
