@@ -43,7 +43,7 @@
     };
 
     caseBase.initBroadcastMessage = function(message){
-      $rootScope.$broadcast('httpRequestInitiated');      
+      $rootScope.$broadcast('httpRequestInitiated');
     };
 
     return {
@@ -62,7 +62,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -217,7 +217,7 @@
           caseBase(caseId).concat([
             {resources: 'note'},
             {commands: 'addnote'}
-          ]), 
+          ]),
           value)
       },
 
@@ -232,7 +232,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -250,7 +250,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -265,7 +265,7 @@
             });
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -280,7 +280,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -306,7 +306,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -321,7 +321,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -346,7 +346,7 @@
             {resources: 'contacts', unsafe: true},
             {resources: contactIndex, unsafe: true},
             {commands: 'update'}
-          ]), 
+          ]),
           value).then(function(result){
             caseBase.broadcastMessage(result.status);
           },
@@ -365,12 +365,12 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
       getSelectedCaseLog: function(caseId) {
- 
+
           //TODO: Look at why this is getting called twice on the caselog list page and if no way around it, maybe make sure the results are cached
           return backendService.get({
               specs:caseBase(caseId).concat([
@@ -379,12 +379,12 @@
               ]),
               onSuccess:function (resource, result) {
                   resource.response.links.forEach(function(link){
-                      result.push(link);                      
+                      result.push(link);
                   });
                   caseBase.broadcastMessage(result.status);
               },
               onFailure:function(err){
-                caseBase.broadcastMessage(err);      
+                caseBase.broadcastMessage(err);
               }
           });
       },
@@ -409,7 +409,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -431,19 +431,87 @@
           specs:caseBase(caseId).concat([
             {resources: 'general'},
             {queries: 'possiblecasetypes'}
-            ]),
+          ]),
           onSuccess:function (resource, result) {
             var caseTypeOptions = _.map(resource.response.links, function(link){
               return {name: link.text, value: link.id};
             });
-
             caseTypeOptions.forEach(function(item){result.push(item)});
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
+      },
+
+      getCaseLabel: function(caseId) {
+        return backendService.get({
+            specs:caseBase(caseId).concat([
+                {resources: 'general'},
+                {resources: 'labels'}
+            ]),
+            onSuccess:function (resource, result) {
+                resource.response.index.links.forEach(function(item){
+                    result.push(item);
+                    caseBase.broadcastMessage(result.status);
+                });
+             },
+            onFailure:function(err){
+                caseBase.broadcastMessage(err);
+            }
+        });
+      },
+
+      getPossibleCaseLabels: function(caseId) {
+        return backendService.get({
+            specs:caseBase(caseId).concat([
+                {resources: 'general'},
+                {resources: 'labels'},
+                {queries: 'possiblelabels'}
+            ]),
+            onSuccess:function (resource, result) {
+                var labelOptions = _.map(resource.response.links, function(link){
+                    return {name: link.text, value: link.id};
+                });
+
+                labelOptions.forEach(function(item){result.push(item)});
+                caseBase.broadcastMessage(result.status);
+            },
+            onFailure:function(err){
+                caseBase.broadcastMessage(err);
+            }
+        });
+      },
+
+      addCaseLabel: function(caseId, labelId){
+        return backendService.postNested(
+            caseBase(caseId).concat([
+                {resources: 'general'},
+                {resources: 'labels'},
+                {commands: 'addlabel'}
+            ]),
+          {entity: labelId }).then(function(result){
+                  caseBase.broadcastMessage(result.status);
+          },
+            function(error){
+              caseBase.broadcastMessage(error);
+            });
+      },
+      deleteCaseLabel: function(caseId, labelId) {
+        return backendService.postNested(
+            caseBase(caseId).concat([
+                {resources: 'general'},
+                {resources: 'labels'},
+                {'index.links': labelId},
+                {commands: 'delete'}
+            ]),
+            {}).then(function(result){
+                caseBase.broadcastMessage(result.status);
+            },
+            function(error){
+                caseBase.broadcastMessage(error);
+            });
       },
 
       updateSimpleValue: debounce(function(caseId, resource, command, property, value, callback) {
@@ -472,7 +540,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -488,7 +556,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -536,7 +604,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -569,7 +637,7 @@
               caseBase.broadcastMessage(result.status);
             },
             onFailure:function(err){
-              caseBase.broadcastMessage(err);      
+              caseBase.broadcastMessage(err);
             }
           });
           //This might cause nestling issues with the error handler
@@ -577,7 +645,7 @@
           caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -668,7 +736,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -683,10 +751,10 @@
           {topic: value}).then(function(result){
             caseBase.broadcastMessage(result.status);
             return result;
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
           });
-          // function(error){
-          //   caseBase.broadcastMessage(error);
-          // };
       },
       getConversationMessages: function(caseId, conversationId) {
         return backendService.get({
@@ -700,7 +768,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -717,7 +785,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -764,7 +832,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },
@@ -781,7 +849,7 @@
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
-            caseBase.broadcastMessage(err);      
+            caseBase.broadcastMessage(err);
           }
         });
       },

@@ -33,6 +33,9 @@
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
       $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
 
+      $scope.caseLabel = caseService.getCaseLabel($params.caseId);
+
+
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
@@ -154,6 +157,7 @@
         };
         caseService.sendCaseTo($params.caseId, sendToId, callback);
       }
+
 /*
       $scope.close = function(){
         $scope.commandView = "close";
@@ -240,6 +244,30 @@
       $scope.showContact = function(contactId){
         alert("Not supported - need UX for this.");
       }
+
+      $scope.removeCaseLabel = function(label){
+        caseService.deleteCaseLabel($params.caseId, label);
+      }
+
+      $scope.showCaseLabel = function(){
+        $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
+        $scope.commandView = "showCaseLabel";
+      }
+
+      $scope.addLabelButtonClicked = function(labelId) {
+
+        caseService.addCaseLabel($params.caseId, labelId).then(function() {
+          var href = navigationService.caseHrefSimple($params.caseId);
+          $scope.possibleCaseLabels.invalidate();
+          $scope.possibleCaseLabels.resolve();
+
+          window.location.reload(href);
+        });
+
+      }
+
+
+
     }]);
 
 })();

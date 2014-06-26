@@ -76,6 +76,30 @@
               </div>
           </div>
 
+          <div class="toolbar-content-popup" data-ng-switch-when="showCaseLabel">
+
+              <div class='ng-modal' ng-show='show'>
+                  <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
+                  <div class='ng-modal-dialog' ng-style='dialogStyle'>
+                      <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+                      <div class="row cf">
+                          <div class="select">
+                              <label for="caseLabel">Lägg till label</label>
+                              <select id="caseLabel" name="caseLabel" data-ng-options="label.value as label.name for label in possibleCaseLabels" data-ng-model="addLabel">
+                              </select>
+                          </div>
+                      </div>
+
+                      <div class="row">
+                          <div class="submit-area cf">
+                              <button sf-open-toolbar-content type="submit" name="save-case-label" data-ng-click="addLabelButtonClicked(addLabel)">Spara</button>
+                          </div>
+                      </div>
+                      <div ng-transclude></div>
+                  </div>
+              </div>
+          </div>
+
 
 
           <div data-ng-switch-when="todo">
@@ -88,6 +112,22 @@
     </div>
   </div>
   <!-- /Issue toolbar -->
+
+  <!-- Ärendelabel -->
+  <div class="mc">
+      <div class="participants">
+      <!-- TODO: Change class participant to labels + css -->
+          <h3 class="struct">Labels i detta ärende</h3>
+          <span ng-hide="deleted" data-ng-repeat="label in caseLabel">{{ label.text }}
+              <a data-ng-click="removeCaseLabel(label.id);  deleted = !deleted;" href="" class="icon-close" title="Ta bort label">
+                  <span class="struct">Ta bort label</span>
+              </a>
+          </span>
+          <a href="" sf-open-toolbar-content  data-ng-click="showCaseLabel()" class="btn"><i class="icon-plus"></i><span class="struct">Lägg till label</span></a>
+      </div>
+  </div>
+  <!-- TODO: Change class add-participant to add-case-label + css -->
+  <!--- / Ärendelabel -->
 
   <!-- Module: Allmänt -->
   <div class="m m-general">
@@ -120,7 +160,7 @@
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</p>
             <ul class="convo-status">
-              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history    " title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
             </ul>
           </a>
         </li>
