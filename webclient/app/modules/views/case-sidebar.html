@@ -162,14 +162,21 @@
     <div class="m-c">
       <div class="m-box">
         <ul>
-          <li><strong>Ägare:</strong> {{ caze[0].owner }}</li>
+          <li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
+          <li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
           <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
-          <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
-          <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
-          <li><strong>Ärendetyp:</strong> {{general[0].caseType.text}}</li>
         </ul>
       </div>
     </div>
+      <div class="m-box permissionBox">
+          <ul>
+              <li><strong>Åtkomst:</strong></li>
+              <li>
+                  <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
+                  <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
+              </li>
+          </ul>
+      </div>
   </div>
   <!-- /Module: Allmänt -->
 

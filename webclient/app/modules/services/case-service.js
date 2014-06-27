@@ -95,6 +95,17 @@
           {entity: resolutionId}).then(_.debounce(callback)());
       },
 
+    getPermissions: function(caseId){
+        return backendService.get({
+            specs:caseBase(caseId).concat([
+                {queries: 'permissions'}
+            ]),
+            onSuccess:function(resource, result) {
+                result.push(resource.response);
+                caseBase.broadcastMessage(result.status);
+            }
+        });
+    },
       getPossibleSendTo: function(caseId) {
         return backendService.get({
           specs:caseBase(caseId).concat([

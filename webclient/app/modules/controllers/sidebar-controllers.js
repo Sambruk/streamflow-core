@@ -32,6 +32,7 @@
       $scope.conversations = caseService.getSelectedConversations($params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
       $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
+      $scope.permissions = caseService.getPermissions($params.caseId);
 
       $scope.general.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
       $scope.caseLabel = caseService.getCaseLabel($params.caseId);
