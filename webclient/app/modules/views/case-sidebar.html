@@ -129,6 +129,18 @@
   <!-- TODO: Change class add-participant to add-case-label + css -->
   <!--- / Ärendelabel -->
 
+  <!-- Prioritet -->
+  <div data-ng-show="general[0].priority.text" class="m m-general">
+      <div class="m-h">
+          <div class="text col full">
+              <select custom-select data-ng-options="priority as priority.name for priority in general.possiblePriorities"
+                       class=has-custom-select" data-ng-model="priority" data-ng-change="changePriorityLevel(priority.value)" id="priorityLevel" name="prioritylevel">
+              </select>
+          </div>
+      </div>
+  </div>
+  <!-- /Prioritet -->
+
   <!-- Module: Allmänt -->
   <div class="m m-general">
     <div class="m-h">

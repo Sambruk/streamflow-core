@@ -513,6 +513,39 @@
                 caseBase.broadcastMessage(error);
             });
       },
+      getPossiblePriorities: function(caseId){
+          return backendService.get({
+              specs:caseBase(caseId).concat([
+                  {resources: 'general'},
+                  {queries: 'priorities'}
+              ]),
+              onSuccess:function (resource, result) {
+                  var priorityOptions = _.map(resource.response.links, function(link){
+                      return {name: link.text, value: link.id};
+                  });
+
+                  priorityOptions.forEach(function(item){result.push(item)});
+                  caseBase.broadcastMessage(result.status);
+              },
+              onFailure:function(err){
+                  caseBase.broadcastMessage(err);
+              }
+          });
+
+      }, changePriorityLevel: function(caseId, priorityId){
+            console.log(priorityId);
+            return backendService.postNested(
+                caseBase(caseId).concat([
+                    {resources: 'general'},
+                    {commands: 'changepriority'}
+                ]),
+                {id: priorityId }).then(function(result){
+                    caseBase.broadcastMessage(result.status);
+                },
+                function(error){
+                    caseBase.broadcastMessage(error);
+                });
+        },
 
       updateSimpleValue: debounce(function(caseId, resource, command, property, value, callback) {
 

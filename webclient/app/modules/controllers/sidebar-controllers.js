@@ -35,6 +35,7 @@
 
       $scope.caseLabel = caseService.getCaseLabel($params.caseId);
 
+      $scope.general.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
 
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -264,6 +265,10 @@
           window.location.reload(href);
         });
 
+      }
+
+      $scope.changePriorityLevel = function(priority){
+          caseService.changePriorityLevel($params.caseId, priority);
       }
 
 
