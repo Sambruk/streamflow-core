@@ -444,6 +444,19 @@
           }
         });
       },
+      changeCaseType: function(caseId, caseTypeId){
+            return backendService.postNested(
+                caseBase(caseId).concat([
+                    {resources: 'general'},
+                    {commands: 'casetype'}
+                ]),
+                {entity: caseTypeId}).then(function(result){
+                    caseBase.broadcastMessage(result.status);
+                },
+                function(error){
+                    caseBase.broadcastMessage(error);
+                });
+        },
 
       getCaseLabel: function(caseId) {
         return backendService.get({
@@ -532,8 +545,8 @@
               }
           });
 
-      }, changePriorityLevel: function(caseId, priorityId){
-            console.log(priorityId);
+      },
+      changePriorityLevel: function(caseId, priorityId){
             return backendService.postNested(
                 caseBase(caseId).concat([
                     {resources: 'general'},

@@ -113,6 +113,19 @@
   </div>
   <!-- /Issue toolbar -->
 
+  <!-- Ärendetyp -->
+  <div class="m m-general">
+      <div class="m-h">
+          {{general.caseType.id }}
+          <div class="text col medium col-3">
+              <select custom-select data-ng-options="caseType as caseType.name for caseType in general.possibleCaseTypes"
+                      class="hasCustomSelect" data-ng-model="caseType" data-ng-change="changeCaseType(caseType.value)" id="caseType" name="casetype">
+              </select>
+          </div>
+      </div>
+  </div>
+  <!-- /Ärendetyp -->
+
   <!-- Ärendelabel -->
   <div class="mc">
       <div class="participants">

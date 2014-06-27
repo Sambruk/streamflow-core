@@ -33,6 +33,7 @@
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
       $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
 
+      $scope.general.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
       $scope.caseLabel = caseService.getCaseLabel($params.caseId);
 
       $scope.general.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
@@ -271,6 +272,9 @@
           caseService.changePriorityLevel($params.caseId, priority);
       }
 
+      $scope.changeCaseType = function(casetype) {
+          caseService.changeCaseType($params.caseId, casetype);
+      }
 
 
     }]);
