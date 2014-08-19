@@ -56,7 +56,9 @@
         system: 'System',
         systemTrace: 'systemTrace',
         successMessage: 'Hämtning lyckades',
-        errorMessage: 'Hämtning misslyckades'
+        errorMessage: 'Hämtning misslyckades',
+        'read: All': 'Läsa: Alla',
+        'write: All': 'Skriva: Alla'
       };
 
       return translation[input];

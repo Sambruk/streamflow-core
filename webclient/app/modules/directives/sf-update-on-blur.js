@@ -22,24 +22,36 @@
       var fn = $parse(attr['sfUpdateOnBlur']);
       var form = scope[element.closest('form').attr('name')];
 
-
       var successCallback = function (element){
 
-        if (element[0].type === 'select-one') {
-          element.parent().addClass('saved saved-select');
-        }else{
-          element.parent().addClass('saved');
-        }
         if(element.parent().hasClass('error')){
           element.parent().removeClass('error');
         }
 
-        if ($("#createContactForm div").not('.error')&&$("#contact-name").val()!=""){
-            $('#contact-submit-button').attr('disabled', false);
+        if (element[0].type === 'select-one') {
+          element.parent().addClass('saved saved-select');
+        }else{
+                if( element[0].id == 'contact-name' && !$("#contact-name").val()){
+                    $("#contact-name").parent().addClass('error');
+                }else {
+                element.parent().addClass('saved');
+            }
+        }
+
+        if ( $('form div').hasClass('error') || !$("#contact-name").val()){
+            $('#contact-submit-button').attr('disabled', true);
+            $('#contact-submit-button').addClass('inactive');
         }
         else{
-            $('#contact-submit-button').attr('disabled', true);
+            $('#contact-submit-button').attr('disabled', false);
+            $('#contact-submit-button').removeClass('inactive');
         }
+
+        element.parent()[0].addEventListener('webkitAnimationEnd', function(){
+            element.parent().removeClass('saved');
+            element.parent().removeClass('saved-select');
+        });
+
 
         //Talk of removing the saved icon after a while, whis coule be one way.
         //Looked at fading it in and out however you cannot fade the "content" in a :after pseudo element
@@ -57,7 +69,7 @@
       var errorCallback = function (element){
         element.parent().addClass('error');
         $('#contact-submit-button').attr('disabled', true);
-
+        $('#contact-submit-button').addClass('inactive');
       };
 
       element.bind('blur', function(event) {

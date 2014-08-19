@@ -99,7 +99,8 @@ public interface CaseSubmittedFormsContext extends IndexContext<SubmittedFormsLi
                   if ( fieldDTO.fieldType().get().equals(GeoLocationFieldValue.class.getName()))
                   {
                       String text = "";
-                      LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, fieldDTO.value().get() );
+                      //SF-867 Make Location parsing more robust. JSON cannot deal with empty string - needs at least curly braces!!∫
+                      LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, "".equals( fieldDTO.value().get() ) ? "{}" : fieldDTO.value().get() );
                       text += locationDTO.street().get() + ", " + locationDTO.zipcode().get() + ", " + locationDTO.city().get() + "<br>";
                       String locationString = locationDTO.location().get();
                       if (locationString != null) {

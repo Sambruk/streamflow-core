@@ -30,6 +30,7 @@
 
       $scope.submitConversation = function($event){
         $event.preventDefault();
+        $('#createContact').attr('disabled', 'disabled');
 
         var topic = $scope.conversationTopicToCreate;
         caseService.createConversation($params.caseId, topic).then(function(response){

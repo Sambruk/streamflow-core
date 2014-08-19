@@ -32,6 +32,12 @@
       $scope.conversations = caseService.getSelectedConversations($params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
       $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
+      $scope.permissions = caseService.getPermissions($params.caseId);
+
+      $scope.general.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
+      $scope.caseLabel = caseService.getCaseLabel($params.caseId);
+
+      $scope.general.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
 
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -45,6 +51,7 @@
       });
 
       $scope.$on('conversation-message-created', function(){
+        $scope.conversations = caseService.getSelectedConversations($params.caseId);
         $scope.conversations.invalidate();
         $scope.conversations.resolve();
       });
@@ -153,6 +160,7 @@
         };
         caseService.sendCaseTo($params.caseId, sendToId, callback);
       }
+
 /*
       $scope.close = function(){
         $scope.commandView = "close";
@@ -239,6 +247,37 @@
       $scope.showContact = function(contactId){
         alert("Not supported - need UX for this.");
       }
+
+      $scope.removeCaseLabel = function(label){
+        caseService.deleteCaseLabel($params.caseId, label);
+      }
+
+      $scope.showCaseLabel = function(){
+        $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
+        $scope.commandView = "showCaseLabel";
+      }
+
+      $scope.addLabelButtonClicked = function(labelId) {
+
+        caseService.addCaseLabel($params.caseId, labelId).then(function() {
+          var href = navigationService.caseHrefSimple($params.caseId);
+          $scope.possibleCaseLabels.invalidate();
+          $scope.possibleCaseLabels.resolve();
+
+          window.location.reload(href);
+        });
+
+      }
+
+      $scope.changePriorityLevel = function(priority){
+          caseService.changePriorityLevel($params.caseId, priority);
+      }
+
+      $scope.changeCaseType = function(casetype) {
+          caseService.changeCaseType($params.caseId, casetype);
+      }
+
+
     }]);
 
 })();

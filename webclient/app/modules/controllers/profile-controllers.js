@@ -28,8 +28,6 @@
         $scope.profile.invalidate();
         $scope.profile.resolve();
       });
-	  /*console.log("Result from profile controller: ");
-	            console.log($scope.profile);*/
 	}]);
 
   sfProfile.controller('ProfileEditCtrl', ['$scope', 'profileService', '$rootScope', '$routeParams','navigationService',
@@ -45,9 +43,6 @@
 
         profileService.changeMessageDeliveryType(valueChange).then(function(){
           $success($($event.target));
-
-          $scope.profile.invalidate();
-	      $scope.profile.resolve();
         },
         function (error){
           $error($($event.target));
@@ -61,9 +56,6 @@
 
         profileService.changeMailFooter(valueChange).then(function(){
           $success($($event.target));
-
-          $scope.profile.invalidate();
-	      $scope.profile.resolve();
         },
         function (error){
           $error($($event.target));
@@ -75,29 +67,21 @@
           var profile = {};
           profile[$event.currentTarget.name] = $event.currentTarget.value;
 
-
           if ($event.currentTarget.id === 'profile-phone' && !$event.currentTarget.value.match(/^([0-9\(\)\/\+ \-]*)$/)) {
-              //handle no number error
               $error($($event.target));
           } else if ($event.currentTarget.id === 'profile-email' && !$event.currentTarget.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
-              //handle no email error
               $error($($event.target));
           } else {
 
               profileService.updateCurrent(profile).then(function () {
-                      /*console.log("profileService.updateCurrent: ");
-                       console.log(profile);*/
-                      if ($event.currentTarget.id === 'profile-name') {
-                          $rootScope.$broadcast('profile-name-updated');
-                      }
-                      $success($($event.target));
-
-                      $scope.profile.invalidate();
-                      $scope.profile.resolve();
-                  },
-                  function (error) {
-                      $error($($event.target));
-                  });
+                  if ($event.currentTarget.id === 'profile-name') {
+                      $rootScope.$broadcast('profile-name-updated');
+                  }
+                  $success($($event.target));
+              },
+              function (error) {
+                  $error($($event.target));
+              });
           }
       }
 
@@ -109,9 +93,6 @@
 
         profileService.changeMarkReadTimeout(valueChange).then(function(){
           $success($($event.target));
-
-          $scope.profile.invalidate();
-	      $scope.profile.resolve();
         },
         function (error){
           $error($($event.target));
