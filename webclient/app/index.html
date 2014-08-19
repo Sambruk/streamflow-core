@@ -80,14 +80,14 @@
         <div class='body'>
         
         <div growl role="banner"></div>
-          <div class="header cf" role="banner">
+          <div class="header cf" role="banner" ng-show="hasToken()">
 
             <div class="header-body cf">
 
               <div class="client-name" data-ng-controller="ProfileCtrl">
                 <div class="user-area">
+                  <a href="" data-ng-click="logout()" class="btn btn-xs" style="float: right;">Logga Ut</a>
                   <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
-                    <!-- Need a btn to log out. <a href="" data-ng-click="logout()" class="btn">Logga Ut</a> -->
                 </div>
                 <!-- /user-area -->
                   <h1>Malmö Kommun Kontaktcenter</h1>
@@ -118,10 +118,11 @@
           <!-- /header -->
 
           <div class="main">
-            <data-ng-include src="'modules/views/navigation.html'"></data-ng-include>
-            <div class="main-body cf" ng-view> 
+            <data-ng-include src="'modules/views/navigation.html'" ng-show="hasToken()"></data-ng-include>
+            <div class="main-body cf" ng-view ng-show="hasToken()">
             </div> <!-- main-body -->
-            
+            <data-ng-include src="'modules/views/login.html'" ng-show="!hasToken()"></data-ng-include>
+
           </div> <!-- main -->
         </div> <!-- body -->
 
@@ -151,6 +152,7 @@
         <script src="modules/controllers/project-controllers.js"></script>
         <script src="modules/controllers/sidebar-controllers.js"></script>
         <script src="modules/controllers/profile-controllers.js"></script>
+        <script src="modules/controllers/login-controllers.js"></script>
         <script src="modules/directives/sf-active-link.js"></script>
         <script src="modules/directives/sf-fixed-toolbar.js"></script>
         <script src="modules/directives/sf-layout-style.js"></script>
@@ -173,6 +175,7 @@
         <script src="modules/services/project-service.js"></script>
         <script src="modules/services/case-service.js"></script>
         <script src="modules/services/form-mapper-service.js"></script>
+        <script src="modules/services/token-service.js"></script>
         <script src="modules/services/profile-service.js"></script>
         <script src="modules/models/sf-case.js"></script>
 
