@@ -76,6 +76,30 @@
               </div>
           </div>
 
+          <div class="toolbar-content-popup" data-ng-switch-when="showCaseLabel">
+
+              <div class='ng-modal' ng-show='show'>
+                  <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
+                  <div class='ng-modal-dialog' ng-style='dialogStyle'>
+                      <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+                      <div class="row cf">
+                          <div class="select">
+                              <label for="caseLabel">Lägg till label</label>
+                              <select id="caseLabel" name="caseLabel" data-ng-options="label.value as label.name for label in possibleCaseLabels" data-ng-model="addLabel">
+                              </select>
+                          </div>
+                      </div>
+
+                      <div class="row">
+                          <div class="submit-area cf">
+                              <button sf-open-toolbar-content type="submit" name="save-case-label" data-ng-click="addLabelButtonClicked(addLabel)">Spara</button>
+                          </div>
+                      </div>
+                      <div ng-transclude></div>
+                  </div>
+              </div>
+          </div>
+
 
 
           <div data-ng-switch-when="todo">
@@ -89,6 +113,47 @@
   </div>
   <!-- /Issue toolbar -->
 
+  <!-- Ärendetyp -->
+  <div class="m m-general">
+      <div class="m-h">
+          {{general.caseType.id }}
+          <div class="text col medium col-3">
+              <select custom-select data-ng-options="caseType as caseType.name for caseType in general.possibleCaseTypes"
+                      class="hasCustomSelect" data-ng-model="caseType" data-ng-change="changeCaseType(caseType.value)" id="caseType" name="casetype">
+              </select>
+          </div>
+      </div>
+  </div>
+  <!-- /Ärendetyp -->
+
+  <!-- Ärendelabel -->
+  <div class="mc">
+      <div class="participants">
+      <!-- TODO: Change class participant to labels + css -->
+          <h3 class="struct">Labels i detta ärende</h3>
+          <span ng-hide="deleted" data-ng-repeat="label in caseLabel">{{ label.text }}
+              <a data-ng-click="removeCaseLabel(label.id);  deleted = !deleted;" href="" class="icon-close" title="Ta bort label">
+                  <span class="struct">Ta bort label</span>
+              </a>
+          </span>
+          <a href="" sf-open-toolbar-content  data-ng-click="showCaseLabel()" class="btn"><i class="icon-plus"></i><span class="struct">Lägg till label</span></a>
+      </div>
+  </div>
+  <!-- TODO: Change class add-participant to add-case-label + css -->
+  <!--- / Ärendelabel -->
+
+  <!-- Prioritet -->
+  <div data-ng-show="general[0].priority.text" class="m m-general">
+      <div class="m-h">
+          <div class="text col full">
+              <select custom-select data-ng-options="priority as priority.name for priority in general.possiblePriorities"
+                       class=has-custom-select" data-ng-model="priority" data-ng-change="changePriorityLevel(priority.value)" id="priorityLevel" name="prioritylevel">
+              </select>
+          </div>
+      </div>
+  </div>
+  <!-- /Prioritet -->
+
   <!-- Module: Allmänt -->
   <div class="m m-general">
     <div class="m-h">
@@ -97,14 +162,21 @@
     <div class="m-c">
       <div class="m-box">
         <ul>
-          <li><strong>Ägare:</strong> {{ caze[0].owner }}</li>
+          <li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
+          <li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
           <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
-          <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
-          <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
-          <li><strong>Ärendetyp:</strong> {{general[0].caseType.text}}</li>
         </ul>
       </div>
     </div>
+      <div class="m-box permissionBox">
+          <ul>
+              <li><strong>Åtkomst:</strong></li>
+              <li>
+                  <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
+                  <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
+              </li>
+          </ul>
+      </div>
   </div>
   <!-- /Module: Allmänt -->
 
@@ -120,7 +192,7 @@
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar" data-ng-controller="CaseDetailCtrl">{{notes[0].note}}</p>
             <ul class="convo-status">
-              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history    " title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
             </ul>
           </a>
         </li>

@@ -39,7 +39,7 @@
                     </div>
                     <div class="text col medium-small col-2">
                         <label for="contact-zipcode">Postnummer</label>
-                        <input type="text" data-ng-model="contact[0].addresses[0].zipCode" id="contact-zipcode" name="zipcode" data-sf-update-on-blur="updateField($event, $success, $error)">
+                        <input type="text" data-ng-model="contact[0].addresses[0].zipCode" id="contact-zipcode" name="zipCode" data-sf-update-on-blur="updateField($event, $success, $error)">
                     </div>
                     <div class="text col medium-small col-3">
                         <label for="contact-city">Postort</label>
@@ -79,8 +79,8 @@
                 </div>
                 <div class="row cols-2 cf">
                     <div class="text col medium col-1">
-                        <label for="contact-id">Kontakt-id <em>(pers.nr / org.nr)</em></label>
-                        <input type="text" data-ng-model="contact[0].contactId" id="contact-id" name="contactid" data-sf-update-on-blur="updateField($event, $success, $error)">
+                        <label for="contact-id">Kontakt-id <em>(pers.nr)</em><!--<em>(pers.nr / org.nr)</em>--></label>
+                        <input type="text" data-ng-model="contact[0].contactId" id="contact-id" name="contactId" placeholder="YYYYMMDDXXXX" data-sf-update-on-blur="updateField($event, $success, $error)">
                     </div>
                     <div class="text col medium col-2">
                         <label for="contact-company">Företag</label>
