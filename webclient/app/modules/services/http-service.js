@@ -17,7 +17,7 @@
 (function() {
   'use strict';
 
-  var sfServices = angular.module('sf.services.http', ['sf.services.error-handler']);
+  var sfServices = angular.module('sf.services.http', ['sf.services.error-handler', 'sf.services.token']);
 
   sfServices.factory("httpService", ['$q', '$cacheFactory', '$location', '$http', '$window', 'errorHandlerService', 'tokenService', function ($q, $cacheFactory, $location, $http, $window, errorHandlerService, tokenService) {
     var token = tokenService.getToken();

@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  var sfServices = angular.module('sf.services.error-handler', []);
+  var sfServices = angular.module('sf.services.error-handler', ['sf.services.token']);
 
   sfServices.factory('errorHandlerService', ['$rootScope','$window', '$q', '$location', 'tokenService', function ($rootScope, $window, $q, $location, tokenService) {
     return function(error) {
