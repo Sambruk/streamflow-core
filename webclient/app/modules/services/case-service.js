@@ -444,9 +444,7 @@
             {queries: 'possiblecasetypes'}
           ]),
           onSuccess:function (resource, result) {
-            var caseTypeOptions = _.map(resource.response.links, function(link){
-              return {name: link.text, value: link.id};
-            });
+            var caseTypeOptions = resource.response.links;
             caseTypeOptions.forEach(function(item){result.push(item)});
             caseBase.broadcastMessage(result.status);
           },
@@ -495,9 +493,7 @@
                 {queries: 'possiblelabels'}
             ]),
             onSuccess:function (resource, result) {
-                var labelOptions = _.map(resource.response.links, function(link){
-                    return {name: link.text, value: link.id};
-                });
+                var labelOptions = resource.response.links;
 
                 labelOptions.forEach(function(item){result.push(item)});
                 caseBase.broadcastMessage(result.status);

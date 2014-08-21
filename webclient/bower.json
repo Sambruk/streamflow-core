@@ -18,6 +18,7 @@
     "es5-shim": "git://github.com/kriskowal/es5-shim.git#~2.0.8",
     "typewatch": "git://github.com/dennyferra/TypeWatch.git",
     "angular-growl": "https://github.com/marcorinck/angular-growl.git#~0.4.0",
+    "chosen": "https://github.com/harvesthq/chosen/releases/download/v1.1.0/chosen_v1.1.0.zip",
     "angular": "1.2.1"
   },
   "devDependencies": {

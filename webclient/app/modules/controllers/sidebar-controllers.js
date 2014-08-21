@@ -36,6 +36,89 @@
 
       $scope.general.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
       $scope.caseLabel = caseService.getCaseLabel($params.caseId);
+      $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
+
+      $scope.allCaseLabels = [];
+      $scope.activeLabels = [];
+      var previousActiveLabels = [];
+
+      $scope.$watch('caze[0].caseType', function (newVal) {
+        if (!!newVal) {
+          $scope.caseType = newVal.id;
+        }
+      });
+
+      var sortByText = function (x, y) {
+        var xS = x.text && x.text.toUpperCase() || "",
+            yS = y.text && y.text.toUpperCase() || "";
+        if (xS > yS) {
+          return 1;
+        } else if (xS < yS) {
+          return -1;
+        } else {
+          return 0;
+        }
+      };
+
+      $scope.$watch('general.possibleCaseTypes', function () {
+        $scope.general.possibleCaseTypes.sort(sortByText);
+
+        setTimeout(function () {
+          $('.chosen-case-type').chosen({ search_contains: true }).trigger("chosen:updated");
+        }, 0);
+      }, true);
+
+      var hasDuplicateLabel = function (labels, item) {
+        return !!_.find(labels, function (j) {
+          return item.id === j.id;
+        });
+      };
+
+      var updateAllCaseLabels = function (labels) {
+        $scope.allCaseLabels = $scope.allCaseLabels.filter(function (item) {
+          return !hasDuplicateLabel(labels, item);
+        }).concat(labels).sort(sortByText);
+
+        $scope.activeLabels = $scope.activeLabels.filter(function (item) {
+          return !hasDuplicateLabel(labels, item);
+        }).concat(labels).filter(function (i) {
+          return i.selected;
+        });
+
+        previousActiveLabels = $scope.activeLabels;
+
+        setTimeout(function () {
+          $('.chosen-case-label').chosen({ search_contains: true }).trigger("chosen:updated");
+        }, 0);
+      };
+
+      var uniqueLabels = function (labels) {
+        return labels.reduce(function (mem, item) {
+          if (!hasDuplicateLabel(mem, item)) {
+            mem.push(item);
+          }
+
+          return mem;
+        }, []);
+      };
+
+      $scope.$watch('caseLabel', function (newVal) {
+        var labels = uniqueLabels(newVal).map(function (i) {
+          i.selected = true;
+          return i;
+        });
+
+        updateAllCaseLabels(labels);
+      }, true);
+
+      $scope.$watch('possibleCaseLabels', function (newVal) {
+        var labels = uniqueLabels(newVal).map(function (i) {
+          i.selected = false;
+          return i;
+        });
+
+        updateAllCaseLabels(labels);
+      }, true);
 
       $scope.general.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
 
@@ -248,34 +331,45 @@
         alert("Not supported - need UX for this.");
       }
 
-      $scope.removeCaseLabel = function(label){
-        caseService.deleteCaseLabel($params.caseId, label);
-      }
-
-      $scope.showCaseLabel = function(){
-        $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
-        $scope.commandView = "showCaseLabel";
-      }
-
-      $scope.addLabelButtonClicked = function(labelId) {
-
-        caseService.addCaseLabel($params.caseId, labelId).then(function() {
-          var href = navigationService.caseHrefSimple($params.caseId);
-          $scope.possibleCaseLabels.invalidate();
-          $scope.possibleCaseLabels.resolve();
-
-          window.location.reload(href);
+      $scope.changeCaseLabels = function (labels) {
+        var removedLabels = previousActiveLabels.filter(function (item) {
+          return !hasDuplicateLabel(labels, item);
         });
 
-      }
+        var updateLabels = function () {
+          $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.resolve();
+        };
+
+        if (removedLabels.length > 0) {
+          removedLabels.forEach(function (label) {
+            caseService.deleteCaseLabel($params.caseId, label.id).then(updateLabels);
+          });
+        } else {
+          labels = labels.filter(function (item) {
+            return !hasDuplicateLabel(previousActiveLabels, item);
+          });
+
+          labels.forEach(function (label) {
+            caseService.addCaseLabel($params.caseId, label.id).then(updateLabels);
+          });
+        }
+
+        previousActiveLabels = labels;
+      };
 
       $scope.changePriorityLevel = function(priority){
           caseService.changePriorityLevel($params.caseId, priority);
       }
 
       $scope.changeCaseType = function(casetype) {
-          caseService.changeCaseType($params.caseId, casetype);
-      }
+          caseService.changeCaseType($params.caseId, casetype).then(function () {
+            $scope.allCaseLabels = [];
+            $scope.activeLabels = [];
+            $scope.possibleCaseLabels.resolve();
+            $scope.caseLabel.resolve();
+          });
+      };
 
 
     }]);

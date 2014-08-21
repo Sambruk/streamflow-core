@@ -76,32 +76,6 @@
               </div>
           </div>
 
-          <div class="toolbar-content-popup" data-ng-switch-when="showCaseLabel">
-
-              <div class='ng-modal' ng-show='show'>
-                  <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
-                  <div class='ng-modal-dialog' ng-style='dialogStyle'>
-                      <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
-                      <div class="row cf">
-                          <div class="select">
-                              <label for="caseLabel">Lägg till label</label>
-                              <select id="caseLabel" name="caseLabel" data-ng-options="label.value as label.name for label in possibleCaseLabels" data-ng-model="addLabel">
-                              </select>
-                          </div>
-                      </div>
-
-                      <div class="row">
-                          <div class="submit-area cf">
-                              <button sf-open-toolbar-content type="submit" name="save-case-label" data-ng-click="addLabelButtonClicked(addLabel)">Spara</button>
-                          </div>
-                      </div>
-                      <div ng-transclude></div>
-                  </div>
-              </div>
-          </div>
-
-
-
           <div data-ng-switch-when="todo">
               TODO
           </div>
@@ -114,33 +88,32 @@
   <!-- /Issue toolbar -->
 
   <!-- Ärendetyp -->
-  <div class="m m-general">
-      <div class="m-h">
-          {{general.caseType.id }}
-          <div class="text col medium col-3">
-              <select custom-select data-ng-options="caseType as caseType.name for caseType in general.possibleCaseTypes"
-                      class="hasCustomSelect" data-ng-model="caseType" data-ng-change="changeCaseType(caseType.value)" id="caseType" name="casetype">
-              </select>
-          </div>
-      </div>
-  </div>
+  <select
+      data-placeholder="Case typ"
+      class="chosen-case-type chosen-select"
+      style="width: 100%;"
+      data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in general.possibleCaseTypes"
+      data-ng-model="caseType"
+      data-ng-change="changeCaseType(caseType)"
+  >
+  </select>
   <!-- /Ärendetyp -->
-
+  <br><br>
   <!-- Ärendelabel -->
-  <div class="mc">
-      <div class="participants">
-      <!-- TODO: Change class participant to labels + css -->
-          <h3 class="struct">Labels i detta ärende</h3>
-          <span ng-hide="deleted" data-ng-repeat="label in caseLabel">{{ label.text }}
-              <a data-ng-click="removeCaseLabel(label.id);  deleted = !deleted;" href="" class="icon-close" title="Ta bort label">
-                  <span class="struct">Ta bort label</span>
-              </a>
-          </span>
-          <a href="" sf-open-toolbar-content  data-ng-click="showCaseLabel()" class="btn"><i class="icon-plus"></i><span class="struct">Lägg till label</span></a>
-      </div>
-  </div>
-  <!-- TODO: Change class add-participant to add-case-label + css -->
-  <!--- / Ärendelabel -->
+  <select
+      data-placeholder="Case etikett"
+      class="chosen-case-label chosen-choices"
+      style="width: 100%;"
+      id="caseLabel"
+      name="caseLabel"
+      data-ng-options="label as label.text for label in allCaseLabels"
+      data-ng-model="activeLabels"
+      data-ng-change="changeCaseLabels(activeLabels)"
+      multiple
+  >
+  </select>
+
+  <br><br>
 
   <!-- Prioritet -->
   <div data-ng-show="general[0].priority.text" class="m m-general">
