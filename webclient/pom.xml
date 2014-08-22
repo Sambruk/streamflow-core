@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>se.streamsource.streamflow</groupId>
 		<artifactId>streamflow</artifactId>
-		<version>1.19-SNAPSHOT</version>
+		<version>1.22-SNAPSHOT</version>
 	</parent>
 	<artifactId>streamflow-webclient</artifactId>
 	<groupId>se.streamsource.streamflow</groupId>
@@ -14,7 +14,7 @@
 	<properties>
 		<streamflow.version>1.19.0-SNAPSHOT</streamflow.version>
 		<spring.version>3.2.5.RELEASE</spring.version>
-		<spring.security.version>3.1.4.RELEASE</spring.security.version>
+		<spring.security.version>3.2.4.RELEASE</spring.security.version>
 	</properties>
 
 	<build>
@@ -74,14 +74,14 @@
 				<version>8.1.9.v20130131</version>
 				<configuration>
 					<webApp>
-						<contextPath>/mycases</contextPath>
+						<contextPath>/webclient</contextPath>
 						<baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
-							<resourcesAsCSV>src/main/webapp,target/classes,../client/temp</resourcesAsCSV>
+							<resourcesAsCSV>src/main/webapp,target/classes,dist</resourcesAsCSV>
 						</baseResource>
 					</webApp>
 					<connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-							<port>8085</port>
+							<port>8088</port>
 							<maxIdleTime>3600000</maxIdleTime>
 						</connector>
 						<connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
@@ -110,9 +110,15 @@
 		</dependency>
 
 		<!-- Spring / Security -->
+		<!-- 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
@@ -125,7 +131,7 @@
 			<artifactId>spring-security-config</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-
+		-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -172,7 +178,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<dependency>
+		    <groupId>org.mitre.dsmiley.httpproxy</groupId>
+		    <artifactId>smiley-http-proxy-servlet</artifactId>
+		    <version>1.4</version>
+		</dependency>
 		<!-- Testing -->
 		<dependency>
 			<groupId>junit</groupId>
