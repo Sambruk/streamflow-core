@@ -18,7 +18,7 @@
   'use strict';
 
 
-  var sfServices = angular.module('sf.services.navigation', []);
+  var sfServices = angular.module('sf.services.navigation', ['ngRoute']);
 
   sfServices.factory('navigationService', ['$location', '$routeParams', function ($location, $routeParams) {
 

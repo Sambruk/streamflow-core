@@ -20,7 +20,6 @@
   var sfProject = angular.module('sf.controllers.project', ['sf.services.navigation', 'sf.services.project']);
 
   function toggleToolbar($event) {
-    $event.preventDefault();
     $('.functions-menu').toggleClass('open');
 
     if ( $('.functions-menu').hasClass('open') ) {

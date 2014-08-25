@@ -25,7 +25,7 @@
 
   sf.env = sf.env || 'development';
 
-  var app = angular.module('sf', ['angular-growl','sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
+  var app = angular.module('sf', ['ngRoute', 'angular-growl','sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
     'sf.controllers.profile', 'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 
     'sf.controllers.project', 'sf.controllers.sidebar', 'sf.controllers.login', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
