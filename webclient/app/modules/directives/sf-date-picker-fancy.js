@@ -24,22 +24,33 @@
       require: "ngModel",
 
       link: function (scope, element, attrs, ngModel) {
-        var $element = $(element);
+        var dateRegex = /^\d{4}-\d{2}-\d{2}/,
+            $element = $(element);
+
         $element.pickadate({
           selectYears: true,
           selectMonths: true,
           format: 'yyyy-mm-dd',
+          min: new Date(),
           onSet: function () {
-            // Time must be set and be in the future (but will be ignored on retrieval).
-            var isoDate = $element.val() + "T23:59:59.000Z";
+            var value = $element.val();
 
-            // Trigger ng-change, send ISO-date to controller.
-            $element.val(isoDate).trigger('input');
+            if (dateRegex.test(value)) {
+              // Time must be set and be in the future (but will be ignored on retrieval).
+              var isoDate = value + "T23:59:59.000Z";
+
+              // Trigger ng-change, send ISO-date to controller.
+              $element.val(isoDate).trigger('input');
+            }
           },
           onClose: function () {
-            // Set fancy date without triggering ng-change.
-            var date = $element.val().split("T")[0];
-            $element.val(fancyDateService.format(date)).blur();
+            var value = $element.val();
+
+            if (dateRegex.test(value)) {
+              // Set fancy date without triggering ng-change.
+              var date = value.split("T")[0];
+              $element.val(fancyDateService.format(date)).blur();
+            }
           }
        });
       }
