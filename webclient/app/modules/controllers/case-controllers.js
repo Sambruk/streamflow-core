@@ -95,12 +95,12 @@
     * ERROR HANDLER
     **/
     //TODO: Implement error handler listener on other controllers where needed
-    $scope.errorHandler = function(){;
+    $scope.errorHandler = function(){
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
         //growl.addSuccessMessage('successMessage');
       }else {
-        growl.addWarnMessage('errorMessage');
+        growl.warning('errorMessage');
       }
     };
 
