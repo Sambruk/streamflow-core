@@ -49,12 +49,46 @@
       });
 
       $scope.priority = "-1";
+      $scope.priorityColor = {};
+      $scope.activePriorityColor = {};
 
       $scope.$watch('general[0].priority', function (newVal) {
         if (!!newVal) {
           $scope.priority = newVal.id;
+
+          if ($scope.priorityColor[newVal.id]) {
+            $scope.activePriorityColor = {
+              'background-color': $scope.priorityColor[newVal.id]
+            };
+          }
         }
       });
+
+      $scope.$watch('general.possiblePriorities', function (newVal) {
+        if (!!newVal) {
+          for (var prop in newVal) {
+            if (newVal.hasOwnProperty(prop) && !isNaN(prop)) {
+              var item = newVal[prop];
+
+              if (item.color !== null) {
+                var intColor = parseInt(item.color, 10);
+
+                if (intColor < 0) {
+                  intColor = 0xFFFFFF + intColor + 1;
+                }
+
+                $scope.priorityColor[item.id] = '#' + intColor.toString(16);
+              }
+            }
+          }
+
+          if ($scope.priority && $scope.priorityColor[$scope.priority]) {
+            $scope.activePriorityColor = {
+              'background-color': $scope.priorityColor[$scope.priority]
+            };
+          }
+        }
+      }, true);
 
       $scope.$watch('caze[0].caseType', function (newVal) {
         if (!!newVal) {
@@ -373,6 +407,10 @@
       };
 
       $scope.changePriorityLevel = function(priorityId){
+        $scope.activePriorityColor = {
+          'background-color': $scope.priorityColor[priorityId]
+        };
+
         if (priorityId === "-1") {
           priorityId = "";
         }

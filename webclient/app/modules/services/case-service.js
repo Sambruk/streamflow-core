@@ -540,9 +540,7 @@
                   {queries: 'priorities'}
               ]),
               onSuccess:function (resource, result) {
-                  var priorityOptions = _.map(resource.response.links, function(link){
-                      return {name: link.text, value: link.id};
-                  });
+                  var priorityOptions = resource.response.links;
 
                   priorityOptions.forEach(function(item){result.push(item)});
                   caseBase.broadcastMessage(result.status);

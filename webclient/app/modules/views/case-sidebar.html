@@ -116,10 +116,11 @@
   <!-- Prioritet -->
   <select
       style="width: 100%;"
+      ng-style="activePriorityColor"
       data-ng-show="general.possiblePriorities.length"
-      data-ng-options="priority.value as priority.name for priority in general.possiblePriorities"
+      data-ng-options="priority.id as priority.text for priority in general.possiblePriorities"
       data-ng-model="priority"
-      data-ng-change="changeDueOn(priority)"
+      data-ng-change="changePriorityLevel(priority);"
   >
   </select>
   <!-- /Prioritet -->
