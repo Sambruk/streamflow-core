@@ -32,6 +32,8 @@
           selectMonths: true,
           format: 'yyyy-mm-dd',
           min: new Date(),
+          close: false,
+          clear: false,
           onClose: function () {
             var value = $element.val();
 

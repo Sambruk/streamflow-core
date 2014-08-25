@@ -30,6 +30,9 @@
           case (new Date()).toISOString().split("T")[0]:
             result = 'I dag';
             break;
+          case moment().subtract(1, 'days').format("YYYY-MM-DD"):
+            result = 'I går';
+            break;
           case '':
             result = '';
             break;
