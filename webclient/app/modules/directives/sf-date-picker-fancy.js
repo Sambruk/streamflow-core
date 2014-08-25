@@ -32,24 +32,12 @@
           selectMonths: true,
           format: 'yyyy-mm-dd',
           min: new Date(),
-          onSet: function () {
-            var value = $element.val();
-
-            if (dateRegex.test(value)) {
-              // Time must be set and be in the future (but will be ignored on retrieval).
-              var isoDate = value + "T23:59:59.000Z";
-
-              // Trigger ng-change, send ISO-date to controller.
-              $element.val(isoDate).trigger('input');
-            }
-          },
           onClose: function () {
             var value = $element.val();
 
             if (dateRegex.test(value)) {
               // Set fancy date without triggering ng-change.
-              var date = value.split("T")[0];
-              $element.val(fancyDateService.format(date)).blur();
+              $element.val(fancyDateService.format(value)).blur();
             }
           }
        });

@@ -424,10 +424,11 @@
         });
       };
 
-      $scope.changeDueOn = function (isoDate) {
-        caseService.changeDueOn($params.caseId, isoDate);
+      $scope.changeDueOn = function (date) {
+          // Must be in the future and time must be set (but is not used).
+          var isoString = (new Date(date + "T23:59:59.000Z")).toISOString();
+          caseService.changeDueOn($params.caseId, isoString);
       };
-
     }]);
 
 })();

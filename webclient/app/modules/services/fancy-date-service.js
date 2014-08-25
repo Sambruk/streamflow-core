@@ -24,21 +24,17 @@
 
     return {
       format: function (value) {
-        var formatString = 'YYYY-MM-DD',
-          result = '';
+        var result = '';
 
         switch (value) {
-          case moment().format(formatString):
+          case (new Date()).toISOString().split("T")[0]:
             result = 'I dag';
-            break;
-          case moment().add(1, 'days').format(formatString):
-            result = 'I morgon';
             break;
           case '':
             result = '';
             break;
           default:
-            result = moment(value).fromNow();
+            result = moment(value + "T23:59:59").fromNow();
             break;
         }
 
