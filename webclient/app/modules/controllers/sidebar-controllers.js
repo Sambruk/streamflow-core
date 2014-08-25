@@ -66,21 +66,17 @@
 
       $scope.$watch('general.possiblePriorities', function (newVal) {
         if (!!newVal) {
-          for (var prop in newVal) {
-            if (newVal.hasOwnProperty(prop) && !isNaN(prop)) {
-              var item = newVal[prop];
+          newVal.forEach(function (item) {
+            if (item.color !== null) {
+              var intColor = parseInt(item.color, 10);
 
-              if (item.color !== null) {
-                var intColor = parseInt(item.color, 10);
-
-                if (intColor < 0) {
-                  intColor = 0xFFFFFF + intColor + 1;
-                }
-
-                $scope.priorityColor[item.id] = '#' + intColor.toString(16);
+              if (intColor < 0) {
+                intColor = 0xFFFFFF + intColor + 1;
               }
+
+              $scope.priorityColor[item.id] = '#' + intColor.toString(16);
             }
-          }
+          });
 
           if ($scope.priority && $scope.priorityColor[$scope.priority]) {
             $scope.activePriorityColor = {
