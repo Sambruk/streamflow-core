@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  sf.directives.directive('sfDatePickerFancy', ['fancyDateService', function (fancyDateService) {
+  sf.directives.directive('sfDatePickerFancy', ['fancyDateService', '$timeout', function (fancyDateService, $timeout) {
 
     return {
       restrict:'A',
@@ -27,7 +27,7 @@
         var dateRegex = /^\d{4}-\d{2}-\d{2}/,
             $element = $(element);
 
-        $element.pickadate({
+        var $input = $element.pickadate({
           selectYears: true,
           selectMonths: true,
           format: 'yyyy-mm-dd',
@@ -53,6 +53,17 @@
             }
           }
        });
+
+        scope.$watch('dueOnShortStartValue', function (newVal) {
+          if (!!newVal) {
+            // run on the next digest
+            $timeout(function () {
+              var picker = $input.pickadate('picker');
+              picker.set('select', new Date(newVal));
+              scope.dueOnShort = fancyDateService.format(newVal);
+            });
+          }
+        });
       }
     };
   }]);

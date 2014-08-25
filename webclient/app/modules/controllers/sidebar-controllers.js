@@ -44,7 +44,8 @@
 
       $scope.$watch('general[0].dueOnShort', function (newVal) {
         if (!!newVal) {
-          $scope.dueOnShort = fancyDateService.format(newVal);
+          // This will be picked up by sfDatePickerFancy.
+          $scope.dueOnShortStartValue = newVal;
         }
       });
 
