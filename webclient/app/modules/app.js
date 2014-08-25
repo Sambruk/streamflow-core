@@ -18,7 +18,7 @@
   'use strict';
 
   window.sf = {
-    directives: angular.module('sf.directives', []),
+    directives: angular.module('sf.directives', ['sf.services.fancy-date']),
     filters: angular.module('sf.filters', []),
     controllers: angular.module('sf.controllers', 'sf.controllers.case', [])
   };

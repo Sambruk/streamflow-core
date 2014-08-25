@@ -17,10 +17,10 @@
 (function() {
   'use strict';
 
-  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
+  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http', 'sf.services.fancy-date']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
-    function($scope, projectService, $params, navigationService, caseService, httpService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 'fancyDateService',
+    function($scope, projectService, $params, navigationService, caseService, httpService, fancyDateService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -41,6 +41,20 @@
       $scope.allCaseLabels = [];
       $scope.activeLabels = [];
       var previousActiveLabels = [];
+
+      $scope.$watch('general[0].dueOnShort', function (newVal) {
+        if (!!newVal) {
+          $scope.dueOnShort = fancyDateService.format(newVal);
+        }
+      });
+
+      $scope.priority = "-1";
+
+      $scope.$watch('general[0].priority', function (newVal) {
+        if (!!newVal) {
+          $scope.priority = newVal.id;
+        }
+      });
 
       $scope.$watch('caze[0].caseType', function (newVal) {
         if (!!newVal) {
@@ -358,19 +372,26 @@
         previousActiveLabels = labels;
       };
 
-      $scope.changePriorityLevel = function(priority){
-          caseService.changePriorityLevel($params.caseId, priority);
-      }
+      $scope.changePriorityLevel = function(priorityId){
+        if (priorityId === "-1") {
+          priorityId = "";
+        }
 
-      $scope.changeCaseType = function(casetype) {
-          caseService.changeCaseType($params.caseId, casetype).then(function () {
-            $scope.allCaseLabels = [];
-            $scope.activeLabels = [];
-            $scope.possibleCaseLabels.resolve();
-            $scope.caseLabel.resolve();
-          });
+        caseService.changePriorityLevel($params.caseId, priorityId);
       };
 
+      $scope.changeCaseType = function(casetype) {
+        caseService.changeCaseType($params.caseId, casetype).then(function () {
+          $scope.allCaseLabels = [];
+          $scope.activeLabels = [];
+          $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.resolve();
+        });
+      };
+
+      $scope.changeDueOn = function (isoDate) {
+        caseService.changeDueOn($params.caseId, isoDate);
+      };
 
     }]);
 

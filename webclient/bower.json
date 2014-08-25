@@ -19,7 +19,8 @@
     "typewatch": "git://github.com/dennyferra/TypeWatch.git",
     "angular-growl": "https://github.com/marcorinck/angular-growl.git#~0.4.0",
     "chosen": "https://github.com/harvesthq/chosen/releases/download/v1.1.0/chosen_v1.1.0.zip",
-    "angular": "1.2.1"
+    "angular": "1.2.1",
+    "moment": "~2.8.1"
   },
   "devDependencies": {
     "angular-mocks": "git://github.com/angular/bower-angular-mocks.git#~1.0.5",

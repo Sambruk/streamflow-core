@@ -566,6 +566,19 @@
                     caseBase.broadcastMessage(error);
                 });
         },
+      changeDueOn: function(caseId, dueOn){
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {resources: 'general'},
+            {commands: 'changedueon'}
+          ]),
+          {date: dueOn}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
+        },
 
       updateSimpleValue: debounce(function(caseId, resource, command, property, value, callback) {
 

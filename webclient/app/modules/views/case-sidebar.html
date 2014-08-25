@@ -112,20 +112,34 @@
       multiple
   >
   </select>
-
+  <br><br>
+  <!-- Prioritet -->
+  <select
+      style="width: 100%;"
+      data-ng-show="general.possiblePriorities.length"
+      data-ng-options="priority.value as priority.name for priority in general.possiblePriorities"
+      data-ng-model="priority"
+      data-ng-change="changeDueOn(priority)"
+  >
+  </select>
+  <!-- /Prioritet -->
   <br><br>
 
-  <!-- Prioritet -->
-  <div data-ng-show="general[0].priority.text" class="m m-general">
-      <div class="m-h">
-          <div class="text col full">
-              <select custom-select data-ng-options="priority as priority.name for priority in general.possiblePriorities"
-                       class=has-custom-select" data-ng-model="priority" data-ng-change="changePriorityLevel(priority.value)" id="priorityLevel" name="prioritylevel">
-              </select>
-          </div>
-      </div>
+  <!-- Due date -->
+  <div class="set-due-date">
+      <input
+          sf-date-picker-fancy
+          style="width: 100%;"
+          type="text"
+          placeholder="Förfallodatum"
+          ng-model="dueOnShort"
+          data-ng-change="changeDueOn(dueOnShort)"
+          id="fancy-date-hidden"
+      >
   </div>
-  <!-- /Prioritet -->
+  <!-- /Due date -->
+
+  <br><br>
 
   <!-- Module: Allmänt -->
   <div class="m m-general">
