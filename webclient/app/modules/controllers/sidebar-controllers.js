@@ -199,6 +199,10 @@
         }
       });
 
+    $scope.$on('casedescription-changed', function(){
+        $scope.caze = caseService.getSelected($params.caseId);
+    })
+
       $scope.$on('participant-removed', function(){
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });

@@ -467,6 +467,20 @@
                 });
         },
 
+        changeCaseDescription: function(caseId, caseDescriptionId) {
+            return backendService.postNested(
+                caseBase(caseId).concat([
+                    {resources: 'general'},
+                    {commands: 'changedescription'}
+                ]),
+                {description: caseDescriptionId}).then(function(result){
+                    caseBase.broadcastMessage(result.status);
+                },
+                function(error){
+                    caseBase.broadcastMessage(error);
+                });
+        },
+
       getCaseLabel: function(caseId) {
         return backendService.get({
             specs:caseBase(caseId).concat([
