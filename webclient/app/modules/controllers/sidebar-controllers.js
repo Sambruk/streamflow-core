@@ -19,8 +19,8 @@
 
   var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http', 'sf.services.fancy-date']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', 'fancyDateService',
-    function($scope, projectService, $params, navigationService, caseService, httpService, fancyDateService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
+    function($scope, projectService, $params, navigationService, caseService, httpService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -38,6 +38,7 @@
       $scope.caseLabel = caseService.getCaseLabel($params.caseId);
       $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
 
+      $scope.possibleResolutions = [];
       $scope.allCaseLabels = [];
       $scope.activeLabels = [];
       var previousActiveLabels = [];
@@ -256,29 +257,29 @@
       };
 
       $scope.resolve = function(){
-
         $scope.possibleResolutions = caseService.getPossibleResolutions($params.caseId);
+
         $scope.$watch("possibleResolutions[0]", function(){
           if ($scope.possibleResolutions[0]) {
             $scope.resolution = $scope.possibleResolutions[0].id;
           }
         });
 
-        $scope.commandView = "resolve"
-      }
+        $scope.commandView = "resolve";
+      };
 
       $scope.onResolveButtonClicked = function($event){
         $event.preventDefault();
 
         var resolutionId = $scope.resolution;
 
-        var callback = function(){
-
+        var callback = function () {
           var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.resolveCase($params.caseId, resolutionId, callback)
-      }
+
+        caseService.resolveCase($params.caseId, resolutionId, callback);
+      };
 
       $scope.sendTo = function(){
         $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
@@ -447,6 +448,10 @@
           // Must be in the future and time must be set (but is not used).
           var isoString = (new Date(date + "T23:59:59.000Z")).toISOString();
           caseService.changeDueOn($params.caseId, isoString);
+      };
+
+      $scope.showToolbar = function () {
+        return !!$scope.possibleResolutions.length;
       };
     }]);
 

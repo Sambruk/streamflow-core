@@ -78,9 +78,9 @@
 
       getPossibleResolutions: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {queries: 'possibleresolutions'}
-            ]),
+          ]),
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){result.push(item)});
           }
