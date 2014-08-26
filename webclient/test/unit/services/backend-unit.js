@@ -55,7 +55,7 @@ describe("sf.services.backend", function () {
       it("can chain several request in one go", inject(function (backendService, $httpBackend) {
         $httpBackend.expectGET('mock/').respond(backend.customer);
         $httpBackend.expectGET('mock/open/').respond(backend.open);
-        $httpBackend.expectGET('mock/open/cases').respond(backend.cases);
+        $httpBackend.expectGET('mock/open/cases').respond(backend.openCases);
 
         var result = backendService.get({
           specs: [{resources:'open'},{queries:'cases'}],
