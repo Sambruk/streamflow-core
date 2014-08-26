@@ -232,6 +232,9 @@
         $scope.canRestrict = _.any(commands, function(command){
           return command.rel === "restrict";
         });
+        $scope.canUnrestrict = _.any(commands, function(command){
+          return command.rel === "unrestrict";
+        });
         $scope.canMarkUnread = _.any(commands, function(command){
           return command.rel === "markunread";
         });
@@ -239,6 +242,18 @@
           return command.rel === "markread";
         });
       });
+
+      $scope.unrestrict = function () {
+        caseService.unrestrictCase($params.caseId).then(function () {
+          $scope.commands.resolve();
+        });
+      };
+
+      $scope.restrict = function () {
+        caseService.restrictCase($params.caseId).then(function () {
+          $scope.commands.resolve();
+        });
+      };
 
       $scope.resolve = function(){
 

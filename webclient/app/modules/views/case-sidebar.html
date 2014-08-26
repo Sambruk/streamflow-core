@@ -35,6 +35,7 @@
             <li><a data-ng-show="canMarkRead" data-ng-click="markRead($event)" href="" class="btn">Markera läst</a></li>
             <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread($event)" href="" class="btn">Markera oläst</a></li>
             <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+            <li><a data-ng-show="canUnrestrict" data-ng-click="unrestrict()" href="" class="btn">Begränsa inte</a></li>
             <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
         </ul>
       </li>

@@ -95,6 +95,22 @@
           {entity: resolutionId}).then(_.debounce(callback)());
       },
 
+      restrictCase: function(caseId) {
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {commands: 'restrict'}
+            ]),
+          {});
+      },
+
+      unrestrictCase: function(caseId) {
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {commands: 'unrestrict'}
+            ]),
+          {});
+      },
+
     getPermissions: function(caseId){
         return backendService.get({
             specs:caseBase(caseId).concat([
