@@ -17,19 +17,35 @@
 describe("sf.services.error-handler", function () {
   'use strict';
 
+  function isPhantomJS() {
+    return ( navigator 
+             && navigator.userAgent 
+             && navigator.userAgent.indexOf("PhantomJS") != -1 ); 
+  }
+
   beforeEach(module('sf.services.error-handler'));
 
   it("does nothing on a 404 request", inject(function (errorHandlerService, $window) {
-    $window.spyOn($window.location, 'reload');
-    var error = {status:404};
-    errorHandlerService(error);
-    expect($window.location.reload).not.toHaveBeenCalled();
+    if (isPhantomJS()) {
+      $window.spyOn($window.location, 'reload');
+      var error = {status:404};
+      errorHandlerService(error);
+      expect($window.location.reload).not.toHaveBeenCalled();
+    }
+    else {
+      console.log("Reload tested only in PhantomJS");
+    }
   }));
 
   it("should reload the window on a 403 request", inject(function(errorHandlerService, $window) {
-    $window.spyOn($window.location, 'reload');
-    var error = {status:403};
-    errorHandlerService(error);
-    expect($window.location.reload).toHaveBeenCalled();
+    if (isPhantomJS()) {
+      $window.spyOn($window.location, 'reload');
+      var error = {status:403};
+      errorHandlerService(error);
+      expect($window.location.reload).toHaveBeenCalled();
+    }
+    else {
+      console.log("Reload tested only in phantomjs");
+    }
   }));
 });
