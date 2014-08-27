@@ -250,12 +250,14 @@
       $scope.unrestrict = function () {
         caseService.unrestrictCase($params.caseId).then(function () {
           $scope.commands.resolve();
+          $scope.permissions.resolve();
         });
       };
 
       $scope.restrict = function () {
         caseService.restrictCase($params.caseId).then(function () {
           $scope.commands.resolve();
+          $scope.permissions.resolve();
         });
       };
 
