@@ -36,24 +36,26 @@
                     <input type="text" sf-date-picker name="date" data-input-type="date" id="set-due-date" placeholder="Förfallodatum" data-ng-model="general[0].dueOnShort" sf-simple-field-auto-send data-resource="general" command="changedueon" />
                 </div> 
         </div>-->
-                
 
+
+
+        <form action="#" method="get" class="form-general cf" name="editCaseForm">
             <div class="m-c">
                 <div class="row cols-1 cf">
                     <div class="text col full col-1">
                         <label for="case-description">Beskrivning</label>
-                        <input type="text" sf-simple-field-auto-send data-resource="general" command="changedescription" name="description" id="case-description" data-ng-model="caze[0].text">
+                        <input type="text" name="description" id="case-description" data-sf-update-on-blur="changeCaseDescription($event, $success, $error)" data-ng-model="caze[0].text">
                     </div>
-                </div>  
+                </div>
 
                 <div class="row cols-1 cf">
                     <div class="text col full col-1">
                         <label for="issue-notes">Notering</label>
-                        <textarea name="issue-notes" id="issue-notes" cols="30" rows="5" data-ng-model="notes[0].note"></textarea>
+                        <textarea name="issue-notes" id="issue-notes" cols="30" rows="5" data-sf-update-on-blur="addNote($event, $success, $error)" data-ng-model="notes[0].note"></textarea>
                     </div>
-                    <button data-ng-click="addNote($event)" type="">Spara</button>
                 </div>
             </div>
+          </form>
         </div>
     </div> 
     <!-- /single-issue -->

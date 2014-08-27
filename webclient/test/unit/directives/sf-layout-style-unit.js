@@ -29,15 +29,15 @@ describe("sf.directives.sf-layout-style", function () {
     $compile(el)(scope);
   }));
 
-  it('sets style to layout-1 for root path', inject(function($location) {
-    $location.path('/a/b');
+  it('sets style to layout-1 for /projects/...', inject(function($location) {
+    $location.path('/projects/some-project-id');
     scope.$digest();
     var klass = el.attr('class');
     expect(klass).toMatch(/layout-1/);
   }));
 
-  it('sets style to layout-2 for path with three slashes', inject(function($location) {
-    $location.path('/a/b/c');
+  it('sets style to layout-2 when path does not start with /projects', inject(function($location) {
+    $location.path('/not-projects/whatever');
     scope.$digest();
     var klass = el.attr('class');
     expect(klass).toMatch(/layout-2/);
@@ -45,7 +45,7 @@ describe("sf.directives.sf-layout-style", function () {
 
   it('removes old classes', inject(function($location) {
     el.addClass('layout-1');
-    $location.path('/a/b/c/');
+    $location.path('/not-projects/whatever');
     scope.$digest();
     var klass = el.attr('class');
     expect(klass).toNotMatch(/layout-1/);

@@ -17,7 +17,7 @@
 (function() {
   'use strict';
 
-  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http']);
+  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http', 'sf.services.fancy-date']);
 
   sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
     function($scope, projectService, $params, navigationService, caseService, httpService) {
@@ -36,6 +36,135 @@
 
       $scope.general.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
       $scope.caseLabel = caseService.getCaseLabel($params.caseId);
+      $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
+
+      $scope.possibleResolutions = [];
+      $scope.allCaseLabels = [];
+      $scope.activeLabels = [];
+      var previousActiveLabels = [];
+
+      $scope.$watch('general[0].dueOnShort', function (newVal) {
+        if (!!newVal) {
+          // This will be picked up by sfDatePickerFancy.
+          $scope.dueOnShortStartValue = newVal;
+        }
+      });
+
+      $scope.priority = "-1";
+      $scope.priorityColor = {};
+      $scope.activePriorityColor = {};
+
+      $scope.$watch('general[0].priority', function (newVal) {
+        if (!!newVal) {
+          $scope.priority = newVal.id;
+
+          if ($scope.priorityColor[newVal.id]) {
+            $scope.activePriorityColor = {
+              'background-color': $scope.priorityColor[newVal.id]
+            };
+          }
+        }
+      });
+
+      $scope.$watch('general.possiblePriorities', function (newVal) {
+        if (!!newVal) {
+          newVal.forEach(function (item) {
+            if (item.color !== null) {
+              var intColor = parseInt(item.color, 10);
+
+              if (intColor < 0) {
+                intColor = 0xFFFFFF + intColor + 1;
+              }
+
+              $scope.priorityColor[item.id] = '#' + intColor.toString(16);
+            }
+          });
+
+          if ($scope.priority && $scope.priorityColor[$scope.priority]) {
+            $scope.activePriorityColor = {
+              'background-color': $scope.priorityColor[$scope.priority]
+            };
+          }
+        }
+      }, true);
+
+      $scope.$watch('caze[0].caseType', function (newVal) {
+        if (!!newVal) {
+          $scope.caseType = newVal.id;
+        }
+      });
+
+      var sortByText = function (x, y) {
+        var xS = x.text && x.text.toUpperCase() || "",
+            yS = y.text && y.text.toUpperCase() || "";
+        if (xS > yS) {
+          return 1;
+        } else if (xS < yS) {
+          return -1;
+        } else {
+          return 0;
+        }
+      };
+
+      $scope.$watch('general.possibleCaseTypes', function () {
+        $scope.general.possibleCaseTypes.sort(sortByText);
+
+        setTimeout(function () {
+          $('.chosen-case-type').chosen({ search_contains: true }).trigger("chosen:updated");
+        }, 0);
+      }, true);
+
+      var hasDuplicateLabel = function (labels, item) {
+        return !!_.find(labels, function (j) {
+          return item.id === j.id;
+        });
+      };
+
+      var updateAllCaseLabels = function (labels) {
+        $scope.allCaseLabels = $scope.allCaseLabels.filter(function (item) {
+          return !hasDuplicateLabel(labels, item);
+        }).concat(labels).sort(sortByText);
+
+        $scope.activeLabels = $scope.activeLabels.filter(function (item) {
+          return !hasDuplicateLabel(labels, item);
+        }).concat(labels).filter(function (i) {
+          return i.selected;
+        });
+
+        previousActiveLabels = $scope.activeLabels;
+
+        setTimeout(function () {
+          $('.chosen-case-label').chosen({ search_contains: true }).trigger("chosen:updated");
+        }, 0);
+      };
+
+      var uniqueLabels = function (labels) {
+        return labels.reduce(function (mem, item) {
+          if (!hasDuplicateLabel(mem, item)) {
+            mem.push(item);
+          }
+
+          return mem;
+        }, []);
+      };
+
+      $scope.$watch('caseLabel', function (newVal) {
+        var labels = uniqueLabels(newVal).map(function (i) {
+          i.selected = true;
+          return i;
+        });
+
+        updateAllCaseLabels(labels);
+      }, true);
+
+      $scope.$watch('possibleCaseLabels', function (newVal) {
+        var labels = uniqueLabels(newVal).map(function (i) {
+          i.selected = false;
+          return i;
+        });
+
+        updateAllCaseLabels(labels);
+      }, true);
 
       $scope.general.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
 
@@ -71,6 +200,10 @@
         }
       });
 
+    $scope.$on('casedescription-changed', function(){
+        $scope.caze = caseService.getSelected($params.caseId);
+    })
+
       $scope.$on('participant-removed', function(){
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });
@@ -100,6 +233,9 @@
         $scope.canRestrict = _.any(commands, function(command){
           return command.rel === "restrict";
         });
+        $scope.canUnrestrict = _.any(commands, function(command){
+          return command.rel === "unrestrict";
+        });
         $scope.canMarkUnread = _.any(commands, function(command){
           return command.rel === "markunread";
         });
@@ -108,30 +244,42 @@
         });
       });
 
-      $scope.resolve = function(){
+      $scope.unrestrict = function () {
+        caseService.unrestrictCase($params.caseId).then(function () {
+          $scope.commands.resolve();
+        });
+      };
 
+      $scope.restrict = function () {
+        caseService.restrictCase($params.caseId).then(function () {
+          $scope.commands.resolve();
+        });
+      };
+
+      $scope.resolve = function(){
         $scope.possibleResolutions = caseService.getPossibleResolutions($params.caseId);
+
         $scope.$watch("possibleResolutions[0]", function(){
           if ($scope.possibleResolutions[0]) {
             $scope.resolution = $scope.possibleResolutions[0].id;
           }
         });
 
-        $scope.commandView = "resolve"
-      }
+        $scope.commandView = "resolve";
+      };
 
       $scope.onResolveButtonClicked = function($event){
         $event.preventDefault();
 
         var resolutionId = $scope.resolution;
 
-        var callback = function(){
-
+        var callback = function () {
           var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.resolveCase($params.caseId, resolutionId, callback)
-      }
+
+        caseService.resolveCase($params.caseId, resolutionId, callback);
+      };
 
       $scope.sendTo = function(){
         $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
@@ -248,36 +396,63 @@
         alert("Not supported - need UX for this.");
       }
 
-      $scope.removeCaseLabel = function(label){
-        caseService.deleteCaseLabel($params.caseId, label);
-      }
-
-      $scope.showCaseLabel = function(){
-        $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
-        $scope.commandView = "showCaseLabel";
-      }
-
-      $scope.addLabelButtonClicked = function(labelId) {
-
-        caseService.addCaseLabel($params.caseId, labelId).then(function() {
-          var href = navigationService.caseHrefSimple($params.caseId);
-          $scope.possibleCaseLabels.invalidate();
-          $scope.possibleCaseLabels.resolve();
-
-          window.location.reload(href);
+      $scope.changeCaseLabels = function (labels) {
+        var removedLabels = previousActiveLabels.filter(function (item) {
+          return !hasDuplicateLabel(labels, item);
         });
 
-      }
+        var updateLabels = function () {
+          $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.resolve();
+        };
 
-      $scope.changePriorityLevel = function(priority){
-          caseService.changePriorityLevel($params.caseId, priority);
-      }
+        if (removedLabels.length > 0) {
+          removedLabels.forEach(function (label) {
+            caseService.deleteCaseLabel($params.caseId, label.id).then(updateLabels);
+          });
+        } else {
+          labels = labels.filter(function (item) {
+            return !hasDuplicateLabel(previousActiveLabels, item);
+          });
+
+          labels.forEach(function (label) {
+            caseService.addCaseLabel($params.caseId, label.id).then(updateLabels);
+          });
+        }
+
+        previousActiveLabels = labels;
+      };
+
+      $scope.changePriorityLevel = function(priorityId){
+        $scope.activePriorityColor = {
+          'background-color': $scope.priorityColor[priorityId]
+        };
+
+        if (priorityId === "-1") {
+          priorityId = "";
+        }
+
+        caseService.changePriorityLevel($params.caseId, priorityId);
+      };
 
       $scope.changeCaseType = function(casetype) {
-          caseService.changeCaseType($params.caseId, casetype);
-      }
+        caseService.changeCaseType($params.caseId, casetype).then(function () {
+          $scope.allCaseLabels = [];
+          $scope.activeLabels = [];
+          $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.resolve();
+        });
+      };
 
+      $scope.changeDueOn = function (date) {
+          // Must be in the future and time must be set (but is not used).
+          var isoString = (new Date(date + "T23:59:59.000Z")).toISOString();
+          caseService.changeDueOn($params.caseId, isoString);
+      };
 
+      $scope.showToolbar = function () {
+        return !!$scope.possibleResolutions.length;
+      };
     }]);
 
 })();

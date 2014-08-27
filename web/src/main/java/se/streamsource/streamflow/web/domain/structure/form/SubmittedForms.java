@@ -187,6 +187,12 @@ public interface SubmittedForms
                         location.changeCity( locationValue.city().get() );
                         location.changeCity( locationValue.country().get() );
                      }
+                      // SF-867 Make sure that field value is not an empty string - it must at least be a set of curly braces!!
+                      // Otherwise newValueFromJSON on the way back to the client gets an ParseException
+                     if( "".equals( fieldBuilder.prototype().value().get() ) )
+                     {
+                          fieldBuilder.prototype().value().set( "{}" );
+                     }
                   }
                   pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
                }

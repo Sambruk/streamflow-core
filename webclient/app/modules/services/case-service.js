@@ -78,9 +78,9 @@
 
       getPossibleResolutions: function(caseId) {
         return backendService.get({
-          specs:caseBase(projectId, projectType, caseId).concat([
+          specs:caseBase(caseId).concat([
             {queries: 'possibleresolutions'}
-            ]),
+          ]),
           onSuccess:function (resource, result) {
             resource.response.links.forEach(function(item){result.push(item)});
           }
@@ -93,6 +93,22 @@
             {commands: 'resolve'}
             ]),
           {entity: resolutionId}).then(_.debounce(callback)());
+      },
+
+      restrictCase: function(caseId) {
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {commands: 'restrict'}
+            ]),
+          {});
+      },
+
+      unrestrictCase: function(caseId) {
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {commands: 'unrestrict'}
+            ]),
+          {});
       },
 
     getPermissions: function(caseId){
@@ -444,9 +460,7 @@
             {queries: 'possiblecasetypes'}
           ]),
           onSuccess:function (resource, result) {
-            var caseTypeOptions = _.map(resource.response.links, function(link){
-              return {name: link.text, value: link.id};
-            });
+            var caseTypeOptions = resource.response.links;
             caseTypeOptions.forEach(function(item){result.push(item)});
             caseBase.broadcastMessage(result.status);
           },
@@ -462,6 +476,20 @@
                     {commands: 'casetype'}
                 ]),
                 {entity: caseTypeId}).then(function(result){
+                    caseBase.broadcastMessage(result.status);
+                },
+                function(error){
+                    caseBase.broadcastMessage(error);
+                });
+        },
+
+        changeCaseDescription: function(caseId, caseDescriptionId) {
+            return backendService.postNested(
+                caseBase(caseId).concat([
+                    {resources: 'general'},
+                    {commands: 'changedescription'}
+                ]),
+                {description: caseDescriptionId}).then(function(result){
                     caseBase.broadcastMessage(result.status);
                 },
                 function(error){
@@ -495,9 +523,7 @@
                 {queries: 'possiblelabels'}
             ]),
             onSuccess:function (resource, result) {
-                var labelOptions = _.map(resource.response.links, function(link){
-                    return {name: link.text, value: link.id};
-                });
+                var labelOptions = resource.response.links;
 
                 labelOptions.forEach(function(item){result.push(item)});
                 caseBase.broadcastMessage(result.status);
@@ -544,9 +570,7 @@
                   {queries: 'priorities'}
               ]),
               onSuccess:function (resource, result) {
-                  var priorityOptions = _.map(resource.response.links, function(link){
-                      return {name: link.text, value: link.id};
-                  });
+                  var priorityOptions = resource.response.links;
 
                   priorityOptions.forEach(function(item){result.push(item)});
                   caseBase.broadcastMessage(result.status);
@@ -569,6 +593,19 @@
                 function(error){
                     caseBase.broadcastMessage(error);
                 });
+        },
+      changeDueOn: function(caseId, dueOn){
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {resources: 'general'},
+            {commands: 'changedueon'}
+          ]),
+          {date: dueOn}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
         },
 
       updateSimpleValue: debounce(function(caseId, resource, command, property, value, callback) {

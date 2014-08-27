@@ -58,31 +58,15 @@ public class FilterLinkListCellRenderer extends DefaultListCellRenderer
                }
 
                if (matchedClasses.trim().equals( "" ))
-                  val = "<html>&nbsp; " + highlightQuery( val )+"</html>";
+                  val = "<html>&nbsp; " + val + "</html>";
                else
-                  val = "<html>&nbsp; " + highlightQuery( val ) + " [" + highlightQuery( matchedClasses.trim() ) + "]</html>";
+                  val = "<html>&nbsp; " + val + " [" + matchedClasses.trim()  + "]</html>";
             } else
-               val = "<html>&nbsp;&nbsp;" + highlightQuery( val )+"</html>";
+               val = "<html>&nbsp;&nbsp; " +  val + "</html>";
          }
 
          return super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
       } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
-   }
-
-   private String highlightQuery( String s )
-   {
-      if (!"".equals( filterText ) && s.toLowerCase().indexOf( filterText.toLowerCase() ) != -1)
-      {
-         if (s.indexOf( filterText ) != -1)
-         {
-            return s.replace( filterText, "<b>" + filterText + "</b>" );
-         } else
-         {
-            String firstUpperCase = filterText.replaceFirst( "" + filterText.charAt( 0 ), ("" + filterText.charAt( 0 )).toUpperCase() );
-            return s.replace( firstUpperCase, "<b>" + firstUpperCase + "</b>" );
-         }
-      }
-      return s;
    }
 
    public void insertUpdate( DocumentEvent e )

@@ -25,8 +25,8 @@
     <ul class="buttons cf" data-ng-show="commands[0]">
       <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content  data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
       <li data-ng-show="canAssign"><a href="" data-ng-click="assign($event)" class="btn">Tilldela</a></li>
-      <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign($event)" class="btn">Tilldela &#45;</a></li>
-      <li data-ng-show="canResolve"><a href="" data-ng-click="resolve()" class="btn">Avsluta</a></li>
+      <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign($event)" class="btn">Återlämna</a></li>
+      <li data-ng-show="canResolve"><a href="" data-ng-click="resolve()" class="btn">Stäng</a></li>
       <li data-ng-show="canClose"><a href="" data-ng-click="close($event)" class="btn">Stäng</a></li>
       <li>
         <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
@@ -35,12 +35,13 @@
             <li><a data-ng-show="canMarkRead" data-ng-click="markRead($event)" href="" class="btn">Markera läst</a></li>
             <li><a data-ng-show="canMarkUnread" data-ng-click="markUnread($event)" href="" class="btn">Markera oläst</a></li>
             <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+            <li><a data-ng-show="canUnrestrict" data-ng-click="unrestrict()" href="" class="btn">Begränsa inte</a></li>
             <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
         </ul>
       </li>
     </ul>
 
-    <div class="toolbar-content" ng-hide="true">
+    <div class="toolbar-content" ng-show="showToolbar">
       <div data-ng-switch on="commandView">
               <div class="toolbar-content-style" data-ng-switch-when="resolve">
                 <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
@@ -76,32 +77,6 @@
               </div>
           </div>
 
-          <div class="toolbar-content-popup" data-ng-switch-when="showCaseLabel">
-
-              <div class='ng-modal' ng-show='show'>
-                  <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
-                  <div class='ng-modal-dialog' ng-style='dialogStyle'>
-                      <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
-                      <div class="row cf">
-                          <div class="select">
-                              <label for="caseLabel">Lägg till label</label>
-                              <select id="caseLabel" name="caseLabel" data-ng-options="label.value as label.name for label in possibleCaseLabels" data-ng-model="addLabel">
-                              </select>
-                          </div>
-                      </div>
-
-                      <div class="row">
-                          <div class="submit-area cf">
-                              <button sf-open-toolbar-content type="submit" name="save-case-label" data-ng-click="addLabelButtonClicked(addLabel)">Spara</button>
-                          </div>
-                      </div>
-                      <div ng-transclude></div>
-                  </div>
-              </div>
-          </div>
-
-
-
           <div data-ng-switch-when="todo">
               TODO
           </div>
@@ -114,45 +89,59 @@
   <!-- /Issue toolbar -->
 
   <!-- Ärendetyp -->
-  <div class="m m-general">
-      <div class="m-h">
-          {{general.caseType.id }}
-          <div class="text col medium col-3">
-              <select custom-select data-ng-options="caseType as caseType.name for caseType in general.possibleCaseTypes"
-                      class="hasCustomSelect" data-ng-model="caseType" data-ng-change="changeCaseType(caseType.value)" id="caseType" name="casetype">
-              </select>
-          </div>
-      </div>
-  </div>
+  <select
+      data-placeholder="Case typ"
+      class="chosen-case-type chosen-select"
+      style="width: 100%;"
+      data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in general.possibleCaseTypes"
+      data-ng-model="caseType"
+      data-ng-change="changeCaseType(caseType)"
+  >
+  </select>
   <!-- /Ärendetyp -->
-
+  <br><br>
   <!-- Ärendelabel -->
-  <div class="mc">
-      <div class="participants">
-      <!-- TODO: Change class participant to labels + css -->
-          <h3 class="struct">Labels i detta ärende</h3>
-          <span ng-hide="deleted" data-ng-repeat="label in caseLabel">{{ label.text }}
-              <a data-ng-click="removeCaseLabel(label.id);  deleted = !deleted;" href="" class="icon-close" title="Ta bort label">
-                  <span class="struct">Ta bort label</span>
-              </a>
-          </span>
-          <a href="" sf-open-toolbar-content  data-ng-click="showCaseLabel()" class="btn"><i class="icon-plus"></i><span class="struct">Lägg till label</span></a>
-      </div>
-  </div>
-  <!-- TODO: Change class add-participant to add-case-label + css -->
-  <!--- / Ärendelabel -->
-
+  <select
+      data-placeholder="Case etikett"
+      class="chosen-case-label chosen-choices"
+      style="width: 100%;"
+      id="caseLabel"
+      name="caseLabel"
+      data-ng-options="label as label.text for label in allCaseLabels"
+      data-ng-model="activeLabels"
+      data-ng-change="changeCaseLabels(activeLabels)"
+      multiple
+  >
+  </select>
+  <br><br>
   <!-- Prioritet -->
-  <div data-ng-show="general[0].priority.text" class="m m-general">
-      <div class="m-h">
-          <div class="text col full">
-              <select custom-select data-ng-options="priority as priority.name for priority in general.possiblePriorities"
-                       class=has-custom-select" data-ng-model="priority" data-ng-change="changePriorityLevel(priority.value)" id="priorityLevel" name="prioritylevel">
-              </select>
-          </div>
-      </div>
-  </div>
+  <select
+      style="width: 100%;"
+      ng-style="activePriorityColor"
+      data-ng-show="general.possiblePriorities.length"
+      data-ng-options="priority.id as priority.text for priority in general.possiblePriorities"
+      data-ng-model="priority"
+      data-ng-change="changePriorityLevel(priority);"
+  >
+  </select>
   <!-- /Prioritet -->
+  <br><br>
+
+  <!-- Due date -->
+  <div class="set-due-date">
+      <input
+          sf-date-picker-fancy
+          style="width: 100%;"
+          type="text"
+          placeholder="Förfallodatum"
+          ng-model="dueOnShort"
+          data-ng-change="changeDueOn(dueOnShort)"
+          id="fancy-date-hidden"
+      >
+  </div>
+  <!-- /Due date -->
+
+  <br><br>
 
   <!-- Module: Allmänt -->
   <div class="m m-general">

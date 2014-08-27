@@ -19,7 +19,7 @@
 <div class="content-primary" role="main">
   <div class="issues-overview">
     <h2 data-ng-show="projectType == 'assignments'">Alla mina ärenden</h2>
-    <h2 data-ng-show="projectType == 'inbox'">Alla mina ärenden i inkorgen</h2>
+    <h2 data-ng-show="projectType == 'inbox'">Alla ärenden i inkorgen</h2>
     <div class="due-date-divider"><span>Förfallodatum</span></div>
     <ul class="issue-list">
       <li class="issue-item {{case.overdueStatus()}}" data-ng-repeat='case in currentCases'>

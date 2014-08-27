@@ -302,7 +302,7 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ], "resources":[]};
 
-  mockBackend.cases = {"links":[
+  mockBackend.openCases = {"links":[
     {
       "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
       "classes":null,
@@ -329,6 +329,7 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ]};
 
+  mockBackend.cases = {"commands":[],"index":null,"queries":[],"resources":[]};
 
 
 

@@ -91,16 +91,20 @@
       $scope.notes = caseService.getSelectedNote($params.caseId);
     });
 
+    $scope.$on('noteDescription-changed', function() {
+        $scope.caze = caseService.getSelected($params.caseId);
+    })
+
     /**
     * ERROR HANDLER
     **/
     //TODO: Implement error handler listener on other controllers where needed
-    $scope.errorHandler = function(){;
+    $scope.errorHandler = function(){
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
         //growl.addSuccessMessage('successMessage');
       }else {
-        growl.addWarnMessage('errorMessage');
+        growl.warning('errorMessage');
       }
     };
 
@@ -146,12 +150,12 @@
     * ERROR HANDLER
     **/
     //TODO: Implement error handler listener on other controllers where needed
-    $scope.errorHandler = function(){;
+    $scope.errorHandler = function(){
       var bcMessage = caseService.getMessage();
       if(bcMessage === 200)  {
         //growl.addSuccessMessage('successMessage');
       }else {
-        growl.addWarnMessage('errorMessage');
+        growl.warning('errorMessage');
       }
     };
 
@@ -174,20 +178,35 @@
       $scope.notes = caseService.getSelectedNote($params.caseId);
       $scope.cachedNote = caseService.getSelectedNote($params.caseId);
 
-      $scope.addNote = function($event){
+
+      $scope.addNote = function($event, $success, $error){
         $event.preventDefault();
-        if ($scope.notes[0].note !== $scope.cachedNote[0].note)
+        if ($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text)
           caseService.addNote($params.caseId, $scope.notes[0]).then(function(){
-            var href = navigationService.caseHrefSimple($params.caseId);
-            $scope.notes.invalidate();
-            $scope.notes.resolve();
+            $success($($event.target));
 
             $rootScope.$broadcast('note-changed');
-            // TODO Fix redirection bug
-            window.location.assign(href + '/edit');
-          });
+          }, function (error){
+              $error($error($event.target));
+          }
+        );
       }
+
+        $scope.changeCaseDescription = function($event, $success, $error){
+            $event.preventDefault();
+
+            caseService.changeCaseDescription($params.caseId, $scope.caze[0].text).then(function(){
+                    $success($($event.target));
+
+                    $rootScope.$broadcast('casedescription-changed');
+                }, function(error) {
+                    $error($error($event.target));
+                }
+            );
+        }
 
     }]);
 
 })();
+
+

@@ -17,21 +17,29 @@
 (function () {
   'use strict';
 
-  var sfServices = angular.module('sf.services.error-handler', ['sf.services.token']);
+	var sfServices = angular.module('sf.services.token', []);
 
-  sfServices.factory('errorHandlerService', ['$rootScope','$window', '$q', '$location', 'tokenService', function ($rootScope, $window, $q, $location, tokenService) {
-    return function(error) {
-      console.log("ERROR -------------", error);
-      // TODO - this works for the mycases web application, should it work the same in this application
-      if (error.status == 403) {
-        $window.location.reload();
+ 	sfServices.factory('tokenService', ['$window', function ($window) {
+
+    var key = 'authToken';
+ 
+    return {
+      hasToken: function () {
+        return !!$window.sessionStorage.getItem(key);
+      },
+
+      clear: function () {
+        $window.sessionStorage.clear();
+      },
+
+      storeToken: function (token) {
+        $window.sessionStorage.setItem(key, token);
+      },
+
+      getToken: function () {
+        return $window.sessionStorage.getItem(key);
       }
+  };
+ }]);
 
-      if (error.status === 401) {
-        tokenService.clear();
-      }
-
-      return $q.reject(error);
-    };
-  }]);
 })();

@@ -94,7 +94,7 @@ Notice it's possible to simulate HTTP error codes etc with the web-server.js (ch
 
 ## Build
 
-   yeoman build
+    grunt
 
 ## Test
 

@@ -17,9 +17,14 @@
 (function() {
   'use strict';
 
-  var sfServices = angular.module('sf.services.http', ['sf.services.error-handler']);
+  var sfServices = angular.module('sf.services.http', ['sf.services.error-handler', 'sf.services.token']);
 
-  sfServices.factory("httpService", ['$q', '$cacheFactory', '$location', '$http', 'errorHandlerService', function ($q, $cacheFactory, $location, $http, errorHandlerService) {
+  sfServices.factory("httpService", ['$q', '$cacheFactory', '$location', '$http', '$window', 'errorHandlerService', 'tokenService', function ($q, $cacheFactory, $location, $http, $window, errorHandlerService, tokenService) {
+    var token = tokenService.getToken();
+
+    if (token) {
+      $http.defaults.headers.common.Authorization = 'Basic ' + token;
+    }
 
     function prepareBaseUrl() {
       var url = $location.absUrl();
@@ -34,17 +39,9 @@
         case 'production':
           return 'http://localhost:8082/streamflow/';
         default:
-          return 'https://test.sf.streamsource.se/streamflow/';
+          return 'https://dummyuser:dummypass@test.sf.streamsource.se/streamflow/';
           //return baseUrl + "/api/";
       }
-    }
-
-    // TODO Remove this, not needed ?
-    function makeBaseAuth(user, password) {
-      var tok = user + ':' + password;
-      // var hash = Base64.encode(tok);
-      // return "Basic " + hash;
-      return tok;
     }
 
     var baseUrl = prepareBaseUrl();
@@ -70,10 +67,6 @@
 
       invalidate: function(hrefs) {
         hrefs.forEach(function(href) { cache.remove(href);});
-      },
-
-      headers: function() {
-        var headers = {'Authorization':makeBaseAuth('administrator', 'administrator')};
       },
 
       getRequest: function (href, skipCache) {

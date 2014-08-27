@@ -18,16 +18,16 @@
   'use strict';
 
   window.sf = {
-    directives: angular.module('sf.directives', []),
+    directives: angular.module('sf.directives', ['sf.services.fancy-date']),
     filters: angular.module('sf.filters', []),
     controllers: angular.module('sf.controllers', 'sf.controllers.case', [])
   };
 
   sf.env = sf.env || 'development';
 
-  var app = angular.module('sf', ['angular-growl','sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
+  var app = angular.module('sf', ['ngRoute', 'angular-growl','sf.filters', 'sf.controllers.case', 'sf.controllers.conversation','sf.controllers.caselog',
     'sf.controllers.profile', 'sf.controllers.contact', 'sf.controllers.form', 'sf.controllers.notes', 
-    'sf.controllers.project', 'sf.controllers.sidebar', 'sf.directives'])
+    'sf.controllers.project', 'sf.controllers.sidebar', 'sf.controllers.login', 'sf.directives'])
     .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
       // $locationProvider.html5Mode(true);
 
@@ -107,10 +107,15 @@
 
   }]);
 
+  app.run(['$rootScope', 'tokenService', function ($rootScope, tokenService) {
+    $rootScope.hasToken = tokenService.hasToken;
+    $rootScope.logout = tokenService.clear;
+  }]);
+
   app.controller('BreadcrumbCtrl', ['$scope', 'profileService', '$routeParams','navigationService', 'httpService', '$rootScope',
     function($scope, profileService, $params, navigationService, httpService, $rootScope) {
-      
-      $rootScope.$on('breadcrumb-updated', function(scope, breadcrumbList) {  
+
+      $rootScope.$on('breadcrumb-updated', function(scope, breadcrumbList) {
         var breadcrumb = [];
         for (var i=0;i<breadcrumbList.length;i++)
         {

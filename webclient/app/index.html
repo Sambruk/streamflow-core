@@ -49,6 +49,9 @@
         <!-- datepicker -->
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.css">
         <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.date.css">
+
+        <!-- chosen -->
+        <link rel="stylesheet" href="components/chosen/chosen.min.css">
         <!-- endbuild -->
 
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
@@ -80,14 +83,14 @@
         <div class='body'>
         
         <div growl role="banner"></div>
-          <div class="header cf" role="banner">
+          <div class="header cf" role="banner" ng-show="hasToken()">
 
             <div class="header-body cf">
 
               <div class="client-name" data-ng-controller="ProfileCtrl">
                 <div class="user-area">
+                  <a href="" data-ng-click="logout()" class="btn btn-xs" style="float: right;">Logga Ut</a>
                   <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
-                    <!-- Need a btn to log out. <a href="" data-ng-click="logout()" class="btn">Logga Ut</a> -->
                 </div>
                 <!-- /user-area -->
                   <h1>Malmö Kommun Kontaktcenter</h1>
@@ -118,28 +121,31 @@
           <!-- /header -->
 
           <div class="main">
-            <data-ng-include src="'modules/views/navigation.html'"></data-ng-include>
-            <div class="main-body cf" ng-view> 
+            <data-ng-include src="'modules/views/navigation.html'" ng-show="hasToken()"></data-ng-include>
+            <div class="main-body cf" ng-view ng-show="hasToken()">
             </div> <!-- main-body -->
-            
+            <data-ng-include src="'modules/views/login.html'" ng-show="!hasToken()"></data-ng-include>
+
           </div> <!-- main -->
         </div> <!-- body -->
 
         <!-- TODO use CDN in production -->
         <script src="components/jquery/jquery.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
-        <!--<script src="components/angular/angular.min.js"></script>-->
+        <script src="components/angular/angular.js"></script>
+        <script src="components/angular-route/angular-route.js"></script>
         <script src="components/angular-resource/angular-resource.js"></script>
         <script src="components/typewatch/jquery.typewatch.js"></script>
 
         <!-- Angular-growl -->
-        <script src="components/angular-growl/build/angular-growl.js"></script>
+        <script src="components/angular-growl-v2/build/angular-growl.js"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
 
         <!-- build:js scripts/scripts.js -->
         <script src="components/base64/base64.js"></script>
         <script src="components/underscore/underscore-min.js"></script>
+        <script src="components/chosen/chosen.jquery.min.js"></script>
+        <script src="components/moment/min/moment-with-locales.min.js"></script>
         <script src="modules/app.js"></script>
         <script src="modules/filters.js"></script>
         <script src="modules/controllers/case-controllers.js"></script>
@@ -151,6 +157,7 @@
         <script src="modules/controllers/project-controllers.js"></script>
         <script src="modules/controllers/sidebar-controllers.js"></script>
         <script src="modules/controllers/profile-controllers.js"></script>
+        <script src="modules/controllers/login-controllers.js"></script>
         <script src="modules/directives/sf-active-link.js"></script>
         <script src="modules/directives/sf-fixed-toolbar.js"></script>
         <script src="modules/directives/sf-layout-style.js"></script>
@@ -164,6 +171,7 @@
         <script src="modules/directives/sf-update-on-blur.js"></script>
         <script src="modules/directives/jquery-custom-select.js"></script>
         <script src="modules/directives/sf-date-picker.js"></script>
+        <script src="modules/directives/sf-date-picker-fancy.js"></script>
         <script src="modules/directives/sf-open-toolbar-content.js"></script>
         <script src="modules/services/navigation-service.js"></script>
         <script src="modules/services/backend-service.js"></script>
@@ -173,7 +181,9 @@
         <script src="modules/services/project-service.js"></script>
         <script src="modules/services/case-service.js"></script>
         <script src="modules/services/form-mapper-service.js"></script>
+        <script src="modules/services/token-service.js"></script>
         <script src="modules/services/profile-service.js"></script>
+        <script src="modules/services/fancy-date-service.js"></script>
         <script src="modules/models/sf-case.js"></script>
 
         <script src="jquery.customSelect.min.js"></script>
