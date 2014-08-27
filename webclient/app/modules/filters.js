@@ -58,10 +58,11 @@
         successMessage: 'Hämtning lyckades',
         errorMessage: 'Hämtning misslyckades',
         'read: All': 'Läsa: Alla',
-        'write: All': 'Skriva: Alla'
+        'write: All': 'Skriva: Alla',
+        'write: Project': 'Skriva: Projekt'
       };
 
-      return translation[input];
+      return translation[input] || input;
     };
   }]);
 
