@@ -242,6 +242,9 @@
         $scope.canMarkRead = _.any(commands, function(command){
           return command.rel === "markread";
         });
+        $scope.formOnClose = _.any(commands, function(command){
+          return command.rel === "formonclose";
+        });
       });
 
       $scope.unrestrict = function () {
@@ -441,6 +444,7 @@
           $scope.activeLabels = [];
           $scope.possibleCaseLabels.resolve();
           $scope.caseLabel.resolve();
+          $scope.commands.resolve();
         });
       };
 
