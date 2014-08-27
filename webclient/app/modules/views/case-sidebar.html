@@ -47,7 +47,8 @@
               <div class="toolbar-content-style" data-ng-switch-when="resolve">
                 <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
                 </select>
-                <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
+                <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
+                <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
               </div>
 
           <div class="toolbar-content-style" data-ng-switch-when="close">

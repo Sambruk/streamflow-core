@@ -271,9 +271,7 @@
         $scope.commandView = "resolve";
       };
 
-      $scope.onResolveButtonClicked = function($event){
-        $event.preventDefault();
-
+      $scope.onResolveButtonClicked = function(){
         var resolutionId = $scope.resolution;
 
         var callback = function () {
@@ -282,6 +280,10 @@
         };
 
         caseService.resolveCase($params.caseId, resolutionId, callback);
+      };
+
+      $scope.onCancelResolveButtonClicked = function () {
+        $scope.commandView = "";
       };
 
       $scope.sendTo = function(){
