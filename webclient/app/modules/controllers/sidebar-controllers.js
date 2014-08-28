@@ -409,7 +409,9 @@
         });
 
         var updateLabels = function () {
+          $scope.possibleCaseLabels.invalidate();
           $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.invalidate();
           $scope.caseLabel.resolve();
         };
 
@@ -446,8 +448,11 @@
         caseService.changeCaseType($params.caseId, casetype).then(function () {
           $scope.allCaseLabels = [];
           $scope.activeLabels = [];
+          $scope.possibleCaseLabels.invalidate();
           $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.invalidate();
           $scope.caseLabel.resolve();
+          $scope.commands.invalidate();
           $scope.commands.resolve();
         });
       };
