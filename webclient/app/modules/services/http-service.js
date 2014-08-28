@@ -83,9 +83,10 @@
             setTimeout(function () {
               cache.remove(href);
             }, 3000);
-          }, function () {
+          }, function (arg) {
+            errorHandlerService(arg);
             cache.remove(href);
-          }).catch(errorHandlerService);
+          });
 
           return q.promise;
         }
