@@ -21,7 +21,7 @@
 
   <h2 class="struct">Verktyg och annan information</h2>
   <!-- Issue toolbar -->
-  <div class="toolbar" data-sf-fixed-toolbar>
+  <div class="toolbar" data-sf-fixed-toolbar ng-hide="showSpinner.caseToolbar">
     <ul class="buttons cf" data-ng-show="commands[0]">
       <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content  data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
       <li data-ng-show="canAssign"><a href="" data-ng-click="assign($event)" class="btn">Tilldela</a></li>
@@ -88,58 +88,82 @@
       </div>
     </div>
   </div>
+  <div ng-show="showSpinner.caseToolbar" style="text-align: center;">
+    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
+  </div>
   <!-- /Issue toolbar -->
 
   <!-- Ärendetyp -->
-  <select
-      data-placeholder="Case typ"
-      class="chosen-case-type chosen-select"
-      style="width: 100%;"
-      data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in general.possibleCaseTypes"
-      data-ng-model="caseType"
-      data-ng-change="changeCaseType(caseType)"
-  >
-  </select>
+  <div ng-hide="showSpinner.caseType">
+    <select
+        data-placeholder="Case typ"
+        class="chosen-case-type chosen-select"
+        style="width: 100%;"
+        data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
+        data-ng-model="caseType"
+        data-ng-change="changeCaseType(caseType)"
+    >
+    </select>
+  </div>
+  <div ng-show="showSpinner.caseType" style="text-align: center;">
+    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
+  </div>
   <!-- /Ärendetyp -->
   <br><br>
   <!-- Ärendelabel -->
-  <select
-      data-placeholder="Case etikett"
-      class="chosen-case-label chosen-choices"
-      style="width: 100%;"
-      id="caseLabel"
-      name="caseLabel"
-      data-ng-options="label as label.text for label in allCaseLabels"
-      data-ng-model="activeLabels"
-      data-ng-change="changeCaseLabels(activeLabels)"
-      multiple
-  >
-  </select>
+  <div ng-hide="showSpinner.caseLabels">
+    <select
+        data-placeholder="Case etikett"
+        class="chosen-case-label chosen-choices"
+        style="width: 100%;"
+        id="caseLabel"
+        name="caseLabel"
+        data-ng-options="label as label.text for label in allCaseLabels"
+        data-ng-model="activeLabels"
+        data-ng-change="changeCaseLabels(activeLabels)"
+        multiple
+    >
+    </select>
+  </div>
+  <div ng-show="showSpinner.caseLabels" style="text-align: center;">
+    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
+  </div>
   <br><br>
   <!-- Prioritet -->
-  <select
-      style="width: 100%;"
-      ng-style="activePriorityColor"
-      data-ng-show="general.possiblePriorities.length"
-      data-ng-options="priority.id as priority.text for priority in general.possiblePriorities"
-      data-ng-model="priority"
-      data-ng-change="changePriorityLevel(priority);"
-  >
-  </select>
+  <div data-ng-show="possiblePriorities.length">
+    <div ng-hide="showSpinner.casePriority">
+      <select
+          style="width: 100%;"
+          ng-style="activePriorityColor"
+          data-ng-options="priority.id as priority.text for priority in possiblePriorities"
+          data-ng-model="priority"
+          data-ng-change="changePriorityLevel(priority);"
+      >
+      </select>
+    </div>
+    <div ng-show="showSpinner.casePriority" style="text-align: center;">
+      <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
+    </div>
+  </div>
   <!-- /Prioritet -->
   <br><br>
 
   <!-- Due date -->
-  <div class="set-due-date">
-      <input
-          sf-date-picker-fancy
-          style="width: 100%;"
-          type="text"
-          placeholder="Förfallodatum"
-          ng-model="dueOnShort"
-          data-ng-change="changeDueOn(dueOnShort)"
-          id="fancy-date-hidden"
-      >
+  <div ng-hide="showSpinner.dueOn">
+    <div class="set-due-date">
+        <input
+            sf-date-picker-fancy
+            style="width: 100%;"
+            type="text"
+            placeholder="Förfallodatum"
+            ng-model="dueOnShort"
+            data-ng-change="changeDueOn(dueOnShort)"
+            id="fancy-date-hidden"
+        >
+    </div>
+  </div>
+  <div ng-show="showSpinner.dueOn" style="text-align: center;">
+    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
   </div>
   <!-- /Due date -->
 

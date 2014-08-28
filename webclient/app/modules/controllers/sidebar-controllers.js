@@ -19,81 +19,32 @@
 
   var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http', 'sf.services.fancy-date']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService',
-    function($scope, projectService, $params, navigationService, caseService, httpService) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', '$q',
+    function($scope, projectService, $params, navigationService, caseService, httpService, $q) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
 
       $scope.caze = caseService.getSelected($params.caseId);
-      $scope.commands = caseService.getSelectedCommands($params.caseId);
       $scope.general = caseService.getSelectedGeneral($params.caseId);
       $scope.contacts = caseService.getSelectedContacts($params.caseId);
       $scope.conversations = caseService.getSelectedConversations($params.caseId);
       $scope.attachments = caseService.getSelectedAttachments($params.caseId);
       $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
-      $scope.permissions = caseService.getPermissions($params.caseId);
-
-      $scope.general.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
-      $scope.caseLabel = caseService.getCaseLabel($params.caseId);
-      $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
+      $scope.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
+      $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
 
       $scope.possibleResolutions = [];
-      $scope.allCaseLabels = [];
-      $scope.activeLabels = [];
-      var previousActiveLabels = [];
-
-      $scope.$watch('general[0].dueOnShort', function (newVal) {
-        if (!!newVal) {
-          // This will be picked up by sfDatePickerFancy.
-          $scope.dueOnShortStartValue = newVal;
-        }
-      });
-
-      $scope.priority = "-1";
-      $scope.priorityColor = {};
-      $scope.activePriorityColor = {};
-
-      $scope.$watch('general[0].priority', function (newVal) {
-        if (!!newVal) {
-          $scope.priority = newVal.id;
-
-          if ($scope.priorityColor[newVal.id]) {
-            $scope.activePriorityColor = {
-              'background-color': $scope.priorityColor[newVal.id]
-            };
-          }
-        }
-      });
-
-      $scope.$watch('general.possiblePriorities', function (newVal) {
-        if (!!newVal) {
-          newVal.forEach(function (item) {
-            if (item.color !== null) {
-              var intColor = parseInt(item.color, 10);
-
-              if (intColor < 0) {
-                intColor = 0xFFFFFF + intColor + 1;
-              }
-
-              $scope.priorityColor[item.id] = '#' + intColor.toString(16);
-            }
-          });
-
-          if ($scope.priority && $scope.priorityColor[$scope.priority]) {
-            $scope.activePriorityColor = {
-              'background-color': $scope.priorityColor[$scope.priority]
-            };
-          }
-        }
-      }, true);
-
-      $scope.$watch('caze[0].caseType', function (newVal) {
-        if (!!newVal) {
-          $scope.caseType = newVal.id;
-        }
-      });
-
+      
+      
+      $scope.showSpinner = {
+        caseType: true,
+        caseLabels: true,
+        caseDueOn: true,
+        casePriority: true,
+        caseToolbar: false
+      };
+      
       var sortByText = function (x, y) {
         var xS = x.text && x.text.toUpperCase() || "",
             yS = y.text && y.text.toUpperCase() || "";
@@ -105,68 +56,238 @@
           return 0;
         }
       };
-
-      $scope.$watch('general.possibleCaseTypes', function () {
-        $scope.general.possibleCaseTypes.sort(sortByText);
-
-        setTimeout(function () {
-          $('.chosen-case-type').chosen({ search_contains: true }).trigger("chosen:updated");
-        }, 0);
-      }, true);
-
-      var hasDuplicateLabel = function (labels, item) {
-        return !!_.find(labels, function (j) {
-          return item.id === j.id;
+      
+      // Due on
+      $scope.general.promise.then(function (result) {
+        $scope.dueOnShortStartValue = result[0].dueOnShort;
+        $scope.showSpinner.caseDueOn = false;
+      });
+      
+      $scope.changeDueOn = function (date) {
+        $scope.showSpinner.caseDueOn = true;
+        
+        // Must be in the future and time must be set (but is not used).
+        var isoString = (new Date(date + "T23:59:59.000Z")).toISOString();
+        caseService.changeDueOn($params.caseId, isoString).then(function () {
+          $scope.general.invalidate();
+          $scope.general.resolve().then(function (result) {
+            $scope.dueOnShortStartValue = result[0].dueOnShort;
+            $scope.showSpinner.caseDueOn = false;
+          });
         });
       };
+      // End due on
 
-      var updateAllCaseLabels = function (labels) {
-        $scope.allCaseLabels = $scope.allCaseLabels.filter(function (item) {
-          return !hasDuplicateLabel(labels, item);
-        }).concat(labels).sort(sortByText);
+      // Priority
+      $scope.priority = "-1";
+      $scope.priorityColor = {};
+      $scope.activePriorityColor = {};
+      
+      $q.all([
+        $scope.general.promise,
+        $scope.possiblePriorities.promise
+      ]).then(function (responses) {
+        responses[1].forEach(function (item) {
+          if (item.color !== null) {
+            var intColor = parseInt(item.color, 10);
 
-        $scope.activeLabels = $scope.activeLabels.filter(function (item) {
-          return !hasDuplicateLabel(labels, item);
-        }).concat(labels).filter(function (i) {
-          return i.selected;
-        });
+            if (intColor < 0) {
+              intColor = 0xFFFFFF + intColor + 1;
+            }
 
-        previousActiveLabels = $scope.activeLabels;
-
-        setTimeout(function () {
-          $('.chosen-case-label').chosen({ search_contains: true }).trigger("chosen:updated");
-        }, 0);
-      };
-
-      var uniqueLabels = function (labels) {
-        return labels.reduce(function (mem, item) {
-          if (!hasDuplicateLabel(mem, item)) {
-            mem.push(item);
+            $scope.priorityColor[item.id] = '#' + intColor.toString(16);
           }
+        });
+        
+        $scope.priority = responses[0][0].priority && responses[0][0].priority.id;
 
-          return mem;
-        }, []);
+        if ($scope.priorityColor[$scope.priority]) {
+          $scope.activePriorityColor = {
+            'background-color': $scope.priorityColor[$scope.priority]
+          };
+        }
+        
+        $scope.showSpinner.casePriority = false;
+      });
+      
+      $scope.changePriorityLevel = function(priorityId) {
+        $scope.showSpinner.casePriority = true;
+
+        if (priorityId === "-1") {
+          priorityId = "";
+        }
+
+        caseService.changePriorityLevel($params.caseId, priorityId).then(function () {
+          if ($scope.priorityColor[priorityId]) {
+            $scope.activePriorityColor = {
+              'background-color': $scope.priorityColor[priorityId]
+            };
+          }
+          
+          $scope.showSpinner.casePriority = false;
+        });
+      };
+      // Priority end
+      
+      // Case type
+      $q.all([
+        $scope.possibleCaseTypes.promise,
+        $scope.caze.promise
+      ]).then(function (results) {
+        $scope.caseType = results[1][0].caseType && results[1][0].caseType.id;
+        $scope.possibleCaseTypes = results[0].sort(sortByText);
+        $scope.showSpinner.caseType = false;
+        setTimeout(function () {
+          jQuery('.chosen-case-type').chosen({ 'search_contains': true }).trigger('chosen:updated');
+        }, 0);
+      });
+      
+      $scope.changeCaseType = function(casetype) {
+        $scope.showSpinner.caseToolbar = true;
+        caseService.changeCaseType($params.caseId, casetype).then(function () {
+          $scope.showSpinner.caseToolbar = false;
+          updateCaseLabels();
+          updateToolbar();
+        });
+      };
+      // End case type
+
+      // Case labels
+      $scope.allCaseLabels = [];
+      $scope.activeLabels = [];
+      var previousActiveLabels = [];
+      
+      var updateCaseLabels = function () {
+        $scope.showSpinner.caseLabels = true;
+        
+        if ($scope.caseLabel) {
+          $scope.caseLabel.invalidate();
+          $scope.caseLabel.resolve();
+        } else {
+          $scope.caseLabel = caseService.getCaseLabel($params.caseId);
+        }
+        
+        if ($scope.possibleCaseLabels) {
+          $scope.possibleCaseLabels.invalidate();
+          $scope.possibleCaseLabels.resolve();
+        } else {
+          $scope.possibleCaseLabels = caseService.getPossibleCaseLabels($params.caseId);
+        }
+        
+        $q.all([
+          $scope.caseLabel.promise,
+          $scope.possibleCaseLabels.promise
+        ]).then(function (results) {
+          $scope.activeLabels = results[0].map(function (i) {
+            i.selected = true;
+            return i;
+          });
+          
+          $scope.allCaseLabels = $scope.activeLabels.concat(results[1].map(function (i) {
+            i.selected = false;
+            return i;
+          })).sort(sortByText);
+          
+          previousActiveLabels = $scope.activeLabels;
+          $scope.showSpinner.caseLabels = false;
+          
+          setTimeout(function () {
+            jQuery('.chosen-case-label').chosen({ search_contains: true }).trigger("chosen:updated");
+          }, 0);
+        });
+      }
+      
+      updateCaseLabels();
+      
+      $scope.changeCaseLabels = function (labels) {
+        $scope.showSpinner.caseLabels = true;
+        var removedLabels = previousActiveLabels.filter(function (item) {
+          return !_.find(labels, function (j) {
+              return item.id === j.id;
+          });
+        });
+        
+        if (removedLabels.length > 0) {
+          var promises = removedLabels.map(function (label) {
+            return caseService.deleteCaseLabel($params.caseId, label.id);
+          });
+          
+          $q.all(promises).then(updateCaseLabels);
+        } else {
+          var promises = labels.map(function (label) {
+            return caseService.addCaseLabel($params.caseId, label.id);
+          });
+          
+          $q.all(promises).then(updateCaseLabels);
+        }
+      
+        previousActiveLabels = labels;
+      };
+      // End case labels
+      
+      // Commands (toolbar)
+      var updateToolbar = function () {
+        $scope.showSpinner.caseToolbar = true;
+        
+        if ($scope.commands) {
+          $scope.commands.invalidate();
+          $scope.commands.resolve();
+        } else {
+          $scope.commands = caseService.getSelectedCommands($params.caseId);
+        }
+        
+        $scope.commands.promise.then(function (response) {  
+          var commandMap = {
+            'sendto': 'canSendTo',
+            'resolve': 'canResolve',
+            'close': 'canClose',
+            'delete': 'canDelete',
+            'assign': 'canAssign',
+            'unassign': 'canUnassign',
+            'restrict': 'canRestrict',
+            'unrestrict': 'canUnrestrict',
+            'markunread': 'canMarkUnread',
+            'markread': 'canMarkRead',
+            'formonclose': 'formOnClose'
+          };
+          
+          for (var commandName in commandMap) {
+            if (commandMap.hasOwnProperty(commandName)) {
+              $scope[commandMap[commandName]] = !!_.find(response, function (command) {
+                return command.rel === commandName;
+              });
+            }
+          }
+          
+          $scope.showSpinner.caseToolbar = false;
+        });
+      }
+      updateToolbar();
+      // End commands (toolbar)
+      
+      // Restrict / Unrestrict
+      $scope.permissions = caseService.getPermissions($params.caseId);
+      
+      $scope.unrestrict = function () {
+        $scope.showSpinner.caseToolbar = true;
+        caseService.unrestrictCase($params.caseId).then(function () {
+          $scope.permissions.invalidate();
+          $scope.permissions.resolve().then(function () {
+            updateToolbar();
+          });
+        });
       };
 
-      $scope.$watch('caseLabel', function (newVal) {
-        var labels = uniqueLabels(newVal).map(function (i) {
-          i.selected = true;
-          return i;
+      $scope.restrict = function () {
+        $scope.showSpinner.caseToolbar = true;
+        caseService.restrictCase($params.caseId).then(function () {
+          $scope.permissions.invalidate();
+          $scope.permissions.resolve().then(function () {
+            updateToolbar();
+          });
         });
-
-        updateAllCaseLabels(labels);
-      }, true);
-
-      $scope.$watch('possibleCaseLabels', function (newVal) {
-        var labels = uniqueLabels(newVal).map(function (i) {
-          i.selected = false;
-          return i;
-        });
-
-        updateAllCaseLabels(labels);
-      }, true);
-
-      $scope.general.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
+      };
+      // End Restrict / Unrestrict
 
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -207,59 +328,6 @@
       $scope.$on('participant-removed', function(){
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });
-
-      $scope.$watch("commands[0]", function(){
-
-        var commands = $scope.commands;
-
-        $scope.canSendTo = _.any(commands, function(command){
-          return command.rel === "sendto";
-        });
-        $scope.canResolve = _.any(commands, function(command){
-          return command.rel === "resolve";
-        });
-        $scope.canClose = _.any(commands, function(command){
-          return command.rel === "close";
-        });
-        $scope.canDelete = _.any(commands, function(command){
-          return command.rel === "delete";
-        });
-        $scope.canAssign = _.any(commands, function(command){
-          return command.rel === "assign";
-        });
-        $scope.canUnassign = _.any(commands, function(command){
-          return command.rel === "unassign";
-        });
-        $scope.canRestrict = _.any(commands, function(command){
-          return command.rel === "restrict";
-        });
-        $scope.canUnrestrict = _.any(commands, function(command){
-          return command.rel === "unrestrict";
-        });
-        $scope.canMarkUnread = _.any(commands, function(command){
-          return command.rel === "markunread";
-        });
-        $scope.canMarkRead = _.any(commands, function(command){
-          return command.rel === "markread";
-        });
-        $scope.formOnClose = _.any(commands, function(command){
-          return command.rel === "formonclose";
-        });
-      });
-
-      $scope.unrestrict = function () {
-        caseService.unrestrictCase($params.caseId).then(function () {
-          $scope.commands.resolve();
-          $scope.permissions.resolve();
-        });
-      };
-
-      $scope.restrict = function () {
-        caseService.restrictCase($params.caseId).then(function () {
-          $scope.commands.resolve();
-          $scope.permissions.resolve();
-        });
-      };
 
       $scope.resolve = function(){
         $scope.possibleResolutions = caseService.getPossibleResolutions($params.caseId);
@@ -316,11 +384,6 @@
         caseService.sendCaseTo($params.caseId, sendToId, callback);
       }
 
-/*
-      $scope.close = function(){
-        $scope.commandView = "close";
-      }
-*/
       $scope.close = function($event){
         $event.preventDefault();
 
@@ -403,65 +466,7 @@
         alert("Not supported - need UX for this.");
       }
 
-      $scope.changeCaseLabels = function (labels) {
-        var removedLabels = previousActiveLabels.filter(function (item) {
-          return !hasDuplicateLabel(labels, item);
-        });
-
-        var updateLabels = function () {
-          $scope.possibleCaseLabels.invalidate();
-          $scope.possibleCaseLabels.resolve();
-          $scope.caseLabel.invalidate();
-          $scope.caseLabel.resolve();
-        };
-
-        if (removedLabels.length > 0) {
-          removedLabels.forEach(function (label) {
-            caseService.deleteCaseLabel($params.caseId, label.id).then(updateLabels);
-          });
-        } else {
-          labels = labels.filter(function (item) {
-            return !hasDuplicateLabel(previousActiveLabels, item);
-          });
-
-          labels.forEach(function (label) {
-            caseService.addCaseLabel($params.caseId, label.id).then(updateLabels);
-          });
-        }
-
-        previousActiveLabels = labels;
-      };
-
-      $scope.changePriorityLevel = function(priorityId){
-        $scope.activePriorityColor = {
-          'background-color': $scope.priorityColor[priorityId]
-        };
-
-        if (priorityId === "-1") {
-          priorityId = "";
-        }
-
-        caseService.changePriorityLevel($params.caseId, priorityId);
-      };
-
-      $scope.changeCaseType = function(casetype) {
-        caseService.changeCaseType($params.caseId, casetype).then(function () {
-          $scope.allCaseLabels = [];
-          $scope.activeLabels = [];
-          $scope.possibleCaseLabels.invalidate();
-          $scope.possibleCaseLabels.resolve();
-          $scope.caseLabel.invalidate();
-          $scope.caseLabel.resolve();
-          $scope.commands.invalidate();
-          $scope.commands.resolve();
-        });
-      };
-
-      $scope.changeDueOn = function (date) {
-          // Must be in the future and time must be set (but is not used).
-          var isoString = (new Date(date + "T23:59:59.000Z")).toISOString();
-          caseService.changeDueOn($params.caseId, isoString);
-      };
+      
 
       $scope.showToolbar = function () {
         return !!$scope.possibleResolutions.length;
