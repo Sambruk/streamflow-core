@@ -21,5 +21,9 @@
   "smarttabs": true,
   "globals": {
     "angular": false
-  }
+  },
+  predef: [
+    "jQuery",
+    "_"
+  ]
 }
