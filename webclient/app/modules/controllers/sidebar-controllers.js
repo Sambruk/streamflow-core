@@ -242,17 +242,22 @@
         $scope.canMarkRead = _.any(commands, function(command){
           return command.rel === "markread";
         });
+        $scope.formOnClose = _.any(commands, function(command){
+          return command.rel === "formonclose";
+        });
       });
 
       $scope.unrestrict = function () {
         caseService.unrestrictCase($params.caseId).then(function () {
           $scope.commands.resolve();
+          $scope.permissions.resolve();
         });
       };
 
       $scope.restrict = function () {
         caseService.restrictCase($params.caseId).then(function () {
           $scope.commands.resolve();
+          $scope.permissions.resolve();
         });
       };
 
@@ -268,9 +273,7 @@
         $scope.commandView = "resolve";
       };
 
-      $scope.onResolveButtonClicked = function($event){
-        $event.preventDefault();
-
+      $scope.onResolveButtonClicked = function(){
         var resolutionId = $scope.resolution;
 
         var callback = function () {
@@ -279,6 +282,10 @@
         };
 
         caseService.resolveCase($params.caseId, resolutionId, callback);
+      };
+
+      $scope.onCancelResolveButtonClicked = function () {
+        $scope.commandView = "";
       };
 
       $scope.sendTo = function(){
@@ -402,7 +409,9 @@
         });
 
         var updateLabels = function () {
+          $scope.possibleCaseLabels.invalidate();
           $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.invalidate();
           $scope.caseLabel.resolve();
         };
 
@@ -439,8 +448,12 @@
         caseService.changeCaseType($params.caseId, casetype).then(function () {
           $scope.allCaseLabels = [];
           $scope.activeLabels = [];
+          $scope.possibleCaseLabels.invalidate();
           $scope.possibleCaseLabels.resolve();
+          $scope.caseLabel.invalidate();
           $scope.caseLabel.resolve();
+          $scope.commands.invalidate();
+          $scope.commands.resolve();
         });
       };
 

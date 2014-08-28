@@ -28,6 +28,7 @@
       <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign($event)" class="btn">Återlämna</a></li>
       <li data-ng-show="canResolve"><a href="" data-ng-click="resolve()" class="btn">Stäng</a></li>
       <li data-ng-show="canClose"><a href="" data-ng-click="close($event)" class="btn">Stäng</a></li>
+      <li data-ng-show="formOnClose"><a href="" class="btn disabled">Stäng</a></li>
       <li>
         <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
         <ul>
@@ -44,9 +45,10 @@
     <div class="toolbar-content" ng-show="showToolbar">
       <div data-ng-switch on="commandView">
               <div class="toolbar-content-style" data-ng-switch-when="resolve">
-                <select custom-select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+                <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
                 </select>
-                <button data-ng-click="onResolveButtonClicked($event)">Avsluta</button>
+                <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
+                <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
               </div>
 
           <div class="toolbar-content-style" data-ng-switch-when="close">

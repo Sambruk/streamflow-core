@@ -39,7 +39,7 @@
         case 'production':
           return 'http://localhost:8082/streamflow/';
         default:
-          return 'https://dummyuser:dummypass@test.sf.streamsource.se/streamflow/';
+          return 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
           //return baseUrl + "/api/";
       }
     }
@@ -71,25 +71,27 @@
 
       getRequest: function (href, skipCache) {
         var result = cache.get(href);
-        if (result && !skipCache)
-          return this.wrapInPromise(result);
-        return this.makeRequest(href);
-      },
+        if (!result) {
+          var url = this.prepareUrl(href);
+          var q = $q.defer();
+          var promise = q.promise;
+          cache.put(href, promise);
 
-      wrapInPromise: function(result) {
-        var deferred = $q.defer();
-        deferred.resolve(result);
-        return deferred.promise;
-      },
+          q.resolve($http({ method:'GET', url: url, cache: false}));
 
-      makeRequest: function(href) {
-        var that = this;
-        var url = this.prepareUrl(href);
-        // Bind href parameter to cacheResponse.
-        var cacheResponse = _.bind(this.cacheResponse, null, href);
-        var request = $http({ method:'GET', url: url, cache: false});
-        
-        return request.then(cacheResponse, errorHandlerService);
+          promise.then(function () {
+            setTimeout(function () {
+              cache.remove(href);
+            }, 3000);
+          }, function (arg) {
+            errorHandlerService(arg);
+            cache.remove(href);
+          });
+
+          return q.promise;
+        }
+
+        return result;
       },
 
       prepareUrl: function(href) {
@@ -97,11 +99,6 @@
           return (/\/streamflow/).test(href) ?  this.absApiUrl(href.substring(11)) : href;
         else
           return this.absApiUrl(href);
-      },
-
-      cacheResponse: function(href, response) {
-        cache.put(href, response);
-        return response;
       },
 
       postRequest: function (href, data) {
