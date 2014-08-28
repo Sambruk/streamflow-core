@@ -34,7 +34,7 @@
             cache: 'false'
           }).then(function () {
             tokenService.storeToken(basicAuthBase64);
-            $window.location.href = '/app';
+            window.location.reload();
           }, function () {
             $scope.errorMessage = "Användarnamn / lösenord ej giltigt!";
           });

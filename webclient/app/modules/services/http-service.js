@@ -40,7 +40,9 @@
           return 'http://localhost:8082/streamflow/';
         default:
           return 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
-          //return baseUrl + "/api/";
+          /*return baseUrl.replace(/(https?:\/\/)/, function (protocol) {
+            return protocol + 'dummyuser:dummypass@';
+          }) + '/api/';*/
       }
     }
 
