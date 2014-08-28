@@ -19,8 +19,8 @@
 
   var sfLogin = angular.module('sf.controllers.login', []);
 
-    sfLogin.controller('LoginCtrl', ['$scope', '$location', '$http', '$window', 'tokenService',
-      function($scope, $location, $http, $window, tokenService) {
+    sfLogin.controller('LoginCtrl', ['$scope', '$location', '$http', '$window', 'tokenService', 'httpService',
+      function($scope, $location, $http, $window, tokenService, httpService) {
 
         $scope.errorMessage = "";
 
@@ -30,7 +30,7 @@
 
           $http({
             method: 'GET',
-            url: 'https://dummyuser:dummyuser@test.sf.streamsource.se/streamflow/account/profile/',
+            url: httpService.absApiUrl('account/profile'),
             cache: 'false'
           }).then(function () {
             tokenService.storeToken(basicAuthBase64);
