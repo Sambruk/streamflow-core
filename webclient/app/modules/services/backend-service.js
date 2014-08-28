@@ -180,14 +180,16 @@
           urls.length = 0;
 
           // always start from the root resource and then drill down by using the provided dsl object
-          return httpService.getRequest("").
-            then(function (response) {
+          result.promise = httpService.getRequest("").then(function (response) {
               var resource = new SfResource("", response);
               result.status = response.status;
-              return resource.getNested(angular.copy(dsl.specs), urls);}).
-            then(function(resource){
+              return resource.getNested(angular.copy(dsl.specs), urls);
+            }).then(function(resource){
               dsl.onSuccess(resource, result, urls);
+              return result;
             });
+            
+            return result.promise;
         };
 
         result.resolve();
