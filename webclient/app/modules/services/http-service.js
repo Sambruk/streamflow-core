@@ -39,7 +39,7 @@
         case 'production':
           return 'http://localhost:8082/streamflow/';
         default:
-          return 'https://dummyuser:dummypass@test.sf.streamsource.se/streamflow/';
+          return 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
           //return baseUrl + "/api/";
       }
     }
