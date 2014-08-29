@@ -289,6 +289,13 @@ module.exports = function (grunt) {
             'fonts/**/*',
             'i/**/*'
           ]
+        },{
+          expand: true,
+          cwd: '<%= yeoman.app %>/components/chosen',
+          dest: '<%= yeoman.dist %>/styles',
+          src: [
+            'chosen-sprite.png'
+          ]
         }]
       }
     }
