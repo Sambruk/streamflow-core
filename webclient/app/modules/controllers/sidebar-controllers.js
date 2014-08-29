@@ -44,8 +44,8 @@
       };
       
       var sortByText = function (x, y) {
-        var xS = x.text && x.text.toUpperCase() || "",
-            yS = y.text && y.text.toUpperCase() || "";
+        var xS = x.text && x.text.toUpperCase() || '',
+            yS = y.text && y.text.toUpperCase() || '';
         if (xS > yS) {
           return 1;
         } else if (xS < yS) {
@@ -64,8 +64,8 @@
         $scope.possibleResolutions = caseService.getPossibleResolutions($params.caseId);
         $scope.possibleResolutions.promise.then(function (response) {
           $scope.resolution = response[0].id;
-          $scope.commandView = "resolve";
-        })
+          $scope.commandView = 'resolve';
+        });
       };
 
       $scope.onResolveButtonClicked = function(){
@@ -80,7 +80,7 @@
       };
 
       $scope.onCancelResolveButtonClicked = function () {
-        $scope.commandView = "";
+        $scope.commandView = '';
       };
       // End Resolve
       
@@ -94,7 +94,7 @@
         $scope.showSpinner.caseDueOn = true;
         
         // Must be in the future and time must be set (but is not used).
-        var isoString = (new Date(date + "T23:59:59.000Z")).toISOString();
+        var isoString = (new Date(date + 'T23:59:59.000Z')).toISOString();
         caseService.changeDueOn($params.caseId, isoString).then(function () {
           $scope.general.invalidate();
           $scope.general.resolve().then(function (result) {
@@ -106,7 +106,7 @@
       // End due on
 
       // Priority
-      $scope.priority = "-1";
+      $scope.priority = '-1';
       $scope.priorityColor = {};
       $scope.activePriorityColor = {};
       
@@ -140,8 +140,8 @@
       $scope.changePriorityLevel = function(priorityId) {
         $scope.showSpinner.casePriority = true;
 
-        if (priorityId === "-1") {
-          priorityId = "";
+        if (priorityId === '-1') {
+          priorityId = '';
         }
 
         caseService.changePriorityLevel($params.caseId, priorityId).then(function () {
@@ -350,10 +350,10 @@
       });
 
       $scope.$on('case-changed', function(e, attr) {
-        if (attr.command === "casetype") {
+        if (attr.command === 'casetype') {
           $scope.commands.invalidate();
           $scope.commands.resolve();
-        } else if (attr.command === "changedueon") {
+        } else if (attr.command === 'changedueon') {
           $scope.general.invalidate();
           $scope.general.resolve();
         }
@@ -361,7 +361,7 @@
 
     $scope.$on('casedescription-changed', function(){
         $scope.caze = caseService.getSelected($params.caseId);
-    })
+    });
 
       $scope.$on('participant-removed', function(){
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
@@ -371,7 +371,7 @@
 
       $scope.sendToIdChanged = function(event) {
         $scope.sendToId = event;
-      }
+      };
 
       $scope.onSendToButtonClicked = function($event){
         $event.preventDefault();
@@ -384,7 +384,7 @@
           window.location.replace(href);
         };
         caseService.sendCaseTo($params.caseId, sendToId, callback);
-      }
+      };
 
       $scope.close = function($event){
         $event.preventDefault();
@@ -394,8 +394,8 @@
           var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
         };
-        caseService.closeCase($params.caseId, callback)
-      }
+        caseService.closeCase($params.caseId, callback);
+      };
 
       $scope.assign = function($event){
         $event.preventDefault();
@@ -405,7 +405,7 @@
           window.location.replace(href);
         };
         caseService.assignCase($params.caseId, callback);
-      }
+      };
 
       $scope.unassign = function($event){
         $event.preventDefault();
@@ -415,7 +415,7 @@
           window.location.replace(href);
         };
         caseService.unassignCase($params.caseId, callback);
-      }
+      };
 
       $scope.markUnread = function($event){
         $event.preventDefault();
@@ -424,7 +424,7 @@
           $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
         caseService.markUnread($params.caseId, callback);
-      }
+      };
 
       $scope.markRead = function($event){
         $event.preventDefault();
@@ -432,7 +432,7 @@
           $scope.commands = caseService.getSelectedCommands($params.caseId);
         };
         caseService.markRead($params.caseId, callback);
-      }
+      };
 
       $scope.deleteCase = function(){
         $scope.commandView = undefined;
@@ -441,42 +441,42 @@
 
           var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
-        }
+        };
 
         caseService.deleteCase($params.caseId, callback);
-      }
+      };
 
       $scope.downloadAttachment = function(attachmentId){
         var attachments = $scope.attachments;
 
         if(attachments[0].rel === 'conversation'){
-          attachments[0].href  = $scope.apiUrl + '/cases/' + $params.caseId + "/" + attachments[0].href.substring(3) + 'download';
+          attachments[0].href  = $scope.apiUrl + '/cases/' + $params.caseId + '/' + attachments[0].href.substring(3) + 'download';
         }else if(attachments[0].rel === 'attachment'){
           attachments[0].href = $scope.apiUrl + '/cases/' + $params.caseId + '/attachments/' + attachments[0].id + '/download';
         }
-      }
+      };
 
       $scope.deleteAttachment = function(attachmentId){
         var callback = function(){
           $scope.attachments.invalidate();
           $scope.attachments.resolve();
-        }
+        };
         caseService.deleteAttachment($params.caseId, attachmentId, callback);
-      }
+      };
 
       $scope.showContact = function(contactId){
         alert("Not supported - need UX for this.");
-      }
+      };
       
       $scope.sendTo = function(){
         $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
-        $scope.$watch("possibleSendTo[0]", function(){
+        $scope.$watch('possibleSendTo[0]', function(){
           if ($scope.possibleSendTo[0]) {
             $scope.sendToId = $scope.possibleSendTo[0].id;
           }
         });
 
-        $scope.commandView = "sendTo"
-      }
+        $scope.commandView = 'sendTo';
+      };
     }]);
 })();
