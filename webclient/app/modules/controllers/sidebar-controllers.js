@@ -339,6 +339,52 @@
         });
       };
       // End Mark Read / Unread
+      
+      // Close
+      $scope.close = function () {
+        caseService.closeCase($params.caseId).then(function () {
+          var href = navigationService.caseListHrefFromCase($scope.caze);
+          window.location.replace(href);
+        });
+      };
+      // End Close
+      
+      // Delete
+      $scope.deleteCase = function () {
+        caseService.deleteCase($params.caseId).then(function () {
+          var href = navigationService.caseListHrefFromCase($scope.caze);
+          window.location.replace(href);
+        });
+      };
+      // End Delete
+      
+      // Send to (BROKEN!)
+      $scope.sendTo = function () {
+        $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
+        $scope.possibleSendTo.promise.then(function (response) {
+          if (response[0]) {
+            $scope.sendToId = response[0] && response[0].id;
+          }
+          
+          $scope.commandView = 'sendTo';
+        });
+      };
+
+      $scope.sendToIdChanged = function () {
+        $scope.sendToId = event;
+      };
+
+      $scope.onSendToButtonClicked = function () {
+        var sendToId = $scope.sendToId;
+
+        var callback = function(){
+
+          var href = navigationService.caseListHrefFromCase($scope.caze);
+          window.location.replace(href);
+        };
+        caseService.sendCaseTo($params.caseId, sendToId, callback);
+      };
+      // End Send to
 
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -380,36 +426,6 @@
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });
 
-      
-
-      $scope.sendToIdChanged = function(event) {
-        $scope.sendToId = event;
-      };
-
-      $scope.onSendToButtonClicked = function($event){
-        $event.preventDefault();
-
-        var sendToId = $scope.sendToId;
-
-        var callback = function(){
-
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
-        };
-        caseService.sendCaseTo($params.caseId, sendToId, callback);
-      };
-
-      $scope.close = function($event){
-        $event.preventDefault();
-
-        var callback = function(){
-
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
-        };
-        caseService.closeCase($params.caseId, callback);
-      };
-
       $scope.assign = function($event){
         $event.preventDefault();
 
@@ -428,18 +444,6 @@
           window.location.replace(href);
         };
         caseService.unassignCase($params.caseId, callback);
-      };
-
-      $scope.deleteCase = function(){
-        $scope.commandView = undefined;
-
-        var callback = function(){
-
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
-        };
-
-        caseService.deleteCase($params.caseId, callback);
       };
 
       $scope.downloadAttachment = function(attachmentId){
@@ -464,15 +468,5 @@
         alert("Not supported - need UX for this.");
       };
       
-      $scope.sendTo = function(){
-        $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
-        $scope.$watch('possibleSendTo[0]', function(){
-          if ($scope.possibleSendTo[0]) {
-            $scope.sendToId = $scope.possibleSendTo[0].id;
-          }
-        });
-
-        $scope.commandView = 'sendTo';
-      };
     }]);
 })();

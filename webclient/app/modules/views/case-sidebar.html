@@ -23,11 +23,11 @@
   <!-- Issue toolbar -->
   <div class="toolbar" data-sf-fixed-toolbar ng-hide="showSpinner.caseToolbar">
     <ul class="buttons cf" data-ng-show="commands[0]">
-      <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content  data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
       <li data-ng-show="canAssign"><a href="" data-ng-click="assign($event)" class="btn">Tilldela</a></li>
       <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign($event)" class="btn">Återlämna</a></li>
       <li data-ng-show="canResolve"><a href="" data-ng-click="resolve()" class="btn">Stäng</a></li>
-      <li data-ng-show="canClose"><a href="" data-ng-click="close($event)" class="btn">Stäng</a></li>
+      <li data-ng-show="canClose"><a href="" data-ng-click="close()" class="btn">Stäng</a></li>
       <li data-ng-show="formOnClose"><a href="" class="btn disabled">Stäng</a></li>
       <li>
         <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
@@ -42,14 +42,14 @@
       </li>
     </ul>
 
-    <div class="toolbar-content" ng-show="possibleResolutions.length">
+    <div class="toolbar-content" ng-show="commandView">
       <div data-ng-switch on="commandView">
-              <div class="toolbar-content-style" data-ng-switch-when="resolve">
-                <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
-                </select>
-                <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
-                <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
-              </div>
+          <div class="toolbar-content-style" data-ng-switch-when="resolve">
+            <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+            </select>
+            <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
+            <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
+          </div>
 
           <div class="toolbar-content-style" data-ng-switch-when="close">
             <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
@@ -57,24 +57,22 @@
 
 
           <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
-
               <div class='ng-modal' ng-show='show'>
                   <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
                   <div class='ng-modal-dialog' ng-style='dialogStyle'>
-                  <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
-                  <div class="row cf">
+                    <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+                    <div class="row cf">
                       <div class="select">
                           <label for="issue-owner">Byt ägare</label>
                           <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
                           </select>
                       </div>
-                  </div>
-                  <div class="row">
-                      <div class="submit-area cf">
-                          <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
-                      </div>
-                  </div>
-                      <div ng-transclude></div>
+                    </div>
+                    <div class="row">
+                        <div class="submit-area cf">
+                            <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+                        </div>
+                    </div>
                   </div>
               </div>
           </div>
