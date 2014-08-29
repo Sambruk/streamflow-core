@@ -319,7 +319,7 @@
             {'index.links': attachmentId},
             {commands: 'delete'}
             ]),
-          {}).then(_.debounce(callback)());
+          {}).then(callback);
       },
 
       getSelectedContact: function(caseId, contactIndex) {

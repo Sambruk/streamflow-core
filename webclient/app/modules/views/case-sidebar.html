@@ -278,14 +278,15 @@
     <div class="m-h">
       <h2>Bifogade filer</h2>
     </div>
-    <div class="m-c">
+    <div class="m-c" ng-hide="showSpinner.caseAttachment">
       <ul class="zebra-list">
         <li ng-repeat="attachment in attachments">
-        <a data-ng-click="downloadAttachment(attachment.id)" ng-href="{{ attachment.href}}">{{ attachment.text }}</a>
+        <a data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
         <a data-ng-click="deleteAttachment(attachment.id)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
         </li>
       </ul>
     </div>
+    <div ng-show="showSpinner.caseAttachment" class="spinner"></div>
   </div>
   <!-- /Module: Bifogade filer -->
 

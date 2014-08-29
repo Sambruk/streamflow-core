@@ -17,10 +17,10 @@
 (function() {
   'use strict';
 
-  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http', 'sf.services.fancy-date']);
+  var sfSidebar = angular.module('sf.controllers.sidebar', ['sf.services.case', 'sf.services.navigation', 'sf.services.project','sf.services.http', 'sf.services.fancy-date', 'sf.services.token']);
 
-  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', '$q',
-    function($scope, projectService, $params, navigationService, caseService, httpService, $q) {
+  sfSidebar.controller('SidebarCtrl', ['$scope', 'projectService', '$routeParams', 'navigationService', 'caseService', 'httpService', '$q', 'tokenService',
+    function($scope, projectService, $params, navigationService, caseService, httpService, $q, tokenService) {
 
       $scope.projectId = $params.projectId;
       $scope.projectType = $params.projectType;
@@ -40,7 +40,8 @@
         caseDueOn: true,
         casePriority: true,
         caseToolbar: false,
-        casePermissions: true
+        casePermissions: true,
+        caseAttachment: true
       };
       
       var sortByText = function (x, y) {
@@ -399,6 +400,34 @@
         });
       };
       // End Assign / Unassign
+      
+      // Attachments
+      $scope.attachments.promise.then(function () {
+        $scope.showSpinner.caseAttachment = false;
+      });
+      
+      $scope.downloadAttachment = function (attachment) {
+        // Hack to replace dummy user and pass with authentication from token.
+        // This is normally sent by http headers in ajax but not possible here.
+        var apiUrl = $scope.apiUrl.replace(/https:\/\/(.*)@/, function () {
+          var userPass = window.atob(tokenService.getToken());
+          return 'https://' + userPass + '@' ;
+        });
+        
+        var url = apiUrl + '/cases/' + $params.caseId + '/attachments/' + attachment.href + 'download';
+        window.location.replace(url);
+      };
+
+      $scope.deleteAttachment = function(attachmentId){
+        caseService.deleteAttachment($params.caseId, attachmentId).then(function () {
+          $scope.showSpinner.caseAttachment = true;
+          $scope.attachments.invalidate();
+          $scope.attachments.resolve().then(function () {
+            $scope.showSpinner.caseAttachment = false;
+          });
+        });
+      };
+      // End Attachments
 
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -439,24 +468,6 @@
       $scope.$on('participant-removed', function(){
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });
-
-      $scope.downloadAttachment = function(attachmentId){
-        var attachments = $scope.attachments;
-
-        if(attachments[0].rel === 'conversation'){
-          attachments[0].href  = $scope.apiUrl + '/cases/' + $params.caseId + '/' + attachments[0].href.substring(3) + 'download';
-        }else if(attachments[0].rel === 'attachment'){
-          attachments[0].href = $scope.apiUrl + '/cases/' + $params.caseId + '/attachments/' + attachments[0].id + '/download';
-        }
-      };
-
-      $scope.deleteAttachment = function(attachmentId){
-        var callback = function(){
-          $scope.attachments.invalidate();
-          $scope.attachments.resolve();
-        };
-        caseService.deleteAttachment($params.caseId, attachmentId, callback);
-      };
 
       $scope.showContact = function(contactId){
         alert("Not supported - need UX for this.");
