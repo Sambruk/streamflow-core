@@ -220,7 +220,7 @@
           $scope.showSpinner.caseLabels = false;
           
           setTimeout(function () {
-            jQuery('.chosen-case-label').chosen({ search_contains: true }).trigger("chosen:updated");
+            jQuery('.chosen-case-label').chosen({ 'search_contains': true }).trigger("chosen:updated");
           }, 0);
         });
       };
