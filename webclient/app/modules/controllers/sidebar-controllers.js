@@ -34,9 +34,6 @@
       $scope.possiblePriorities = caseService.getPossiblePriorities($params.caseId);
       $scope.possibleCaseTypes = caseService.getPossibleCaseTypes($params.caseId);
 
-      $scope.possibleResolutions = [];
-      
-      
       $scope.showSpinner = {
         caseType: true,
         caseLabels: true,
@@ -56,6 +53,35 @@
           return 0;
         }
       };
+      
+      // Resolve
+      $scope.showToolbar = function () {
+        return !!$scope.possibleResolutions.length;
+      };
+      
+      $scope.resolve = function() {
+        $scope.possibleResolutions = caseService.getPossibleResolutions($params.caseId);
+        $scope.possibleResolutions.promise.then(function (response) {
+          $scope.resolution = response[0].id;
+          $scope.commandView = "resolve";
+        })
+      };
+
+      $scope.onResolveButtonClicked = function(){
+        var resolutionId = $scope.resolution;
+
+        var callback = function () {
+          var href = navigationService.caseListHrefFromCase($scope.caze);
+          window.location.replace(href);
+        };
+
+        caseService.resolveCase($params.caseId, resolutionId, callback);
+      };
+
+      $scope.onCancelResolveButtonClicked = function () {
+        $scope.commandView = "";
+      };
+      // End Resolve
       
       // Due on
       $scope.general.promise.then(function (result) {
@@ -329,43 +355,7 @@
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });
 
-      $scope.resolve = function(){
-        $scope.possibleResolutions = caseService.getPossibleResolutions($params.caseId);
-
-        $scope.$watch("possibleResolutions[0]", function(){
-          if ($scope.possibleResolutions[0]) {
-            $scope.resolution = $scope.possibleResolutions[0].id;
-          }
-        });
-
-        $scope.commandView = "resolve";
-      };
-
-      $scope.onResolveButtonClicked = function(){
-        var resolutionId = $scope.resolution;
-
-        var callback = function () {
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
-        };
-
-        caseService.resolveCase($params.caseId, resolutionId, callback);
-      };
-
-      $scope.onCancelResolveButtonClicked = function () {
-        $scope.commandView = "";
-      };
-
-      $scope.sendTo = function(){
-        $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
-        $scope.$watch("possibleSendTo[0]", function(){
-          if ($scope.possibleSendTo[0]) {
-            $scope.sendToId = $scope.possibleSendTo[0].id;
-          }
-        });
-
-        $scope.commandView = "sendTo"
-      }
+      
 
       $scope.sendToIdChanged = function(event) {
         $scope.sendToId = event;
@@ -465,12 +455,16 @@
       $scope.showContact = function(contactId){
         alert("Not supported - need UX for this.");
       }
-
       
+      $scope.sendTo = function(){
+        $scope.possibleSendTo = caseService.getPossibleSendTo($params.caseId);
+        $scope.$watch("possibleSendTo[0]", function(){
+          if ($scope.possibleSendTo[0]) {
+            $scope.sendToId = $scope.possibleSendTo[0].id;
+          }
+        });
 
-      $scope.showToolbar = function () {
-        return !!$scope.possibleResolutions.length;
-      };
+        $scope.commandView = "sendTo"
+      }
     }]);
-
 })();

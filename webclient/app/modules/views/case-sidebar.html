@@ -42,7 +42,7 @@
       </li>
     </ul>
 
-    <div class="toolbar-content" ng-show="showToolbar">
+    <div class="toolbar-content" ng-show="possibleResolutions.length">
       <div data-ng-switch on="commandView">
               <div class="toolbar-content-style" data-ng-switch-when="resolve">
                 <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
