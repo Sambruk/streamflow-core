@@ -130,43 +130,23 @@
     });*/
   }]);
 
-  sfCase.controller('PrintCtrl', ['growl','$scope', '$routeParams', 'caseService', 'navigationService',
-    function(growl, $scope, $params, caseService, navigationService){
+  sfCase.controller('PrintCtrl', ['growl','$scope', '$routeParams', 'caseService', '$q',
+    function(growl, $scope, $params, caseService, $q){
 
     $scope.caze = caseService.getSelected($params.caseId);
     $scope.general = caseService.getSelectedGeneral($params.caseId);
     $scope.notes = caseService.getSelectedNote($params.caseId);
-
-    $scope.$on('case-created', function() {
-        $scope.caze.invalidate();
+    
+    $q.all(
+      $scope.caze.promise,
+      $scope.general.promise,
+      $scope.notes.promise
+    ).then(function () {
+      // Page has to be rendered first.
+      setTimeout(function () {
+        window.print();
+      });
     });
-
-    $scope.$on('case-changed', function() {
-      $scope.caze.invalidate();
-      $scope.caze.resolve();
-    });
-
-    /**
-    * ERROR HANDLER
-    **/
-    //TODO: Implement error handler listener on other controllers where needed
-    $scope.errorHandler = function(){
-      var bcMessage = caseService.getMessage();
-      if(bcMessage === 200)  {
-        //growl.addSuccessMessage('successMessage');
-      }else {
-        growl.warning('errorMessage');
-      }
-    };
-
-    //error-handler
-    $scope.$on('httpRequestInitiated', $scope.errorHandler);
-
-    $scope.$watch('caze + general + notes', function() {
-      setTimeout(function(){
-         window.print();
-      }, 500);
-    })
   }]);
 
   sfCase.controller('CaseEditCtrl', ['growl','$scope', '$rootScope', '$routeParams', 'caseService', 'navigationService',
