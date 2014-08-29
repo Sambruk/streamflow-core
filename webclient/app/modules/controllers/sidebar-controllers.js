@@ -377,14 +377,28 @@
       $scope.onSendToButtonClicked = function () {
         var sendToId = $scope.sendToId;
 
-        var callback = function(){
-
+        caseService.sendCaseTo($params.caseId, sendToId).then(function () {
           var href = navigationService.caseListHrefFromCase($scope.caze);
           window.location.replace(href);
-        };
-        caseService.sendCaseTo($params.caseId, sendToId, callback);
+        });
       };
       // End Send to
+      
+      // Assign / Unassign
+      $scope.assign = function () {
+        caseService.assignCase($params.caseId).then(function () {
+          var href = navigationService.caseListHrefFromCase($scope.caze);
+          window.location.replace(href);
+        });
+      };
+
+      $scope.unassign = function () {
+        caseService.unassignCase($params.caseId).then(function () {
+          var href = navigationService.caseListHrefFromCase($scope.caze);
+          window.location.replace(href);
+        });
+      };
+      // End Assign / Unassign
 
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -425,26 +439,6 @@
       $scope.$on('participant-removed', function(){
      	$scope.conversations = caseService.getSelectedConversations($params.caseId);
       });
-
-      $scope.assign = function($event){
-        $event.preventDefault();
-
-        var callback = function(){
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
-        };
-        caseService.assignCase($params.caseId, callback);
-      };
-
-      $scope.unassign = function($event){
-        $event.preventDefault();
-
-        var callback = function(){
-          var href = navigationService.caseListHrefFromCase($scope.caze);
-          window.location.replace(href);
-        };
-        caseService.unassignCase($params.caseId, callback);
-      };
 
       $scope.downloadAttachment = function(attachmentId){
         var attachments = $scope.attachments;
