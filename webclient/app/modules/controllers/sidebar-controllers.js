@@ -333,9 +333,8 @@
         $scope.showSpinner.caseToolbar = true;
         
         markFunction($params.caseId).then(function () {
-          $scope.commands.resolve().then(function (result) {
+          $scope.commands.resolve().then(function () {
             updateToolbar();
-            return result;
           });
         });
       };
