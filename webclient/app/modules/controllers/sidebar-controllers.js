@@ -326,6 +326,20 @@
         });
       };
       // End Restrict / Unrestrict
+      
+      // Mark Read / Unread
+      $scope.markReadUnread = function (read) {
+        var markFunction = read ? caseService.markRead : caseService.markUnread;
+        $scope.showSpinner.caseToolbar = true;
+        
+        markFunction($params.caseId).then(function () {
+          $scope.commands.resolve().then(function (result) {
+            updateToolbar();
+            return result;
+          });
+        });
+      };
+      // End Mark Read / Unread
 
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $params.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
@@ -415,23 +429,6 @@
           window.location.replace(href);
         };
         caseService.unassignCase($params.caseId, callback);
-      };
-
-      $scope.markUnread = function($event){
-        $event.preventDefault();
-
-        var callback = function(){
-          $scope.commands = caseService.getSelectedCommands($params.caseId);
-        };
-        caseService.markUnread($params.caseId, callback);
-      };
-
-      $scope.markRead = function($event){
-        $event.preventDefault();
-        var callback = function(){
-          $scope.commands = caseService.getSelectedCommands($params.caseId);
-        };
-        caseService.markRead($params.caseId, callback);
       };
 
       $scope.deleteCase = function(){
