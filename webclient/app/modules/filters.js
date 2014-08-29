@@ -59,7 +59,12 @@
         errorMessage: 'Hämtning misslyckades',
         'read: All': 'Läsa: Alla',
         'write: All': 'Skriva: Alla',
-        'write: Project': 'Skriva: Projekt'
+        'read: Project': 'Läsa: Projekt',
+        'write: Project': 'Skriva: Projekt',
+        'read: Organization': 'Läsa: Organisatorisk enhet',
+        'write: Organization': 'Skriva: Organisatorisk enhet',
+        'read: Sameoubranch': 'Läsa: Samma organisatoriska gren',
+        'write: Sameoubranch': 'Skriva: Samma organisatoriska gren'
       };
 
       return translation[input] || input;
