@@ -39,7 +39,8 @@
         caseLabels: true,
         caseDueOn: true,
         casePriority: true,
-        caseToolbar: false
+        caseToolbar: false,
+        casePermissions: true
       };
       
       var sortByText = function (x, y) {
@@ -221,7 +222,7 @@
             jQuery('.chosen-case-label').chosen({ search_contains: true }).trigger("chosen:updated");
           }, 0);
         });
-      }
+      };
       
       updateCaseLabels();
       
@@ -234,17 +235,17 @@
         });
         
         if (removedLabels.length > 0) {
-          var promises = removedLabels.map(function (label) {
+          var removePromises = removedLabels.map(function (label) {
             return caseService.deleteCaseLabel($params.caseId, label.id);
           });
           
-          $q.all(promises).then(updateCaseLabels);
+          $q.all(removePromises).then(updateCaseLabels);
         } else {
-          var promises = labels.map(function (label) {
+          var addPromises = labels.map(function (label) {
             return caseService.addCaseLabel($params.caseId, label.id);
           });
           
-          $q.all(promises).then(updateCaseLabels);
+          $q.all(addPromises).then(updateCaseLabels);
         }
       
         previousActiveLabels = labels;
@@ -277,28 +278,37 @@
             'formonclose': 'formOnClose'
           };
           
+          var hasCommand = function (commandName) {
+            return !!_.find(response, function (command) {
+              return command.rel === commandName;
+            });
+          };
+          
           for (var commandName in commandMap) {
             if (commandMap.hasOwnProperty(commandName)) {
-              $scope[commandMap[commandName]] = !!_.find(response, function (command) {
-                return command.rel === commandName;
-              });
+              $scope[commandMap[commandName]] = hasCommand(commandName);
             }
           }
           
           $scope.showSpinner.caseToolbar = false;
         });
-      }
+      };
       updateToolbar();
       // End commands (toolbar)
       
       // Restrict / Unrestrict
       $scope.permissions = caseService.getPermissions($params.caseId);
+      $scope.permissions.promise.then(function () {
+        $scope.showSpinner.casePermissions = false;
+      });
       
       $scope.unrestrict = function () {
         $scope.showSpinner.caseToolbar = true;
+        $scope.showSpinner.casePermissions = true;
         caseService.unrestrictCase($params.caseId).then(function () {
           $scope.permissions.invalidate();
           $scope.permissions.resolve().then(function () {
+            $scope.showSpinner.casePermissions = false;
             updateToolbar();
           });
         });
@@ -306,9 +316,11 @@
 
       $scope.restrict = function () {
         $scope.showSpinner.caseToolbar = true;
+        $scope.showSpinner.casePermissions = true;
         caseService.restrictCase($params.caseId).then(function () {
           $scope.permissions.invalidate();
           $scope.permissions.resolve().then(function () {
+            $scope.showSpinner.casePermissions = false;
             updateToolbar();
           });
         });
