@@ -88,9 +88,7 @@
       </div>
     </div>
   </div>
-  <div ng-show="showSpinner.caseToolbar" style="text-align: center;">
-    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
-  </div>
+  <div ng-show="showSpinner.caseToolbar" class="spinner"></div>
   <!-- /Issue toolbar -->
 
   <!-- Ärendetyp -->
@@ -105,9 +103,7 @@
     >
     </select>
   </div>
-  <div ng-show="showSpinner.caseType" style="text-align: center;">
-    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
-  </div>
+  <div ng-show="showSpinner.caseType" class="spinner"></div>
   <!-- /Ärendetyp -->
   <br><br>
   <!-- Ärendelabel -->
@@ -125,9 +121,7 @@
     >
     </select>
   </div>
-  <div ng-show="showSpinner.caseLabels" style="text-align: center;">
-    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
-  </div>
+  <div ng-show="showSpinner.caseLabels" class="spinner"></div>
   <br><br>
   <!-- Prioritet -->
   <div data-ng-show="possiblePriorities.length">
@@ -141,15 +135,13 @@
       >
       </select>
     </div>
-    <div ng-show="showSpinner.casePriority" style="text-align: center;">
-      <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
-    </div>
+    <div ng-show="showSpinner.casePriority" class="spinner"></div>
   </div>
   <!-- /Prioritet -->
   <br><br>
 
   <!-- Due date -->
-  <div ng-hide="showSpinner.dueOn">
+  <div ng-hide="showSpinner.caseDueOn">
     <div class="set-due-date">
         <input
             sf-date-picker-fancy
@@ -162,9 +154,7 @@
         >
     </div>
   </div>
-  <div ng-show="showSpinner.dueOn" style="text-align: center;">
-    <img src="http://progrower.coffeecup.com/shop/ccdata/images/spinner.gif" style="height: 20px; width: 20px;">
-  </div>
+  <div ng-show="showSpinner.caseDueOn" class="spinner"></div>
   <!-- /Due date -->
 
   <br><br>
