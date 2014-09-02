@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 'use strict';
+var sf = angular.module('sf');
 angular.module('sf')
 .factory('projectService', function (backendService, navigationService, SfCase, caseService) {
 

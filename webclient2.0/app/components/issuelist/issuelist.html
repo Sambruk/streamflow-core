@@ -1,0 +1,24 @@
+<ul class="issue-list" ng-show="currentCases">
+      <li class="issue-item {{case.overdueStatus()}}" data-ng-repeat='case in currentCases'>
+      <a href="{{case.href}}" class="block-link">
+        <div class="due-date">
+          <span>{{case.overdueDays() | positive}}</span>
+          <data-ng-pluralize
+          count="case.overdueDays()"
+          when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
+          </data-ng-pluralize>
+        </div>
+        <div class="issue-description">
+          <span class="meta">{{case.caseId}} - {{case.project}}</span>
+          <h4>{{case.text}}</h4>
+          <span class="creator">{{case.createdBy}}</span>
+        </div>
+        <div class="issue-actions">
+          <div>
+            <span class="action-status updated">Ändrad {{case.modificationDate() | shortDate}}</span>
+            <span class="created-on">Skapad {{case.creationDate | shortDate}}</span>
+          </div>
+        </div>
+      </a>
+  </li>
+</ul>

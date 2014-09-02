@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('caseService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
+.factory('caseService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapperService) {
 
     var workspaceId = 'workspacev2';
 
@@ -672,7 +672,7 @@ angular.module('sf')
 
         _.forEach(pages, function(page){
           _.forEach(page.fields, function(field){
-            formMapper.addProperties(field)
+            formMapperService.addProperties(field)
           });
         });
       },
