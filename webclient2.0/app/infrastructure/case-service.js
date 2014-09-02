@@ -14,9 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function () {
-  'use strict';
-
+'use strict';
 
 angular.module('sf')
 .factory('caseService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapper) {
@@ -980,4 +978,3 @@ angular.module('sf')
 
     }
   });
-

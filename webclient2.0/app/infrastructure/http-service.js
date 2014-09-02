@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-  'use strict';
+'use strict';
 
-  var sfServices = angular.module('sf');
+var sf = angular.module('sf');
 
-  sfServices.factory('httpService', function ($q, $cacheFactory, $location, $http, $window, errorHandlerService, tokenService) {
+angular.module('sf')
+.factory('httpService', function ($q, $cacheFactory, $location, $http, $window, errorHandlerService, tokenService) {
     var token = tokenService.getToken();
 
     if (token) {

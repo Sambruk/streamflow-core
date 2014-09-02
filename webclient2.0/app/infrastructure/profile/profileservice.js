@@ -17,7 +17,6 @@
 
 'use strict';
 
-
 angular.module('sf')
 .factory('profileService', function(backendService) {
   return {
@@ -66,5 +65,4 @@ angular.module('sf')
         value);
     }
   }
-
  });

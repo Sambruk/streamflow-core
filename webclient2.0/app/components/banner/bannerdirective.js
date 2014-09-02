@@ -12,10 +12,11 @@ angular.module('sf')
       profile: '=?'
     },
     link: function(scope){
-      profilePromise = profileService.getCurrent();
-
-      $q.allSettled([profilePromise])
+      var profile = profileService.getCurrent();
+      
+      $q.all([profile.promise])
       .then(function(response){
+        debugger;
         scope.profile = response;
       });
 

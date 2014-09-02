@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-  'use strict';
+'use strict';
 
- angular.module('sf').factory('backendService', ['$http', '$q', 'httpService', function ($http, $q, httpService) {
+ angular.module('sf').factory('backendService', function ($http, $q, httpService) {
     function SfResource(href, response) {
       if (response) {
         this.response = response.data;
@@ -219,4 +219,4 @@
     };
 
     return api;
-  }]);
+  });

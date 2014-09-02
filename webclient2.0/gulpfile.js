@@ -1,34 +1,29 @@
 var gulp = require('gulp');
 var plugins = require("gulp-load-plugins")({lazy:false});
 
+gulp.task('html', function(){
+    gulp.src(
+        ['./app/**/*.html'])
+    .pipe(gulp.dest('./build'));
+});
+
 gulp.task('scripts', function(){
     //combine all js files of the app
-    gulp.src(['!./app/**/*_test.js','./app/**/*.js'])
+    gulp.src(
+        ['!./app/**/*_test.js',
+        '!./bower_components/**/*.min.js',
+        './bower_components/**/*.js',
+        './app/app.js',
+        './app/**/*.js'])
         .pipe(plugins.jshint())
         .pipe(plugins.jshint.reporter('default'))
-        //.pipe(plugins.concat('app.js'))
+        .pipe(plugins.concat('app.js'))
         .pipe(gulp.dest('./build'));
 });
 
 gulp.task('css', function(){
     gulp.src('./app/**/*.css')
         .pipe(plugins.concat('app.css'))
-        .pipe(gulp.dest('./build'));
-});
-
-gulp.task('vendorJS', function(){
-    //concatenate vendor JS files
-    gulp.src(['!./bower_components/**/*.min.js',
-        './bower_components/**/*.js'])
-        .pipe(plugins.concat('lib.js'))
-        .pipe(gulp.dest('./build'));
-});
-
-gulp.task('vendorCSS', function(){
-    //concatenate vendor CSS files
-    gulp.src(['!./bower_components/**/*.min.css',
-        './bower_components/**/*.css'])
-        .pipe(plugins.concat('lib.css'))
         .pipe(gulp.dest('./build'));
 });
 
@@ -59,4 +54,4 @@ gulp.task('connect', plugins.connect.server({
     livereload: true
 }));
 
-gulp.task('default',['connect','vendorJS','vendorCSS','scripts','css','copy-index','watch']);
+gulp.task('default',['connect','html','scripts','css','copy-index','watch']);
