@@ -1,4 +1,4 @@
-<ul class="issue-list" ng-show="currentCases">
+<ul class="issue-list" ng-show="currentCases.length">
       <li class="issue-item {{case.overdueStatus()}}" data-ng-repeat='case in currentCases'>
       <a href="{{case.href}}" class="block-link">
         <div class="due-date">

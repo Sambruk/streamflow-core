@@ -1,11 +1,8 @@
 'use strict';
 angular.module('sf')
-    .controller('NotesHistoryCtrl',
-        function($scope, caseService, $params) {
-
-            $scope.projectId = $params.projectId;
-            $scope.projectType = $params.projectType;
-            $scope.caseId = $params.caseId;
-
-            $scope.notesHistory = caseService.getAllNotes($params.caseId);
-        });
+  .controller('NotesHistoryCtrl', function($scope, caseService, $routeParams) {
+    $scope.projectId = $routeParams.projectId;
+    $scope.projectType = $routeParams.projectType;
+    $scope.caseId = $routeParams.caseId;
+    $scope.notesHistory = caseService.getAllNotes($routeParams.caseId);
+  });

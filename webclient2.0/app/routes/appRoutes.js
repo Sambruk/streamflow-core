@@ -5,67 +5,68 @@ angular.module('sf')
   // $locationProvider.html5Mode(true);
   $routeProvider
     .when('/search', {
-      templateUrl: 'modules/views/case-search.html',
+      templateUrl: 'routes/case/casesearch.html',
       controller: 'CaseSearchCtrl'
     })
     .when('/perspectives', {
-      templateUrl: 'modules/views/case-overview.html',
+      templateUrl: 'routes/case/caseoverview.html',
       controller: 'CaseOverviewCtrl'
     })
     .when('/profile', {
-      templateUrl: 'modules/views/profile-edit.html',
+      templateUrl: 'routes/profile/profile-edit.html',
       controller: 'ProfileCtrl'
     })
     .when('/projects/:projectId/:projectType', {
-      templateUrl: 'modules/views/case-list.html',
+      templateUrl: 'routes/caselog/caseloglist.html',
       controller: 'CaseListCtrl'
     })
     .when('/cases/:caseId/edit', {
-      templateUrl:'modules/views/case-edit.html',
+      templateUrl:'routes/cases/caseedit.html',
       controller: 'CaseEditCtrl'
     })
     .when('/cases/:caseId', {
-      templateUrl:'modules/views/case-detail.html',
+      templateUrl:'routes/cases/casedetail.html',
       controller: 'CaseDetailCtrl'
     })
+    //TODO: This should probably not be in a route but maybe
     .when('/cases/:caseId/conversation/create', {
-      templateUrl:'modules/views/conversation-create.html',
+      templateUrl:'routes/conversation/conversationcreate.html',
       controller: 'ConversationCreateCtrl'
     })
     .when('/cases/:caseId/conversation/:conversationId/participants/create', {
-      templateUrl:'modules/views/conversation-participant-create.html',
+      templateUrl:'routes/conversation/conversationparticipantcreate.html',
       controller: 'ConversationParticipantCreateCtrl'
     })
     .when('/cases/:caseId/conversation/:conversationId', {
-      templateUrl:'modules/views/conversation-detail.html',
+      templateUrl:'routes/conversation/conversationdetail.html',
       controller: 'ConversationDetailCtrl'
     })
     .when('/cases/:caseId/caselog', {
-      templateUrl:'modules/views/caselog-list.html',
+      templateUrl:'routes/caselog/caseloglist.html',
       controller: 'CaselogListCtrl'
     })
       .when('/cases/:caseId/contact/add', {
-        templateUrl:'modules/views/contact-create.html',
+        templateUrl:'routes/contact/contactcreate.html',
         controller: 'ContactCreateCtrl'
       })
       .when('/cases/:caseId/contact/:contactIndex/', {
-        templateUrl:'modules/views/contact-edit.html',
+        templateUrl:'routes/contact/contactedit.html',
         controller: 'ContactEditCtrl'
       })
     .when('/cases/:caseId/formhistory/:formId', {
-      templateUrl:'modules/views/form-history.html',
+      templateUrl:'routes/form/formhistory.html',
       controller: 'FormHistoryCtrl'
     })
     .when('/cases/:caseId/formdrafts/:formId', {
-            templateUrl:'modules/views/forms.html',
-            controller: 'FormCtrl'
+      templateUrl:'routes/form/forms.html',
+      controller: 'FormCtrl'
     })
     .when('/cases/:caseId/noteshistory/', {
-      templateUrl:'modules/views/notes-history.html',
+      templateUrl:'routes/note/noteshistory.html',
       controller: 'NotesHistoryCtrl'
     })
     .when('/cases/:caseId/print', {
-      templateUrl:'modules/views/print.html',
+      templateUrl:'routes/print/print.html',
       controller: 'PrintCtrl'
     })
     .otherwise({

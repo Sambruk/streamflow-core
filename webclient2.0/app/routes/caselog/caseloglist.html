@@ -17,23 +17,13 @@
 
 -->
 <!--TODO: Consider if it's a good idea or not tuo use the same controller as for sidebar-->
-<div class="content-primary" role="main" data-ng-controller="CaselogListCtrl">
+<div class="content-primary" role="main">
   <div class="m m-check-list">
     <div class="m-h">
       <h2>Ärendelogg</h2>
     </div>
     <br />
-    <div class="caselog-input" data-ng-controller="CaselogEntryCreateCtrl">
-      <form action="#" method="get" class="cf">
-        <div class="text">
-          <label for="caselog-entry-text" class="struct">Ärende</label>
-          <textarea name="caselog-entry-text" id="caselog-entry-text" cols="70" rows="3" placeholder="Skriv ditt meddelande här" data-ng-model="caseLogEntryToCreate"></textarea>
-        </div>
-        <div class="send">
-          <button data-ng-click="submitCaseLogEntry($event)" name="caselog-entry-submit">Lägg till loggpost</button>
-        </div>
-      </form>
-    </div>
+    <caselogentry caseid="caseId"></caselogentry>
 
     <!--<div class="caselog-filter-options">-->
     <!--<span>Visa loggposter av typ:</span><br />-->

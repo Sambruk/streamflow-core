@@ -1,26 +1,22 @@
 'use strict';
 angular.module('sf')
-    .controller('ConversationParticipantCreateCtrl',
-        function($scope, caseService, $params, navigationService) {
+  .controller('ConversationParticipantCreateCtrl', function($scope, caseService, $routeParams, navigationService) {
+    $scope.projectId = $routeParams.projectId;
+    $scope.projectType = $routeParams.projectType;
+    $scope.caseId = $routeParams.caseId;
+    $scope.conversationId = $routeParams.conversationId;
+    $scope.possibleParticipants = caseService.getPossibleConversationParticipants($routeParams.caseId, $routeParams.conversationId);
 
-            $scope.projectId = $params.projectId;
-            $scope.projectType = $params.projectType;
-            $scope.caseId = $params.caseId;
-            $scope.conversationId = $params.conversationId;
+    $scope.addParticipant = function($event){
+      $event.preventDefault();
+      var participant = $scope.participant;
 
-            $scope.possibleParticipants = caseService.getPossibleConversationParticipants($params.caseId, $params.conversationId);
-
-            $scope.addParticipant = function($event){
-                $event.preventDefault();
-
-                var participant = $scope.participant;
-
-                caseService.addParticipantToConversation($params.caseId, $params.conversationId, participant).then(function(){
-                    var href = navigationService.caseHrefSimple($params.caseId) + "/conversation/" + $params.conversationId;
-                    $scope.possibleParticipants.invalidate();
-                    $scope.possibleParticipants.resolve();
-                    window.location.assign(href);
-                });
-            }
-
-        });
+      caseService.addParticipantToConversation($routeParams.caseId, $routeParams.conversationId, participant)
+      .then(function(){
+        var href = navigationService.caseHrefSimple($routeParams.caseId) + "/conversation/" + $routeParams.conversationId;
+        $scope.possibleParticipants.invalidate();
+        $scope.possibleParticipants.resolve();
+        window.location.assign(href);
+      });
+    }
+  });
