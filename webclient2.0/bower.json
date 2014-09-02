@@ -1,0 +1,24 @@
+{
+  "name": "better-streamflow",
+  "main": "app.js",
+  "version": "0.0.0",
+  "authors": [
+    "fjodorekstrom <fjodor.ekstrom@jayway.com>"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular": "~1.2.23",
+    "angular-route": "~1.2.14"
+  },
+  "dependencies": {
+    "angular-growl": "~0.4.0",
+    "lodash": "~2.4.1"
+  }
+}
