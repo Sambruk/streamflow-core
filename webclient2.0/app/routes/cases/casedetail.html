@@ -1,0 +1,42 @@
+<!--
+
+
+    Copyright 2009-2014 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main">
+    <!-- Single issue -->
+    <div class="m single-issue">
+        <!-- Issue header -->
+        <div class="m-h cf">
+            <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
+                <span class="struct">Redigera ärende</span>
+            </a>
+        </div>
+        <!-- Issue body -->
+        <div class="issue-body">
+            <div class="issue-description">
+                <h2>{{caze[0].text}}</h2>
+                <p>{{notes[0].note}}</p>
+            </div>
+        </div>
+        <!-- /Issue body -->
+    </div>
+    <!-- /Single issue -->
+</div>
+<!-- /Content primary -->
+
+<!-- Content secondary -->
+<data-ng-include src="'modules/views/case-sidebar.html'"></data-ng-include>
