@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 'use strict';
+
 angular.module('sf')
 .filter('positive', function() {
     return function(input) {

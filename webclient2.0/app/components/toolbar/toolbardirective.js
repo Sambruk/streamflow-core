@@ -11,14 +11,20 @@ angular.module('sf')
     link: function(scope){
       scope.projects = projectService.getAll();
 
-      scope.toggleToolbar = function($event) {
+      scope.displayToolbar = false;
+
+      scope.toggleToolbar = function(){
+        scope.displayToolbar = !scope.displayToolbar;
+      }
+
+      /*scope.toggleToolbar = function($event) {
         $('.functions-menu').toggleClass('open');
         if ( $('.functions-menu').hasClass('open') ) {
           $('.sub-category').show();
         } else {
           $('.sub-category').hide();
         }
-      };
+      };*/
 
       scope.canCreateCase = function() {
         var canCreate = true;

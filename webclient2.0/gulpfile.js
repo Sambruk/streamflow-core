@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var plugins = require("gulp-load-plugins")({lazy:false});
+var plugins = require('gulp-load-plugins')({lazy:false});
 
 gulp.task('html', function(){
     gulp.src(
