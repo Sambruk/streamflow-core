@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('banner', function($q, profileService){
+.directive('banner', function($rootScope, $q, profileService){
   return {
     restrict: 'E',
     templateUrl: 'components/banner/banner.html',
@@ -16,9 +16,14 @@ angular.module('sf')
       
       $q.all([profile.promise])
       .then(function(response){
-        debugger;
         scope.profile = response;
       });
+
+      scope.hasToken = $rootScope.hasToken;
+      scope.logout = function(){
+        $rootScope.logout();
+        window.location.reload();
+      }
 
       scope.$on('profile-name-updated', function(){
         scope.profile.invalidate();

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('login', function($location, $http, $window, tokenService, httpService){
+.directive('login', function($rootScope,$location, $http, $window, tokenService, httpService){
   return {
     restrict: 'E',
     templateUrl: 'components/login/login.html',
@@ -12,6 +12,8 @@ angular.module('sf')
       scope.errorMessage = "";
       scope.username;
       scope.password;
+      scope.hasToken = tokenService.hasToken();
+      $rootScope.isLoggedIn = tokenService.hasToken();
 
       scope.validate = function () {
         var basicAuthBase64 = btoa(scope.username + ':' + scope.password);
@@ -23,7 +25,6 @@ angular.module('sf')
           cache: 'false'
         }).then(function () {
           tokenService.storeToken(basicAuthBase64);
-          scope.authenticated = true;
           window.location.reload();
         }, function () {
           scope.errorMessage = "Användarnamn / lösenord ej giltigt!";
