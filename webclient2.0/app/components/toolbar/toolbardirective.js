@@ -13,28 +13,31 @@ angular.module('sf')
 
       scope.displayToolbar = false;
 
-      scope.toggleToolbar = function(){
+      /*scope.toggleToolbar = function(){
         scope.displayToolbar = !scope.displayToolbar;
-      }
+      }*/
 
-      /*scope.toggleToolbar = function($event) {
+      scope.toggleToolbar = function($event) {
+        $event.preventDefault();
         $('.functions-menu').toggleClass('open');
         if ( $('.functions-menu').hasClass('open') ) {
           $('.sub-category').show();
         } else {
           $('.sub-category').hide();
         }
-      };*/
+      };
 
       scope.canCreateCase = function() {
-        var canCreate = true;
+        if(!scope.params){
+          return false;
+        }
         if (scope.params.projectType === 'inbox') {
-          canCreate = false;
+          return false;
         }
         if (!scope.params.projectType) {
-          canCreate = false;
+          return false;
         }
-        return canCreate;
+        return true;
       };
 
       scope.createCase = function(){

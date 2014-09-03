@@ -73,7 +73,7 @@
         }
         return httpService.getRequest(abshref, skipCache).then(function (response) {
           //urls
-          urls.push(abshref);
+          //urls.push(abshref);
           return new SfResource(abshref, response);
         });
       },
@@ -129,7 +129,10 @@
         var id = postLink[key];
 
         return this.getNested(specs).then(function(resource) {
-          var w = _.find(resource.response[key], function(item){return item.id === id});
+          var w = _.find(resource.response[key], function(item){
+            return item.id === id
+          });
+          debugger;
           return httpService.postRequest(resource.basehref +  w.href, data);
         });
       }

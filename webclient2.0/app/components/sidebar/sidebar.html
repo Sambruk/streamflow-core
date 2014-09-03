@@ -1,0 +1,346 @@
+<!--
+
+
+    Copyright 2009-2014 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<div class="content-secondary" role="complementary">
+
+  <h2 class="struct">Verktyg och annan information</h2>
+  <!-- Issue toolbar -->
+  <div class="toolbar" data-sf-fixed-toolbar ng-hide="showSpinner.caseToolbar">
+    <ul class="buttons cf" data-ng-show="commands[0]">
+      <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li data-ng-show="canAssign"><a href="" data-ng-click="assign()" class="btn">Tilldela</a></li>
+      <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign()" class="btn">Återlämna</a></li>
+      <li data-ng-show="canResolve"><a href="" data-ng-click="resolve()" class="btn">Stäng</a></li>
+      <li data-ng-show="canClose"><a href="" data-ng-click="close()" class="btn">Stäng</a></li>
+      <li data-ng-show="formOnClose"><a href="" class="btn disabled">Stäng</a></li>
+      <li>
+        <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
+        <ul>
+            <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
+            <li><a data-ng-show="canMarkRead" data-ng-click="markReadUnread(true)" href="" class="btn">Markera läst</a></li>
+            <li><a data-ng-show="canMarkUnread" data-ng-click="markReadUnread(false)" href="" class="btn">Markera oläst</a></li>
+            <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+            <li><a data-ng-show="canUnrestrict" data-ng-click="unrestrict()" href="" class="btn">Begränsa inte</a></li>
+            <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="toolbar-content" ng-show="commandView">
+      <div data-ng-switch on="commandView">
+          <div class="toolbar-content-style" data-ng-switch-when="resolve">
+            <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+            </select>
+            <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
+            <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
+          </div>
+
+          <div class="toolbar-content-style" data-ng-switch-when="close">
+            <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
+          </div>
+
+
+          <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
+              <div class='ng-modal' ng-show='show'>
+                  <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
+                  <div class='ng-modal-dialog' ng-style='dialogStyle'>
+                    <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+                    <div class="row cf">
+                      <div class="select">
+                          <label for="issue-owner">Byt ägare</label>
+                          <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+                          </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                        <div class="submit-area cf">
+                            <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+
+          <div data-ng-switch-when="todo">
+              TODO
+          </div>
+
+          <div data-ng-switch-default>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div ng-show="showSpinner.caseToolbar" class="spinner"></div>
+  <!-- /Issue toolbar -->
+
+  <!-- Ärendetyp -->
+  <div ng-hide="showSpinner.caseType">
+    <select
+        data-placeholder="Case typ"
+        class=""
+        style="width: 100%;"
+        data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
+        data-ng-model="caseType"
+        data-ng-change="changeCaseType(caseType)"
+    >
+    </select>
+  </div>
+  <div ng-show="showSpinner.caseType" class="spinner"></div>
+  <!-- /Ärendetyp -->
+  <br><br>
+  <!-- Ärendelabel -->
+  <div ng-hide="showSpinner.caseLabels">
+    <select
+        data-placeholder="Case etikett"
+        class=""
+        style="width: 100%;"
+        id="caseLabel"
+        name="caseLabel"
+        data-ng-options="label as label.text for label in allCaseLabels"
+        data-ng-model="activeLabels"
+        data-ng-change="changeCaseLabels(activeLabels)"
+        multiple
+    >
+    </select>
+  </div>
+  <div ng-show="showSpinner.caseLabels" class="spinner"></div>
+  <br><br>
+  <!-- Prioritet -->
+  <div data-ng-show="possiblePriorities.length">
+    <div ng-hide="showSpinner.casePriority">
+      <select
+          style="width: 100%;"
+          ng-style="activePriorityColor"
+          data-ng-options="priority.id as priority.text for priority in possiblePriorities"
+          data-ng-model="priority"
+          data-ng-change="changePriorityLevel(priority);"
+      >
+      </select>
+    </div>
+    <div ng-show="showSpinner.casePriority" class="spinner"></div>
+    <br><br>
+  </div>
+  <!-- /Prioritet -->
+
+  <!-- Due date -->
+  <div ng-hide="showSpinner.caseDueOn">
+    <div class="set-due-date">
+        <input
+            sf-date-picker-fancy
+            style="width: 100%;"
+            type="text"
+            placeholder="Förfallodatum"
+            ng-model="dueOnShort"
+            data-ng-change="changeDueOn(dueOnShort)"
+            id="fancy-date-hidden"
+        >
+    </div>
+  </div>
+  <div ng-show="showSpinner.caseDueOn" class="spinner"></div>
+  <!-- /Due date -->
+
+  <br><br>
+
+  <!-- Module: Allmänt -->
+  <div class="m m-general">
+    <div class="m-h">
+      <h2>Allmänt</h2>
+    </div>
+    <div class="m-c">
+      <div class="m-box">
+        <ul>
+          <li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
+          <li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
+          <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
+        </ul>
+      </div>
+    </div>
+      <div class="m-box permissionBox">
+        <div ng-hide="showSpinner.casePermissions">
+          <ul>
+              <li><strong>Åtkomst:</strong></li>
+              <li>
+                  <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
+                  <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
+              </li>
+          </ul>
+        </div>
+        <div ng-show="showSpinner.casePermissions" class="spinner"></div>
+      </div>
+  </div>
+  <!-- /Module: Allmänt -->
+
+  <!-- Module: Ärende -->
+  <div class="m m-convos">
+    <div class="m-h">
+      <h2>Ärende</h2>
+    </div>
+    <div class="m-c">
+      <ul>
+        <li>
+          <a href="#/cases/{{ caze[0].id }}" class="block-link convCaseSidebar">
+            <h3>{{caze[0].text}}</h3>
+            <p class="caseInSidebar">{{notes[0].note}}</p>
+            <ul class="convo-status">
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history    " title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+            </ul>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Ärende -->
+
+<!-- Module: Formulär -->
+  <div  class="m m-convos">
+    <div class="m-h">
+      <h2>Formulär</h2>
+    </div>
+    <div class="m-c">
+      <ul>
+        <li data-ng-repeat="form in possibleForms">
+          <a href="#/cases/{{ caseId }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
+            <h3>{{form.text}}</h3>
+            <div>
+              <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)">
+              </span>
+              <ul class="form-status">
+                <li><a href="#/cases/{{ caseId }}/formhistory/{{ form.id }}"><span class="icon-chat" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
+              </ul>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+<!-- /Module: Formulär -->
+
+  <!-- Module: Konversationer -->
+  <div class="m m-convos">
+    <div class="m-h">
+      <h2>Konversationer</h2>
+      <a href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
+    </div>
+    <div class="m-c">
+      <ul>
+        <li data-ng-repeat='conversation in conversations' class="convo-li">
+          <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
+            <h3>{{ conversation.text }}</h3>
+            <span class="date">{{ conversation.creationDate | dateTime }}</span>
+            <ul class="convo-status">
+              <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
+              <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
+            </ul>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Konversationer -->
+
+  <!-- Module: Kontakter -->
+  <div class="m m-contacts">
+    <div class="m-h">
+      <h2>Kontakter</h2>
+      <a href="#/cases/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+    </div>
+    <div class="m-c">
+      <ul class="zebra-list">
+        <li data-ng-repeat='contact in contacts'>
+            <a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
+            <!--
+            <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
+            -->
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /Module: Kontakter -->
+
+  <!-- Module: Bifogade filer -->
+  <div class="m m-attachments">
+    <div class="m-h">
+      <h2>Bifogade filer</h2>
+    </div>
+    <div class="m-c" ng-hide="showSpinner.caseAttachment">
+      <ul class="zebra-list">
+        <li ng-repeat="attachment in attachments">
+        <a data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
+        <a data-ng-click="deleteAttachment(attachment.id)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+        </li>
+      </ul>
+    </div>
+    <div ng-show="showSpinner.caseAttachment" class="spinner"></div>
+  </div>
+  <!-- /Module: Bifogade filer -->
+
+  <!-- Module: Ärendelogg -->
+  <div class="m m-convos">
+      <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
+      <div class="m-h">
+          <h2>Ärendelogg</h2>
+          <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
+      </div>
+      <div class="m-c">
+          <ul>
+              <li data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'" class="convo-li">
+                 <!-- <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">-->
+                      <h3>{{ entry.text }} by {{ entry.creator }}</h3>
+                      <span class="date">{{ entry.creationDate | dateTime}}</span>
+              </li>
+          </ul>
+        </div>
+      </a>
+  </div>
+  <!-- /Module: Ärendelogg -->
+
+  <!-- Module: Ärendelogg -->
+  <!--
+  <div class="m m-issuelog" data-ng-controller="CaselogListCtrl">
+      <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
+          <div class="m-h">
+              <h2>Ärendelogg</h2>
+              <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
+          </div>
+          <div class="m-c">
+              <table class="log-table">
+                  <caption class="struct">Historik för detta ärende</caption>
+                  <thead class="struct">
+                  <tr>
+                      <th>Datum</th>
+                      <th>Titel</th>
+                      <th>Användare</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'">
+                      <td>{{ entry.creationDate | shortDate}}</td>
+                      <td>{{ entry.text }}</td>
+                      <td>{{ entry.creator }}</td>
+                  </tr>
+                  </tbody>
+              </table>
+          </div>
+      </a>
+  </div> -->
+  <!-- /Module: Ärendelogg -->
+
+
+  <!-- <pre><code>{{ form[0] | json }}</code></pre> -->
+</div>

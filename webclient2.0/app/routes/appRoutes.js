@@ -5,11 +5,11 @@ angular.module('sf')
   // $locationProvider.html5Mode(true);
   $routeProvider
     .when('/search', {
-      templateUrl: 'routes/case/casesearch.html',
+      templateUrl: 'routes/cases/casesearch.html',
       controller: 'CaseSearchCtrl'
     })
     .when('/perspectives', {
-      templateUrl: 'routes/case/caseoverview.html',
+      templateUrl: 'routes/cases/caseoverview.html',
       controller: 'CaseOverviewCtrl'
     })
     .when('/profile', {
@@ -17,7 +17,7 @@ angular.module('sf')
       controller: 'ProfileCtrl'
     })
     .when('/projects/:projectId/:projectType', {
-      templateUrl: 'routes/caselog/caseloglist.html',
+      templateUrl: 'routes/cases/caselist.html',
       controller: 'CaseListCtrl'
     })
     .when('/cases/:caseId/edit', {

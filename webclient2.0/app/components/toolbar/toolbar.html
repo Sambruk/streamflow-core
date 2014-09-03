@@ -23,15 +23,15 @@
   <div class="functions-menu">
     <div class="functions-header cf">
       <h2><a href="/app/#perspectives">Funktioner</a></h2>
-      <a href="" class="icon-menu open-toolbar" data-ng-click='toggleToolbar()'>
+      <a href="" class="icon-menu open-toolbar" data-ng-click='toggleToolbar($event)'>
         <span class="struct">Visa/dölj funktionsmeny</span>
       </a>
     </div>
-    <div class="sub-category" data-ng-repeat="project in projects" ng-show="displayToolbar">
+    <div class="sub-category" data-ng-repeat="project in projects">
       <h3>{{project.text}}</h3>
       <ul>
         <li data-ng-repeat="type in project.types">
-          <a href="#/{{type.href}}" sf-active-link  data-ng-click='toggleToolbar()'>
+          <a ng-href="#/{{type.href}}" sf-active-link  data-ng-click='toggleToolbar($event)'>
             <span>{{type.caseCount}}</span><span class="struct">meddelanden i </span> {{type.name | translate }}
           </a>
         </li>

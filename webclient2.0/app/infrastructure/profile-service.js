@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-.factory('profileService', function (backendService, navigationService, SfCase, $http, debounce, formMapper) {
+.factory('profileService', function (backendService, navigationService, SfCase, $http, debounce, formMapperService) {
  
  	 return {
       getCurrent: function() {

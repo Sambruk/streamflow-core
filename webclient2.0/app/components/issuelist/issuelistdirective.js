@@ -6,7 +6,7 @@ angular.module('sf')
     restrict: 'E',
     templateUrl: 'components/issuelist/issuelist.html',
     scope: {
-      items: '=datasource'
+      items: '=?'
     },
     link: function(scope){
       scope.currentCases = scope.items;
