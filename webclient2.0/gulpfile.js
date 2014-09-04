@@ -178,6 +178,6 @@ gulp.task('default', ['connect'], function () {
   gulp.watch([paths.other], ['copy']);
   gulp.watch([paths.other], ['inject']);
   gulp.watch(paths.scripts, ['scripts']);
-  gulp.watch(paths.css, ['styles']);
+  gulp.watch(paths.css, ['css']);
   gulp.watch(paths.templates, ['scripts', 'inject']);
 });
