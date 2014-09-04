@@ -64,11 +64,10 @@ var paths = {
               '!app/token.html',
               '!app/bower_components/**/*.html'],
   icons: 'app/icons/*.svg',
-  css: ['!bower_components/angular-growl-v2/angular-growl.css',
-        '!bower_components/angular-growl-v2/angular-growl.min.css',
-        '!**/*.min.css',
+  css: ['!**/*.min.css',
         'app/**/*.css',
-        'bower_components/**/*.css'],
+        'bower_components/**/*.css',
+        '!bower_components/angular-growl-v2/*.css'],
   other: ['app/design/gui/fonts/*',
           'app/design/**/*.png',
           'app/*.html',
@@ -149,8 +148,8 @@ gulp.task('images', function(){
 
 gulp.task('css', function(){
     gulp.src('./app/**/*.css')
-        .pipe(plugins.concat('app.css'))
-        .pipe(gulp.dest('./build'));
+      .pipe(concat('app.css'))
+      .pipe(gulp.dest('./build/css'));
 });
 
 gulp.task('copy', function() {
