@@ -24,10 +24,19 @@ var buildMode = args.build || 'dev';
 
 var paths = {
   scripts: ['app/app.js',
+            'app/*.js',
             'app/infrastructure/**/*.js',
             'app/components/**/*.js',
             'app/routes/**/*.js',
             '!app/**/*test.js'],
+  bower: ['!bower_components/jquery/**/*.js',
+          '!bower_components/angular/**/*.js',
+          '!bower_components/angular-route/**/*.js',
+          '!bower_components/angular-growl-v2/**/*.js',
+          '!bower_components/momentjs/**/*.js',
+          '!bower_components/**/*.min.js',
+          '!bower_components/**/*.min.map',
+          'bower_components/**/*js'],
   templates: ['app/**/*.html',
               '!app/index.html',
               '!app/token.html',
@@ -87,23 +96,34 @@ gulp.task('scripts', function() {
       // Need to add a directory here so we can do proper sorting before concatenation below
       .pipe(rename(function (path) {
         path.dirname = 'bower/';
+
       }))
     ),
     (
+
       gulp.src(paths.scripts)
       .pipe(jshint())
       .pipe(jshint.reporter(stylish))
       .pipe(ngAnnotate())
     ),
     (
+      gulp.src(paths.bower)
+      .pipe(ngAnnotate())
+      .pipe(rename(function(path){
+        path.dirname = 'bower/';
+      }))
+    ),
+    (
       gulp.src(paths.templates)
       .pipe(templateCache({module:'sf'}))
     )
   )
-  // Specify concatenation order so we never end up with unmet dependencies
+  // Specify concatenation order
   .pipe(order([
     'bower/jquery.js',
+    'bower/lodash.js',
     'bower/angular.js',
+ //   'bower/moment.js',
     'bower/**/*.js',
     'app.js',
     '**/*.js'
