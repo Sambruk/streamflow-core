@@ -22,12 +22,13 @@ var gulp = require('gulp'),
     gulpif = require('gulp-if');
 
 
-gulp.task('connect', function() {
+gulp.task('connect', ['clean-build'], function() {
   connect.server({
     root: 'build',
     livereload: true
   });
 });
+
 
 gulp.task('clean', function(cb) {
   del(['build'], cb);
