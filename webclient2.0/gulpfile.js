@@ -34,7 +34,7 @@ gulp.task('clean', function(cb) {
   del(['build'], cb);
 });
 
-gulp.task('build', ['copy', 'inject', 'scripts', 'css','fonts'], function(cb) {
+gulp.task('build', ['copy', 'images', 'inject', 'scripts', 'css','fonts'], function(cb) {
   cb();
 });
 
@@ -64,12 +64,12 @@ var paths = {
               '!app/token.html',
               '!app/bower_components/**/*.html'],
   icons: 'app/icons/*.svg',
+  images: 'app/design/gui/i/*.png',
   css: ['!**/*.min.css',
         'app/**/*.css',
         'bower_components/**/*.css',
         '!bower_components/angular-growl-v2/*.css'],
   other: ['app/design/gui/fonts/*',
-          'app/design/**/*.png',
           'app/*.html',
           'app/*.json',
           'app/robots.txt',
@@ -142,8 +142,8 @@ gulp.task('fonts', function(){
 });
 
 gulp.task('images', function(){
-    gulp.src(['./app/**/*.png'])
-    .pipe(gulp.dest('./build/images'));
+    gulp.src([paths.images])
+    .pipe(gulp.dest('./build/i'));
 });
 
 gulp.task('css', function(){
@@ -177,6 +177,7 @@ gulp.task('test', function(){
 gulp.task('default', ['connect'], function () {
   gulp.watch([paths.other], ['copy']);
   gulp.watch([paths.other], ['inject']);
+  gulp.watch([paths.images], ['images']);
   gulp.watch(paths.scripts, ['scripts']);
   gulp.watch(paths.css, ['css']);
   gulp.watch(paths.templates, ['scripts', 'inject']);
