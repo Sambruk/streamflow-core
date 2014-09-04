@@ -1,4 +1,5 @@
 'use strict';
+var buildMode = 'dev';
 var gulp = require('gulp'),
     args   = require('yargs').argv,
     order = require('gulp-order'),
@@ -10,6 +11,7 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
+    connect = require('gulp-connect'),
     browserSync = require('browser-sync'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
@@ -19,8 +21,27 @@ var gulp = require('gulp'),
     karma = require('gulp-karma'),
     gulpif = require('gulp-if');
 
-// Building for development
-var buildMode = args.build || 'dev';
+
+gulp.task('connect', function() {
+  connect.server({
+    root: 'build',
+    livereload: true
+  });
+});
+
+gulp.task('clean', function(cb) {
+  del(['build'], cb);
+});
+
+gulp.task('build', ['copy', 'inject', 'scripts', 'css','fonts'], function(cb) {
+  cb();
+});
+
+gulp.task('clean-build', function(cb) {
+  runSequence('clean', 'build', function() {
+    cb();
+  });
+});
 
 var paths = {
   scripts: ['app/app.js',
@@ -55,38 +76,18 @@ var paths = {
           'app/favicon.ico']
 };
 
-gulp.task('clean', function(cb) {
-  del(['build'], cb);
-});
-
-gulp.task('build', ['copy', 'inject', 'scripts', 'styles','fonts'], function(cb) {
-  cb();
-});
-
-gulp.task('clean-build', function(cb) {
-  runSequence('clean', 'build', function() {
-    cb();
-  });
-});
-
-gulp.task('browser-sync', ['clean-build'], function() {
-  // The server
-  browserSync({
-    port: 9000,
-    server: {
-      baseDir: 'build'
-    }
-  });
-});
-
-gulp.task('styles',function() {
-  // Compiles Sass and prefixes the output CSS
+gulp.task('css',function() {
   return gulp.src(paths.css)
     .pipe(concat('app.css'))
     .pipe(gulp.dest('build/css'))
-    .pipe(browserSync.reload({stream:true}));
+    .pipe(connect.reload());
 });
 
+gulp.task('html', function(){
+    gulp.src(
+        ['!./app/index.html','!app/design/**/*.html','./app/**/*.html'])
+    .pipe(gulp.dest('./build'));
+});
 
 gulp.task('scripts', function() {
   return es.concat(
@@ -132,15 +133,8 @@ gulp.task('scripts', function() {
   .pipe(concat('streamflow.js'))
   .pipe(gulpif(buildMode === 'dev', sourcemaps.write()))
   .pipe(gulp.dest('build/scripts'))
-  .pipe(browserSync.reload({stream:true}));
+  .pipe(connect.reload());
 });
-
-gulp.task('html', function(){
-    gulp.src(
-        ['!./app/index.html','!app/design/**/*.html','./app/**/*.html'])
-    .pipe(gulp.dest('./build'));
-});
-
 
 gulp.task('fonts', function(){
     gulp.src(['./app/design/gui/fonts/*'])
@@ -149,7 +143,7 @@ gulp.task('fonts', function(){
 
 gulp.task('images', function(){
     gulp.src(['./app/**/*.png'])
-    .pipe(gulp.dest('./build/img'));
+    .pipe(gulp.dest('./build/images'));
 });
 
 gulp.task('css', function(){
@@ -159,7 +153,6 @@ gulp.task('css', function(){
 });
 
 gulp.task('copy', function() {
-  // Copy assets to build folder
   return gulp.src(paths.other, {base: 'app'})
     .pipe(gulp.dest('build'));
 });
@@ -181,12 +174,10 @@ gulp.task('test', function(){
 });
 
 
-gulp.task('default', ['browser-sync'], function () {
+gulp.task('default', ['connect'], function () {
   gulp.watch([paths.other], ['copy']);
   gulp.watch([paths.other], ['inject']);
   gulp.watch(paths.scripts, ['scripts']);
-  gulp.watch(paths.sass, ['styles']);
+  gulp.watch(paths.css, ['styles']);
   gulp.watch(paths.templates, ['scripts', 'inject']);
 });
-
-//gulp.task('default',['connect','fonts', 'images', 'dependencies','copy-index', 'scripts-index','html','scripts','css','watch']);
