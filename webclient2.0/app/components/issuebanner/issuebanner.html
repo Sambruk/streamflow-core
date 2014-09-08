@@ -1,5 +1,5 @@
  <div class="issue-banner">
-    <span data-ng-repeat="bread in breadcrumbList">
+    <span data-ng-repeat="bread in breadcrumbList track by $index">
       {{ bread }} 
       <span >&rarr;</span>
     </span>

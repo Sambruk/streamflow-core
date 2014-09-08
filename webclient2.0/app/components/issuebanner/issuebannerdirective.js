@@ -10,18 +10,15 @@ angular.module('sf')
     },
     link: function(scope) {
       scope.breadcrumbList;
-      $rootScope.$on('breadcrumb-updated', function(scope, breadcrumbList) {
-        var breadcrumb = [];
-        var a = _.reduce(breadcrumbList, function(a,b){
-          return a;
-        }, []);
-        console.log(a);
-        scope.breadcrumbList = getBreadcrumbItems(breadcrumbList);
-      });
-
       scope.$watch('breadcrumbList', function(newVal){
-        scope.breadcrumbList = newVal;
-        console.log(newVal);
+        if(!newVal){
+          return;
+        }
+        scope.breadcrumbList = newVal;   
+      });
+      
+      $rootScope.$on('breadcrumb-updated', function(event, breadcrumbList) {
+        scope.breadcrumbList = getBreadcrumbItems(breadcrumbList);
       });
 
       var getBreadcrumbItems = function(breadcrumbList){
@@ -36,5 +33,5 @@ angular.module('sf')
         return bcList;
       };
     }
-  }
+  };
 });
