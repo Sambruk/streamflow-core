@@ -438,7 +438,19 @@ angular.module('sf')
         });
       },
       createCaseLogEntry: function(caseId, value) {
-        return backendService.postNested(
+        //debugger;
+        var specs = caseBase(caseId).concat([{resources: 'caselog'}, {commands: 'addmessage'}]),
+            data = {string: value},
+            responseSelector;
+        return backendService.postNested(specs, data).then(function(response){
+          caseBase.broadcastMessage(response.status);
+          return response;
+        }, function(err){
+          caseBase.broadcastMessage(err);
+          return err;
+        });
+        //backendService.postNested()
+        /*return backendService.postNested(
           caseBase(caseId).concat([
             {resources: 'caselog'},
             {commands: 'addmessage'}
@@ -448,7 +460,7 @@ angular.module('sf')
           }),
           function(error){
             caseBase.broadcastMessage(error);
-          };
+          };*/
       },
       getPossibleCaseTypes: function(caseId) {
         return backendService.get({

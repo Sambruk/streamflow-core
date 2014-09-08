@@ -19,6 +19,9 @@ angular.module('sf')
 .factory('navigationService', function ($location, $routeParams) {
 
     return {
+      linkTo: function(href){
+        return $location.path(href);
+      },
       caseHref: function(caseId) {
         return "#/" + this.projectId() + '/' + this.projectType() + '/' + caseId;
       },

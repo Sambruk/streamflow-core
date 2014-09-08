@@ -2,7 +2,9 @@
 
 angular.module('sf', [
     'ngRoute',
-    'angular-growl'
+    'ngResource',
+    'angular-growl',
+    'ui.bootstrap'
   ])
   .run(function ($rootScope, $location, $routeParams, tokenService) {
     $rootScope.hasToken = tokenService.hasToken;

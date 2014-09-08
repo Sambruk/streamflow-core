@@ -34,7 +34,7 @@ gulp.task('clean', function(cb) {
   del(['build'], cb);
 });
 
-gulp.task('build', ['copy', 'images', 'inject', 'scripts', 'css','fonts'], function(cb) {
+gulp.task('build', ['copy', 'images', 'datepicker', 'inject', 'scripts', 'css','fonts'], function(cb) {
   cb();
 });
 
@@ -44,6 +44,8 @@ gulp.task('clean-build', function(cb) {
   });
 });
 
+var mainBowerFiles = mainBowerFiles();
+
 var paths = {
   scripts: ['app/app.js',
             'app/*.js',
@@ -51,25 +53,41 @@ var paths = {
             'app/components/**/*.js',
             'app/routes/**/*.js',
             '!app/**/*test.js'],
-  bower: ['!bower_components/jquery/**/*.js',
+  bower: ['bower_components/**/*.js',
+          '!bower_components/jquery/**/*.js',
           '!bower_components/angular/**/*.js',
           '!bower_components/angular-route/**/*.js',
           '!bower_components/angular-growl-v2/**/*.js',
           '!bower_components/momentjs/**/*.js',
+          '!bower_components/bootstrap/**/*.*',
+          'bower_components/bootstrap/dist/js/bootstrap.js',
+          '!bower_components/pickadate/**/*.*',
+          'bower_components/pickadate/lib/picker.js',
+          'bower_components/pickadate/lib/picker.date.js',
           '!bower_components/**/*.min.js',
-          '!bower_components/**/*.min.map',
-          'bower_components/**/*js'],
+          '!bower_components/**/*.min.map'
+          ],
   templates: ['app/**/*.html',
               '!app/index.html',
               '!app/token.html',
-              '!app/bower_components/**/*.html'],
+              '!bower_components/**/*.html'],
+  vendortTemplates: {
+    datepicker: {
+      origin: 'bower_components/bootstrap/template/datepicker/*.html',
+      dest: 'datepicker'
+    }
+  },
   icons: 'app/icons/*.svg',
   images: 'app/design/gui/i/*.png',
   css: ['bower_components/**/*.css',
         '!bower_components/angular-growl-v2/*.css',
+        '!bower_components/pickadate/**/*.*',
+        'bower_components/pickadate/lib/themes/default.css',
+        'bower_components/pickadate/lib/themes/default.date.css',
         '!**/*.min.css',
         'app/**/*.css'],
   other: ['app/design/gui/fonts/*',
+          'bower_components/bootstrap/dist/fonts/*.*',
           'app/*.html',
           'app/*.json',
           'app/robots.txt',
@@ -86,13 +104,24 @@ gulp.task('css',function() {
 gulp.task('html', function(){
     gulp.src(
         ['!./app/index.html','!app/design/**/*.html','./app/**/*.html'])
-    .pipe(gulp.dest('./build'));
+    .pipe(gulp.dest('./build/template'));
+});
+
+
+gulp.task('datepicker', function(){
+  gulp.src(['./app/components/bootstrap/datepicker/*.html'])
+  .pipe(gulp.dest('./build/template/datepicker'));
 });
 
 gulp.task('scripts', function() {
+  //Check that no css files are mistakenly added to mainBowerFiles
+  mainBowerFiles = mainBowerFiles.filter(function(file){
+    return file.substring(file.length - 2) === 'js';
+  });
+  console.log(mainBowerFiles);
   return es.concat(
     (
-      gulp.src(mainBowerFiles())
+      gulp.src(mainBowerFiles)
       .pipe(ngAnnotate())
       // Need to add a directory here so we can do proper sorting before concatenation below
       .pipe(rename(function (path) {
@@ -122,7 +151,10 @@ gulp.task('scripts', function() {
   // Specify concatenation order
   .pipe(order([
     'bower/jquery.js',
+    'bower/jquery-ui.js',
     'bower/lodash.js',
+    'bower/picker.js',
+    'bower/picker.date.js',
     'bower/angular.js',
  //   'bower/moment.js',
     'bower/**/*.js',

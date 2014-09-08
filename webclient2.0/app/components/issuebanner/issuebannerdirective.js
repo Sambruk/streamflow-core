@@ -9,25 +9,32 @@ angular.module('sf')
       breadcrumblist: '=?'
     },
     link: function(scope) {
+      scope.breadcrumbList;
       $rootScope.$on('breadcrumb-updated', function(scope, breadcrumbList) {
         var breadcrumb = [];
-        for (var i=0;i<breadcrumbList.length;i++)
-        {
-          if(breadcrumbList[i].projectId){ 
-            breadcrumb.push(breadcrumbList[i].projectId);
-          }if(breadcrumbList[i].projectType){ 
-            // translate didn't work
-            if(breadcrumbList[i].projectType == 'inbox'){
-              breadcrumb.push('Inkorg');
-            }if(breadcrumbList[i].projectType == 'assignments'){
-              breadcrumb.push('Mina ärenden');
-            }
-          }if(breadcrumbList[i].caseId){ 
-            breadcrumb.push(breadcrumbList[i].caseId);
-          }
-        }
-        scope.breadcrumbList = breadcrumb;
+        var a = _.reduce(breadcrumbList, function(a,b){
+          return a;
+        }, []);
+        console.log(a);
+        scope.breadcrumbList = getBreadcrumbItems(breadcrumbList);
       });
+
+      scope.$watch('breadcrumbList', function(newVal){
+        scope.breadcrumbList = newVal;
+        console.log(newVal);
+      });
+
+      var getBreadcrumbItems = function(breadcrumbList){
+        var bcList = [];
+        _.each(breadcrumbList, function(breadcrumbItem){
+          _.each(breadcrumbItem, function(val, key){
+            if(typeof val === 'string' && val !== undefined){
+              bcList.push(val);
+            }
+          });
+        });
+        return bcList;
+      };
     }
   }
 });

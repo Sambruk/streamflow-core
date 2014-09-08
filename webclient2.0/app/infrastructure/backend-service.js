@@ -132,7 +132,6 @@
           var w = _.find(resource.response[key], function(item){
             return item.id === id
           });
-          debugger;
           return httpService.postRequest(resource.basehref +  w.href, data);
         });
       }

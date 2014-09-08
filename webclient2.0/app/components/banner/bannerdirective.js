@@ -16,7 +16,7 @@ angular.module('sf')
       
       $q.all([profile.promise])
       .then(function(response){
-        scope.profile = response;
+        scope.profile = response[0];
       });
 
       scope.hasToken = $rootScope.hasToken;

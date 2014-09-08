@@ -4,17 +4,21 @@ angular.module('sf')
   var caze = caseService.getSelected($routeParams.caseId);
   var notes = caseService.getSelectedNote($routeParams.caseId);
   var general = caseService.getSelectedGeneral($routeParams.caseId);
+  var commands = caseService.getSelectedCommands($routeParams.caseId);
+  var profile = profileService.getCurrent();
 
   var dfds = [];
-  dfds.push(caze.promise, notes.promise, general.promise);
+  dfds.push(caze.promise, notes.promise, general.promise, commands.promise, profile.promise);
   $q.all(dfds)
   .then(function(response){
     $scope.caze = response[0];
     $scope.notes = response[1];
     $scope.general = response[2];
+    $scope.commands = response[3];
+    $scope.profile = response[4];
   })
   .then(function(){
-      $scope.sidebarData = {};
+    $scope.sidebarData = {};
     $scope.sidebarData.caseData = {caseId: $routeParams.caseId, caze: $scope.caze};
     $scope.sidebarData.general = $scope.general;
     $scope.sidebarData.notes = $scope.notes;
@@ -23,17 +27,20 @@ angular.module('sf')
   
 
 
+  
+  
 
-  $scope.commands = caseService.getSelectedCommands($routeParams.caseId);
-  $scope.profile = profileService.getCurrent();
-
-  $scope.$watch('caze[0]', function(newVal){
+  $scope.$watch('caze', function(newVal){
     if(!newVal){
       return; 
     }
-    if ($scope.caze.length === 1){
+    console.log(newVal);
+    if ($scope.caze['length'] === 1){
       $scope.caseListUrl = navigationService.caseListHrefFromCase($scope.caze);
-      $rootScope.$broadcast('breadcrumb-updated', [{projectId: $scope.caze[0].owner}, {projectType: $scope.caze[0].listType}, {caseId: $scope.caze[0].caseId}]);
+      $rootScope.$broadcast('breadcrumb-updated', 
+        [{projectId: $scope.caze[0].owner}, 
+        {projectType: $scope.caze[0].listType}, 
+        {caseId: $scope.caze[0].caseId}]);
     }
   });
 

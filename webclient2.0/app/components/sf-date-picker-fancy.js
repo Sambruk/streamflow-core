@@ -24,9 +24,10 @@ angular.module('sf')
 
       link: function (scope, element, attrs, ngModel) {
         var dateRegex = /^\d{4}-\d{2}-\d{2}/,
-            $element = $(element);
-
-        var $input = $element.pickadate({
+            //$element = $(element);
+            $element = $('#fancy-date-hidden');
+            //debugger;
+        var $input = $(element).pickadate({
           selectYears: true,
           selectMonths: true,
           format: 'yyyy-mm-dd',

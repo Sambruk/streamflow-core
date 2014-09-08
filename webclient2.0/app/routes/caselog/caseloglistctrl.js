@@ -11,8 +11,8 @@ angular.module('sf')
         filterArray.push({ "filterName": prop, "filterValue": filterObj[prop] });
       }
       $scope.caseLogFilters = filterArray;
-      $scope.caseLogs = caseService.getSelectedCaseLog($params.caseId);
-      //$scope.caseLogs = caseService.getSelectedCaseLog($params.projectId, $params.projectType, $params.caseId, defaultFilters);
+      $scope.caseLogs = caseService.getSelectedCaseLog($routeParams.caseId);
+      //$scope.caseLogs = caseService.getSelectedCaseLog($routeParams.projectId, $routeParams.projectType, $routeParams.caseId, defaultFilters);
       //console.log($scope.caseLogs);
     });
   });

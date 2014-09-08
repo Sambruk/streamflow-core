@@ -17,6 +17,13 @@ angular.module('sf')
         scope.displayToolbar = !scope.displayToolbar;
       }*/
 
+      scope.navigateTo = function(href, $event){
+        $event.preventDefault();
+        scope.toggleToolbar($event);
+        navigationService.linkTo(href);
+      };
+      
+
       scope.toggleToolbar = function($event) {
         $event.preventDefault();
         $('.functions-menu').toggleClass('open');
