@@ -74,11 +74,14 @@
         <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
     <div class="body">
-
-        <banner ng-show="isLoggedIn"></banner>
-        <toolbar params="toolbarParams" ng-show="isLoggedIn"></toolbar>
-        <login ng-show="!isLoggedIn"></login>
-        <div class="container" ng-view=""></div>
+            <banner ng-show="isLoggedIn"></banner>
+            <login ng-show="!isLoggedIn"></login>
+            <div class="main">
+            <toolbar params="toolbarParams" ng-show="isLoggedIn"></toolbar>
+            <div class="main-body cf">
+                <div class="container" ng-view=""></div>
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="vendor/vendor.js"></script>
