@@ -30,15 +30,27 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" sizes="57x57" href="i/apple-touch-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="i/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="i/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="app/i/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="app/i/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="app/i/apple-touch-icon-114x114.png">
 
     <link rel="shortcut icon" href="favicon.ico">  
+
+    <!-- ////////////////////////
+    ////////// Datepicker //////
+    ///////////////////////////-->
+    <!-- Datepicker -->
+      <link rel="stylesheet" href="vendor/default.css">
+      <link rel="stylesheet" href="vendor/default.date.css">
     <!-- ////////////////////
     /////////// CSS ////////
     ///////////////////////-->
-    <link href="css/app.css" rel="stylesheet">
+
+    <link href="app/css/basic.css" rel="stylesheet">
+    <link href="app/css/print.css" rel="stylesheet">
+    <link href="app/css/fonts.css" rel="stylesheet">
+    <link href="app/css/main.css" rel="stylesheet">
+    <link href="app/css/retina.css" rel="stylesheet">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
     <!--[if lte IE 8]>
       <script>
@@ -68,8 +80,8 @@
         <login ng-show="!isLoggedIn"></login>
         <div class="container" ng-view=""></div>
     </div>
-    
-    <script src="scripts/streamflow.js"></script>
-    <script>window.jQuery||document.write('<script src="tests/jquery.2.0.0.js"><\/script>')</script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="vendor/vendor.js"></script>
+    <script src="app/streamflow.js"></script>
 </body>
 </html>

@@ -140,25 +140,14 @@
 
 
   <!-- Due date -->
-  <h4>Popup</h4>
-    <div class="row">
-        <div class="col-md-6">
-            <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="yyyy-mm-dd" ng-model="dt" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="toggleDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p>
-        </div>
-    </div>
-       <!-- <input
+       <input
             sf-date-picker-fancy
             style="width: 100%;"
             type="text"
             placeholder="Förfallodatum"
             ng-model="dueOnShortStartValue"
             data-ng-change="changeDueOn(dueOnShortStartValue)"
-            id="fancy-date-hidden">-->
+            id="fancy-date-hidden">
     </div>
 
   <div ng-show="showSpinner.caseDueOn" class="spinner"></div>

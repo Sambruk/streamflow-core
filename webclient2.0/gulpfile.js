@@ -34,7 +34,11 @@ gulp.task('clean', function(cb) {
   del(['build'], cb);
 });
 
-gulp.task('build', ['copy', 'images', 'datepicker', 'inject', 'scripts', 'css','fonts'], function(cb) {
+//gulp.task('build', ['datepicker-scripts', 'datepicker-styles', 'copy', 'images', 'inject', 'scripts', 'css','fonts'], function(cb) {
+//  cb();
+//});
+
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-scripts', 'vendor-css'], function(cb){
   cb();
 });
 
@@ -47,67 +51,109 @@ gulp.task('clean-build', function(cb) {
 var mainBowerFiles = mainBowerFiles();
 
 var paths = {
-  scripts: ['app/app.js',
-            'app/*.js',
-            'app/infrastructure/**/*.js',
-            'app/components/**/*.js',
-            'app/routes/**/*.js',
+  scripts: ['app/**/*.js',
+            '!app/design/**/*.*',     
             '!app/**/*test.js'],
-  bower: ['bower_components/**/*.js',
+  templates: ['app/**/*.html',
+              '!app/index.html',
+              '!app/token.html',
+              '!bower_components/**/*.html'],
+  icons: 'app/icons/*.svg',
+  images: 'app/design/gui/i/*.*',
+  css: ['app/design/gui/css/basic.css',
+        'app/design/gui/css/print.css',
+        'app/design/gui/css/fonts.css',
+        'app/design/gui/css/retina.css',
+        'app/design/gui/vendor/pickadate/themes/default.css',
+        'app/design/gui/vendor/pickadate/themes/default.date.css'],
+  design: {
+    images: ['app/design/gui/i/*.*'],
+    css: ['app/design/gui/css/main.css',
+        'app/design/gui/css/basic.css',
+        'app/design/gui/css/print.css',
+        'app/design/gui/css/fonts.css',
+        'app/design/gui/css/retina.css'],
+    scripts: ['app/design/gui/js/**/*.js',
+              '!app/design/gui/js/jquery-1.10.1.js'],
+    fonts: 'app/design/gui/fonts/*',
+  },
+  vendor: {
+    scripts: ['bower_components/**/*.js',
           '!bower_components/jquery/**/*.js',
           '!bower_components/angular/**/*.js',
           '!bower_components/angular-route/**/*.js',
           '!bower_components/angular-growl-v2/**/*.js',
           '!bower_components/momentjs/**/*.js',
           '!bower_components/bootstrap/**/*.*',
-          'bower_components/bootstrap/dist/js/bootstrap.js',
           '!bower_components/pickadate/**/*.*',
-          'bower_components/pickadate/lib/picker.js',
-          'bower_components/pickadate/lib/picker.date.js',
           '!bower_components/**/*.min.js',
-          '!bower_components/**/*.min.map'
-          ],
-  templates: ['app/**/*.html',
-              '!app/index.html',
-              '!app/token.html',
-              '!bower_components/**/*.html'],
-  vendortTemplates: {
-    datepicker: {
-      origin: 'bower_components/bootstrap/template/datepicker/*.html',
-      dest: 'datepicker'
-    }
+          '!bower_components/**/*.min.map'],
+    css: ['app/design/gui/vendor/pickadate/themes/default.css',
+          'app/design/gui/vendor/pickadate/themes/default.date.css']
   },
-  icons: 'app/icons/*.svg',
-  images: 'app/design/gui/i/*.png',
-  css: ['app/design/gui/css/**/*.css'],
-  other: ['app/design/gui/fonts/*',
-          'bower_components/bootstrap/dist/fonts/*.*',
+  other: [,
           'app/*.html',
           'app/*.json',
           'app/robots.txt',
           'app/favicon.ico']
 };
 
-gulp.task('css',function() {
-  return gulp.src(paths.css)
-    .pipe(concat('app.css'))
-    .pipe(gulp.dest('build/css'))
-    .pipe(connect.reload());
+gulp.task('app-scripts', function(){
+  return gulp.src(paths.scripts)
+  .pipe(ngAnnotate())
+  .pipe(rename(function(path){
+    path.dirname = 'app/';
+  }))
+  .pipe(order([
+  'app/app.js',
+  'app/infrastructure/**/*.js',
+  'app/components/**/*.js',
+  'app/routes/**/*.js']))
+  .pipe(gulpif(buildMode === 'dev', sourcemaps.init()))
+  .pipe(concat('streamflow.js'))
+  .pipe(gulpif(buildMode === 'dev', sourcemaps.write()))
+  .pipe(gulp.dest('build/app'))
+  .pipe(connect.reload());
 });
 
-gulp.task('html', function(){
-    gulp.src(
-        ['!./app/index.html','!app/design/**/*.html','./app/**/*.html'])
-    .pipe(gulp.dest('./build/template'));
+gulp.task('app-templates', function(){
+  return gulp.src('app/**/*.html')
+  .pipe(gulp.dest('build'))
+  .pipe(connect.reload());
+});
+
+gulp.task('app-css', function(){
+  return gulp.src(paths.design.css)
+  .pipe(gulp.dest('build/app/css'))
+  .pipe(connect.reload());
+});
+
+gulp.task('app-fonts', function(){
+  return gulp.src(paths.design.fonts)
+  .pipe(gulp.dest('build/app/fonts'))
+  .pipe(connect.reload());
+});
+
+gulp.task('app-images', function(){
+  return gulp.src(paths.design.images)
+  .pipe(gulp.dest('build/app/i'))
+  .pipe(connect.reload());
+});
+
+gulp.task('app-plugins', function(){
+  return gulp.src(paths.design.scripts)
+  .pipe(gulp.dest('build/app/plugins'))
+  .pipe(connect.reload());
+});
+
+gulp.task('vendor-css', function(){
+  return gulp.src(paths.vendor.css)
+  .pipe(gulp.dest('build/vendor'))
+  .pipe(connect.reload());
 });
 
 
-gulp.task('datepicker', function(){
-  gulp.src(['./app/components/bootstrap/datepicker/*.html'])
-  .pipe(gulp.dest('./build/template/datepicker'));
-});
-
-gulp.task('scripts', function() {
+gulp.task('vendor-scripts', function() {
   //Check that no css files are mistakenly added to mainBowerFiles
   mainBowerFiles = mainBowerFiles.filter(function(file){
     return file.substring(file.length - 2) === 'js';
@@ -124,58 +170,25 @@ gulp.task('scripts', function() {
       }))
     ),
     (
-
-      gulp.src(paths.scripts)
-      .pipe(jshint())
-      .pipe(jshint.reporter(stylish))
+      gulp.src(paths.vendor.scripts)
       .pipe(ngAnnotate())
-    ),
-    (
-      gulp.src(paths.bower)
-      .pipe(ngAnnotate())
-      .pipe(rename(function(path){
-        path.dirname = 'bower/';
-      }))
-    ),
-    (
-      gulp.src(paths.templates)
-      .pipe(templateCache({module:'sf'}))
     )
   )
   // Specify concatenation order
   .pipe(order([
-    'bower/jquery.js',
-    'bower/jquery-ui.js',
-    'bower/lodash.js',
     'bower/picker.js',
     'bower/picker.date.js',
+    'bower/sv_SE.js',
+    'bower/lodash.js',
     'bower/angular.js',
- //   'bower/moment.js',
-    'bower/**/*.js',
-    'app.js',
-    '**/*.js'
+    'bower/moment.js',
+    'bower/**/*.js'
   ]))
   .pipe(gulpif(buildMode === 'dev', sourcemaps.init()))
-  .pipe(concat('streamflow.js'))
+  .pipe(concat('vendor.js'))
   .pipe(gulpif(buildMode === 'dev', sourcemaps.write()))
-  .pipe(gulp.dest('build/scripts'))
+  .pipe(gulp.dest('build/vendor'))
   .pipe(connect.reload());
-});
-
-gulp.task('fonts', function(){
-    gulp.src(['./app/design/gui/fonts/*'])
-    .pipe(gulp.dest('./build/fonts'));
-});
-
-gulp.task('images', function(){
-    gulp.src([paths.images])
-    .pipe(gulp.dest('./build/i'));
-});
-
-gulp.task('css', function(){
-    gulp.src('./app/design/gui/css/**/*.css')
-      .pipe(concat('app.css'))
-      .pipe(gulp.dest('./build/css'));
 });
 
 gulp.task('copy', function() {
@@ -201,10 +214,8 @@ gulp.task('test', function(){
 
 
 gulp.task('default', ['connect'], function () {
-  gulp.watch([paths.other], ['copy']);
-  gulp.watch([paths.other], ['inject']);
-  gulp.watch([paths.images], ['images']);
-  gulp.watch(paths.scripts, ['scripts']);
-  gulp.watch(paths.css, ['css']);
-  gulp.watch(paths.templates, ['scripts', 'inject']);
+  gulp.watch([paths.design.images], ['clean-build']);
+  gulp.watch(paths.scripts, ['clean-build']);
+  gulp.watch(paths.design.css, ['clean-build']);
+  gulp.watch(['app/**/*.html'], ['clean-build']);
 });

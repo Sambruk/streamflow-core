@@ -13,13 +13,8 @@
     "angular": "1.2.22",
     "angular-route": "1.2.22",
     "angular-growl-v2": "0.7.0",
-    "jquery": "~2.1.1",
     "momentjs": "~2.8.2",
-    "lodash": "latest",
-    "jqueryui": "~1.11.1",
-    "bootstrap": "latest",
-    "angular-bootstrap": "~0.11.0",
-    "pickadate": "~3.5.3"
+    "lodash": "latest"
   },
   "devDependencies": {
     "angular-mocks": "1.2.22",

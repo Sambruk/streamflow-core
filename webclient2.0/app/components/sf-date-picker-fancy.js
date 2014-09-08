@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 'use strict';
+jQuery(document).ready(function($){
 angular.module('sf')
 .directive('sfDatePickerFancy', ['fancyDateService', '$timeout', function (fancyDateService, $timeout) {
 
@@ -57,3 +58,5 @@ angular.module('sf')
       }
     };
   }]);
+
+});
