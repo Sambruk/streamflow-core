@@ -79,13 +79,7 @@ var paths = {
   },
   icons: 'app/icons/*.svg',
   images: 'app/design/gui/i/*.png',
-  css: ['bower_components/**/*.css',
-        '!bower_components/angular-growl-v2/*.css',
-        '!bower_components/pickadate/**/*.*',
-        'bower_components/pickadate/lib/themes/default.css',
-        'bower_components/pickadate/lib/themes/default.date.css',
-        '!**/*.min.css',
-        'app/**/*.css'],
+  css: ['app/design/gui/css/**/*.css'],
   other: ['app/design/gui/fonts/*',
           'bower_components/bootstrap/dist/fonts/*.*',
           'app/*.html',
@@ -179,7 +173,7 @@ gulp.task('images', function(){
 });
 
 gulp.task('css', function(){
-    gulp.src('./app/**/*.css')
+    gulp.src('./app/design/gui/css/**/*.css')
       .pipe(concat('app.css'))
       .pipe(gulp.dest('./build/css'));
 });
