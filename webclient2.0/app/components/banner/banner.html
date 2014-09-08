@@ -6,7 +6,7 @@
       <div class="client-name">
         <div class="user-area">
           <a href="" data-ng-click="logout()" class="btn btn-xs" style="float: right;">Logga Ut</a>
-          <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
+          <a href="#/profile" class="icon-user logged-in">{{profile[0].name | truncate:20}}</a>
         </div>
         <!-- /user-area -->
           <h1>Malmö Kommun Kontaktcenter</h1>
