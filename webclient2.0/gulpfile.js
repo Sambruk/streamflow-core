@@ -89,7 +89,8 @@ var paths = {
           '!bower_components/**/*.min.js',
           '!bower_components/**/*.min.map'],
     css: ['app/design/gui/vendor/pickadate/themes/default.css',
-          'app/design/gui/vendor/pickadate/themes/default.date.css']
+          'app/design/gui/vendor/pickadate/themes/default.date.css',
+          'bower_components/chosen/chosen.css']
   },
   other: [,
           'app/*.html',

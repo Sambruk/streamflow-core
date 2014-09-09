@@ -90,10 +90,10 @@
   <!-- /Issue toolbar -->
 
   <!-- Ärendetyp -->
-  <div ng-hide="showSpinner.caseType">
+   <div ng-hide="showSpinner.caseType">
     <select
         data-placeholder="Case typ"
-        class=""
+        class="chosen-case-type chosen-select"
         style="width: 100%;"
         data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
         data-ng-model="caseType"
