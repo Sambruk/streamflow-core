@@ -48,7 +48,7 @@ angular.module('sf')
       };
 
       scope.createCase = function(){
-        if(!canCreateCase()){
+        if(!scope.canCreateCase()){
           return;
         }
 
