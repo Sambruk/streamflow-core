@@ -79,10 +79,10 @@ var paths = {
               'app/design/gui/vendor/pickadate/picker.js',
               'app/design/gui/vendor/pickadate/picker.date.js',
               'app/design/gui/vendor/pickadate/translations/sv_SE.js'],
-    fonts: 'app/design/gui/fonts/*',
+    fonts: 'app/design/gui/fonts/*'
   },
   vendor: {
-    images: ['bower_components/chosen/chosen-sprite.png'],
+    images: ['bower_components/chosen/*.png'],
     scripts: ['bower_components/**/*.js',
           '!bower_components/jquery/**/*.js',
           '!bower_components/angular/**/*.js',
@@ -95,8 +95,7 @@ var paths = {
           '!bower_components/**/*.min.map'],
     css: ['app/design/gui/vendor/pickadate/themes/default.css',
           'app/design/gui/vendor/pickadate/themes/default.date.css',
-          'bower_components/chosen/chosen.css'],
-    images: ['bower_components/chosen/chosen-sprite.png']
+          'bower_components/chosen/chosen.css']
   },
   other: [,
           'app/*.html',
