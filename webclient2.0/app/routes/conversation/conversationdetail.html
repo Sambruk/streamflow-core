@@ -16,11 +16,11 @@
     limitations under the License.
 
 -->
-<div class="content-primary" role="main" data-ng-controller="ConversationDetailCtrl">
+<div class="content-primary" role="main">
   <div class="m m-check-list">
     <div class="m-h">
-      <div  data-ng-controller="SidebarCtrl">
-        <div data-ng-repeat="conversation in conversations | filter: conversationId">
+      <div>
+        <div data-ng-repeat="conversation in conversations | filter: conversationId track by conversation.$index">
           <h2>{{ conversation.text }}</h2>
         </div>
       </div>
@@ -53,7 +53,7 @@
         <li class="msg-item" data-ng-repeat="message in conversationMessages">
           <div class="msg-head cf">
             <div class="msg-author">{{ message.sender }} </div>
-            <div data-ng-controller="SidebarCtrl">
+            <div>
               <div class="msg-attachment" ng-repeat="attachment in attachments | filter: message.id">
                 <strong>Bifogad fil:</strong>
                 <a data-ng-click="downloadAttachment(attachment.id)" ng-href="{{ attachment.href}}">{{ attachment.text }}</a>

@@ -239,8 +239,7 @@
       <a href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
-      <ul>
-        <li data-ng-repeat='conversation in conversations' class="convo-li">
+        <li data-ng-repeat='conversation in conversations track by $index' class="convo-li">
           <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
