@@ -38,7 +38,7 @@ gulp.task('clean', function(cb) {
 //  cb();
 //});
 
-gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-scripts', 'vendor-css'], function(cb){
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css'], function(cb){
   cb();
 });
 
@@ -74,7 +74,10 @@ var paths = {
         'app/design/gui/css/fonts.css',
         'app/design/gui/css/retina.css'],
     scripts: ['app/design/gui/js/**/*.js',
-              '!app/design/gui/js/jquery-1.10.1.js'],
+              '!app/design/gui/js/jquery-1.10.1.js',
+              'app/design/gui/vendor/pickadate/picker.js',
+              'app/design/gui/vendor/pickadate/picker.date.js',
+              'app/design/gui/vendor/pickadate/translations/sv_SE.js'],
     fonts: 'app/design/gui/fonts/*',
   },
   vendor: {
@@ -90,7 +93,8 @@ var paths = {
           '!bower_components/**/*.min.map'],
     css: ['app/design/gui/vendor/pickadate/themes/default.css',
           'app/design/gui/vendor/pickadate/themes/default.date.css',
-          'bower_components/chosen/chosen.css']
+          'bower_components/chosen/chosen.css'],
+    images: ['bower_components/chosen/chosen-sprite.png']
   },
   other: [,
           'app/*.html',
@@ -144,6 +148,12 @@ gulp.task('app-images', function(){
 gulp.task('app-plugins', function(){
   return gulp.src(paths.design.scripts)
   .pipe(gulp.dest('build/app/plugins'))
+  .pipe(connect.reload());
+});
+
+gulp.task('vendor-images', function(){
+  return gulp.src(paths.vendor.images)
+  .pipe(gulp.dest('build/vendor'))
   .pipe(connect.reload());
 });
 

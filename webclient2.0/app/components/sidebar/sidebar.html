@@ -139,16 +139,20 @@
   <!-- /Prioritet -->
 
 
-  <!-- Due date -->
-       <input
+ <!-- Due date -->
+  <div ng-hide="showSpinner.caseDueOn">
+    <div class="set-due-date">
+        <input
             sf-date-picker-fancy
             style="width: 100%;"
             type="text"
             placeholder="Förfallodatum"
             ng-model="dueOnShortStartValue"
             data-ng-change="changeDueOn(dueOnShortStartValue)"
-            id="fancy-date-hidden">
-
+            id="fancy-date-hidden"
+        >
+    </div>
+  </div>
   <div ng-show="showSpinner.caseDueOn" class="spinner"></div>
   <!-- /Due date -->
 
