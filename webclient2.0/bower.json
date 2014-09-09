@@ -15,7 +15,8 @@
     "angular-growl-v2": "0.7.0",
     "momentjs": "~2.8.2",
     "lodash": "latest",
-    "angular-resource": "~1.2.23"
+    "angular-resource": "~1.2.23",
+    "typewatch": "git://github.com/dennyferra/TypeWatch.git"
   },
   "devDependencies": {
     "angular-mocks": "1.2.22",
