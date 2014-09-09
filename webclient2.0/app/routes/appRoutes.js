@@ -14,7 +14,7 @@ angular.module('sf')
     })
     .when('/profile', {
       templateUrl: 'routes/profile/profile-edit.html',
-      controller: 'ProfileCtrl'
+      controller: 'ProfileEditCtrl'
     })
     .when('/projects/:projectId/:projectType', {
       templateUrl: 'routes/cases/caselist.html',
