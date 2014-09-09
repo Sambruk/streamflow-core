@@ -38,6 +38,7 @@ gulp.task('clean', function(cb) {
 //  cb();
 //});
 
+
 gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css'], function(cb){
   cb();
 });
@@ -81,6 +82,7 @@ var paths = {
     fonts: 'app/design/gui/fonts/*',
   },
   vendor: {
+    images: ['bower_components/chosen/chosen-sprite.png'],
     scripts: ['bower_components/**/*.js',
           '!bower_components/jquery/**/*.js',
           '!bower_components/angular/**/*.js',

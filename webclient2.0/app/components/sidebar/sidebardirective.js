@@ -232,7 +232,6 @@ angular.module('sf')
       updateCaseLabels();
       
       scope.changeCaseLabels = function (labels) {
-        debugger;
         scope.showSpinner.caseLabels = true;
         var removedLabels = previousActiveLabels.filter(function (item) {
           return !_.find(labels, function (j) {
