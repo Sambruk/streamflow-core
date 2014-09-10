@@ -68,7 +68,11 @@ angular.module('sf')
         return backendService.get({
           specs: caseBase(caseId),
           onSuccess:function (resource, result) {
-            resource.response.commands.forEach(function(item){result.push(item)});
+            if(resource.response.commands.length === 0){
+              result.push(resource.response);
+            } else {
+              resource.response.commands.forEach(function(item){result.push(item)});
+            }
           }
         });
       },
@@ -125,7 +129,14 @@ angular.module('sf')
             {queries: 'possiblesendto'}
           ]),
           onSuccess:function (resource, result) {
-            resource.response.links.forEach(function(item){result.push(item)});
+
+            //NOTE: pushing resource.response.links to result if no links.
+            // this might be wrong approach
+            if(resource.response.links.length ===0){
+              result.push(resource.response.links);
+            } else {
+              resource.response.links.forEach(function(item){result.push(item)});
+            }
           }
         });
       },
