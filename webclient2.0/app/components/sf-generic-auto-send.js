@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-.directive('sfGenericAutoSend', ['$parse', '$routeParams', 'caseService', 'formMapperService', function($parse, $params, caseService, formMapper) {
+.directive('sfGenericAutoSend', ['$parse', '$routeParams', 'caseService', 'formMapperService', function($parse, $routeParams, caseService, formMapper) {
     return {
       require: 'ngModel',
       link: function(scope, element, attr, ngModel) {
@@ -39,9 +39,9 @@ angular.module('sf')
             // Valid input, clear error warnings
             $("[class^=error]", element.parent()).hide();
 
-
             var value = formMapper.getValue(newValue, attr);
-            caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, value);
+            caseService.updateField($routeParams.caseId,  scope.$parent.form[0].draftId, attr.name, value);
+
           }
 
           hasRunAtLeastOnce = true;
