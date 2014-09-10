@@ -40,6 +40,7 @@ angular.module('sf')
       scope.possibleResolutions = caseService.getPossibleResolutions($routeParams.caseId);
       scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
+      scope.notes = caseService.getSelectedNote($routeParams.caseId);
 
       if($routeParams.formId && $routeParams.caseId){
         var formId = scope.formdata.formId;
