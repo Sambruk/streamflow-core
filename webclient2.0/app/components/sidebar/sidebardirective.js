@@ -48,7 +48,17 @@ angular.module('sf')
         casePermissions: true,
         caseAttachment: true
       };
-      
+
+      scope.contact = {
+        name: '',
+        contactId: '',
+        note: '',
+        addresses: [{ address: '', zipCode: '', city: '', region: '', country: '', contactType: 'HOME' }],
+        emailAddresses: [{ emailAddress: '', contactType: 'HOME'}],
+        phoneNumbers: [{ phoneNumber: '', contactType: 'HOME' }],
+        contactPreference: 'email'
+      };
+
       var sortByText = function (x, y) {
         var xS = x.text && x.text.toUpperCase() || '',
             yS = y.text && y.text.toUpperCase() || '';
@@ -486,6 +496,14 @@ angular.module('sf')
       scope.showContact = function(contactId){
         alert("Not supported - need UX for this.");
       };
+
+      scope.submitContact = function() {
+        caseService.addContact($routeParams.caseId, scope.contact).then(function(){
+          var href = navigationService.caseHrefSimple($routeParams.caseId);
+          window.location.assign(href + "/contact/" + scope.contacts.length + "/");
+        });
+      };
+
       /*scope.$watch('sidebardata', function(newVal){
         if(newVal){
           scope.sidebardata = newVal;

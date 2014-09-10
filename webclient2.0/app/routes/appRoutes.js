@@ -45,14 +45,10 @@ angular.module('sf')
       templateUrl:'routes/caselog/caseloglist.html',
       controller: 'CaselogListCtrl'
     })
-      .when('/cases/:caseId/contact/add', {
-        templateUrl:'routes/contact/contactcreate.html',
-        controller: 'ContactCreateCtrl'
-      })
-      .when('/cases/:caseId/contact/:contactIndex/', {
-        templateUrl:'routes/contact/contactedit.html',
-        controller: 'ContactEditCtrl'
-      })
+    .when('/cases/:caseId/contact/:contactIndex/', {
+      templateUrl:'routes/contact/contactedit.html',
+      controller: 'ContactEditCtrl'
+    })
     .when('/cases/:caseId/formhistory/:formId', {
       templateUrl:'routes/form/formhistory.html',
       controller: 'FormHistoryCtrl'

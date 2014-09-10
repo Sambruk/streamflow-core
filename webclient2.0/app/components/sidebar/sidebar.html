@@ -258,15 +258,15 @@
   <div class="m m-contacts">
     <div class="m-h">
       <h2>Kontakter</h2>
-      <a href="#/cases/{{ caze[0].id }}/contact/add" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+      <a href="" data-ng-click="submitContact($event)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul class="zebra-list">
         <li data-ng-repeat='contact in contacts'>
-            <a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">{{contact.name}}</a>
-            <!--
-            <a data-ng-click="showContact(contact.id)" href="">{{contact.name}}</a>
-            -->
+					<a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">
+						<span data-ng-if="contact.name == ''">Namn saknas</span>
+						{{contact.name}}
+					</a>
         </li>
       </ul>
     </div>
