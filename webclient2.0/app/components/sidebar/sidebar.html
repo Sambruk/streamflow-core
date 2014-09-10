@@ -64,7 +64,7 @@
                     <div class="row cf">
                       <div class="select">
                           <label for="issue-owner">Byt ägare</label>
-                          <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in possibleSendTo" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+                          <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in sendToRecipients" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
                           </select>
                       </div>
                     </div>

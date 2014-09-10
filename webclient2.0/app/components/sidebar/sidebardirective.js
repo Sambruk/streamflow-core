@@ -363,11 +363,18 @@ angular.module('sf')
       };
       // End Delete
       
-      // Send to (BROKEN!)
+      // Send to (BROKEN)
+      // NOTE: Why does this use response[0]? the response is a large array of possible
+      // recipients. Why always the first in the list?
       scope.sendTo = function () {
+        //debugger;
         scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
         scope.possibleSendTo.promise.then(function (response) {
+          scope.sendToRecipients = response;
+          console.log('send to ');
+          console.log(response);
           if (response[0]) {
+            scope.show = true;
             scope.sendToId = response[0] && response[0].id;
           }
           
@@ -375,17 +382,20 @@ angular.module('sf')
         });
       };
 
-      scope.sendToIdChanged = function () {
-        scope.sendToId = event;
+      scope.sendToIdChanged = function (id) {
+        scope.sendToId = id;
       };
 
       scope.onSendToButtonClicked = function () {
         var sendToId = scope.sendToId;
 
-        caseService.sendCaseTo($routeParams.caseId, sendToId).then(function () {
+        caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
+          scope.show = false;
+        });
+        /*.then(function () {
           var href = navigationService.caseListHrefFromCase(scope.caze);
           window.location.replace(href);
-        });
+        });*/
       };
       // End Send to
       

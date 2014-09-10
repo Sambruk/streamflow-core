@@ -50,6 +50,7 @@ angular.module('sf')
     var baseUrl = prepareBaseUrl();
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');
+    
   
     return {
 
@@ -105,6 +106,7 @@ angular.module('sf')
       },
 
       postRequest: function (href, data) {
+        console.log(data);
         var params = $.param(data);
         var url = this.prepareUrl(href);
         return $http({
