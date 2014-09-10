@@ -38,6 +38,13 @@ angular.module('sf')
       scope.possiblePriorities = caseService.getPossiblePriorities($routeParams.caseId);
       scope.possibleCaseTypes = caseService.getPossibleCaseTypes($routeParams.caseId);
       scope.possibleResolutions = caseService.getPossibleResolutions($routeParams.caseId);
+      scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
+      scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
+
+      if($routeParams.formId && $routeParams.caseId){
+        var formId = scope.formdata.formId;
+        scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
+      }
 
       scope.showSpinner = {
         caseType: true,
@@ -59,14 +66,6 @@ angular.module('sf')
         contactPreference: 'email'
       };
 
-      scope.$watch('sidebardata', function(newVal){
-        if(!newVal){
-          return;
-        }
-        console.log(newVal);
-        scope.sidebardata = newVal;
-      });
-      
       var sortByText = function (x, y) {
         var xS = x.text && x.text.toUpperCase() || '',
             yS = y.text && y.text.toUpperCase() || '';
