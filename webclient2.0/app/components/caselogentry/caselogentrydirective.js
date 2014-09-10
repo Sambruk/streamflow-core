@@ -28,14 +28,10 @@ angular.module('sf')
         scope.caseLogs = caseService.getSelectedCaseLog(scope.caseId);
         caseService.createCaseLogEntry(scope.caseId, scope.caseLogEntryToCreate)
         .then(function(response){
-          console.log(response);
-          var href = navigationService.caseHrefSimple(scope.caseId) + '/caselog';
           scope.caseLogs.invalidate();
           scope.caseLogs.resolve();
           $rootScope.$broadcast('caselog-message-created');
-          console.log(href);
-          $location.path(href);
-          //window.location.assign(href);
+          $location.path('cases/' + $routeParams.caseId + '/caselog');
         });
       }
     }
