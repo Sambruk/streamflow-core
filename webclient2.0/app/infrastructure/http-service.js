@@ -106,7 +106,6 @@ angular.module('sf')
       },
 
       postRequest: function (href, data) {
-        console.log(data);
         var params = $.param(data);
         var url = this.prepareUrl(href);
         return $http({

@@ -59,6 +59,14 @@ angular.module('sf')
         contactPreference: 'email'
       };
 
+      scope.$watch('sidebardata', function(newVal){
+        if(!newVal){
+          return;
+        }
+        console.log(newVal);
+        scope.sidebardata = newVal;
+      });
+      
       var sortByText = function (x, y) {
         var xS = x.text && x.text.toUpperCase() || '',
             yS = y.text && y.text.toUpperCase() || '';

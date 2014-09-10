@@ -242,7 +242,7 @@ angular.module('sf')
             {resources: 'note'},
             {commands: 'addnote'}
           ]),
-          value)
+          value);
       },
 
       getAllNotes: function(caseId) {

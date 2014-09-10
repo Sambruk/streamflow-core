@@ -26,15 +26,15 @@ angular.module('sf')
 
     $scope.addNote = function($event, $success, $error){
       $event.preventDefault();
-      if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
+      //if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
         caseService.addNote($routeParams.caseId, $scope.notes[0])
-        .then(function(){
+        .then(function(response){
           $success($($event.target));
           $rootScope.$broadcast('note-changed');
         }, function (error){
           $error($error($event.target));
         });
-      }   
+      //}   
     }
 
     $scope.changeCaseDescription = function($event, $success, $error){
