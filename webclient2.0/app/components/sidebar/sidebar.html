@@ -262,7 +262,7 @@
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li data-ng-repeat='contact in contacts'>
+        <li data-ng-repeat='contact in contacts track by $index'>
 					<a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">
 						<span data-ng-if="contact.name == ''">Namn saknas</span>
 						{{contact.name}}

@@ -50,6 +50,7 @@ angular.module('sf')
     var baseUrl = prepareBaseUrl();
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');
+    console.log(cache.info());
     
   
     return {
@@ -73,26 +74,27 @@ angular.module('sf')
         hrefs.forEach(function(href) { cache.remove(href);});
       },
 
-      getRequest: function (href, skipCache) {
+      getRequest: function (href) {
         var result = cache.get(href);
         if (!result) {
           var url = this.prepareUrl(href);
-          var q = $q.defer();
-          var promise = q.promise;
+          //var q = $q.defer();
+          //var promise = q.promise;
+          //cache.put(href, promise);
+
+          var promise = $http({ method:'GET', url: url});
           cache.put(href, promise);
 
-          q.resolve($http({ method:'GET', url: url, cache: false}));
-
-          promise.then(function () {
+         /* promise.then(function () {
             setTimeout(function () {
               cache.remove(href);
             }, 3000);
           }, function (arg) {
             errorHandlerService(arg);
             cache.remove(href);
-          });
+          });*/
 
-          return q.promise;
+          return promise;
         }
 
         return result;

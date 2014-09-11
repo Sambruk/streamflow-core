@@ -29,7 +29,7 @@ angular.module('sf')
       scope.projectId = $routeParams.projectId;
       scope.projectType = $routeParams.projectType;
 
-      scope.caze = caseService.getSelected($routeParams.caseId);
+      
       scope.general = caseService.getSelectedGeneral($routeParams.caseId);
       scope.contacts = caseService.getSelectedContacts($routeParams.caseId);
       scope.conversations = caseService.getSelectedConversations($routeParams.caseId);
@@ -41,6 +41,11 @@ angular.module('sf')
       scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
       scope.notes = caseService.getSelectedNote($routeParams.caseId);
+      scope.caze = caseService.getSelected($routeParams.caseId);
+
+      console.log('sidebar');
+      console.log(scope.caze);
+      console.log(scope.notes);
 
       if($routeParams.formId && $routeParams.caseId){
         var formId = scope.formdata.formId;
@@ -67,6 +72,11 @@ angular.module('sf')
         contactPreference: 'email'
       };
 
+      scope.$watch('sidebardata', function(newVal){
+        scope.sidebardata = newVal;
+        console.log(scope.sidebardata);
+      });
+
       var sortByText = function (x, y) {
         var xS = x.text && x.text.toUpperCase() || '',
             yS = y.text && y.text.toUpperCase() || '';
@@ -80,9 +90,9 @@ angular.module('sf')
       };
       
       // Resolve
-      scope.showToolbar = function () {
+     /* scope.showToolbar = function () {
         return !!scope.possibleResolutions.length;
-      };
+      };*/
       
       scope.resolve = function() {
         scope.possibleResolutions.promise.then(function (response) {
@@ -318,6 +328,46 @@ angular.module('sf')
       };
       updateToolbar();
       // End commands (toolbar)
+
+      // Send to (BROKEN)
+      // NOTE: Why does this use response[0]? the response is a large array of possible
+      // recipients. Why always the first in the list?
+      scope.sendTo = function () {
+        //debugger;
+        scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
+        console.log('before then');
+        console.log(scope.possibleSendTo);
+        scope.possibleSendTo.promise.then(function (response) {
+          scope.sendToRecipients = response;
+          console.log('send to ');
+          console.log(response);
+          if (response[0]) {
+            scope.show = true;
+            scope.sendToId = response[0] && response[0].id;
+          }
+          
+          scope.commandView = 'sendTo';
+        });
+      };
+
+      scope.sendToIdChanged = function (id) {
+        scope.sendToId = id;
+      };
+
+      scope.onSendToButtonClicked = function () {
+        var sendToId = scope.sendToId;
+
+        caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
+          scope.show = false;
+          scope.caze.invalidate();
+          scope.caze.resolve();
+        });
+        /*.then(function () {
+          var href = navigationService.caseListHrefFromCase(scope.caze);
+          window.location.replace(href);
+        });*/
+      };
+      // End Send to
       
       // Restrict / Unrestrict
       scope.permissions = caseService.getPermissions($routeParams.caseId);
@@ -381,45 +431,7 @@ angular.module('sf')
       };
       // End Delete
       
-      // Send to (BROKEN)
-      // NOTE: Why does this use response[0]? the response is a large array of possible
-      // recipients. Why always the first in the list?
-      scope.sendTo = function () {
-        //debugger;
-        scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
-        console.log('before then');
-        console.log(scope.possibleSendTo);
-        scope.possibleSendTo.promise.then(function (response) {
-          scope.sendToRecipients = response;
-          console.log('send to ');
-          console.log(response);
-          if (response[0]) {
-            scope.show = true;
-            scope.sendToId = response[0] && response[0].id;
-          }
-          
-          scope.commandView = 'sendTo';
-        });
-      };
-
-      scope.sendToIdChanged = function (id) {
-        scope.sendToId = id;
-      };
-
-      scope.onSendToButtonClicked = function () {
-        var sendToId = scope.sendToId;
-
-        caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
-          scope.show = false;
-          scope.caze = null;
-          scope.caze = caseService.getSelected($routeParams.caseId);
-        });
-        /*.then(function () {
-          var href = navigationService.caseListHrefFromCase(scope.caze);
-          window.location.replace(href);
-        });*/
-      };
-      // End Send to
+      
       
       // Assign / Unassign
       scope.assign = function () {
@@ -472,22 +484,32 @@ angular.module('sf')
       });
 
       scope.$on('caselog-message-created', function(){
+        console.log('a');
         scope.sideBarCaseLogs.invalidate();
         scope.sideBarCaseLogs.resolve();
       });
 
       scope.$on('conversation-message-created', function(){
+        console.log('a');
         scope.conversations = caseService.getSelectedConversations($routeParams.caseId);
         scope.conversations.invalidate();
         scope.conversations.resolve();
       });
 
-      scope.$on('contact-name-updated', function(){
+      scope.$on('note-changed', function(event, data){
+        scope.notes[0].note = data;
+        scope.notes.invalidate();
+        scope.notes.resolve();
+      });
+
+      scope.$on('contact-name-updated', function(event, data){
+        scope.contacts[$routeParams.contactIndex].name = data.name;
         scope.contacts.invalidate();
         scope.contacts.resolve();
       });
 
       scope.$on('case-changed', function(e, attr) {
+        console.log('a');
         if (attr.command === 'casetype') {
           scope.commands.invalidate();
           scope.commands.resolve();
@@ -497,11 +519,12 @@ angular.module('sf')
         }
       });
 
-      scope.$on('casedescription-changed', function(){
-          scope.caze = caseService.getSelected($routeParams.caseId);
+      scope.$on('casedescription-changed', function(event, data){
+        scope.caze[0].text = data;
       });
 
       scope.$on('participant-removed', function(){
+        console.log('a');
         scope.conversations = caseService.getSelectedConversations($routeParams.caseId);
       });
 

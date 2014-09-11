@@ -11,16 +11,19 @@ angular.module('sf')
     $q.all(dfds)
     .then(function(response){
       $scope.caze = response[0];
+      console.log($scope.caze);
       $scope.notes = response[1];
+      console.log($scope.notes);
       $scope.general = response[2];
       $scope.cachedNote = response[3];
-    })
-    .then(function(){
-      $scope.sidebarData = {};
-      $scope.sidebarData.caseData = {caseId: $routeParams.caseId, caze: $scope.caze};
-      $scope.sidebarData.general = $scope.general;
-      $scope.sidebarData.notes = $scope.notes;
-      $scope.commands = caseService.getSelectedCommands($routeParams.caseId);
+    });
+
+    $scope.$watch('notes[0].note', function(newVal){
+      
+    });
+
+    $scope.$watch('caze[0].text', function(newVal){
+      
     });
 
 
@@ -29,8 +32,9 @@ angular.module('sf')
       //if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
         caseService.addNote($routeParams.caseId, $scope.notes[0])
         .then(function(response){
+          console.log(response);
+          $rootScope.$broadcast('note-changed', $scope.notes[0].note);
           $success($($event.target));
-          $rootScope.$broadcast('note-changed');
         }, function (error){
           $error($error($event.target));
         });
@@ -40,9 +44,9 @@ angular.module('sf')
     $scope.changeCaseDescription = function($event, $success, $error){
       $event.preventDefault();
       caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
-      .then(function(){
+      .then(function(response){
+        $rootScope.$broadcast('casedescription-changed', $scope.caze[0].text);
         $success($($event.target));
-        $rootScope.$broadcast('casedescription-changed');
       }, function(error) {
         $error($error($event.target));
       });
