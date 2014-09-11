@@ -503,9 +503,11 @@ angular.module('sf')
       });
 
       scope.$on('contact-name-updated', function(event, data){
-        scope.contacts[$routeParams.contactIndex].name = data.name;
+        //Hack to make live update work.
+        // This should probably be looked into.
         scope.contacts.invalidate();
-        scope.contacts.resolve();
+        scope.contacts[$routeParams.contactIndex] = {};
+        scope.contacts[$routeParams.contactIndex].name = data.name;
       });
 
       scope.$on('case-changed', function(e, attr) {
