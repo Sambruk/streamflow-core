@@ -14,7 +14,7 @@
     "angular-route": "1.2.22",
     "angular-growl-v2": "0.7.0",
     "momentjs": "~2.8.2",
-    "lodash": "latest",
+    "underscore": "git://github.com/documentcloud/underscore.git#~1.4.4",
     "angular-resource": "~1.2.23",
     "typewatch": "git://github.com/dennyferra/TypeWatch.git"
   },

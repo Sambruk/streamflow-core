@@ -19,7 +19,8 @@ var gulp = require('gulp'),
     del = require('del'),
     runSequence = require('run-sequence'),
     karma = require('gulp-karma'),
-    gulpif = require('gulp-if');
+    gulpif = require('gulp-if'),
+    testFiles = ['unit/filters-unit.js'];
 
 
 gulp.task('connect', ['clean-build'], function() {
@@ -191,7 +192,7 @@ gulp.task('vendor-scripts', function() {
     'bower/picker.js',
     'bower/picker.date.js',
     'bower/sv_SE.js',
-    'bower/lodash.js',
+    'bower/underscore.js',
     'bower/angular.js',
     'bower/moment.js',
     'bower/**/*.js'
@@ -216,7 +217,7 @@ gulp.task('inject', ['copy'], function() {
 gulp.task('test', function(){
   return gulp.src(testFiles)
     .pipe(karma({
-      configFile: 'karma.conf.js',
+      configFile: 'karma.config.js',
       action: 'run'
     }))
     .on('error', function(err){
