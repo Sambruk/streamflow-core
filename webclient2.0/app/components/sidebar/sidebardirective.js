@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -88,6 +88,13 @@ angular.module('sf')
           return 0;
         }
       };
+
+      scope.$watch('caze', function(newVal){
+        if(!newVal){
+          return;
+        }
+        scope.caze = newVal;
+      });
       
       // Resolve
      /* scope.showToolbar = function () {
@@ -353,19 +360,19 @@ angular.module('sf')
       scope.sendToIdChanged = function (id) {
         scope.sendToId = id;
       };
+      //var cache = $cacheFactory.info();
 
       scope.onSendToButtonClicked = function () {
         var sendToId = scope.sendToId;
+        //console.log('cachefactory');
+        //console.log(cache.info());
+
 
         caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
           scope.show = false;
           scope.caze.invalidate();
           scope.caze.resolve();
         });
-        /*.then(function () {
-          var href = navigationService.caseListHrefFromCase(scope.caze);
-          window.location.replace(href);
-        });*/
       };
       // End Send to
       
@@ -497,17 +504,17 @@ angular.module('sf')
       });
 
       scope.$on('note-changed', function(event, data){
-        scope.notes[0].note = data;
         scope.notes.invalidate();
         scope.notes.resolve();
       });
 
-      scope.$on('contact-name-updated', function(event, data){
-        //Hack to make live update work.
-        // This should probably be looked into.
+      scope.$watch('contacts', function(newVal){
+        console.log('updated contacts');
+        console.log(newVal);
+      });
+      scope.$on('contact-name-updated', function(){
         scope.contacts.invalidate();
-        scope.contacts[$routeParams.contactIndex] = {};
-        scope.contacts[$routeParams.contactIndex].name = data.name;
+        scope.contacts.resolve();
       });
 
       scope.$on('case-changed', function(e, attr) {
@@ -521,8 +528,9 @@ angular.module('sf')
         }
       });
 
-      scope.$on('casedescription-changed', function(event, data){
-        scope.caze[0].text = data;
+      scope.$on('casedescription-changed', function(){
+        scope.caze.invalidate();
+        scope.caze.resolve();
       });
 
       scope.$on('participant-removed', function(){

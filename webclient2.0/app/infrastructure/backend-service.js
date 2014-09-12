@@ -16,7 +16,7 @@
  */
 'use strict';
 
- angular.module('sf').factory('backendService', function ($http, $q, httpService) {
+ angular.module('sf').factory('backendService', function ($window, $http, $q, httpService) {
     function SfResource(href, response) {
       if (response) {
         this.response = response.data;
@@ -46,6 +46,9 @@
       },
 
       createById:function (resourceData, id, urls, skipCache) {
+        //console.log('CREATE BY ID');
+        //console.log(urls);
+        //console.log(id);
         var values = id.split('?');
         var trimmedId = values[0];
         var query = values[1];
@@ -71,13 +74,20 @@
         if (query){
           abshref += '?' + query;
         }
+
         return httpService.getRequest(abshref, skipCache).then(function (response) {
-          //urls
-          //urls.push(abshref);
+          //QUICK FIX:
+          // workspacev2 id sends undefined urls once which breaks the loop
+          // therefore, until we find out why this happens, we check that urls
+          // is not undefined.
+          if(urls){
+            urls.push(abshref);
+          }
           return new SfResource(abshref, response);
         });
       },
       getNested:function (specs, urls) {
+        //console.log(urls);
         if (specs.length === 0) {
           var deferred = $q.defer();
           deferred.resolve(this);
@@ -115,9 +125,12 @@
         if (skipCache){
           //var x = 0;
         }
+        //console.log('GET NESTED');
+        //console.log(urls);
 
         var resource = this.createById(data, id, urls, skipCache);
         return resource.then(function (nextResource) {
+          //console.log(nextResource);
           return nextResource.getNested(specs, urls);
         });
       },
@@ -160,12 +173,20 @@
       //      $scope.foo.invalidate();
       //      $scope.foo.resolve(); // will update the foo result again.
       //    }
-      get: function(dsl) {
+
+      //GET
+      //skipCache, a bool that decides whether to skip cache (in an update event) or not.
+      // needs to be passed.
+      get: function(dsl, skipCache) {
         var urls = []; // stores which URL the given DSL will use, so that we can invalidate it later if necessarily
         var result = []; // the return value, which can be used as a normal JavaScript object and has two extra methods
-
         // invalidates the HTTP Cache
-        result.invalidate = function() { httpService.invalidate(urls); };
+        result.urls = urls;
+        $window.result = result.urls;
+        result.invalidate = function() { 
+
+          httpService.invalidate(urls); 
+        };
 
         result.status = null;
 
@@ -182,18 +203,22 @@
           urls.length = 0;
 
           // always start from the root resource and then drill down by using the provided dsl object
-          result.promise = httpService.getRequest('').then(function (response) {
-              var resource = new SfResource('', response);
-              result.status = response.status;
-              return resource.getNested(angular.copy(dsl.specs), urls);
-            }).then(function(resource){
-              dsl.onSuccess(resource, result, urls);
-              return result;
-            });
-            
-            return result.promise;
+          result.promise = httpService.getRequest('', skipCache)
+          .then(function (response) {
+            var resource = new SfResource('', response);
+            result.status = response.status;
+            //console.log('here')
+            //console.log(urls);
+            return resource.getNested(angular.copy(dsl.specs), urls);
+          })
+          .then(function(resource){
+            dsl.onSuccess(resource, result, urls);
+            //console.log(resource);
+            return result;
+          });
+          //console.log(result);
+          return result.promise;
         };
-
         result.resolve();
         return result;
       },
@@ -203,6 +228,9 @@
       postNested: function (specs, data, responseSelector) {
 
         function findInJson(spec, json) {
+          console.log('findInJson');
+          console.log(spec);
+          console.log(json);
           var key = Object.keys(spec)[0];
           var id = spec[key];
           var searchIds = key.split('.');
@@ -211,11 +239,17 @@
           return _.find(jsonArray, function (item) { return item[arrayId] === id });
         }
 
-        return httpService.getRequest('').then(function (response) {
+        return httpService.getRequest('')
+        .then(function (response) {
           var resource = new SfResource('', response);
           return resource.postNested(specs, data);
-        }).then(function(response) {
-            return responseSelector ?  findInJson(responseSelector, response.data) : response;
+        })
+        .then(function(response) {
+          //console.log('post');
+          //console.log(response);
+          //console.log('responseSelector');
+          //console.log(responseSelector);
+          return responseSelector ?  findInJson(responseSelector, response.data) : response;
         });
       }
     };

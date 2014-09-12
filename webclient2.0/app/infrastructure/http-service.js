@@ -47,6 +47,14 @@ angular.module('sf')
       }
     }
 
+    var invalidate = function(hrefs) {
+        hrefs.forEach(function(href) { 
+          console.log('invalidate');
+          console.log(href);
+          cache.remove(href);
+        });
+      }
+
     var baseUrl = prepareBaseUrl();
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');
@@ -54,7 +62,6 @@ angular.module('sf')
     
   
     return {
-
       baseUrl: baseUrl,
       apiUrl: apiUrl,
 
@@ -71,29 +78,27 @@ angular.module('sf')
       },
 
       invalidate: function(hrefs) {
-        hrefs.forEach(function(href) { cache.remove(href);});
+        hrefs.forEach(function(href) { 
+          console.log('invalidate: ' + href);
+          //console.log(href);
+          cache.remove(href);
+        });
       },
 
-      getRequest: function (href) {
+      //GET: skipCache decides whether to skip the cache or not.
+      // if skipCache the cached item href will be removed from cache and
+      // replaced with updated one.
+      getRequest: function (href, skipCache) {
+        //if(skipCache === true){
+        //  cache.remove(href);
+        //}
         var result = cache.get(href);
-        if (!result) {
+        var resultUndefined = angular.isUndefined(result);
+        if (!result || resultUndefined === true) {
           var url = this.prepareUrl(href);
-          //var q = $q.defer();
-          //var promise = q.promise;
-          //cache.put(href, promise);
-
           var promise = $http({ method:'GET', url: url});
           cache.put(href, promise);
-
-         /* promise.then(function () {
-            setTimeout(function () {
-              cache.remove(href);
-            }, 3000);
-          }, function (arg) {
-            errorHandlerService(arg);
-            cache.remove(href);
-          });*/
-
+          //console.log(cache);
           return promise;
         }
 

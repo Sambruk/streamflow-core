@@ -11,9 +11,7 @@ angular.module('sf')
     $q.all(dfds)
     .then(function(response){
       $scope.caze = response[0];
-      console.log($scope.caze);
       $scope.notes = response[1];
-      console.log($scope.notes);
       $scope.general = response[2];
       $scope.cachedNote = response[3];
     });
@@ -32,7 +30,6 @@ angular.module('sf')
       //if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
         caseService.addNote($routeParams.caseId, $scope.notes[0])
         .then(function(response){
-          console.log(response);
           $rootScope.$broadcast('note-changed', $scope.notes[0].note);
           $success($($event.target));
         }, function (error){
