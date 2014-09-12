@@ -336,9 +336,7 @@ angular.module('sf')
       updateToolbar();
       // End commands (toolbar)
 
-      // Send to (BROKEN)
-      // NOTE: Why does this use response[0]? the response is a large array of possible
-      // recipients. Why always the first in the list?
+      // Send to
       scope.sendTo = function () {
         //debugger;
         scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
@@ -364,9 +362,6 @@ angular.module('sf')
 
       scope.onSendToButtonClicked = function () {
         var sendToId = scope.sendToId;
-        //console.log('cachefactory');
-        //console.log(cache.info());
-
 
         caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
           scope.show = false;
@@ -490,6 +485,7 @@ angular.module('sf')
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, defaultFilters);
       });
 
+      //Event-listeners
       scope.$on('caselog-message-created', function(){
         console.log('a');
         scope.sideBarCaseLogs.invalidate();
@@ -537,6 +533,7 @@ angular.module('sf')
         console.log('a');
         scope.conversations = caseService.getSelectedConversations($routeParams.caseId);
       });
+      //End Event-listeners
 
       scope.showContact = function(contactId){
         alert("Not supported - need UX for this.");
