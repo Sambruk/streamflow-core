@@ -26,7 +26,7 @@
       <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
       <li data-ng-show="canAssign"><a href="" data-ng-click="assign()" class="btn">Tilldela</a></li>
       <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign()" class="btn">Återlämna</a></li>
-      <li data-ng-show="canResolve"><a href="" data-ng-click="resolve()" class="btn">Stäng</a></li>
+      <li data-ng-show="canResolve"><a href="" data-ng-click="resolveCase()" class="btn">Stäng</a></li>
       <li data-ng-show="canClose"><a href="" data-ng-click="close()" class="btn">Stäng</a></li>
       <li data-ng-show="formOnClose"><a href="" class="btn disabled">Stäng</a></li>
       <li>
@@ -259,7 +259,7 @@
   <div class="m m-contacts">
     <div class="m-h">
       <h2>Kontakter</h2>
-      <a href="" data-ng-click="submitContact($event)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+      <a href="" data-ng-click="submitContact(caze[0].id, contacts.length)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul class="zebra-list">

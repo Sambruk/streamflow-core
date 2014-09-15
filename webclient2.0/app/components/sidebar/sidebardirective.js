@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, growl, contactService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -42,6 +42,7 @@ angular.module('sf')
       scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
       scope.notes = caseService.getSelectedNote($routeParams.caseId);
       scope.caze = caseService.getSelected($routeParams.caseId);
+      scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
 
       if($routeParams.formId && $routeParams.caseId){
         //var formId = scope.formdata.formId;
@@ -56,16 +57,6 @@ angular.module('sf')
         caseToolbar: false,
         casePermissions: true,
         caseAttachment: true
-      };
-
-      scope.contact = {
-        name: '',
-        contactId: '',
-        note: '',
-        addresses: [{ address: '', zipCode: '', city: '', region: '', country: '', contactType: 'HOME' }],
-        emailAddresses: [{ emailAddress: '', contactType: 'HOME'}],
-        phoneNumbers: [{ phoneNumber: '', contactType: 'HOME' }],
-        contactPreference: 'email'
       };
 
       var sortByText = function (x, y) {
@@ -116,6 +107,9 @@ angular.module('sf')
         console.log(newVal);
       });
 
+      //contact here
+      scope.submitContact = contactService.submitContact;
+      //end contact
 
 
       /* HTTP NOTIFICATIONS */
@@ -138,7 +132,7 @@ angular.module('sf')
         return !!scope.possibleResolutions.length;
       };*/
       
-      scope.resolve = function() {
+      scope.resolveCase = function() {
         scope.possibleResolutions.promise.then(function (response) {
           scope.resolution = response[0].id;
           scope.commandView = 'resolve';
@@ -375,14 +369,8 @@ angular.module('sf')
 
       // Send to
       scope.sendTo = function () {
-        //debugger;
-        scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
-        console.log('before then');
-        console.log(scope.possibleSendTo);
         scope.possibleSendTo.promise.then(function (response) {
           scope.sendToRecipients = response;
-          console.log('send to ');
-          console.log(response);
           if (response[0]) {
             scope.show = true;
             scope.sendToId = response[0] && response[0].id;
@@ -477,8 +465,6 @@ angular.module('sf')
       };
       // End Delete
       
-      
-      
       // Assign / Unassign
       scope.assign = function () {
         caseService.assignCase($routeParams.caseId).then(function () {
@@ -529,16 +515,7 @@ angular.module('sf')
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, defaultFilters);
       });
 
-      scope.showContact = function(contactId){
-        alert("Not supported - need UX for this.");
-      };
-
-      scope.submitContact = function() {
-        caseService.addContact($routeParams.caseId, scope.contact).then(function(){
-          var href = navigationService.caseHrefSimple($routeParams.caseId);
-          window.location.assign(href + "/contact/" + scope.contacts.length + "/");
-        });
-      };
+      
 
       //Event-listeners
       scope.$on('caselog-message-created', function(){
