@@ -16,12 +16,12 @@ angular.module('sf', [
       console.log('Current route name: ' + $location.path());
       console.log($routeParams);
       // Get all URL parameter
-      $rootScope.toolbarParams = {};
+      $rootScope.contextmenuParams = {};
       if($routeParams.projectType){
-        $rootScope.toolbarParams.projectType = $routeParams.projectType;
+        $rootScope.contextmenuParams.projectType = $routeParams.projectType;
       }
       if($routeParams.projectId){
-        $rootScope.toolbarParams.projectId = $routeParams.projectId;        
+        $rootScope.contextmenuParams.projectId = $routeParams.projectId;        
       }
     });
   });

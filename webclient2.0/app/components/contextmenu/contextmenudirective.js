@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('sf')
-.directive('toolbar', function(projectService, navigationService, $rootScope){
+.directive('contextmenu', function(projectService, navigationService, $rootScope){
   return {
     restrict: 'E',
-    templateUrl: 'components/toolbar/toolbar.html',
+    templateUrl: 'components/contextmenu/contextmenu.html',
     scope: {
       params: '=?'
     },

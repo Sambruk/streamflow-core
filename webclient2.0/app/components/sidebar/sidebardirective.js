@@ -111,6 +111,11 @@ angular.module('sf')
         scope.caze = newVal;
       });
 
+      scope.$watch('contacts', function(newVal){
+        console.log('updated contacts');
+        console.log(newVal);
+      });
+
 
 
       /* HTTP NOTIFICATIONS */
@@ -524,16 +529,24 @@ angular.module('sf')
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, defaultFilters);
       });
 
+      scope.showContact = function(contactId){
+        alert("Not supported - need UX for this.");
+      };
+
+      scope.submitContact = function() {
+        caseService.addContact($routeParams.caseId, scope.contact).then(function(){
+          var href = navigationService.caseHrefSimple($routeParams.caseId);
+          window.location.assign(href + "/contact/" + scope.contacts.length + "/");
+        });
+      };
+
       //Event-listeners
       scope.$on('caselog-message-created', function(){
-        console.log('a');
         scope.sideBarCaseLogs.invalidate();
         scope.sideBarCaseLogs.resolve();
       });
 
       scope.$on('conversation-message-created', function(){
-        console.log('a');
-        scope.conversations = caseService.getSelectedConversations($routeParams.caseId);
         scope.conversations.invalidate();
         scope.conversations.resolve();
       });
@@ -543,17 +556,13 @@ angular.module('sf')
         scope.notes.resolve();
       });
 
-      scope.$watch('contacts', function(newVal){
-        console.log('updated contacts');
-        console.log(newVal);
-      });
+      
       scope.$on('contact-name-updated', function(){
         scope.contacts.invalidate();
         scope.contacts.resolve();
       });
 
       scope.$on('case-changed', function(e, attr) {
-        console.log('a');
         if (attr.command === 'casetype') {
           scope.commands.invalidate();
           scope.commands.resolve();
@@ -569,21 +578,10 @@ angular.module('sf')
       });
 
       scope.$on('participant-removed', function(){
-        console.log('a');
-        scope.conversations = caseService.getSelectedConversations($routeParams.caseId);
+        scope.conversations.invalidate();
+        scope.conversations.resolve();
       });
       //End Event-listeners
-
-      scope.showContact = function(contactId){
-        alert("Not supported - need UX for this.");
-      };
-
-      scope.submitContact = function() {
-        caseService.addContact($routeParams.caseId, scope.contact).then(function(){
-          var href = navigationService.caseHrefSimple($routeParams.caseId);
-          window.location.assign(href + "/contact/" + scope.contacts.length + "/");
-        });
-      };
 
     }
   };
