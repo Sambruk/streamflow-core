@@ -4,8 +4,6 @@ angular.module('sf')
 
     $scope.caseId = $routeParams.caseId;
     $scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
-    $scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
-
     $scope.$watch("selectedSubmittedForm", function(){
       var index = $scope.selectedSubmittedForm;
       if (_.isNumber(index)){

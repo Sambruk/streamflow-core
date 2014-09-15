@@ -1,12 +1,12 @@
 'use strict';
 angular.module('sf')
   .controller('ContactEditCtrl', function($scope, $rootScope, caseService, $routeParams, navigationService) {
+    $scope.sidebardata = {};
     $scope.projectId = $routeParams.projectId;
     $scope.projectType = $routeParams.projectType;
     $scope.caseId = $routeParams.caseId;
     $scope.contactIndex = $routeParams.contactIndex;
     $scope.contact = caseService.getSelectedContact($routeParams.caseId, $routeParams.contactIndex);
-    $scope.contacts = caseService.getSelectedContacts($routeParams.caseId);
 
     $scope.submitContact = function($event){
       $event.preventDefault();
@@ -26,8 +26,6 @@ angular.module('sf')
         var href = navigationService.caseHref($routeParams.caseId);
         $scope.contact.invalidate();
         $scope.contact.resolve();
-        $scope.contacts.invalidate();
-        $scope.contacts.resolve();
         window.location.assign(href);
       });
     }

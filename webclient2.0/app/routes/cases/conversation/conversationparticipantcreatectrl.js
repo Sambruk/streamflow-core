@@ -1,8 +1,6 @@
 'use strict';
 angular.module('sf')
   .controller('ConversationParticipantCreateCtrl', function($scope, caseService, $routeParams, navigationService) {
-    $scope.projectId = $routeParams.projectId;
-    $scope.projectType = $routeParams.projectType;
     $scope.caseId = $routeParams.caseId;
     $scope.conversationId = $routeParams.conversationId;
     $scope.possibleParticipants = caseService.getPossibleConversationParticipants($routeParams.caseId, $routeParams.conversationId);

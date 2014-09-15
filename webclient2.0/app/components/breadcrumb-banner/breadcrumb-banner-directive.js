@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('sf')
-.directive('issuebanner', function(profileService, $rootScope){
+.directive('breadcrumbbanner', function(profileService, $rootScope){
   return {
     restrict: 'E',
-    templateUrl: 'components/issuebanner/issuebanner.html',
+    templateUrl: 'components/breadcrumb-banner/breadcrumb-banner.html',
     scope: {
       breadcrumblist: '=?'
     },
@@ -17,7 +17,7 @@ angular.module('sf')
         scope.breadcrumbList = newVal;   
       });
       
-      $rootScope.$on('breadcrumb-updated', function(event, breadcrumbList) {
+      scope.$on('breadcrumb-updated', function(event, breadcrumbList) {
         scope.breadcrumbList = getBreadcrumbItems(breadcrumbList);
       });
 

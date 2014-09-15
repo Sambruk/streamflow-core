@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, growl, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -43,12 +43,8 @@ angular.module('sf')
       scope.notes = caseService.getSelectedNote($routeParams.caseId);
       scope.caze = caseService.getSelected($routeParams.caseId);
 
-      console.log('sidebar');
-      console.log(scope.caze);
-      console.log(scope.notes);
-
       if($routeParams.formId && $routeParams.caseId){
-        var formId = scope.formdata.formId;
+        //var formId = scope.formdata.formId;
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
       }
 
@@ -72,11 +68,6 @@ angular.module('sf')
         contactPreference: 'email'
       };
 
-      scope.$watch('sidebardata', function(newVal){
-        scope.sidebardata = newVal;
-        console.log(scope.sidebardata);
-      });
-
       var sortByText = function (x, y) {
         var xS = x.text && x.text.toUpperCase() || '',
             yS = y.text && y.text.toUpperCase() || '';
@@ -89,12 +80,53 @@ angular.module('sf')
         }
       };
 
+      //Sending updated objects to controller
+      scope.$watch('caze[0]', function(newVal){
+        if(!newVal){
+          return;
+        }
+        console.log('caze fetched');
+        $rootScope.$broadcast('breadcrumb-updated', 
+          [{projectId: scope.caze[0].owner}, 
+          {projectType: scope.caze[0].listType}, 
+          {caseId: scope.caze[0].caseId}]);
+        if(scope.sidebardata){
+          scope.sidebardata['caze'] = scope.caze;
+        }
+      });
+
+      scope.$watch('notes', function(newVal){
+        if(!newVal){
+          return;
+        }
+        if(scope.sidebardata){
+          scope.sidebardata['notes'] = scope.notes;
+        }
+      });
+
       scope.$watch('caze', function(newVal){
         if(!newVal){
           return;
         }
         scope.caze = newVal;
       });
+
+
+
+      /* HTTP NOTIFICATIONS */
+      scope.errorHandler = function(){
+        var bcMessage = caseService.getMessage();
+        if(bcMessage === 200)  {
+          //alert('success');
+            //growl.addSuccessMessage('successMessage');
+        }else {
+          growl.warning('errorMessage');
+        }
+      };
+
+      //error-handler
+      scope.$on('httpRequestInitiated', scope.errorHandler);
+      // End HTTP NOTIFICATIONS
       
       // Resolve
      /* scope.showToolbar = function () {
@@ -366,14 +398,15 @@ angular.module('sf')
         caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
           scope.show = false;
           scope.caze.invalidate();
-          scope.caze.resolve();
-          console.log('owner');
-          console.log(scope.caze);
-          $rootScope.$broadcast('breadcrumb-updated', 
-            [{projectId: scope.caze[0].owner}, 
-            {projectType: scope.caze[0].listType}, 
-            {caseId: scope.caze[0].caseId}]);
+          scope.caze.resolve().then(function(response){
+            $rootScope.$broadcast('case-changed');
+            $rootScope.$broadcast('breadcrumb-updated', 
+              [{projectId: scope.caze[0].owner}, 
+              {projectType: scope.caze[0].listType}, 
+              {caseId: scope.caze[0].caseId}]);
+            });
           });
+          
       };
       // End Send to
       

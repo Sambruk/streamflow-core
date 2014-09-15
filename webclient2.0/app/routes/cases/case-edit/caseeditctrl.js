@@ -1,33 +1,27 @@
 'use strict';
 angular.module('sf')
-  .controller('CaseEditCtrl', function(growl, $q, $scope, $rootScope, $routeParams, caseService, navigationService) { 
-    var cachedNote = caseService.getSelectedNote($routeParams.caseId);
-    var caze = caseService.getSelected($routeParams.caseId);
-    var notes = caseService.getSelectedNote($routeParams.caseId);
-    var general = caseService.getSelectedGeneral($routeParams.caseId);
+  .controller('CaseEditCtrl', function($scope, $rootScope, $routeParams, caseService) { 
+    $scope.sidebardata = {};
 
-    var dfds = [];
-    dfds.push(caze.promise, notes.promise, general.promise, cachedNote.promise);
-    $q.all(dfds)
-    .then(function(response){
-      $scope.caze = response[0];
-      $scope.notes = response[1];
-      $scope.general = response[2];
-      $scope.cachedNote = response[3];
+    $scope.$watch('sidebardata.caze', function(newVal){
+      if(!newVal){
+        return;
+      }
+      $scope.caze = $scope.sidebardata.caze;    
     });
 
-    $scope.$watch('notes[0].note', function(newVal){
-      
-    });
-
-    $scope.$watch('caze[0].text', function(newVal){
-      
+    $scope.$watch('sidebardata.notes', function(newVal){
+      if(!newVal){
+        return;
+      }
+      $scope.notes = $scope.sidebardata.notes;
+      $scope.cachedNote = $scope.sidebardata.notes;
     });
 
 
     $scope.addNote = function($event, $success, $error){
       $event.preventDefault();
-      //if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
+      if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
         caseService.addNote($routeParams.caseId, $scope.notes[0])
         .then(function(response){
           $rootScope.$broadcast('note-changed', $scope.notes[0].note);
@@ -35,7 +29,7 @@ angular.module('sf')
         }, function (error){
           $error($error($event.target));
         });
-      //}   
+      }   
     }
 
     $scope.changeCaseDescription = function($event, $success, $error){

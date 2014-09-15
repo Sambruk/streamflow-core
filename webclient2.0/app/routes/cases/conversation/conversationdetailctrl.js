@@ -1,8 +1,7 @@
 'use strict';
 angular.module('sf')
   .controller('ConversationDetailCtrl', function($scope, $rootScope, caseService, $routeParams, navigationService) {
-    $scope.projectId = $routeParams.projectId;
-    $scope.projectType = $routeParams.projectType;
+    $scope.sidebardata = {};
     $scope.caseId = $routeParams.caseId;
     $scope.conversationId = $routeParams.conversationId;
 

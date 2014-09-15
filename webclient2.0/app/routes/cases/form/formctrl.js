@@ -1,6 +1,7 @@
 'use strict';
 angular.module('sf')
   .controller('FormCtrl', function($scope, caseService, $routeParams) {
+    $scope.sidebardata = {};
     $scope.caseId = $routeParams.caseId;
     $scope.currentFormId = $routeParams.formId;
     $scope.currentFormDescription;
@@ -17,7 +18,7 @@ angular.module('sf')
             };
           });
         }, 1000);
-        $scope.currentFormId = formId;
+       // $scope.currentFormId = formId;
       });
 
       $scope.formMessage = "";
