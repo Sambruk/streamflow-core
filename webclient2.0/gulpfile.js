@@ -85,6 +85,9 @@ var paths = {
   vendor: {
     images: ['bower_components/chosen/*.png'],
     scripts: ['bower_components/**/*.js',
+          '!bower_components/underscore/index.js',
+          '!bower_components/underscore/docs/**/*.js',
+          '!bower_components/underscore/test/**/*.js',
           '!bower_components/jquery/**/*.js',
           '!bower_components/angular/**/*.js',
           '!bower_components/angular-route/**/*.js',
@@ -93,7 +96,8 @@ var paths = {
           '!bower_components/bootstrap/**/*.*',
           '!bower_components/pickadate/**/*.*',
           '!bower_components/**/*.min.js',
-          '!bower_components/**/*.min.map'],
+          '!bower_components/**/*.min.map',
+          'bower_components/underscore/underscore.js'],
     css: ['app/design/gui/vendor/pickadate/themes/default.css',
           'app/design/gui/vendor/pickadate/themes/default.date.css',
           'bower_components/chosen/chosen.css']

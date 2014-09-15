@@ -367,7 +367,13 @@ angular.module('sf')
           scope.show = false;
           scope.caze.invalidate();
           scope.caze.resolve();
-        });
+          console.log('owner');
+          console.log(scope.caze);
+          $rootScope.$broadcast('breadcrumb-updated', 
+            [{projectId: scope.caze[0].owner}, 
+            {projectType: scope.caze[0].listType}, 
+            {caseId: scope.caze[0].caseId}]);
+          });
       };
       // End Send to
       

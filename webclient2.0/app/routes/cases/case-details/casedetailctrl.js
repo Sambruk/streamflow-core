@@ -3,33 +3,15 @@ angular.module('sf')
 .controller('CaseDetailCtrl', function(growl, $q, $scope, $timeout, $routeParams, caseService, navigationService, projectService, profileService, $rootScope){
   var caze = caseService.getSelected($routeParams.caseId);
   var notes = caseService.getSelectedNote($routeParams.caseId);
-  var general = caseService.getSelectedGeneral($routeParams.caseId);
-  var commands = caseService.getSelectedCommands($routeParams.caseId);
-  var profile = profileService.getCurrent();
 
   var dfds = [];
-  dfds.push(caze.promise, notes.promise, general.promise, commands.promise, profile.promise);
+  dfds.push(caze.promise, notes.promise);
   $q.all(dfds)
   .then(function(response){
     $scope.caze = response[0];
     $scope.notes = response[1];
-    $scope.general = response[2];
-    $scope.commands = response[3];
-    $scope.profile = response[4];
-  })
-  .then(function(){
-    $scope.sidebarData = {};
-    $scope.sidebarData.caseData = {caseId: $routeParams.caseId, caze: $scope.caze};
-    $scope.sidebarData.general = $scope.general;
-    $scope.sidebarData.notes = $scope.notes;
   });
   
-  
-
-
-  
-  
-
   $scope.$watch('caze', function(newVal){
     if(!newVal){
       return; 
@@ -51,6 +33,10 @@ angular.module('sf')
   $scope.$on('case-changed', function() {
     $scope.caze.invalidate();
     $scope.caze.resolve();
+    $rootScope.$broadcast('breadcrumb-updated', 
+        [{projectId: $scope.caze[0].owner}, 
+        {projectType: $scope.caze[0].listType}, 
+        {caseId: $scope.caze[0].caseId}]);
   });
 
   $scope.$on('note-changed', function() {
