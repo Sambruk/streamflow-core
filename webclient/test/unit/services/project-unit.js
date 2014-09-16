@@ -19,7 +19,7 @@ describe("sf.services.project", function () {
 
   var backend = window.mockBackend;
 
-  beforeEach(module('sf.services.project'));
+  beforeEach(module('sf'));
 
   beforeEach(inject(function(httpService, navigationService) {
     httpService.apiUrl = 'mock/';

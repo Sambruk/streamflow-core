@@ -19,7 +19,7 @@ describe("sf.services.http", function () {
 
   var backend = window.mockBackend;
 
-  beforeEach(module('sf.services.http'));
+  beforeEach(module('sf'));
 
   describe('httpService', function () {
     beforeEach(inject(function ($location) {

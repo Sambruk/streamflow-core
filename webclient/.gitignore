@@ -1,11 +1,6 @@
-node_modules/
-dist
+node_modules
+build
+app/bower_components
 .tmp
-.sass-cache
-app/components
-test_server/*.jar
-test_server/*.war
-libpeerconnection.log
-*.swp
-*.swo
-.idea
+.DS_Store
+.env

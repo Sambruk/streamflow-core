@@ -1,7 +1,7 @@
 {
   "name": "streamflow-client",
   "version": "1.0.0",
-  "main": "app/modules/app.js",
+  "main": "app/app.js",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -12,16 +12,11 @@
   "dependencies": {
     "angular": "1.2.22",
     "angular-route": "1.2.22",
-    "angular-resource": "1.2.22",
-    "base64": "git://github.com/davidchambers/Base64.js.git#~0.1.1",
-    "jquery": "git://github.com/components/jquery.git#~2.0.2",
-    "json3": "git://github.com/bestiejs/json3.git#~3.2.4",
+    "angular-growl-v2": "0.7.0",
+    "momentjs": "~2.8.2",
     "underscore": "git://github.com/documentcloud/underscore.git#~1.4.4",
-    "es5-shim": "git://github.com/kriskowal/es5-shim.git#~2.0.8",
-    "typewatch": "git://github.com/dennyferra/TypeWatch.git",
-    "chosen": "https://github.com/harvesthq/chosen/releases/download/v1.1.0/chosen_v1.1.0.zip",
-    "moment": "~2.8.1",
-    "angular-growl-v2": "0.7.0"
+    "angular-resource": "~1.2.23",
+    "typewatch": "git://github.com/dennyferra/TypeWatch.git"
   },
   "devDependencies": {
     "angular-mocks": "1.2.22",

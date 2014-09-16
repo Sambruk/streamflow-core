@@ -14,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+'use strict';
 describe("sf.services.error-handler", function () {
-  'use strict';
 
   function isPhantomJS() {
     return ( navigator 
@@ -23,7 +24,7 @@ describe("sf.services.error-handler", function () {
              && navigator.userAgent.indexOf("PhantomJS") != -1 ); 
   }
 
-  beforeEach(module('sf.services.error-handler'));
+  beforeEach(module('sf'));
 
   it("does nothing on a 404 request", inject(function (errorHandlerService, $window) {
     if (isPhantomJS()) {

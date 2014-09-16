@@ -1,6 +1,0 @@
-node_modules
-build
-app/bower_components
-.tmp
-.DS_Store
-.env
