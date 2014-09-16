@@ -40,7 +40,7 @@ gulp.task('clean', function(cb) {
 //});
 
 
-gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'unit-test'], function(cb){
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css'], function(cb){
   cb();
 });
 
