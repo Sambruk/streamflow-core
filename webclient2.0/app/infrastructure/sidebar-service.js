@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('sidebarService', function($routeParams, caseService, $q){
+.factory('sidebarService', function($routeParams, caseService, $q, $rootScope){
   var sortByText = function (x, y) {
     var xS = x.text && x.text.toUpperCase() || '',
         yS = y.text && y.text.toUpperCase() || '';
@@ -27,7 +27,7 @@ angular.module('sf')
           'background-color': scope.priorityColor[priorityId]
         };
       }
-      
+
       scope.showSpinner.casePriority = false;
     });
   };
@@ -118,9 +118,20 @@ angular.module('sf')
           scope[commandMap[commandName]] = hasCommand(commandName);
         }
       }
-      
+
       scope.showSpinner.caseToolbar = false;
     });
+  };
+
+  var _sendTo = function(scope) {
+    scope.possibleSendTo.promise.then(function (response) {
+      scope.sendToRecipients = response;
+      if (response[0]) {
+        scope.show = true;
+        scope.sendToId = response[0] && response[0].id;
+      }
+        scope.commandView = 'sendTo';
+      });
   };
 
   var _onSendToButtonClicked = function(scope) {
@@ -130,7 +141,8 @@ angular.module('sf')
       scope.show = false;
       scope.caze.invalidate();
       scope.caze.resolve().then(function(response){
-        $rootScope.$broadcast('case-changed');
+        // Is this needed?
+        //$rootScope.$broadcast('case-changed');
         $rootScope.$broadcast('breadcrumb-updated', 
           [{projectId: scope.caze[0].owner}, 
           {projectType: scope.caze[0].listType}, 
@@ -342,6 +354,7 @@ angular.module('sf')
     changeCaseType: _changeCaseType,
     updateCaseLabels: _updateCaseLabels,
     updateToolbar: _updateToolbar,
+    sendTo: _sendTo,
     onSendToButtonClicked: _onSendToButtonClicked,
     unrestrict: _unrestrict,
     restrict: _restrict,
