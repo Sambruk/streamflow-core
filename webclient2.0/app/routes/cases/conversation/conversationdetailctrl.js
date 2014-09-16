@@ -1,6 +1,6 @@
 'use strict';
 angular.module('sf')
-  .controller('ConversationDetailCtrl', function($scope, $rootScope, caseService, $routeParams, navigationService) {
+  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService) {
     $scope.sidebardata = {};
     $scope.caseId = $routeParams.caseId;
     $scope.conversationId = $routeParams.conversationId;
@@ -8,6 +8,15 @@ angular.module('sf')
     $scope.conversationMessages = caseService.getConversationMessages($routeParams.caseId, $routeParams.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($routeParams.caseId, $routeParams.conversationId);
     $scope.conversationMessageDraft = caseService.getMessageDraft($routeParams.caseId, $routeParams.conversationId);
+    //console.log($scope.conversationParticipants);
+
+    $scope.showSpinner = {
+      participants: true
+    };
+
+    $scope.conversationParticipants.promise.then(function(response){
+      $scope.showSpinner.participants = false;
+    });
 
     $scope.$watch("conversationMessageDraft[0]", function(){
       var toSend = $scope.conversationMessageDraft[0];

@@ -235,6 +235,9 @@ angular.module('sf')
       scope.$on('caselog-message-created', function(){
         updateObject(scope.sideBarCaseLogs);
       });
+      scope.$on('conversation-created', function(){
+        updateObject(scope.conversations);
+      });
       scope.$on('conversation-message-created', function(){
         updateObject(scope.conversations);
       });

@@ -15,7 +15,7 @@
 
   describe("Issue view", function() {
     beforeEach(function() {
-      browser().navigateTo('../../app/index.html');
+      browser().navigateTo('../../build/index.html');
 
       element('.open-toolbar').click();
       element(".sub-category a:eq(1)").click();
