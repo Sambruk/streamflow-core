@@ -52,8 +52,13 @@ angular.module('sf')
         casePriority: true,
         caseToolbar: false,
         casePermissions: true,
-        caseAttachment: true
+        caseAttachment: true,
+        caseGeneralInfo: true
       }; //End declare scope objects
+
+      scope.caze.promise.then(function(){
+        scope.showSpinner.caseGeneralInfo = false;
+      });
 
       //Watch
       scope.$watch('caze[0]', function(newVal){
@@ -171,8 +176,9 @@ angular.module('sf')
       };
       scope.onSendToButtonClicked = function () {
         sidebarService.onSendToButtonClicked(scope);
-      }; // End Send to    
-      
+      };
+      // End Send to
+
       // Restrict / Unrestrict
       scope.permissions = caseService.getPermissions($routeParams.caseId);
       scope.permissions.promise.then(function () {

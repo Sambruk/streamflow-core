@@ -165,12 +165,15 @@
       <h2>Allmänt</h2>
     </div>
     <div class="m-c">
-      <div class="m-box">
-        <ul>
-          <li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
-          <li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
-          <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
-        </ul>
+      <div class="m-box generalCaseInfoBox">
+				<div ng-hide="showSpinner.caseGeneralInfo">
+					<ul>
+						<li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
+						<li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
+						<li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
+					</ul>
+				</div>
+				<div ng-show="showSpinner.caseGeneralInfo" class="spinner"></div>
       </div>
     </div>
       <div class="m-box permissionBox">

@@ -130,13 +130,13 @@ angular.module('sf')
         scope.show = true;
         scope.sendToId = response[0] && response[0].id;
       }
-        scope.commandView = 'sendTo';
-      });
+      scope.commandView = 'sendTo';
+    });
   };
 
   var _onSendToButtonClicked = function(scope) {
     var sendToId = scope.sendToId;
-
+    scope.showSpinner.caseGeneralInfo= true;
     caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
       scope.show = false;
       scope.caze.invalidate();
@@ -147,8 +147,12 @@ angular.module('sf')
           [{projectId: scope.caze[0].owner}, 
           {projectType: scope.caze[0].listType}, 
           {caseId: scope.caze[0].caseId}]);
+
+        scope.showSpinner.caseGeneralInfo = false;
         });
+
       });
+
   };
 
   var _unrestrict = function (scope) {
