@@ -48,6 +48,3 @@ describe("sf.filters", function () {
   });
 
 });
-
-
-

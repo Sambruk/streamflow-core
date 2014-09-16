@@ -40,7 +40,7 @@ gulp.task('clean', function(cb) {
 //});
 
 
-gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css'], function(cb){
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'unit-test'], function(cb){
   cb();
 });
 
@@ -218,10 +218,21 @@ gulp.task('inject', ['copy'], function() {
     .pipe(gulp.dest('build'));
 });
 
-gulp.task('test', function(){
+gulp.task('unit-test', function(){
   return gulp.src(testFiles)
     .pipe(karma({
       configFile: 'karma.config.js',
+      action: 'run'
+    }))
+    .on('error', function(err){
+      throw err;
+    });
+});
+
+gulp.task('e2e-test', function(){
+  return gulp.src(testFiles)
+    .pipe(karma({
+      configFile: 'karma-e2e.conf.js',
       action: 'run'
     }))
     .on('error', function(err){
