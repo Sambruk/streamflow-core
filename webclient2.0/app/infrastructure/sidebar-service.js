@@ -146,7 +146,7 @@ angular.module('sf')
       scope.permissions.invalidate();
       scope.permissions.resolve().then(function () {
         scope.showSpinner.casePermissions = false;
-        updateToolbar();
+        _updateToolbar(scope);
       });
     });
   };
@@ -158,7 +158,7 @@ angular.module('sf')
       scope.permissions.invalidate();
       scope.permissions.resolve().then(function () {
         scope.showSpinner.casePermissions = false;
-        updateToolbar();
+        _updateToolbar(scope);
       });
     });
   };
@@ -171,7 +171,7 @@ angular.module('sf')
     
     markFunction($routeParams.caseId).then(function () {
       scope.commands.resolve().then(function () {
-        updateToolbar();
+        _updateToolbar(scope);
       });
     });
   };
