@@ -1,15 +1,15 @@
 # Up and running
-navigate to /webclient
+navigate to `webclient`
 
     npm install  
 
     bower install  
-remove jquery from bower_components  
+You need to remove jquery from bower_components since wrong version gets installed as a dependency  
 
-navigate to app/design  
+navigate to `webclient/app/design`  
     git checkout develop  
 
-navigate to ../../  
+navigate to `webclient`  
     gulp  
  
 The application is now served on localhost:8080
@@ -20,5 +20,4 @@ This project uses a submodule, it need to be initiated with.
 
     git submodule update --init
 
-This populates the folder `webclient/app/design`.  
-Navigate here and checkout the develop or master branch to get current design.  
+This populates the folder `webclient/app/design`.   
