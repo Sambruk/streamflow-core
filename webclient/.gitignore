@@ -4,3 +4,10 @@ app/bower_components
 .tmp
 .DS_Store
 .env
+test_server/*.jar
+test_server/*.war
+libpeerconnection.log
+*.swp
+*.swo
+.idea
+.sass-cache
