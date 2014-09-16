@@ -129,7 +129,7 @@
           ng-style="activePriorityColor"
           data-ng-options="priority.id as priority.text for priority in possiblePriorities"
           data-ng-model="priority"
-          data-ng-change="changePriorityLevel(priority);"
+          data-ng-change="changePriorityLevel(priority, showSpinner.casePriority, activePriorityColor, priorityColor, caseId);"
       >
       </select>
     </div>
