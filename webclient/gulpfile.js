@@ -45,7 +45,7 @@ gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-template
 });
 
 gulp.task('clean-build', function(cb) {
-  runSequence('clean', 'build', function() {
+  runSequence('clean', 'build', 'unit-test', function() {
     cb();
   });
 });
