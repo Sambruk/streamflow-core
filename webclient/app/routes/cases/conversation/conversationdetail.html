@@ -60,7 +60,7 @@
     <div class="convo-body">
       <ul class="convo-messages">
         <li class="msg-item" data-ng-repeat="message in conversationMessages">
-          <div class="msg-head cf">
+          <div class="msg-head cf" ng-show="message.text.length">
             <div class="msg-author">{{ message.sender }} </div>
             <div>
               <div class="msg-attachment" ng-repeat="attachment in attachments | filter: message.id">
@@ -69,7 +69,7 @@
               </div>
             </div>
           </div>
-          <div class="msg-body">
+          <div class="msg-body" ng-show="message.text.length">
             <p>{{ message.text }}</p>
           </div>
           <div class="msg-meta cf">

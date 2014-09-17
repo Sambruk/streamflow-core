@@ -35,6 +35,8 @@ angular.module('sf')
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
         $scope.conversationMessages.invalidate();
         $scope.conversationMessages.resolve();
+        console.log('CONVERSATION MESSAGES');
+        console.log($scope.getConversationMessages);
         $scope.conversationMessageDraft[0] = "";
         $rootScope.$broadcast('conversation-message-created');
       });
