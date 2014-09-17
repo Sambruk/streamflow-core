@@ -10,16 +10,16 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "1.2.22",
-    "angular-route": "1.2.22",
+    "angular": "latest",
+    "angular-route": "latest",
     "angular-growl-v2": "0.7.0",
     "momentjs": "~2.8.2",
     "underscore": "git://github.com/documentcloud/underscore.git#~1.4.4",
-    "angular-resource": "~1.2.23",
+    "angular-resource": "latest",
     "typewatch": "git://github.com/dennyferra/TypeWatch.git"
   },
   "devDependencies": {
-    "angular-mocks": "1.2.22",
-    "angular-scenario": "1.2.22"
+    "angular-mocks": "latest",
+    "angular-scenario": "latest"
   }
 }

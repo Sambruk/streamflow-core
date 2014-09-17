@@ -166,7 +166,7 @@ describe("sf.services.backend", function () {
 
 
 
-    describe("postNested", function() {
+    xdescribe("postNested", function() {
       it("Can post on the root resource", inject(function(backendService, $httpBackend) {
         $httpBackend.expectGET('mock/').respond(backend.profile);
         $httpBackend.expectPOST('mock/update', "name=andreas").respond("Japp");

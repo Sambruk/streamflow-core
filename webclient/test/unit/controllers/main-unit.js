@@ -1,7 +1,7 @@
 describe("sf.main.controllers", function () {
   'use strict';
 
-  beforeEach(module('sf.controllers'));
+  beforeEach(module('sf'));
 
   describe('description', function() {
   	// it("fails", inject(function(){
