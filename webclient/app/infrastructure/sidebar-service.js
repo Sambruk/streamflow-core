@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('sidebarService', function($routeParams, caseService, $q, $rootScope){
+.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, navigationService){
   var sortByText = function (x, y) {
     var xS = x.text && x.text.toUpperCase() || '',
         yS = y.text && y.text.toUpperCase() || '';
