@@ -198,6 +198,7 @@ angular.module('sf')
       
       // Close
       scope.close = function () {
+        $rootScope.$broadcast('case-closed');
         sidebarService.close(scope);
       }; // End Close     
       

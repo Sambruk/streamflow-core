@@ -4,5 +4,12 @@ angular.module('sf')
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
     $scope.projectType = $routeParams.projectType;
 
+    $rootScope.$on('case-closed', function(){
+      console.log('CASE CLOSED');
+      $scope.currentCases.invalidate();
+      $scope.currentCases.resolve();
+      $rootScope.$on('case-closed', function(){});
+    });
+
     $rootScope.$broadcast('breadcrumb-updated', [{projectId: $routeParams.projectId}, {projectType: $routeParams.projectType}]);
 });
