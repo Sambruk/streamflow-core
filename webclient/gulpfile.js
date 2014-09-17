@@ -20,6 +20,7 @@ var gulp = require('gulp'),
     runSequence = require('run-sequence'),
     karma = require('gulp-karma'),
     gulpif = require('gulp-if'),
+    minifyCSS = require('gulp-minify-css'),
     testFiles = ['unit/filters-unit.js'];
 
 
@@ -40,7 +41,7 @@ gulp.task('clean', function(cb) {
 //});
 
 
-gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-templates', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css'], function(cb){
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'app-templates'], function(cb){
   cb();
 });
 
@@ -49,6 +50,18 @@ gulp.task('clean-build', function(cb) {
     cb();
   });
 });
+var buildMode;
+
+if(args.prod){
+  buildMode = 'prod';
+} else if(args.dev){
+  buildMode = 'dev';
+} else {
+  buildMode = 'dev';
+}
+
+console.log('BUILD MODE');
+console.log(buildMode);
 
 var mainBowerFiles = mainBowerFiles();
 
@@ -70,10 +83,10 @@ var paths = {
         'app/design/gui/vendor/pickadate/themes/default.date.css'],
   design: {
     images: ['app/design/gui/i/*.*'],
-    css: ['app/design/gui/css/main.css',
-        'app/design/gui/css/basic.css',
+    css: ['app/design/gui/css/basic.css',     
         'app/design/gui/css/print.css',
         'app/design/gui/css/fonts.css',
+        'app/design/gui/css/main.css',
         'app/design/gui/css/retina.css'],
     scripts: ['app/design/gui/js/**/*.js',
               '!app/design/gui/js/jquery-1.10.1.js',
@@ -103,7 +116,7 @@ var paths = {
           'bower_components/chosen/chosen.css']
   },
   other: [,
-          'app/*.html',
+          //'app/*.html',
           'app/*.json',
           'app/robots.txt',
           'app/favicon.ico']
@@ -120,6 +133,7 @@ gulp.task('app-scripts', function(){
   'app/infrastructure/**/*.js',
   'app/components/**/*.js',
   'app/routes/**/*.js']))
+  .pipe(gulpif(buildMode === 'prod', uglify()))
   .pipe(gulpif(buildMode === 'dev', sourcemaps.init()))
   .pipe(concat('streamflow.js'))
   .pipe(gulpif(buildMode === 'dev', sourcemaps.write()))
@@ -130,11 +144,12 @@ gulp.task('app-scripts', function(){
 gulp.task('app-templates', function(){
   return gulp.src('app/**/*.html')
   .pipe(gulp.dest('build'))
-  .pipe(connect.reload());
 });
 
 gulp.task('app-css', function(){
   return gulp.src(paths.design.css)
+  .pipe(gulpif(buildMode === 'prod', minifyCSS({keepBreaks:true})))
+  .pipe(concat('streamflow.css'))
   .pipe(gulp.dest('build/app/css'))
   .pipe(connect.reload());
 });
@@ -142,31 +157,28 @@ gulp.task('app-css', function(){
 gulp.task('app-fonts', function(){
   return gulp.src(paths.design.fonts)
   .pipe(gulp.dest('build/app/fonts'))
-  .pipe(connect.reload());
 });
 
 gulp.task('app-images', function(){
   return gulp.src(paths.design.images)
   .pipe(gulp.dest('build/app/i'))
-  .pipe(connect.reload());
 });
 
 gulp.task('app-plugins', function(){
   return gulp.src(paths.design.scripts)
   .pipe(gulp.dest('build/app/plugins'))
-  .pipe(connect.reload());
 });
 
 gulp.task('vendor-images', function(){
   return gulp.src(paths.vendor.images)
   .pipe(gulp.dest('build/vendor'))
-  .pipe(connect.reload());
 });
 
 gulp.task('vendor-css', function(){
   return gulp.src(paths.vendor.css)
+  .pipe(gulpif(buildMode === 'prod', minifyCSS({keepBreaks:true})))
+  .pipe(concat('vendor.css'))
   .pipe(gulp.dest('build/vendor'))
-  .pipe(connect.reload());
 });
 
 
@@ -201,6 +213,7 @@ gulp.task('vendor-scripts', function() {
     'bower/moment.js',
     'bower/**/*.js'
   ]))
+  .pipe(gulpif(buildMode === 'prod', uglify()))
   .pipe(gulpif(buildMode === 'dev', sourcemaps.init()))
   .pipe(concat('vendor.js'))
   .pipe(gulpif(buildMode === 'dev', sourcemaps.write()))
@@ -242,8 +255,7 @@ gulp.task('e2e-test', function(){
 
 
 gulp.task('default', ['connect'], function () {
-  gulp.watch([paths.design.images], ['clean-build']);
-  gulp.watch(paths.scripts, ['clean-build']);
-  gulp.watch(paths.design.css, ['clean-build']);
-  gulp.watch(['app/**/*.html'], ['clean-build']);
+  gulp.watch(paths.scripts, ['build']);
+  gulp.watch(paths.design.css, ['build']);
+  gulp.watch(['app/**/*.html'], ['build']);
 });
