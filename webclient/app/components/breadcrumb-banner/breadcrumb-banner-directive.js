@@ -17,7 +17,11 @@ angular.module('sf')
         scope.breadcrumbList = newVal;   
       });
       
-      scope.$on('breadcrumb-updated', function(event, breadcrumbList) {
+      $rootScope.$on('breadcrumb-updated', function(event, breadcrumbList) {
+        console.log('BREADCRUMB UPDATED');
+        console.log(breadcrumbList);
+        var newbcItems = getBreadcrumbItems(breadcrumbList);
+        console.log(newbcItems);
         scope.breadcrumbList = getBreadcrumbItems(breadcrumbList);
       });
 
@@ -26,6 +30,7 @@ angular.module('sf')
         _.each(breadcrumbList, function(breadcrumbItem){
           _.each(breadcrumbItem, function(val, key){
             if(typeof val === 'string' && val !== undefined){
+              val = val.charAt(0).toUpperCase() + val.slice(1);
               bcList.push(val);
             }
           });
