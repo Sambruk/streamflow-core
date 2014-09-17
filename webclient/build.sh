@@ -17,5 +17,5 @@
 npm install
 bower install
 rm -rf bower_components/jquery
-gulp clean-build
+gulp clean-build --prod
 
