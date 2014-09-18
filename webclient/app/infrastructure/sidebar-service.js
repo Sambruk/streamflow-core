@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, navigationService){
+.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, navigationService, tokenService){
   var sortByText = function (x, y) {
     var xS = x.text && x.text.toUpperCase() || '',
         yS = y.text && y.text.toUpperCase() || '';
@@ -42,7 +42,7 @@ angular.module('sf')
   };
 
   var _updateCaseLabels = function(scope) {
-    console.log(scope);
+    //console.log(scope);
     scope.showSpinner.caseLabels = true;
     
     if (!scope.caseLabel) {
