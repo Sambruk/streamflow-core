@@ -91,8 +91,8 @@ angular.module('sf')
       });
 
       scope.$watch('contacts', function(newVal){
-        console.log('updated contacts');
-        console.log(newVal);
+        //console.log('updated contacts');
+        //console.log(newVal);
       }); //End Watch
 
       /* HTTP NOTIFICATIONS */
@@ -153,7 +153,7 @@ angular.module('sf')
       scope.activeLabels = [];
       scope.previousActiveLabels = [];
       var updateCaseLabels = function() {
-        console.log(scope);
+        //console.log(scope);
         sidebarService.updateCaseLabels(scope);
       };
       updateCaseLabels();  
@@ -234,8 +234,12 @@ angular.module('sf')
       });
 
       var updateObject = function(itemToUpdate){
+        console.log("ItemToUpdate");
+        console.log(itemToUpdate);
         itemToUpdate.invalidate();
         itemToUpdate.resolve();
+        console.log(itemToUpdate);
+
       };
 
       //Event-listeners
@@ -266,6 +270,9 @@ angular.module('sf')
       });
       scope.$on('participant-removed', function(){
         updateObject(scope.conversations);
+      });
+      scope.$on('form-submitted', function(){
+        updateObject(scope.submittedFormList);
       }); //End Event-listeners
     }
   };

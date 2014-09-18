@@ -1,7 +1,8 @@
 'use strict';
 angular.module('sf')
-  .controller('FormCtrl', function($scope, caseService, $routeParams) {
+  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope) {
     $scope.sidebardata = {};
+    
     $scope.caseId = $routeParams.caseId;
     $scope.currentFormId = $routeParams.formId;
     $scope.currentFormDescription;
@@ -46,9 +47,10 @@ angular.module('sf')
     }
 
     $scope.submitForm = function(){
-      caseService.submitForm($routeParams.caseId, $scope.form[0].draftId);
-      $scope.formMessage = "Skickat!";
-
+      caseService.submitForm($routeParams.caseId, $scope.form[0].draftId).then(function(){
+        $scope.formMessage = "Skickat!";
+        $rootScope.$broadcast('form-submitted');
+      });
       $scope.form = [];
       $scope.currentFormPage = null;
     }
