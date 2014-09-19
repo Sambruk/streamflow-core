@@ -59,7 +59,7 @@
     </div>
     <div class="convo-body">
       <ul class="convo-messages">
-        <li class="msg-item" data-ng-repeat="message in conversationMessages">
+        <li class="msg-item" data-ng-repeat="message in conversationMessages | orderBy:'-createdOn'">
           <div class="msg-head cf" ng-show="message.text.length">
             <div class="msg-author">{{ message.sender }} </div>
             <div>
