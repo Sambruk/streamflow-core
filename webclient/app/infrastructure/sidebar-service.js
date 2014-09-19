@@ -34,8 +34,16 @@ angular.module('sf')
 
   var _changeCaseType = function(scope, casetype) {
     scope.showSpinner.caseToolbar = true;
-    caseService.changeCaseType($routeParams.caseId, casetype).then(function () {
+    scope.showSpinner.casePossibleForms = true;
+    caseService.changeCaseType($routeParams.caseId, casetype).then(function() {
       scope.showSpinner.caseToolbar = false;
+      if(!scope.possibleForms){
+        scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
+      }else{
+        scope.possibleForms.invalidate();
+        scope.possibleForms.resolve();
+      }
+      scope.showSpinner.casePossibleForms = false;
       _updateCaseLabels(scope);
       _updateToolbar(scope);
     });

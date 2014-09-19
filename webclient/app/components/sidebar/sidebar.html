@@ -121,6 +121,7 @@
   </div>
   <div ng-show="showSpinner.caseLabels" class="spinner"></div>
   <br><br>
+
   <!-- Prioritet -->
   <div data-ng-show="possiblePriorities.length">
     <div ng-hide="showSpinner.casePriority">
@@ -138,8 +139,7 @@
   </div>
   <!-- /Prioritet -->
 
-
-<!-- Due date -->
+  <!-- Due date -->
   <div ng-hide="showSpinner.caseDueOn">
     <div class="set-due-date">
         <input
@@ -218,20 +218,23 @@
       <h2>Formulär</h2>
     </div>
     <div class="m-c">
-      <ul>
-        <li data-ng-repeat="form in possibleForms">
-          <a href="#/cases/{{ caze[0].id  }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
-            <h3>{{form.text}}</h3>
-            <div>
-              <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)">
-              </span>
-              <ul class="form-status">
-                <li><a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-chat" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
-              </ul>
-            </div>
-          </a>
-        </li>
-      </ul>
+      <div ng-hide="showSpinner.casePossibleForms">
+        <ul>
+          <li data-ng-repeat="form in possibleForms">
+            <a href="#/cases/{{ caze[0].id  }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
+              <h3>{{form.text}}</h3>
+              <div>
+                <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)">
+                </span>
+                <ul class="form-status">
+                  <li><a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-chat" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
+                </ul>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div ng-show="showSpinner.casePossibleForms" class="spinner"></div>
     </div>
   </div>
 <!-- /Module: Formulär -->
