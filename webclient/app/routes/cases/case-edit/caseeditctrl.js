@@ -15,13 +15,14 @@ angular.module('sf')
         return;
       }
       $scope.notes = $scope.sidebardata.notes;
-      $scope.cachedNote = $scope.sidebardata.notes;
+      //$scope.cachedNote = $scope.sidebardata.notes;
     });
 
 
     $scope.addNote = function($event, $success, $error){
       $event.preventDefault();
-      if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
+      if($scope.notes[0].note === $event.target.value){
+      //if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
         caseService.addNote($routeParams.caseId, $scope.notes[0])
         .then(function(response){
           $rootScope.$broadcast('note-changed', $scope.notes[0].note);
