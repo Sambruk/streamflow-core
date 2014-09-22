@@ -64,7 +64,7 @@
                     <div class="row cf">
                       <div class="select">
                           <label for="issue-owner">Byt ägare</label>
-                          <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text for option in sendToRecipients" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
+                          <select id="issue-owner" name="issue-owner" data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']" data-ng-model="sendToId" data-ng-change='sendToIdChanged(sendToId)'>
                           </select>
                       </div>
                     </div>
@@ -203,7 +203,7 @@
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar">{{notes[0].note}}</p>
             <ul class="convo-status">
-              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history    " title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
             </ul>
           </a>
         </li>
