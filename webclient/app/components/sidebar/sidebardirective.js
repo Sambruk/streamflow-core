@@ -54,11 +54,13 @@ angular.module('sf')
         casePermissions: true,
         caseAttachment: true,
         caseGeneralInfo: true,
-        casePossibleForms: true
+        casePossibleForms: true,
+        caseDescriptionText: true     
       }; //End declare scope objects
 
       scope.caze.promise.then(function(){
         scope.showSpinner.caseGeneralInfo = false;
+        scope.showSpinner.caseDescriptionText = false;
       });
 
       scope.possibleForms.promise.then(function(){
