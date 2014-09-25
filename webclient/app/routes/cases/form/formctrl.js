@@ -1,12 +1,14 @@
 'use strict';
 angular.module('sf')
-  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope) {
+  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService) {
     $scope.sidebardata = {};
     
     $scope.caseId = $routeParams.caseId;
     $scope.currentFormId = $routeParams.formId;
     $scope.currentFormDescription;
     $scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
+    $scope.selectedItems = {};
+    $scope.applyRules = webformRulesService.applyRules;
 
     $scope.selectForm = function(formId){
       // TODO Is there a better way than this?
@@ -16,6 +18,8 @@ angular.module('sf')
             if ($scope.form && $scope.form[0]) {
               $scope.currentFormDescription = $scope.form[0].description;
               $scope.currentFormPage = $scope.form[0].enhancedPages[0];
+              console.log($scope.form);
+              $scope.displayField($scope.form[0].enhancedPages);
             };
           });
         }, 1000);
@@ -41,6 +45,20 @@ angular.module('sf')
         $scope.currentFormPage = null;
       });
     }
+
+    $scope.displayField = function(formPage){
+      $scope.applyRules(formPage);
+    }
+
+    $scope.reapplyRules = function(){
+      //alert('reapplying rules');
+      $scope.applyRules($scope.currentFormPage);
+    };
+
+
+
+
+
 
     $scope.selectFormPage = function(page){
       $scope.currentFormPage = page;
