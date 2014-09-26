@@ -97,7 +97,12 @@ angular.module('sf')
         _hideField(fieldId);
       }
     } else {
-    	//Maybe do something else here ...
+    	if(obj.field){
+        _displayField(obj.field);
+      }
+      if(obj.page){
+        _displayField(obj.page);
+      }
     }
   };
 

@@ -6,7 +6,11 @@
       <h3>{{ currentFormDescription }}</h3>
     </div>
     <ul class="form-sections cf row">
-      <li class="section-item" data-ng-class="{sel: currentFormPage.title==page.title}" data-ng-repeat="page in form[0].enhancedPages" id="{{page.page}}"><a href="" data-ng-click="issueForm.$valid && selectFormPage(page)">{{page.title}}</a></li>
+      <li class="section-item" data-ng-class="{sel: currentFormPage.title==page.title}" data-ng-repeat="page in form[0].enhancedPages" id="{{page.page}}">
+        <a href="" data-ng-click="issueForm.$valid && selectFormPage(page)">
+        {{page.title}}
+        </a>
+      </li>
     </ul>
 
     <form name="issueForm" method="post" novalidate data-ng-submit="submitForm()">
@@ -102,7 +106,7 @@
           </div>
 
           <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue">
-            <div class="radio col-2 form" id="{{field.field.field}}" ng-show="isSelected(field)">
+            <div class="radio col-2 form" id="{{field.field.field}}">
               <data-ng-include class="m-c" src="'routes/cases/form/form-label.html'"></data-ng-include>
               <br />
                 <span data-ng-repeat="option in field.field.fieldValue.checkings">
@@ -115,7 +119,7 @@
           </div>
 
           <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CommentFieldValue">
-            <div class="col medium col-2" data-ng-bind-html-unsafe="field.field.note"></div>
+            <div class="col medium col-2" id="{{field.field.field}}" data-ng-bind-html-unsafe="field.field.note"></div>
           </div>
 
           <div data-ng-switch-default>

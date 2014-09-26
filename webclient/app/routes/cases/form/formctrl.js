@@ -10,6 +10,13 @@ angular.module('sf')
     $scope.selectedItems = {};
     $scope.applyRules = webformRulesService.applyRules;
 
+    $scope.$watch('currentFormPage', function(newVal){
+      if(!newVal){
+        return;
+      }
+      $scope.reapplyRules();
+    });
+
     $scope.selectForm = function(formId){
       // TODO Is there a better way than this?
       $scope.$watch('form', function(){
