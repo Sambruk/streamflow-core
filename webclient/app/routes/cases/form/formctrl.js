@@ -18,7 +18,7 @@ angular.module('sf')
             if ($scope.form && $scope.form[0]) {
               $scope.currentFormDescription = $scope.form[0].description;
               $scope.currentFormPage = $scope.form[0].enhancedPages[0];
-              console.log($scope.form);
+              //console.log($scope.form);
               $scope.displayField($scope.form[0].enhancedPages);
             };
           });
@@ -52,7 +52,7 @@ angular.module('sf')
 
     $scope.reapplyRules = function(){
       //alert('reapplying rules');
-      $scope.applyRules($scope.currentFormPage);
+      $scope.applyRules($scope.form[0].enhancedPages);
     };
 
 

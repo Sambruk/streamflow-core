@@ -80,7 +80,7 @@
               <data-ng-include class="m-c form-label" src="'routes/cases/form/form-label.html'"></data-ng-include>
               <br />
                 <span data-ng-repeat="option in field.field.fieldValue.values">
-                  <input data-ng-model="field.value" type="radio" name="{{ field.field.field }}" value="{{ option }}" sf-generic-auto-send>{{ option }}</input>
+                  <input data-ng-model="field.value" type="radio" name="{{ field.field.field }}" value="{{ option }}" ng-change="reapplyRules()" sf-generic-auto-send>{{ option }}</input>
                   <br />
                 </span>
             </div>

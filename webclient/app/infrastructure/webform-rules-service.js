@@ -1,6 +1,8 @@
 angular.module('sf')
 .factory('webformRulesService', function(){
-// TODO: Make other pages work accordingly, see _
+// TODO: Test all possible form configurations.
+// If something does not work, look in the viewcontroller and the view template
+// to verify that everything there looks appropriate
 
   //Recursive function that traverses down the object and looks for matches
   // between the objects values and the expected value.
@@ -52,9 +54,6 @@ angular.module('sf')
   	_applyRulesToElements(obj, rootObj);
   }
 
-  //TODO: It seems like we dont check rules for the other page here.
-  // Investigate and fix.
-
   //Recursive function that traverses down the object tree and executes
   // displayFieldIfRuleValuePresent for each object/array in the tree
   var _applyRulesToElements = function(obj, rootObj){
@@ -78,12 +77,24 @@ angular.module('sf')
       return;
     }
     if(obj.rule.field.length > 1 && obj.rule.visibleWhen === true ){//&& obj.rule.values.length > 0){
+      console.log('has rule');
+      console.log(obj);
       var ruleFulfilled = _ruleValuePresent(rootObj, obj.rule.values[0]);
+      console.log('rule fulfilled?');
+      console.log(ruleFulfilled);
+      var fieldId;
+      if(obj.field){
+        console.log('Object has field attribute');
+        fieldId = obj.field;
+      } else if(obj.page) {
+        console.log('Object has page attribute');
+        fieldId = obj.page;
+      }
 
       if(ruleFulfilled === true){
-        _displayField(obj.field);
+        _displayField(fieldId);
       } else {
-        _hideField(obj.field);
+        _hideField(fieldId);
       }
     } else {
     	//Maybe do something else here ...
@@ -107,6 +118,8 @@ angular.module('sf')
 
   //Hide field (remove ng-show class if present)
   var _hideField = function(fieldId){
+    
+    console.log('hiding field: ' + fieldId);
     var element = $('#' + fieldId);
     if(element.hasClass('ng-show')){
       element.removeClass('ng-show');
