@@ -62,11 +62,6 @@ angular.module('sf')
       $scope.applyRules($scope.form[0].enhancedPages);
     };
 
-
-
-
-
-
     $scope.selectFormPage = function(page){
       $scope.currentFormPage = page;
     }
@@ -78,6 +73,11 @@ angular.module('sf')
       });
       $scope.form = [];
       $scope.currentFormPage = null;
+    }
+
+    $scope.toggleLastPageTrue = function(val){
+      alert(val);
+      $scope.forcedLastPage = val;
     }
 
     $scope.isLastPage = function(){
