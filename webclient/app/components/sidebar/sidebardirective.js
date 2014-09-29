@@ -66,7 +66,7 @@ angular.module('sf')
       scope.possibleForms.promise.then(function(){
         scope.showSpinner.casePossibleForms = false;
       });
-
+      
       //Watch
       scope.$watch('caze[0]', function(newVal){
         if(!newVal){
@@ -96,11 +96,6 @@ angular.module('sf')
         }
         scope.caze = newVal;
       });
-
-      scope.$watch('contacts', function(newVal){
-        //console.log('updated contacts');
-        //console.log(newVal);
-      }); //End Watch
 
       /* HTTP NOTIFICATIONS */
       scope.errorHandler = function(){
@@ -133,6 +128,7 @@ angular.module('sf')
       
       // Due on
       scope.general.promise.then(function (result) {
+
         scope.dueOnShortStartValue = result[0].dueOnShort;
         scope.showSpinner.caseDueOn = false;
       });  
@@ -151,6 +147,7 @@ angular.module('sf')
       
       // Case type
       sidebarService.caseType(scope);
+
       scope.changeCaseType = function(caseType){
         sidebarService.changeCaseType(scope, caseType);
       }; // End case type
@@ -241,12 +238,8 @@ angular.module('sf')
       });
 
       var updateObject = function(itemToUpdate){
-        console.log("ItemToUpdate");
-        console.log(itemToUpdate);
         itemToUpdate.invalidate();
         itemToUpdate.resolve();
-        console.log(itemToUpdate);
-
       };
 
       //Event-listeners
@@ -265,12 +258,10 @@ angular.module('sf')
       scope.$on('contact-name-updated', function(){
         updateObject(scope.contacts);
       });
-      scope.$on('case-changed', function(e, attr) {
-        if (attr.command === 'casetype') {
-          updateObject(scope.commands);
-        } else if (attr.command === 'changedueon') {
-          updateObject(scope.general);
-        }
+      scope.$on('case-changed', function() {
+        updateObject(scope.possibleCaseTypes);
+        updateObject(scope.sendToRecipients);
+        sidebarService.caseType(scope);
       });
       scope.$on('casedescription-changed', function(){
         updateObject(scope.caze);
