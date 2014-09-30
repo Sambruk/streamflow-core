@@ -212,6 +212,7 @@ angular.module('sf')
   // Close
   var _close = function (scope) {
     caseService.closeCase($routeParams.caseId).then(function () {
+      $rootScope.$broadcast('case-changed-update-context-and-caselist');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
