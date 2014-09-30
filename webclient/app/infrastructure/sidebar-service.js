@@ -2,6 +2,7 @@
 
 angular.module('sf')
 .factory('sidebarService', function($routeParams, caseService, $q, $rootScope, navigationService, tokenService){
+
   var sortByText = function (x, y) {
     var xS = x.text && x.text.toUpperCase() || '',
         yS = y.text && y.text.toUpperCase() || '';
@@ -145,22 +146,22 @@ angular.module('sf')
   var _onSendToButtonClicked = function(scope) {
     var sendToId = scope.sendToId;
     scope.showSpinner.caseGeneralInfo= true;
+
     caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
       scope.show = false;
       scope.caze.invalidate();
       scope.caze.resolve().then(function(response){
         // Is this needed?
         //$rootScope.$broadcast('case-changed');
+        $rootScope.$broadcast('case-changed-update-context-and-caselist');
         $rootScope.$broadcast('breadcrumb-updated', 
           [{projectId: scope.caze[0].owner}, 
-          {projectType: scope.caze[0].listType}, 
+          {projectType: scope.caze[0].listType},
           {caseId: scope.caze[0].caseId}]);
 
         scope.showSpinner.caseGeneralInfo = false;
-        });
-
       });
-
+    });
   };
 
   var _unrestrict = function (scope) {
