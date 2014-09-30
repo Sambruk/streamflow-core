@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('contextmenu', function(projectService, navigationService, $rootScope){
+.directive('contextmenu', function(projectService, navigationService, $rootScope, $timeout){
   return {
     restrict: 'E',
     templateUrl: 'components/contextmenu/contextmenu.html',
@@ -16,6 +16,12 @@ angular.module('sf')
       /*scope.toggleToolbar = function(){
         scope.displayToolbar = !scope.displayToolbar;
       }*/
+
+      $rootScope.$on('case-changed-update-context-and-caselist', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+        console.log('case-changed-update-contect-menu')
+      });
 
       scope.navigateTo = function(href, $event){
         $event.preventDefault();
@@ -52,12 +58,12 @@ angular.module('sf')
           return;
         }
 
-        $rootScope.$broadcast('case-created');
-
         projectService.createCase(scope.params.projectId, scope.params.projectType).then(function(response){
           //NOTE: Why is caseId defined here?
           var caseId = response.data.events[1].entity;
           var href = navigationService.caseHrefSimple(caseId);
+
+          $rootScope.$broadcast('case-changed-update-context-and-caselist');
 
           window.location.replace(href + "/edit");
         });

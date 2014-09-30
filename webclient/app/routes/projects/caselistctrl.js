@@ -5,26 +5,24 @@ angular.module('sf')
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
     $scope.projectType = $routeParams.projectType;
 
-    $rootScope.$on('case-closed', function(){
-      console.log('CASE CLOSED');
+    $rootScope.$on('case-changed-update-context-and-caselist', function(){
       $scope.currentCases.invalidate();
       $scope.currentCases.resolve();
-      $rootScope.$on('case-closed', function(){});
+      console.log('case-changed-update-caselist');
     });
 
+    //Set breadcrumbs to case-owner if possible else to project id
+    $scope.currentCases.promise.then(function(response){
+     var owner = _.filter(response, function(sfCase){
+        if(sfCase.owner.length > 0){
+          return sfCase.owner;
+        }
+      });
 
-  //Set breadcrumbs to case-owner if possible else to project id
-  $scope.currentCases.promise.then(function(response){
-   var owner = _.filter(response, function(sfCase){
-      if(sfCase.owner.length > 0){
-        return sfCase.owner;
+      if(owner.length > 0){
+        $rootScope.$broadcast('breadcrumb-updated', [{owner: response[0].owner}, {projectType: $routeParams.projectType}]);
+      } else {
+        $rootScope.$broadcast('breadcrumb-updated', [{projectId: $routeParams.projectId}, {projectType: $routeParams.projectType}]);
       }
     });
-
-    if(owner.length > 0){
-      $rootScope.$broadcast('breadcrumb-updated', [{owner: response[0].owner}, {projectType: $routeParams.projectType}]);
-    } else {
-      $rootScope.$broadcast('breadcrumb-updated', [{projectId: $routeParams.projectId}, {projectType: $routeParams.projectType}]);
-    }
   });
-});
