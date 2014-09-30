@@ -36,6 +36,7 @@ angular.module('sf')
   var _changeCaseType = function(scope, casetype) {
     scope.showSpinner.caseToolbar = true;
     scope.showSpinner.casePossibleForms = true;
+    
     caseService.changeCaseType($routeParams.caseId, casetype).then(function() {
       scope.showSpinner.caseToolbar = false;
       if(!scope.possibleForms){
@@ -47,11 +48,10 @@ angular.module('sf')
       scope.showSpinner.casePossibleForms = false;
       _updateCaseLabels(scope);
       _updateToolbar(scope);
-    });
+    }); 
   };
 
   var _updateCaseLabels = function(scope) {
-    //console.log(scope);
     scope.showSpinner.caseLabels = true;
     
     if (!scope.caseLabel) {
@@ -145,24 +145,31 @@ angular.module('sf')
 
   var _onSendToButtonClicked = function(scope) {
     var sendToId = scope.sendToId;
-    scope.showSpinner.caseGeneralInfo= true;
+    scope.showSpinner.caseGeneralInfo = true;
 
     caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
+      var href = navigationService.caseListHrefFromCase(scope.caze);
+      var projectId = scope.caze[0].owner;
+      var projectType = scope.caze[0].listType;
+
       scope.show = false;
       scope.caze.invalidate();
       scope.caze.resolve().then(function(response){
-        // Is this needed?
-        //$rootScope.$broadcast('case-changed');
+        $rootScope.$broadcast('case-changed');
         $rootScope.$broadcast('case-changed-update-context-and-caselist');
         $rootScope.$broadcast('breadcrumb-updated', 
-          [{projectId: scope.caze[0].owner}, 
-          {projectType: scope.caze[0].listType},
-          {caseId: scope.caze[0].caseId}]);
+          [{projectId: projectId},
+          {projectType: projectType}]);
 
         scope.showSpinner.caseGeneralInfo = false;
+
+        window.location.replace(href);
       });
-    });
+      
+     
+      });
   };
+
 
   var _unrestrict = function (scope) {
     scope.showSpinner.caseToolbar = true;
@@ -322,7 +329,7 @@ angular.module('sf')
   var _caseType = function(scope){
     $q.all([
       scope.possibleCaseTypes.promise,
-      scope.caze.promise
+      scope.caze.promise,
     ]).then(function (results) {
       scope.caseType = results[1][0].caseType && results[1][0].caseType.id;
       scope.possibleCaseTypes = results[0].sort(sortByText);
