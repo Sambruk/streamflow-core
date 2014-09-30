@@ -15,14 +15,12 @@ angular.module('sf')
         return;
       }
       $scope.notes = $scope.sidebardata.notes;
-      //$scope.cachedNote = $scope.sidebardata.notes;
     });
 
 
     $scope.addNote = function($event, $success, $error){
       $event.preventDefault();
       if($scope.notes[0].note === $event.target.value){
-      //if($scope.notes[0].note !== $scope.cachedNote[0].note || $event.target.value == $scope.caze[0].text){
         caseService.addNote($routeParams.caseId, $scope.notes[0])
         .then(function(response){
           $rootScope.$broadcast('note-changed', $scope.notes[0].note);
@@ -37,7 +35,7 @@ angular.module('sf')
       $event.preventDefault();
       caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
       .then(function(response){
-        $rootScope.$broadcast('casedescription-changed', $scope.caze[0].text);
+        $rootScope.$broadcast('casedescription-changed');
         $success($($event.target));
       }, function(error) {
         $error($error($event.target));
