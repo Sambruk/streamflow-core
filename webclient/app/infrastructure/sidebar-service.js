@@ -231,6 +231,7 @@ angular.module('sf')
   // Assign / Unassign
   var _assign = function (scope) {
     caseService.assignCase($routeParams.caseId).then(function () {
+      $rootScope.$broadcast('case-changed-update-context-and-caselist');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
@@ -238,6 +239,7 @@ angular.module('sf')
 
   var _unassign = function (scope) {
     caseService.unassignCase($routeParams.caseId).then(function () {
+      $rootScope.$broadcast('case-changed-update-context-and-caselist');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
