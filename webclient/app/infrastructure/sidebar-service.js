@@ -222,6 +222,7 @@ angular.module('sf')
   // Delete
   var _deleteCase = function (scope) {
     caseService.deleteCase($routeParams.caseId).then(function () {
+      $rootScope.$broadcast('case-changed-update-context-and-caselist');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
