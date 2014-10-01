@@ -8,14 +8,18 @@ angular.module('sf')
     $scope.conversationMessages = caseService.getConversationMessages($routeParams.caseId, $routeParams.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($routeParams.caseId, $routeParams.conversationId);
     $scope.conversationMessageDraft = caseService.getMessageDraft($routeParams.caseId, $routeParams.conversationId);
-    //console.log($scope.conversationParticipants);
 
     $scope.showSpinner = {
-      participants: true
+      participants: true,
+      conversation: true
     };
 
     $scope.conversationParticipants.promise.then(function(response){
       $scope.showSpinner.participants = false;
+    });
+
+    $scope.conversationMessages.promise.then(function(){
+      $scope.showSpinner.conversation = false;
     });
 
     $scope.$watch("conversationMessageDraft[0]", function(){
@@ -24,21 +28,27 @@ angular.module('sf')
     });
 
     $scope.removeParticipant = function(participant){
+      $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
       caseService.deleteParticipantFromConversation($routeParams.caseId, $routeParams.conversationId, participant).then(function(){
         $rootScope.$broadcast('participant-removed');
-        //alert("Deltagare borttagen!");
+        $rootScope.$broadcast('conversation-changed-set-spinner', 'false');
       });
     }
 
     $scope.submitMessage = function($event){
       $event.preventDefault();
+      $scope.showSpinner.conversation = true;
+      $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
+
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
         $scope.conversationMessages.invalidate();
         $scope.conversationMessages.resolve();
-        console.log('CONVERSATION MESSAGES');
-        console.log($scope.getConversationMessages);
+
         $scope.conversationMessageDraft[0] = "";
         $rootScope.$broadcast('conversation-message-created');
+
+        $scope.showSpinner.conversation = false;
+        $rootScope.$broadcast('conversation-changed-set-spinner', 'false');
       });
     }
   });

@@ -32,62 +32,61 @@
       <li>
         <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
         <ul>
-            <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
-            <li><a data-ng-show="canMarkRead" data-ng-click="markReadUnread(true)" href="" class="btn">Markera läst</a></li>
-            <li><a data-ng-show="canMarkUnread" data-ng-click="markReadUnread(false)" href="" class="btn">Markera oläst</a></li>
-            <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
-            <li><a data-ng-show="canUnrestrict" data-ng-click="unrestrict()" href="" class="btn">Begränsa inte</a></li>
-            <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
+          <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
+          <li><a data-ng-show="canMarkRead" data-ng-click="markReadUnread(true)" href="" class="btn">Markera läst</a></li>
+          <li><a data-ng-show="canMarkUnread" data-ng-click="markReadUnread(false)" href="" class="btn">Markera oläst</a></li>
+          <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
+          <li><a data-ng-show="canUnrestrict" data-ng-click="unrestrict()" href="" class="btn">Begränsa inte</a></li>
+          <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
         </ul>
       </li>
     </ul>
 
     <div class="toolbar-content" ng-show="commandView">
       <div data-ng-switch on="commandView">
-          <div class="toolbar-content-style" data-ng-switch-when="resolve">
-            <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
-            </select>
-            <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
-            <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
-          </div>
+        <div class="toolbar-content-style" data-ng-switch-when="resolve">
+          <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
+          </select>
+          <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
+          <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
+        </div>
 
-          <div class="toolbar-content-style" data-ng-switch-when="close">
-            <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
-          </div>
+        <div class="toolbar-content-style" data-ng-switch-when="close">
+          <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
+        </div>
 
-          <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
-              <div class='ng-modal' ng-show='show'>
-                <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
-                <div class='ng-modal-dialog' ng-style='dialogStyle'>
-                  <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
-                  <div class="row cf">
-                    <div class="select">
-                        <label for="issue-owner">Byt ägare</label>
-                        <select 
-                          id="issue-owner" 
-                          name="issue-owner" 
-                          data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']" 
-                          data-ng-model="sendToId" 
-                          data-ng-change='sendToIdChanged(sendToId)'
-                        >
-                        </select>
-                    </div>
+        <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
+            <div class='ng-modal' ng-show='show'>
+              <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
+              <div class='ng-modal-dialog' ng-style='dialogStyle'>
+                <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+                <div class="row cf">
+                  <div class="select">
+                    <label for="issue-owner">Byt ägare</label>
+                    <select 
+                      id="issue-owner" 
+                      name="issue-owner" 
+                      data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']" 
+                      data-ng-model="sendToId" 
+                      data-ng-change='sendToIdChanged(sendToId)'
+                    >
+                    </select>
                   </div>
-                  <div class="row">
-                    <div class="submit-area cf">
-                        <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
-                    </div>
+                </div>
+                <div class="row">
+                  <div class="submit-area cf">
+                    <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
                   </div>
                 </div>
               </div>
-          </div>
+            </div>
+        </div>
 
-          <div data-ng-switch-when="todo">
-              TODO
-          </div>
+        <div data-ng-switch-when="todo">
+            TODO
+        </div>
 
-          <div data-ng-switch-default>
-          </div>
+        <div data-ng-switch-default></div>
       </div>
     </div>
   </div>
@@ -95,14 +94,14 @@
   <!-- /Issue toolbar -->
 
   <!-- Ärendetyp -->
-   <div ng-hide="showSpinner.caseType">
+  <div ng-hide="showSpinner.caseType">
     <select
-        data-placeholder="Case typ"
-        class="chosen-case-type chosen-select"
-        style="width: 100%;"
-        data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
-        data-ng-model="caseType"
-        data-ng-change="changeCaseType(caseType)"
+      data-placeholder="Case typ"
+      class="chosen-case-type chosen-select"
+      style="width: 100%;"
+      data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
+      data-ng-model="caseType"
+      data-ng-change="changeCaseType(caseType)"
     >
     </select>
   </div>
@@ -112,15 +111,15 @@
   <!-- Ärendelabel -->
   <div ng-hide="showSpinner.caseLabels">
     <select
-        data-placeholder="Case etikett"
-        class="chosen-case-label chosen-choices"
-        style="width: 100%;"
-        id="caseLabel"
-        name="caseLabel"
-        data-ng-options="label as label.text for label in allCaseLabels"
-        data-ng-model="activeLabels"
-        data-ng-change="changeCaseLabels(activeLabels)"
-        multiple
+      data-placeholder="Case etikett"
+      class="chosen-case-label chosen-choices"
+      style="width: 100%;"
+      id="caseLabel"
+      name="caseLabel"
+      data-ng-options="label as label.text for label in allCaseLabels"
+      data-ng-model="activeLabels"
+      data-ng-change="changeCaseLabels(activeLabels)"
+      multiple
     >
     </select>
   </div>
@@ -131,11 +130,11 @@
   <div data-ng-show="possiblePriorities.length">
     <div ng-hide="showSpinner.casePriority">
       <select
-          style="width: 100%;"
-          ng-style="activePriorityColor"
-          data-ng-options="priority.id as priority.text for priority in possiblePriorities"
-          data-ng-model="priority"
-          data-ng-change="changePriorityLevel(priority, showSpinner.casePriority, activePriorityColor, priorityColor, caseId);"
+        style="width: 100%;"
+        ng-style="activePriorityColor"
+        data-ng-options="priority.id as priority.text for priority in possiblePriorities"
+        data-ng-model="priority"
+        data-ng-change="changePriorityLevel(priority, showSpinner.casePriority, activePriorityColor, priorityColor, caseId);"
       >
       </select>
     </div>
@@ -148,13 +147,13 @@
   <div ng-hide="showSpinner.caseDueOn">
     <div class="set-due-date">
       <input
-          sf-date-picker-fancy
-          style="width: 100%;"
-          type="text"
-          placeholder="Förfallodatum"
-          ng-model="dueOnShort"
-          data-ng-change="changeDueOn(dueOnShort)"
-          id="fancy-date-hidden"
+        sf-date-picker-fancy
+        style="width: 100%;"
+        type="text"
+        placeholder="Förfallodatum"
+        ng-model="dueOnShort"
+        data-ng-change="changeDueOn(dueOnShort)"
+        id="fancy-date-hidden"
       >
     </div>
   </div>
@@ -181,18 +180,18 @@
 				<div ng-show="showSpinner.caseGeneralInfo" class="spinner"></div>
       </div>
     </div>
-      <div class="m-box permissionBox">
-        <div ng-hide="showSpinner.casePermissions">
-          <ul>
-            <li><strong>Åtkomst:</strong></li>
-            <li>
-              <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
-              <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
-            </li>
-          </ul>
-        </div>
-        <div ng-show="showSpinner.casePermissions" class="spinner"></div>
+    <div class="m-box permissionBox">
+      <div ng-hide="showSpinner.casePermissions">
+        <ul>
+          <li><strong>Åtkomst:</strong></li>
+          <li>
+            <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
+            <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
+          </li>
+        </ul>
       </div>
+      <div ng-show="showSpinner.casePermissions" class="spinner"></div>
+    </div>
   </div>
   <!-- /Module: Allmänt -->
 
@@ -217,7 +216,7 @@
   </div>
   <!-- /Module: Ärende -->
 
-<!-- Module: Formulär -->
+  <!-- Module: Formulär -->
   <div  class="m m-convos">
     <div class="m-h">
       <h2>Formulär</h2>
@@ -242,7 +241,7 @@
       <div ng-show="showSpinner.casePossibleForms" class="spinner"></div>
     </div>
   </div>
-<!-- /Module: Formulär -->
+  <!-- /Module: Formulär -->
 
   <!-- Module: Konversationer -->
   <div class="m m-convos">
@@ -251,17 +250,21 @@
       <a href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
-      <li data-ng-repeat='conversation in conversations track by $index' class="convo-li">
-        <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
-          <h3>{{ conversation.text }}</h3>
-          <span class="date">{{ conversation.creationDate | dateTime }}</span>
-          <ul class="convo-status">
-            <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
-            <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
-          </ul>
-        </a>
-      </li>
-      </ul>
+      <div ng-hide="showSpinner.caseConversation">
+        <ul>
+          <li data-ng-repeat='conversation in conversations track by $index' class="convo-li">
+            <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
+              <h3>{{ conversation.text }}</h3>
+              <span class="date">{{ conversation.creationDate | dateTime }}</span>
+              <ul class="convo-status">
+                <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
+                <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
+              </ul>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div ng-show="showSpinner.caseConversation" class="spinner"></div>
     </div>
   </div>
   <!-- /Module: Konversationer -->
@@ -305,54 +308,22 @@
   <!-- Module: Ärendelogg -->
   <div class="m m-convos">
     <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
-    <div class="m-h">
-      <h2>Ärendelogg</h2>
-      <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
-    </div>
-    <div class="m-c">
-      <ul>
-        <li data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'" class="convo-li">
-          <!-- <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">-->
-          <h3>{{ entry.text }} by {{ entry.creator }}</h3>
-          <span class="date">{{ entry.creationDate | dateTime}}</span>
-        </li>
-      </ul>
+      <div class="m-h">
+        <h2>Ärendelogg</h2>
+        <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
+      </div>
+      <div class="m-c">
+        <ul>
+          <li data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'" class="convo-li">
+            <!-- <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">-->
+            <h3>{{ entry.text }} by {{ entry.creator }}</h3>
+            <span class="date">{{ entry.creationDate | dateTime}}</span>
+          </li>
+        </ul>
       </div>
     </a>
   </div>
   <!-- /Module: Ärendelogg -->
-
-  <!-- Module: Ärendelogg -->
-  <!--
-  <div class="m m-issuelog" data-ng-controller="CaselogListCtrl">
-      <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
-          <div class="m-h">
-              <h2>Ärendelogg</h2>
-              <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
-          </div>
-          <div class="m-c">
-              <table class="log-table">
-                  <caption class="struct">Historik för detta ärende</caption>
-                  <thead class="struct">
-                  <tr>
-                      <th>Datum</th>
-                      <th>Titel</th>
-                      <th>Användare</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'">
-                      <td>{{ entry.creationDate | shortDate}}</td>
-                      <td>{{ entry.text }}</td>
-                      <td>{{ entry.creator }}</td>
-                  </tr>
-                  </tbody>
-              </table>
-          </div>
-      </a>
-  </div> -->
-  <!-- /Module: Ärendelogg -->
-
 
   <!-- <pre><code>{{ form[0] | json }}</code></pre> -->
 </div>

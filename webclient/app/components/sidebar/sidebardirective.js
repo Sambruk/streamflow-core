@@ -55,7 +55,8 @@ angular.module('sf')
         caseAttachment: true,
         caseGeneralInfo: true,
         casePossibleForms: true,
-        caseDescriptionText: true     
+        caseDescriptionText: true,
+        caseConversation: true     
       }; //End declare scope objects
 
       scope.caze.promise.then(function(){
@@ -65,6 +66,10 @@ angular.module('sf')
 
       scope.possibleForms.promise.then(function(){
         scope.showSpinner.casePossibleForms = false;
+      });
+
+      scope.conversations.promise.then(function(){
+        scope.showSpinner.caseConversation = false;
       });
       
       //Watch
@@ -107,7 +112,6 @@ angular.module('sf')
           growl.warning('errorMessage');
         }
       };
-
       //error-handler
       scope.$on('httpRequestInitiated', scope.errorHandler);
       // End HTTP NOTIFICATIONS
@@ -128,7 +132,6 @@ angular.module('sf')
       
       // Due on
       scope.general.promise.then(function (result) {
-
         scope.dueOnShortStartValue = result[0].dueOnShort;
         scope.showSpinner.caseDueOn = false;
       });  
@@ -147,7 +150,6 @@ angular.module('sf')
       
       // Case type
       sidebarService.caseType(scope);
-
       scope.changeCaseType = function(caseType){
         sidebarService.changeCaseType(scope, caseType);
       }; // End case type
@@ -157,7 +159,6 @@ angular.module('sf')
       scope.activeLabels = [];
       scope.previousActiveLabels = [];
       var updateCaseLabels = function() {
-        //console.log(scope);
         sidebarService.updateCaseLabels(scope);
       };
       updateCaseLabels();  
@@ -180,8 +181,7 @@ angular.module('sf')
       };
       scope.onSendToButtonClicked = function () {
         sidebarService.onSendToButtonClicked(scope);
-      };
-      // End Send to
+      };// End Send to
 
       // Restrict / Unrestrict
       scope.permissions = caseService.getPermissions($routeParams.caseId);
@@ -202,7 +202,6 @@ angular.module('sf')
       
       // Close
       scope.close = function () {
-        $rootScope.$broadcast('case-closed');
         sidebarService.close(scope);
       }; // End Close     
       
@@ -252,6 +251,9 @@ angular.module('sf')
       scope.$on('conversation-message-created', function(){
         updateObject(scope.conversations);
       });
+      scope.$on('participant-removed', function(){
+        updateObject(scope.conversations);
+      });
       scope.$on('note-changed', function(event, data){
         updateObject(scope.notes);
       });
@@ -266,12 +268,15 @@ angular.module('sf')
       scope.$on('casedescription-changed', function(){
         updateObject(scope.caze);
       });
-      scope.$on('participant-removed', function(){
-        updateObject(scope.conversations);
-      });
       scope.$on('form-submitted', function(){
         updateObject(scope.submittedFormList);
       }); //End Event-listeners
+      
+      // Event-listeners for updating showSpinner
+      scope.$on('conversation-changed-set-spinner', function(event, data){
+        scope.showSpinner.caseConversation = data;
+      });
+      // End Event-listeners for updating showSpinner
     }
   };
 });
