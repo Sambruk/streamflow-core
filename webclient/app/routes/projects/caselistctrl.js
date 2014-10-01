@@ -11,6 +11,11 @@ angular.module('sf')
       console.log('case-changed-update-caselist');
     });
 
+    $rootScope.$on('casedescription-changed', function(){
+      $scope.currentCases.invalidate();
+      $scope.currentCases.resolve();
+    });
+
     //Set breadcrumbs to case-owner if possible else to project id
     $scope.currentCases.promise.then(function(response){
      var owner = _.filter(response, function(sfCase){
