@@ -46,6 +46,10 @@ angular.module('sf')
         scope.possibleForms.resolve();
       }
       scope.showSpinner.casePossibleForms = false;
+      
+      scope.possibleResolutions.invalidate();
+      scope.possibleResolutions.resolve();
+
       _updateCaseLabels(scope);
       _updateToolbar(scope);
     }); 
@@ -164,12 +168,9 @@ angular.module('sf')
         scope.showSpinner.caseGeneralInfo = false;
 
         window.location.replace(href);
-      });
-      
-     
-      });
+      }); 
+    });
   };
-
 
   var _unrestrict = function (scope) {
     scope.showSpinner.caseToolbar = true;
@@ -273,7 +274,7 @@ angular.module('sf')
     scope.showSpinner.caseLabels = true;
     var removedLabels = scope.previousActiveLabels.filter(function (item) {
       return !_.find(labels, function (j) {
-          return item.id === j.id;
+        return item.id === j.id;
       });
     });
     
