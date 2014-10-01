@@ -248,7 +248,7 @@ angular.module('sf')
 
   var _downloadAttachment = function (scope, attachment) {
     // Hack to replace dummy user and pass with authentication from token.
-    // This is normally sent by http headers in ajax but not possible here.
+    // This is normally sent by httpF headers in ajax but not possible here.
     var apiUrl = scope.apiUrl.replace(/https:\/\/(.*)@/, function () {
       var userPass = window.atob(tokenService.getToken());
       return 'https://' + userPass + '@' ;
@@ -315,12 +315,11 @@ angular.module('sf')
   var _onResolveButtonClicked = function(scope){
     var resolutionId = scope.resolution;
 
-    var callback = function () {
+    caseService.resolveCase($routeParams.caseId, resolutionId, function(){
+      $rootScope.$broadcast('case-changed-update-context-and-caselist');
       var href = navigationService.caseListHrefFromCase(scope.caze);
-      window.location.replace(href);
-    };
-
-    caseService.resolveCase($routeParams.caseId, resolutionId, callback);
+      window.location.replace(href)
+    });
   };
 
   var _resolveCase = function(scope) {
