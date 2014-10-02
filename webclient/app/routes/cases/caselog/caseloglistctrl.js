@@ -25,7 +25,10 @@ angular.module('sf')
     });
     
     $scope.$on('caselog-message-created', function(){
+      $scope.showSpinner.caseLogs = true;
       $scope.caseLogs.invalidate();
       $scope.caseLogs.resolve();
+
+      $scope.showSpinner.caseLogs = false;
     });
   });
