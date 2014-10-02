@@ -17,7 +17,7 @@
 
 -->
 <div class="content-primary" role="main">
-  <div class="m m-check-list">
+  <div class="m m-check-list" ng-hide="showSpinner.conversationMessageDraft">
     <div class="m-h">
       <div>
         <div data-ng-repeat="conversation in conversations | filter: conversationId track by conversation.$index">
@@ -86,6 +86,7 @@
       <div ng-show="showSpinner.conversation" class="spinner"></div>
     </div>
   </div>
+  <div ng-show="showSpinner.conversationMessageDraft" class="spinner"></div>
 </div>
 
 <!-- Content secondary -->

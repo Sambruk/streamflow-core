@@ -11,7 +11,8 @@ angular.module('sf')
 
     $scope.showSpinner = {
       participants: true,
-      conversation: true
+      conversation: true,
+      conversationMessageDraft: true
     };
 
     $scope.conversationParticipants.promise.then(function(response){
@@ -20,6 +21,10 @@ angular.module('sf')
 
     $scope.conversationMessages.promise.then(function(){
       $scope.showSpinner.conversation = false;
+    });
+
+    $scope.conversationMessageDraft.promise.then(function(){
+      $scope.showSpinner.conversationMessageDraft = false;
     });
 
     $scope.$watch("conversationMessageDraft[0]", function(){
