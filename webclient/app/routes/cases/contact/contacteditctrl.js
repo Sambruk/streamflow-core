@@ -8,6 +8,14 @@ angular.module('sf')
     $scope.contactIndex = $routeParams.contactIndex;
     $scope.contact = caseService.getSelectedContact($routeParams.caseId, $routeParams.contactIndex);
 
+    $scope.showSpinner = {
+      contact: true
+    };
+
+    $scope.contact.promise.then(function(){
+      $scope.showSpinner.contact = false;
+    });
+
     $scope.submitContact = function($event){
       $event.preventDefault();
 
