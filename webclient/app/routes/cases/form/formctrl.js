@@ -10,6 +10,10 @@ angular.module('sf')
     $scope.selectedItems = {};
     $scope.applyRules = webformRulesService.applyRules;
 
+    $scope.showSpinner = {
+      form: true
+    };
+
     $scope.$watch('currentFormPage', function(newVal){
       if(!newVal){
         return;
@@ -25,7 +29,6 @@ angular.module('sf')
             if ($scope.form && $scope.form[0]) {
               $scope.currentFormDescription = $scope.form[0].description;
               $scope.currentFormPage = $scope.form[0].enhancedPages[0];
-              //console.log($scope.form);
               $scope.displayField($scope.form[0].enhancedPages);
             };
           });
@@ -36,17 +39,23 @@ angular.module('sf')
       $scope.formMessage = "";
       $scope.possibleForm = caseService.getPossibleForm($routeParams.caseId, formId);
 
+
+
       $scope.$watch('possibleForm[0]', function (){
         if (!$scope.possibleForm[0]){
           return;
         }
         if ($scope.possibleForm[0].queries.length !== 0) {
           $scope.form = caseService.getFormDraftFromForm($routeParams.caseId, formId);
+          $scope.form.promise.then(function(){
+            $scope.showSpinner.form = false;
+          });
         }
         else {
           caseService.createSelectedForm($routeParams.caseId, formId).then(function(response){
             var draftId = JSON.parse(response.data.events[0].parameters).param1;
             $scope.form = caseService.getFormDraft($routeParams.caseId, draftId);
+            $scope.showSpinner.form = false;
           });
         }
         $scope.currentFormPage = null;
