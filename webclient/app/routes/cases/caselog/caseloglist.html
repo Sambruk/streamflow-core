@@ -24,13 +24,6 @@
     </div>
     <br />
     <caselogentry caseid="caseId"></caselogentry>
-
-    <!--<div class="caselog-filter-options">-->
-    <!--<span>Visa loggposter av typ:</span><br />-->
-    <!--<label data-ng-repeat="filter in caseLogFilters">-->
-    <!--<input type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName | translate }}-->
-    <!--</label>-->
-    <!--</div>-->
     <div class="caselog-filter-options">
       <span>Visa loggposter av typ:</span><br />
       <div ng-repeat="filterTemp in caseLogFilters|limitTo:(caseLogFilters.length/4)+1">
@@ -39,50 +32,32 @@
         </label>
       </div>
     </div>
-
-
     <br />
-    <!--<table class="log-table">-->
-    <!--<caption class="struct">Historik för detta ärende</caption>-->
-    <!--<thead>-->
-    <!--<tr>-->
-    <!--<th>Datum</th>-->
-    <!--<th>Titel</th>-->
-    <!--<th>Användare</th>-->
-    <!--<th>Loggpost typ</th>-->
-    <!--</tr>-->
-    <!--</thead>-->
-    <!--<tbody>-->
-    <!--<tr data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate')  " data-ng-class-even="'even'">-->
-    <!--<td>{{ entry.creationDate | shortDate}}</td>-->
-    <!--<td>{{ entry.text }}</td>-->
-    <!--<td>{{ entry.creator }}</td>-->
-    <!--<td>{{ entry.caseLogType | translate }}</td>-->
-    <!--</tr>-->
-    <!--</tbody>-->
-    <!--</table>-->
-
-    <div class="caselog-body" ng-show="filteredCaseLogs.length > 0">
-      <ul>
-        <li class="msg-item caselog-item" data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate')">
-          <div class="msg-head cf">
-            <div><span class="msg-author">{{ entry.creator }}</span><span> - {{ entry.caseLogType | translate }}</span></div>
-          </div>
-          <div class="msg-body">
-            <p>{{ entry.text }}</p>
-          </div>
-          <div class="msg-meta cf">
-            <!--<div class="caselog-type">-->
-            <!--{{ entry.caseLogType | translate }}-->
-            <!--</div>-->
-            <div class="msg-timestamp">
-              {{ entry.creationDate | dateTime }}
+    <div ng-hide="showSpinner.caseLogs">
+      <div class="caselog-body" ng-show="filteredCaseLogs.length > 0">
+        <ul>
+          <li class="msg-item caselog-item" data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate')">
+            <div class="msg-head cf">
+              <div><span class="msg-author">{{ entry.creator }}</span><span> - {{ entry.caseLogType | translate }}</span></div>
             </div>
-          </div>
-        </li>
-      </ul>
+            <div class="msg-body">
+              <p>{{ entry.text }}</p>
+            </div>
+            <div class="msg-meta cf">
+              <!--<div class="caselog-type">-->
+              <!--{{ entry.caseLogType | translate }}-->
+              <!--</div>-->
+              <div class="msg-timestamp">
+                {{ entry.creationDate | dateTime }}
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-
+    <div ng-show="showSpinner.caseLogs" class="spinner"></div>
+  </div>
+  <div ng-hide="showSpinner.caseLogs === true">
     <p ng-hide="filteredCaseLogs.length">Inga loggposter att visa med det angivna filtret.</p>
   </div>
 </div>

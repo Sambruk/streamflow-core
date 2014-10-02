@@ -4,6 +4,10 @@ angular.module('sf')
     $scope.sidebardata = {};
     $scope.caseId = $routeParams.caseId;
     var defaultFiltersUrl = caseService.getWorkspace() + '/cases/' + $scope.caseId + '/caselog/defaultfilters';
+
+    $scope.showSpinner = {
+      caseLogs: true
+    };
     
     httpService.getRequest(defaultFiltersUrl, false)
     .then(function(result){
@@ -14,6 +18,10 @@ angular.module('sf')
       }
       $scope.caseLogFilters = filterArray;
       $scope.caseLogs = caseService.getSelectedCaseLog($routeParams.caseId);
+
+      $scope.caseLogs.promise.then(function(){
+        $scope.showSpinner.caseLogs = false;
+      });
     });
     
     $scope.$on('caselog-message-created', function(){
