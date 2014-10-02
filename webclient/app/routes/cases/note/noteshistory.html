@@ -18,27 +18,29 @@
 -->
 <div class="content-primary" role="main" data-ng-controller="NotesHistoryCtrl">
   <div class="m">
-
     <h2>Ärendebeskrivning, historik</h2>
-    <div class="posted-notes">
-      <div data-ng-repeat="note in notesHistory">
-        <div class="note-item cf">
+    <div ng-hide="showSpinner.notesHistory">
+      <div class="posted-notes">
+        <div data-ng-repeat="note in notesHistory">
+          <div class="note-item cf">
 
-          <div class="note-posted-by">
-            <span class="struct">Postad av: </span>{{ note.creator }}
+            <div class="note-posted-by">
+              <span class="struct">Postad av: </span>{{ note.creator }}
+            </div>
+            <div class="note-body">
+              <p>{{ note.note }}</p>
+            </div>
+            <div class="msg-timestamp">
+              <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
+            </div>
+            <br/>
           </div>
-          <div class="note-body">
-            <p>{{ note.note }}</p>
-          </div>
-          <div class="msg-timestamp">
-            <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
-          </div>
-
-          <br/>
         </div>
       </div>
     </div>
-  </div></div>
+    <div ng-show="showSpinner.notesHistory" class="spinner"></div>
+  </div>
+</div>
 
 <!-- Content secondary -->
 <sidebar class="sidebar-content"></sidebar>
