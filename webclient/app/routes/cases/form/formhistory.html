@@ -23,9 +23,9 @@
   </div>
 
   <span>Välj ett datum:</span>
-    <span>
-        <select data-ng-options="form.index as form.submissionDate for form in submittedForms" id="selectedSubmittedForm" data-ng-model="selectedSubmittedForm"></select>
-    </span>
+  <span>
+    <select data-ng-options="form.index as form.submissionDate for form in submittedForms" id="selectedSubmittedForm" data-ng-model="selectedSubmittedForm"></select>
+  </span>
   <br />
   <div class="form-history" data-ng-repeat="page in submittedForm[0].pages">
     <div class="form-history-sections cf row">

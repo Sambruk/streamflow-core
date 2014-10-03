@@ -17,24 +17,27 @@
 
 -->
 <div class="content-primary" role="main">
-    <!-- Single issue -->
-    <div class="m single-issue">
-        <!-- Issue header -->
-        <div class="m-h cf">
-            <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
-                <span class="struct">Redigera ärende</span>
-            </a>
-        </div>
-        <!-- Issue body -->
-        <div class="issue-body">
-            <div class="issue-description">
-                <h2>{{caze[0].text}}</h2>
-                <p>{{notes[0].note}}</p>
-            </div>
-        </div>
-        <!-- /Issue body -->
+  <!-- Single issue -->
+  <div class="m single-issue" ng-hide="showSpinner.caze">
+    <!-- Issue header -->
+    <div class="m-h cf" ng-hide="showSpinner.notes">
+      <a href="#/cases/{{ caze[0].id }}/edit" class="edit-module icon-edit" title="Redigera ärende">
+        <span class="struct">Redigera ärende</span>
+      </a>
     </div>
-    <!-- /Single issue -->
+    <!-- Issue body -->
+    <div class="issue-body">
+      <div class="issue-description">
+        <h2>{{caze[0].text}}</h2>
+        <p>{{notes[0].note}}</p>
+      </div>
+    </div>
+    <!-- /Issue body -->
+  </div>
+  <div ng-show="showSpinner.caze" class="spinner">
+    <div ng-show="showSpinner.notes" class="spinner"></div>
+  </div>
+  <!-- /Single issue -->
 </div>
 <!-- /Content primary -->
 
