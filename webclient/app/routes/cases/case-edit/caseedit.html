@@ -20,31 +20,13 @@
 
   <!-- Module: Ärendebeskrivning & taggar -->
   <div class="m single-issue">
-    <!-- <h2>{{caze[0].caseId}}</h2>  -->
-    <!-- Issue header -->
     <div class="issue-body">
-
-      <!--<div class="choose-type new-create-issue">
-              <label class="struct" for="issue-type">Ärendetyp</label>
-              <select data-ng-model="general[0].caseType.id"
-                  name="entity" id="issue-type"
-                  data-ng-options="option.value as option.name for option in possibleCaseTypes" sf-simple-field-auto-send data-resource="general" command="casetype">
-              </select>
-              </div>
-               <div class="set-due-date">
-                  <label class="struct" for="set-due-date">Förfallodatum</label>
-                  <input type="text" sf-date-picker name="date" data-input-type="date" id="set-due-date" placeholder="Förfallodatum" data-ng-model="general[0].dueOnShort" sf-simple-field-auto-send data-resource="general" command="changedueon" />
-              </div>
-      </div>-->
-
-
-
       <form action="#" method="get" class="form-general cf" name="editCaseForm">
         <div class="m-c">
           <div class="row cols-1 cf">
             <div class="text col full col-1">
               <label for="case-description">Beskrivning</label>
-              <input type="text" name="description" id="case-description" data-sf-update-on-blur="changeCaseDescription($event, $success, $error)" data-ng-model="caze[0].text">
+                <input type="text" name="description" id="case-description" data-sf-update-on-blur="changeCaseDescription($event, $success, $error)" data-ng-model="caze[0].text">
             </div>
           </div>
 
@@ -57,8 +39,7 @@
         </div>
       </form>
     </div>
-  </div>
-  <!-- /single-issue -->
+  </div><!-- /single-issue -->
   <!-- /Module: Ärendebeskrivning & taggar -->
 
 </div>
