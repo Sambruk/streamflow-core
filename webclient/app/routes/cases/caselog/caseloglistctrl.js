@@ -29,6 +29,8 @@ angular.module('sf')
       $scope.caseLogs.invalidate();
       $scope.caseLogs.resolve();
 
-      $scope.showSpinner.caseLogs = false;
+      $scope.caseLogs.promise.then(function(){
+        $scope.showSpinner.caseLogs = false;
+      });
     });
   });
