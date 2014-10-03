@@ -200,7 +200,7 @@
     <div class="m-h">
       <h2>Ärende</h2>
     </div>
-    <div class="m-c">
+    <div class="m-c" ng-hide="showSpinner.caseDescriptionText">
       <ul>
         <li>
           <a href="#/cases/{{ caze[0].id }}" class="block-link convCaseSidebar">
@@ -213,6 +213,7 @@
         </li>
       </ul>
     </div>
+    <div ng-show="showSpinner.caseDescriptionText" class="spinner"></div>
   </div>
   <!-- /Module: Ärende -->
 
@@ -275,7 +276,7 @@
       <h2>Kontakter</h2>
       <a href="" data-ng-click="submitContact(caze[0].id, contacts.length)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
-    <div class="m-c">
+    <div class="m-c" ng-hide="showSpinner.caseContact">
       <ul class="zebra-list">
         <li data-ng-repeat='contact in contacts track by $index'>
 					<a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">
@@ -285,6 +286,7 @@
         </li>
       </ul>
     </div>
+    <div ng-show="showSpinner.caseContact" class="spinner"></div>
   </div>
   <!-- /Module: Kontakter -->
 
@@ -312,7 +314,7 @@
         <h2>Ärendelogg</h2>
         <span class="caselog-count-sidebar"> 3 most recent of {{sideBarCaseLogs.length}}</span>
       </div>
-      <div class="m-c">
+      <div class="m-c" ng-hide="showSpinner.caseLog">
         <ul>
           <li data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3" data-ng-class-even="'even'" class="convo-li">
             <!-- <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">-->
@@ -321,6 +323,7 @@
           </li>
         </ul>
       </div>
+      <div ng-show="showSpinner.caseLog" class="spinner"></div>
     </a>
   </div>
   <!-- /Module: Ärendelogg -->

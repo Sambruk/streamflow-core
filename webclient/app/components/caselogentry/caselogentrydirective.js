@@ -23,7 +23,7 @@ angular.module('sf')
 
       scope.submitCaseLogEntry = function($event){
         $event.preventDefault();
-        
+        $rootScope.$broadcast('caselog-message-added', 'true');
         scope.caseLogs = caseService.getSelectedCaseLog(scope.caseId);
         caseService.createCaseLogEntry(scope.caseId, scope.caseLogEntryToCreate)
         .then(function(response){
@@ -31,6 +31,7 @@ angular.module('sf')
           scope.caseLogs.resolve();
           $rootScope.$broadcast('caselog-message-created');
           scope.caseLogEntryToCreate = '';
+          $rootScope.$broadcast('caselog-message-added', 'false');
         });
       }
     }

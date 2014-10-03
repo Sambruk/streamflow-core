@@ -57,22 +57,20 @@ angular.module('sf')
         casePossibleForms: true,
         caseDescriptionText: true,
         caseConversation: true,
-        caseContact: true     
+        caseContact: true,
+        caseLog: true  
       }; //End declare scope objects
 
       scope.caze.promise.then(function(){
         scope.showSpinner.caseGeneralInfo = false;
         scope.showSpinner.caseDescriptionText = false;
       });
-
       scope.possibleForms.promise.then(function(){
         scope.showSpinner.casePossibleForms = false;
       });
-
       scope.conversations.promise.then(function(){
         scope.showSpinner.caseConversation = false;
       });
-
       scope.contacts.promise.then(function(){
         scope.showSpinner.caseContact = false;
       });
@@ -239,6 +237,9 @@ angular.module('sf')
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         var defaultFilters = result.data;
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, defaultFilters);
+        scope.sideBarCaseLogs.promise.then(function(){
+          scope.showSpinner.caseLog = false;
+        });
       });
 
       var updateObject = function(itemToUpdate){
@@ -291,6 +292,9 @@ angular.module('sf')
       });
       scope.$on('contact-updated', function(event, data){
         scope.showSpinner.caseContact = data;
+      });
+      scope.$on('caselog-message-added', function(event, data){
+        scope.showSpinner.caseLog = data;
       });
       // End Event-listeners for updating showSpinner
     }
