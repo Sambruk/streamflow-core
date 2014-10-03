@@ -43,7 +43,7 @@ angular.module('sf')
     $scope.submitMessage = function($event){
       $event.preventDefault();
       $scope.showSpinner.conversation = true;
-      $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
+      $rootScope.$broadcast('conversation-changed', 'true');
 
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
         $scope.conversationMessages.invalidate();
@@ -53,7 +53,7 @@ angular.module('sf')
         $rootScope.$broadcast('conversation-message-created');
 
         $scope.showSpinner.conversation = false;
-        $rootScope.$broadcast('conversation-changed-set-spinner', 'false');
+        $rootScope.$broadcast('conversation-changed', 'false');
       });
     }
   });

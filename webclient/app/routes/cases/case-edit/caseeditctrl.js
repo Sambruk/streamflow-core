@@ -7,7 +7,7 @@ angular.module('sf')
       if(!newVal){
         return;
       }
-      $scope.caze = $scope.sidebardata.caze;    
+      $scope.caze = $scope.sidebardata.caze;
     });
 
     $scope.$watch('sidebardata.notes', function(newVal){
@@ -17,13 +17,12 @@ angular.module('sf')
       $scope.notes = $scope.sidebardata.notes;
     });
 
-
     $scope.addNote = function($event, $success, $error){
       $event.preventDefault();
       if($scope.notes[0].note === $event.target.value){
         caseService.addNote($routeParams.caseId, $scope.notes[0])
         .then(function(response){
-          $rootScope.$broadcast('note-changed', $scope.notes[0].note);
+          $rootScope.$broadcast('note-changed');
           $success($($event.target));
         }, function (error){
           $error($error($event.target));

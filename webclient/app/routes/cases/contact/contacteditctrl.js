@@ -40,6 +40,7 @@ angular.module('sf')
 
     $scope.updateField = function ($event, $success, $error) {
       $event.preventDefault();
+      $rootScope.$broadcast('contact-updated', true);
       var contact = {};
 
       contact[$event.currentTarget.name] = $event.currentTarget.value;
@@ -54,8 +55,9 @@ angular.module('sf')
         $scope.contactId = caseService.updateContact($routeParams.caseId, $routeParams.contactIndex, contact)
         .then(function(){
           if ($event.currentTarget.id === 'contact-name') {
-            $rootScope.$broadcast('contact-name-updated', contact);
+            $rootScope.$broadcast('contact-name-updated');
           }
+          $rootScope.$broadcast('contact-updated', false);
           $success($($event.target));
         }, function (error){
           $error($($event.target));

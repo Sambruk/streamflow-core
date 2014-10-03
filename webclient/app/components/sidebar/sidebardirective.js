@@ -56,7 +56,8 @@ angular.module('sf')
         caseGeneralInfo: true,
         casePossibleForms: true,
         caseDescriptionText: true,
-        caseConversation: true     
+        caseConversation: true,
+        caseContact: true     
       }; //End declare scope objects
 
       scope.caze.promise.then(function(){
@@ -70,6 +71,10 @@ angular.module('sf')
 
       scope.conversations.promise.then(function(){
         scope.showSpinner.caseConversation = false;
+      });
+
+      scope.contacts.promise.then(function(){
+        scope.showSpinner.caseContact = false;
       });
       
       //Watch
@@ -255,7 +260,11 @@ angular.module('sf')
         updateObject(scope.conversations);
       });
       scope.$on('note-changed', function(event, data){
+        scope.showSpinner.caseDescriptionText = true;
         updateObject(scope.notes);
+        scope.notes.promise.then(function(){
+          scope.showSpinner.caseDescriptionText = false;
+        });
       });
       scope.$on('contact-name-updated', function(){
         updateObject(scope.contacts);
@@ -266,15 +275,22 @@ angular.module('sf')
         sidebarService.caseType(scope);
       });
       scope.$on('casedescription-changed', function(){
+        scope.showSpinner.caseDescriptionText = true;
         updateObject(scope.caze);
+        scope.caze.promise.then(function(){
+          scope.showSpinner.caseDescriptionText = false;
+        });
       });
       scope.$on('form-submitted', function(){
         updateObject(scope.submittedFormList);
       }); //End Event-listeners
-      
-      // Event-listeners for updating showSpinner
-      scope.$on('conversation-changed-set-spinner', function(event, data){
+  
+      // Event-listeners needed for updating showSpinner in sidebar
+      scope.$on('conversation-changed', function(event, data){
         scope.showSpinner.caseConversation = data;
+      });
+      scope.$on('contact-updated', function(event, data){
+        scope.showSpinner.caseContact = data;
       });
       // End Event-listeners for updating showSpinner
     }
