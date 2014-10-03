@@ -5,16 +5,9 @@ angular.module('sf')
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
     $scope.projectType = $routeParams.projectType;
 
-    $rootScope.$on('case-changed-update-context-and-caselist', function(){
-      $scope.currentCases.invalidate();
-      $scope.currentCases.resolve();
-      console.log('case-changed-update-caselist');
-    });
-
-    $rootScope.$on('casedescription-changed', function(){
-      $scope.currentCases.invalidate();
-      $scope.currentCases.resolve();
-    });
+    $scope.showSpinner = {
+      currentCases: true
+    };
 
     //Set breadcrumbs to case-owner if possible else to project id
     $scope.currentCases.promise.then(function(response){
@@ -29,5 +22,46 @@ angular.module('sf')
       } else {
         $rootScope.$broadcast('breadcrumb-updated', [{projectId: $routeParams.projectId}, {projectType: $routeParams.projectType}]);
       }
+
+      $scope.showSpinner.currentCases = false;
     });
+
+    var updateObject = function(){
+      $scope.currentCases.invalidate();
+      $scope.currentCases.resolve();
+    };
+    
+    // Event listeners
+    $rootScope.$on('case-created', function(){
+      updateObject();
+    });
+
+    $rootScope.$on('case-closed', function(){
+      updateObject();
+    });
+
+    $rootScope.$on('case-assigned', function(){
+      updateObject();
+    });
+
+    $rootScope.$on('case-unassigned', function(){
+      updateObject();
+    });
+
+    $rootScope.$on('case-resolved', function(){
+      updateObject();
+    });
+
+    $rootScope.$on('case-deleted', function(){
+      updateObject();
+    });
+
+    $rootScope.$on('case-owner-changed', function(){
+      updateObject();
+    });
+
+    $rootScope.$on('casedescription-changed', function(){
+      updateObject();
+    });
+    // End Event listeners
   });
