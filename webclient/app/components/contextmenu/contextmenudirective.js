@@ -17,12 +17,6 @@ angular.module('sf')
         scope.displayToolbar = !scope.displayToolbar;
       }*/
 
-      $rootScope.$on('case-changed-update-context-and-caselist', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
-        console.log('case-changed-update-contect-menu')
-      });
-
       scope.navigateTo = function(href, $event){
         $event.preventDefault();
         scope.toggleToolbar($event);
@@ -63,11 +57,48 @@ angular.module('sf')
           var caseId = response.data.events[1].entity;
           var href = navigationService.caseHrefSimple(caseId);
 
-          $rootScope.$broadcast('case-changed-update-context-and-caselist');
+          $rootScope.$broadcast('case-created');
 
           window.location.replace(href + "/edit");
         });
       }
+
+      // Event listeners
+      $rootScope.$on('case-created', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+      });
+
+      $rootScope.$on('case-closed', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+      });
+
+      $rootScope.$on('case-assigned', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+      });
+
+      $rootScope.$on('case-unassigned', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+      });
+
+      $rootScope.$on('case-resolved', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+      });
+
+      $rootScope.$on('case-deleted', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+      });
+
+      $rootScope.$on('case-owner-changed', function(){
+        scope.projects.invalidate();
+        scope.projects.resolve();
+      });
+      // End Event listeners
     }
   };
 });
