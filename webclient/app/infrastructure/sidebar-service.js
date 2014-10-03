@@ -160,6 +160,8 @@ angular.module('sf')
       scope.caze.invalidate();
       scope.caze.resolve().then(function(response){
         $rootScope.$broadcast('case-changed');
+        $rootScope.$broadcast('case-owner-changed');
+
         $rootScope.$broadcast('case-changed-update-context-and-caselist');
         $rootScope.$broadcast('breadcrumb-updated', 
           [{projectId: projectId},
@@ -213,7 +215,7 @@ angular.module('sf')
   // Close
   var _close = function (scope) {
     caseService.closeCase($routeParams.caseId).then(function () {
-      $rootScope.$broadcast('case-changed-update-context-and-caselist');
+      $rootScope.$broadcast('case-closed');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
@@ -223,7 +225,7 @@ angular.module('sf')
   // Delete
   var _deleteCase = function (scope) {
     caseService.deleteCase($routeParams.caseId).then(function () {
-      $rootScope.$broadcast('case-changed-update-context-and-caselist');
+      $rootScope.$broadcast('case-deleted');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
@@ -233,7 +235,7 @@ angular.module('sf')
   // Assign / Unassign
   var _assign = function (scope) {
     caseService.assignCase($routeParams.caseId).then(function () {
-      $rootScope.$broadcast('case-changed-update-context-and-caselist');
+      $rootScope.$broadcast('case-assigned');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
@@ -241,7 +243,9 @@ angular.module('sf')
 
   var _unassign = function (scope) {
     caseService.unassignCase($routeParams.caseId).then(function () {
-      $rootScope.$broadcast('case-changed-update-context-and-caselist');
+      $rootScope.$broadcast('case-unassigned');
+      $rootScope.$broadcast('test');
+
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
@@ -317,7 +321,7 @@ angular.module('sf')
     var resolutionId = scope.resolution;
 
     caseService.resolveCase($routeParams.caseId, resolutionId, function(){
-      $rootScope.$broadcast('case-changed-update-context-and-caselist');
+      $rootScope.$broadcast('case-resolved');
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href)
     });
