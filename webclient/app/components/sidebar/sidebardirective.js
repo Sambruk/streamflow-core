@@ -254,6 +254,12 @@ angular.module('sf')
       scope.$on('case-assingned', function(){
         checkFilterCaseLog('system');
       });
+      scope.$on('case-restricted', function(){
+        checkFilterCaseLog('system');
+      });
+      scope.$on('case-unrestricted', function(){
+        checkFilterCaseLog('system');
+      });
       scope.$on('case-type-changed', function(){
         checkFilterCaseLog('system')
       });
