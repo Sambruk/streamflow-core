@@ -248,6 +248,12 @@ angular.module('sf')
       };
 
       //Event-listeners
+      scope.$on('case-unassigned', function(){
+        checkFilterCaseLog('system');
+      });
+      scope.$on('case-assingned', function(){
+        checkFilterCaseLog('system');
+      });
       scope.$on('case-type-changed', function(){
         checkFilterCaseLog('system')
       });
