@@ -24,7 +24,7 @@ angular.module('sf')
       });
     });
 
-    $rootScope.$on('form-submitted', function(){
+    $rootScope.$on('update-caseLogs', function(){
       updateObject($scope.caseLogs);
     });
     
