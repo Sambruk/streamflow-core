@@ -1,6 +1,6 @@
 'use strict';
 angular.module('sf')
-  .controller('CaselogListCtrl', function($scope, caseService, $routeParams, navigationService, httpService) {
+  .controller('CaselogListCtrl', function($scope, $rootScope, caseService, $routeParams, navigationService, httpService) {
     $scope.sidebardata = {};
     $scope.caseId = $routeParams.caseId;
     var defaultFiltersUrl = caseService.getWorkspace() + '/cases/' + $scope.caseId + '/caselog/defaultfilters';
@@ -23,14 +23,22 @@ angular.module('sf')
         $scope.showSpinner.caseLogs = false;
       });
     });
+
+    $rootScope.$on('form-submitted', function(){
+      updateObject($scope.caseLogs);
+    });
     
     $scope.$on('caselog-message-created', function(){
       $scope.showSpinner.caseLogs = true;
-      $scope.caseLogs.invalidate();
-      $scope.caseLogs.resolve();
+      updateObject($scope.caseLogs);
 
       $scope.caseLogs.promise.then(function(){
         $scope.showSpinner.caseLogs = false;
       });
     });
+
+    var updateObject = function(itemToUpdate){
+      itemToUpdate.invalidate();
+      itemToUpdate.resolve();
+    };
   });

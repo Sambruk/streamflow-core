@@ -235,8 +235,8 @@ angular.module('sf')
       
      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
-        var defaultFilters = result.data;
-        scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, defaultFilters);
+        scope.defaultFilters = result.data;
+        scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, scope.defaultFilters);
         scope.sideBarCaseLogs.promise.then(function(){
           scope.showSpinner.caseLog = false;
         });
@@ -260,13 +260,6 @@ angular.module('sf')
       scope.$on('participant-removed', function(){
         updateObject(scope.conversations);
       });
-      scope.$on('note-changed', function(event, data){
-        scope.showSpinner.caseDescriptionText = true;
-        updateObject(scope.notes);
-        scope.notes.promise.then(function(){
-          scope.showSpinner.caseDescriptionText = false;
-        });
-      });
       scope.$on('contact-name-updated', function(){
         updateObject(scope.contacts);
       });
@@ -282,8 +275,16 @@ angular.module('sf')
           scope.showSpinner.caseDescriptionText = false;
         });
       });
+      scope.$on('note-changed', function(event, data){
+        scope.showSpinner.caseDescriptionText = true;
+        updateObject(scope.notes);
+        scope.notes.promise.then(function(){
+          scope.showSpinner.caseDescriptionText = false;
+        });
+      });
       scope.$on('form-submitted', function(){
         updateObject(scope.submittedFormList);
+        checkFilterCaseLog('form');
       }); //End Event-listeners
   
       // Event-listeners needed for updating showSpinner in sidebar
@@ -297,6 +298,20 @@ angular.module('sf')
         scope.showSpinner.caseLog = data;
       });
       // End Event-listeners for updating showSpinner
+
+      var checkFilterCaseLog = function(filter){
+        if(scope.defaultFilters[filter] === false){
+          updateObject(scope.sideBarCaseLogs);
+          return;
+        }else{
+          scope.showSpinner.caseLog = true;
+          updateObject(scope.sideBarCaseLogs);
+          scope.sideBarCaseLogs.promise.then(function(){
+            scope.showSpinner.caseLog = false;
+          });
+        }
+      };
+
     }
   };
 });
