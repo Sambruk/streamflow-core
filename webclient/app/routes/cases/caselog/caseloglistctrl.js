@@ -25,7 +25,12 @@ angular.module('sf')
     });
 
     $rootScope.$on('update-caseLogs', function(){
+      $scope.showSpinner.caseLogs = true;
       updateObject($scope.caseLogs);
+
+      $scope.caseLogs.promise.then(function(){
+        $scope.showSpinner.caseLogs = false;
+      });
     });
     
     $scope.$on('caselog-message-created', function(){
