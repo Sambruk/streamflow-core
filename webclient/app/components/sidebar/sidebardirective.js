@@ -248,6 +248,9 @@ angular.module('sf')
       };
 
       //Event-listeners
+      scope.$on('case-type-changed', function(){
+        checkFilterCaseLog('system')
+      });
       scope.$on('caselog-message-created', function(){
         updateObject(scope.sideBarCaseLogs);
       });
