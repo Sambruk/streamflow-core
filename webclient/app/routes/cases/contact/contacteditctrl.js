@@ -34,13 +34,13 @@ angular.module('sf')
         var href = navigationService.caseHref($routeParams.caseId);
         $scope.contact.invalidate();
         $scope.contact.resolve();
+
         window.location.assign(href);
       });
     }
 
     $scope.updateField = function ($event, $success, $error) {
       $event.preventDefault();
-      $rootScope.$broadcast('contact-updated', true);
       var contact = {};
 
       contact[$event.currentTarget.name] = $event.currentTarget.value;
@@ -57,7 +57,6 @@ angular.module('sf')
           if ($event.currentTarget.id === 'contact-name') {
             $rootScope.$broadcast('contact-name-updated');
           }
-          $rootScope.$broadcast('contact-updated', false);
           $success($($event.target));
         }, function (error){
           $error($($event.target));

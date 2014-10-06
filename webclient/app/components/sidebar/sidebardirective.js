@@ -291,9 +291,6 @@ angular.module('sf')
       scope.$on('conversation-changed', function(event, data){
         scope.showSpinner.caseConversation = data;
       });
-      scope.$on('contact-updated', function(event, data){
-        scope.showSpinner.caseContact = data;
-      });
       scope.$on('caselog-message-added', function(event, data){
         scope.showSpinner.caseLog = data;
       });
