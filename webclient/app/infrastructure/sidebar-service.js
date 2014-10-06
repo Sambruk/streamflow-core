@@ -50,6 +50,7 @@ angular.module('sf')
       scope.possibleResolutions.invalidate();
       scope.possibleResolutions.resolve();
 
+      $rootScope.$broadcast('case-type-changed');
       _updateCaseLabels(scope);
       _updateToolbar(scope);
     }); 
@@ -180,6 +181,7 @@ angular.module('sf')
     caseService.unrestrictCase($routeParams.caseId).then(function () {
       scope.permissions.invalidate();
       scope.permissions.resolve().then(function () {
+        $rootScope.$broadcast('case-unrestricted');
         scope.showSpinner.casePermissions = false;
         _updateToolbar(scope);
       });
@@ -192,6 +194,7 @@ angular.module('sf')
     caseService.restrictCase($routeParams.caseId).then(function () {
       scope.permissions.invalidate();
       scope.permissions.resolve().then(function () {
+        $rootScope.$broadcast('case-restricted');
         scope.showSpinner.casePermissions = false;
         _updateToolbar(scope);
       });
@@ -244,8 +247,6 @@ angular.module('sf')
   var _unassign = function (scope) {
     caseService.unassignCase($routeParams.caseId).then(function () {
       $rootScope.$broadcast('case-unassigned');
-      $rootScope.$broadcast('test');
-
       var href = navigationService.caseListHrefFromCase(scope.caze);
       window.location.replace(href);
     });
