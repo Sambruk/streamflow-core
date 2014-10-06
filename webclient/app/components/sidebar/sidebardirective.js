@@ -253,9 +253,11 @@ angular.module('sf')
       });
       scope.$on('conversation-created', function(){
         updateObject(scope.conversations);
+        checkFilterCaseLog('conversation');
       });
       scope.$on('conversation-message-created', function(){
         updateObject(scope.conversations);
+        checkFilterCaseLog('conversation');
       });
       scope.$on('participant-removed', function(){
         updateObject(scope.conversations);
@@ -303,7 +305,7 @@ angular.module('sf')
 
       var checkFilterCaseLog = function(filter){
         if(scope.defaultFilters[filter] === false){
-          updateObject(scope.sideBarCaseLogs);
+          $rootScope.$broadcast('update-caseLogs');
           return;
         }else{
           scope.showSpinner.caseLog = true;
@@ -311,8 +313,9 @@ angular.module('sf')
           scope.sideBarCaseLogs.promise.then(function(){
             scope.showSpinner.caseLog = false;
           });
+          $rootScope.$broadcast('update-caseLogs');
         }
-        $rootScope.$broadcast('update-caseLogs');
+        
       };
 
     }
