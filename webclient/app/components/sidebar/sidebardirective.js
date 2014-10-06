@@ -261,7 +261,12 @@ angular.module('sf')
         updateObject(scope.conversations);
       });
       scope.$on('contact-name-updated', function(){
+        scope.showSpinner.caseContact = true;
         updateObject(scope.contacts);
+        scope.contacts.promise.then(function(){
+          scope.showSpinner.caseContact = false;
+        });
+        checkFilterCaseLog('contact');
       });
       scope.$on('case-changed', function() {
         updateObject(scope.possibleCaseTypes);
@@ -307,6 +312,7 @@ angular.module('sf')
             scope.showSpinner.caseLog = false;
           });
         }
+        $rootScope.$broadcast('update-caseLogs');
       };
 
     }
