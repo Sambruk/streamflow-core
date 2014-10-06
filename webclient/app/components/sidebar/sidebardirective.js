@@ -248,6 +248,11 @@ angular.module('sf')
       };
 
       //Event-listeners
+      scope.$on('case-changed', function() {
+        updateObject(scope.possibleCaseTypes);
+        updateObject(scope.sendToRecipients);
+        sidebarService.caseType(scope);
+      });
       scope.$on('case-unassigned', function(){
         checkFilterCaseLog('system');
       });
@@ -263,8 +268,23 @@ angular.module('sf')
       scope.$on('case-type-changed', function(){
         checkFilterCaseLog('system')
       });
-      scope.$on('caselog-message-created', function(){
-        updateObject(scope.sideBarCaseLogs);
+      scope.$on('casedescription-changed', function(){
+        scope.showSpinner.caseDescriptionText = true;
+        updateObject(scope.caze);
+        scope.caze.promise.then(function(){
+          scope.showSpinner.caseDescriptionText = false;
+        });
+      });
+      scope.$on('note-changed', function(event, data){
+        scope.showSpinner.caseDescriptionText = true;
+        updateObject(scope.notes);
+        scope.notes.promise.then(function(){
+          scope.showSpinner.caseDescriptionText = false;
+        });
+      });
+      scope.$on('form-submitted', function(){
+        updateObject(scope.submittedFormList);
+        checkFilterCaseLog('form');
       });
       scope.$on('conversation-created', function(){
         updateObject(scope.conversations);
@@ -285,29 +305,10 @@ angular.module('sf')
         });
         checkFilterCaseLog('contact');
       });
-      scope.$on('case-changed', function() {
-        updateObject(scope.possibleCaseTypes);
-        updateObject(scope.sendToRecipients);
-        sidebarService.caseType(scope);
+      scope.$on('caselog-message-created', function(){
+        updateObject(scope.sideBarCaseLogs);
       });
-      scope.$on('casedescription-changed', function(){
-        scope.showSpinner.caseDescriptionText = true;
-        updateObject(scope.caze);
-        scope.caze.promise.then(function(){
-          scope.showSpinner.caseDescriptionText = false;
-        });
-      });
-      scope.$on('note-changed', function(event, data){
-        scope.showSpinner.caseDescriptionText = true;
-        updateObject(scope.notes);
-        scope.notes.promise.then(function(){
-          scope.showSpinner.caseDescriptionText = false;
-        });
-      });
-      scope.$on('form-submitted', function(){
-        updateObject(scope.submittedFormList);
-        checkFilterCaseLog('form');
-      }); //End Event-listeners
+      //End Event-listeners
   
       // Event-listeners needed for updating showSpinner in sidebar
       scope.$on('conversation-changed', function(event, data){
@@ -330,7 +331,6 @@ angular.module('sf')
           });
           $rootScope.$broadcast('update-caseLogs');
         }
-        
       };
 
     }
