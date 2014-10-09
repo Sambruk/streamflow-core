@@ -310,7 +310,8 @@ angular.module('sf')
         checkFilterCaseLog('contact');
       });
       scope.$on('caselog-message-created', function(){
-        updateObject(scope.sideBarCaseLogs);
+        // updateObject(scope.sideBarCaseLogs);
+        checkFilterCaseLog('custom');
       });
       //End Event-listeners
   
