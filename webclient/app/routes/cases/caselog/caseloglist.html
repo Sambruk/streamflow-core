@@ -36,7 +36,7 @@
     <div ng-hide="showSpinner.caseLogs">
       <div class="caselog-body" ng-show="filteredCaseLogs.length > 0">
         <ul>
-          <li class="msg-item caselog-item" data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate')">
+          <li class="msg-item caselog-item" data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate') track by $index">
             <div class="msg-head cf">
               <div><span class="msg-author">{{ entry.creator }}</span><span> - {{ entry.caseLogType | translate }}</span></div>
             </div>
