@@ -297,6 +297,10 @@ angular.module('sf')
       scope.$on('participant-removed', function(){
         updateObject(scope.conversations);
       });
+      scope.$on('contact-created', function(){
+        updateObject(scope.contacts);
+        checkFilterCaseLog('contact');
+      });
       scope.$on('contact-name-updated', function(){
         scope.showSpinner.caseContact = true;
         updateObject(scope.contacts);

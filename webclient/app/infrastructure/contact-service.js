@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('contactService', function(caseService, navigationService){
+.factory('contactService', function(caseService, navigationService, $rootScope){
     var contact = {
       name: '',
       contactId: '',
@@ -18,11 +18,11 @@ angular.module('sf')
 
     var _submitContact = function(caseId, contactIndex) {
       caseService.addContact(caseId, contact).then(function(){
+        $rootScope.$broadcast('contact-created');
         var href = navigationService.caseHrefSimple(caseId);
         window.location.assign(href + "/contact/" + contactIndex + "/");
       });
     };
-
 
   return {
     submitContact: _submitContact
