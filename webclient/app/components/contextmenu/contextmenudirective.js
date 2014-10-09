@@ -62,41 +62,33 @@ angular.module('sf')
           window.location.replace(href + "/edit");
         });
       }
+      
+      var updateObject = function(itemToUpdate){
+        itemToUpdate.invalidate();
+        itemToUpdate.resolve();
+      };
 
       // Event listeners
       $rootScope.$on('case-created', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
+        updateObject($scope.projects);
       });
-
       $rootScope.$on('case-closed', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
+        updateObject($scope.projects);
       });
-
       $rootScope.$on('case-assigned', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
+        updateObject($scope.projects);
       });
-
       $rootScope.$on('case-unassigned', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
+        updateObject($scope.projects);
       });
-
       $rootScope.$on('case-resolved', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
+        updateObject($scope.projects);
       });
-
       $rootScope.$on('case-deleted', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
+        updateObject($scope.projects);
       });
-
       $rootScope.$on('case-owner-changed', function(){
-        scope.projects.invalidate();
-        scope.projects.resolve();
+        updateObject($scope.projects);
       });
       // End Event listeners
     }

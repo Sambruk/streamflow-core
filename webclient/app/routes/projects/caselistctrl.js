@@ -26,42 +26,35 @@ angular.module('sf')
       $scope.showSpinner.currentCases = false;
     });
 
-    var updateObject = function(){
-      $scope.currentCases.invalidate();
-      $scope.currentCases.resolve();
+    var updateObject = function(itemToUpdate){
+      itemToUpdate.invalidate();
+      itemToUpdate.resolve();
     };
     
     // Event listeners
     $rootScope.$on('case-created', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
-
     $rootScope.$on('case-closed', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
-
     $rootScope.$on('case-assigned', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
-
     $rootScope.$on('case-unassigned', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
-
     $rootScope.$on('case-resolved', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
-
     $rootScope.$on('case-deleted', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
-
     $rootScope.$on('case-owner-changed', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
-
     $rootScope.$on('casedescription-changed', function(){
-      updateObject();
+      updateObject($scope.currentCases);
     });
     // End Event listeners
   });
