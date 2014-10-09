@@ -70,25 +70,25 @@ angular.module('sf')
 
       // Event listeners
       $rootScope.$on('case-created', function(){
-        updateObject($scope.projects);
+        updateObject(scope.projects);
       });
       $rootScope.$on('case-closed', function(){
-        updateObject($scope.projects);
+        updateObject(scope.projects);
       });
       $rootScope.$on('case-assigned', function(){
-        updateObject($scope.projects);
+        updateObject(scope.projects);
       });
       $rootScope.$on('case-unassigned', function(){
-        updateObject($scope.projects);
+        updateObject(scope.projects);
       });
       $rootScope.$on('case-resolved', function(){
-        updateObject($scope.projects);
+        updateObject(scope.projects);
       });
       $rootScope.$on('case-deleted', function(){
-        updateObject($scope.projects);
+        updateObject(scope.projects);
       });
       $rootScope.$on('case-owner-changed', function(){
-        updateObject($scope.projects);
+        updateObject(scope.projects);
       });
       // End Event listeners
     }
