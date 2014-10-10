@@ -32,12 +32,16 @@ angular.module('sf')
 
     $scope.changeCaseDescription = function($event, $success, $error){
       $event.preventDefault();
-      caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
-      .then(function(response){
-        $rootScope.$broadcast('casedescription-changed');
-        $success($($event.target));
-      }, function(error) {
-        $error($error($event.target));
-      });
+      if($event.currentTarget.value.length > 50){
+        $error($($event.target));
+      }else{
+        caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
+        .then(function(response){
+          $rootScope.$broadcast('casedescription-changed');
+          $success($($event.target));
+        }, function(error) {
+          $error($error($event.target));
+        });
+      }
     }
   });

@@ -214,8 +214,8 @@
       <ul>
         <li>
           <a href="#/cases/{{ caze[0].id }}" class="block-link convCaseSidebar">
-            <h3>{{caze[0].text}}</h3>
-            <p class="caseInSidebar" style="">{{notes[0].note}}</p>
+            <h3 id="case-text">{{caze[0].text}}</h3>
+            <p class="caseInSidebar" style="word-wrap: break-word;">{{notes[0].note | limitTo: 170}}</p>
             <ul class="convo-status">
               <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
             </ul>
