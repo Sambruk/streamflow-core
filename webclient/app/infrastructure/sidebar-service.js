@@ -163,7 +163,6 @@ angular.module('sf')
         $rootScope.$broadcast('case-changed');
         $rootScope.$broadcast('case-owner-changed');
 
-        $rootScope.$broadcast('case-changed-update-context-and-caselist');
         $rootScope.$broadcast('breadcrumb-updated', 
           [{projectId: projectId},
           {projectType: projectType}]);
