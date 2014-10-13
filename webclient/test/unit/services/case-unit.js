@@ -1,9 +1,26 @@
+/*
+ *
+ * Copyright 2009-2012 Jayway Products AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
 describe("sf.services.case", function () {
-  'use strict';
 
   var backend = window.mockBackend;
 
-  beforeEach(module('sf.services.case'));
+  beforeEach(module('sf'));
 
   beforeEach(inject(function (httpService, navigationService) {
     httpService.baseUrl = '';
@@ -22,16 +39,11 @@ describe("sf.services.case", function () {
         // Given
         $httpBackend.expectGET('mock/').respond(backend.root);
         $httpBackend.expectGET('mock/workspacev2/').respond(backend.workspacev2);
-        $httpBackend.expectGET('mock/workspacev2/projects/').respond(backend.projects);
-        $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/').respond(backend.project1);
-        $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/').respond(backend.project1Inbox);
-        $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/cases?tq=select+*').respond(backend.project1InboxCases);
-        $httpBackend.expectGET('/api/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/').respond(backend.case1);
+        $httpBackend.expectGET('mock/workspacev2/cases/').respond(backend.cases);
+        $httpBackend.expectGET('mock/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/').respond(backend.case1);
 
         // When
-        var response = caseService.getSelected('b35873ba-4007-40ac-9936-975eab38395a-3f',
-                                               'inbox',
-                                               'b35873ba-4007-40ac-9936-975eab38395a-30');
+        var response = caseService.getSelected('b35873ba-4007-40ac-9936-975eab38395a-30');
 
         // Then
         expect(response.length).toEqual(0);
@@ -50,18 +62,12 @@ describe("sf.services.case", function () {
        // Given
        $httpBackend.expectGET('mock/').respond(backend.root);
        $httpBackend.expectGET('mock/workspacev2/').respond(backend.workspacev2);
-       $httpBackend.expectGET('mock/workspacev2/projects/').respond(backend.projects);
-       $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/').respond(backend.project1);
-       $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/').respond(backend.project1Inbox);
-       $httpBackend.expectGET('mock/workspacev2/projects/b35873ba-4007-40ac-9936-975eab38395a-3f/inbox/cases?tq=select+*').respond(backend.project1InboxCases);
-       $httpBackend.expectGET('/api/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/').respond(backend.case1);
-       $httpBackend.expectGET('/api/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/contacts/').respond(backend.contact1);
+       $httpBackend.expectGET('mock/workspacev2/cases/').respond(backend.cases);
+       $httpBackend.expectGET('mock/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/').respond(backend.case1);
+       $httpBackend.expectGET('mock/workspacev2/cases/b35873ba-4007-40ac-9936-975eab38395a-30/contacts/').respond(backend.contact1);
 
        // When
-        var response = caseService.getSelectedContacts(
-          'b35873ba-4007-40ac-9936-975eab38395a-3f',
-          'inbox',
-          'b35873ba-4007-40ac-9936-975eab38395a-30');
+        var response = caseService.getSelectedContacts('b35873ba-4007-40ac-9936-975eab38395a-30');
        // Then
        expect(response.length).toEqual(0);
 

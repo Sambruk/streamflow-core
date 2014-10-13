@@ -1,0 +1,105 @@
+<!--
+
+
+    Copyright 2009-2014 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main">
+  <div class="m m-check-list">
+    <div class="m-h">
+      <h2>Redigera kontakt</h2>
+      <!--<a href="#/cases/{{ caseId }}/" title="Tillbaka" class="action-btn"><i class="icon-arrow-down"></i> Tillbaka</a>-->
+    </div>
+    <div ng-hide="showSpinner.contact">
+      <div class="contact-input">
+        <form action="#" method="get" class="form-general cf" name="editContactForm">
+          <div class="row cols-1 cf">
+            <div class="text col full">
+              <label for="contact-name">Namn</label>
+              <input type="text" data-ng-model="contact[0].name" id="contact-name" name="name" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+          </div>
+          <div class="row cols-1 cf">
+          </div>
+          <div class="row cf cols-3">
+            <div class="text col medium col-1">
+              <label for="contact-name">Gatuadress</label>
+              <input type="text" data-ng-model="contact[0].addresses[0].address" id="contact-address" name="address" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+            <div class="text col medium-small col-2">
+              <label for="contact-zipcode">Postnummer</label>
+              <input type="text" data-ng-model="contact[0].addresses[0].zipCode" id="contact-zipcode" name="zipCode" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+            <div class="text col medium-small col-3">
+              <label for="contact-city">Postort</label>
+              <input type="text" data-ng-model="contact[0].addresses[0].city" id="contact-city" name="city" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+          </div>
+          <div class="row cols-2 cf">
+            <div class="text col medium col-1">
+              <label for="contact-region">Region</label>
+              <input type="text" data-ng-model="contact[0].addresses[0].region" id="contact-region" name="region" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+            <div class="text col medium col-2">
+              <label for="contact-country">Land</label>
+              <input type="text" data-ng-model="contact[0].addresses[0].country" id="contact-country" name="country" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+          </div>
+          <div class="row cols-1 cf">
+          </div>
+          <div class="row cols-3 cf">
+            <div class="text col medium-small col-1">
+              <label for="contact-phone">Telefon</label>
+              <input type="text" data-ng-model="contact[0].phoneNumbers[0].phoneNumber" id="contact-phone" name="phone" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+            <div class="text col medium col-2">
+              <label for="contact-email">E-post</label>
+              <input type="text" data-ng-model="contact[0].emailAddresses[0].emailAddress" id="contact-email" name="email" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+            <div class="text col medium-small col-3">
+              <label for="contact-pref">Kontaktpreferens</label>
+              <select custom-select class="hasCustomSelect" data-ng-model="contact[0].contactPreference" id="contact-pref" name="contactpreference" data-sf-update-on-blur="updateField($event, $success, $error)">
+                <option value="letter">Brev</option>
+                <option value="email" selected>E-post</option>
+                <option value="sms">SMS</option>
+                <option value="phone">Telefon</option>
+              </select>
+            </div>
+          </div>
+          <div class="row cols-2 cf">
+            <div class="text col medium col-1">
+              <label for="contact-id">Kontakt-id <em>(pers.nr)</em><!--<em>(pers.nr / org.nr)</em>--></label>
+              <input type="text" data-ng-model="contact[0].contactId" id="contact-id" name="contactId" placeholder="YYYYMMDDXXXX" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+            <div class="text col medium col-2">
+              <label for="contact-company">Företag</label>
+              <input type="text" data-ng-model="contact[0].company" id="contact-company" name="company" data-sf-update-on-blur="updateField($event, $success, $error)">
+            </div>
+          </div>
+          <div class="row cols-1 cf">
+            <div class="text col full">
+              <label for="contact-note">Anteckningar</label>
+              <textarea data-ng-model="contact[0].note" id="contact-note" name="note" cols="30" rows="2" placeholder="" data-sf-update-on-blur="updateField($event, $success, $error)"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div ng-show="showSpinner.contact" class="spinner"></div>
+  </div>
+</div>
+
+<!-- Content secondary -->
+<sidebar class="sidebar-content" sidebardata="sidebardata"></sidebar>

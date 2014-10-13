@@ -17,7 +17,7 @@
 describe("sf.services.forms", function () {
   'use strict';
 
-  beforeEach(module('sf.services.forms'));
+  beforeEach(module('sf'));
 
   describe("formMapperService", function(){
 

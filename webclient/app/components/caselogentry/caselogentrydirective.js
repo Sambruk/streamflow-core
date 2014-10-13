@@ -1,0 +1,39 @@
+'use strict';
+
+angular.module('sf')
+.directive('caselogentry', function($rootScope, $location, $routeParams, $q, caseService, navigationService){
+  return {
+    restrict: 'E',
+    templateUrl: 'components/caselogentry/caselogentry.html',
+    scope: {
+      caseid: '=?'
+    },
+    link: function(scope){
+      scope.caseLogEntryToCreate = '';
+      //scope.caseLogs;
+      scope.caseId = $routeParams.caseId;
+      scope.caseLogs;
+
+      scope.$watch('caseLogs', function(newVal){
+        if(!newVal){
+          return;
+        }
+        scope.caseLogs = newVal;
+      });
+
+      scope.submitCaseLogEntry = function($event){
+        $event.preventDefault();
+        $rootScope.$broadcast('caselog-message-added', 'true');
+        scope.caseLogs = caseService.getSelectedCaseLog(scope.caseId);
+        caseService.createCaseLogEntry(scope.caseId, scope.caseLogEntryToCreate)
+        .then(function(response){
+          scope.caseLogs.invalidate();
+          scope.caseLogs.resolve();
+          $rootScope.$broadcast('caselog-message-created');
+          scope.caseLogEntryToCreate = '';
+          $rootScope.$broadcast('caselog-message-added', 'false');
+        });
+      }
+    }
+  };
+});

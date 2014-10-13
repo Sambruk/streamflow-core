@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+'use strict';
 window.mockBackend = window.mockBackend || (function () {
-  'use strict';
 
   var mockBackend = {};
-
 
   mockBackend.root = {"commands":[], "index":null, "queries":[], "resources":[
     {
@@ -302,7 +302,7 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ], "resources":[]};
 
-  mockBackend.cases = {"links":[
+  mockBackend.openCases = {"links":[
     {
       "_type":"se.streamsource.streamflow.surface.api.CaseListItemDTO",
       "classes":null,
@@ -329,6 +329,7 @@ window.mockBackend = window.mockBackend || (function () {
     }
   ]};
 
+  mockBackend.cases = {"commands":[],"index":null,"queries":[],"resources":[]};
 
 
 

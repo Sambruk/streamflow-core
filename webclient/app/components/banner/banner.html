@@ -1,0 +1,30 @@
+<div growl role="banner"></div>
+  <div class="header cf" role="banner" ng-show="hasToken()">
+
+    <div class="header-body cf">
+
+      <div class="client-name">
+        <div class="user-area">
+          <a href="#/" data-ng-click="logout()" class="btn btn-xs" style="float: right;">Logga Ut</a>
+          <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
+        </div>
+        <!-- /user-area -->
+          <h1>Malmö Kommun Kontaktcenter</h1>
+      </div>
+
+      <!-- /client-name -->
+
+      <!--<form action="#" method="get" class="main-search" role="search">
+          <div>
+              <label for="main-searchtext" class="struct">Sök</label>
+              <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
+              <button type="submit"><i class="icon-search"><span>Sök</span></i></button>
+          </div>
+      </form>-->
+      <!-- /main-search -->
+    </div>
+    <!-- /header-body -->
+    
+    <breadcrumbbanner></breadcrumbbanner>
+
+  </div>
