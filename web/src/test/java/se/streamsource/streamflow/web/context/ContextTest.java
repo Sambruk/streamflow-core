@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonAnyGetter;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -248,6 +250,11 @@ public abstract class ContextTest
    {
       return value( StringValue.class, "{'string':'" + value + "'}" );
    }
+
+    protected static EntityValue entityValueNull( )
+    {
+        return value( EntityValue.class, "{'entity':"+ JSONObject.NULL +"}" );
+    }
 
    protected static EntityValue entityValue( String value )
    {

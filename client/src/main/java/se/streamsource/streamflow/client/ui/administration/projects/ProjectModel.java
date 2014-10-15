@@ -25,6 +25,7 @@ import se.streamsource.streamflow.client.ui.administration.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RequiresCaseTypeModel;
 
 /**
  * Represents a Project in the administration model
@@ -43,5 +44,6 @@ public class ProjectModel
       relationModelMapping("filters", FiltersModel.class);
       relationModelMapping("caseaccessdefaults", CaseAccessDefaultsModel.class);
       relationModelMapping("dueonnotification", CaseDueOnNotificationModel.class);
+      relationModelMapping("requirescasetype", RequiresCaseTypeModel.class);
    }
 }

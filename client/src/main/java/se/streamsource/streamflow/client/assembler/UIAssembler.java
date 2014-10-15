@@ -90,6 +90,7 @@ import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RequiresCaseTypeView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
@@ -373,6 +374,7 @@ public class UIAssembler
             CaseDefaultDaysToCompleteView.class,
             CaseDueOnNotificationView.class,
             RecipientsView.class,
+            RequiresCaseTypeView.class,
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
             FormOnRemoveView.class,

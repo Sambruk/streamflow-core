@@ -214,6 +214,6 @@ public enum AdministrationResources
    point,
    polyline,
    polygon,
-   statistical;
+   statistical, change_requires_case_type, requires_casetype_seperator;
 
 }

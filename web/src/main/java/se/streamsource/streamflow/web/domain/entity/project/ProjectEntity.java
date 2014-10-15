@@ -56,9 +56,8 @@ import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseType
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.CaseTypeRequired;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -97,6 +96,8 @@ public interface ProjectEntity
         Filters.Events,
         DueOnNotificationSettings.Data,
         DueOnNotificationSettings.Events,
+        CaseTypeRequired.Data,
+        CaseTypeRequired.Events,
 
         // Queries
         AssignmentsQueries,

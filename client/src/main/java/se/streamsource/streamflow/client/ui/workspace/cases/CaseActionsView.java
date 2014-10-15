@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
 
 import java.awt.BorderLayout;
@@ -119,6 +120,7 @@ public class CaseActionsView extends JPanel
       markunread,
       markread,
       formonclose,
+      requirecasetype,
       close
    }
 
@@ -499,9 +501,33 @@ public class CaseActionsView extends JPanel
          }
       };
    }
+
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task requirecasetype(){
+
+       ConfirmationDialog dialog = module.objectBuilderFactory().newObject(ConfirmationDialog.class);
+       dialog.setCustomMessage( i18n.text( WorkspaceResources.caze_requirescasetype ) );
+       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+
+       if (dialog.isConfirmed())
+       {
+           return new CommandTask()
+           {
+               @Override
+               public void command()
+                       throws Exception
+               {
+                   model.requirecasetype();
+               }
+           };
+       } else
+           return null;
+   }
+
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formondelete", "reinstate", "restrict", "unrestrict", "read" ), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "onhold", "reopen", "resume", "unassign", "resolved", "formonclose", "formondelete", "reinstate", "restrict", "unrestrict", "read" ), transactions )
+              || matches( withNames("changedCaseType"), transactions ))
       {
          model.refresh();
       }
