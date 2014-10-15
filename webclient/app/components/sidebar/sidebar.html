@@ -96,80 +96,98 @@
 
   <!-- Ärendetyp -->
   <!-- <div ng-hide="showSpinner.caseType"> -->
-  <div>
-    <select
-      data-placeholder="Case typ"
-      class="chosen-case-type chosen-select"
-      style="width: 100%;"
-      data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
-      data-ng-model="caseType"
-      
-      data-ng-change="changeCaseType(caseType)"
-    >
-    </select>
-  </div>
-  <!-- <div ng-show="showSpinner.caseType" class="spinner"></div> -->
-  <!-- /Ärendetyp -->
-  <br><br>
-  <!-- Ärendelabel -->
-  <!-- <div ng-hide="showSpinner.caseLabels"> -->
-  <div class="row">
-    <div class="select">
-      <label for="issue-label-select">Etiketter</label>
-      <select
-        data-placeholder="Case etikett"
-        class="chosen chosen-case-label chosen-choices"
-        style="width: 100%;"
-        id="issue-label-select"
-        name="caseLabel"
-        data-ng-options="label as label.text for label in allCaseLabels"
-        data-ng-model="activeLabels"
-        data-ng-change="changeCaseLabels(activeLabels)"
-        multiple
-      >
-      </select>
-    </div>
-  </div>
-  <!-- <div ng-show="showSpinner.caseLabels" class="spinner"></div> -->
-  <br><br>
 
-  <!-- Prioritet -->
-  <div data-ng-show="possiblePriorities.length">
-    <!-- <div ng-hide="showSpinner.casePriority"> -->
-    <div>
-      <select
-        style="width: 100%;"
-        ng-style="activePriorityColor"
-        data-ng-options="priority.id as priority.text for priority in possiblePriorities"
-        data-ng-model="priority"
-        data-ng-change="changePriorityLevel(priority, showSpinner.casePriority, activePriorityColor, priorityColor, caseId);"
-      >
-      </select>
+  <div class="m m-status">
+    <div class="m-h">
+      <h2>Status</h2>
     </div>
-    <!-- <div ng-show="showSpinner.casePriority" class="spinner"></div> -->
-    <br><br>
-  </div>
-  <!-- /Prioritet -->
+    <form>
+    <div class="row">
+      <div class="select">
+        <label for="type-select">Ärendetyp</label>
+        <select
+          data-placeholder="Case typ"
+          class="chosen-case-type chosen-select"
+          style="width: 100%;"
+          data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
+          data-ng-model="caseType"
+          data-ng-change="changeCaseType(caseType)"
+          name="name-select"
+          id="type-select"
+        >
+        </select>
+      </div>
+    </div>
+    <!-- <div ng-show="showSpinner.caseType" class="spinner"></div> -->
+    <!-- /Ärendetyp -->
 
-  <!-- Due date -->
-  <!-- <div ng-hide="showSpinner.caseDueOn"> -->
-  <div>
-    <div class="set-due-date">
-      <input
-        sf-date-picker-fancy
-        style="width: 100%;"
-        type="text"
-        placeholder="Förfallodatum"
-        ng-model="dueOnShort"
-        data-ng-change="changeDueOn(dueOnShort)"
-        id="fancy-date-hidden"
-      >
+    <!-- Ärendelabel -->
+    <!-- <div ng-hide="showSpinner.caseLabels"> -->
+    <div class="row">
+      <div class="select">
+        <label for="issue-label-select">Etiketter</label>
+        <select
+          data-placeholder="Case etikett"
+          class="chosen chosen-case-label chosen-choices"
+          style="width: 100%;"
+          id="issue-label-select"
+          name="caseLabel"
+          data-ng-options="label as label.text for label in allCaseLabels"
+          data-ng-model="activeLabels"
+          data-ng-change="changeCaseLabels(activeLabels)"
+          multiple
+        >
+        </select>
+      </div>
     </div>
-  </div>
+    <!-- <div ng-show="showSpinner.caseLabels" class="spinner"></div> -->
+
+    <!-- Prioritet -->
+    <div data-ng-show="possiblePriorities.length" class="row">
+      <!-- <div ng-hide="showSpinner.casePriority"> -->
+      <div class="select">
+        <label for="priority-select">Prioritet</label>
+        <select
+          style="width: 100%;"
+          ng-style="activePriorityColor"
+          data-ng-options="priority.id as priority.text for priority in possiblePriorities"
+          data-ng-model="priority"
+          data-ng-change="changePriorityLevel(priority, showSpinner.casePriority, activePriorityColor, priorityColor, caseId);"
+          class="sidebar-chosen-drop-down"
+          name="priority-select"
+          id="priority-select"
+        >
+        </select>
+      </div>
+      <!-- <div ng-show="showSpinner.casePriority" class="spinner"></div> -->
+    </div>
+    <!-- /Prioritet -->
+
+    <!-- Due date -->
+    <!-- <div ng-hide="showSpinner.caseDueOn"> -->
+    <div class="row">
+      <div class="text">
+        <label for="issue-due-date">Förfaller om</label>
+        <div class="set-due-date">
+          <input
+            sf-date-picker-fancy
+            style="width: 100%;"
+            type="text"
+            placeholder="Förfallodatum"
+            ng-model="dueOnShort"
+            data-ng-change="changeDueOn(dueOnShort)"
+            id="issue-due-date"
+            name="issue-due-date"
+            class="datepicker-due"
+          >
+        </div>
+      </div>
+    </div>
+    </form>
   <!-- <div ng-show="showSpinner.caseDueOn" class="spinner"></div> -->
   <!-- /Due date -->
-
-  <br><br>
+  </div>
+  <!-- /Module: Status -->
 
   <!-- Module: Allmänt -->
   <!-- <div ng-show="showSpinner.caseGeneral" class="spinner"></div> -->
@@ -220,7 +238,7 @@
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar" style="">{{notes[0].note | limitTo: 170}}</p>
             <ul class="convo-status">
-              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-chat icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
+              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-history-file icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
             </ul>
           </a>
         </li>
@@ -245,7 +263,7 @@
               <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)">
               </span>
               <ul class="form-status">
-                <li><a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-chat" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
+                <li><a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-history-doc" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
               </ul>
             </div>
           </a>
