@@ -109,7 +109,6 @@ public class CaseActionsView extends JPanel
       unassign,
       onhold,
       resume,
-      resolve,
       formondelete,
       reopen,
       delete,
@@ -119,8 +118,9 @@ public class CaseActionsView extends JPanel
       unrestrict,
       markunread,
       markread,
-      formonclose,
       requirecasetype,
+      resolve,
+      formonclose,
       close
    }
 

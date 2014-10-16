@@ -54,12 +54,16 @@ public @interface RequiresCaseType
              return isCaseTypeRequiredAndNotSet(caseTypeRequired, type);
          } else
          {
-             return caseTypeRequired && type != null;
+             return isCaseTypeNotRequiredOrCaseTypeSet(caseTypeRequired, type);
          }
       }
 
        private boolean isCaseTypeRequiredAndNotSet(boolean caseTypeRequired, CaseType type) {
            return caseTypeRequired && type == null;
+       }
+
+       private boolean isCaseTypeNotRequiredOrCaseTypeSet(boolean caseTypeRequired, CaseType type) {
+           return !caseTypeRequired || type != null;
        }
    }
 }
