@@ -105,9 +105,9 @@ angular.module('sf')
       
       scope.previousActiveLabels = scope.activeLabels;
       scope.showSpinner.caseLabels = false;
-      
       setTimeout(function () {
         jQuery('.chosen-case-label').chosen({ 'search_contains': true }).trigger('chosen:updated');
+        $('.chosen-container').css({visibility: 'visible'});
       }, 0);
     });
   };
@@ -131,6 +131,7 @@ angular.module('sf')
         'assign': 'canAssign',
         'unassign': 'canUnassign',
         'restrict': 'canRestrict',
+        'requirecasetype': 'caseRequireCaseType',
         'unrestrict': 'canUnrestrict',
         'markunread': 'canMarkUnread',
         'markread': 'canMarkRead',
@@ -232,11 +233,15 @@ angular.module('sf')
   
   // Close
   var _close = function (scope) {
-    caseService.closeCase($routeParams.caseId).then(function () {
-      $rootScope.$broadcast('case-closed');
-      var href = navigationService.caseListHrefFromCase(scope.caze);
-      window.location.replace(href);
-    });
+    if(scope.caseType === null){
+      scope.commandView = 'requiredCaseType';
+    }else{
+      caseService.closeCase($routeParams.caseId).then(function () {
+        $rootScope.$broadcast('case-closed');
+        var href = navigationService.caseListHrefFromCase(scope.caze);
+        window.location.replace(href);
+      });
+    }
   };
   // End Close
   

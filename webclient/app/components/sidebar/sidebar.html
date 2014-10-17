@@ -29,6 +29,7 @@
       <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign()" class="btn">Återlämna</a></li>
       <li data-ng-show="canResolve"><a href="" data-ng-click="resolveCase()" class="btn">Stäng</a></li>
       <li data-ng-show="canClose"><a href="" data-ng-click="close()" class="btn">Stäng</a></li>
+      <li data-ng-show="caseRequireCaseType"><a href="" data-ng-click="close()" class="btn">Stäng</a></li>
       <li data-ng-show="formOnClose"><a href="" class="btn disabled">Stäng</a></li>
       <li>
         <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
@@ -50,6 +51,11 @@
           </select>
           <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
           <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
+        </div>
+
+        <div class="toolbar-content-style" data-ng-switch-when="requiredCaseType">
+          <p>Du behöver ange en ärendetyp innan du kan stänga ärendet.</p>
+          <button data-ng-click="onCancelRequiredCaseTypeButtonClicked()">Avbryt</button>
         </div>
 
         <div class="toolbar-content-style" data-ng-switch-when="close">
