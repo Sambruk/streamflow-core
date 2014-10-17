@@ -369,6 +369,8 @@ angular.module('sf')
       scope.showSpinner.caseType = false;
       setTimeout(function () {
         jQuery('.chosen-case-type').chosen({ 'search_contains': true }).trigger('chosen:updated');
+        $('#type_select').css({visibility: 'visible'});
+        $('#type_select_chosen').css({visibility: 'visible'});
       }, 0);
     });
   };
