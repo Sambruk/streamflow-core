@@ -15,3 +15,7 @@
 # limitations under the License.
 #
 
+npm install
+bower install
+rm -rf bower_components/jquery
+gulp clean-build --prod
