@@ -982,6 +982,21 @@ angular.module('sf')
             caseBase.broadcastMessage(error);
           });
       },
+      addExternalParticipantToConversation: function(caseId, conversationId, participantEmail) {
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'participants'},
+            {commands: 'addexternalparticipant'}
+            ]),
+          {emailAddress: participantEmail}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
+      },
       deleteParticipantFromConversation: function(caseId, conversationId, participant) {
         return backendService.postNested(
           caseBase(caseId).concat([

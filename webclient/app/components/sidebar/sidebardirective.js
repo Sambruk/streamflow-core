@@ -206,7 +206,10 @@ angular.module('sf')
       // Close
       scope.close = function () {
         sidebarService.close(scope);
-      }; // End Close     
+      };
+      scope.onCancelRequiredCaseTypeButtonClicked = function () {
+        scope.commandView = '';
+      };// End Close     
       
       // Delete
       scope.deleteCase = function () {
