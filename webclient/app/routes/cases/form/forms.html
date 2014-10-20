@@ -80,7 +80,8 @@
             <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue" >
               <div class="select col medium col-2 form-comboBox" id="{{field.field.field}}">
                 <data-ng-include class="m-c" src="'routes/cases/form/form-label.html'"></data-ng-include>
-                <select custom-select data-ng-model="field.value" 
+                <select data-ng-model="field.value" 
+                        class="sidebar-chosen-drop-down ng-pristine ng-valid"
                         name="{{ field.field.field }}" id="{{ field.field.fieldId }}"
                         data-ng-options="option.value as option.name for option in field.field.fieldValue.options" ng-change="reapplyRules()" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
                 </select>
