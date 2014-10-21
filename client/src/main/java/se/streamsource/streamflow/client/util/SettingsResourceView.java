@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArch
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.RequiresCaseTypeView;
 
@@ -78,6 +79,8 @@ public class SettingsResourceView
       addSettings( "restrictions", AdministrationResources.restrictions_settings_separator,  CaseAccessDefaultsView.class);
 
       addSettings( "formondelete", AdministrationResources.formondelete_separator, FormOnRemoveView.class );
+
+      addSettings( "mailrestrictions", AdministrationResources.mailrestrictions_separator, MailRestrictionsView.class);
    }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)

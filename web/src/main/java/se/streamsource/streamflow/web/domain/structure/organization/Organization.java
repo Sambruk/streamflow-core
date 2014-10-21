@@ -66,6 +66,7 @@ public interface Organization
       CaseAccessDefaults,
       Groups,
       ShadowCases,
-      IntegrationPoints
+      IntegrationPoints,
+      MailRestrictions
 {
 }

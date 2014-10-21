@@ -20,13 +20,16 @@ import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.RoleMap;
@@ -43,6 +46,7 @@ import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectOrganizationalUnitQueries;
+import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
@@ -54,6 +58,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Unread;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
@@ -93,13 +98,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
-import se.streamsource.streamflow.web.domain.structure.organization.Priority;
-import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTasks;
 import se.streamsource.streamflow.web.domain.structure.user.User;
@@ -712,14 +711,37 @@ public interface CaseEntity
                   variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
                   variables.put( "subject", caze.getDescription() );
 
-                  conversation.createMessage( Translator.translate("{received,caseid=" + ((CaseId.Data) caze).caseId().get() + ",subject=" + caze.getDescription() + "}", origin.accesspoint().get().emailTemplates().get(), variables  ),
+                  if ( noMailRestrictionPresent( caze.createdBy().get() ))
+                  {
+                     conversation.createMessage( Translator.translate("{received,caseid=" + ((CaseId.Data) caze).caseId().get() + ",subject=" + caze.getDescription() + "}", origin.accesspoint().get().emailTemplates().get(), variables  ),
                         MessageType.SYSTEM, administrator, false );
+                  }
                }
             }
          }
       }
 
-      public void close()
+       private boolean noMailRestrictionPresent(final Creator creator)
+       {
+           MailRestrictions mailRestrictions = RoleMap.role(MailRestrictions.class);
+           MailRestriction mailRestriction = null;
+
+           if( creator instanceof EmailUserEntity )
+           {
+               mailRestriction = Iterables.first(Iterables.filter(new Specification<MailRestriction>()
+               {
+                   @Override
+                   public boolean satisfiedBy(MailRestriction item)
+                   {
+                       return ((Identity)creator).identity().get().equals( "email:" + item.getDescription() );
+                   }
+               },mailRestrictions.getMailRestrictions()));
+
+           }
+           return mailRestriction == null;
+       }
+
+       public void close()
       {
          if (origin.accesspoint().get() != null&&
                !Strings.empty( origin.accesspoint().get().emailTemplates().get().get( "closed" ) ) )
@@ -738,8 +760,11 @@ public interface CaseEntity
                   variables.put( "caseid", ((CaseId.Data) caze).caseId().get() );
                   variables.put( "subject", caze.getDescription() );
 
-                  conversation.createMessage( Translator.translate( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + ",subject=" + caze.getDescription() + "}", origin.accesspoint().get().emailTemplates().get(), variables ),
-                        MessageType.SYSTEM, administrator, false );
+                   if ( noMailRestrictionPresent( caze.createdBy().get() ))
+                   {
+                        conversation.createMessage( Translator.translate( "{closed,caseid=" + ((CaseId.Data) caze).caseId().get() + ",subject=" + caze.getDescription() + "}", origin.accesspoint().get().emailTemplates().get(), variables ),
+                            MessageType.SYSTEM, administrator, false );
+                   }
                }
             }
          }

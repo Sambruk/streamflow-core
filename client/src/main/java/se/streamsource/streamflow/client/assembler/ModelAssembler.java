@@ -61,6 +61,7 @@ import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsMo
 import se.streamsource.streamflow.client.ui.administration.labels.LabelModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsModel;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersModel;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
@@ -247,7 +248,8 @@ public class ModelAssembler
             PriorityModel.class,
             PriorityOnCaseModel.class,
             FormLabelsModel.class,
-            VisibilityRuleValuesModel.class);
+            VisibilityRuleValuesModel.class,
+            MailRestrictionsModel.class);
 
 
       addModels(module, LinksListModel.class,
