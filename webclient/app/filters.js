@@ -17,6 +17,11 @@
 'use strict';
 
 angular.module('sf')
+.filter('sanitize', ['$sce', function($sce){
+  return function(htmlCode){
+    return $sce.trustAsHtml(htmlCode);
+  };
+}])
 .filter('positive', function() {
     return function(input) {
       return input > 0 ? input : '';
