@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.administration;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsModel;
 import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseAccessDefaultsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
@@ -57,5 +58,6 @@ public class OrganizationModel
       relationModelMapping( "restrictions", CaseAccessDefaultsModel.class );
       relationModelMapping( "formondelete", FormOnRemoveModel.class );
       relationModelMapping( "groups", GroupsModel.class );
+      relationModelMapping( "mailrestrictions", MailRestrictionsModel.class);
    }
 }

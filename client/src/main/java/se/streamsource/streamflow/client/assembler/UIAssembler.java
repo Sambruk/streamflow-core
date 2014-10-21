@@ -81,6 +81,7 @@ import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsView;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
+import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsView;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.priorities.PrioritiesView;
@@ -90,6 +91,7 @@ import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RequiresCaseTypeView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
@@ -373,6 +375,7 @@ public class UIAssembler
             CaseDefaultDaysToCompleteView.class,
             CaseDueOnNotificationView.class,
             RecipientsView.class,
+            RequiresCaseTypeView.class,
             CaseArchivalSettingView.class,
             FormOnCloseView.class,
             FormOnRemoveView.class,
@@ -398,7 +401,8 @@ public class UIAssembler
             PriorityOnCaseView.class,
             FormLabelsView.class,
             IntegrationPointsView.class,
-            IntegrationPointView.class);
+            IntegrationPointView.class,
+            MailRestrictionsView.class);
 
       addViews(module,
             FieldEditorAttachmentFieldValueView.class,

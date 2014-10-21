@@ -206,6 +206,11 @@ public class CaseModel
       client.postCommand( "markread" );
    }
 
+    public void requirecasetype()
+    {
+        //client.postCommand( "requirecasetype" );
+    }
+
    public CaseGeneralModel newGeneralModel()
    {
       return module.objectBuilderFactory().newObjectBuilder(CaseGeneralModel.class).use(client.getSubClient("general" )).newInstance();

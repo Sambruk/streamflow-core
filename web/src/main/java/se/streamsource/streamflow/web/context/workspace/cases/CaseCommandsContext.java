@@ -138,6 +138,7 @@ public interface CaseCommandsContext
     * Mark the case as closed
     */
    @RequiresStatus( OPEN )
+   @RequiresCaseType(false)
    @HasResolutions(false)
    @HasFormOnClose(false)
    @SubCasesAreClosed
@@ -149,6 +150,7 @@ public interface CaseCommandsContext
     */
    @RequiresStatus( OPEN )
    @HasResolutions(true)
+   @RequiresCaseType(false)
    @HasFormOnClose(false)
    @RequiresRemoved(false)
    @SubCasesAreClosed
@@ -160,6 +162,7 @@ public interface CaseCommandsContext
     */
    @RequiresStatus( OPEN )
    @HasFormOnClose(true)
+   @RequiresCaseType(false)
    @RequiresRemoved(false)
    @SubCasesAreClosed
    public void formonclose();
@@ -173,6 +176,12 @@ public interface CaseCommandsContext
    @HasFormOnDelete(true)
    @RequiresRemoved(false)
    public StringValue formondeletename();
+
+    @RequiresStatus( OPEN )
+    @RequiresCaseType(true)
+    @SubCasesAreClosed
+    @RequiresRemoved(false)
+   public void requirecasetype();
 
    /**
     * Mark the case as on-hold
@@ -532,6 +541,15 @@ public interface CaseCommandsContext
                access.changeAccess( entry.getKey(), entry.getValue() );
             }
          }
+      }
+
+       /**
+        * Do nothing - just a marker method to tell the client
+        * that there needs to be a case type set before closing this case.
+         */
+      public void requirecasetype()
+      {
+
       }
 
       public PDDocument exportpdf( CaseOutputConfigDTO config ) throws Throwable

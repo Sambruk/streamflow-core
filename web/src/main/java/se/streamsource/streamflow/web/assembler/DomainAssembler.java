@@ -467,7 +467,8 @@ public class DomainAssembler
    {
       module.entities(OrganizationsEntity.class, OrganizationEntity.class,
               OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class,
-            PriorityEntity.class, IntegrationPointEntity.class, GlobalCaseIdStateEntity.class).visibleIn( application );
+            PriorityEntity.class, IntegrationPointEntity.class, MailRestrictionEntity.class,
+            GlobalCaseIdStateEntity.class).visibleIn( application );
       module.values(ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 

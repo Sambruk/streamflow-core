@@ -82,6 +82,7 @@ public interface Projects
          Project project = createdProject( null, id );
          addProject( project );
          project.changeDescription( name );
+         project.changeCaseTypeRequired( true );
 
          return project;
       }
