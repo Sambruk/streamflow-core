@@ -29,6 +29,24 @@ angular.module('sf')
       ];
     };
 
+   var getConversationMessage = function(caseId, conversationId, messageId) {
+      return backendService.get({
+        specs:caseBase(caseId).concat([
+          {resources: 'conversations'},
+          {'index.links': conversationId},
+          {resources: 'messages'},
+          {'index.links': messageId}
+          ]),
+        onSuccess:function (resource, result) {
+          result.push(resource.response.index.text);
+          caseBase.broadcastMessage(result.status);
+        },
+        onFailure:function(err){
+          caseBase.broadcastMessage(err);
+        }
+      });
+    };
+
     //caseBase.bcMessage = null;
     //TODO: Refactor (use a var instead of property)
     var bcMessage = null;
@@ -63,7 +81,6 @@ angular.module('sf')
           }
         });
       },
-
       getSelectedCommands: function(caseId) {
         return backendService.get({
           specs: caseBase(caseId),
@@ -878,7 +895,10 @@ angular.module('sf')
             {resources: 'messages'}
             ]),
           onSuccess:function (resource, result) {
-            resource.response.index.links.forEach(function(item){result.push(item)});
+            resource.response.index.links.forEach(function(item){
+              item.text = getConversationMessage(caseId, conversationId, item.id);
+              result.push(item);
+            });
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
