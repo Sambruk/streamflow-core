@@ -19,7 +19,10 @@ package se.streamsource.streamflow.client.ui.administration.organisationsettings
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.Action;
@@ -62,12 +65,23 @@ public class MailRestrictionsView
 
     public JList list;
 
+    private DefaultFormBuilder builder;
+
     public MailRestrictionsView( @Service ApplicationContext context,
                             @Uses final MailRestrictionsModel model )
     {
-        super( new BorderLayout() );
         this.model = model;
-        setBorder( Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu") );
+
+        FormLayout layout = new FormLayout( "150dlu, 2dlu, 50, 200", "pref" );
+        setLayout(layout);
+        setMaximumSize( new Dimension( Short.MAX_VALUE, 50 ) );
+        builder = new DefaultFormBuilder( layout, this);
+
+        builder.add(new JLabel(i18n.text(AdministrationResources.mailrestrictions_addresses)),
+                new CellConstraints(1,1,1,1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 4, 0, 0, 0 )));
+
+        JPanel addressPanel = new JPanel( new BorderLayout() );
+        addressPanel.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
         ActionMap am = context.getActionMap( this );
         setActionMap( am );
@@ -81,14 +95,16 @@ public class MailRestrictionsView
         list = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
         list.setCellRenderer( new LinkListCellRenderer() );
         scrollPane.setViewportView( list );
-        add( scrollPane, BorderLayout.CENTER );
+        addressPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add( new StreamflowButton( am.get( "add" ) ) );
         toolbar.add( new StreamflowButton( new OptionsAction( options ) ) );
-        add( toolbar, BorderLayout.SOUTH );
+        addressPanel.add(toolbar, BorderLayout.SOUTH);
 
         list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ) ) );
+
+        builder.add( addressPanel, new CellConstraints( 3, 1, 2, 1) );
 
         new RefreshWhenShowing( this, model );
 

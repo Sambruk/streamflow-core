@@ -23,6 +23,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.project.CaseTypeRequired;
 
 import java.lang.annotation.ElementType;
@@ -45,9 +46,10 @@ public @interface RequiresCaseType
    {
       public boolean isValid( RequiresCaseType requiresCaseType, RoleMap roleMap )
       {
-         Owner owner =  RoleMap.role(Ownable.Data.class).owner().get();
+         Case caze = RoleMap.role(Case.class);
+         Owner owner =  ((Ownable.Data)caze).owner().get();
          boolean caseTypeRequired = ((CaseTypeRequired.Data)owner).caseTypeRequired().get();
-         CaseType type = RoleMap.role( TypedCase.Data.class ).caseType().get();
+         CaseType type = (( TypedCase.Data )caze).caseType().get();
 
          if (requiresCaseType.value())
          {

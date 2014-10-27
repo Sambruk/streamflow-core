@@ -214,6 +214,6 @@ public enum AdministrationResources
    point,
    polyline,
    polygon,
-   statistical, change_requires_case_type, requires_casetype_seperator, mailrestrictions_separator, add_mailrestriction_title;
+   statistical, change_requires_case_type, requires_casetype_seperator, mailrestrictions_separator, add_mailrestriction_title, mailrestrictions_addresses;
 
 }

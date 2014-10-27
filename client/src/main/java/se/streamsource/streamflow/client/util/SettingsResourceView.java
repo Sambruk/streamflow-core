@@ -40,7 +40,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Font;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -78,10 +78,13 @@ public class SettingsResourceView
 
       addSettings( "restrictions", AdministrationResources.restrictions_settings_separator,  CaseAccessDefaultsView.class);
 
-      addSettings( "formondelete", AdministrationResources.formondelete_separator, FormOnRemoveView.class );
+       addSettings( "mailrestrictions", AdministrationResources.mailrestrictions_separator, MailRestrictionsView.class);
 
-      addSettings( "mailrestrictions", AdministrationResources.mailrestrictions_separator, MailRestrictionsView.class);
-   }
+       addSettings( "mailrestrictions", AdministrationResources.mailrestrictions_separator, MailRestrictionsView.class);
+
+       addSettings( "formondelete", AdministrationResources.formondelete_separator, FormOnRemoveView.class );
+
+      }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)
    {
@@ -113,6 +116,7 @@ public class SettingsResourceView
                JComponent view = module.objectBuilderFactory().newObjectBuilder(tabClass).use(resourceModel).newInstance();
                view.setAlignmentX(JComponent.LEFT_ALIGNMENT);
                view.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+               //view.setBorder( BorderFactory.createLineBorder(Color.RED, 3));
                add(view);
             } catch (Exception e)
             {
