@@ -20,15 +20,19 @@ import org.apache.commons.collections.ArrayStack;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Contexts;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
@@ -194,7 +198,7 @@ public class CaseCommandsContextTest
 
       // Check actions for new draft
       {
-         checkActions( caze, "delete", "sendto" );
+         checkActions( caze, null, "delete", "sendto" );
       }
 
       // Send to project
@@ -206,14 +210,15 @@ public class CaseCommandsContextTest
          playRole( caze );
 
          CaseCommandsContext context = context( CaseCommandsContext.class );
-         context.sendto( entityValue( findLink( context.possiblesendto(), "Project1" ) ) );
+         LinkValue project1 = findLink(context.possiblesendto(), "Project1");
+         context.sendto( entityValue( project1 ) );
          uow.complete();
          eventsOccurred( "changedOwner", "changedDate", "setCounter", "assignedCaseId" );
       }
 
       // Check actions for draft sent to project
       {
-         checkActions( caze, "delete", "open", "sendto" );
+         checkActions( caze,  "Project1", "delete", "open", "sendto" );
       }
 
       // Select casetype
@@ -262,7 +267,7 @@ public class CaseCommandsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "delete", "resolve", "read", "markread", "sendto", "restrict", "assign", "assignto" );
+         checkActions( caze,  "Project1", "delete", "resolve", "read", "markread", "sendto", "restrict", "assign", "assignto" );
       }
 
       // Assign case
@@ -284,7 +289,7 @@ public class CaseCommandsContextTest
 
       // Check assigned actions
       {
-         checkActions( caze, "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
+         checkActions( caze,  "Project1", "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
       }
 
       // Resolve case
@@ -309,7 +314,7 @@ public class CaseCommandsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "reopen" );
+         checkActions( caze,  "Project1", "reopen" );
       }
 
       // Reopen case
@@ -328,7 +333,7 @@ public class CaseCommandsContextTest
 
       // Check reopened actions
       {
-         checkActions( caze, "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
+         checkActions( caze,  "Project1", "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
       }
 
       // Close
@@ -347,8 +352,75 @@ public class CaseCommandsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "reopen" );
+         checkActions( caze,  "Project1", "reopen" );
       }
+
+       // Reopen case and change to project with requires case type
+       {
+           UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "15" ));
+           RoleMap.newCurrentRoleMap();
+           playRole( User.class, "testing" );
+           RoleMap.current().set( new UserPrincipal( "testing" ) );
+           playRole( caze );
+
+           context( CaseCommandsContext.class ).reopen();
+
+           uow.complete();
+           eventsOccurred( "changedStatus", "unresolved" );
+
+       }
+
+       // Check reopened actions
+       {
+           checkActions( caze,  "Project1", "delete", "resolve", "markread", "read", "sendto", "restrict", "unassign" );
+       }
+
+       //SentTo
+       {
+           UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "16" ));
+           RoleMap.newCurrentRoleMap();
+           playRole( User.class, "testing" );
+           RoleMap.current().set( new UserPrincipal( "testing" ) );
+           playRole( caze );
+
+           Project project1 = CaseCommandsContextTest.<Project>entity(findLink( context(WorkspaceProjectsContext.class).index(), "Project1" ) );
+           project1.changeCaseTypeRequired(true);
+
+           CaseGeneralCommandsContext generalContext = context( CaseGeneralCommandsContext.class );
+
+           generalContext.casetype( entityValueNull() );
+
+           uow.complete();
+
+           eventsOccurred("changedRequiresCaseType","changedCaseType");
+       }
+
+       {
+           checkActions( caze,  "Project1", "delete", "requirecasetype", "markread", "read", "sendto", "restrict", "unassign" );
+       }
+
+       // Close again with casetype present
+       {
+           UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "17" ));
+           RoleMap.newCurrentRoleMap();
+           playRole( User.class, "testing" );
+           RoleMap.current().set( new UserPrincipal( "testing" ) );
+           playRole( caze );
+
+           CaseGeneralCommandsContext generalContext = context( CaseGeneralCommandsContext.class );
+           generalContext.casetype( entityValue( findLink( generalContext.possiblecasetypes(), "CaseType1" ) ) );
+
+           context( CaseCommandsContext.class ).close();
+
+           uow.complete();
+           eventsOccurred( "changedStatus", "changedCaseType" );
+       }
+
+       // Check closed actions
+       {
+           checkActions( caze, "Project1", "reopen" );
+       }
+
    }
 
    @Test
@@ -461,13 +533,18 @@ public class CaseCommandsContextTest
       readUow.discard();
    }
 
-   private void checkActions( Case caze, String... allowedActions )
+   private void checkActions( Case caze, String projectId, String... allowedActions )
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork( UsecaseBuilder.newUsecase( "28" ));
       RoleMap.newCurrentRoleMap();
       RoleMap.current().set( new UserPrincipal( "testing" ) );
       playRole( caze );
       playRole( User.class, "testing" );
+      if( projectId != null )
+      {
+          playRole( Project.class, findLink( context( WorkspaceProjectsContext.class ).index(), projectId ) );
+          //playRole( findDescribable( context( ProjectsContext.class ).index(), projectId ) );
+      }
       RoleMap.current().set( new UserPrincipal( "testing" ) );
 
       List<String> actions = new ArrayStack();

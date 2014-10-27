@@ -207,4 +207,10 @@
             newDataType="varchar(1000)"
             tableName="fields"/>
     </changeSet>
+    <changeSet id="5" dbms="mssql" author="arvidhuss">
+        <modifyDataType
+                columnName="value"
+                newDataType="varchar(4500)"
+                tableName="fields"/>
+    </changeSet>
 </databaseChangeLog>

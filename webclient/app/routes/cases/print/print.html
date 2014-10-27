@@ -1,0 +1,66 @@
+<!--
+
+
+    Copyright 2009-2014 Jayway Products AB
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="content-primary" role="main">
+
+  <!-- Single issue -->
+  <div class="m single-issue">
+
+    <!-- Issue header -->
+    <div class="m-h cf">
+      <h2 class="id">{{caze[0].caseId}}</h2>
+      <div class="choose-type">
+        <label class="struct" for="issue-type">Ärendetyp</label>
+        <input type="text" disabled id="issue-type" data-ng-model="general[0].caseType.text">
+      </div>
+    </div>
+    <!-- /Issue header -->
+
+    <!-- Issue body -->
+    <div class="issue-body">
+      <div class="due-date {{caze.index.overdueStatus()}}">
+        <span>{{caze[0].overdueDays() | positive}}</span>
+      </div>
+      <div class="issue-description">
+        <h2>{{caze[0].text}}</h2>
+        <p>{{notes[0].note}}</p>
+      </div>
+    </div>
+
+    <!-- Module: Allmänt -->
+    <div class="m m-general">
+      <div class="m-h">
+        <h2>Allmänt</h2>
+      </div>
+      <div class="m-c">
+        <div class="m-box">
+          <ul>
+            <li><strong>Ägare:</strong> {{ caze[0].owner }}</li>
+            <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
+            <li data-ng-show="general[0].priority.text"><strong>Prioritet:</strong> {{ general[0].priority.text }}</li>
+            <li><strong>Kund:</strong> TODO TODOsson 19760901-4046</li>
+            <li data-ng-show="general[0].dueOn"><strong>Förfallodatum:</strong> {{ general[0].dueOn | longDate }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- /Module: Allmänt -->
+
+  </div>
+
+</div>

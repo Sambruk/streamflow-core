@@ -13,4 +13,5 @@ nbproject
 .idea
 webclient/dist/
 webclient/temp/
+webclient/app/design/
 **/*.iml

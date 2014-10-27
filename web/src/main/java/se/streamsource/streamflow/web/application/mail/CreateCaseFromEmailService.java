@@ -76,6 +76,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Receive emails and create cases through Access Points
@@ -161,6 +165,19 @@ public interface CreateCaseFromEmailService
                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
                      uow.discard();
                      return;
+                  }
+
+                  if( ap != null && hasAutoReplyHeader( email.headers().get() ) )
+                  {
+                      // Possible mail loop - auto reply header present but no References - create support case.
+                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class ).withPrototype( email );
+
+                      String subj = "Possible Mail Loop: " + builder.prototype().to().get() + " - " + builder.prototype().subject().get();
+
+                      builder.prototype().subject().set( subj.length() > 50 ? subj.substring( 0, 50 ) : subj );
+                      systemDefaults.createCaseOnEmailFailure( builder.newInstance() );
+                      uow.discard();
+                      return;
                   }
 
                   Drafts user = systemDefaults.getUser( email );
@@ -250,7 +267,23 @@ public interface CreateCaseFromEmailService
             }
          }
 
-         private void addVCardAsContact(Contactable.Data user, AttachedFileValue attachedFileValue) throws IOException
+          private boolean hasAutoReplyHeader(Map<String,String> headers)
+          {
+              List autoReplyHeaders = new ArrayList(
+                      Arrays.asList( "auto-submitted", "x-autoreply", "x-autorespond", "precedence", "x-precedence")
+              );
+
+              for( String key : headers.keySet() )
+              {
+                if( autoReplyHeaders.contains( key.toLowerCase()))
+                {
+                    return true;
+                }
+              }
+              return false;
+          }
+
+          private void addVCardAsContact(Contactable.Data user, AttachedFileValue attachedFileValue) throws IOException
          {
             // Add VCard info to contact and then remove it as attachment
             String[] mimeTypeParts = attachedFileValue.mimeType().get().split(";");

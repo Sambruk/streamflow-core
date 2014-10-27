@@ -30,7 +30,9 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArch
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RequiresCaseTypeView;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -38,7 +40,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Font;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -66,6 +68,8 @@ public class SettingsResourceView
 
       addSettings("dueonnotification", AdministrationResources.dueon_notification_separator, CaseDueOnNotificationView.class);
 
+      addSettings("requirescasetype", AdministrationResources.requires_casetype_seperator, RequiresCaseTypeView.class);
+
       addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
 
       addSettings( "priorityoncase", AdministrationResources.casepriority_separator, PriorityOnCaseView.class );
@@ -74,8 +78,13 @@ public class SettingsResourceView
 
       addSettings( "restrictions", AdministrationResources.restrictions_settings_separator,  CaseAccessDefaultsView.class);
 
-      addSettings( "formondelete", AdministrationResources.formondelete_separator, FormOnRemoveView.class );
-   }
+       addSettings( "mailrestrictions", AdministrationResources.mailrestrictions_separator, MailRestrictionsView.class);
+
+       addSettings( "mailrestrictions", AdministrationResources.mailrestrictions_separator, MailRestrictionsView.class);
+
+       addSettings( "formondelete", AdministrationResources.formondelete_separator, FormOnRemoveView.class );
+
+      }
 
    private static void addSettings(String name, Enum tabName, Class<? extends JComponent> viewClass)
    {
@@ -107,6 +116,7 @@ public class SettingsResourceView
                JComponent view = module.objectBuilderFactory().newObjectBuilder(tabClass).use(resourceModel).newInstance();
                view.setAlignmentX(JComponent.LEFT_ALIGNMENT);
                view.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+               //view.setBorder( BorderFactory.createLineBorder(Color.RED, 3));
                add(view);
             } catch (Exception e)
             {

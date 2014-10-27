@@ -20,6 +20,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
 import se.streamsource.streamflow.web.context.administration.ProjectContext;
+import se.streamsource.streamflow.web.context.administration.RequiresCaseTypContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.rest.resource.organizations.filters.FiltersResource;
 import se.streamsource.streamflow.web.rest.resource.organizations.forms.FormsResource;
@@ -87,5 +88,11 @@ public class ProjectResource
    public void dueonnotification()
    {
       subResource(DueOnNotificationSettingsResource.class);
+   }
+
+   @SubResource
+    public void requirescasetype()
+   {
+       subResourceContexts(RequiresCaseTypContext.class);
    }
 }

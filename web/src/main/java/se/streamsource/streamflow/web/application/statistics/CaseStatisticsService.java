@@ -469,10 +469,10 @@ public interface CaseStatisticsService
                      } else {
                         formBuilder.prototype().datatype().set( "" );
                      }
-                     // truncate field value if greater than 500 chars.
-                     // value in fields table is varchar(500)
+                     // truncate field value if greater than 4500 chars.
+                     // value in fields table is varchar(4500)
                      String fieldValue = submittedFieldValue.value().get();
-                     fieldValue = fieldValue.length() > 500 ? fieldValue.substring(0, 500) : fieldValue;
+                     fieldValue = fieldValue.length() > 4500 ? fieldValue.substring(0, 4500) : fieldValue;
                      formBuilder.prototype().value().set(fieldValue);
                      prototype.fields().get().add(formBuilder.newInstance());
                   }

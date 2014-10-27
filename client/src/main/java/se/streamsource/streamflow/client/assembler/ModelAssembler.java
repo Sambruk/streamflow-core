@@ -61,6 +61,7 @@ import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsMo
 import se.streamsource.streamflow.client.ui.administration.labels.LabelModel;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsModel;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationUsersModel;
 import se.streamsource.streamflow.client.ui.administration.organizations.OrganizationsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
@@ -71,6 +72,7 @@ import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationModel;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.RecipientsModel;
+import se.streamsource.streamflow.client.ui.administration.projectsettings.RequiresCaseTypeModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
@@ -199,6 +201,7 @@ public class ModelAssembler
             CaseDefaultDaysToCompleteModel.class,
             CaseDueOnNotificationModel.class,
             RecipientsModel.class,
+            RequiresCaseTypeModel.class,
             CaseArchivalSettingModel.class,
             FormOnCloseModel.class,
             FormOnRemoveModel.class,
@@ -245,7 +248,8 @@ public class ModelAssembler
             PriorityModel.class,
             PriorityOnCaseModel.class,
             FormLabelsModel.class,
-            VisibilityRuleValuesModel.class);
+            VisibilityRuleValuesModel.class,
+            MailRestrictionsModel.class);
 
 
       addModels(module, LinksListModel.class,

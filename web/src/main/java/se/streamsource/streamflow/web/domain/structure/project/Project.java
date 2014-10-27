@@ -46,6 +46,7 @@ public interface Project
       Owner,
       Ownable,
       Removable,
-      DueOnNotificationSettings
+      DueOnNotificationSettings,
+        CaseTypeRequired
 {
 }

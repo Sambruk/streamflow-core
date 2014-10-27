@@ -15,10 +15,7 @@
 # limitations under the License.
 #
 
-rm -rf dist
-grunt --force
-rm -rf dist/api
-rm -f dist/mock.html
-# TODO remove not needed script since they are replaced by scripts.js
-# rm -rf dist/modules/*.js
-
+npm install
+bower install
+rm -rf bower_components/jquery
+gulp clean-build --prod

@@ -20,16 +20,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 
-import se.streamsource.streamflow.api.administration.ArchivalSettingsDTO;
-import se.streamsource.streamflow.api.administration.ChangePasswordDTO;
-import se.streamsource.streamflow.api.administration.DueOnNotificationSettingsDTO;
-import se.streamsource.streamflow.api.administration.LinkTree;
-import se.streamsource.streamflow.api.administration.NewProxyUserDTO;
-import se.streamsource.streamflow.api.administration.NewUserDTO;
-import se.streamsource.streamflow.api.administration.ProxyUserDTO;
-import se.streamsource.streamflow.api.administration.ProxyUserListDTO;
-import se.streamsource.streamflow.api.administration.RegisterUserDTO;
-import se.streamsource.streamflow.api.administration.UserEntityDTO;
+import se.streamsource.streamflow.api.administration.*;
 import se.streamsource.streamflow.api.administration.filter.AssignActionValue;
 import se.streamsource.streamflow.api.administration.filter.ChangeOwnerActionValue;
 import se.streamsource.streamflow.api.administration.filter.CloseActionValue;
@@ -197,6 +188,7 @@ public class ClientAPIAssembler
       administration.values(
               ArchivalSettingsDTO.class,
               DueOnNotificationSettingsDTO.class,
+              RequiresCaseTypeDTO.class,
               RegisterUserDTO.class,
               ChangePasswordDTO.class,
               NewUserDTO.class,

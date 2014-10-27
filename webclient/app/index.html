@@ -21,170 +21,69 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" xmlns="http://www.w3.org/1999/html"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8"/>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-        <title>Streamflow</title>
-        <meta name="description" content=""/>
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <link rel="apple-touch-icon" sizes="57x57" href="design/gui/i/apple-touch-icon-57x57.png">
-        <link rel="apple-touch-icon" sizes="72x72" href="design/gui/i/apple-touch-icon-72x72.png">
-        <link rel="apple-touch-icon" sizes="114x114" href="design/gui/i/apple-touch-icon-114x114.png">
+<html class="no-js" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>Streamflow</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" sizes="57x57" href="app/i/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="app/i/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="app/i/apple-touch-icon-114x114.png">
 
-        <link rel="shortcut icon" href="design/gui/i/favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
 
-        <!-- build:css styles/gui-fwk.css -->
-        <link rel="stylesheet" href="design/gui/css/basic.css">
-        <link rel="stylesheet" href="design/gui/css/print.css">
-        <link rel="stylesheet" href="design/gui/css/fonts.css">
-        <link rel="stylesheet" href="design/gui/css/main.css">
-        <link rel="stylesheet" href="design/gui/css/retina.css">
+    <!-- ////////////////////////
+    //////// Vendor styles /////
+    ///////////////////////////-->
+      <link rel="stylesheet" href="vendor/vendor.css">   
 
-        <!-- Angular growl -->
-        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ////////////////////
+    /////// App styles /////
+    ///////////////////////-->
+    <link href="app/css/streamflow.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
+    <!--[if lte IE 8]>
+      <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
 
-        <!-- datepicker -->
-        <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.css">
-        <link rel="stylesheet" href="design/gui/vendor/pickadate/themes/default.date.css">
-        <!-- endbuild -->
+        // Optionally these for CSS
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+      </script>
+    <![endif]-->
 
-        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
-        <!--[if lte IE 8]>
-          <script>
-            document.createElement('ng-include');
-            document.createElement('ng-pluralize');
-            document.createElement('ng-view');
+    <!-- Angular growl 
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet"> -->
 
-            // Optionally these for CSS
-            document.createElement('ng:include');
-            document.createElement('ng:pluralize');
-            document.createElement('ng:view');
-          </script>
-        <![endif]-->
-    </head>
-    <body data-ng-app="sf" data-sf-layout-style>
-
-        <!--[if lt IE 7]>
+  </head>
+  <body ng-app="sf" sf-layout-style>
+    <!--[if lt IE 7]>
         <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
-
-        <!--[if lt IE 9]>
-        <script src="vendor/es5-shim.min.js"></script>
-        <script src="vendor/json3.min.js"></script>
-        <![endif]-->
-
-        <!-- Add your site or application content here -->
-        <div class='body'>
-        
-        <div growl role="banner"></div>
-          <div class="header cf" role="banner">
-
-            <div class="header-body cf">
-
-              <div class="client-name" data-ng-controller="ProfileCtrl">
-                <div class="user-area">
-                  <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
-                    <!-- Need a btn to log out. <a href="" data-ng-click="logout()" class="btn">Logga Ut</a> -->
-                </div>
-                <!-- /user-area -->
-                  <h1>Malmö Kommun Kontaktcenter</h1>
-              </div>
-
-              <!-- /client-name -->
-
-              <form action="#" method="get" class="main-search" role="search">
-                  <div>
-                      <label for="main-searchtext" class="struct">Sök</label>
-                      <input type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök">
-                      <button type="submit"><i class="icon-search"><span>Sök</span></i></button>
-                  </div>
-              </form>
-              <!-- /main-search -->
+    <div class="body">
+            <banner ng-show="isLoggedIn"></banner>
+            <login ng-show="!isLoggedIn"></login>
+            <div class="main">
+            <contextmenu params="contextmenuParams" ng-show="isLoggedIn"></contextmenu>
+            <div class="main-body cf">
+                <div class="container" ng-view=""></div>
             </div>
-            <!-- /header-body -->
-            
-            <!-- Issue banner -->
-            <div class="issue-banner" data-ng-controller="BreadcrumbCtrl">
-                <span data-ng-repeat="bread in breadcrumbList">
-                    {{ bread }} 
-                    <span ng-hide="$last == true">&rarr;</span>
-                </span>
-            </div>
-            <!-- /issue-banner -->
-          </div>
-          <!-- /header -->
-
-          <div class="main">
-            <data-ng-include src="'modules/views/navigation.html'"></data-ng-include>
-            <div class="main-body cf" ng-view> 
-            </div> <!-- main-body -->
-            
-          </div> <!-- main -->
-        </div> <!-- body -->
-
-        <!-- TODO use CDN in production -->
-        <script src="components/jquery/jquery.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
-        <!--<script src="components/angular/angular.min.js"></script>-->
-        <script src="components/angular-resource/angular-resource.js"></script>
-        <script src="components/typewatch/jquery.typewatch.js"></script>
-
-        <!-- Angular-growl -->
-        <script src="components/angular-growl/build/angular-growl.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-
-
-        <!-- build:js scripts/scripts.js -->
-        <script src="components/base64/base64.js"></script>
-        <script src="components/underscore/underscore-min.js"></script>
-        <script src="modules/app.js"></script>
-        <script src="modules/filters.js"></script>
-        <script src="modules/controllers/case-controllers.js"></script>
-        <script src="modules/controllers/conversation-controllers.js"></script>
-        <script src="modules/controllers/caselog-controllers.js"></script>
-        <script src="modules/controllers/contact-controllers.js"></script>
-        <script src="modules/controllers/form-controllers.js"></script>
-        <script src="modules/controllers/notes-controllers.js"></script>
-        <script src="modules/controllers/project-controllers.js"></script>
-        <script src="modules/controllers/sidebar-controllers.js"></script>
-        <script src="modules/controllers/profile-controllers.js"></script>
-        <script src="modules/directives/sf-active-link.js"></script>
-        <script src="modules/directives/sf-fixed-toolbar.js"></script>
-        <script src="modules/directives/sf-layout-style.js"></script>
-        <script src="modules/directives/sf-on-blur.js"></script>
-        <script src="modules/directives/sf-checkbox-auto-send.js"></script>
-        <script src="modules/directives/sf-multiple-select-auto-send.js"></script>
-        <script src="modules/directives/sf-generic-auto-send.js"></script>
-        <script src="modules/directives/sf-simple-field-auto-send.js"></script>
-        <script src="modules/directives/sf-radio-extended-auto-send.js"></script>
-        <script src="modules/directives/sf-radio-extended-text-field.js"></script>
-        <script src="modules/directives/sf-update-on-blur.js"></script>
-        <script src="modules/directives/jquery-custom-select.js"></script>
-        <script src="modules/directives/sf-date-picker.js"></script>
-        <script src="modules/directives/sf-open-toolbar-content.js"></script>
-        <script src="modules/services/navigation-service.js"></script>
-        <script src="modules/services/backend-service.js"></script>
-        <script src="modules/services/error-handler-service.js"></script>
-        <script src="modules/services/http-service.js"></script>
-        <script src="modules/services/perspective-service.js"></script>
-        <script src="modules/services/project-service.js"></script>
-        <script src="modules/services/case-service.js"></script>
-        <script src="modules/services/form-mapper-service.js"></script>
-        <script src="modules/services/profile-service.js"></script>
-        <script src="modules/models/sf-case.js"></script>
-
-        <script src="jquery.customSelect.min.js"></script>
-        <!-- endbuild -->
-
-        <!-- build:js scripts/gui-fwk.js -->
-        <!-- datepicker -->
-        <script type="text/javascript" src="design/gui/vendor/pickadate/picker.js"></script>
-        <script type="text/javascript" src="design/gui/vendor/pickadate/picker.date.js"></script>
-        <script type="text/javascript" src="design/gui/vendor/pickadate/translations/sv_SE.js"></script>
-        <!-- endbuild -->
-
-    </body>
+        </div>
+    </div>
+    <!--<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>-->
+    <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+    <script src="app/plugins/jquery.customSelect.js"></script>
+    <script src="app/plugins/picker.js"></script>
+    <script src="app/plugins/picker.date.js"></script>
+    <script src="app/plugins/sv_SE.js"></script>
+    <script src="vendor/vendor.js"></script>
+    <script src="app/streamflow.js"></script>
+</body>
 </html>

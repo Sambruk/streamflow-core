@@ -18,19 +18,19 @@
 
 -->
 <!-- Copyright 2009-2012 Jayway Products AB. All Rights Reserved by Jayway 
-	Products AB. The content of this file is property of Jayway Products AB, 
-	org no 556777-9896, with the address Hans Michelsensgatan 9, SE-211 20 Malmö, 
-	Sweden. Any unauthorized review, use, disclosure or distribution is prohibited. -->
+  Products AB. The content of this file is property of Jayway Products AB, 
+  org no 556777-9896, with the address Hans Michelsensgatan 9, SE-211 20 Malmö, 
+  Sweden. Any unauthorized review, use, disclosure or distribution is prohibited. -->
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	version="3.0">
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0">
 
-	<display-name>Streamflow WebClient</display-name>
-	<description>WebClient for complex casehandling</description>
+  <display-name>Streamflow WebClient</display-name>
+  <description>WebClient for complex casehandling</description>
 
 
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-	</welcome-file-list>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
 
 </web-app>

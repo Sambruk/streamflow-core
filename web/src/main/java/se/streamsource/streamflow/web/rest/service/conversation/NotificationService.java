@@ -205,6 +205,11 @@ public interface NotificationService
                      {
                         builder.prototype().from().set(emailAccessPoint.getDescription() );
                         builder.prototype().headers().get().put( "Auto-Submitted", "auto-replied" );
+                        builder.prototype().headers().get().put( "X-Auto-Response-Suppress", "OOF, DR, RN, NRN" );
+                        builder.prototype().headers().get().put( "X-Autoreply", "yes" );
+                        builder.prototype().headers().get().put( "X-Autorespond", "yes" );
+                        builder.prototype().headers().get().put( "Precedence", "auto_reply" );
+                        builder.prototype().headers().get().put( "X-Precedence", "auto_reply" );
                      }
 
       //               builder.prototype().replyTo();

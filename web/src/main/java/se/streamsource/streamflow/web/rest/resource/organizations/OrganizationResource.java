@@ -164,4 +164,10 @@ public class OrganizationResource
       subResourceContexts( FormOnRemoveContext.class );
    }
 
+   @SubResource
+   public void mailrestrictions()
+   {
+       subResource( MailRestrictionsResource.class );
+   }
+
 }
