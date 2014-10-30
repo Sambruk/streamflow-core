@@ -49,6 +49,7 @@ public class ConversationContext
       builder.prototype().creator().set( ((Describable) conversation.createdBy().get()).getDescription() );
       builder.prototype().messages().set( ((Messages.Data) conversation).messages().count() );
       builder.prototype().participants().set( ((ConversationParticipants.Data) conversation).participants().count() );
+      builder.prototype().unread().set( conversation.hasUnreadMessage() );
 
       return builder.newInstance();
    }
