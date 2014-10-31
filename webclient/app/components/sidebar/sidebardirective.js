@@ -103,7 +103,9 @@ angular.module('sf')
         if(!newVal){
           return;
         }
-        scope.sidebardata['notesHistory'] = scope.notesHistory;
+        if(scope.sidebardata){
+          scope.sidebardata['notesHistory'] = scope.notesHistory;
+        }
       });
 
       scope.$watch('caze', function(newVal){
