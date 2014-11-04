@@ -46,6 +46,14 @@ angular.module('sf')
       return;
     }
     $scope.notesHistory = $scope.sidebardata.notesHistory;
+
+    $scope.notesHistory.promise.then(function(){
+      if($scope.notesHistory[$scope.notesHistory.length -1].note == ''){
+        $scope.notesHistory.pop();
+      }
+    });
+
+
   });
 
   $scope.addNote = function($event){
