@@ -31,6 +31,11 @@ angular.module('sf')
     }
   };
 
+  var _updateObject = function(itemToUpdate){
+    itemToUpdate.invalidate();
+    itemToUpdate.resolve();
+  }
+
   var _changePriorityLevel = function(scope, priorityId) {
     scope.showSpinner.casePriority = true;
 
@@ -58,8 +63,7 @@ angular.module('sf')
       if(!scope.possibleForms){
         scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       }else{
-        scope.possibleForms.invalidate();
-        scope.possibleForms.resolve();
+        _updateObject(scope.possibleForms);
       }
 
       if(scope.possibleForms.length == 0){
@@ -72,8 +76,7 @@ angular.module('sf')
       }
       scope.showSpinner.casePossibleForms = false;
       
-      scope.possibleResolutions.invalidate();
-      scope.possibleResolutions.resolve();
+      _updateObject(scope.possibleResolutions);
 
       $rootScope.$broadcast('case-type-changed');
       _updateCaseLabels(scope);
@@ -87,15 +90,13 @@ angular.module('sf')
     if (!scope.caseLabel) {
       scope.caseLabel = caseService.getCaseLabel($routeParams.caseId);
     } else {
-      scope.caseLabel.invalidate();
-      scope.caseLabel.resolve();
+      _updateObject(scope.caseLabel);
     }
     
     if (!scope.possibleCaseLabels) {
       scope.possibleCaseLabels = caseService.getPossibleCaseLabels($routeParams.caseId);
     } else {
-      scope.possibleCaseLabels.invalidate();
-      scope.possibleCaseLabels.resolve();
+      _updateObject(scope.possibleCaseLabels);
     }
     
     $q.all([
@@ -125,8 +126,7 @@ angular.module('sf')
     scope.showSpinner.caseToolbar = true;
     
     if (scope.commands) {
-      scope.commands.invalidate();
-      scope.commands.resolve();
+      _updateObject(scope.commands);
     } else {
       scope.commands = caseService.getSelectedCommands($routeParams.caseId);
     }
