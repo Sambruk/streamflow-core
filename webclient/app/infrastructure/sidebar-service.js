@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, navigationService, tokenService){
+.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, $location, navigationService, tokenService){
 
   var sortByText = function (x, y) {
     var xS = x.text && x.text.toUpperCase() || '',
@@ -60,6 +60,15 @@ angular.module('sf')
       }else{
         scope.possibleForms.invalidate();
         scope.possibleForms.resolve();
+      }
+
+      if(scope.possibleForms.length == 0){
+        // Check if the current route contains formdraft to redirect to "case main page"
+        var checkRoute = new RegExp('formdrafts').test($location.path());
+        if(checkRoute == true){
+          var href = navigationService.caseHrefSimple($routeParams.caseId);
+          window.location.replace(href);
+        }
       }
       scope.showSpinner.casePossibleForms = false;
       
