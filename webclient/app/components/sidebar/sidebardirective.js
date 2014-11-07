@@ -212,7 +212,7 @@ angular.module('sf')
       scope.markReadUnread = function (read) {
         sidebarService.markReadUnread(scope, read);
       }; // End Mark Read / Unread 
-      
+
       // Close
       scope.close = function () {
         sidebarService.close(scope);
@@ -339,16 +339,13 @@ angular.module('sf')
 
       var checkFilterCaseLog = function(filter){
         if(scope.defaultFilters[filter] === false){
-          $rootScope.$broadcast('update-caseLogs');
           return;
-        }else{
-          scope.showSpinner.caseLog = true;
-          updateObject(scope.sideBarCaseLogs);
-          scope.sideBarCaseLogs.promise.then(function(){
-            scope.showSpinner.caseLog = false;
-          });
-          $rootScope.$broadcast('update-caseLogs');
         }
+        scope.showSpinner.caseLog = true;
+        updateObject(scope.sideBarCaseLogs);
+        scope.sideBarCaseLogs.promise.then(function(){
+          scope.showSpinner.caseLog = false;
+        });
       };
 
     }
