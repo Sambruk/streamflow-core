@@ -48,6 +48,9 @@ angular.module('sf')
     $scope.notesHistory = $scope.sidebardata.notesHistory;
 
     $scope.notesHistory.promise.then(function(){
+      if($scope.notesHistory.length == 0){
+        return;
+      }
       if($scope.notesHistory[$scope.notesHistory.length -1].note == ''){
         $scope.notesHistory.pop();
       }
