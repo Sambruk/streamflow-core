@@ -58,8 +58,10 @@
         <div class="note-body">
           <p ng-bind-html="note.note | sanitize"></p>
         </div>
-        <div class="msg-timestamp">
-          <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
+        <div class="msg-meta cf">
+          <div class="msg-timestamp">
+            {{ note.createdOn | dateTime }}
+          </div>
         </div>
         <br/>
       </div>
