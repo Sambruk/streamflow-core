@@ -37,7 +37,7 @@
             </div>
           </div>
         </div>
-        <button data-ng-click="addCaseDescriptionAndNote($event)" name="note-submit" style="float:right">Spara ärendebeskrivning</button>
+        <a class="btn inline inactive" data-ng-click="addCaseDescriptionAndNote($event)" data-ng-class="{inactive: !caze[0].text || !notes[0].note}" name="note-submit" style="float:right" >Spara ärendebeskrivning</a>
       </form>
     </div>
   </div><!-- /single-issue -->
