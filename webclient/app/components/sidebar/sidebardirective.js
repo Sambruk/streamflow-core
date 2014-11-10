@@ -230,7 +230,6 @@ angular.module('sf')
       scope.assign = function () {
         sidebarService.assign(scope);
       };
-
       scope.unassign = function () {
         sidebarService.unassign(scope);
       }; // End Assign / Unassign
@@ -246,14 +245,24 @@ angular.module('sf')
         sidebarService.deleteAttachment(scope, attachmentId);
       }; // End Attachments
       
-     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
+      // Show / Close pop up
+      scope.showCaseInfoPopUp = function(){
+        scope.showCaseInfo = true;
+      }
+      scope.closePopUp = function(){
+        scope.showCaseInfo = false;
+        scope.commandView = '';
+      } // End Show / Close pop up
+
+      // Filter for caselog
+      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         scope.defaultFilters = result.data;
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, scope.defaultFilters);
         scope.sideBarCaseLogs.promise.then(function(){
           scope.showSpinner.caseLog = false;
         });
-      });
+      }); // End Filter for caselog
 
       var updateObject = function(itemToUpdate){
         itemToUpdate.invalidate();

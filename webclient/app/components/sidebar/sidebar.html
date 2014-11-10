@@ -24,7 +24,7 @@
   <!-- <div class="toolbar" data-sf-fixed-toolbar ng-hide="showSpinner.caseToolbar"> -->
   <div class="toolbar" data-sf-fixed-toolbar>
     <ul class="buttons cf" data-ng-show="commands[0]">
-      <li data-ng-show="canSendTo"><a href="" sf-open-toolbar-content data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
+      <li data-ng-show="canSendTo"><a href="" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
       <li data-ng-show="canAssign"><a href="" data-ng-click="assign()" class="btn">Tilldela</a></li>
       <li data-ng-show="canUnassign"><a href="" data-ng-click="unassign()" class="btn">Återlämna</a></li>
       <li data-ng-show="canResolve"><a href="" data-ng-click="resolveCase()" class="btn">Stäng</a></li>
@@ -64,9 +64,9 @@
 
         <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
           <div class='ng-modal' ng-show='show'>
-            <div class='ng-modal-overlay'  sf-open-toolbar-content></div>
+            <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
             <div class='ng-modal-dialog' ng-style='dialogStyle'>
-              <div class='ng-modal-close'  sf-open-toolbar-content>X</div>
+              <div class='ng-modal-close' ng-click="closePopUp()">X</div>
               <div class="row cf">
                 <div class="select">
                   <label for="issue-owner">Byt ägare</label>
@@ -192,46 +192,11 @@
   </div>
   <!-- /Module: Status -->
 
-  <!-- Module: Allmänt -->
-  <!-- <div ng-show="showSpinner.caseGeneral" class="spinner"></div> -->
-  <!-- <div class="m m-general" ng-hide="showSpinner.caseGeneral"> -->
-  <div class="m m-general">
-    <div class="m-h">
-      <h2>Allmänt</h2>
-    </div>
-    <div class="m-c">
-      <div class="m-box generalCaseInfoBox">
-				<!-- <div ng-hide="showSpinner.caseGeneralInfo"> -->
-        <div>
-					<ul>
-						<li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
-						<li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
-						<li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
-					</ul>
-				</div>
-				<!-- <div ng-show="showSpinner.caseGeneralInfo" class="spinner"></div> -->
-      </div>
-    </div>
-    <!-- <div class="m-box permissionBox" ng-hide="showSpinner.casePermissions"> -->
-    <div class="m-box permissionBox">  
-      <div>
-        <ul>
-          <li><strong>Åtkomst:</strong></li>
-          <li>
-            <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
-            <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
-          </li>
-        </ul>
-      </div>
-      <!-- <div ng-show="showSpinner.casePermissions" class="spinner"></div> -->
-    </div>
-  </div>
-  <!-- /Module: Allmänt -->
-
   <!-- Module: Ärende -->
   <div class="m m-convos">
     <div class="m-h">
       <h2>Ärende</h2>
+      <a href="" class="action-btn" ng-click="showCaseInfoPopUp()"><i class="icon-search"></i></a>
     </div>
     <!-- <div class="m-c" ng-hide="showSpinner.caseDescriptionText"> -->
     <div class="m-c">
@@ -250,6 +215,44 @@
     <!-- <div ng-show="showSpinner.caseDescriptionText" class="spinner"></div> -->
   </div>
   <!-- /Module: Ärende -->
+
+  <!-- Module: Allmänt -->
+  <div class="toolbar-content-popup" data-ng-show="showCaseInfo">
+    <div class='ng-modal'>
+      <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
+      <div class='ng-modal-dialog' ng-style='dialogStyle'>
+        <div class='ng-modal-close' ng-click="closePopUp()">X</div>
+        <div class="m m-general">
+          <div class="m-h">
+            <h2>Allmänt</h2>
+          </div>
+          <div class="m-c">
+            <div class="m-box generalCaseInfoBox">
+              <div>
+                <ul>
+                  <li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
+                  <li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
+                  <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="m-box permissionBox">
+            <div>
+              <ul>
+                <li><strong>Åtkomst:</strong></li>
+                <li>
+                  <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
+                  <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Module: Allmänt -->
 
   <!-- Module: Formulär -->
   <div class="m m-convos" ng-show="possibleForms.length > 0">
