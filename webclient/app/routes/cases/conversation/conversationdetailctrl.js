@@ -50,6 +50,13 @@ angular.module('sf')
       caseService.updateMessageDraft($routeParams.caseId, $routeParams.conversationId, toSend);
     });
 
+    $scope.$watch('sidebardata.conversations', function(newVal){
+      if(!newVal){
+        return;
+      }
+      $scope.conversations = $scope.sidebardata.conversations;
+    });
+
     $scope.$on('conversation-attachment-deleted', function(){
       $scope.conversationMessages.invalidate();
       $scope.conversationMessages.resolve();

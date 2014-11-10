@@ -108,6 +108,13 @@ angular.module('sf')
         }
       });
 
+      scope.$watch('conversations', function(newVal){
+        if(!newVal){
+          return;
+        }
+        scope.sidebardata['conversations'] = scope.conversations;
+      });
+
       scope.$watch('caze', function(newVal){
         if(!newVal){
           return;

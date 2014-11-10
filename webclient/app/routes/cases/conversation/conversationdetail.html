@@ -19,10 +19,8 @@
 <div class="content-primary" role="main">
   <div class="m m-check-list" ng-hide="showSpinner.conversationMessageDraft">
     <div class="m-h">
-      <div>
-        <div data-ng-repeat="conversation in conversations | filter: conversationId track by conversation.$index">
-          <h2>{{ conversation.text }}</h2>
-        </div>
+      <div data-ng-repeat="conversation in conversations | filter: conversationId track by conversation.$index">
+        <h2>{{ conversation.text }}</h2>
       </div>
     </div>
     <div class="mc">
