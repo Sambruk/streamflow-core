@@ -297,13 +297,16 @@ angular.module('sf')
     window.location.replace(url);
   };
 
-  var _deleteAttachment = function(scope, attachmentId){
-    caseService.deleteAttachment($routeParams.caseId, attachmentId).then(function () {
+  var _deleteAttachment = function(scope, attachment){
+    caseService.deleteAttachment($routeParams.caseId, attachment.id).then(function () {
       scope.showSpinner.caseAttachment = true;
       scope.attachments.invalidate();
       scope.attachments.resolve().then(function () {
         scope.showSpinner.caseAttachment = false;
       });
+      if(attachment.rel == 'conversation'){
+        $rootScope.$broadcast('conversation-attachment-deleted');
+      }
     });
   };
   // End Attachments

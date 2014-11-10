@@ -16,7 +16,9 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService) {
+  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService) {
+
+    $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
     $scope.sidebardata = {};
     $scope.caseId = $routeParams.caseId;
     $scope.conversationId = $routeParams.conversationId;
@@ -48,6 +50,11 @@ angular.module('sf')
       caseService.updateMessageDraft($routeParams.caseId, $routeParams.conversationId, toSend);
     });
 
+    $scope.$on('conversation-attachment-deleted', function(){
+      $scope.conversationMessages.invalidate();
+      $scope.conversationMessages.resolve();
+    });
+
     $scope.removeParticipant = function(participant){
       $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
       caseService.deleteParticipantFromConversation($routeParams.caseId, $routeParams.conversationId, participant).then(function(){
@@ -72,4 +79,16 @@ angular.module('sf')
         $rootScope.$broadcast('conversation-changed', 'false');
       });
     }
+
+    $scope.downloadMessageAttachment = function (message, attachment) {
+      // Hack to replace dummy user and pass with authentication from token.
+      // This is normally sent by httpF headers in ajax but not possible here.
+      var apiUrl = $scope.apiUrl.replace(/https:\/\/(.*)@/, function () {
+        var userPass = window.atob(tokenService.getToken());
+        return 'https://' + userPass + '@' ;
+      });
+
+      var url = apiUrl + '/cases/' + $routeParams.caseId + '/conversations/' + $scope.conversationId + '/messages/' + message.id + '/attachments/' + attachment.href + 'download';
+      window.location.replace(url);
+    };
   });
