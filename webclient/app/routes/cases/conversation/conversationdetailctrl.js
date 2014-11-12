@@ -45,11 +45,6 @@ angular.module('sf')
       $scope.showSpinner.conversationMessageDraft = false;
     });
 
-    $scope.$watch("conversationMessageDraft[0]", function(){
-      var toSend = $scope.conversationMessageDraft[0];
-      caseService.updateMessageDraft($routeParams.caseId, $routeParams.conversationId, toSend);
-    });
-
     $scope.$watch('sidebardata.conversations', function(newVal){
       if(!newVal){
         return;
@@ -58,9 +53,20 @@ angular.module('sf')
     });
 
     $scope.$on('conversation-attachment-deleted', function(){
-      $scope.conversationMessages.invalidate();
-      $scope.conversationMessages.resolve();
+      updateObject($scope.conversationMessages);
     });
+
+    var updateObject = function(itemToUpdate){
+      itemToUpdate.invalidate();
+      itemToUpdate.resolve();
+    };
+
+    $scope.changeMessageDraft = function($event){
+      var message = $event.currentTarget.value;
+      caseService.updateMessageDraft($scope.caseId, $scope.conversationId, message).then(function(){
+        updateObject($scope.conversationMessageDraft);
+      });
+    };
 
     $scope.removeParticipant = function(participant){
       $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
@@ -76,8 +82,7 @@ angular.module('sf')
       $rootScope.$broadcast('conversation-changed', 'true');
 
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
-        $scope.conversationMessages.invalidate();
-        $scope.conversationMessages.resolve();
+        updateObject($scope.conversationMessages);
 
         $scope.conversationMessageDraft[0] = "";
         $rootScope.$broadcast('conversation-message-created');

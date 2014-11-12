@@ -48,7 +48,6 @@ angular.module('sf')
     };
 
     var getConversationMessageAttachments = function(caseId, conversationId, messageId) {
-      console.log("messageId");
       return backendService.get({
         specs:caseBase(caseId).concat([
           {resources: 'conversations'},
@@ -770,7 +769,6 @@ angular.module('sf')
             ]),
           onSuccess:function (resource, result) {
             var id = resource.response.id;
-
             return backendService.get({
             specs:caseBase(caseId).concat([
               {resources: 'formdrafts'},
@@ -946,7 +944,7 @@ angular.module('sf')
           }
         });
       },
-      updateMessageDraft: debounce(function(caseId, conversationId, value) {
+      updateMessageDraft: function(caseId, conversationId, value) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {resources: 'conversations'},
@@ -957,11 +955,11 @@ angular.module('sf')
             ]),
           {message: value}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
-      }, 500),
+          });
+      },
       createMessage: function(caseId, conversationId, value) {
         return backendService.postNested(
           caseBase(caseId).concat([

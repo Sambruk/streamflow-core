@@ -43,7 +43,7 @@
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
-          <textarea name="convo-text" id="convo-text" cols="30" rows="5" placeholder="Skriv ditt meddelande här" data-ng-model="conversationMessageDraft[0]"></textarea>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="5" placeholder="Skriv ditt meddelande här" data-ng-blur="changeMessageDraft($event)">{{ conversationMessageDraft[0] }}</textarea>
         </div>
         <div class="send">
           <button data-ng-click="submitMessage($event)" name="convo-submit">Skicka</button>
