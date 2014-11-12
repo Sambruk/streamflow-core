@@ -39,7 +39,7 @@ angular.module('sf')
   }])
 .filter('dateTime', ['$filter', function($filter) {
     return function(input) {
-      return $filter('date')(input, 'yyyy-MM-dd, hh:mm');
+      return $filter('date')(input, 'yyyy-MM-dd, HH:mm');
     };
   }])
 .filter('translate', ['$filter', function($filter) {

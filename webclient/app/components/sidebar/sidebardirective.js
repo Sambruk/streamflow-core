@@ -40,6 +40,7 @@ angular.module('sf')
       scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
       scope.notes = caseService.getSelectedNote($routeParams.caseId);
+      scope.notesHistory = caseService.getAllNotes($routeParams.caseId);
       scope.caze = caseService.getSelected($routeParams.caseId);
       scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
       if($routeParams.formId && $routeParams.caseId){
@@ -96,6 +97,22 @@ angular.module('sf')
         if(scope.sidebardata){
           scope.sidebardata['notes'] = scope.notes;
         }
+      });
+
+      scope.$watch('notesHistory', function(newVal){
+        if(!newVal){
+          return;
+        }
+        if(scope.sidebardata){
+          scope.sidebardata['notesHistory'] = scope.notesHistory;
+        }
+      });
+
+      scope.$watch('conversations', function(newVal){
+        if(!newVal){
+          return;
+        }
+        scope.sidebardata['conversations'] = scope.conversations;
       });
 
       scope.$watch('caze', function(newVal){
@@ -202,7 +219,7 @@ angular.module('sf')
       scope.markReadUnread = function (read) {
         sidebarService.markReadUnread(scope, read);
       }; // End Mark Read / Unread 
-      
+
       // Close
       scope.close = function () {
         sidebarService.close(scope);
@@ -220,7 +237,6 @@ angular.module('sf')
       scope.assign = function () {
         sidebarService.assign(scope);
       };
-
       scope.unassign = function () {
         sidebarService.unassign(scope);
       }; // End Assign / Unassign
@@ -236,14 +252,24 @@ angular.module('sf')
         sidebarService.deleteAttachment(scope, attachmentId);
       }; // End Attachments
       
-     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
+      // Show / Close pop up
+      scope.showCaseInfoPopUp = function(){
+        scope.showCaseInfo = true;
+      }
+      scope.closePopUp = function(){
+        scope.showCaseInfo = false;
+        scope.commandView = '';
+      } // End Show / Close pop up
+
+      // Filter for caselog
+      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         scope.defaultFilters = result.data;
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, scope.defaultFilters);
         scope.sideBarCaseLogs.promise.then(function(){
           scope.showSpinner.caseLog = false;
         });
-      });
+      }); // End Filter for caselog
 
       var updateObject = function(itemToUpdate){
         itemToUpdate.invalidate();
@@ -278,10 +304,10 @@ angular.module('sf')
           scope.showSpinner.caseDescriptionText = false;
         });
       });
-      scope.$on('note-changed', function(event, data){
+      scope.$on('note-changed', function(event){
         scope.showSpinner.caseDescriptionText = true;
-        updateObject(scope.notes);
-        scope.notes.promise.then(function(){
+        updateObject(scope.notesHistory);
+        scope.notesHistory.promise.then(function(){
           scope.showSpinner.caseDescriptionText = false;
         });
       });
@@ -329,16 +355,13 @@ angular.module('sf')
 
       var checkFilterCaseLog = function(filter){
         if(scope.defaultFilters[filter] === false){
-          $rootScope.$broadcast('update-caseLogs');
           return;
-        }else{
-          scope.showSpinner.caseLog = true;
-          updateObject(scope.sideBarCaseLogs);
-          scope.sideBarCaseLogs.promise.then(function(){
-            scope.showSpinner.caseLog = false;
-          });
-          $rootScope.$broadcast('update-caseLogs');
         }
+        scope.showSpinner.caseLog = true;
+        updateObject(scope.sideBarCaseLogs);
+        scope.sideBarCaseLogs.promise.then(function(){
+          scope.showSpinner.caseLog = false;
+        });
       };
 
     }

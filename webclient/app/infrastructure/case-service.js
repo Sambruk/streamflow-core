@@ -47,6 +47,26 @@ angular.module('sf')
       });
     };
 
+    var getConversationMessageAttachments = function(caseId, conversationId, messageId) {
+      console.log("messageId");
+      return backendService.get({
+        specs:caseBase(caseId).concat([
+          {resources: 'conversations'},
+          {'index.links': conversationId},
+          {resources: 'messages'},
+          {'index.links': messageId},
+          {resources: 'attachments'}
+          ]),
+        onSuccess:function(resource, result){
+          resource.response.index.links.forEach(function(item){result.push(item)});
+          caseBase.broadcastMessage(result.status);
+        },
+        onFailure:function(err){
+          caseBase.broadcastMessage(err);
+        }
+      });
+    };
+
     //caseBase.bcMessage = null;
     //TODO: Refactor (use a var instead of property)
     var bcMessage = null;
@@ -897,6 +917,9 @@ angular.module('sf')
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){
               item.text = getConversationMessage(caseId, conversationId, item.id);
+              if(item.hasAttachments == true){
+                item.attachments = getConversationMessageAttachments(caseId, conversationId, item.id);
+              }
               result.push(item);
             });
             caseBase.broadcastMessage(result.status);

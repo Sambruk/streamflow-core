@@ -72,6 +72,8 @@ angular.module('sf')
             var draftId = JSON.parse(response.data.events[0].parameters).param1;
             $scope.form = caseService.getFormDraft($routeParams.caseId, draftId);
             $scope.showSpinner.form = false;
+            $scope.possibleForm.invalidate();
+            $scope.possibleForm.resolve();
           });
         }
         $scope.currentFormPage = null;
