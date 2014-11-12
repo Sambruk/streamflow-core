@@ -112,7 +112,9 @@ angular.module('sf')
         if(!newVal){
           return;
         }
-        scope.sidebardata['conversations'] = scope.conversations;
+        if(scope.sidebardata){
+          scope.sidebardata['conversations'] = scope.conversations;
+        }
       });
 
       scope.$watch('caze', function(newVal){
