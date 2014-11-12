@@ -16,6 +16,8 @@
  */
 package se.streamsource.infrastructure.index.elasticsearch;
 
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.ElasticsearchIllegalStateException;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.json.JSONArray;
@@ -147,29 +149,40 @@ public interface ElasticSearchIndexer
             if( bulkBuilder.numberOfActions() > 0 )
             {
 
-                // Execute bulk actions
-                BulkResponse bulkResponse = bulkBuilder.execute().actionGet();
-
-                // Handle errors
-                if( bulkResponse.hasFailures() )
+                try
                 {
-                    throw new ElasticSearchIndexException( bulkResponse.buildFailureMessage() );
-                }
+                    // Execute bulk actions
+                    BulkResponse bulkResponse = bulkBuilder.execute().actionGet();
 
-                LOGGER.trace( "Indexing changed Entity states took {}ms", bulkResponse.getTookInMillis() );
+                    // Handle errors
+                    if( bulkResponse.hasFailures() )
+                    {
+                        throw new ElasticSearchIndexException( bulkResponse.buildFailureMessage() );
+                    }
 
-                if( config.configuration().indexRefreshInterval().get() == null
-                        || "-1".equals( config.configuration().indexRefreshInterval().get() ) )
+                    LOGGER.trace( "Indexing changed Entity states took {}ms", bulkResponse.getTookInMillis() );
+
+                    if( config.configuration().indexRefreshInterval().get() == null
+                            || "-1".equals( config.configuration().indexRefreshInterval().get() ) )
+                    {
+                        // Refresh index  manually if automatic is switched off
+                        long start2 = System.nanoTime();
+
+                        support.client().admin().indices().prepareRefresh( support.index() ).execute().actionGet();
+
+                        long end2 = System.nanoTime();
+                        long timeMicro2 = (end2 - start2) / 1000;
+                        double timeMilli2 = timeMicro2 / 1000.0;
+                        LOGGER.trace( "Indexing refresh index took {}ms", timeMilli2 );
+                    }
+                } catch( ElasticsearchIllegalStateException esis )
                 {
-                    // Refresh index  manually if automatic is switched off
-                    long start2 = System.nanoTime();
+                  LOGGER.warn( "Possible corrupted index state.", esis );
 
-                    support.client().admin().indices().prepareRefresh( support.index() ).execute().actionGet();
-
-                    long end2 = System.nanoTime();
-                    long timeMicro2 = (end2 - start2) / 1000;
-                    double timeMilli2 = timeMicro2 / 1000.0;
-                    LOGGER.trace( "Indexing refresh index took {}ms", timeMilli2 );
+                  if(!config.configuration().suppressInterruptedException().get() )
+                  {
+                      throw esis;
+                  }
                 }
 
             }

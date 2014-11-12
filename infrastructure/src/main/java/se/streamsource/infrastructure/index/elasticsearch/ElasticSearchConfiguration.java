@@ -76,5 +76,13 @@ public interface ElasticSearchConfiguration
      */
     @Optional
     Property<String> indexRefreshInterval();
+
+    /**
+     * Set to true it will suppress occasional InterruptedExceptions occurring inside Elastic Search.
+     * The occurance will still be logged as WARNING
+     * @return
+     */
+    @UseDefaults
+    Property<Boolean> suppressInterruptedException();
 }
 
