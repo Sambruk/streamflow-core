@@ -18,6 +18,7 @@
 -->
 <div class="content-primary" role="main">
   <div class="form-content">
+  <iframe ng-src="http://test-sf.jayway.com/surface/?ap=" + {{caseId}}></iframe>
 
     <div ng-init="selectForm(currentFormId)"></div>
     <div class="m m-c">
@@ -26,7 +27,7 @@
     <div ng-hide="showSpinner.form">
       <ul class="form-sections cf row">
         <li class="section-item" data-ng-class="{sel: currentFormPage.title==page.title}" data-ng-repeat="page in form[0].enhancedPages" id="{{page.page}}">
-          <a href="" data-ng-click="issueForm.$valid && selectFormPage(page)">
+          <a href="" id="page-{{$index}}"data-ng-click="issueForm.$valid && selectFormPage(page)">
           {{page.title}}
           </a>
         </li>
@@ -80,8 +81,10 @@
             <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue" >
               <div class="select col medium col-2 form-comboBox" id="{{field.field.field}}">
                 <data-ng-include class="m-c" src="'routes/cases/form/form-label.html'"></data-ng-include>
-                <select data-ng-model="field.value" 
-                        class="sidebar-chosen-drop-down ng-pristine ng-valid" 
+                <!--<select data-ng-model="field.value" 
+                        class="sidebar-chosen-drop-down ng-pristine ng-valid"-->
+                <select data-ng-model="field.value"
+                        class="sidebar-chosen-drop-down ng-pristine ng-valid ng-touched" 
                         name="{{ field.field.field }}" id="{{ field.field.fieldId }}"
                         data-ng-options="option.value as option.name for option in field.field.fieldValue.options" ng-change="reapplyRules()" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
                 </select>

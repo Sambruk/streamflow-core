@@ -93,17 +93,17 @@ angular.module('sf')
       return;
     }
     if(obj.rule.field.length > 1 && obj.rule.visibleWhen === true ){//&& obj.rule.values.length > 0){
-      console.log('has rule');
-      console.log(obj);
+      //console.log('has rule');
+      //console.log(obj);
       var ruleFulfilled = _ruleValuePresent(rootObj, obj.rule.values[0]);
-      console.log('rule fulfilled?');
-      console.log(ruleFulfilled);
+      //console.log('rule fulfilled?');
+      //console.log(ruleFulfilled);
       var fieldId;
       if(obj.field){
-        console.log('Object has field attribute');
+        //console.log('Object has field attribute');
         fieldId = obj.field;
       } else if(obj.page) {
-        console.log('Object has page attribute');
+        //console.log('Object has page attribute');
         fieldId = obj.page;
       }
 
@@ -139,8 +139,13 @@ angular.module('sf')
 
   //Hide field (remove ng-show class if present)
   var _hideField = function(fieldId){
+    debugger;
+    var fld = $('#'+fieldId);
+   //console.log(fld);
+    //fld.css('display', 'hidden');
+   //  debugger;
     
-    console.log('hiding field: ' + fieldId);
+    //console.log('hiding field: ' + fieldId);
     var element = $('#' + fieldId);
     if(element.hasClass('ng-show')){
       element.removeClass('ng-show');

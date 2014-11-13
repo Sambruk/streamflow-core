@@ -62,7 +62,7 @@ gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-scripts'
 });
 
 gulp.task('clean-build', function(cb) {
-  runSequence('clean', 'build', 'unit-test', function() {
+  runSequence('clean', 'build', function() {
     cb();
   });
 });
@@ -84,7 +84,8 @@ var mainBowerFiles = mainBowerFiles();
 var paths = {
   scripts: ['app/**/*.js',
             '!app/design/**/*.*',     
-            '!app/**/*test.js'],
+            '!app/**/*test.js',
+            '!app/routes/cases/forms/dynamicformdirective/**/*.*'],
   templates: ['app/**/*.html',
               '!app/index.html',
               '!app/token.html',
