@@ -155,13 +155,19 @@ angular.module('sf')
     }
 
     $scope.isLastPage = function(){
-      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1); //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) == visiblePages.length;
+      if($scope.form && $scope.form[0]){
+        return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1);
+      }
+      return; //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) == visiblePages.length;
     }
 
     
 
     $scope.isFirstPage = function(){
-      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === 0;
+      if($scope.form && $scope.form[0]){
+        return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === 0;
+     }
+     return;
     }
 
     $scope.nextFormPage = function(){
