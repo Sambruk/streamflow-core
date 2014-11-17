@@ -57,7 +57,7 @@ gulp.task('clean', function(cb) {
 //});
 
 
-gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'app-templates'], function(cb){
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'app-templates', 'unit-test'], function(cb){
   cb();
 });
 

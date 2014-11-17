@@ -35,7 +35,7 @@
       <!-- Issue body -->
       <div class="issue-body row">
         <div class="issue-description">
-          <p ng-bind-html="notesHistory[notesHistory.length -1].note | sanitize "></p>
+          <p ng-bind-html="notesHistory[notesHistory.length -1].note"></p>
         </div>
       </div>
       <!-- /Issue body -->
@@ -56,7 +56,7 @@
           <span class="struct">Postad av: </span>{{ note.creator }}
         </div>
         <div class="note-body">
-          <p ng-bind-html="note.note | sanitize"></p>
+          <p ng-bind-html="note.note"></p>
         </div>
         <div class="msg-meta cf">
           <div class="msg-timestamp">

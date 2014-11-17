@@ -62,7 +62,7 @@
               <div class="msg-author">{{ message.sender }} </div>
             </div>
             <div class="msg-body" ng-show="message.text.length">
-              <div class="msg-container" ng-bind-html="message.text[0] | sanitize"></div>
+              <div class="msg-container" ng-bind-html="message.text[0]"></div>
             </div>
             <div class="msg-meta cf">
               <div class="m-c m-attachments" ng-show="message.attachments.length > 0">

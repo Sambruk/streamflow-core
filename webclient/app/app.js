@@ -19,7 +19,8 @@
 angular.module('sf', [
     'ngRoute',
     'ngResource',
-    'angular-growl'
+    'angular-growl',
+    'ngSanitize'
   ])
   .run(function ($rootScope, $location, $routeParams, tokenService) {
     $rootScope.hasToken = tokenService.hasToken;
