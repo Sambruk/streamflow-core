@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService, $upload){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -43,9 +43,12 @@ angular.module('sf')
       scope.notesHistory = caseService.getAllNotes($routeParams.caseId);
       scope.caze = caseService.getSelected($routeParams.caseId);
       scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
+      scope.uploadProgress = 0;
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
       }
+
+
       scope.showSpinner = {
         caseType: true,
         caseLabels: true,
@@ -253,7 +256,7 @@ angular.module('sf')
       scope.deleteAttachment = function(attachmentId){
         sidebarService.deleteAttachment(scope, attachmentId);
       }; // End Attachments
-      
+
       // Show / Close pop up
       scope.showCaseInfoPopUp = function(){
         scope.showCaseInfo = true;
@@ -366,6 +369,23 @@ angular.module('sf')
         });
       };
 
+      scope.onFileSelect = function($files) {
+          for (var i = 0; i < $files.length; i++) {
+            var file = $files[i];
+            scope.upload = $upload.upload({
+              url: 'https://test.sf.streamsource.se/streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment',
+              headers: {'Content-Type': 'multipart/formdata'},
+              file: file // or list of files ($files) for html5 only
+            }).progress(function(evt) {
+              scope.uploadProgress = parseInt(100.0 * evt.loaded / evt.total);
+              console.log(scope.uploadProgress);
+              // console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+            }).success(function(data, status, headers, config) {
+              // file is uploaded successfully
+              console.log(data);
+            });
+          }
+      };
     }
   };
 });
