@@ -226,7 +226,9 @@ gulp.task('vendor-scripts', function() {
     'bower/picker.date.js',
     'bower/sv_SE.js',
     'bower/underscore.js',
+    'bower/angular-file-upload-shim.js',
     'bower/angular.js',
+    'bower/angular-file-upload.js',
     'bower/moment.js',
     'bower/**/*.js'
   ]))
