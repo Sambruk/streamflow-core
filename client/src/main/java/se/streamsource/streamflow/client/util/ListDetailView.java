@@ -16,9 +16,11 @@
  */
 package se.streamsource.streamflow.client.util;
 
+import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
@@ -89,6 +91,11 @@ public abstract class ListDetailView
       initMaster( listModel, createAction,selectionActionEnabler, false, factory, renderer );
    }
 
+   protected void initMaster( EventListModel<TitledLinkValue> listModel, final DetailFactory factory )
+   {
+       initMaster( listModel, null,new SelectionActionEnabler(new Action[]{}),false,factory, new SeparatorListCellRenderer( new LinkListCellRenderer() ));
+   }
+
    /**
     * This method creates and regulates a master detail.
     * This method contains a workaround for the streamflow client server action concept. ResourceModels are telling what kind of resources and commands or querys are available
@@ -103,7 +110,7 @@ public abstract class ListDetailView
     * @param factory
     * @param renderer
     */
-   protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, SelectionActionEnabler selectionActionEnabler, boolean actionsWithoutOption, final DetailFactory factory, ListCellRenderer renderer)
+   protected void initMaster( EventListModel<? extends LinkValue> listModel, Action createAction, SelectionActionEnabler selectionActionEnabler, boolean actionsWithoutOption, final DetailFactory factory, ListCellRenderer renderer)
    {
       list = new JList(listModel);
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
@@ -151,37 +158,41 @@ public abstract class ListDetailView
       {
          public void valueChanged( ListSelectionEvent e )
          {
-            if (!e.getValueIsAdjusting())
+
+            if (!e.getValueIsAdjusting() )
             {
-               LinkValue detailLink = (LinkValue) list.getSelectedValue();
-               if (detailLink != null)
+               if(!(list.getSelectedValue() instanceof SeparatorList.Separator))
                {
-                  int selectedIndex = -1;
-                  if (getRightComponent() != null && getRightComponent() instanceof TabbedResourceView)
-                  {
-                     TabbedResourceView tab = (TabbedResourceView) getRightComponent();
-//                     selectedIndex = tab.getSelectedIndex();
-                  }
+                   LinkValue detailLink = (LinkValue) list.getSelectedValue();
+                   if (detailLink != null)
+                   {
+                      int selectedIndex = -1;
+                      if (getRightComponent() != null && getRightComponent() instanceof TabbedResourceView)
+                      {
+                         TabbedResourceView tab = (TabbedResourceView) getRightComponent();
+    //                     selectedIndex = tab.getSelectedIndex();
+                      }
 
-                  Component detailView = factory.createDetail( detailLink );
+                      Component detailView = factory.createDetail( detailLink );
 
-                  if (detailView instanceof TabbedResourceView)
-                  {
-//                     ((TabbedResourceView)detailView).setSelectedIndex( selectedIndex );
-                  }
+                      if (detailView instanceof TabbedResourceView)
+                      {
+    //                     ((TabbedResourceView)detailView).setSelectedIndex( selectedIndex );
+                      }
 
-                  setRightComponent( detailView );
+                      setRightComponent( detailView );
 
-                  if (detailView instanceof ListDetailView || detailView instanceof TabbedResourceView)
-                  {
-                     ListDetailView parentListDetailView = (ListDetailView) SwingUtilities.getAncestorOfClass( ListDetailView.class, ListDetailView.this);
-                     if (parentListDetailView != null)
-                        parentListDetailView.setDividerLocation( 0 );
-                  }
+                      if (detailView instanceof ListDetailView || detailView instanceof TabbedResourceView)
+                      {
+                         ListDetailView parentListDetailView = (ListDetailView) SwingUtilities.getAncestorOfClass( ListDetailView.class, ListDetailView.this);
+                         if (parentListDetailView != null)
+                            parentListDetailView.setDividerLocation( 0 );
+                      }
 
-               } else
-               {
-                  setRightComponent( new JPanel() );
+                   } else
+                   {
+                      setRightComponent( new JPanel() );
+                   }
                }
             }
          }

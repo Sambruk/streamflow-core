@@ -170,4 +170,10 @@ public class OrganizationResource
        subResource( MailRestrictionsResource.class );
    }
 
+   @SubResource
+   public void removedcasetypes()
+   {
+       subResource( RemovedCaseTypesResource.class);
+   }
+
 }

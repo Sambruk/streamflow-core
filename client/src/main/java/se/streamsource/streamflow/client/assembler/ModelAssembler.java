@@ -34,9 +34,7 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArch
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseModel;
 import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.*;
 import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointModel;
 import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsModel;
 import se.streamsource.streamflow.client.ui.administration.filters.ActionsModel;
@@ -230,6 +228,9 @@ public class ModelAssembler
             RolesModel.class,
             ResolutionsModel.class,
             SelectedCaseTypesModel.class,
+            RemovedCaseTypesModel.class,
+            RemovedCaseTypeModel.class,
+            CaseTypeDetailModel.class,
             SelectionElementsModel.class,
             SelectedLabelsModel.class,
             SelectedResolutionsModel.class,

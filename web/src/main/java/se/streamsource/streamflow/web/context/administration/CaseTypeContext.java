@@ -25,15 +25,18 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.CaseTypeEntityDTO;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -48,7 +51,7 @@ import static se.streamsource.dci.api.RoleMap.*;
  * JAVADOC
  */
 public class CaseTypeContext
-      implements DeleteContext
+      implements IndexContext<CaseTypeEntityDTO>,DeleteContext
 {
    @Structure
    Module module;
@@ -56,6 +59,8 @@ public class CaseTypeContext
    @Service
    KnowledgebaseService knowledgebaseService;
 
+
+   @RequiresRemoved(false)
    public LinksValue usages()
    {
       Query<SelectedCaseTypes> usageQuery = RoleMap.role( CaseTypes.class ).usages( RoleMap.role( CaseType.class ) );
@@ -69,6 +74,7 @@ public class CaseTypeContext
       return builder.newLinks();
    }
 
+   @RequiresRemoved(false)
    public void delete()
    {
       CaseTypes caseTypes = RoleMap.role( CaseTypes.class );
@@ -78,6 +84,7 @@ public class CaseTypeContext
       caseTypes.removeCaseType( caseType );
    }
 
+   @RequiresRemoved(false)
    public Iterable<CaseTypes> possiblemoveto()
    {
       final CaseTypes thisCaseTypes = role(CaseTypes.class);
@@ -98,6 +105,7 @@ public class CaseTypeContext
             .newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
    }
 
+   @RequiresRemoved(false)
    public void move( EntityValue to )
    {
       CaseTypes toCaseTypes = module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypes.class, to.entity().get() );
@@ -105,6 +113,7 @@ public class CaseTypeContext
       RoleMap.role( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
    }
 
+   @RequiresRemoved(false)
    @ServiceAvailable(service = KnowledgebaseService.class, availability = true)
    public LinkValue knowledgeBase()
    {
@@ -116,4 +125,22 @@ public class CaseTypeContext
       builder.prototype().href().set(knowledgebaseService.createURL(caseType));
       return builder.newInstance();
    }
+
+    @Override
+    public CaseTypeEntityDTO index() {
+        CaseType caseType = role(CaseType.class);
+        ValueBuilder<CaseTypeEntityDTO> builder = module.valueBuilderFactory().newValueBuilder(CaseTypeEntityDTO.class);
+
+        if( caseType.hasOwner() )
+        {
+            Owner owner = role(Ownable.Data.class).owner().get();
+            builder.prototype().ownerId().set(owner.toString());
+            builder.prototype().ownerName().set(((Describable)owner).getDescription() );
+        }
+        builder.prototype().href().set(caseType.toString());
+        builder.prototype().id().set( caseType.toString() );
+        builder.prototype().text().set( caseType.getDescription() );
+
+        return builder.newInstance();
+    }
 }

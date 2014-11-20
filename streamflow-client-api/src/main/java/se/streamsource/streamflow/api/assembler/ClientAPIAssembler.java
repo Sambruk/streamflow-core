@@ -197,7 +197,7 @@ public class ClientAPIAssembler
               CreateFieldGroupDTO.class);
 
       // Queries
-      administration.values(LinkTree.class, UserEntityDTO.class, ProxyUserListDTO.class, ProxyUserDTO.class);
+      administration.values(LinkTree.class, UserEntityDTO.class, ProxyUserListDTO.class, ProxyUserDTO.class, CaseTypeEntityDTO.class);
 
       // Filters
       administration.values(FilterValue.class);

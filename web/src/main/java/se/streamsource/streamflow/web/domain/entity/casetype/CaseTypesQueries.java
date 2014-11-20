@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
@@ -35,6 +36,8 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -55,7 +58,9 @@ public interface CaseTypesQueries
 
    void caseTypes( LinksBuilder builder, Specification<CaseType> specification );
 
-   abstract class Mixin
+    void removedCaseTypes( LinksBuilder builder );
+
+    abstract class Mixin
          implements CaseTypesQueries, CaseTypes.Data
    {
       @Service
@@ -127,6 +132,26 @@ public interface CaseTypesQueries
          }
 
          return projects;
+      }
+
+      public void removedCaseTypes( LinksBuilder linksBuilder )
+      {
+          Removable.Data template = templateFor(Removable.Data.class);
+          QueryBuilder<CaseType> builder = module.queryBuilderFactory().newQueryBuilder(CaseType.class);
+
+          Query<CaseType> removedCaseTypes = builder.where( eq(template.removed(), true ) ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+          for( CaseType caseType : removedCaseTypes )
+          {
+              if( caseType.hasOwner() )
+              {
+                  Owner owner = ((Ownable.Data)caseType).owner().get();
+                  linksBuilder.addDescribable( caseType, (Describable)owner );
+              } else
+              {
+                  linksBuilder.addDescribable( caseType, "" );
+              }
+          }
       }
    }
 }
