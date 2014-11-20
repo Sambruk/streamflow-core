@@ -57,12 +57,12 @@ gulp.task('clean', function(cb) {
 //});
 
 
-gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'app-templates'], function(cb){
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'app-templates', 'unit-test'], function(cb){
   cb();
 });
 
 gulp.task('clean-build', function(cb) {
-  runSequence('clean', 'build', 'unit-test', function() {
+  runSequence('clean', 'build', function() {
     cb();
   });
 });
@@ -84,7 +84,8 @@ var mainBowerFiles = mainBowerFiles();
 var paths = {
   scripts: ['app/**/*.js',
             '!app/design/**/*.*',     
-            '!app/**/*test.js'],
+            '!app/**/*test.js',
+            '!app/routes/cases/forms/dynamicformdirective/**/*.*'],
   templates: ['app/**/*.html',
               '!app/index.html',
               '!app/token.html',
@@ -225,7 +226,9 @@ gulp.task('vendor-scripts', function() {
     'bower/picker.date.js',
     'bower/sv_SE.js',
     'bower/underscore.js',
+    'bower/angular-file-upload-shim.js',
     'bower/angular.js',
+    'bower/angular-file-upload.js',
     'bower/moment.js',
     'bower/**/*.js'
   ]))

@@ -25,6 +25,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.RemovedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsView;
 import se.streamsource.streamflow.client.ui.administration.filters.FiltersView;
@@ -80,6 +81,7 @@ public class TabbedResourceView
 
       addTab( "casetypes", AdministrationResources.casetypes_tab, CaseTypesView.class );
       addTab( "selectedcasetypes", AdministrationResources.selected_casetypes_tab, SelectedCaseTypesView.class );
+      addTab( "removedcasetypes", AdministrationResources.removed_casetypes_tab, RemovedCaseTypesView.class);
       addTab( "priorities", AdministrationResources.casepriorities_tab, PrioritiesView.class );
 
       addTab( "labels", AdministrationResources.labels_tab, LabelsView.class );

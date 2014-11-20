@@ -29,6 +29,43 @@ angular.module('sf')
       ];
     };
 
+   var getConversationMessage = function(caseId, conversationId, messageId) {
+      return backendService.get({
+        specs:caseBase(caseId).concat([
+          {resources: 'conversations'},
+          {'index.links': conversationId},
+          {resources: 'messages'},
+          {'index.links': messageId}
+          ]),
+        onSuccess:function (resource, result) {
+          result.push(resource.response.index.text);
+          caseBase.broadcastMessage(result.status);
+        },
+        onFailure:function(err){
+          caseBase.broadcastMessage(err);
+        }
+      });
+    };
+
+    var getConversationMessageAttachments = function(caseId, conversationId, messageId) {
+      return backendService.get({
+        specs:caseBase(caseId).concat([
+          {resources: 'conversations'},
+          {'index.links': conversationId},
+          {resources: 'messages'},
+          {'index.links': messageId},
+          {resources: 'attachments'}
+          ]),
+        onSuccess:function(resource, result){
+          resource.response.index.links.forEach(function(item){result.push(item)});
+          caseBase.broadcastMessage(result.status);
+        },
+        onFailure:function(err){
+          caseBase.broadcastMessage(err);
+        }
+      });
+    };
+
     //caseBase.bcMessage = null;
     //TODO: Refactor (use a var instead of property)
     var bcMessage = null;
@@ -63,7 +100,6 @@ angular.module('sf')
           }
         });
       },
-
       getSelectedCommands: function(caseId) {
         return backendService.get({
           specs: caseBase(caseId),
@@ -733,7 +769,6 @@ angular.module('sf')
             ]),
           onSuccess:function (resource, result) {
             var id = resource.response.id;
-
             return backendService.get({
             specs:caseBase(caseId).concat([
               {resources: 'formdrafts'},
@@ -878,7 +913,13 @@ angular.module('sf')
             {resources: 'messages'}
             ]),
           onSuccess:function (resource, result) {
-            resource.response.index.links.forEach(function(item){result.push(item)});
+            resource.response.index.links.forEach(function(item){
+              item.text = getConversationMessage(caseId, conversationId, item.id);
+              if(item.hasAttachments == true){
+                item.attachments = getConversationMessageAttachments(caseId, conversationId, item.id);
+              }
+              result.push(item);
+            });
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
@@ -903,7 +944,7 @@ angular.module('sf')
           }
         });
       },
-      updateMessageDraft: debounce(function(caseId, conversationId, value) {
+      updateMessageDraft: function(caseId, conversationId, value) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {resources: 'conversations'},
@@ -914,11 +955,11 @@ angular.module('sf')
             ]),
           {message: value}).then(function(result){
             caseBase.broadcastMessage(result.status);
-          }),
+          },
           function(error){
             caseBase.broadcastMessage(error);
-          };
-      }, 500),
+          });
+      },
       createMessage: function(caseId, conversationId, value) {
         return backendService.postNested(
           caseBase(caseId).concat([

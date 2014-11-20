@@ -16,7 +16,9 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService) {
+  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService) {
+
+    $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
     $scope.sidebardata = {};
     $scope.caseId = $routeParams.caseId;
     $scope.conversationId = $routeParams.conversationId;
@@ -43,10 +45,28 @@ angular.module('sf')
       $scope.showSpinner.conversationMessageDraft = false;
     });
 
-    $scope.$watch("conversationMessageDraft[0]", function(){
-      var toSend = $scope.conversationMessageDraft[0];
-      caseService.updateMessageDraft($routeParams.caseId, $routeParams.conversationId, toSend);
+    $scope.$watch('sidebardata.conversations', function(newVal){
+      if(!newVal){
+        return;
+      }
+      $scope.conversations = $scope.sidebardata.conversations;
     });
+
+    $scope.$on('conversation-attachment-deleted', function(){
+      updateObject($scope.conversationMessages);
+    });
+
+    var updateObject = function(itemToUpdate){
+      itemToUpdate.invalidate();
+      itemToUpdate.resolve();
+    };
+
+    $scope.changeMessageDraft = function($event){
+      var message = $event.currentTarget.value;
+      caseService.updateMessageDraft($scope.caseId, $scope.conversationId, message).then(function(){
+        updateObject($scope.conversationMessageDraft);
+      });
+    };
 
     $scope.removeParticipant = function(participant){
       $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
@@ -62,8 +82,7 @@ angular.module('sf')
       $rootScope.$broadcast('conversation-changed', 'true');
 
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
-        $scope.conversationMessages.invalidate();
-        $scope.conversationMessages.resolve();
+        updateObject($scope.conversationMessages);
 
         $scope.conversationMessageDraft[0] = "";
         $rootScope.$broadcast('conversation-message-created');
@@ -72,4 +91,16 @@ angular.module('sf')
         $rootScope.$broadcast('conversation-changed', 'false');
       });
     }
+
+    $scope.downloadMessageAttachment = function (message, attachment) {
+      // Hack to replace dummy user and pass with authentication from token.
+      // This is normally sent by httpF headers in ajax but not possible here.
+      var apiUrl = $scope.apiUrl.replace(/https:\/\/(.*)@/, function () {
+        var userPass = window.atob(tokenService.getToken());
+        return 'https://' + userPass + '@' ;
+      });
+
+      var url = apiUrl + '/cases/' + $routeParams.caseId + '/conversations/' + $scope.conversationId + '/messages/' + message.id + '/attachments/' + attachment.href + 'download';
+      window.location.replace(url);
+    };
   });

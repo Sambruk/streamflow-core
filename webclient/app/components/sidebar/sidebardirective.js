@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService, fileService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -40,11 +40,15 @@ angular.module('sf')
       scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
       scope.notes = caseService.getSelectedNote($routeParams.caseId);
+      scope.notesHistory = caseService.getAllNotes($routeParams.caseId);
       scope.caze = caseService.getSelected($routeParams.caseId);
       scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
+      scope.uploadProgress = 0;
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
       }
+
+
       scope.showSpinner = {
         caseType: true,
         caseLabels: true,
@@ -95,6 +99,24 @@ angular.module('sf')
         }
         if(scope.sidebardata){
           scope.sidebardata['notes'] = scope.notes;
+        }
+      });
+
+      scope.$watch('notesHistory', function(newVal){
+        if(!newVal){
+          return;
+        }
+        if(scope.sidebardata){
+          scope.sidebardata['notesHistory'] = scope.notesHistory;
+        }
+      });
+
+      scope.$watch('conversations', function(newVal){
+        if(!newVal){
+          return;
+        }
+        if(scope.sidebardata){
+          scope.sidebardata['conversations'] = scope.conversations;
         }
       });
 
@@ -202,7 +224,7 @@ angular.module('sf')
       scope.markReadUnread = function (read) {
         sidebarService.markReadUnread(scope, read);
       }; // End Mark Read / Unread 
-      
+
       // Close
       scope.close = function () {
         sidebarService.close(scope);
@@ -220,7 +242,6 @@ angular.module('sf')
       scope.assign = function () {
         sidebarService.assign(scope);
       };
-
       scope.unassign = function () {
         sidebarService.unassign(scope);
       }; // End Assign / Unassign
@@ -236,14 +257,34 @@ angular.module('sf')
         sidebarService.deleteAttachment(scope, attachmentId);
       }; // End Attachments
       
-     var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
+      scope.exportCaseInfo = function(){
+        scope.caseExportInfo = caseService.getCaseExportInfo($routeParams.caseId);
+      }
+
+
+      // Show / Close pop up
+      scope.showExportCaseInfoPopUp = function(){
+        scope.showExportInfo = true;
+      }
+      scope.showCaseInfoPopUp = function(){
+        scope.showCaseInfo = true;
+      }
+      scope.closePopUp = function(){
+        console.log("close")
+        scope.showCaseInfo = false;
+        scope.showExportInfo = false;
+        scope.commandView = '';
+      } // End Show / Close pop up
+
+      // Filter for caselog
+      var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         scope.defaultFilters = result.data;
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, scope.defaultFilters);
         scope.sideBarCaseLogs.promise.then(function(){
           scope.showSpinner.caseLog = false;
         });
-      });
+      }); // End Filter for caselog
 
       var updateObject = function(itemToUpdate){
         itemToUpdate.invalidate();
@@ -278,10 +319,10 @@ angular.module('sf')
           scope.showSpinner.caseDescriptionText = false;
         });
       });
-      scope.$on('note-changed', function(event, data){
+      scope.$on('note-changed', function(event){
         scope.showSpinner.caseDescriptionText = true;
-        updateObject(scope.notes);
-        scope.notes.promise.then(function(){
+        updateObject(scope.notesHistory);
+        scope.notesHistory.promise.then(function(){
           scope.showSpinner.caseDescriptionText = false;
         });
       });
@@ -329,18 +370,19 @@ angular.module('sf')
 
       var checkFilterCaseLog = function(filter){
         if(scope.defaultFilters[filter] === false){
-          $rootScope.$broadcast('update-caseLogs');
           return;
-        }else{
-          scope.showSpinner.caseLog = true;
-          updateObject(scope.sideBarCaseLogs);
-          scope.sideBarCaseLogs.promise.then(function(){
-            scope.showSpinner.caseLog = false;
-          });
-          $rootScope.$broadcast('update-caseLogs');
         }
+        scope.showSpinner.caseLog = true;
+        updateObject(scope.sideBarCaseLogs);
+        scope.sideBarCaseLogs.promise.then(function(){
+          scope.showSpinner.caseLog = false;
+        });
       };
 
+      scope.onFileSelect = function($files){
+        fileService.uploadFiles($files);
+        updateObject(scope.attachments);
+      }
     }
   };
 });

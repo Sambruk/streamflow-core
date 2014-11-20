@@ -63,7 +63,7 @@
         }
 
         if (!w) {
-          console.log('Not found: ', trimmedId, ' in ', JSON.stringify(resourceData));
+          //console.log('Not found: ', trimmedId, ' in ', JSON.stringify(resourceData));
 
           var deferred = $q.defer();
           deferred.reject({msg: 'Missing key in json ' + id, data: resourceData});
@@ -228,9 +228,9 @@
       postNested: function (specs, data, responseSelector) {
 
         function findInJson(spec, json) {
-          console.log('findInJson');
-          console.log(spec);
-          console.log(json);
+          //console.log('findInJson');
+          //console.log(spec);
+          //console.log(json);
           var key = Object.keys(spec)[0];
           var id = spec[key];
           var searchIds = key.split('.');

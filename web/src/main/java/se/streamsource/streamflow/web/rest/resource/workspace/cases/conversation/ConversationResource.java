@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.rest.resource.workspace.cases.conversatio
 import se.streamsource.dci.api.Requires;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.ConversationContext;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 
 /**
@@ -28,6 +29,11 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 public class ConversationResource
       extends CommandQueryResource
 {
+    public ConversationResource( )
+    {
+        super( ConversationContext.class );
+    }
+
    @SubResource
    public void participants( )
    {

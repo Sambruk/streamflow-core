@@ -16,10 +16,16 @@
     "momentjs": "~2.8.2",
     "underscore": "git://github.com/documentcloud/underscore.git#~1.4.4",
     "angular-resource": "latest",
-    "typewatch": "git://github.com/dennyferra/TypeWatch.git"
+    "typewatch": "git://github.com/dennyferra/TypeWatch.git",
+    "angular-sanitize": "~1.3.3",
+    "ng-file-upload": "~1.6.12",
+    "ng-file-upload-shim": "~1.6.12"
   },
   "devDependencies": {
     "angular-mocks": "latest",
     "angular-scenario": "latest"
+  },
+  "resolutions": {
+    "angular": "1.3.3"
   }
 }

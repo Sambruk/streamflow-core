@@ -79,6 +79,11 @@ public interface CaseCountCacheService
          ));
          for (Case caze : queryBuilder.newQuery( uow ))
          {
+            if( caze == null )
+            {
+                // prevent possible NullPointerException in startup sequence if index and database are out of sync.
+                continue;
+            }
             CaseEntity aCase = (CaseEntity) caze;
             try
             {

@@ -3,12 +3,12 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.24-SNAPSHOT</version>
+        <version>1.25-SNAPSHOT</version>
     </parent>
 
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-webstart</artifactId>
-    <version>1.24-SNAPSHOT</version>
+    <version>1.25-SNAPSHOT</version>
 
     <packaging>pom</packaging>
     <name>Streamflow JavaWebStart client</name>
@@ -19,7 +19,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>webstart-maven-plugin</artifactId>
-                <version>1.0-beta-3</version>
+                <version>1.0-beta-5</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -31,6 +31,7 @@
                 <configuration>
                     <dependencies>
                     </dependencies>
+                    <filenameMapping>simple</filenameMapping>
                     <jnlp>
                         <outputFile>streamflow.jnlp</outputFile>
                         <mainClass>se.streamsource.streamflow.client.MainClient</mainClass>
@@ -43,7 +44,14 @@
                             <delete>false</delete>
                             <gen>false</gen>
                         </keystoreConfig>
+
+                        <tsaLocation>https://timestamp.geotrust.com/tsa</tsaLocation>
                     </sign>
+
+                    <updateManifestEntries>
+                        <Permissions>all-permissions</Permissions>
+                        <Codebase>*</Codebase>
+                    </updateManifestEntries>
 
                     <unsign>true</unsign>
                     <verbose>false</verbose>

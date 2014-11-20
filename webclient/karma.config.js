@@ -21,11 +21,14 @@ module.exports = function(config){
     basePath : '',
 
     files : [
+      'bower_components/ng-file-upload/angular-file-upload-shim.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-resource/angular-resource.js',
       'bower_components/angular-growl-v2/build/angular-growl.js',
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/angular-sanitize/angular-sanitize.js',
+      'bower_components/ng-file-upload/angular-file-upload.js',
       'bower_components/underscore/underscore-min.js',
       'app/design/gui/js/jquery-1.10.1.js',
       'app/*.js',

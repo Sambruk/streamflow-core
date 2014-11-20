@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, navigationService, tokenService){
+.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, $location, navigationService, tokenService){
 
   var sortByText = function (x, y) {
     var xS = x.text && x.text.toUpperCase() || '',
@@ -30,6 +30,11 @@ angular.module('sf')
       return 0;
     }
   };
+
+  var _updateObject = function(itemToUpdate){
+    itemToUpdate.invalidate();
+    itemToUpdate.resolve();
+  }
 
   var _changePriorityLevel = function(scope, priorityId) {
     scope.showSpinner.casePriority = true;
@@ -58,13 +63,20 @@ angular.module('sf')
       if(!scope.possibleForms){
         scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       }else{
-        scope.possibleForms.invalidate();
-        scope.possibleForms.resolve();
+        _updateObject(scope.possibleForms);
+      }
+
+      if(scope.possibleForms.length == 0){
+        // Check if the current route contains formdraft to redirect to "case main page"
+        var checkRoute = new RegExp('formdrafts').test($location.path());
+        if(checkRoute == true){
+          var href = navigationService.caseHrefSimple($routeParams.caseId);
+          window.location.replace(href);
+        }
       }
       scope.showSpinner.casePossibleForms = false;
       
-      scope.possibleResolutions.invalidate();
-      scope.possibleResolutions.resolve();
+      _updateObject(scope.possibleResolutions);
 
       $rootScope.$broadcast('case-type-changed');
       _updateCaseLabels(scope);
@@ -78,15 +90,13 @@ angular.module('sf')
     if (!scope.caseLabel) {
       scope.caseLabel = caseService.getCaseLabel($routeParams.caseId);
     } else {
-      scope.caseLabel.invalidate();
-      scope.caseLabel.resolve();
+      _updateObject(scope.caseLabel);
     }
     
     if (!scope.possibleCaseLabels) {
       scope.possibleCaseLabels = caseService.getPossibleCaseLabels($routeParams.caseId);
     } else {
-      scope.possibleCaseLabels.invalidate();
-      scope.possibleCaseLabels.resolve();
+      _updateObject(scope.possibleCaseLabels);
     }
     
     $q.all([
@@ -116,8 +126,7 @@ angular.module('sf')
     scope.showSpinner.caseToolbar = true;
     
     if (scope.commands) {
-      scope.commands.invalidate();
-      scope.commands.resolve();
+      _updateObject(scope.commands);
     } else {
       scope.commands = caseService.getSelectedCommands($routeParams.caseId);
     }
@@ -288,13 +297,16 @@ angular.module('sf')
     window.location.replace(url);
   };
 
-  var _deleteAttachment = function(scope, attachmentId){
-    caseService.deleteAttachment($routeParams.caseId, attachmentId).then(function () {
+  var _deleteAttachment = function(scope, attachment){
+    caseService.deleteAttachment($routeParams.caseId, attachment.id).then(function () {
       scope.showSpinner.caseAttachment = true;
       scope.attachments.invalidate();
       scope.attachments.resolve().then(function () {
         scope.showSpinner.caseAttachment = false;
       });
+      if(attachment.rel == 'conversation'){
+        $rootScope.$broadcast('conversation-attachment-deleted');
+      }
     });
   };
   // End Attachments

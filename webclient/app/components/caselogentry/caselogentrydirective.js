@@ -26,7 +26,6 @@ angular.module('sf')
     },
     link: function(scope){
       scope.caseLogEntryToCreate = '';
-      //scope.caseLogs;
       scope.caseId = $routeParams.caseId;
       scope.caseLogs;
 
@@ -39,15 +38,10 @@ angular.module('sf')
 
       scope.submitCaseLogEntry = function($event){
         $event.preventDefault();
-        $rootScope.$broadcast('caselog-message-added', 'true');
-        scope.caseLogs = caseService.getSelectedCaseLog(scope.caseId);
         caseService.createCaseLogEntry(scope.caseId, scope.caseLogEntryToCreate)
         .then(function(response){
-          scope.caseLogs.invalidate();
-          scope.caseLogs.resolve();
           $rootScope.$broadcast('caselog-message-created');
           scope.caseLogEntryToCreate = '';
-          $rootScope.$broadcast('caselog-message-added', 'false');
         });
       }
     }

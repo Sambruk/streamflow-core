@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService) {
+  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService, $sce) {
     $scope.sidebardata = {};
     
     $scope.caseId = $routeParams.caseId;
@@ -62,16 +62,36 @@ angular.module('sf')
           return;
         }
         if ($scope.possibleForm[0].queries.length !== 0) {
-          $scope.form = caseService.getFormDraftFromForm($routeParams.caseId, formId);
-          $scope.form.promise.then(function(){
+          var form = caseService.getFormDraftFromForm($routeParams.caseId, formId);
+          form.promise.then(function(response){
+            console.log("RESPONSE FORM")
+            console.log(response);
+            $scope.form = response;
             $scope.showSpinner.form = false;
+
+          })
+          .then(function(){
+            if($scope.isLastPage()){
+
+            }
           });
         }
         else {
           caseService.createSelectedForm($routeParams.caseId, formId).then(function(response){
             var draftId = JSON.parse(response.data.events[0].parameters).param1;
-            $scope.form = caseService.getFormDraft($routeParams.caseId, draftId);
             $scope.showSpinner.form = false;
+            $scope.possibleForm.invalidate();
+            $scope.possibleForm.resolve();
+            var form = caseService.getFormDraft($routeParams.caseId, draftId);
+            form.promise.then(function(response){
+              $scope.form = response;
+              $scope.showSpinner.form = false;
+            })
+            .then(function(){
+              $scope.isLastPage = function(){
+                return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1); //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) == visiblePages.length;
+              }
+            });
           });
         }
         $scope.currentFormPage = null;
@@ -88,6 +108,8 @@ angular.module('sf')
     };
 
     $scope.selectFormPage = function(page){
+      console.log("PAGE");
+      console.log(page);
       $scope.currentFormPage = page;
     }
 
@@ -96,8 +118,35 @@ angular.module('sf')
         $scope.formMessage = "Skickat!";
         $rootScope.$broadcast('form-submitted');
       });
-      $scope.form = [];
-      $scope.currentFormPage = null;
+      //$scope.form = [];
+      //$scope.currentFormPage = null;
+    }
+
+    var formNavigationMachine = function(index){
+      var allowedNav = {
+        previousPage: false,
+        nextPage: false,
+        submitForm: false
+      };
+      if(index>0){
+        allowedNav.previousPage = true;
+        if(inputValid){
+          if(isLast){
+            allowedNav.submitForm = true;
+          } else {
+            allowedNav.nextPage = true;
+          }
+        }
+      } else {
+        if(inputValid){
+          if(isLast){
+            allowedNav.submitForm = true;
+          } else {
+            allowedNav.nextPage = true;
+          }
+        }
+      }
+      return allowedNav;
     }
 
     $scope.toggleLastPageTrue = function(val){
@@ -106,11 +155,19 @@ angular.module('sf')
     }
 
     $scope.isLastPage = function(){
-      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1);
+      if($scope.form && $scope.form[0]){
+        return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1);
+      }
+      return; //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) == visiblePages.length;
     }
 
+    
+
     $scope.isFirstPage = function(){
-      return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === 0;
+      if($scope.form && $scope.form[0]){
+        return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === 0;
+     }
+     return;
     }
 
     $scope.nextFormPage = function(){

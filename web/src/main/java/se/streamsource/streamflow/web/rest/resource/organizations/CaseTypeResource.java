@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.context.administration.FormOnCloseContext;
 import se.streamsource.streamflow.web.context.administration.PriorityOnCaseContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.entity.RequiresRemoved;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
@@ -45,6 +46,7 @@ public class CaseTypeResource
       super( CaseTypeContext.class, DescribableContext.class );
    }
 
+   @RequiresRemoved(false)
    public LinksValue possiblemoveto() throws Throwable
    {
       Iterable<CaseTypes> caseTypesList = context(CaseTypeContext.class).possiblemoveto();
@@ -64,48 +66,56 @@ public class CaseTypeResource
       return builder.newLinks();
    }
 
+   @RequiresRemoved(false)
    @SubResource
    public void forms( )
    {
       subResource( FormsResource.class );
    }
 
+   @RequiresRemoved(false)
    @SubResource
    public void labels()
    {
       subResource( LabelsResource.class );
    }
 
+   @RequiresRemoved(false)
    @SubResource
    public void selectedforms()
    {
       subResource( SelectedFormsResource.class );
    }
 
+   @RequiresRemoved(false)
    @SubResource
    public void selectedlabels()
    {
       subResource( SelectedLabelsResource.class );
    }
 
+   @RequiresRemoved(false)
    @SubResource
    public void resolutions()
    {
       subResource( ResolutionsResource.class );
    }
 
+   @RequiresRemoved(false)
    @SubResource
    public void selectedresolutions()
    {
       subResource( SelectedResolutionsResource.class );
    }
 
+   @RequiresRemoved(false)
    @SubResource
    public void caseaccessdefaults()
    {
       subResourceContexts(CaseAccessDefaultsContext.class);
    }
 
+    @RequiresRemoved(false)
    @SubResource
    public void defaultdaystocomplete()
    {
@@ -117,16 +127,25 @@ public class CaseTypeResource
    {
       subResourceContexts(ArchivalSettingsContext.class);
    }
-   
+
+    @RequiresRemoved(false)
    @SubResource
    public void formonclose()
    {
       subResourceContexts( FormOnCloseContext.class );
    }
-   
+
+    @RequiresRemoved(false)
    @SubResource
    public void priorityoncase()
    {
       subResourceContexts( PriorityOnCaseContext.class );
+   }
+
+    @RequiresRemoved(true)
+    @SubResource
+   public void casetypedetail()
+   {
+        subResourceContexts( CaseTypeContext.class );
    }
 }

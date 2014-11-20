@@ -19,10 +19,8 @@
 <div class="content-primary" role="main">
   <div class="m m-check-list" ng-hide="showSpinner.conversationMessageDraft">
     <div class="m-h">
-      <div>
-        <div data-ng-repeat="conversation in conversations | filter: conversationId track by conversation.$index">
-          <h2>{{ conversation.text }}</h2>
-        </div>
+      <div data-ng-repeat="conversation in conversations | filter: conversationId track by conversation.$index">
+        <h2>{{ conversation.text }}</h2>
       </div>
     </div>
     <div class="mc">
@@ -45,7 +43,7 @@
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
-          <textarea name="convo-text" id="convo-text" cols="30" rows="5" placeholder="Skriv ditt meddelande här" data-ng-model="conversationMessageDraft[0]"></textarea>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="5" placeholder="Skriv ditt meddelande här" data-ng-blur="changeMessageDraft($event)">{{ conversationMessageDraft[0] }}</textarea>
         </div>
         <div class="send">
           <button data-ng-click="submitMessage($event)" name="convo-submit">Skicka</button>
@@ -62,18 +60,20 @@
           <li class="msg-item" data-ng-repeat="message in conversationMessages | orderBy:'-createdOn'">
             <div class="msg-head cf" ng-show="message.text.length">
               <div class="msg-author">{{ message.sender }} </div>
-              <div>
-                <div class="msg-attachment" ng-repeat="attachment in attachments | filter: message.id">
-                  <strong>Bifogad fil:</strong>
-                  <a data-ng-click="downloadAttachment(attachment.id)" ng-href="{{ attachment.href}}">{{ attachment.text }}</a>
-                </div>
-              </div>
             </div>
             <div class="msg-body" ng-show="message.text.length">
-              <p>{{ message.text }}</p>
+              <div class="msg-container" ng-bind-html="message.text[0]"></div>
             </div>
             <div class="msg-meta cf">
-              <!-- TODO What is this?!? Check with Reinhold and Kleine <div class="msg-recipients">
+              <div class="m-c m-attachments" ng-show="message.attachments.length > 0">
+                <ul class="zebra-list msg-attachment" style="margin-top:0.4em">
+                  <li ng-repeat="attachment in message.attachments">
+                    <a data-ng-click="downloadMessageAttachment(message, attachment)" href=""> {{ attachment.text }}</a>
+                  </li>
+                </ul>
+              </div>
+              <!-- TODO What is this?!? Check with Reinhold and Kleine
+              <div class="msg-recipients">
                 Mottagare: Streamsource admin, esbjorn.karlsson@cloudmail.com
               </div> -->
               <div class="msg-timestamp">

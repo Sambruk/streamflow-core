@@ -38,6 +38,7 @@ public class LinkListCellRenderer extends DefaultListCellRenderer
             val = "  "+val;
 
          return super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
-      } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+      }
+      else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
    }
 }

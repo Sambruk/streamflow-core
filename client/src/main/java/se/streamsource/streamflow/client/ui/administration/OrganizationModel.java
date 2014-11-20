@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import se.streamsource.streamflow.client.ResourceModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.RemovedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsModel;
@@ -49,6 +50,7 @@ public class OrganizationModel
       relationModelMapping("roles", RolesModel.class);
       relationModelMapping("forms", FormsModel.class);
       relationModelMapping("casetypes", CaseTypesModel.class);
+      relationModelMapping("removedcasetypes", RemovedCaseTypesModel.class);
       relationModelMapping("priorities", PrioritiesModel.class);
       relationModelMapping("accesspoints", AccessPointsModel.class);
       relationModelMapping("emailaccesspoints", EmailAccessPointsModel.class);

@@ -20,6 +20,8 @@ import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -35,6 +37,7 @@ import static java.util.Collections.reverseOrder;
  */
 public class TableBuilder
 {
+   private static final Logger LOGGER = LoggerFactory.getLogger( TableBuilder.class );
    protected ValueBuilderFactory vbf;
    private Map<String, TableBuilderFactory.Column> columns;
    private TableQuery tableQuery;
@@ -105,6 +108,11 @@ public class TableBuilder
 
       for (Object rowObject : rowObjects)
       {
+         if( rowObject == null )
+         {
+            LOGGER.warn( "Encountered null object while building row.");
+            continue;
+         }
          row();
          for (ColumnValue columnValue : tableBuilder.prototype().cols().get())
          {

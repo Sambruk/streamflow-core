@@ -19,7 +19,9 @@
 angular.module('sf', [
     'ngRoute',
     'ngResource',
-    'angular-growl'
+    'angular-growl',
+    'ngSanitize',
+    'angularFileUpload'
   ])
   .run(function ($rootScope, $location, $routeParams, tokenService) {
     $rootScope.hasToken = tokenService.hasToken;
