@@ -338,7 +338,7 @@
     <!-- <div class="m-c" ng-hide="showSpinner.caseAttachment"> -->
     <div class="m-c">
       <ul class="zebra-list">
-        <li ng-repeat="attachment in attachments">
+        <li ng-show="attachment.rel == 'attachment'" ng-repeat="attachment in attachments">
           <a data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
           <a data-ng-click="deleteAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
         </li>
