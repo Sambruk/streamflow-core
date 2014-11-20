@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService, fileService){
+.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -44,6 +44,13 @@ angular.module('sf')
       scope.caze = caseService.getSelected($routeParams.caseId);
       scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
       scope.uploadProgress = 0;
+      scope.showExport = false;
+      scope.exportSubmittedForms = false;
+      scope.exportAttachments = false;
+      scope.exportConversations = false;
+      scope.exportContacts = false;
+      scope.exportCaseLog = false;
+
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
       }
@@ -224,6 +231,18 @@ angular.module('sf')
       scope.markReadUnread = function (read) {
         sidebarService.markReadUnread(scope, read);
       }; // End Mark Read / Unread 
+
+      // Show Export Pdf
+      scope.showExportPopUp = function () {
+        scope.showExport =! scope.showExport;
+        scope.commandView = true;
+        console.log(scope.showExport);
+      }; // End Show Export Pdf
+
+      scope.onExportButtonClicked = function () {
+        caseService.getCasePdf($routeParams.caseId, scope.exportSubmittedForms, scope.exportAttachments, scope.exportConversations, scope.exportContacts, scope.exportCaseLog);
+        
+      };// End Send to
 
       // Close
       scope.close = function () {

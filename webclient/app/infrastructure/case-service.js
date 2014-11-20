@@ -190,6 +190,23 @@ angular.module('sf')
           };
       },
 
+      getCasePdf: function(caseId, submittedForms, attachments, conversations, contacts, caseLog) {
+        var downloadURL = function downloadURL(url) {
+        var hiddenIFrameID = 'hiddenDownloader',
+            iframe = document.getElementById(hiddenIFrameID);
+        if (iframe === null) {
+            iframe = document.createElement('iframe');
+            iframe.id = hiddenIFrameID;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+        }
+        iframe.src = url;
+        };
+
+        var url = 'https://test-sf.jayway.com/streamflow/workspacev2/cases/'+caseId+'/exportpdf?submittedForms='+submittedForms+'&attachments='+attachments+'&conversations='+conversations+'&contacts='+contacts+'&caselog='+caseLog;
+        downloadURL(url);
+      },
+
       closeCase: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([

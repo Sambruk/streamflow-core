@@ -96,7 +96,10 @@ angular.module('sf')
         var resultUndefined = angular.isUndefined(result);
         if (!result || resultUndefined === true) {
           var url = this.prepareUrl(href);
-          var promise = $http({ method:'GET', url: url});
+          var promise = $http({ 
+            method:'GET', 
+            url: url
+          });
           cache.put(href, promise);
           //console.log(cache);
           return promise;

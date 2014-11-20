@@ -39,7 +39,7 @@
           <li><a data-ng-show="canMarkUnread" data-ng-click="markReadUnread(false)" href="" class="btn">Markera oläst</a></li>
           <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
           <li><a data-ng-show="canUnrestrict" data-ng-click="unrestrict()" href="" class="btn">Begränsa inte</a></li>
-          <li><a href="#/cases/{{ caze[0].id }}/print" class="btn">Skriv ut</a></li>
+          <li><a data-ng-click="showExportPopUp()" href="" class="btn">Exportera</a></li>
         </ul>
       </li>
     </ul>
@@ -94,9 +94,39 @@
         </div>
 
         <div data-ng-switch-default></div>
+
       </div>
     </div>
   </div>
+
+  <div class="toolbar-content-popup" ng-show='showExport'>
+          <div class='ng-modal'>
+            <div class='ng-modal-overlay' ng-click="showExportPopUp()"></div>
+            <div class='ng-modal-dialog' ng-style='dialogStyle'>
+              <div class='ng-modal-close' ng-click="showExportPopUp()">X</div>
+              <div class="row cf">
+                <div class="select">
+                  <label>Exportera</label>
+                  <label for="export-submitted-forms">Skickade formulär</label>
+                  <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
+                  <label for="export-attachments">Bifogade filer</label>
+                  <input id="export-attachments" type="checkbox" ng-model="exportAttachments" name="export-attachments">
+                  <label for="export-conversations">Konversationer</label>
+                  <input id="export-conversations" type="checkbox" ng-model="exportConversations" name="export-conversations">
+                  <label for="export-contacts">Kontakter</label>
+                  <input id="export-contacts" type="checkbox" ng-model="exportContacts" name="export-contacts">
+                  <label for="export-case-log">Ärendelogg</label>
+                  <input id="export-case-log" type="checkbox" ng-model="exportCaseLog" name="export-case-log">
+                </div>
+              </div>
+              <div class="row">
+                <div class="submit-area cf">
+                  <button type="submit" name="save-issue-owner" data-ng-click="onExportButtonClicked()">Exportera</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
   <!-- <div ng-show="showSpinner.caseToolbar" class="spinner"></div> -->
   <!-- /Issue toolbar -->
 
