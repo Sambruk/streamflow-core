@@ -78,7 +78,8 @@ public class ValueBinder
             JComboBox.class,
             JRadioButton.class,
             RemovableLabel.class,
-            StreamflowJXColorSelectionButton.class);
+            StreamflowJXColorSelectionButton.class,
+              StreamflowSelectableLabel.class);
    }
 
    public void registerBinder( Binder binder, Class<? extends Component>... componentTypes )

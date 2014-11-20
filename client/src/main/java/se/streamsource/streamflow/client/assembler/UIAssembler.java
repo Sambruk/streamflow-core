@@ -43,7 +43,9 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArch
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeDetailView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.RemovedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointView;
 import se.streamsource.streamflow.client.ui.administration.external.IntegrationPointsView;
@@ -352,6 +354,8 @@ public class UIAssembler
             ResolutionsView.class,
             RolesView.class,
             SelectedCaseTypesView.class,
+            RemovedCaseTypesView.class,
+            CaseTypeDetailView.class,
             FormsView.class,
             FormView.class,
             GroupsView.class,

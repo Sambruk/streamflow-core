@@ -51,11 +51,18 @@
      	initial-heap-size="64m"
      	max-heap-size="300m"
      />
+
     #set($start = '<jar href=\"streamflow-help-sv_gov-')
     #set($middle = ${project.version})
     #set($end = '.jar\"/>')
+    #set($remove = '<jar href=\"vorbis-java-core-tests-0.1.jar\"/>')
 
-    $dependencies.replaceAll( "$start$middle$end", "")
+    #set($dependencies = $dependencies.replaceAll( "$start$middle$end", ""))
+    #set($dependencies = $dependencies.replaceAll( "$remove", "") )
+
+    $dependencies
+
+    <jar href="vorbis-java-core-0.1-tests.jar"/>
     <jar href="streamflow-help-sv_gov-${project.version}.jar" locale="sv_gov"/>
 
 

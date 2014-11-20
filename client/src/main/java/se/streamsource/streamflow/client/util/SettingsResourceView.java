@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.ui.administration.casesettings.CaseArch
 import se.streamsource.streamflow.client.ui.administration.casesettings.CaseDefaultDaysToCompleteView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.PriorityOnCaseView;
 import se.streamsource.streamflow.client.ui.administration.casesettings.FormOnCloseView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeDetailView;
 import se.streamsource.streamflow.client.ui.administration.organisationsettings.MailRestrictionsView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.CaseDueOnNotificationView;
 import se.streamsource.streamflow.client.ui.administration.projectsettings.RequiresCaseTypeView;
@@ -69,6 +70,8 @@ public class SettingsResourceView
       addSettings("dueonnotification", AdministrationResources.dueon_notification_separator, CaseDueOnNotificationView.class);
 
       addSettings("requirescasetype", AdministrationResources.requires_casetype_seperator, RequiresCaseTypeView.class);
+
+      addSettings( "casetypedetail", AdministrationResources.detail_separator, CaseTypeDetailView.class);
 
       addSettings("archival", AdministrationResources.archival_settings_separator, CaseArchivalSettingView.class);
 
