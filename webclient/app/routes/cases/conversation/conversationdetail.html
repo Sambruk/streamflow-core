@@ -43,16 +43,27 @@
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
-          <textarea name="convo-text" id="convo-text" cols="30" rows="5" placeholder="Skriv ditt meddelande här" data-ng-blur="changeMessageDraft($event)">{{ conversationMessageDraft[0] }}</textarea>
+          <textarea name="convo-text" id="convo-text" cols="30" rows="5" placeholder="Skriv ditt meddelande här" data-ng-blur="changeMessageDraft($event)" ng-model="conversationMessageDraft[0]"></textarea>
+        </div>
+
+        <div class="m-attachments m-draft-attachments" style="float:left">
+          <ul class="zebra-list">
+            <li ng-repeat="attachment in conversationMessageDraftAttachments">
+              <a data-ng-click="downloadDraftAttachment(attachment)" href="">{{ attachment.text }}</a>
+              <a data-ng-click="deleteDraftAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+            </li>
+          </ul>
         </div>
         <div class="send">
           <button data-ng-click="submitMessage($event)" name="convo-submit">Skicka</button>
         </div>
         <div class="upload">
-          <a href="xlink-dsa890d" class="icon-attach upload-file"><span class="struct">Ladda upp en fil</span></a>
+          <label class="file-input-label">
+            <input type="file" class="file-input" name="file" ng-file-select="onMessageFileSelect($files)" multiple />
+            <div class="icon-attach upload-file"><span class="struct">Ladda upp en fil</span></div>
+          </label>
         </div>
       </form>
-      <!-- <div class="attached-files">Bifogad fil: <a href="xlink-d6as78">uppladdad-fil.doc</a></div> -->
     </div>
     <div class="convo-body">
       <div ng-hide="showSpinner.conversation">

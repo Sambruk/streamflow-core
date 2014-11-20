@@ -944,6 +944,47 @@ angular.module('sf')
           }
         });
       },
+
+      getMessageDraftAttachments: function(caseId, conversationId){
+        return backendService.get({
+          specs:caseBase(caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'messages'},
+            {resources: 'messagedraft', unsafe: true},
+            {resources: 'attachments'}
+            ]),
+          onSuccess:function(resource, result){
+            resource.response.index.links.forEach(function(attachment){
+              result.push(attachment);
+            });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);
+          }
+        });
+      },
+
+      deleteDraftAttachment: function(caseId, conversationId, attachmentId){
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {resources: 'conversations'},
+            {'index.links': conversationId},
+            {resources: 'messages'},
+            {resources: 'messagedraft', unsafe: true},
+            {resources: 'attachments'},
+            {'index.links': attachmentId},
+            {commands: 'delete'}
+            ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
+      },
+
       updateMessageDraft: function(caseId, conversationId, value) {
         return backendService.postNested(
           caseBase(caseId).concat([

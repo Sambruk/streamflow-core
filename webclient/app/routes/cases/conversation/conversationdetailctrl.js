@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService) {
+  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService, fileService) {
 
     $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
     $scope.sidebardata = {};
@@ -26,6 +26,7 @@ angular.module('sf')
     $scope.conversationMessages = caseService.getConversationMessages($routeParams.caseId, $routeParams.conversationId);
     $scope.conversationParticipants = caseService.getConversationParticipants($routeParams.caseId, $routeParams.conversationId);
     $scope.conversationMessageDraft = caseService.getMessageDraft($routeParams.caseId, $routeParams.conversationId);
+    $scope.conversationMessageDraftAttachments = caseService.getMessageDraftAttachments($routeParams.caseId, $routeParams.conversationId);
 
     $scope.showSpinner = {
       participants: true,
@@ -61,12 +62,29 @@ angular.module('sf')
       itemToUpdate.resolve();
     };
 
+    var getApiUrl = function(){
+      // Hack to replace dummy user and pass with authentication from token.
+      // This is normally sent by httpF headers in ajax but not possible here.
+      var apiUrl = $scope.apiUrl.replace(/https:\/\/(.*)@/, function () {
+        var userPass = window.atob(tokenService.getToken());
+        return 'https://' + userPass + '@' ;
+      });
+      return apiUrl;
+    };
+
+
     $scope.changeMessageDraft = function($event){
       var message = $event.currentTarget.value;
       caseService.updateMessageDraft($scope.caseId, $scope.conversationId, message).then(function(){
         updateObject($scope.conversationMessageDraft);
       });
     };
+
+    $scope.onMessageFileSelect = function($files){
+      var url = 'https://test.sf.streamsource.se/streamflow/workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
+      fileService.uploadFiles($files, url);
+      updateObject($scope.conversationMessageDraftAttachments);
+    }
 
     $scope.removeParticipant = function(participant){
       $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
@@ -83,6 +101,7 @@ angular.module('sf')
 
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
         updateObject($scope.conversationMessages);
+        updateObject($scope.conversationMessageDraftAttachments);
 
         $scope.conversationMessageDraft[0] = "";
         $rootScope.$broadcast('conversation-message-created');
@@ -92,15 +111,24 @@ angular.module('sf')
       });
     }
 
-    $scope.downloadMessageAttachment = function (message, attachment) {
-      // Hack to replace dummy user and pass with authentication from token.
-      // This is normally sent by httpF headers in ajax but not possible here.
-      var apiUrl = $scope.apiUrl.replace(/https:\/\/(.*)@/, function () {
-        var userPass = window.atob(tokenService.getToken());
-        return 'https://' + userPass + '@' ;
+    $scope.deleteDraftAttachment = function(attachment){
+      caseService.deleteDraftAttachment($routeParams.caseId, $routeParams.conversationId, attachment.id).then(function(){
+        updateObject($scope.conversationMessageDraftAttachments);
       });
+    }
+
+    $scope.downloadDraftAttachment = function(attachment){
+      var apiUrl = getApiUrl();
+
+      var url = apiUrl + '/cases/' + $routeParams.caseId + '/conversations/' + $routeParams.conversationId + '/messages/messagedraft/attachments/' + attachment.href + 'download';
+      window.location.replace(url);
+    }
+
+    $scope.downloadMessageAttachment = function (message, attachment) {
+      var apiUrl = getApiUrl();
 
       var url = apiUrl + '/cases/' + $routeParams.caseId + '/conversations/' + $scope.conversationId + '/messages/' + message.id + '/attachments/' + attachment.href + 'download';
       window.location.replace(url);
     };
+
   });

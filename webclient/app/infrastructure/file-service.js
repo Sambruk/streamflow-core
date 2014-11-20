@@ -3,11 +3,11 @@
 angular.module('sf')
 .factory('fileService', function($upload, $routeParams){
 
-	var uploadFiles = function($files){
+	var uploadFiles = function($files, url){
     $files.forEach(function(file){
 	    $upload.upload({
 	    	// TODO: extract url to be more dynamic
-	      url: 'https://test.sf.streamsource.se/streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment',
+	      url: url,
 	      headers: {'Content-Type': 'multipart/formdata'},
 	      file: file // or list of files ($files) for html5 only
 	    })
