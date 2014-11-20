@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService, $upload){
+.directive('sidebar', function($location, growl, contactService, sidebarService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService, fileService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -256,13 +256,23 @@ angular.module('sf')
       scope.deleteAttachment = function(attachmentId){
         sidebarService.deleteAttachment(scope, attachmentId);
       }; // End Attachments
+      
+      scope.exportCaseInfo = function(){
+        scope.caseExportInfo = caseService.getCaseExportInfo($routeParams.caseId);
+      }
+
 
       // Show / Close pop up
+      scope.showExportCaseInfoPopUp = function(){
+        scope.showExportInfo = true;
+      }
       scope.showCaseInfoPopUp = function(){
         scope.showCaseInfo = true;
       }
       scope.closePopUp = function(){
+        console.log("close")
         scope.showCaseInfo = false;
+        scope.showExportInfo = false;
         scope.commandView = '';
       } // End Show / Close pop up
 
@@ -369,23 +379,10 @@ angular.module('sf')
         });
       };
 
-      scope.onFileSelect = function($files) {
-          for (var i = 0; i < $files.length; i++) {
-            var file = $files[i];
-            scope.upload = $upload.upload({
-              url: 'https://test.sf.streamsource.se/streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment',
-              headers: {'Content-Type': 'multipart/formdata'},
-              file: file // or list of files ($files) for html5 only
-            }).progress(function(evt) {
-              scope.uploadProgress = parseInt(100.0 * evt.loaded / evt.total);
-              console.log(scope.uploadProgress);
-              // console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-            }).success(function(data, status, headers, config) {
-              // file is uploaded successfully
-              console.log(data);
-            });
-          }
-      };
+      scope.onFileSelect = function($files){
+        fileService.uploadFiles($files);
+        updateObject(scope.attachments);
+      }
     }
   };
 });
