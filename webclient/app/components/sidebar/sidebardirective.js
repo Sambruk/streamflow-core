@@ -260,6 +260,11 @@ angular.module('sf')
       scope.exportCaseInfo = function(){
         scope.caseExportInfo = caseService.getCaseExportInfo($routeParams.caseId);
       }
+      scope.onFileSelect = function($files){
+        var url = 'https://test.sf.streamsource.se/streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
+        fileService.uploadFiles($files, url);
+        updateObject(scope.attachments);
+      }
 
 
       // Show / Close pop up
@@ -335,7 +340,7 @@ angular.module('sf')
         checkFilterCaseLog('conversation');
       });
       scope.$on('conversation-message-created', function(){
-        updateObject(scope.conversations);
+        // updateObject(scope.conversations);
         checkFilterCaseLog('conversation');
       });
       scope.$on('participant-removed', function(){
@@ -378,11 +383,6 @@ angular.module('sf')
           scope.showSpinner.caseLog = false;
         });
       };
-
-      scope.onFileSelect = function($files){
-        fileService.uploadFiles($files);
-        updateObject(scope.attachments);
-      }
     }
   };
 });
