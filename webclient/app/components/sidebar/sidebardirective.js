@@ -241,7 +241,7 @@ angular.module('sf')
 
       scope.onExportButtonClicked = function () {
         caseService.getCasePdf($routeParams.caseId, scope.exportSubmittedForms, scope.exportAttachments, scope.exportConversations, scope.exportContacts, scope.exportCaseLog);
-        
+        scope.showExportPopUp();
       };// End Send to
 
       // Close
