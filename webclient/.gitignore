@@ -1,4 +1,5 @@
 node_modules
+app/design
 build
 bower_components
 .tmp
