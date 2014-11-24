@@ -42,3 +42,9 @@ This project uses a submodule, it need to be initiated with.
     git submodule update --init
 
 This populates the folder `webclient/app/design`.   
+
+
+# Building the webclient with Maven
+
+Make sure you do git pull in ./webclient/app/design to get the latest files from
+the submodule before you run mvn clean install in the webclient folder.
