@@ -37,7 +37,8 @@ var gulp = require('gulp'),
     karma = require('gulp-karma'),
     gulpif = require('gulp-if'),
     minifyCSS = require('gulp-minify-css'),
-    testFiles = ['unit/filters-unit.js'];
+    testFiles = ['unit/filters-unit.js'],
+    ngConstant = require('gulp-ng-constant');
 
 
 gulp.task('connect', ['clean-build'], function() {
@@ -57,7 +58,7 @@ gulp.task('clean', function(cb) {
 //});
 
 
-gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'app-templates', 'unit-test'], function(cb){
+gulp.task('build', ['copy', 'app-plugins', 'app-fonts', 'app-css', 'config','app-scripts', 'app-css', 'app-images', 'vendor-images','vendor-scripts', 'vendor-css', 'app-templates', 'unit-test'], function(cb){
   cb();
 });
 
@@ -66,7 +67,8 @@ gulp.task('clean-build', function(cb) {
     cb();
   });
 });
-var buildMode;
+var buildMode,
+    endpoint;
 
 if(args.prod){
   buildMode = 'prod';
@@ -76,8 +78,27 @@ if(args.prod){
   buildMode = 'dev';
 }
 
+if(args.endpoint){
+  endpoint = args.endpoint;
+}
+
+console.log('ENDPOINT');
+console.log(endpoint);
+
 console.log('BUILD MODE');
 console.log(buildMode);
+
+gulp.task('config', function () {
+  gulp.src('app/config/config.json')
+    .pipe(ngConstant({
+      name: 'sf.config',
+      constants: { baseUrl: endpoint },
+      //wrap: 'commonjs'
+      //wrap: 'amd',
+    }))
+    // Writes config.js to dist/ folder
+    .pipe(gulp.dest('app/config'));
+});
 
 var mainBowerFiles = mainBowerFiles();
 

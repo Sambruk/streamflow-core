@@ -21,7 +21,8 @@ angular.module('sf', [
     'ngResource',
     'angular-growl',
     'ngSanitize',
-    'angularFileUpload'
+    'angularFileUpload',
+    'sf.config'
   ])
   .run(function ($rootScope, $location, $routeParams, tokenService) {
     $rootScope.hasToken = tokenService.hasToken;
@@ -31,8 +32,6 @@ angular.module('sf', [
 
     //Add current project type to rootScope to let toolbar update accordingly in index.html
     $rootScope.$on('$routeChangeSuccess', function(e, current, pre) {
-      console.log('Current route name: ' + $location.path());
-      console.log($routeParams);
       // Get all URL parameter
       $rootScope.contextmenuParams = {};
       if($routeParams.projectType){

@@ -31,6 +31,7 @@ module.exports = function(config){
       'bower_components/ng-file-upload/angular-file-upload.js',
       'bower_components/underscore/underscore-min.js',
       'app/design/gui/js/jquery-1.10.1.js',
+      'app/config/config.js',
       'app/*.js',
       'app/components/**/*js',
       'app/components/*.js',

@@ -64,15 +64,16 @@ angular.module('sf')
         if ($scope.possibleForm[0].queries.length !== 0) {
           var form = caseService.getFormDraftFromForm($routeParams.caseId, formId);
           form.promise.then(function(response){
-            console.log("RESPONSE FORM")
-            console.log(response);
             $scope.form = response;
             $scope.showSpinner.form = false;
 
           })
           .then(function(){
             if($scope.isLastPage()){
-
+              $scope.form.invalidate();
+              $scope.form.resolve();
+              console.log("RESPONSE FORM")
+              console.log(response);
             }
           });
         }

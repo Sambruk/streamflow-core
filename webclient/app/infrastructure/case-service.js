@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('caseService', function ($rootScope, backendService, navigationService, SfCase, $http, debounce, formMapperService) {
+.factory('caseService', function ($rootScope, backendService, baseUrl, navigationService, SfCase, $http, debounce, formMapperService) {
 
     var workspaceId = 'workspacev2';
 
@@ -203,7 +203,7 @@ angular.module('sf')
         iframe.src = url;
         };
 
-        var url = 'https://test-sf.jayway.com/streamflow/workspacev2/cases/'+caseId+'/exportpdf?submittedForms='+submittedForms+'&attachments='+attachments+'&conversations='+conversations+'&contacts='+contacts+'&caselog='+caseLog;
+        var url = baseUrl+'streamflow/workspacev2/cases/'+caseId+'/exportpdf?submittedForms='+submittedForms+'&attachments='+attachments+'&conversations='+conversations+'&contacts='+contacts+'&caselog='+caseLog;
         downloadURL(url);
       },
 
