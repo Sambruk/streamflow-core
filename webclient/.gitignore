@@ -1,5 +1,6 @@
 node_modules
 app/design
+app/config/config.js
 build
 bower_components
 .tmp

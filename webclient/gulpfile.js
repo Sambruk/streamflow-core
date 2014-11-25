@@ -80,6 +80,8 @@ if(args.prod){
 
 if(args.endpoint){
   endpoint = args.endpoint;
+} else {
+  endpoint = "https://test-sf.jayway.com/"
 }
 
 console.log('ENDPOINT');
