@@ -148,7 +148,7 @@
       <div class="select">
         <label for="type-select">Ärendetyp</label>
         <select
-          data-placeholder="Case typ"
+          data-placeholder="Ärendetyp"
           class="chosen-case-type chosen-select"
           style="width: 100%;"
           data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
@@ -169,7 +169,7 @@
       <div class="select">
         <label for="issue-label-select">Etiketter</label>
         <select
-          data-placeholder="Case etikett"
+          data-placeholder="Etiketter"
           class="chosen chosen-case-label chosen-choices"
           style="width: 100%;"
           id="issue-label-select"
@@ -392,14 +392,14 @@
     <a href="#/cases/{{ caze[0].id }}/caselog" class="block-link">
       <div class="m-h">
         <h2>Ärendelogg</h2>
-        <span class="caselog-count-sidebar"> 3 most recent</span>
+        <span class="caselog-count-sidebar"> Visar de 3 senaste</span>
       </div>
       <!-- <div class="m-c" ng-hide="showSpinner.caseLog"> -->
       <div class="m-c">
         <ul>
           <li data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3 track by $index" data-ng-class-even="'even'" class="convo-li">
             <!-- <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">-->
-            <h3>{{ entry.text }} by {{ entry.creator }}</h3>
+            <h3>{{ entry.text }} av {{ entry.creator }}</h3>
             <span class="date">{{ entry.creationDate | dateTime}}</span>
           </li>
         </ul>
