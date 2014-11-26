@@ -18,8 +18,15 @@
 
 angular.module('sf')
   .controller('CaseListCtrl', function(growl, $scope, $routeParams, projectService, $rootScope) {
+    $scope.currentPage = 1;
+    $scope.pageSize = 10;
+    $scope.currentCases = [];
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
     $scope.projectType = $routeParams.projectType;
+
+    $scope.pageChangeHandler = function(num) {
+      console.log('page changed to ' + num);
+    };
 
     $scope.showSpinner = {
       currentCases: true
