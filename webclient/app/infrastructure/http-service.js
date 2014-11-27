@@ -40,7 +40,7 @@ angular.module('sf')
       var host = $location.$$host;
       var port = $location.$$port;
       var urlPrefix = protocol + '://dummyuser:dummypass@';
-      var prodUrl = urlPrefix + host +':'+ port + '/api/';
+      var prodUrl = urlPrefix + host +':'+ port + '/webclient/api/';
       debugger;
       switch (buildMode) {
         case 'prod':
