@@ -18,4 +18,4 @@
 npm install
 bower install
 rm -rf bower_components/jquery
-gulp clean-build --prod
+gulp clean-build --prod --endpoint="http://demo-sf.jayway.com/"
