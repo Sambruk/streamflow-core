@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, baseUrl, $routeParams, navigationService, tokenService, httpService, fileService) {
+  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService, fileService) {
 
     $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
     $scope.sidebardata = {};
@@ -81,7 +81,7 @@ angular.module('sf')
     };
 
     $scope.onMessageFileSelect = function($files){
-      var url = baseUrl + 'streamflow/workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
+      var url = httpService.baseUrl1 + 'streamflow/workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
       fileService.uploadFiles($files, url);
       updateObject($scope.conversationMessageDraftAttachments);
     }

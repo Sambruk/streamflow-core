@@ -20,7 +20,7 @@
 var sf = angular.module('sf');
 
 angular.module('sf')
-.factory('httpService', function ($q, $cacheFactory, $location, $http, $window, errorHandlerService, tokenService) {
+.factory('httpService', function ($q, $cacheFactory, buildMode, $location, $http, $window, errorHandlerService, tokenService) {
     var token = tokenService.getToken();
 
     if (token) {
@@ -36,9 +36,18 @@ angular.module('sf')
     }
 
     function prepareApiUrl(baseUrl) {
-      switch (sf.env) {
-        case 'production':
-          return 'http://localhost:8082/streamflow/';
+      var protocol = $location.$$protocol;
+      var host = $location.$$host;
+      var port = $location.$$port;
+      var urlPrefix = protocol + '://dummyuser:dummypass@';
+      var prodUrl = urlPrefix + host +':'+ port + '/api/';
+      debugger;
+      switch (buildMode) {
+        case 'prod':
+          return prodUrl;
+        case 'dev':
+          return 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
+          //return 'http://localhost:8082/streamflow/';
         default:
           return 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
           /*return baseUrl.replace(/(https?:\/\/)/, function (protocol) {
@@ -54,7 +63,7 @@ angular.module('sf')
           cache.remove(href);
         });
       }
-
+//    debugger;
     var baseUrl = prepareBaseUrl();
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');

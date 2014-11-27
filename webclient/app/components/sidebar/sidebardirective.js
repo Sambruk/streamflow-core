@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, contactService, sidebarService, baseUrl, fileService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, growl, contactService, sidebarService, fileService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -281,7 +281,7 @@ angular.module('sf')
       }
       scope.onFileSelect = function($files){
         //var url = 'https://test.sf.streamsource.se/
-        var url = baseUrl + 'streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
+        var url = httpService.baseUrl + 'streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
         fileService.uploadFiles($files, url);
         updateObject(scope.attachments);
       }
