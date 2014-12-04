@@ -135,7 +135,6 @@ angular.module('sf')
       // Due on
       scope.general.promise.then(function (result) {
         scope.dueOnShortStartValue = result[0].dueOnShort;
-        scope.showSpinner.caseDueOn = false;
       });  
       scope.changeDueOn = function (date) {
         sidebarService.changeDueOn(scope, date);
@@ -187,7 +186,7 @@ angular.module('sf')
 
       // Restrict / Unrestrict
       scope.permissions = caseService.getPermissions($routeParams.caseId);
-      
+
       scope.unrestrict = function () {
         sidebarService.unrestrict(scope);
       };
