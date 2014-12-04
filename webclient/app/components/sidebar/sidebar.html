@@ -20,8 +20,8 @@
 <div class="content-secondary" role="complementary">
 
   <h2 class="struct">Verktyg och annan information</h2>
+  
   <!-- Issue toolbar -->
-  <!-- <div class="toolbar" data-sf-fixed-toolbar ng-hide="showSpinner.caseToolbar"> -->
   <div class="toolbar" data-sf-fixed-toolbar>
     <ul class="buttons cf" data-ng-show="commands[0]">
       <li data-ng-show="canSendTo"><a href="" data-ng-click="sendTo()" class="btn">Byt ägare</a></li>
@@ -44,6 +44,7 @@
       </li>
     </ul>
 
+    <!-- Command view -->
     <div class="toolbar-content" ng-show="commandView">
       <div data-ng-switch on="commandView">
         <div class="toolbar-content-style" data-ng-switch-when="resolve">
@@ -96,162 +97,155 @@
 
       </div>
     </div>
+    <!-- /Command view -->
   </div>
+  <!-- /Issue toolbar -->
 
+  <!-- Pop up export to pdf -->
   <div class="toolbar-content-popup" ng-show='showExport'>
-          <div class='ng-modal'>
-            <div class='ng-modal-overlay' ng-click="showExportPopUp()"></div>
-            <div class='ng-modal-dialog' ng-style='dialogStyle'>
-              <div class='ng-modal-close' ng-click="showExportPopUp()">X</div>
-                <div class="row">
-                  <label><h3>Exportera</h3></label>
-                </div>
-                <ul class="center-list">
-                  <li>
-                      <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
-                      <label for="export-submitted-forms">Skickade formulär</label>
-                  </li>
-                  <li>
-                      <input id="export-attachments" type="checkbox" ng-model="exportAttachments" name="export-attachments">
-                      <label for="export-attachments">Bifogade filer</label>
-                  </li>
-                  <li>
-                      <input id="export-conversations" type="checkbox" ng-model="exportConversations" name="export-conversations">
-                      <label for="export-conversations">Konversationer</label>
-                  </li>
-                  <li>
-                      <input id="export-contacts" type="checkbox" ng-model="exportContacts" name="export-contacts">
-                      <label for="export-contacts">Kontakter</label>
-                  </li>
-                  <li>
-                      <input id="export-case-log" type="checkbox" ng-model="exportCaseLog" name="export-case-log">
-                      <label for="export-case-log">Ärendelogg</label>
-                  </li>
-                </ul>  
-              <div class="row">
-                <div class="submit-area cf">
-                  <button type="submit" name="save-issue-owner" data-ng-click="onExportButtonClicked()">Ok</button>
-                </div>
-              </div>
+    <div class='ng-modal'>
+      <div class='ng-modal-overlay' ng-click="showExportPopUp()"></div>
+      <div class='ng-modal-dialog' ng-style='dialogStyle'>
+        <div class='ng-modal-close' ng-click="showExportPopUp()">X</div>
+          <div class="row">
+            <label><h3>Exportera</h3></label>
+          </div>
+          <ul class="center-list">
+            <li>
+              <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
+              <label for="export-submitted-forms">Skickade formulär</label>
+            </li>
+            <li>
+              <input id="export-attachments" type="checkbox" ng-model="exportAttachments" name="export-attachments">
+              <label for="export-attachments">Bifogade filer</label>
+            </li>
+            <li>
+              <input id="export-conversations" type="checkbox" ng-model="exportConversations" name="export-conversations">
+              <label for="export-conversations">Konversationer</label>
+            </li>
+            <li>
+              <input id="export-contacts" type="checkbox" ng-model="exportContacts" name="export-contacts">
+              <label for="export-contacts">Kontakter</label>
+            </li>
+            <li>
+              <input id="export-case-log" type="checkbox" ng-model="exportCaseLog" name="export-case-log">
+              <label for="export-case-log">Ärendelogg</label>
+            </li>
+          </ul>
+        <div class="row">
+          <div class="submit-area cf">
+            <button type="submit" name="save-issue-owner" data-ng-click="onExportButtonClicked()">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- / Pop up export to pdf -->
+
+  <!-- Module: Status -->
+  <div class="m m-status">
+    <div class="m-c">
+      <form>
+
+        <!-- Ärendetyp -->
+        <div class="sidebar-row full">
+          <div class="select">
+            <label for="type-select">Ärendetyp</label>
+            <select
+              data-placeholder="Ärendetyp"
+              class="chosen-case-type chosen-select"
+              data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
+              data-ng-model="caseType"
+              data-ng-change="changeCaseType(caseType)"
+              name="name-select"
+              id="type-select"
+            >
+            </select>
+          </div>
+        </div>
+        <!-- /Ärendetyp -->
+
+        <!-- Ärendelabel -->
+        <div class="sidebar-row">
+          <div class="select">
+            <label for="issue-label-select">Etiketter</label>
+            <select
+              data-placeholder="Etiketter"
+              class="chosen chosen-case-label chosen-choices"
+              style="width: 100%;"
+              id="issue-label-select"
+              name="caseLabel"
+              data-ng-options="label as label.text for label in allCaseLabels"
+              data-ng-model="activeLabels"
+              data-ng-change="changeCaseLabels(activeLabels)"
+              multiple
+            >
+            </select>
+          </div>
+        </div>
+        <!-- /Ärendelabel -->
+
+        <!-- Prioritet -->
+        <div data-ng-show="possiblePriorities.length" class="sidebar-row">
+          <div class="select">
+            <label for="priority-select">Prioritet</label>
+            <select
+              style="width: 100%;"
+              ng-style="activePriorityColor"
+              data-ng-options="priority.id as priority.text for priority in possiblePriorities"
+              data-ng-model="priority"
+              data-ng-change="changePriorityLevel(priority, activePriorityColor, priorityColor, caseId);"
+              class="sidebar-chosen-drop-down"
+              name="priority-select"
+              id="priority-select"
+            >
+            </select>
+          </div>
+        </div>
+        <!-- /Prioritet -->
+
+        <!-- Due date -->
+        <div class="sidebar-row">
+          <div class="text">
+            <label for="issue-due-date">Förfaller om</label>
+            <div class="set-due-date">
+              <input
+                sf-date-picker-fancy
+                style="width: 100%;"
+                type="text"
+                placeholder="Förfallodatum"
+                ng-model="dueOnShort"
+                data-ng-change="changeDueOn(dueOnShort)"
+                id="issue-due-date"
+                name="issue-due-date"
+                class="datepicker-due"
+              >
             </div>
           </div>
         </div>
-  <!-- <div ng-show="showSpinner.caseToolbar" class="spinner"></div> -->
-  <!-- /Issue toolbar -->
+        <!-- /Due date -->
 
-  <!-- Ärendetyp -->
-  <!-- <div ng-hide="showSpinner.caseType"> -->
-
-  <div class="m m-status">
-    <form>
-    <div class="row">
-      <div class="select">
-        <label for="type-select">Ärendetyp</label>
-        <select
-          data-placeholder="Ärendetyp"
-          class="chosen-case-type chosen-select"
-          style="width: 100%;"
-          data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
-          data-ng-model="caseType"
-          data-ng-change="changeCaseType(caseType)"
-          name="name-select"
-          id="type-select"
-        >
-        </select>
-      </div>
+      </form>
     </div>
-    <!-- <div ng-show="showSpinner.caseType" class="spinner"></div> -->
-    <!-- /Ärendetyp -->
-
-    <!-- Ärendelabel -->
-    <!-- <div ng-hide="showSpinner.caseLabels"> -->
-    <div class="row">
-      <div class="select">
-        <label for="issue-label-select">Etiketter</label>
-        <select
-          data-placeholder="Etiketter"
-          class="chosen chosen-case-label chosen-choices"
-          style="width: 100%;"
-          id="issue-label-select"
-          name="caseLabel"
-          data-ng-options="label as label.text for label in allCaseLabels"
-          data-ng-model="activeLabels"
-          data-ng-change="changeCaseLabels(activeLabels)"
-          multiple
-        >
-        </select>
-      </div>
-    </div>
-    <!-- <div ng-show="showSpinner.caseLabels" class="spinner"></div> -->
-
-    <!-- Prioritet -->
-    <div data-ng-show="possiblePriorities.length" class="row">
-      <!-- <div ng-hide="showSpinner.casePriority"> -->
-      <div class="select">
-        <label for="priority-select">Prioritet</label>
-        <select
-          style="width: 100%;"
-          ng-style="activePriorityColor"
-          data-ng-options="priority.id as priority.text for priority in possiblePriorities"
-          data-ng-model="priority"
-          data-ng-change="changePriorityLevel(priority, showSpinner.casePriority, activePriorityColor, priorityColor, caseId);"
-          class="sidebar-chosen-drop-down"
-          name="priority-select"
-          id="priority-select"
-        >
-        </select>
-      </div>
-      <!-- <div ng-show="showSpinner.casePriority" class="spinner"></div> -->
-    </div>
-    <!-- /Prioritet -->
-
-    <!-- Due date -->
-    <!-- <div ng-hide="showSpinner.caseDueOn"> -->
-    <div class="row">
-      <div class="text">
-        <label for="issue-due-date">Förfaller om</label>
-        <div class="set-due-date">
-          <input
-            sf-date-picker-fancy
-            style="width: 100%;"
-            type="text"
-            placeholder="Förfallodatum"
-            ng-model="dueOnShort"
-            data-ng-change="changeDueOn(dueOnShort)"
-            id="issue-due-date"
-            name="issue-due-date"
-            class="datepicker-due"
-          >
-        </div>
-      </div>
-    </div>
-    </form>
-  <!-- <div ng-show="showSpinner.caseDueOn" class="spinner"></div> -->
-  <!-- /Due date -->
   </div>
   <!-- /Module: Status -->
 
   <!-- Module: Ärende -->
   <div class="m m-convos">
     <div class="m-h">
-      <a href="#/cases/{{ caze[0].id }}/edit"><h2>Ärende</h2><a>
+      <a href="#/cases/{{ caze[0].id }}/edit"><h2>Ärende</h2></a>
       <a href="" class="action-btn" ng-click="showCaseInfoPopUp()"><i class="icon-info"></i></a>
     </div>
-    <!-- <div class="m-c" ng-hide="showSpinner.caseDescriptionText"> -->
     <div class="m-c">
       <ul>
         <li>
           <a href="#/cases/{{ caze[0].id }}" class="block-link convCaseSidebar">
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar" style="" ng-bind-html="notesHistory[notesHistory.length -1].note | limitTo: 250"></p>
-            <!--<ul class="convo-status">
-              <a href="#/cases/{{ caze[0].id }}/noteshistory"><li class="icon-history-file icon-case-history" title="Ärendebeskrivning, historik"><span class="struct">Ärendebeskrivning, historik</span></li></a>
-            </ul> -->
           </a>
         </li>
       </ul>
     </div>
-    <!-- <div ng-show="showSpinner.caseDescriptionText" class="spinner"></div> -->
   </div>
   <!-- /Module: Ärende -->
 
@@ -279,7 +273,7 @@
           <div class="m-box permissionBox">
             <div>
               <ul>
-                <li><strong>Åtkomst:</strong></li>
+                <li><strong>Åtkomst</strong></li>
                 <li>
                   <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
                   <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
@@ -298,15 +292,13 @@
     <div class="m-h">
       <h2>Formulär</h2>
     </div>
-    <!-- <div class="m-c" ng-hide="showSpinner.casePossibleForms"> -->
     <div class="m-c">
       <ul>
         <li data-ng-repeat="form in possibleForms">
           <a href="#/cases/{{ caze[0].id  }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
             <h3>{{form.text}}</h3>
             <div>
-              <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)">
-              </span>
+              <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)"></span>
               <ul class="form-status">
                 <li><a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-history-doc" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
               </ul>
@@ -315,7 +307,6 @@
         </li>
       </ul>
     </div>
-    <!-- <div ng-show="showSpinner.casePossibleForms" class="spinner"></div> -->
   </div>
   <!-- /Module: Formulär -->
 
@@ -325,7 +316,6 @@
       <h2>Konversationer</h2>
       <a href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
-    <!-- <div  class="m-c" ng-hide="showSpinner.caseConversation"> -->
     <div class="m-c"> 
       <ul>
         <li data-ng-repeat='conversation in conversations track by $index' class="convo-li">
@@ -340,7 +330,6 @@
         </li>
       </ul>  
     </div>
-    <!-- <div ng-show="showSpinner.caseConversation" class="spinner"></div> -->
   </div>
   <!-- /Module: Konversationer -->
 
@@ -350,7 +339,6 @@
       <h2>Kontakter</h2>
       <a href="" data-ng-click="submitContact(caze[0].id, contacts.length)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
-    <!-- <div class="m-c" ng-hide="showSpinner.caseContact"> -->
     <div class="m-c">
       <ul class="zebra-list">
         <li data-ng-repeat='contact in contacts track by $index'>
@@ -361,7 +349,6 @@
         </li>
       </ul>
     </div>
-    <!-- <div ng-show="showSpinner.caseContact" class="spinner"></div> -->
   </div>
   <!-- /Module: Kontakter -->
 
@@ -369,12 +356,11 @@
   <div class="m m-attachments">
     <div class="m-h">
       <h2>Bifogade filer</h2>
-        <label class="file-input-label action-btn">
-          <input type="file" name="file" ng-file-select="onFileSelect($files)" class="file-input"/>
-          Lägg till fil <i class="icon-plus"></i> 
-        </label>
+      <label class="file-input-label action-btn">
+        <input type="file" name="file" ng-file-select="onFileSelect($files)" class="file-input"/>
+        Lägg till fil <i class="icon-plus"></i>
+      </label>
     </div>
-    <!-- <div class="m-c" ng-hide="showSpinner.caseAttachment"> -->
     <div class="m-c">
       <ul class="zebra-list">
         <li ng-show="attachment.rel == 'attachment'" ng-repeat="attachment in attachments">
@@ -383,7 +369,6 @@
         </li>
       </ul>
     </div>
-    <!-- <div ng-show="showSpinner.caseAttachment" class="spinner"></div> -->
   </div>
   <!-- /Module: Bifogade filer -->
 
@@ -394,17 +379,14 @@
         <h2>Ärendelogg</h2>
         <span class="caselog-count-sidebar"> Visar de 3 senaste</span>
       </div>
-      <!-- <div class="m-c" ng-hide="showSpinner.caseLog"> -->
       <div class="m-c">
         <ul>
           <li data-ng-repeat="entry in sideBarCaseLogs | orderBy:'-creationDate' | limitTo:3 track by $index" data-ng-class-even="'even'" class="convo-li">
-            <!-- <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">-->
             <h3>{{ entry.text }} av {{ entry.creator }}</h3>
             <span class="date">{{ entry.creationDate | dateTime}}</span>
           </li>
         </ul>
       </div>
-      <!-- <div ng-show="showSpinner.caseLog" class="spinner"></div> -->
     </a>
   </div>
   <!-- /Module: Ärendelogg -->

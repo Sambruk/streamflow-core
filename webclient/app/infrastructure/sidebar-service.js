@@ -37,8 +37,6 @@ angular.module('sf')
   }
 
   var _changePriorityLevel = function(scope, priorityId) {
-    scope.showSpinner.casePriority = true;
-
     if (priorityId === '-1') {
       priorityId = '';
     }
@@ -49,17 +47,11 @@ angular.module('sf')
           'background-color': scope.priorityColor[priorityId]
         };
       }
-
-      scope.showSpinner.casePriority = false;
     });
   };
 
   var _changeCaseType = function(scope, casetype) {
-    scope.showSpinner.caseToolbar = true;
-    scope.showSpinner.casePossibleForms = true;
-    
     caseService.changeCaseType($routeParams.caseId, casetype).then(function() {
-      scope.showSpinner.caseToolbar = false;
       if(!scope.possibleForms){
         scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       }else{
@@ -74,8 +66,6 @@ angular.module('sf')
           window.location.replace(href);
         }
       }
-      scope.showSpinner.casePossibleForms = false;
-      
       _updateObject(scope.possibleResolutions);
 
       $rootScope.$broadcast('case-type-changed');
@@ -85,8 +75,6 @@ angular.module('sf')
   };
 
   var _updateCaseLabels = function(scope) {
-    scope.showSpinner.caseLabels = true;
-    
     if (!scope.caseLabel) {
       scope.caseLabel = caseService.getCaseLabel($routeParams.caseId);
     } else {
@@ -114,7 +102,6 @@ angular.module('sf')
       })).sort(sortByText);
       
       scope.previousActiveLabels = scope.activeLabels;
-      scope.showSpinner.caseLabels = false;
       setTimeout(function () {
         jQuery('.chosen-case-label').chosen({ 'search_contains': true }).trigger('chosen:updated');
         $('.chosen-container').css({visibility: 'visible'});
@@ -123,8 +110,6 @@ angular.module('sf')
   };
 
   var _updateToolbar = function(scope) {
-    scope.showSpinner.caseToolbar = true;
-    
     if (scope.commands) {
       _updateObject(scope.commands);
     } else {
@@ -158,8 +143,6 @@ angular.module('sf')
           scope[commandMap[commandName]] = hasCommand(commandName);
         }
       }
-
-      scope.showSpinner.caseToolbar = false;
     });
   };
 
@@ -176,7 +159,6 @@ angular.module('sf')
 
   var _onSendToButtonClicked = function(scope) {
     var sendToId = scope.sendToId;
-    scope.showSpinner.caseGeneralInfo = true;
 
     caseService.sendCaseTo($routeParams.caseId, sendToId, function(){
       var href = navigationService.caseListHrefFromCase(scope.caze);
@@ -193,28 +175,22 @@ angular.module('sf')
           [{projectId: projectId},
           {projectType: projectType}]);
 
-        scope.showSpinner.caseGeneralInfo = false;
-
         window.location.replace(href);
       }); 
     });
   };
 
   var _unrestrict = function (scope) {
-    scope.showSpinner.caseToolbar = true;
-    scope.showSpinner.casePermissions = true;
     caseService.unrestrictCase($routeParams.caseId).then(function () {
       scope.permissions.invalidate();
       scope.permissions.resolve().then(function () {
         $rootScope.$broadcast('case-unrestricted');
-        scope.showSpinner.casePermissions = false;
         _updateToolbar(scope);
       });
     });
   };
 
   var _restrict = function (scope) {
-    scope.showSpinner.caseToolbar = true;
     scope.showSpinner.casePermissions = true;
     caseService.restrictCase($routeParams.caseId).then(function () {
       scope.permissions.invalidate();
@@ -230,7 +206,6 @@ angular.module('sf')
   // Mark Read / Unread
   var _markReadUnread = function (scope, read) {
     var markFunction = read ? caseService.markRead : caseService.markUnread;
-    scope.showSpinner.caseToolbar = true;
     
     markFunction($routeParams.caseId).then(function () {
       scope.commands.resolve().then(function () {
@@ -299,20 +274,12 @@ angular.module('sf')
 
   var _deleteAttachment = function(scope, attachment){
     caseService.deleteAttachment($routeParams.caseId, attachment.id).then(function () {
-      scope.showSpinner.caseAttachment = true;
-      scope.attachments.invalidate();
-      scope.attachments.resolve().then(function () {
-        scope.showSpinner.caseAttachment = false;
-      });
-      if(attachment.rel == 'conversation'){
-        $rootScope.$broadcast('conversation-attachment-deleted');
-      }
+       _updateObject(scope.attachments);
     });
   };
   // End Attachments
 
   var _changeCaseLabels = function (scope, labels) {
-    scope.showSpinner.caseLabels = true;
     var removedLabels = scope.previousActiveLabels.filter(function (item) {
       return !_.find(labels, function (j) {
         return item.id === j.id;
@@ -341,15 +308,12 @@ angular.module('sf')
   };
 
   var _changeDueOn = function (scope, date) {
-    scope.showSpinner.caseDueOn = true;
-    
     // Must be in the future and time must be set (but is not used).
     var isoString = (new Date(date + 'T23:59:59.000Z')).toISOString();
     caseService.changeDueOn($routeParams.caseId, isoString).then(function () {
       scope.general.invalidate();
       scope.general.resolve().then(function (result) {
         scope.dueOnShortStartValue = result[0].dueOnShort;
-        scope.showSpinner.caseDueOn = false;
       });
     });
   };
@@ -378,7 +342,6 @@ angular.module('sf')
     ]).then(function (results) {
       scope.caseType = results[1][0].caseType && results[1][0].caseType.id;
       scope.possibleCaseTypes = results[0].sort(sortByText);
-      scope.showSpinner.caseType = false;
       setTimeout(function () {
         jQuery('.chosen-case-type').chosen({ 'search_contains': true }).trigger('chosen:updated');
         $('#type_select').css({visibility: 'visible'});
@@ -411,8 +374,6 @@ angular.module('sf')
           'background-color': scope.priorityColor[scope.priority]
         };
       }
-      
-      scope.showSpinner.casePriority = false;
     });
   };
 

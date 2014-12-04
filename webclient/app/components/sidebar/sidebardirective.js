@@ -54,37 +54,7 @@ angular.module('sf')
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
       }
-
-
-      scope.showSpinner = {
-        caseType: true,
-        caseLabels: true,
-        caseDueOn: true,
-        casePriority: true,
-        caseToolbar: false,
-        casePermissions: true,
-        caseAttachment: true,
-        caseGeneralInfo: true,
-        casePossibleForms: true,
-        caseDescriptionText: true,
-        caseConversation: true,
-        caseContact: true,
-        caseLog: true  
-      }; //End declare scope objects
-
-      scope.caze.promise.then(function(){
-        scope.showSpinner.caseGeneralInfo = false;
-        scope.showSpinner.caseDescriptionText = false;
-      });
-      scope.possibleForms.promise.then(function(){
-        scope.showSpinner.casePossibleForms = false;
-      });
-      scope.conversations.promise.then(function(){
-        scope.showSpinner.caseConversation = false;
-      });
-      scope.contacts.promise.then(function(){
-        scope.showSpinner.caseContact = false;
-      });
+      //End declare scope objects
       
       //Watch
       scope.$watch('caze[0]', function(newVal){
@@ -217,9 +187,7 @@ angular.module('sf')
 
       // Restrict / Unrestrict
       scope.permissions = caseService.getPermissions($routeParams.caseId);
-      scope.permissions.promise.then(function () {
-        scope.showSpinner.casePermissions = false;
-      });     
+      
       scope.unrestrict = function () {
         sidebarService.unrestrict(scope);
       };
@@ -236,7 +204,6 @@ angular.module('sf')
       scope.showExportPopUp = function () {
         scope.showExport =! scope.showExport;
         scope.commandView = true;
-        console.log(scope.showExport);
       }; // End Show Export Pdf
 
       scope.onExportButtonClicked = function () {
@@ -266,9 +233,6 @@ angular.module('sf')
       }; // End Assign / Unassign
       
       // Attachments
-      scope.attachments.promise.then(function () {
-        scope.showSpinner.caseAttachment = false;
-      });    
       scope.downloadAttachment = function (attachment) {
         sidebarService.downloadAttachment(scope, attachment);
       };
@@ -306,9 +270,6 @@ angular.module('sf')
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         scope.defaultFilters = result.data;
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, scope.defaultFilters);
-        scope.sideBarCaseLogs.promise.then(function(){
-          scope.showSpinner.caseLog = false;
-        });
       }); // End Filter for caselog
 
       var updateObject = function(itemToUpdate){
@@ -371,11 +332,7 @@ angular.module('sf')
         checkFilterCaseLog('contact');
       });
       scope.$on('contact-name-updated', function(){
-        scope.showSpinner.caseContact = true;
         updateObject(scope.contacts);
-        scope.contacts.promise.then(function(){
-          scope.showSpinner.caseContact = false;
-        });
         checkFilterCaseLog('contact');
       });
       scope.$on('caselog-message-created', function(){
@@ -383,25 +340,12 @@ angular.module('sf')
         checkFilterCaseLog('custom');
       });
       //End Event-listeners
-  
-      // Event-listeners needed for updating showSpinner in sidebar
-      scope.$on('conversation-changed', function(event, data){
-        scope.showSpinner.caseConversation = data;
-      });
-      scope.$on('caselog-message-added', function(event, data){
-        scope.showSpinner.caseLog = data;
-      });
-      // End Event-listeners for updating showSpinner
 
       var checkFilterCaseLog = function(filter){
         if(scope.defaultFilters[filter] === false){
           return;
         }
-        scope.showSpinner.caseLog = true;
         updateObject(scope.sideBarCaseLogs);
-        scope.sideBarCaseLogs.promise.then(function(){
-          scope.showSpinner.caseLog = false;
-        });
       };
     }
   };

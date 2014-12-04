@@ -53,10 +53,6 @@ angular.module('sf')
       $scope.conversations = $scope.sidebardata.conversations;
     });
 
-    $scope.$on('conversation-attachment-deleted', function(){
-      updateObject($scope.conversationMessages);
-    });
-
     var updateObject = function(itemToUpdate){
       itemToUpdate.invalidate();
       itemToUpdate.resolve();
@@ -97,7 +93,6 @@ angular.module('sf')
     $scope.submitMessage = function($event){
       $event.preventDefault();
       $scope.showSpinner.conversation = true;
-      $rootScope.$broadcast('conversation-changed', 'true');
 
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
         updateObject($scope.conversationMessages);
@@ -107,7 +102,6 @@ angular.module('sf')
         $rootScope.$broadcast('conversation-message-created');
 
         $scope.showSpinner.conversation = false;
-        $rootScope.$broadcast('conversation-changed', 'false');
       });
     }
 
