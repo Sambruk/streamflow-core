@@ -77,7 +77,7 @@ angular.module('sf')
     };
 
     $scope.onMessageFileSelect = function($files){
-      var url = httpService.baseUrl1 + 'streamflow/workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
+      var url = httpService.apiUrl + 'workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
       fileService.uploadFiles($files, url);
       updateObject($scope.conversationMessageDraftAttachments);
     }
