@@ -1,4 +1,4 @@
-      /*
+/*
  *
  * Copyright 2009-2014 Jayway Products AB
  *
@@ -258,7 +258,6 @@ angular.module('sf')
         scope.showCaseInfo = true;
       }
       scope.closePopUp = function(){
-        console.log("close")
         scope.showCaseInfo = false;
         scope.showExportInfo = false;
         scope.commandView = '';
@@ -298,18 +297,10 @@ angular.module('sf')
         checkFilterCaseLog('system')
       });
       scope.$on('casedescription-changed', function(){
-        scope.showSpinner.caseDescriptionText = true;
         updateObject(scope.caze);
-        scope.caze.promise.then(function(){
-          scope.showSpinner.caseDescriptionText = false;
-        });
       });
       scope.$on('note-changed', function(event){
-        scope.showSpinner.caseDescriptionText = true;
         updateObject(scope.notesHistory);
-        scope.notesHistory.promise.then(function(){
-          scope.showSpinner.caseDescriptionText = false;
-        });
       });
       scope.$on('form-submitted', function(){
         updateObject(scope.submittedFormList);
