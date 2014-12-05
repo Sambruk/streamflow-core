@@ -284,7 +284,7 @@ angular.module('sf')
       scope.$on('case-unassigned', function(){
         checkFilterCaseLog('system');
       });
-      scope.$on('case-assingned', function(){
+      scope.$on('case-assigned', function(){
         checkFilterCaseLog('system');
       });
       scope.$on('case-restricted', function(){
