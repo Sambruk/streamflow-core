@@ -191,12 +191,10 @@ angular.module('sf')
   };
 
   var _restrict = function (scope) {
-    scope.showSpinner.casePermissions = true;
     caseService.restrictCase($routeParams.caseId).then(function () {
       scope.permissions.invalidate();
       scope.permissions.resolve().then(function () {
         $rootScope.$broadcast('case-restricted');
-        scope.showSpinner.casePermissions = false;
         _updateToolbar(scope);
       });
     });

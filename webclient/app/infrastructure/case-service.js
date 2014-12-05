@@ -148,7 +148,7 @@ angular.module('sf')
           {});
       },
 
-    getPermissions: function(caseId){
+     getPermissions: function(caseId){
         return backendService.get({
             specs:caseBase(caseId).concat([
                 {queries: 'permissions'}
@@ -158,7 +158,7 @@ angular.module('sf')
                 caseBase.broadcastMessage(result.status);
             }
         });
-    },
+      },
       getPossibleSendTo: function(caseId) {
         return backendService.get({
           specs:caseBase(caseId).concat([
