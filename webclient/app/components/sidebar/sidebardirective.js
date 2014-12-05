@@ -243,8 +243,7 @@ angular.module('sf')
         scope.caseExportInfo = caseService.getCaseExportInfo($routeParams.caseId);
       }
       scope.onFileSelect = function($files){
-        //var url = 'https://test.sf.streamsource.se/
-        var url = httpService.baseUrl + 'streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
+        var url = httpService.apiUrl + 'workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
         fileService.uploadFiles($files, url);
         updateObject(scope.attachments);
       }
