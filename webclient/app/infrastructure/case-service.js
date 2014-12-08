@@ -203,7 +203,7 @@ angular.module('sf')
         iframe.src = url;
         };
 
-        var url = httpService.baseUrl +'streamflow/workspacev2/cases/'+caseId+'/exportpdf?submittedForms='+submittedForms+'&attachments='+attachments+'&conversations='+conversations+'&contacts='+contacts+'&caselog='+caseLog;
+        var url = httpService.apiUrl+'workspacev2/cases/'+caseId+'/exportpdf?submittedForms='+submittedForms+'&attachments='+attachments+'&conversations='+conversations+'&contacts='+contacts+'&caselog='+caseLog;
         downloadURL(url);
       },
 
