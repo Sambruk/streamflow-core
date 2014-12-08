@@ -68,21 +68,25 @@
             <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
             <div class='ng-modal-dialog' ng-style='dialogStyle'>
               <div class='ng-modal-close' ng-click="closePopUp()">X</div>
-              <div class="row cf">
-                <div class="select">
-                  <label for="issue-owner">Byt ägare</label>
-                  <select 
-                    id="issue-owner" 
-                    name="issue-owner" 
-                    data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']" 
-                    data-ng-model="sendToId" 
-                    data-ng-change='sendToIdChanged(sendToId)'>
-                  </select>
-                </div>
-              </div>
-              <div class="row">
-                <div class="submit-area cf">
-                  <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+              <div class="m dialog-outer-content">
+                <div class="dialog-inner-content">
+                  <div class="dialog-header">
+                    <label>Byt ägare</label>
+                  </div>
+                  <div class="row cf">
+                    <div class="select">
+                      <select
+                        id="issue-owner"
+                        name="issue-owner"
+                        data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']"
+                        data-ng-model="sendToId"
+                        data-ng-change='sendToIdChanged(sendToId)'>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="submit-area cf dialog-submit">
+                    <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -107,34 +111,36 @@
       <div class='ng-modal-overlay' ng-click="showExportPopUp()"></div>
       <div class='ng-modal-dialog' ng-style='dialogStyle'>
         <div class='ng-modal-close' ng-click="showExportPopUp()">X</div>
-          <div class="row">
-            <label><h3>Exportera</h3></label>
-          </div>
-          <ul class="center-list">
-            <li>
-              <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
-              <label for="export-submitted-forms">Skickade formulär</label>
-            </li>
-            <li>
-              <input id="export-attachments" type="checkbox" ng-model="exportAttachments" name="export-attachments">
-              <label for="export-attachments">Bifogade filer</label>
-            </li>
-            <li>
-              <input id="export-conversations" type="checkbox" ng-model="exportConversations" name="export-conversations">
-              <label for="export-conversations">Konversationer</label>
-            </li>
-            <li>
-              <input id="export-contacts" type="checkbox" ng-model="exportContacts" name="export-contacts">
-              <label for="export-contacts">Kontakter</label>
-            </li>
-            <li>
-              <input id="export-case-log" type="checkbox" ng-model="exportCaseLog" name="export-case-log">
-              <label for="export-case-log">Ärendelogg</label>
-            </li>
-          </ul>
-        <div class="row">
-          <div class="submit-area cf">
-            <button type="submit" name="save-issue-owner" data-ng-click="onExportButtonClicked()">Ok</button>
+        <div class="m dialog-outer-content">
+          <div class="dialog-inner-content">
+            <div class="dialog-header">
+              <label>Exporteringsalternativ</label>
+            </div>
+            <ul class="dialog-list">
+              <li>
+                <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
+                <label for="export-submitted-forms">Skickade formulär</label>
+              </li>
+              <li>
+                <input id="export-attachments" type="checkbox" ng-model="exportAttachments" name="export-attachments">
+                <label for="export-attachments">Bifogade filer</label>
+              </li>
+              <li>
+                <input id="export-conversations" type="checkbox" ng-model="exportConversations" name="export-conversations">
+                <label for="export-conversations">Konversationer</label>
+              </li>
+              <li>
+                <input id="export-contacts" type="checkbox" ng-model="exportContacts" name="export-contacts">
+                <label for="export-contacts">Kontakter</label>
+              </li>
+              <li>
+                <input id="export-case-log" type="checkbox" ng-model="exportCaseLog" name="export-case-log">
+                <label for="export-case-log">Ärendelogg</label>
+              </li>
+            </ul>
+            <div class="submit-area cf dialog-submit">
+              <button type="submit" name="save-issue-owner" data-ng-click="onExportButtonClicked()">Exportera</button>
+            </div>
           </div>
         </div>
       </div>
@@ -255,30 +261,32 @@
       <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
       <div class='ng-modal-dialog' ng-style='dialogStyle'>
         <div class='ng-modal-close' ng-click="closePopUp()">X</div>
-        <div class="m m-general">
-          <div class="m-h">
-            <h2>Allmänt</h2>
-          </div>
-          <div class="m-c">
-            <div class="m-box generalCaseInfoBox">
-              <div>
-                <ul>
-                  <li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
-                  <li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
-                  <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
-                </ul>
+        <div class="m dialog-outer-content">
+          <div class="dialog-inner-content">
+            <div class="dialog-header">
+              <label>Allmänt</label>
+            </div>
+            <div class="m-c">
+              <div class="m-box ">
+                <div>
+                  <ul>
+                    <li><strong>Ansvarig:</strong> {{ caze[0].owner }}</li>
+                    <li><strong>Skapad av:</strong> {{ caze[0].createdBy }}</li>
+                    <li><strong>Handläggare:</strong> {{ caze[0].assignedTo }}</li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="m-box permissionBox">
-            <div>
-              <ul>
-                <li><strong>Åtkomst</strong></li>
-                <li>
-                  <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
-                  <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
-                </li>
-              </ul>
+            <div class="m-box permissionBox">
+              <div>
+                <ul>
+                  <li><strong>Åtkomst</strong></li>
+                  <li>
+                    <div class="permissionRead">{{ permissions[0].readAccess | translate }}</div>
+                    <div class="permissionWrite" >{{ permissions[0].writeAccess | translate}}</div>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
