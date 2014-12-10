@@ -26,8 +26,8 @@
     <caselogentry caseid="caseId"></caselogentry>
     <div class="caselog-filter-options">
       <span>Visa loggposter av typ:</span><br />
-      <div ng-repeat="filterTemp in caseLogFilters|limitTo:(caseLogFilters.length/4)+1">
-        <label class="caselog-filter" data-ng-repeat="filter in caseLogFilters.slice($index*4,($index*4+4))">
+      <div  class="caselog-filter-length" ng-repeat="filterTemp in caseLogFilters|limitTo:(caseLogFilters.length/4)+1">
+        <label class="caselog-filter caselog-filter-label" data-ng-repeat="filter in caseLogFilters.slice($index*4,($index*4+4))">
           <input class="caselog-filter-checkbox" type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName | translate }}
         </label>
       </div>
