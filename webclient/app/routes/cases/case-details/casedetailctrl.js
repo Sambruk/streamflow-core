@@ -17,7 +17,6 @@
 'use strict';
 angular.module('sf')
 .controller('CaseDetailCtrl', function($scope, $rootScope, $routeParams, caseService, navigationService){
-  $scope.notes = caseService.getSelectedNote($routeParams.caseId);
 
   $scope.sidebardata = {};
   $scope.showSpinner = {
@@ -55,15 +54,12 @@ angular.module('sf')
         $scope.notesHistory.pop();
       }
     });
-
-
   });
 
   $scope.addNote = function($event){
     $event.preventDefault();
     if($scope.noteToAdd){
       $scope.notes[0].note = $scope.noteToAdd;
-
       caseService.addNote($routeParams.caseId, $scope.notes[0])
       .then(function(response){
         $scope.noteToAdd = '';

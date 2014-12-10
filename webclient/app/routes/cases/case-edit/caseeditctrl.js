@@ -35,7 +35,6 @@ angular.module('sf')
 
     $scope.addCaseDescriptionAndNote = function($event){
       $event.preventDefault();
-
       if($scope.caze[0].text && $scope.notes[0].note){
         caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
         .then(function(){
@@ -51,32 +50,4 @@ angular.module('sf')
       }
     }
 
-    // $scope.addNote = function($event, $success, $error){
-    //   $event.preventDefault();
-    //   if($scope.notes[0].note === $event.target.value){
-    //     caseService.addNote($routeParams.caseId, $scope.notes[0])
-    //     .then(function(response){
-    //       console.log("edit: addNote repsonse");
-    //       console.log(response);
-    //       $rootScope.$broadcast('note-changed');
-    //       $success($($event.target));
-    //     }, function (error){
-    //       $error($error($event.target));
-    //     });
-    //   }
-    // }
-    // $scope.changeCaseDescription = function($event, $success, $error){
-    //   $event.preventDefault();
-    //   if($event.currentTarget.value.length > 50){
-    //     $error($($event.target));
-    //   }else{
-    //     caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
-    //     .then(function(response){
-    //       $rootScope.$broadcast('casedescription-changed');
-    //       $success($($event.target));
-    //     }, function(error) {
-    //       $error($error($event.target));
-    //     });
-    //   }
-    // }
   });
