@@ -239,15 +239,19 @@
   <!-- Module: Ärende -->
   <div class="m m-convos">
     <div class="m-h">
-      <a href="#/cases/{{ caze[0].id }}/edit"><h2>Ärende</h2></a>
+      <a href="#/cases/{{ caze[0].id }}/edit" ng-show="!caze[0].text"><h2>Ärende</h2></a>
+      <a href="#/cases/{{ caze[0].id }}" ng-show="caze[0].text"><h2>Ärende</h2></a>
       <a href="" class="action-btn" ng-click="showCaseInfoPopUp()"><i class="icon-info"></i></a>
     </div>
     <div class="m-c">
       <ul>
         <li>
-          <a href="#/cases/{{ caze[0].id }}" class="block-link convCaseSidebar">
+          <a href="#/cases/{{ caze[0].id }}" ng-show="caze[0].text && notes[0].note" class="block-link case-sidebar-info">
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar" style="" ng-bind-html="notesHistory[notesHistory.length -1].note | limitTo: 250"></p>
+          </a>
+          <a href="#/cases/{{ caze[0].id }}/edit" ng-show="!caze[0].text && !notes[0].note" class="block-link case-sidebar-info">
+            <div class="no-caseinfo">Ingen ärendebeskrivning</div>
           </a>
         </li>
       </ul>
