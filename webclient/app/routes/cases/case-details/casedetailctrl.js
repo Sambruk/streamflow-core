@@ -30,6 +30,10 @@ angular.module('sf')
     if($scope.sidebardata){
       $scope.caze = $scope.sidebardata.caze;
     }
+    $scope.notes = $scope.sidebardata.notes;
+    $scope.caze.promise.then(function(){
+      $scope.showSpinner.caze = false;
+    });
   });
 
 
