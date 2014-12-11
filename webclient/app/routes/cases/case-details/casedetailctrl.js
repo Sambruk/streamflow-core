@@ -27,11 +27,11 @@ angular.module('sf')
     if(!newVal){
       return;
     }
-    $scope.caze = $scope.sidebardata.caze;
-    $scope.caze.promise.then(function(){
-      $scope.showSpinner.caze = false;
-    });
+    if($scope.sidebardata){
+      $scope.caze = $scope.sidebardata.caze;
+    }
   });
+
 
   $scope.$watch('sidebardata.notes', function(newVal){
     if(!newVal){
@@ -71,13 +71,18 @@ angular.module('sf')
 
   $scope.changeCaseDescription = function($event, $success, $error){
     $event.preventDefault();
-    caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
-    .then(function(response){
-      $rootScope.$broadcast('casedescription-changed');
-      $success($($event.target));
-    }, function(error) {
-      $error($error($event.target));
-    });
+
+    if ($event.currentTarget.value === '')  {
+      $error($($event.target));
+    }else{
+      caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
+      .then(function(response){
+        $rootScope.$broadcast('casedescription-changed');
+        $success($($event.target));
+      }, function(error) {
+        $error($error($event.target));
+      });
+    }
   }
 
 });
