@@ -141,6 +141,26 @@
               </div>
             </div>
 
+            <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.AttachmentFieldValue">
+              <data-ng-include class="m-c" src="'routes/cases/form/form-label.html'"></data-ng-include>
+              <div ng-repeat="attachment in formAttachments">
+              	<div class="file-input-button" ng-show="!attachment.id && attachment.fieldId === field.field.field">
+	                <i class="icon-plus icon-white"></i>
+	                <span class="button-text">Bifoga fil</span>
+	                <input type="file" id="field-{{ field.field.field }}" name="file" ng-file-select="onFormDraftFileSelect($files, field.field.field )" />
+	              </div>
+	              <div class="m m-attachments form-attachments" id="form-attachment-{{field.field.field}}" style="float:left" ng-show="attachment.id && attachment.fieldId === field.field.field">
+	                <ul class="zebra-list">
+	                  <li>
+	                    <a href="">{{ attachment.name }}</a>
+	                    <a data-ng-click="deleteFormDraftAttachment(field.field.field)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+	                  </li>
+	                </ul>
+	              </div>
+              </div>
+            </div>
+
+
             <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CommentFieldValue">
               <div class="col medium col-2" id="{{field.field.field}}" data-ng-bind-html-unsafe="field.field.note"></div>
             </div>

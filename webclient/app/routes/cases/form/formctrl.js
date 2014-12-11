@@ -65,13 +65,32 @@ angular.module('sf')
             var form = caseService.getFormDraftFromForm($routeParams.caseId, $scope.formDraftId);
             form.promise.then(function(response){
               $scope.form = response;
+              $scope.formAttachments = [];
               $scope.showSpinner.form = false;
-            }).then(function(){
-              caseService.getFormDraftAttachment($routeParams.caseId, $scope.formDraftId).promise.then(function(response){
-                if(!response[0]){
-                  return;
-                }
-                $scope.formAttachment = response;
+
+              $scope.form[0].enhancedPages.forEach(function(pages, pageIndex){
+                pages.fields.forEach(function(field, fieldIndex){
+
+                  if(field.field.fieldValue['_type'] == 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'){
+                    var name = null;
+                    var id = null;
+
+
+										if(field.value){
+											var jsonParse = JSON.parse(field.value);
+											name = jsonParse.name;
+											id = jsonParse.attachment;
+										}
+
+                    var attachment = {
+                    	name: name,
+                    	id: id,
+                    	fieldId: field.field.field
+                    }
+
+                    $scope.formAttachments.push(attachment);
+									}
+                });
               });
             })
             .then(function(){
@@ -129,10 +148,17 @@ angular.module('sf')
       //$scope.currentFormPage = null;
     }
 
-    $scope.deleteFormDraftAttachment = function(formAttachment){
-      caseService.deleteFormDraftAttachment($routeParams.caseId, $scope.formDraftId, formAttachment.id).then(function(response){
-        $scope.formAttachment.invalidate();
-        $scope.formAttachment.resolve();
+    $scope.deleteFormDraftAttachment = function(fieldId){
+			var attachment = _.find($scope.formAttachments, function(attachment) { return attachment.fieldId == fieldId });
+
+      caseService.deleteFormDraftAttachment($routeParams.caseId, $scope.formDraftId, attachment.id).then(function(response){
+      	$scope.formAttachments.forEach(function(attachment, index){
+	       	if($scope.formAttachments[index].fieldId == fieldId){
+	       		$scope.formAttachments[index].name = null;
+	       		$scope.formAttachments[index].id = null;
+	       	}
+  			});
+        caseService.updateField($routeParams.caseId, $scope.formDraftId, fieldId, null);
       });
     }
 
@@ -143,17 +169,13 @@ angular.module('sf')
         return JSON.parse(data.data.events[0].parameters).param1;
       }).then(function(attachmentId){
         caseService.updateFormDraftAttachmentField($routeParams.caseId, $scope.formDraftId, $files[0].name, attachmentId, fieldId).then(function(){
-          if(!$scope.formAttachment){
-            caseService.getFormDraftAttachment($routeParams.caseId, $scope.formDraftId).promise.then(function(response){
-              $scope.formAttachment = response;
-            }).then(function(){
-              $scope.formAttachment.invalidate();
-              $scope.formAttachment.resolve();
-            });
-          }else{
-            $scope.formAttachment.invalidate();
-            $scope.formAttachment.resolve();
-          }
+
+  	    	$scope.formAttachments.forEach(function(attachment, index){
+  	    		if($scope.formAttachments[index].fieldId == fieldId){
+  	    			$scope.formAttachments[index].name = $files[0].name;
+  	    			$scope.formAttachments[index].id = attachmentId;
+  	    		}
+		    	});
         });
       });
     }
