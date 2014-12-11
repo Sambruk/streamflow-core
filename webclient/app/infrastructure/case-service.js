@@ -543,48 +543,48 @@ angular.module('sf')
         });
       },
       changeCaseType: function(caseId, caseTypeId){
-            return backendService.postNested(
-                caseBase(caseId).concat([
-                    {resources: 'general'},
-                    {commands: 'casetype'}
-                ]),
-                {entity: caseTypeId}).then(function(result){
-                    caseBase.broadcastMessage(result.status);
-                },
-                function(error){
-                    caseBase.broadcastMessage(error);
-                });
+        return backendService.postNested(
+          caseBase(caseId).concat([
+              {resources: 'general'},
+              {commands: 'casetype'}
+          ]),
+          {entity: caseTypeId}).then(function(result){
+              caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+              caseBase.broadcastMessage(error);
+          });
         },
 
         changeCaseDescription: function(caseId, caseDescriptionId) {
-            return backendService.postNested(
-                caseBase(caseId).concat([
-                    {resources: 'general'},
-                    {commands: 'changedescription'}
-                ]),
-                {description: caseDescriptionId}).then(function(result){
-                    caseBase.broadcastMessage(result.status);
-                },
-                function(error){
-                    caseBase.broadcastMessage(error);
-                });
+          return backendService.postNested(
+            caseBase(caseId).concat([
+                {resources: 'general'},
+                {commands: 'changedescription'}
+            ]),
+            {description: caseDescriptionId}).then(function(result){
+                caseBase.broadcastMessage(result.status);
+            },
+            function(error){
+                caseBase.broadcastMessage(error);
+            });
         },
 
       getCaseLabel: function(caseId) {
         return backendService.get({
-            specs:caseBase(caseId).concat([
-                {resources: 'general'},
-                {resources: 'labels'}
-            ]),
-            onSuccess:function (resource, result) {
-                resource.response.index.links.forEach(function(item){
-                    result.push(item);
-                    caseBase.broadcastMessage(result.status);
-                });
-             },
-            onFailure:function(err){
-                caseBase.broadcastMessage(err);
-            }
+          specs:caseBase(caseId).concat([
+              {resources: 'general'},
+              {resources: 'labels'}
+          ]),
+          onSuccess:function (resource, result) {
+              resource.response.index.links.forEach(function(item){
+                  result.push(item);
+                  caseBase.broadcastMessage(result.status);
+              });
+           },
+          onFailure:function(err){
+              caseBase.broadcastMessage(err);
+          }
         });
       },
 
@@ -802,7 +802,10 @@ angular.module('sf')
           onSuccess:function(resource, result){
             var index = resource.response.index;
 
-            index.enhancedPages = angular.copy(index.pages);
+            // BUT WHY?!
+            if(!index.enhancedPages){
+              index.enhancedPages = angular.copy(index.pages);
+            }
             that.addViewModelProperties(index.enhancedPages);
             index.draftId = formDraftId;
 
