@@ -56,7 +56,7 @@ angular.module('sf')
         $scope.notes[0].note = $scope.caseNote;
 
         caseService.changeCaseDescription($routeParams.caseId, $scope.caseDescription)
-        .then(function(){)
+        .then(function(){
           $rootScope.$broadcast('casedescription-changed');
         });
         caseService.addNote($routeParams.caseId, $scope.notes[0])
