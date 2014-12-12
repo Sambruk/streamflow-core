@@ -88,7 +88,7 @@ angular.module('sf')
 
       invalidate: function(hrefs) {
         hrefs.forEach(function(href) { 
-          console.log('invalidate: ' + href);
+          // console.log('invalidate: ' + href);
           //console.log(href);
           cache.remove(href);
         });
