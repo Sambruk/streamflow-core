@@ -58,8 +58,8 @@ angular.module('sf')
 
     var invalidate = function(hrefs) {
         hrefs.forEach(function(href) { 
-          console.log('invalidate');
-          console.log(href);
+          // console.log('invalidate');
+          // console.log(href);
           cache.remove(href);
         });
       }
@@ -67,7 +67,7 @@ angular.module('sf')
     var baseUrl = prepareBaseUrl();
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');
-    console.log(cache.info());
+    // console.log(cache.info());
     
   
     return {
