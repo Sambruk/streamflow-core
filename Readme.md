@@ -31,9 +31,14 @@ To run them simply type the commands in the webclient root folder.
 Gulp will by default build to the `webclient/build/` folder.
 This will also be done by using the `.build.sh` script.  
 
+# Deployment
+We're using maven to build the complete project.  
+Start by updating the design submodule and then make sure all changes have been commited, pushed and that you have the latest version of the repository (pull).  
+Then in the streamflow-core/webclient folder type: mvn clean install.  
+The build process should start and this will create a .war file in the target/ folder of /webclient, that can be deployed on a java webserver.  
+The pom.xml describes what happens when we build using maven.  
+In the pom.xml we reference to the build.sh script that defines which webclient specific actions that are performed.  
 
-When building with gulp all vendor files will be concatenated into a single vendor.js file under `build/vendor/`  
-and all app specific files will be concatenated into a streamflow.js file under `build/app/`  
 
 # Submodules
 
