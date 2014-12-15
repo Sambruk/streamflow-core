@@ -219,6 +219,18 @@ angular.module('sf')
           }).then(callback);
       },
 
+      reopenCase: function(caseId, callback) {
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {commands: 'reopen'}
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
+      },
+
       deleteCase: function(caseId, callback) {
         return backendService.postNested(
           caseBase(caseId).concat([

@@ -40,8 +40,8 @@ angular.module('sf')
     if (priorityId === '-1') {
       priorityId = '';
     }
-
     caseService.changePriorityLevel($routeParams.caseId, priorityId).then(function () {
+
       if (scope.priorityColor[priorityId]) {
         scope.activePriorityColor = {
           'background-color': scope.priorityColor[priorityId]
@@ -121,6 +121,7 @@ angular.module('sf')
         'sendto': 'canSendTo',
         'resolve': 'canResolve',
         'close': 'canClose',
+        'reopen': 'canReopen',
         'delete': 'canDelete',
         'assign': 'canAssign',
         'unassign': 'canUnassign',
@@ -258,6 +259,12 @@ angular.module('sf')
     });
   };
 
+  var _reopen = function(scope){
+    caseService.reopenCase($routeParams.caseId).then(function(){
+      _updateToolbar(scope);
+    });
+  };
+
   var _downloadAttachment = function (scope, attachment) {
     // Hack to replace dummy user and pass with authentication from token.
     // This is normally sent by httpF headers in ajax but not possible here.
@@ -360,13 +367,11 @@ angular.module('sf')
           if (intColor < 0) {
             intColor = 0xFFFFFF + intColor + 1;
           }
-
           scope.priorityColor[item.id] = '#' + intColor.toString(16);
         }
       });
       
       scope.priority = responses[0][0].priority && responses[0][0].priority.id;
-
       if (scope.priorityColor[scope.priority]) {
         scope.activePriorityColor = {
           'background-color': scope.priorityColor[scope.priority]
@@ -386,6 +391,7 @@ angular.module('sf')
     restrict: _restrict,
     markReadUnread: _markReadUnread,
     close: _close,
+    reopen: _reopen,
     deleteCase: _deleteCase,
     assign: _assign,
     unassign: _unassign, 

@@ -218,6 +218,12 @@ angular.module('sf')
         scope.commandView = '';
       };// End Close     
       
+      // Reopen
+      scope.reopen = function(){
+        sidebarService.reopen(scope);
+      };
+      // End Reopen
+
       // Delete
       scope.deleteCase = function () {
         sidebarService.deleteCase(scope);
