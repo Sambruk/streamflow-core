@@ -194,12 +194,12 @@
         <!-- /Ärendelabel -->
 
         <!-- Prioritet -->
-        <div data-ng-show="possiblePriorities.length" class="sidebar-row">
+        <div data-ng-show="possiblePriorities.length" class="sidebar-row sidebar-priority">
           <div class="select">
             <label for="priority-select">Prioritet</label>
+            <span class="priority-color" ng-style="activePriorityColor"></span>
             <select
-              style="width: 100%;"
-              ng-style="activePriorityColor"
+              style="width: 100%; z-index: 1; position: absolute;"
               data-ng-options="priority.id as priority.text for priority in possiblePriorities"
               data-ng-model="priority"
               data-ng-change="changePriorityLevel(priority, activePriorityColor, priorityColor, caseId);"

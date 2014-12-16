@@ -40,11 +40,15 @@ angular.module('sf')
     if (priorityId === '-1') {
       priorityId = '';
     }
-    caseService.changePriorityLevel($routeParams.caseId, priorityId).then(function () {
 
+    caseService.changePriorityLevel($routeParams.caseId, priorityId).then(function () {
       if (scope.priorityColor[priorityId]) {
         scope.activePriorityColor = {
           'background-color': scope.priorityColor[priorityId]
+        };
+      }else{
+        scope.activePriorityColor = {
+          'background-color': '#ffffff'
         };
       }
     });
@@ -56,6 +60,12 @@ angular.module('sf')
         scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       }else{
         _updateObject(scope.possibleForms);
+      }
+      // TODO: Handle the default priority for case type
+      if(!scope.possiblePriorities){
+        scope.possiblePriorities = caseService.getPossiblePriorities($routeParams.caseId);
+      }else{
+        _updateObject(scope.possiblePriorities);
       }
 
       if(scope.possibleForms.length == 0){
@@ -365,12 +375,14 @@ angular.module('sf')
           var intColor = parseInt(item.color, 10);
 
           if (intColor < 0) {
-            intColor = 0xFFFFFF + intColor + 1;
+            intColor = 0xFFFFFFFF + intColor + 1;
           }
-          scope.priorityColor[item.id] = '#' + intColor.toString(16);
+          scope.priorityColor[item.id] = '#' + intColor.toString(16).slice(2,8);
+        }else{
+          scope.priorityColor[item.id] = '#ffffff';
         }
       });
-      
+
       scope.priority = responses[0][0].priority && responses[0][0].priority.id;
       if (scope.priorityColor[scope.priority]) {
         scope.activePriorityColor = {
