@@ -51,6 +51,8 @@ angular.module('sf')
           'background-color': '#ffffff'
         };
       }
+      console.log("priority");
+      console.log(scope.priorityColori);
     });
   };
 
@@ -61,12 +63,17 @@ angular.module('sf')
       }else{
         _updateObject(scope.possibleForms);
       }
-      // TODO: Handle the default priority for case type
+
       if(!scope.possiblePriorities){
         scope.possiblePriorities = caseService.getPossiblePriorities($routeParams.caseId);
       }else{
         _updateObject(scope.possiblePriorities);
       }
+
+      scope.general.invalidate();
+      scope.general.resolve().then(function(){
+        _priority(scope);
+      });
 
       if(scope.possibleForms.length == 0){
         // Check if the current route contains formdraft to redirect to "case main page"
