@@ -45,7 +45,6 @@
         </ul>
       </li>
     </ul>
-
     <!-- Command view -->
     <div class="toolbar-content" ng-show="commandView">
       <div data-ng-switch on="commandView">
@@ -160,6 +159,7 @@
           <div class="select">
             <label for="type-select">Ärendetyp</label>
             <select
+              ng-show="possibleCaseTypes.length"
               data-placeholder="Ärendetyp"
               class="chosen-case-type chosen-select"
               data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
@@ -169,6 +169,15 @@
               id="type-select"
             >
             </select>
+            <!-- Have taken layout classes from chosen so caseType looks the same even if there's no possibleCaseTypes -->
+            <div class="chosen-container chosen-container-single" id="type_select_chosen" ng-show="!possibleCaseTypes.length">
+              <div id="case-type-selected">
+                <a id="type-selected" class="chosen-single tabindex="-1"">
+                  <span ng-show="general[0].caseType.text" selected>{{ general[0].caseType.text }}</span>
+                  <span ng-show="!general[0].caseType.text" placeholder="Ärendetyp"></span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
         <!-- /Ärendetyp -->

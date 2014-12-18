@@ -364,10 +364,11 @@ angular.module('sf')
     ]).then(function (results) {
       scope.caseType = results[1][0].caseType && results[1][0].caseType.id;
       scope.possibleCaseTypes = results[0].sort(sortByText);
+
       setTimeout(function () {
         jQuery('.chosen-case-type').chosen({ 'search_contains': true }).trigger('chosen:updated');
-        $('#type_select').css({visibility: 'visible'});
-        $('#type_select_chosen').css({visibility: 'visible'});
+        // $('#type-select').css({visibility: 'visible'});
+        // $('#type_select_chosen').css({visibility: 'visible'});
       }, 0);
     });
   };
