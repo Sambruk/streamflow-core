@@ -41,7 +41,7 @@ angular.module('sf')
                 value = newValue;
               }
 
-              caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.id, value);
+              caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, value);
             }
           }
 
