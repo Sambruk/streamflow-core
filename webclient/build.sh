@@ -14,6 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+#
+#
+# NB!
+# Remember to change build.bat if any changes are done in this file
 
 npm install
 bower install

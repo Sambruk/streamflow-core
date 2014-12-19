@@ -15,11 +15,25 @@
     <streamflow.version>1.23-SNAPSHOT</streamflow.version>
     <spring.version>3.2.5.RELEASE</spring.version>
     <spring.security.version>3.2.4.RELEASE</spring.security.version>
+    <buildscript>build.sh</buildscript>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>Windows</id>
+      <activation>
+        <os>
+          <family>Windows</family>
+        </os>
+      </activation>
+      <properties>
+        <buildscript>build.bat</buildscript>
+      </properties>
+    </profile>
+  </profiles>
+  
   <build>
     <plugins>
-
       <!-- Build JavaScript app -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -34,7 +48,7 @@
           </execution>
         </executions>
         <configuration>
-          <executable>${basedir}/build.sh</executable>
+          <executable>${basedir}/${buildscript}</executable>
           <workingDirectory>${basedir}/</workingDirectory>
         </configuration>
       </plugin>
