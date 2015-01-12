@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('caseService', function ($rootScope, backendService, baseUrl, navigationService, SfCase, $http, debounce, formMapperService) {
+.factory('caseService', function ($rootScope, httpService, backendService, navigationService, SfCase, $http, debounce, formMapperService) {
 
     var workspaceId = 'workspacev2';
 
@@ -148,7 +148,7 @@ angular.module('sf')
           {});
       },
 
-    getPermissions: function(caseId){
+     getPermissions: function(caseId){
         return backendService.get({
             specs:caseBase(caseId).concat([
                 {queries: 'permissions'}
@@ -158,7 +158,7 @@ angular.module('sf')
                 caseBase.broadcastMessage(result.status);
             }
         });
-    },
+      },
       getPossibleSendTo: function(caseId) {
         return backendService.get({
           specs:caseBase(caseId).concat([
@@ -203,7 +203,7 @@ angular.module('sf')
         iframe.src = url;
         };
 
-        var url = baseUrl+'streamflow/workspacev2/cases/'+caseId+'/exportpdf?submittedForms='+submittedForms+'&attachments='+attachments+'&conversations='+conversations+'&contacts='+contacts+'&caselog='+caseLog;
+        var url = httpService.apiUrl+'workspacev2/cases/'+caseId+'/exportpdf?submittedForms='+submittedForms+'&attachments='+attachments+'&conversations='+conversations+'&contacts='+contacts+'&caselog='+caseLog;
         downloadURL(url);
       },
 
@@ -211,6 +211,18 @@ angular.module('sf')
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'close'}
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          }, function(error){
+            caseBase.broadcastMessage(error);
+          }).then(callback);
+      },
+
+      reopenCase: function(caseId, callback) {
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {commands: 'reopen'}
           ]),
           {}).then(function(result){
             caseBase.broadcastMessage(result.status);
@@ -543,48 +555,48 @@ angular.module('sf')
         });
       },
       changeCaseType: function(caseId, caseTypeId){
-            return backendService.postNested(
-                caseBase(caseId).concat([
-                    {resources: 'general'},
-                    {commands: 'casetype'}
-                ]),
-                {entity: caseTypeId}).then(function(result){
-                    caseBase.broadcastMessage(result.status);
-                },
-                function(error){
-                    caseBase.broadcastMessage(error);
-                });
+        return backendService.postNested(
+          caseBase(caseId).concat([
+              {resources: 'general'},
+              {commands: 'casetype'}
+          ]),
+          {entity: caseTypeId}).then(function(result){
+              caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+              caseBase.broadcastMessage(error);
+          });
         },
 
         changeCaseDescription: function(caseId, caseDescriptionId) {
-            return backendService.postNested(
-                caseBase(caseId).concat([
-                    {resources: 'general'},
-                    {commands: 'changedescription'}
-                ]),
-                {description: caseDescriptionId}).then(function(result){
-                    caseBase.broadcastMessage(result.status);
-                },
-                function(error){
-                    caseBase.broadcastMessage(error);
-                });
+          return backendService.postNested(
+            caseBase(caseId).concat([
+                {resources: 'general'},
+                {commands: 'changedescription'}
+            ]),
+            {description: caseDescriptionId}).then(function(result){
+                caseBase.broadcastMessage(result.status);
+            },
+            function(error){
+                caseBase.broadcastMessage(error);
+            });
         },
 
       getCaseLabel: function(caseId) {
         return backendService.get({
-            specs:caseBase(caseId).concat([
-                {resources: 'general'},
-                {resources: 'labels'}
-            ]),
-            onSuccess:function (resource, result) {
-                resource.response.index.links.forEach(function(item){
-                    result.push(item);
-                    caseBase.broadcastMessage(result.status);
-                });
-             },
-            onFailure:function(err){
-                caseBase.broadcastMessage(err);
-            }
+          specs:caseBase(caseId).concat([
+              {resources: 'general'},
+              {resources: 'labels'}
+          ]),
+          onSuccess:function (resource, result) {
+              resource.response.index.links.forEach(function(item){
+                  result.push(item);
+                  caseBase.broadcastMessage(result.status);
+              });
+           },
+          onFailure:function(err){
+              caseBase.broadcastMessage(err);
+          }
         });
       },
 
@@ -745,7 +757,6 @@ angular.module('sf')
       },
 
       addViewModelProperties: function(pages){
-
         _.forEach(pages, function(page){
           _.forEach(page.fields, function(field){
             formMapperService.addProperties(field)
@@ -776,44 +787,95 @@ angular.module('sf')
         });
       },
 
-      getFormDraftFromForm: function(caseId, formId) {
-        var that = this;
+      getFormDraftId: function(caseId, formId){
         return backendService.get({
           specs:caseBase(caseId).concat([
             {resources: 'possibleforms'},
             {'index.links': formId.replace("/", "")},
             {queries: 'formdraft'}
             ]),
-          onSuccess:function (resource, result) {
-            var id = resource.response.id;
-            return backendService.get({
-            specs:caseBase(caseId).concat([
-              {resources: 'formdrafts'},
-              {resources: id, unsafe: true}
-              ]),
-            onSuccess:function (resource) {
-              var index = resource.response.index;
-
-              index.enhancedPages = angular.copy(index.pages);
-              that.addViewModelProperties(index.enhancedPages);
-
-              index.draftId = id;
-
-              result.push(index);
-              caseBase.broadcastMessage(result.status);
-            },
-            onFailure:function(err){
-              caseBase.broadcastMessage(err);
-            }
-          });
-          //This might cause nestling issues with the error handler
-          // to test, if the topmost error broadcaster overrides the nestled one
-          caseBase.broadcastMessage(result.status);
+          onSuccess:function(resource, result){
+            result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
             caseBase.broadcastMessage(err);
           }
         });
+      },
+
+      getFormDraftFromForm: function(caseId, formDraftId){
+        var that = this;
+        return backendService.get({
+          specs:caseBase(caseId).concat([
+            {resources: 'formdrafts'},
+            {resources: formDraftId, unsafe: true}
+            ]),
+          onSuccess:function(resource, result){
+            var index = resource.response.index;
+
+            // BUT WHY?!
+            if(!index.enhancedPages){
+              index.enhancedPages = angular.copy(index.pages);
+            }
+            that.addViewModelProperties(index.enhancedPages);
+            index.draftId = formDraftId;
+
+            result.push(index);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);
+          }
+        });
+      },
+
+      getFormDraftAttachment: function(caseId, formDraftId){
+        return backendService.get({
+          specs:caseBase(caseId).concat([
+            {resources: 'formdrafts/' + formDraftId, unsafe: true},
+            {resources: 'formattachments'}
+            ]),
+          onSuccess:function(resource, result){
+            resource.response.index.links.forEach(function(attachment){
+              result.push(attachment);
+            });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);
+          }
+        });
+      },
+
+      updateFormDraftAttachmentField: function(caseId, formDraftId, fileName, attachmentId, fieldId){
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {resources: 'formdrafts/' + formDraftId, unsafe: true},
+            {commands: 'updateattachmentfield'}
+            ]),
+          {'name': fileName, 'attachment': attachmentId, 'field': fieldId}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
+      },
+
+      deleteFormDraftAttachment: function(caseId, formDraftId, attachmentId){
+        return backendService.postNested(
+          caseBase(caseId).concat([
+             {resources: 'formdrafts/' + formDraftId, unsafe: true},
+             {resources: 'formattachments'},
+             {'index.links': attachmentId},
+             {commands: 'delete'}
+            ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
       },
 
       updateField: debounce(function(caseId, formId, fieldId, value) {
@@ -875,19 +937,19 @@ angular.module('sf')
 
       getSubmittedFormList: function(caseId) {
         return backendService.get({
-            specs:caseBase(caseId).concat([{
-                resources: 'submittedforms'
-            }]),
-            onSuccess:function (resource, result){
-                resource.response.index.forms.forEach(function(item, index){
-                    item.index = index;
-                    result.push(item);
-                });
-                caseBase.broadcastMessage(result.status);
-            },
-            onFailure:function(err){
-                caseBase.broadcastMessage(err);
-            }
+          specs:caseBase(caseId).concat([{
+            resources: 'submittedforms'
+          }]),
+          onSuccess:function (resource, result){
+            resource.response.index.forms.forEach(function(item, index){
+                item.index = index;
+                result.push(item);
+            });
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+              caseBase.broadcastMessage(err);
+          }
         });
       },
 

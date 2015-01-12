@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, baseUrl, $routeParams, navigationService, tokenService, httpService, fileService) {
+  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService, fileService) {
 
     $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
     $scope.sidebardata = {};
@@ -53,10 +53,6 @@ angular.module('sf')
       $scope.conversations = $scope.sidebardata.conversations;
     });
 
-    $scope.$on('conversation-attachment-deleted', function(){
-      updateObject($scope.conversationMessages);
-    });
-
     var updateObject = function(itemToUpdate){
       itemToUpdate.invalidate();
       itemToUpdate.resolve();
@@ -81,7 +77,7 @@ angular.module('sf')
     };
 
     $scope.onMessageFileSelect = function($files){
-      var url = baseUrl + 'streamflow/workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
+      var url = httpService.apiUrl + 'workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
       fileService.uploadFiles($files, url);
       updateObject($scope.conversationMessageDraftAttachments);
     }
@@ -97,7 +93,6 @@ angular.module('sf')
     $scope.submitMessage = function($event){
       $event.preventDefault();
       $scope.showSpinner.conversation = true;
-      $rootScope.$broadcast('conversation-changed', 'true');
 
       caseService.createMessage($routeParams.caseId, $routeParams.conversationId).then(function(){
         updateObject($scope.conversationMessages);
@@ -107,7 +102,6 @@ angular.module('sf')
         $rootScope.$broadcast('conversation-message-created');
 
         $scope.showSpinner.conversation = false;
-        $rootScope.$broadcast('conversation-changed', 'false');
       });
     }
 

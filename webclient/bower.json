@@ -19,7 +19,8 @@
     "typewatch": "git://github.com/dennyferra/TypeWatch.git",
     "angular-sanitize": "~1.3.3",
     "ng-file-upload": "~1.6.12",
-    "ng-file-upload-shim": "~1.6.12"
+    "ng-file-upload-shim": "~1.6.12",
+    "bootstrap": "~3.3.1"
   },
   "devDependencies": {
     "angular-mocks": "latest",

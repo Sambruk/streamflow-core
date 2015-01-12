@@ -1,4 +1,4 @@
-      /*
+/*
  *
  * Copyright 2009-2014 Jayway Products AB
  *
@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, contactService, sidebarService, baseUrl, fileService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, growl, contactService, sidebarService, fileService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -54,37 +54,7 @@ angular.module('sf')
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
       }
-
-
-      scope.showSpinner = {
-        caseType: true,
-        caseLabels: true,
-        caseDueOn: true,
-        casePriority: true,
-        caseToolbar: false,
-        casePermissions: true,
-        caseAttachment: true,
-        caseGeneralInfo: true,
-        casePossibleForms: true,
-        caseDescriptionText: true,
-        caseConversation: true,
-        caseContact: true,
-        caseLog: true  
-      }; //End declare scope objects
-
-      scope.caze.promise.then(function(){
-        scope.showSpinner.caseGeneralInfo = false;
-        scope.showSpinner.caseDescriptionText = false;
-      });
-      scope.possibleForms.promise.then(function(){
-        scope.showSpinner.casePossibleForms = false;
-      });
-      scope.conversations.promise.then(function(){
-        scope.showSpinner.caseConversation = false;
-      });
-      scope.contacts.promise.then(function(){
-        scope.showSpinner.caseContact = false;
-      });
+      //End declare scope objects
       
       //Watch
       scope.$watch('caze[0]', function(newVal){
@@ -165,7 +135,6 @@ angular.module('sf')
       // Due on
       scope.general.promise.then(function (result) {
         scope.dueOnShortStartValue = result[0].dueOnShort;
-        scope.showSpinner.caseDueOn = false;
       });  
       scope.changeDueOn = function (date) {
         sidebarService.changeDueOn(scope, date);
@@ -217,9 +186,7 @@ angular.module('sf')
 
       // Restrict / Unrestrict
       scope.permissions = caseService.getPermissions($routeParams.caseId);
-      scope.permissions.promise.then(function () {
-        scope.showSpinner.casePermissions = false;
-      });     
+
       scope.unrestrict = function () {
         sidebarService.unrestrict(scope);
       };
@@ -236,7 +203,6 @@ angular.module('sf')
       scope.showExportPopUp = function () {
         scope.showExport =! scope.showExport;
         scope.commandView = true;
-        console.log(scope.showExport);
       }; // End Show Export Pdf
 
       scope.onExportButtonClicked = function () {
@@ -252,6 +218,12 @@ angular.module('sf')
         scope.commandView = '';
       };// End Close     
       
+      // Reopen
+      scope.reopen = function(){
+        sidebarService.reopen(scope);
+      };
+      // End Reopen
+
       // Delete
       scope.deleteCase = function () {
         sidebarService.deleteCase(scope);
@@ -266,9 +238,6 @@ angular.module('sf')
       }; // End Assign / Unassign
       
       // Attachments
-      scope.attachments.promise.then(function () {
-        scope.showSpinner.caseAttachment = false;
-      });    
       scope.downloadAttachment = function (attachment) {
         sidebarService.downloadAttachment(scope, attachment);
       };
@@ -280,8 +249,7 @@ angular.module('sf')
         scope.caseExportInfo = caseService.getCaseExportInfo($routeParams.caseId);
       }
       scope.onFileSelect = function($files){
-        //var url = 'https://test.sf.streamsource.se/
-        var url = baseUrl + 'streamflow/workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
+        var url = httpService.apiUrl + 'workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
         fileService.uploadFiles($files, url);
         updateObject(scope.attachments);
       }
@@ -295,7 +263,6 @@ angular.module('sf')
         scope.showCaseInfo = true;
       }
       scope.closePopUp = function(){
-        console.log("close")
         scope.showCaseInfo = false;
         scope.showExportInfo = false;
         scope.commandView = '';
@@ -306,9 +273,6 @@ angular.module('sf')
       httpService.getRequest(defaultFiltersUrl, false).then(function(result){
         scope.defaultFilters = result.data;
         scope.sideBarCaseLogs = caseService.getSelectedFilteredCaseLog($routeParams.caseId, scope.defaultFilters);
-        scope.sideBarCaseLogs.promise.then(function(){
-          scope.showSpinner.caseLog = false;
-        });
       }); // End Filter for caselog
 
       var updateObject = function(itemToUpdate){
@@ -325,7 +289,7 @@ angular.module('sf')
       scope.$on('case-unassigned', function(){
         checkFilterCaseLog('system');
       });
-      scope.$on('case-assingned', function(){
+      scope.$on('case-assigned', function(){
         checkFilterCaseLog('system');
       });
       scope.$on('case-restricted', function(){
@@ -338,18 +302,10 @@ angular.module('sf')
         checkFilterCaseLog('system')
       });
       scope.$on('casedescription-changed', function(){
-        scope.showSpinner.caseDescriptionText = true;
         updateObject(scope.caze);
-        scope.caze.promise.then(function(){
-          scope.showSpinner.caseDescriptionText = false;
-        });
       });
       scope.$on('note-changed', function(event){
-        scope.showSpinner.caseDescriptionText = true;
         updateObject(scope.notesHistory);
-        scope.notesHistory.promise.then(function(){
-          scope.showSpinner.caseDescriptionText = false;
-        });
       });
       scope.$on('form-submitted', function(){
         updateObject(scope.submittedFormList);
@@ -371,11 +327,7 @@ angular.module('sf')
         checkFilterCaseLog('contact');
       });
       scope.$on('contact-name-updated', function(){
-        scope.showSpinner.caseContact = true;
         updateObject(scope.contacts);
-        scope.contacts.promise.then(function(){
-          scope.showSpinner.caseContact = false;
-        });
         checkFilterCaseLog('contact');
       });
       scope.$on('caselog-message-created', function(){
@@ -383,25 +335,12 @@ angular.module('sf')
         checkFilterCaseLog('custom');
       });
       //End Event-listeners
-  
-      // Event-listeners needed for updating showSpinner in sidebar
-      scope.$on('conversation-changed', function(event, data){
-        scope.showSpinner.caseConversation = data;
-      });
-      scope.$on('caselog-message-added', function(event, data){
-        scope.showSpinner.caseLog = data;
-      });
-      // End Event-listeners for updating showSpinner
 
       var checkFilterCaseLog = function(filter){
         if(scope.defaultFilters[filter] === false){
           return;
         }
-        scope.showSpinner.caseLog = true;
         updateObject(scope.sideBarCaseLogs);
-        scope.sideBarCaseLogs.promise.then(function(){
-          scope.showSpinner.caseLog = false;
-        });
       };
     }
   };

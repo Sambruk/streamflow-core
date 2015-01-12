@@ -44,6 +44,7 @@ var gulp = require('gulp'),
 gulp.task('connect', ['clean-build'], function() {
   connect.server({
     root: 'build',
+    port: 9999,
     livereload: true
   });
 });
@@ -78,12 +79,6 @@ if(args.prod){
   buildMode = 'dev';
 }
 
-if(args.endpoint){
-  endpoint = args.endpoint;
-} else {
-  endpoint = "https://test-sf.jayway.com/"
-}
-
 console.log('ENDPOINT');
 console.log(endpoint);
 
@@ -94,7 +89,7 @@ gulp.task('config', function () {
   gulp.src('app/config/config.json')
     .pipe(ngConstant({
       name: 'sf.config',
-      constants: { baseUrl: endpoint },
+      constants: { buildMode: buildMode },
       //wrap: 'commonjs'
       //wrap: 'amd',
     }))

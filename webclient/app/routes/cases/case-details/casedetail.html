@@ -33,8 +33,8 @@
         </div>
       </div>
       <!-- Issue body -->
-      <div class="issue-body row">
-        <div class="issue-description">
+      <div class="issue-body row cols-1 cf">
+        <div class="issue-description row">
           <p ng-bind-html="notesHistory[notesHistory.length -1].note"></p>
         </div>
       </div>
@@ -42,7 +42,7 @@
       <div class="row cols-1 cf">
         <div class="text col full col-1">
           <textarea placeholder="Notering" id="issue-notes" cols="30" rows="4" ng-model="noteToAdd"></textarea>
-          <a class="btn inline inactive" data-ng-class="{ inactive: !noteToAdd }" style="float:right;" data-ng-click="addNote($event)" name="note-submit">Lägg till</a>
+          <a class="btn inline inactive" data-ng-disabled="!noteToAdd || noteToAdd === notesHistory[notesHistory.length -1].note" data-ng-class="{ inactive: !noteToAdd || noteToAdd === notesHistory[notesHistory.length -1].note }" style="float:right;" data-ng-click="addNote($event)" name="note-submit">Lägg till</a>
         </div>
       </div>
     </form>

@@ -17,14 +17,34 @@
 
 -->
 <div class="content-primary" role="main">
-	<div class="issues-overview">
-
-		<h2 data-ng-show="projectType == 'assignments'">Alla mina ärenden</h2>
-		<h2 data-ng-show="projectType == 'inbox'">Alla ärenden i inkorgen</h2>
-		<div class="due-date-divider"><span>Förfallodatum</span></div>
+	<div class="issues-overview">	
+		<div class="issue-item">	
+			<dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" class="paging"></dir-pagination-controls>
+			<input ng-model="q" id="search" class="form-control" placeholder="Filter search"></input>
+			<select class="paging" 
+					ng-model="sortExpression">
+                    <option value="">-- Sortera --</option>
+                    <option value="caseId">Ingen</option>
+                    <option value="text">Beskrivning</option>
+                    <option value="creationDate">Skapad</option>
+                    <option value="dueDate">Förfallodatum</option>
+                    <option value="priority">Prioritet</option>
+            </select>
+             <select class="paging" 
+             		 ng-options="option.name for option in groupingOptions"
+                     ng-model="selectedItem"
+                     ng-change="groupBy()">
+                    <option value="">-- Gruppera --</option>
+            </select>
+		</div>	
+		<div class="issue-item">
+			<h2 data-ng-show="projectType == 'assignments'">Alla mina ärenden</h2>
+			<h2 data-ng-show="projectType == 'inbox'">Alla ärenden i inkorgen</h2>
+			<div class="due-date-divider"><span>Förfallodatum</span></div>
+		</div>
 		<div ng-hide="showSpinner.currentCases">
 			<ul class="issue-list">
-				<li class="issue-item {{case.overdueStatus()}}" data-ng-repeat='case in currentCases'>
+				<li class="issue-item {{case.overdueStatus()}}" dir-paginate="case in currentCases | orderBy:sortExpression | filter:q | itemsPerPage: pageSize" current-page="currentPage">
 					<a href="{{case.href}}" class="block-link">
 						<div class="due-date">
 							<span>{{case.overdueDays() | positive}}</span>
