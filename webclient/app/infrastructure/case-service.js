@@ -308,6 +308,7 @@ angular.module('sf')
           specs:caseBase(caseId).concat([{resources: 'note'}]),
           onSuccess:function (resource, result) {
             result.push(resource.response.index);
+            result.commands = resource.response.commands;
           },
         });
       },
@@ -347,6 +348,7 @@ angular.module('sf')
               index.dueOnShort = index.dueOn.split("T")[0]
 
             result.push(index);
+            result.commands = resource.response.commands;
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){

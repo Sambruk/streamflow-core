@@ -51,10 +51,17 @@ angular.module('sf')
       scope.exportContacts = false;
       scope.exportCaseLog = false;
 
-
+      scope.general.promise.then(function(){
+        checkPermissionService.checkCommands(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription']);
+      });
+      scope.notes.promise.then(function(){
+        checkPermissionService.checkCommand(scope, scope.notes.commands, 'addnote', 'canAddNote');
+        console.log(scope)
+      });
       scope.contacts.promise.then(function(){
         checkPermissionService.checkCommand(scope, scope.contacts.commands, 'add', 'canAddContact');
       });
+
 
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
