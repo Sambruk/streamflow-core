@@ -349,36 +349,6 @@
                         <owner>${project.organization.name}</owner>
                         <year>${project.inceptionYear}</year>
                     </properties>
-                    <excludes>
-                        <exclude>**/*.txt</exclude>
-                        <exclude>**/*.pdf</exclude>
-                        <exclude>**/src/test/resources/**</exclude>
-                        <exclude>**/src/test/data/**</exclude>
-                        <exclude>**/.idea/**</exclude>
-                        <exclude>**/*.scenario</exclude>
-                        <exclude>**/*.vm</exclude>
-                        <exclude>**/automysqlbackup.sh</exclude>
-                        <exclude>**/*.atom</exclude>
-                        <exclude>**/*.hs</exclude>
-                        <exclude>**/*.TAB</exclude>
-                        <exclude>**/*.DOC</exclude>
-                        <exclude>**/docbkx/**</exclude>
-                        <exclude>**/javadoc/**</exclude>
-                        <exclude>**/site/**</exclude>
-                        <exclude>**/version.html</exclude>
-                        <exclude>**/*.py</exclude>
-                        <exclude>**/manual/template/**</exclude>
-                        <exclude>**/**.wiki</exclude>
-                        <exclude>**/webapp/resources/css/external/**</exclude>
-                        <exclude>**/webapp/resources/js/external/**</exclude>
-                        <exclude>**/StreamflowJXColorSelectionButton.java</exclude>
-                        <exclude>**/doublesignaturetextmail_sv.html</exclude>
-                        <exclude>**/doublesignaturehtmlmail_sv.html</exclude>
-                        <exclude>**/htmlmail_sv.html</exclude>
-
-						<exclude>**/webclient/**</exclude>
-
-                    </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
                     </mapping>
@@ -386,11 +356,56 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>check-headers</id>
+                        <id>check-headers UTF-8</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>format</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*.properties</exclude>
+                                <exclude>**/*.txt</exclude>
+                                <exclude>**/*.pdf</exclude>
+                                <exclude>**/src/test/resources/**</exclude>
+                                <exclude>**/src/test/data/**</exclude>
+                                <exclude>**/.idea/**</exclude>
+                                <exclude>**/*.scenario</exclude>
+                                <exclude>**/*.vm</exclude>
+                                <exclude>**/automysqlbackup.sh</exclude>
+                                <exclude>**/*.atom</exclude>
+                                <exclude>**/*.hs</exclude>
+                                <exclude>**/*.TAB</exclude>
+                                <exclude>**/*.DOC</exclude>
+                                <exclude>**/docbkx/**</exclude>
+                                <exclude>**/javadoc/**</exclude>
+                                <exclude>**/site/**</exclude>
+                                <exclude>**/version.html</exclude>
+                                <exclude>**/*.py</exclude>
+                                <exclude>**/manual/template/**</exclude>
+                                <exclude>**/**.wiki</exclude>
+                                <exclude>**/webapp/resources/css/external/**</exclude>
+                                <exclude>**/webapp/resources/js/external/**</exclude>
+                                <exclude>**/StreamflowJXColorSelectionButton.java</exclude>
+                                <exclude>**/doublesignaturetextmail_sv.html</exclude>
+                                <exclude>**/doublesignaturehtmlmail_sv.html</exclude>
+                                <exclude>**/htmlmail_sv.html</exclude>
+                                <exclude>**/webclient/**</exclude>
+                            </excludes>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>check-headers ISO-8859-1</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*.properties</include>
+                            </includes>
+                            <encoding>ISO-8859-1</encoding>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
