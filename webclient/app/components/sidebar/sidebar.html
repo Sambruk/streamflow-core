@@ -341,7 +341,7 @@
   <div class="m m-convos">
     <div class="m-h">
       <h2>Konversationer</h2>
-      <a href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
+      <a ng-hide="!canCreateConversation" href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c"> 
       <ul>

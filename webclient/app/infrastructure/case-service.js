@@ -361,6 +361,7 @@ angular.module('sf')
         return backendService.get({
           specs:caseBase(caseId).concat([{resources: 'conversations'}]),
           onSuccess:function (resource, result) {
+            result.commands = resource.response.commands;
             resource.response.index.links.forEach(function(link){
               result.push(link);
               caseBase.broadcastMessage(result.status);

@@ -61,6 +61,9 @@ angular.module('sf')
       scope.contacts.promise.then(function(){
         checkPermissionService.checkCommand(scope, scope.contacts.commands, 'add', 'canAddContact');
       });
+      scope.conversations.promise.then(function(){
+        checkPermissionService.checkCommand(scope, scope.conversations.commands, 'create', 'canCreateConversation');
+      });
 
 
       if($routeParams.formId && $routeParams.caseId){
