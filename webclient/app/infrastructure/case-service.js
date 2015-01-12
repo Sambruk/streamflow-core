@@ -597,6 +597,7 @@ angular.module('sf')
                   result.push(item);
                   caseBase.broadcastMessage(result.status);
               });
+              result.commands = resource.response.commands;
            },
           onFailure:function(err){
               caseBase.broadcastMessage(err);

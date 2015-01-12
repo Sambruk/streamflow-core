@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, $location, navigationService, tokenService){
+.factory('sidebarService', function($routeParams, caseService, $q, $rootScope, $location, navigationService, tokenService, checkPermissionService){
 
   var sortByText = function (x, y) {
     var xS = x.text && x.text.toUpperCase() || '',
@@ -94,6 +94,7 @@ angular.module('sf')
   var _updateCaseLabels = function(scope) {
     if (!scope.caseLabel) {
       scope.caseLabel = caseService.getCaseLabel($routeParams.caseId);
+
     } else {
       _updateObject(scope.caseLabel);
     }
@@ -108,6 +109,7 @@ angular.module('sf')
       scope.caseLabel.promise,
       scope.possibleCaseLabels.promise
     ]).then(function (results) {
+      checkPermissionService.checkCommand(scope, scope.caseLabel.commands, 'addlabel', 'canAddLabel');
       scope.activeLabels = results[0].map(function (i) {
         i.selected = true;
         return i;
