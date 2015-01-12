@@ -4,11 +4,10 @@ angular.module('sf')
 .factory('checkPermissionService', function(){
 
 	var checkCommands = function(scope, commands, commandsToCheck, paraPermission){
-		// TODO: Check how this works if there's many commands. Ex. check contact, update/delete
-		// TODO: Don't forget to fix the unit-tests
+		// Commands and paraPermission must be sent in the same order
 		if(commandsToCheck.length){
 			commandsToCheck.forEach(function(command, index){
-				checkCommand(scope, commandsToCheck[index], commands, paraPermission);
+				checkCommand(scope, commands, commandsToCheck[index], paraPermission[index]);
 			});
 		}
 		return scope;
@@ -18,7 +17,7 @@ angular.module('sf')
 
 	}
 
-	var checkCommand = function(scope, command, commands, paraPermission){;
+	var checkCommand = function(scope, commands, command, paraPermission){
 		if(_.find(commands, function(obj){return obj.id == command})){
 			scope[paraPermission] = true;
 		}
@@ -27,6 +26,7 @@ angular.module('sf')
 
 	return {
 		checkCommands: checkCommands,
+		checkCommand: checkCommand,
 		checkQueries: checkQueries
 	}	
 });

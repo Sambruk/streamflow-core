@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('ContactEditCtrl', function($scope, $rootScope, caseService, $routeParams, navigationService) {
+  .controller('ContactEditCtrl', function($scope, $rootScope, caseService, $routeParams, navigationService, checkPermissionService) {
     $scope.sidebardata = {};
     $scope.projectId = $routeParams.projectId;
     $scope.projectType = $routeParams.projectType;
@@ -30,6 +30,7 @@ angular.module('sf')
 
     $scope.contact.promise.then(function(){
       $scope.showSpinner.contact = false;
+      checkPermissionService.checkCommands($scope, $scope.contact.commands, ['delete', 'update'], ['canDeleteContact', 'canUpdateContact']);
     });
 
     $scope.submitContact = function($event){

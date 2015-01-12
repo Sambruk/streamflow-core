@@ -53,7 +53,7 @@ angular.module('sf')
 
 
       scope.contacts.promise.then(function(){
-        checkPermissionService.checkCommands(scope, scope.contacts.commands, ['add'], 'canAddContact');
+        checkPermissionService.checkCommand(scope, scope.contacts.commands, 'add', 'canAddContact');
       });
 
       if($routeParams.formId && $routeParams.caseId){
