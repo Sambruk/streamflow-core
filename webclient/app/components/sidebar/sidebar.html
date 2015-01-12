@@ -166,6 +166,7 @@
               data-ng-change="changeCaseType(caseType)"
               name="name-select"
               id="type-select"
+              data-ng-disabled="!canChangeCaseType"
             >
             </select>
             <!-- Have taken layout classes from chosen so caseType looks the same even if there's no possibleCaseTypes -->
@@ -235,6 +236,7 @@
                 id="issue-due-date"
                 name="issue-due-date"
                 class="datepicker-due"
+                data-ng-disabled="!canChangeDueOn"
               >
             </div>
           </div>
