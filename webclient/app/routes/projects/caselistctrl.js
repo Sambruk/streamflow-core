@@ -32,6 +32,13 @@ angular.module('sf')
       currentCases: true
     };
 
+    $scope.groupingOptions = [{name:'Ingen', value:'caseId'},
+      {name:'Ärendetyp', value:'caseType.text'},
+      {name:'Förfallodatum', value:'dueOn'},
+      {name:'Assigned To', value:'assignedTo'},
+      {name:'Projekt', value:'project'},
+      {name:'Prioritet', value:'priority'}];
+
     //Set breadcrumbs to case-owner if possible else to project id
     $scope.currentCases.promise.then(function(response){
      var owner = _.filter(response, function(sfCase){
