@@ -1005,6 +1005,7 @@ angular.module('sf')
               }
               result.push(item);
             });
+            result.commands = resource.response.commands;
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){

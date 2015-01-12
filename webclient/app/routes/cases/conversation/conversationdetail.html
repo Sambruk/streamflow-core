@@ -39,7 +39,7 @@
         </a>
       </div>
     </div>
-    <div class="convo-input">
+    <div class="convo-input" ng-hide="!canCreateMessageFromDraft">
       <form action="#" method="get" class="cf">
         <div class="text">
           <label for="convo-text" class="struct">Meddelande</label>
@@ -68,6 +68,7 @@
     <div class="convo-body">
       <div ng-hide="showSpinner.conversation">
         <ul class="convo-messages">
+          <li ng-show="!conversationMessages.length">Inga meddelande i konversationen</li>
           <li class="msg-item" data-ng-repeat="message in conversationMessages | orderBy:'-createdOn'">
             <div class="msg-head cf" ng-show="message.text.length">
               <div class="msg-author">{{ message.sender }} </div>

@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService, fileService) {
+  .controller('ConversationDetailCtrl', function($scope, $q, $rootScope, caseService, $routeParams, navigationService, tokenService, httpService, fileService, checkPermissionService) {
 
     $scope.apiUrl = httpService.apiUrl + caseService.getWorkspace();
     $scope.sidebardata = {};
@@ -40,6 +40,7 @@ angular.module('sf')
 
     $scope.conversationMessages.promise.then(function(){
       $scope.showSpinner.conversation = false;
+      checkPermissionService.checkCommand($scope, $scope.conversationMessages.commands, 'createmessagefromdraft', 'canCreateMessageFromDraft');
     });
 
     $scope.conversationMessageDraft.promise.then(function(){
