@@ -153,7 +153,6 @@
   <div class="m m-status">
     <div class="m-c">
       <form>
-
         <!-- Ärendetyp -->
         <div class="sidebar-row full">
           <div class="select">
@@ -257,6 +256,7 @@
     <div class="m-c">
       <ul>
         <li>
+          {{caze[0].text}}
           <a href="#/cases/{{ caze[0].id }}" ng-show="caze[0].text && notes[0].note" class="block-link case-sidebar-info">
             <h3>{{caze[0].text}}</h3>
             <p class="caseInSidebar" style="" ng-bind-html="notesHistory[notesHistory.length -1].note | limitTo: 250"></p>
@@ -360,15 +360,15 @@
   <div class="m m-contacts">
     <div class="m-h">
       <h2>Kontakter</h2>
-      <a href="" data-ng-click="submitContact(caze[0].id, contacts.length)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+      <a ng-show="canAddContact" href="" data-ng-click="submitContact(caze[0].id, contacts.length)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul class="zebra-list">
         <li data-ng-repeat='contact in contacts track by $index'>
-					<a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">
-						<span class="contact-no-name" data-ng-if="contact.name == ''">Namn saknas</span>
-						{{contact.name}}
-					</a>
+          <a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">
+            <span class="contact-no-name" data-ng-if="contact.name == ''">Namn saknas</span>
+            {{contact.name}}
+          </a>
         </li>
       </ul>
     </div>

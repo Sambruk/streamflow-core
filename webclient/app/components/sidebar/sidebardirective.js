@@ -18,7 +18,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('sidebar', function($location, growl, contactService, sidebarService, fileService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService){
+.directive('sidebar', function($location, growl, contactService, sidebarService, fileService, $cacheFactory, $rootScope, $routeParams, projectService, caseService, httpService, navigationService, $q, tokenService, checkPermissionService){
   return {
     restrict: 'E',
     templateUrl: 'components/sidebar/sidebar.html',
@@ -50,6 +50,11 @@ angular.module('sf')
       scope.exportConversations = false;
       scope.exportContacts = false;
       scope.exportCaseLog = false;
+
+
+      scope.contacts.promise.then(function(){
+        checkPermissionService.checkCommands(scope, scope.contacts.commands, ['add'], 'canAddContact');
+      });
 
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);

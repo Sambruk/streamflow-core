@@ -418,6 +418,7 @@ angular.module('sf')
           ]),
           onSuccess:function (resource, result) {
             resource.response.index.contacts.forEach(function(item){result.push(item)});
+            result.commands = resource.response.commands;
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){

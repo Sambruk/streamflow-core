@@ -77,6 +77,7 @@ describe("sf.services.case", function () {
        // Then
        expect(response.length).toEqual(2);
        expect(response[0].name).toEqual("Frida Kranstege");
+       expect(response.commands[0].text).toEqual("Add");
      }));
 
    })
