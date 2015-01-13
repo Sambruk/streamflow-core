@@ -459,6 +459,21 @@ angular.module('sf')
             caseBase.broadcastMessage(error);
           });
       },
+      getCaseLogCommands: function(caseId) {
+        return backendService.get({
+          specs:caseBase(caseId).concat([
+              {resources: 'caselog'}
+            ]),
+          onSuccess:function (resource, result) {
+            result.commands = resource.response.commands;
+            result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure:function(err){
+            caseBase.broadcastMessage(err);
+          }
+        });
+      },
       getCaseLogDefaultParams: function(caseId) {
         return backendService.get({
           specs:caseBase(caseId).concat([
