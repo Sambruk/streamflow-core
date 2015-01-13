@@ -51,18 +51,18 @@ angular.module('sf')
       scope.exportContacts = false;
       scope.exportCaseLog = false;
 
+
       scope.general.promise.then(function(){
-        checkPermissionService.checkCommands(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription']);
+        checkPermissionService.checkPermissions(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription']);
       });
       scope.notes.promise.then(function(){
-        checkPermissionService.checkCommand(scope, scope.notes.commands, 'addnote', 'canAddNote');
-        console.log(scope)
+        checkPermissionService.checkPermission(scope, scope.notes.commands, 'addnote', 'canAddNote');
       });
       scope.contacts.promise.then(function(){
-        checkPermissionService.checkCommand(scope, scope.contacts.commands, 'add', 'canAddContact');
+        checkPermissionService.checkPermission(scope, scope.contacts.commands, 'add', 'canAddContact');
       });
       scope.conversations.promise.then(function(){
-        checkPermissionService.checkCommand(scope, scope.conversations.commands, 'create', 'canCreateConversation');
+        checkPermissionService.checkPermission(scope, scope.conversations.commands, 'create', 'canCreateConversation');
       });
 
 

@@ -3,30 +3,28 @@
 angular.module('sf')
 .factory('checkPermissionService', function(){
 
-	var checkCommands = function(scope, commands, commandsToCheck, paraPermission){
+	var checkPermissions = function(scope, permissions, permissionsToCheck, paraPermission){
 		// Commands and paraPermission must be sent in the same order
-		if(commandsToCheck.length){
-			commandsToCheck.forEach(function(command, index){
-				checkCommand(scope, commands, commandsToCheck[index], paraPermission[index]);
+		// console.log(paraPermission + ": " + permissions);
+		if(permissionsToCheck.length){
+			permissionsToCheck.forEach(function(permission, index){
+				checkPermission(scope, permissions, permissionsToCheck[index], paraPermission[index]);
 			});
 		}
 		return scope;
 	}
 
-	var checkQueries = function(){
-
-	}
-
-	var checkCommand = function(scope, commands, command, paraPermission){
-		if(_.find(commands, function(obj){return obj.id == command})){
+	var checkPermission = function(scope, permissions, permission, paraPermission){
+		// console.log(paraPermission + ": ")
+		// console.log(permissions)
+		if(_.find(permissions, function(obj){return obj.id == permission})){
 			scope[paraPermission] = true;
 		}
 		return scope;
 	}
 
 	return {
-		checkCommands: checkCommands,
-		checkCommand: checkCommand,
-		checkQueries: checkQueries
+		checkPermissions: checkPermissions,
+		checkPermission: checkPermission
 	}	
 });
