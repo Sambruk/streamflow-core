@@ -66,6 +66,22 @@ angular.module('sf')
       });
     };
 
+    var getAttachmentPermissions = function(caseId, attachmentId, attachment) {
+      return backendService.get({
+        specs:caseBase(caseId).concat([
+          {resources: 'attachments'},
+          {'index.links': attachmentId}
+        ]),
+        onSuccess:function(resource){
+          attachment.commands = resource.response.commands;
+          attachment.queries = resource.response.queries;
+        },
+        onFailure:function(err){
+          caseBase.broadcastMessage(err);
+        }
+      });
+    };
+
     //caseBase.bcMessage = null;
     //TODO: Refactor (use a var instead of property)
     var bcMessage = null;
@@ -377,8 +393,9 @@ angular.module('sf')
         return backendService.get({
           specs:caseBase(caseId).concat([{resources: 'attachments'}]),
           onSuccess:function (resource, result) {
-            resource.response.index.links.forEach(function(link){
+            resource.response.index.links.forEach(function(link, index){
               result.push(link);
+              getAttachmentPermissions(caseId, link.id, result[index]);
             });
             caseBase.broadcastMessage(result.status);
           },

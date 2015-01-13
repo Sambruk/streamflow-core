@@ -383,7 +383,7 @@
   <div class="m m-attachments">
     <div class="m-h">
       <h2>Bifogade filer</h2>
-      <label class="file-input-label action-btn">
+      <label ng-show="canCreateAttachment" class="file-input-label action-btn">
         <input type="file" name="file" ng-file-select="onFileSelect($files)" class="file-input"/>
         Lägg till fil <i class="icon-plus"></i>
       </label>
@@ -391,8 +391,9 @@
     <div class="m-c">
       <ul class="zebra-list">
         <li ng-show="attachment.rel == 'attachment'" ng-repeat="attachment in attachments">
-          <a data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
-          <a data-ng-click="deleteAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+          <a ng-show="attachment.queries[0].id == 'download'" data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
+          <a ng-show="attachment.queries[0].id !== 'download'" href="">{{attachment.text}}</a>
+          <a ng-show="attachment.commands.length" data-ng-click="deleteAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
         </li>
       </ul>
     </div>
