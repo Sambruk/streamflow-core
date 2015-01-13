@@ -29,18 +29,18 @@ angular.module('sf')
     $scope.conversationMessageDraftAttachments = caseService.getMessageDraftAttachments($routeParams.caseId, $routeParams.conversationId);
 
     $scope.showSpinner = {
-      participants: true,
       conversation: true,
       conversationMessageDraft: true
     };
 
     $scope.conversationParticipants.promise.then(function(response){
-      $scope.showSpinner.participants = false;
+      // console.log($scope.conversationParticipants)
+      checkPermissionService.checkPermissions($scope, $scope.conversationParticipants.commands, ['addparticipant', 'addexternalparticipant'], ['canAddParticipant', 'canAddExternalParticipant']);
     });
 
     $scope.conversationMessages.promise.then(function(){
       $scope.showSpinner.conversation = false;
-      checkPermissionService.checkCommand($scope, $scope.conversationMessages.commands, 'createmessagefromdraft', 'canCreateMessageFromDraft');
+      checkPermissionService.checkPermission($scope, $scope.conversationMessages.commands, 'createmessagefromdraft', 'canCreateMessageFromDraft');
     });
 
     $scope.conversationMessageDraft.promise.then(function(){
