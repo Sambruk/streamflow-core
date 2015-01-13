@@ -30,7 +30,7 @@ angular.module('sf')
 
     $scope.contact.promise.then(function(){
       $scope.showSpinner.contact = false;
-      checkPermissionService.checkCommands($scope, $scope.contact.commands, ['delete', 'update'], ['canDeleteContact', 'canUpdateContact']);
+      checkPermissionService.checkPermissions($scope, $scope.contact.commands, ['delete', 'update'], ['canDeleteContact', 'canUpdateContact']);
     });
 
     $scope.submitContact = function($event){
