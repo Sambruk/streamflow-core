@@ -69,10 +69,9 @@
         <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
     <div class="body">
-            <banner ng-show="isLoggedIn"></banner>
-            <login ng-show="!isLoggedIn"></login>
+            <banner></banner>
             <div class="main">
-            <contextmenu params="contextmenuParams" ng-show="isLoggedIn"></contextmenu>
+            <contextmenu params="contextmenuParams"></contextmenu>
             <div class="main-body cf">
                 <div class="container" ng-view=""></div>
             </div>

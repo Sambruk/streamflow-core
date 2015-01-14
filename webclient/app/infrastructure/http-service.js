@@ -39,14 +39,14 @@ angular.module('sf')
       var protocol = $location.$$protocol;
       var host = $location.$$host;
       var port = $location.$$port;
-      var urlPrefix = protocol + '://dummyuser:dummypass@';
+      var urlPrefix = protocol;//+ '://dummyuser:dummypass@';
       var prodUrl = urlPrefix + host +':'+ port + '/webclient/api/';
       //debugger;
       switch (buildMode) {
         case 'prod':
           return prodUrl;
         case 'dev':
-          return 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
+          return 'https://test-sf.jayway.com/streamflow/';
           //return 'http://localhost:8082/streamflow/';
         default:
           return 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';

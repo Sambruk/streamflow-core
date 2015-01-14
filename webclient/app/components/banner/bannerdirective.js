@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('banner', function($rootScope, $q, profileService){
+.directive('banner', function($rootScope, $q, profileService, buildMode, tokenService, navigationService, $http, httpService, $location){
   return {
     restrict: 'E',
     templateUrl: 'components/banner/banner.html',
@@ -37,8 +37,16 @@ angular.module('sf')
 
       scope.hasToken = $rootScope.hasToken;
       scope.logout = function(){
-        $rootScope.logout();
-        window.location.reload();
+        var urlValue;
+        if(buildMode == 'dev'){
+          urlValue = 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
+        } else {
+          urlValue = $location.$$protocol + '://dummyuser:dummypass' + $location.$$host + ':' + $location.$$port;
+        }
+        $http.get(urlValue).error(function(res){
+          location.reload();
+        });
+        //window.location.reload();
       }
 
       scope.$on('profile-name-updated', function(){

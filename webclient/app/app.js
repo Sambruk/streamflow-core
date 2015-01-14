@@ -24,7 +24,8 @@ angular.module('sf', [
     'angularFileUpload',
     'sf.config'
   ])
-  .run(function ($rootScope, $location, $routeParams, tokenService) {
+  .run(function ($rootScope, $http, httpService, $location, $routeParams, tokenService) {
+    
     $rootScope.hasToken = tokenService.hasToken;
     $rootScope.isLoggedIn = $rootScope.hasToken();
     $rootScope.logout = tokenService.clear;
