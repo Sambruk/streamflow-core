@@ -64,7 +64,18 @@ angular.module('sf')
       scope.conversations.promise.then(function(){
         checkPermissionService.checkPermission(scope, scope.conversations.commands, 'create', 'canCreateConversation');
       });
-
+      scope.possibleForms.promise.then(function(){
+        if(scope.possibleForms.length > 0){
+          scope.possibleForms.forEach(function(form){
+            caseService.getPossibleForm($routeParams.caseId, form.id).promise.then(function(response){
+              // Making the assumption that the user is 'read-only' if he hasn't access to queries or commands
+              if(response[0].commands.length !== 0 || response[0].queries.length !== 0){
+                scope['canCreateFormDraft'] = true;
+              }
+            });
+          });
+        }
+      });
 
       if($routeParams.formId && $routeParams.caseId){
         scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
