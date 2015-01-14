@@ -327,7 +327,7 @@
           </a>
           <a ng-show="canCreateFormDraft" href="#/cases/{{ caze[0].id  }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
             <h3>{{form.text}}</h3>
-            <div>
+            <div ng-show="canCreateFormDraft">
               <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)"></span>
               <ul class="form-status">
                 <li><a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-history-doc" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
