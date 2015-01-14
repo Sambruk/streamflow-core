@@ -51,8 +51,6 @@ angular.module('sf')
           'background-color': '#ffffff'
         };
       }
-      console.log("priority");
-      console.log(scope.priorityColori);
     });
   };
 
