@@ -55,7 +55,11 @@ angular.module('sf')
         checkPermissionService.checkPermissions(scope, scope.caze.queries, ['exportpdf'], ['canExportCase']);
       });
       scope.general.promise.then(function(){
-        checkPermissionService.checkPermissions(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription']);
+        checkPermissionService.checkPermissions(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription', 'changepriority'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription', 'canChangePriority']);
+        if(!scope['canChangeCaseType']){
+         $("#type_select_chosen, #type-select").addClass("disabled");
+         $('.case-type-selected').addClass('cursor-default');
+        }
       });
       scope.notes.promise.then(function(){
         checkPermissionService.checkPermissions(scope, scope.notes.commands, ['addnote'], ['canAddNote']);

@@ -31,6 +31,9 @@ angular.module('sf')
     $scope.contact.promise.then(function(){
       $scope.showSpinner.contact = false;
       checkPermissionService.checkPermissions($scope, $scope.contact.commands, ['delete', 'update'], ['canDeleteContact', 'canUpdateContact']);
+      if(!$scope['canUpdateContact']){
+        $(".custom-select, .contact-pref").addClass("disabled");
+      }
     });
 
     $scope.submitContact = function($event){
