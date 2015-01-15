@@ -32,23 +32,23 @@ angular.module('sf')
       $rootScope.isLoggedIn = tokenService.hasToken();
 
       function checkIfLoggedIn(){
-      var urlValue;
-      if(buildMode == 'dev'){
-        urlValue = 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
-      } else {
-        urlValue = $location.$$protocol + '://dummyuser:dummypass@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
+        var urlValue;
+        if(buildMode == 'dev'){
+          urlValue = 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
+        } else {
+          urlValue = $location.$$protocol + '://dummyuser:dummypass@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
+        }
+        $http.get(httpService.apiUrl)
+        .success(function(res){
+          $rootScope.isLoggedIn = true;
+          console.log(res);
+        })
+        .error(function(err){
+          $rootScope.isLoggedIn = false;
+          console.log(err);
+        });
       }
-      $http.get(httpService.apiUrl)
-      .success(function(res){
-        $rootScope.isLoggedIn = true;
-        console.log(res);
-      })
-      .error(function(err){
-        $rootScope.isLoggedIn = false;
-        console.log(err);
-      });
-    }
-    checkIfLoggedIn();
+      checkIfLoggedIn();
 
       scope.validate = function () {
         var basicAuthBase64 = btoa(scope.username + ':' + scope.password);
