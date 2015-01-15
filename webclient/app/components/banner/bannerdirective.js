@@ -41,7 +41,7 @@ angular.module('sf')
         if(buildMode == 'dev'){
           urlValue = 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
         } else {
-          urlValue = $location.$$protocol + '://dummyuser:dummypass' + $location.$$host + ':' + $location.$$port;
+          urlValue = $location.$$protocol + '://dummyuser:dummypass@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
         }
         $http.get(urlValue).error(function(res){
           location.reload();
