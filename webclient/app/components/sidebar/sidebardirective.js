@@ -58,13 +58,13 @@ angular.module('sf')
         checkPermissionService.checkPermissions(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription']);
       });
       scope.notes.promise.then(function(){
-        checkPermissionService.checkPermission(scope, scope.notes.commands, 'addnote', 'canAddNote');
+        checkPermissionService.checkPermissions(scope, scope.notes.commands, ['addnote'], ['canAddNote']);
       });
       scope.contacts.promise.then(function(){
-        checkPermissionService.checkPermission(scope, scope.contacts.commands, 'add', 'canAddContact');
+        checkPermissionService.checkPermissions(scope, scope.contacts.commands, ['add'], ['canAddContact']);
       });
       scope.conversations.promise.then(function(){
-        checkPermissionService.checkPermission(scope, scope.conversations.commands, 'create', 'canCreateConversation');
+        checkPermissionService.checkPermissions(scope, scope.conversations.commands, ['create'], ['canCreateConversation']);
       });
       scope.possibleForms.promise.then(function(){
         if(scope.possibleForms.length > 0){

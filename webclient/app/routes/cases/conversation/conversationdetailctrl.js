@@ -34,13 +34,12 @@ angular.module('sf')
     };
 
     $scope.conversationParticipants.promise.then(function(response){
-      // console.log($scope.conversationParticipants)
       checkPermissionService.checkPermissions($scope, $scope.conversationParticipants.commands, ['addparticipant', 'addexternalparticipant'], ['canAddParticipant', 'canAddExternalParticipant']);
     });
 
     $scope.conversationMessages.promise.then(function(){
       $scope.showSpinner.conversation = false;
-      checkPermissionService.checkPermission($scope, $scope.conversationMessages.commands, 'createmessagefromdraft', 'canCreateMessageFromDraft');
+      checkPermissionService.checkPermissions($scope, $scope.conversationMessages.commands, ['createmessagefromdraft'], ['canCreateMessageFromDraft']);
     });
 
     $scope.conversationMessageDraft.promise.then(function(){

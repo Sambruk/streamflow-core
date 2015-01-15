@@ -107,7 +107,7 @@ angular.module('sf')
       scope.caseLabel.promise,
       scope.possibleCaseLabels.promise
     ]).then(function (results) {
-      checkPermissionService.checkPermission(scope, scope.caseLabel.commands, 'addlabel', 'canAddLabel');
+      checkPermissionService.checkPermissions(scope, scope.caseLabel.commands, ['addlabel'], ['canAddLabel']);
       scope.activeLabels = results[0].map(function (i) {
         i.selected = true;
         return i;

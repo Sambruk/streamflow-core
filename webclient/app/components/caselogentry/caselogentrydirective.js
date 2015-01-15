@@ -27,7 +27,7 @@ angular.module('sf')
     link: function(scope){
       scope.caseLogCommands = caseService.getCaseLogCommands($routeParams.caseId);
       scope.caseLogCommands.promise.then(function(){
-        checkPermissionService.checkPermission(scope, scope.caseLogCommands.commands, 'addmessage', 'canAddCaseLogMessage');
+        checkPermissionService.checkPermissions(scope, scope.caseLogCommands.commands, ['addmessage'], ['canAddCaseLogMessage']);
       });
 
       scope.caseLogEntryToCreate = '';

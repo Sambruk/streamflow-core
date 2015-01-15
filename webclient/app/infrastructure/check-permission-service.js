@@ -4,8 +4,11 @@ angular.module('sf')
 .factory('checkPermissionService', function(){
 
 	var checkPermissions = function(scope, permissions, permissionsToCheck, paraPermission){
+		// permissions - the returned permissions the user have.
+		// permissionsToCheck - the permissions to check against for letting the user do certain actions.
+		// paraPermissions - set to true if the user have permission to certain commands/queries.
 		// Commands and paraPermission must be sent in the same order
-		// console.log(paraPermission + ": " + permissions);
+
 		if(permissionsToCheck.length){
 			permissionsToCheck.forEach(function(permission, index){
 				checkPermission(scope, permissions, permissionsToCheck[index], paraPermission[index]);
@@ -15,8 +18,6 @@ angular.module('sf')
 	}
 
 	var checkPermission = function(scope, permissions, permission, paraPermission){
-		// console.log(paraPermission + ": ")
-		// console.log(permissions)
 		if(_.find(permissions, function(obj){return obj.id == permission})){
 			scope[paraPermission] = true;
 		}
@@ -24,7 +25,6 @@ angular.module('sf')
 	}
 
 	return {
-		checkPermissions: checkPermissions,
-		checkPermission: checkPermission
+		checkPermissions: checkPermissions
 	}	
 });
