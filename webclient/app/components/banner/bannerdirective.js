@@ -36,18 +36,6 @@ angular.module('sf')
       });
 
       scope.hasToken = $rootScope.hasToken;
-      scope.logout = function(){
-        var urlValue;
-        if(buildMode == 'dev'){
-          urlValue = 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
-        } else {
-          urlValue = $location.$$protocol + '://dummyuser:dummypass@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
-        }
-        $http.get(urlValue).error(function(res){
-          location.reload();
-        });
-        //window.location.reload();
-      }
 
       scope.$on('profile-name-updated', function(){
         scope.profile.invalidate();
