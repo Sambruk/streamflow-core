@@ -23,6 +23,7 @@ module.exports = function(config){
     files : [
       'bower_components/ng-file-upload/angular-file-upload-shim.js',
       'bower_components/angular/angular.js',
+      'bower_components/angular-touch/angular-touch.js',
       'bower_components/angular-resource/angular-resource.js',
       'bower_components/angular-growl-v2/build/angular-growl.js',
       'bower_components/angular-route/angular-route.js',
