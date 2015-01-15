@@ -9,6 +9,7 @@ angular.module('sf')
     } else {
       urlValue = $location.$$protocol + '://dummyuser:dummypass@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
     }
+    document.execCommand("ClearAuthenticationCache");
     $http.get(urlValue).error(function(res){
       navigationService.linkTo('#/');
       location.reload();
