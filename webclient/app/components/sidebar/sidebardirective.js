@@ -51,7 +51,9 @@ angular.module('sf')
       scope.exportContacts = false;
       scope.exportCaseLog = false;
 
-
+      scope.caze.promise.then(function(){
+        checkPermissionService.checkPermissions(scope, scope.caze.queries, ['exportpdf'], ['canExportCase']);
+      });
       scope.general.promise.then(function(){
         checkPermissionService.checkPermissions(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription']);
       });

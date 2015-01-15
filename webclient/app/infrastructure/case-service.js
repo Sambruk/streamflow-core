@@ -108,6 +108,7 @@ angular.module('sf')
         return backendService.get({
           specs: caseBase(caseId),
           onSuccess:function (resource, result) {
+            result.queries = resource.response.queries;
             result.push(new SfCase(resource.response.index));
             caseBase.broadcastMessage(result.status);
           },

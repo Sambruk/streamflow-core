@@ -33,7 +33,7 @@
       <li data-ng-show="formOnClose"><a href="" class="btn disabled">Stäng</a></li>
       <li data-ng-show="canReopen"><a href="" data-ng-click="reopen()" class="btn">Återuppta</a></li>
 
-      <li>
+      <li data-ng-show="canDelete || canMarkRead || canMarkUnread || canRestrict || canUnrestrict || canExportCase">
         <a href="" class="btn dropdown">Mer <i class="icon-arrow-down"></i></a>
         <ul>
           <li><a href="" data-ng-show="canDelete" data-ng-click="deleteCase()" class="btn">Radera</a></li>
@@ -41,7 +41,7 @@
           <li><a data-ng-show="canMarkUnread" data-ng-click="markReadUnread(false)" href="" class="btn">Markera oläst</a></li>
           <li><a data-ng-show="canRestrict" data-ng-click="restrict()" href="" class="btn">Begränsa</a></li>
           <li><a data-ng-show="canUnrestrict" data-ng-click="unrestrict()" href="" class="btn">Begränsa inte</a></li>
-          <li><a data-ng-click="showExportPopUp()" href="" class="btn">Exportera</a></li>
+          <li data-ng-show="canExportCase"><a data-ng-click="showExportPopUp()" href="" class="btn">Exportera</a></li>
         </ul>
       </li>
     </ul>
