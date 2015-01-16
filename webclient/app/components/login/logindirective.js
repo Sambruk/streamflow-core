@@ -54,7 +54,23 @@ angular.module('sf')
       getLoggedInStatus()
       .then(function(status){
         $rootScope.isLoggedIn = status;
+      });
 
+      $rootScope.$on('logout', function(event, data){
+        if(data === true){
+          $http.get(urlValue).error(function(){
+            $rootScope.$broadcast('logout', false);
+          });
+        } else {
+          getLoggedInStatus()
+          .then(function(status){
+            $rootScope.isLoggedIn = status;
+            $location.path('#/');
+            $window.location.reload();
+            console.log(status);
+          });
+
+        }
       });
 
       scope.validate = function () {

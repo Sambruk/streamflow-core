@@ -2,9 +2,8 @@
 
 angular.module('sf')
 .controller('LogoutCtrl', function($scope, $location, $http, buildMode, navigationService, httpService, $window, $rootScope, $route){
-  $rootScope.$broadcast('loggedin', false);
-  $location.path('#/');
-  $window.location.reload();
+  $rootScope.$broadcast('logout', true);
+
 	/*$scope.logout = function(){
 
     var urlValue;
