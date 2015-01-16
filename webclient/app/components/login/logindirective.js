@@ -29,8 +29,10 @@ angular.module('sf')
       scope.username;
       scope.password;
       scope.hasToken = tokenService.hasToken();
-      $rootScope.isLoggedIn = tokenService.hasToken();
+      scope.hasLoggedOut = $rootScope.hasLoggedOut;
+      //$rootScope.isLoggedIn = tokenService.hasToken();
 
+      // Set 
       var urlValue;
       if(buildMode == 'dev'){
         urlValue = 'https://username:password@test-sf.jayway.com/streamflow/';
@@ -39,27 +41,21 @@ angular.module('sf')
       }
       //document.execCommand("ClearAuthenticationCache");
 
-      function checkIfLoggedIn(){
-        $http.get(httpService.apiUrl)
+      function getLoggedInStatus(){
+        return $http.get(httpService.apiUrl)
         .success(function(res){
-          $rootScope.isLoggedIn = true;
-          console.log(res);
+          return true;
         })
         .error(function(err){
-          $rootScope.isLoggedIn = false;
-          $route.reload();
-          location.reload();
-          console.log(err);
+          return false;
         });
       }
+      
+      getLoggedInStatus()
+      .then(function(status){
+        $rootScope.isLoggedIn = status;
 
-      if($rootScope.isLoggedIn === false){
-        $http.get(urlValue).error(function(res){
-          checkIfLoggedIn();
-        });
-      } else {
-        checkIfLoggedIn();
-      }
+      });
 
       scope.validate = function () {
         var basicAuthBase64 = btoa(scope.username + ':' + scope.password);

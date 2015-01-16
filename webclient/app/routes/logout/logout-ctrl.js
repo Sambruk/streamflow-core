@@ -2,7 +2,7 @@
 
 angular.module('sf')
 .controller('LogoutCtrl', function($scope, $location, $http, buildMode, navigationService, httpService, $window, $rootScope, $route){
-  $rootScope.isLoggedIn = false;
+  $rootScope.$broadcast('loggedin', false);
   $location.path('#/');
   $window.location.reload();
 	/*$scope.logout = function(){
