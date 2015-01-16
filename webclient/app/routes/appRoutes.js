@@ -20,6 +20,10 @@ angular.module('sf')
 .config(function($routeProvider) {
   // $locationProvider.html5Mode(true);
   $routeProvider
+    .when('/login',{
+      templateUrl: 'routes/login/login.html',
+      controller: 'LoginCtrl'
+    })
     .when('/logout', {
       templateUrl: 'routes/logout/logout.html',
       controller: 'LogoutCtrl'

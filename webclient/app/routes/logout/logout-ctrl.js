@@ -1,20 +1,35 @@
 'use strict';
 
 angular.module('sf')
-.controller('LogoutCtrl', function($scope, $location, $http, buildMode, navigationService){
-	$scope.logout = function(){
+.controller('LogoutCtrl', function($scope, $location, $http, buildMode, navigationService, httpService, $window, $rootScope, $route){
+  $rootScope.isLoggedIn = false;
+  $location.path('#/');
+  $window.location.reload();
+	/*$scope.logout = function(){
+
     var urlValue;
     if(buildMode == 'dev'){
-      urlValue = 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
+      urlValue = 'https://username:password@test-sf.jayway.com/streamflow/';
     } else {
-      urlValue = $location.$$protocol + '://dummyuser:dummypass@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
+      urlValue = $location.$$protocol + '://username:password@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
     }
-    document.execCommand("ClearAuthenticationCache");
+    //document.execCommand("ClearAuthenticationCache");
     $http.get(urlValue).error(function(res){
-      navigationService.linkTo('#/');
-      location.reload();
+      $http.get(httpService.apiUrl)
+      .success(function(res){
+        $rootScope.isLoggedIn = true;
+        console.log(res);
+      })
+      .error(function(err){
+        $rootScope.isLoggedIn = false;
+        $location.path('#/');
+        $window.location.reload();
+        console.log(err);
+      });
+
+      console.log(res);
     });
   }
 
-  $scope.logout();
+  $scope.logout();*/
 });

@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.directive('login', function($rootScope,buildMode,$location, $http, $window, tokenService, httpService){
+.directive('login', function($rootScope,buildMode,$location, $http, $window, $route, tokenService, httpService){
   return {
     restrict: 'E',
     templateUrl: 'components/login/login.html',
@@ -31,13 +31,15 @@ angular.module('sf')
       scope.hasToken = tokenService.hasToken();
       $rootScope.isLoggedIn = tokenService.hasToken();
 
+      var urlValue;
+      if(buildMode == 'dev'){
+        urlValue = 'https://username:password@test-sf.jayway.com/streamflow/';
+      } else {
+        urlValue = $location.$$protocol + '://username:password@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
+      }
+      //document.execCommand("ClearAuthenticationCache");
+
       function checkIfLoggedIn(){
-        var urlValue;
-        if(buildMode == 'dev'){
-          urlValue = 'https://dummyuser:dummypass@test-sf.jayway.com/streamflow/';
-        } else {
-          urlValue = $location.$$protocol + '://dummyuser:dummypass@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
-        }
         $http.get(httpService.apiUrl)
         .success(function(res){
           $rootScope.isLoggedIn = true;
@@ -45,10 +47,19 @@ angular.module('sf')
         })
         .error(function(err){
           $rootScope.isLoggedIn = false;
+          $route.reload();
+          location.reload();
           console.log(err);
         });
       }
-      checkIfLoggedIn();
+
+      if($rootScope.isLoggedIn === false){
+        $http.get(urlValue).error(function(res){
+          checkIfLoggedIn();
+        });
+      } else {
+        checkIfLoggedIn();
+      }
 
       scope.validate = function () {
         var basicAuthBase64 = btoa(scope.username + ':' + scope.password);
