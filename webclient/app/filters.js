@@ -17,6 +17,12 @@
 'use strict';
 
 angular.module('sf')
+.filter('attachmentJson', function($filter) {
+  return function(attachment) {
+    var jsonParse = JSON.parse(attachment);
+    return jsonParse['name'];
+  }
+})
 .filter('positive', function() {
     return function(input) {
       return input > 0 ? input : '';

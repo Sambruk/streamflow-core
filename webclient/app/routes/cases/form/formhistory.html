@@ -31,9 +31,12 @@
     <div class="form-history-sections cf row">
       <div class="section-history-item">{{page.name}}</div>
     </div>
+    {{page}}
     <div class="form-history-field">
       <div data-ng-repeat="field in page.fields">
-        <div class="form-field"><em>{{ field.field }}</em>: {{ field.value  | dateTime}}</div>
+        <div ng-show="field.fieldType == 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'" class="form-field"><em>{{ field.field }}</em>: {{ field.value | attachmentJson }}</div> <button ng-click="downloadFormAttachment(field)">download</button>
+        <div ng-show="field.fieldType !== 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'" class="form-field"><em>{{ field.field }}</em>: {{ field.value  | dateTime}}</div>
+        
       </div>
     </div>
     <div ng-show="$last == true">

@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('FormHistoryCtrl', function($scope, caseService, $routeParams) {
+  .controller('FormHistoryCtrl', function($scope, caseService, $routeParams, httpService) {
 
     $scope.caseId = $routeParams.caseId;
     $scope.submittedForms = caseService.getSubmittedForms($routeParams.caseId, $routeParams.formId);
@@ -26,6 +26,13 @@ angular.module('sf')
         $scope.selectedSubmittedForm = $scope.submittedForms[0].index;
       }
     });
+
+    $scope.downloadFormAttachment = function(attachment){
+      var jsonParse = JSON.parse(attachment.value);
+
+      var url = httpService.apiUrl+'workspacev2/cases/'+$routeParams.caseId+'/submittedforms/download?id='+jsonParse['attachment'];
+      window.location.replace(url);
+    };
 
     $scope.$watch("selectedSubmittedForm", function(){
       var index = $scope.selectedSubmittedForm;
