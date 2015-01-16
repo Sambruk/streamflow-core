@@ -133,7 +133,7 @@ var paths = {
   vendor: {
     images: ['bower_components/chosen/*.png'],
     scripts: ['bower_components/**/*.js',
-          '!bower_components/underscore/index.js',
+          '!bower_components/**/index.js',
           '!bower_components/underscore/docs/**/*.js',
           '!bower_components/underscore/test/**/*.js',
           '!bower_components/jquery/**/*.js',
