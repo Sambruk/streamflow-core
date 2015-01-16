@@ -22,8 +22,7 @@ angular.module('sf', [
     'angular-growl',
     'ngSanitize',
     'angularFileUpload',
-    'sf.config',
-    'ngTouch'
+    'sf.config'
   ])
   .run(function ($rootScope, $http, httpService, $location, $routeParams, tokenService) {
     
