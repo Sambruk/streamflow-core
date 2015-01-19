@@ -29,8 +29,8 @@ angular.module('sf')
       controller: 'LogoutCtrl'
     })
     .when('/search', {
-      templateUrl: 'routes/cases/casesearch.html',
-      controller: 'CaseSearchCtrl'
+      templateUrl: 'routes/projects/caselist.html',
+      controller: 'SearchCtrl'
     })
     .when('/perspectives', {
       templateUrl: 'routes/cases/caseoverview.html',
