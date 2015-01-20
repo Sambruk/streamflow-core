@@ -60,12 +60,6 @@ angular.module('sf')
         $rootScope.$broadcast('breadcrumb-updated', [{projectId: $routeParams.projectId}, {projectType: $routeParams.projectType}]);
       }
 
-      $.each($scope.currentCases, function(index, currentCase){
-        if(currentCase.text === ''){
-          currentCase.href = currentCase.href + '/edit';
-        }
-      });
-
       $scope.showSpinner.currentCases = false;
     });
 
