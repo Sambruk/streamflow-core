@@ -138,7 +138,6 @@ var paths = {
           '!bower_components/angular-route/**/*.js',
           '!bower_components/angular-growl-v2/**/*.js',
           '!bower_components/momentjs/**/*.js',
-          '!bower_components/bootstrap/**/*.*',
           '!bower_components/pickadate/**/*.*',
           '!bower_components/**/*.min.js',
           '!bower_components/**/*.min.map',

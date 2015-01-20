@@ -33,14 +33,12 @@
     <link rel="apple-touch-icon" sizes="57x57" href="app/i/apple-touch-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="72x72" href="app/i/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="app/i/apple-touch-icon-114x114.png">
-    <link data-require="bootstrap-css@3.1.1" data-semver="3.1.1" rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
-
     <link rel="shortcut icon" href="favicon.ico">
 
     <!-- ////////////////////////
     //////// Vendor styles /////
     ///////////////////////////-->
-      <link rel="stylesheet" href="vendor/vendor.css">
+    <link rel="stylesheet" href="vendor/vendor.css">
 
     <!-- ////////////////////
     /////// App styles /////
@@ -59,23 +57,20 @@
         document.createElement('ng:view');
       </script>
     <![endif]-->
-
-    <!-- Angular growl
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet"> -->
-
   </head>
   <body ng-app="sf" sf-layout-style>
     <!--[if lt IE 7]>
         <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
     <div class="body">
-            <banner ng-show="isLoggedIn"></banner>
-            <login ng-show="!isLoggedIn"></login>
-            <div class="main">
-            <contextmenu params="contextmenuParams" ng-show="isLoggedIn"></contextmenu>
-            <div class="main-body cf" ng-view="">
-            </div>
+      <banner ng-show="isLoggedIn"></banner>
+      <login ng-show="!isLoggedIn"></login>
+      <div class="main">
+        <contextmenu params="contextmenuParams" ng-show="isLoggedIn"></contextmenu>
+        >
+        <div class="main-body cf" ng-view="">
         </div>
+      </div>
     </div>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="app/plugins/jquery.customSelect.js"></script>
