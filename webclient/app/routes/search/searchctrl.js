@@ -28,6 +28,10 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, se
     currentCases: true
   };
 
+  $scope.getHeader = function () {
+    return 'Sökresultat';
+  };
+
   searchService.getCases(query).promise.then(function (result) {
     $scope.currentCases = result;
     $scope.showSpinner.currentCases = false;

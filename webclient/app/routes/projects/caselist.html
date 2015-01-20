@@ -38,8 +38,7 @@
             </select>
 		</div>
 		<div class="issue-item">
-			<h2 data-ng-show="projectType === 'assignments'">Alla mina ärenden</h2>
-			<h2 data-ng-show="projectType === 'inbox'">Alla ärenden i inkorgen</h2>
+      <h2>{{getHeader()}}</h2>
 			<div class="due-date-divider"><span>Förfallodatum</span></div>
 		</div>
 		<div ng-hide="showSpinner.currentCases">

@@ -19,9 +19,6 @@
 
 angular.module('sf').factory('searchService', function (backendService, projectService) {
 
-  var results = 1000;
-  var queryBegin = '?tq=select+*+where+';
-  var queryEnd = '+limit+' + results;
   var workspaceId = 'workspacev2';
 
   function getCases(query) {
@@ -29,7 +26,22 @@ angular.module('sf').factory('searchService', function (backendService, projectS
       specs: [
         {resources: workspaceId},
         {resources: 'search'},
-        {queries: 'cases' + queryBegin + query + queryEnd}
+        {queries: 'cases?tq=select+*+where+' + query}
+      ],
+      onSuccess: function (resource, result) {
+        resource.response.links.forEach(function (item) {
+          result.push(projectService.sfCaseFactory(item));
+        });
+      }
+    });
+  }
+
+  function getPossibleLabels() {
+    return backendService.get({
+      specs: [
+        {resources: workspaceId},
+        {resources: 'search'},
+        {queries: 'possiblelabels'}
       ],
       onSuccess: function (resource, result) {
         resource.response.links.forEach(function (item) {
@@ -40,7 +52,8 @@ angular.module('sf').factory('searchService', function (backendService, projectS
   }
 
   return {
-    getCases: getCases
+    getCases: getCases,
+    getPossibleLabels: getPossibleLabels
   };
 
 });

@@ -39,9 +39,17 @@ angular.module('sf')
       {name:'Projekt', value:'project'},
       {name:'Prioritet', value:'priority'}];
 
+    $scope.getHeader = function () {
+      console.log('T_____T');
+      return {
+        assignments: 'Alla mina ärenden',
+        inbox: 'Alla ärenden i inkorgen'
+      }[$scope.projectType];
+    };
+
     //Set breadcrumbs to case-owner if possible else to project id
     $scope.currentCases.promise.then(function(response){
-     var owner = _.filter(response, function(sfCase){
+      var owner = _.filter(response, function(sfCase){
         if(sfCase.owner.length > 0){
           return sfCase.owner;
         }
