@@ -40,7 +40,9 @@
     </div>
     <div ng-show="showSpinner.notesHistory" class="spinner"></div>
   </div>
-  <p ng-hide="noteHistory.length">Det finns ingen historik på ärendet.</p>
+  <div ng-hide="showSpinner.notesHistory">
+    <p ng-hide="notesHistory.length">Det finns ingen historik på ärendet.</p>
+  </div>
 </div>
 
 <!-- Content secondary -->
