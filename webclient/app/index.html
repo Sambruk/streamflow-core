@@ -40,7 +40,7 @@
     <!-- ////////////////////////
     //////// Vendor styles /////
     ///////////////////////////-->
-      <link rel="stylesheet" href="vendor/vendor.css">   
+      <link rel="stylesheet" href="vendor/vendor.css">
 
     <!-- ////////////////////
     /////// App styles /////
@@ -60,7 +60,7 @@
       </script>
     <![endif]-->
 
-    <!-- Angular growl 
+    <!-- Angular growl
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet"> -->
 
   </head>
@@ -73,8 +73,7 @@
             <login ng-show="!isLoggedIn"></login>
             <div class="main">
             <contextmenu params="contextmenuParams" ng-show="isLoggedIn"></contextmenu>
-            <div class="main-body cf">
-                <div class="container" ng-view=""></div>
+            <div class="main-body cf" ng-view="">
             </div>
         </div>
     </div>

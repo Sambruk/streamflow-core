@@ -40,7 +40,6 @@ angular.module('sf')
       {name:'Prioritet', value:'priority'}];
 
     $scope.getHeader = function () {
-      console.log('T_____T');
       return {
         assignments: 'Alla mina ärenden',
         inbox: 'Alla ärenden i inkorgen'
