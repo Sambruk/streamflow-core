@@ -19,9 +19,6 @@ angular.module('sf')
 .controller('CaseDetailCtrl', function($scope, $rootScope, $routeParams, caseService, navigationService){
 
   $scope.sidebardata = {};
-  $scope.showSpinner = {
-    caze: true
-  };
 
   $scope.$watch('sidebardata.caze', function(newVal){
     if(!newVal){
@@ -30,12 +27,7 @@ angular.module('sf')
     if($scope.sidebardata){
       $scope.caze = $scope.sidebardata.caze;
     }
-    $scope.notes = $scope.sidebardata.notes;
-    $scope.caze.promise.then(function(){
-      $scope.showSpinner.caze = false;
-    });
   });
-
 
   $scope.$watch('sidebardata.notes', function(newVal){
     if(!newVal){
@@ -43,50 +35,5 @@ angular.module('sf')
     }
     $scope.notes = $scope.sidebardata.notes;
   });
-
-  $scope.$watch('sidebardata.notesHistory', function(newVal){
-    if(!newVal){
-      return;
-    }
-    $scope.notesHistory = $scope.sidebardata.notesHistory;
-
-    $scope.notesHistory.promise.then(function(){
-      if($scope.notesHistory.length === 0){
-        return;
-      }
-      if($scope.notesHistory[$scope.notesHistory.length -1].note === ''){
-        $scope.notesHistory.pop();
-      }
-    });
-  });
-
-  $scope.addNote = function($event){
-    $event.preventDefault();
-    if($scope.noteToAdd){
-      $scope.notes[0].note = $scope.noteToAdd;
-      caseService.addNote($routeParams.caseId, $scope.notes[0])
-      .then(function(response){
-        $scope.noteToAdd = '';
-        $scope.notesHistory.invalidate();
-        $scope.notesHistory.resolve();
-      });
-    }
-  };
-
-  $scope.changeCaseDescription = function($event, $success, $error){
-    $event.preventDefault();
-
-    if ($event.currentTarget.value === '')  {
-      $error($($event.target));
-    }else{
-      caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
-      .then(function(response){
-        $rootScope.$broadcast('casedescription-changed');
-        $success($($event.target));
-      }, function(error) {
-        $error($error($event.target));
-      });
-    }
-  }
 
 });

@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('CaseEditCtrl', function($scope, $rootScope, $routeParams, caseService, navigationService ) { 
+  .controller('CaseEditCtrl', function($scope, $rootScope, $routeParams, caseService ) {
     $scope.sidebardata = {};
 
     $scope.$watch('sidebardata.caze', function(newVal){
@@ -24,13 +24,9 @@ angular.module('sf')
         return;
       }
       $scope.caze = $scope.sidebardata.caze;
-    });
-
-    $scope.$watch('caseDescription', function(newVal){
-      if(!newVal){
-        return;
-      }
-      $scope.caseDescription = newVal;
+      $scope.caze.promise.then(function(){
+        $scope.caseDescription = $scope.caze[0].text;
+      });
     });
 
     $scope.$watch('sidebardata.notes', function(newVal){
@@ -38,6 +34,17 @@ angular.module('sf')
         return;
       }
       $scope.notes = $scope.sidebardata.notes;
+
+      $scope.notes.promise.then(function(){
+        $scope.caseNote = $scope.notes[0].note;
+      });
+    });
+
+    $scope.$watch('caseDescription', function(newVal){
+      if(!newVal){
+        return;
+      }
+      $scope.caseDescription = newVal;
     });
 
     $scope.$watch('caseNote', function(newVal){
@@ -48,24 +55,35 @@ angular.module('sf')
     });
 
 
-    $scope.addCaseDescriptionAndNote = function($event){
+    $scope.addNote = function($event, $success, $error){
       $event.preventDefault();
 
-      if($scope.caseDescription && $scope.caseNote){
-        $scope.caze[0].text = $scope.caseDescription;
-        $scope.notes[0].note = $scope.caseNote;
+      $scope.notes[0].note = $scope.caseNote;
+      if($scope.notes[0].note === $event.target.value){
+        caseService.addNote($routeParams.caseId, $scope.notes[0])
+        .then(function(response){
+          $rootScope.$broadcast('note-changed');
+          $success($($event.target));
+        }, function (error){
+          $error($error($event.target));
+        });
+      }
+    }
 
-        caseService.changeCaseDescription($routeParams.caseId, $scope.caseDescription)
+    $scope.changeCaseDescription = function($event, $success, $error){
+      $event.preventDefault();
+
+      $scope.caze[0].text = $scope.caseDescription;
+      if($event.currentTarget.value.length > 50){
+        $error($($event.target));
+      }else{
+        caseService.changeCaseDescription($routeParams.caseId, $scope.caze[0].text)
         .then(function(){
           $rootScope.$broadcast('casedescription-changed');
+          $success($($event.target));
+        }, function(error) {
+          $error($error($event.target));
         });
-        caseService.addNote($routeParams.caseId, $scope.notes[0])
-        .then(function(){
-          $rootScope.$broadcast('note-changed');
-        });
-
-        var href = navigationService.caseHrefSimple($routeParams.caseId);
-        window.location.assign(href);
       }
     }
 

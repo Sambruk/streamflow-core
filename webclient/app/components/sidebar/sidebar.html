@@ -271,15 +271,17 @@
     <div class="m-c">
       <ul>
         <li>
-          <a href="#/cases/{{ caze[0].id }}" ng-show="caze[0].text && notes[0].note" class="block-link case-sidebar-info">
+          <a href="#/cases/{{ caze[0].id }}" class="block-link case-sidebar-info">
             <h3>{{caze[0].text}}</h3>
-            <p class="caseInSidebar" style="" ng-bind-html="notesHistory[notesHistory.length -1].note | limitTo: 250"></p>
+            <p class="caseInSidebar" style="" ng-bind-html="notes[0].note | limitTo: 250"></p>
           </a>
-          <a href="#/cases/{{ caze[0].id }}/edit" ng-show="(!caze[0].text || !notes[0].note) && canChangeDescription" class="block-link case-sidebar-info">
-            <div ng-show="!caze[0].text && !notes[0].note" class="no-caseinfo">Ingen ärendebeskrivning</div>
-            <h3>{{caze[0].text}}</h3>
-            <p class="caseInSidebar" style="" ng-bind-html="notesHistory[notesHistory.length -1].note | limitTo: 250"></p>
-          </a>
+          <ul class="convo-status">
+            <a href="#/cases/{{ caze[0].id }}/noteshistory">
+              <li class="icon-history-file icon-case-history" title="Ärendebeskrivning, historik">
+                <span class="struct">Ärendebeskrivning, historik</span>
+              </li>
+            </a>
+          </ul>
         </li>
       </ul>
     </div>

@@ -40,7 +40,7 @@ angular.module('sf')
       scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
       scope.submittedFormList = caseService.getSubmittedFormList($routeParams.caseId);
       scope.notes = caseService.getSelectedNote($routeParams.caseId);
-      scope.notesHistory = caseService.getAllNotes($routeParams.caseId);
+      // scope.notesHistory = caseService.getAllNotes($routeParams.caseId);
       scope.caze = caseService.getSelected($routeParams.caseId);
       scope.possibleSendTo = caseService.getPossibleSendTo($routeParams.caseId);
       scope.uploadProgress = 0;
@@ -60,9 +60,18 @@ angular.module('sf')
          $("#type_select_chosen, #type-select").addClass("disabled");
          $('.case-type-selected').addClass('cursor-default');
         }
+
+        if(scope.sidebardata && scope['canChangeDescription']){
+          scope.sidebardata['canChangeDescription'] = true;
+        }
       });
       scope.notes.promise.then(function(){
+
         checkPermissionService.checkPermissions(scope, scope.notes.commands, ['addnote'], ['canAddNote']);
+
+        if(scope.sidebardata && scope['canAddNote']){
+          scope.sidebardata['canAddNote'] = true;
+        }
       });
       scope.contacts.promise.then(function(){
         checkPermissionService.checkPermissions(scope, scope.contacts.commands, ['add'], ['canAddContact']);
@@ -97,6 +106,7 @@ angular.module('sf')
           [{projectId: scope.caze[0].owner}, 
           {projectType: scope.caze[0].listType}, 
           {caseId: scope.caze[0].caseId}]);
+
         if(scope.sidebardata){
           scope.sidebardata['caze'] = scope.caze;
         }
@@ -111,14 +121,14 @@ angular.module('sf')
         }
       });
 
-      scope.$watch('notesHistory', function(newVal){
-        if(!newVal){
-          return;
-        }
-        if(scope.sidebardata){
-          scope.sidebardata['notesHistory'] = scope.notesHistory;
-        }
-      });
+      // scope.$watch('notesHistory', function(newVal){
+      //   if(!newVal){
+      //     return;
+      //   }
+      //   if(scope.sidebardata){
+      //     scope.sidebardata['notesHistory'] = scope.notesHistory;
+      //   }
+      // });
 
       scope.$watch('conversations', function(newVal){
         if(!newVal){
@@ -167,6 +177,7 @@ angular.module('sf')
       // Due on
       scope.general.promise.then(function (result) {
         scope.dueOnShortStartValue = result[0].dueOnShort;
+
       });  
       scope.changeDueOn = function (date) {
         sidebarService.changeDueOn(scope, date);
@@ -336,9 +347,9 @@ angular.module('sf')
       scope.$on('casedescription-changed', function(){
         updateObject(scope.caze);
       });
-      scope.$on('note-changed', function(event){
-        updateObject(scope.notesHistory);
-      });
+      // scope.$on('note-changed', function(event){
+      //   updateObject(scope.notes);
+      // });
       scope.$on('form-submitted', function(){
         updateObject(scope.submittedFormList);
         checkFilterCaseLog('form');
