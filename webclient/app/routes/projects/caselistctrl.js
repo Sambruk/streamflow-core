@@ -54,7 +54,7 @@ angular.module('sf')
       }
 
       $.each($scope.currentCases, function(index, currentCase){
-        if(currentCase.text == ''){
+        if(currentCase.text === ''){
           currentCase.href = currentCase.href + '/edit';
         }
       });
@@ -66,7 +66,7 @@ angular.module('sf')
       itemToUpdate.invalidate();
       itemToUpdate.resolve();
     };
-    
+
     // Event listeners
     $rootScope.$on('case-created', function(){
       updateObject($scope.currentCases);

@@ -51,7 +51,7 @@
   <div ng-show="showSpinner.caze" class="spinner"></div>
   <!-- Posted notes -->
   <div class="posted-notes">
-    <div data-ng-repeat="note in notesHistory track by $index | orderBy: createdOn:reverse" ng-hide="$last == true">
+    <div data-ng-repeat="note in notesHistory track by $index | orderBy: createdOn:reverse" ng-hide="$last === true">
         <div class="note-posted-by">
           <span class="struct">Postad av: </span>{{ note.creator }}
         </div>

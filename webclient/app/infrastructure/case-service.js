@@ -1033,7 +1033,7 @@ angular.module('sf')
           onSuccess:function (resource, result) {
             resource.response.index.links.forEach(function(item){
               item.text = getConversationMessage(caseId, conversationId, item.id);
-              if(item.hasAttachments == true){
+              if(item.hasAttachments === true){
                 item.attachments = getConversationMessageAttachments(caseId, conversationId, item.id);
               }
               result.push(item);

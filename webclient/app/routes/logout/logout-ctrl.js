@@ -7,7 +7,7 @@ angular.module('sf')
 	/*$scope.logout = function(){
 
     var urlValue;
-    if(buildMode == 'dev'){
+    if(buildMode === 'dev'){
       urlValue = 'https://username:password@test-sf.jayway.com/streamflow/';
     } else {
       urlValue = $location.$$protocol + '://username:password@' + $location.$$host + ':' + $location.$$port + '/webclient/api';

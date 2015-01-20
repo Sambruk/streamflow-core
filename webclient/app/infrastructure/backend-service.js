@@ -118,7 +118,7 @@
           function(prev, curr) {
             return prev[curr];
         }, this.response);
-        
+
         var skipCache = specs.length === 0;
 
         //NOTE: What does this one do?
@@ -152,7 +152,7 @@
 
     function clear(obj) {
       obj.length = 0;
-      function clearable(i) { return obj.hasOwnProperty(i) && ['invalidate', 'resolve'].indexOf(i) == -1}
+      function clearable(i) { return obj.hasOwnProperty(i) && ['invalidate', 'resolve'].indexOf(i) === -1}
 
       for (var i in obj) {
         clearable(i) && delete obj[i];
@@ -183,9 +183,9 @@
         // invalidates the HTTP Cache
         result.urls = urls;
         $window.result = result.urls;
-        result.invalidate = function() { 
+        result.invalidate = function() {
 
-          httpService.invalidate(urls); 
+          httpService.invalidate(urls);
         };
 
         result.status = null;

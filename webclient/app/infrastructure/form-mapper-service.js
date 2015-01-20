@@ -116,7 +116,7 @@ angular.module('sf')
           });
 
           var value;
-          if (field.field.fieldValue.values.indexOf(field.value) == -1) {
+          if (field.field.fieldValue.values.indexOf(field.value) === -1) {
             value = field.value
           }
 

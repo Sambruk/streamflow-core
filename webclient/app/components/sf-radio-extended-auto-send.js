@@ -28,7 +28,7 @@ angular.module('sf')
           if (hasRunAtLeastOnce) {
             console.log("new: ", newValue, ", old: ", oldValue);
 
-            if (newValue == attr.value) {
+            if (newValue === attr.value) {
 
               var isOther = $parse(attr['sfRadioExtendedAutoSend'])();
               var value;

@@ -20,7 +20,7 @@
 <div class="content-secondary" role="complementary">
 
   <h2 class="struct">Verktyg och annan information</h2>
-  
+
   <!-- Issue toolbar -->
   <div class="toolbar" data-sf-fixed-toolbar>
     <ul class="buttons cf" data-ng-show="commands[0]">
@@ -358,7 +358,7 @@
       <h2>Konversationer</h2>
       <a ng-hide="!canCreateConversation" href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
-    <div class="m-c"> 
+    <div class="m-c">
       <ul>
         <li data-ng-repeat='conversation in conversations track by $index' class="convo-li">
           <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
@@ -370,7 +370,7 @@
             </ul>
           </a>
         </li>
-      </ul>  
+      </ul>
     </div>
   </div>
   <!-- /Module: Konversationer -->
@@ -385,7 +385,7 @@
       <ul class="zebra-list">
         <li data-ng-repeat='contact in contacts track by $index'>
           <a href="#/cases/{{ caze[0].id }}/contact/{{$index}}/" class="block-link">
-            <span class="contact-no-name" data-ng-if="contact.name == ''">Namn saknas</span>
+            <span class="contact-no-name" data-ng-if="contact.name === ''">Namn saknas</span>
             {{contact.name}}
           </a>
         </li>
@@ -405,8 +405,8 @@
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li ng-show="attachment.rel == 'attachment'" ng-repeat="attachment in attachments">
-          <a ng-show="attachment.queries[0].id == 'download'" data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
+        <li ng-show="attachment.rel === 'attachment'" ng-repeat="attachment in attachments">
+          <a ng-show="attachment.queries[0].id === 'download'" data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
           <a ng-show="attachment.queries[0].id !== 'download'" href="">{{attachment.text}}</a>
           <a ng-show="attachment.commands.length" data-ng-click="deleteAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
         </li>

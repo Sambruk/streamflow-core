@@ -32,9 +32,9 @@ angular.module('sf')
       scope.hasLoggedOut = $rootScope.hasLoggedOut;
       //$rootScope.isLoggedIn = tokenService.hasToken();
 
-      // Set 
+      // Set
       var urlValue;
-      if(buildMode == 'dev'){
+      if(buildMode === 'dev'){
         urlValue = 'https://username:password@test-sf.jayway.com/streamflow/';
       } else {
         urlValue = $location.$$protocol + '://username:password@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
@@ -50,7 +50,7 @@ angular.module('sf')
           return false;
         });
       }
-      
+
       getLoggedInStatus()
       .then(function(status){
         $rootScope.isLoggedIn = status;

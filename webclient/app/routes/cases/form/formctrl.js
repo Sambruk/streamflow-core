@@ -18,7 +18,7 @@
 angular.module('sf')
   .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService, $sce, navigationService, fileService, httpService) {
     $scope.sidebardata = {};
-    
+
     $scope.caseId = $routeParams.caseId;
     $scope.currentFormId = $routeParams.formId;
     $scope.currentFormDescription;
@@ -71,7 +71,7 @@ angular.module('sf')
               $scope.form[0].enhancedPages.forEach(function(pages, pageIndex){
                 pages.fields.forEach(function(field, fieldIndex){
 
-                  if(field.field.fieldValue['_type'] == 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'){
+                  if(field.field.fieldValue['_type'] === 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'){
                     var name = null;
                     var id = null;
 
@@ -114,7 +114,7 @@ angular.module('sf')
             })
             .then(function(){
               $scope.isLastPage = function(){
-                return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1); //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) == visiblePages.length;
+                return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1); //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === visiblePages.length;
               }
             });
           });
@@ -149,11 +149,11 @@ angular.module('sf')
     }
 
     $scope.deleteFormDraftAttachment = function(fieldId){
-			var attachment = _.find($scope.formAttachments, function(attachment) { return attachment.fieldId == fieldId });
+			var attachment = _.find($scope.formAttachments, function(attachment) { return attachment.fieldId === fieldId });
 
       caseService.deleteFormDraftAttachment($routeParams.caseId, $scope.formDraftId, attachment.id).then(function(response){
       	$scope.formAttachments.forEach(function(attachment, index){
-	       	if($scope.formAttachments[index].fieldId == fieldId){
+	       	if($scope.formAttachments[index].fieldId === fieldId){
 	       		$scope.formAttachments[index].name = null;
 	       		$scope.formAttachments[index].id = null;
 	       	}
@@ -171,7 +171,7 @@ angular.module('sf')
         caseService.updateFormDraftAttachmentField($routeParams.caseId, $scope.formDraftId, $files[0].name, attachmentId, fieldId).then(function(){
 
   	    	$scope.formAttachments.forEach(function(attachment, index){
-  	    		if($scope.formAttachments[index].fieldId == fieldId){
+  	    		if($scope.formAttachments[index].fieldId === fieldId){
   	    			$scope.formAttachments[index].name = $files[0].name;
   	    			$scope.formAttachments[index].id = attachmentId;
   	    		}
@@ -216,10 +216,10 @@ angular.module('sf')
       if($scope.form && $scope.form[0]){
         return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1);
       }
-      return; //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) == visiblePages.length;
+      return; //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === visiblePages.length;
     }
 
-    
+
 
     $scope.isFirstPage = function(){
       if($scope.form && $scope.form[0]){

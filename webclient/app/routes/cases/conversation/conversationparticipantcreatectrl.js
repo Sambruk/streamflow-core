@@ -34,7 +34,7 @@ angular.module('sf')
     var chosen = select.data('chosen');
 
     chosen.dropdown.find('input').on('keydown', function(keyEvent){
-      if ((keyEvent.which == 9 || keyEvent.which == 13) && chosen.dropdown.find('li.no-results').length > 0){
+      if ((keyEvent.which === 9 || keyEvent.which === 13) && chosen.dropdown.find('li.no-results').length > 0){
         if(!this.value.match(/^$|^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
           return;
         }

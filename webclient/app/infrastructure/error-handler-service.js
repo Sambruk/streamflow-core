@@ -21,7 +21,7 @@ angular.module('sf')
     return function(error) {
       console.log("ERROR -------------", error);
       // TODO - this works for the mycases web application, should it work the same in this application
-      if (error.status == 403) {
+      if (error.status === 403) {
         $window.location.reload();
       }
 

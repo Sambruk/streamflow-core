@@ -18,7 +18,7 @@ angular.module('sf')
 	}
 
 	var checkPermission = function(scope, permissions, permission, paraPermission){
-		if(_.find(permissions, function(obj){return obj.id == permission})){
+		if(_.find(permissions, function(obj){return obj.id === permission})){
 			scope[paraPermission] = true;
 		}
 		return scope;
@@ -26,5 +26,5 @@ angular.module('sf')
 
 	return {
 		checkPermissions: checkPermissions
-	}	
+	}
 });

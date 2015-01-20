@@ -4,7 +4,7 @@ angular.module('sf')
 .factory('fileService', function($upload, $routeParams){
 
 	var uploadFiles = function($files, url){
-		if($files.length == 1){
+		if($files.length === 1){
 			uploadFile($files[0], url);
 		}else{
 	    $files.forEach(function(file){
@@ -20,9 +20,9 @@ angular.module('sf')
       file: file
     });
 	}
-	
+
 	return {
 		uploadFiles: uploadFiles,
 		uploadFile: uploadFile
-	}	
+	}
 });

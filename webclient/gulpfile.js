@@ -20,15 +20,12 @@ var gulp = require('gulp'),
     args   = require('yargs').argv,
     order = require('gulp-order'),
     es = require('event-stream'),
-    inject = require('gulp-inject'),
-    templateCache = require('gulp-angular-templatecache'),
     mainBowerFiles = require('main-bower-files'),
     ngAnnotate = require('gulp-ng-annotate'),
     rename = require('gulp-rename'),
     jshint = require('gulp-jshint'),
     stylish = require('jshint-stylish'),
     connect = require('gulp-connect'),
-    browserSync = require('browser-sync'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
     sourcemaps = require('gulp-sourcemaps'),
@@ -101,7 +98,7 @@ var mainBowerFiles = mainBowerFiles();
 
 var paths = {
   scripts: ['app/**/*.js',
-            '!app/design/**/*.*',     
+            '!app/design/**/*.*',
             '!app/**/*test.js',
             '!app/routes/cases/forms/dynamicformdirective/**/*.*'],
   templates: ['app/**/*.html',
@@ -118,7 +115,7 @@ var paths = {
         'app/design/gui/vendor/pickadate/themes/default.date.css'],
   design: {
     images: ['app/design/gui/i/*.*'],
-    css: ['app/design/gui/css/basic.css',     
+    css: ['app/design/gui/css/basic.css',
         'app/design/gui/css/print.css',
         'app/design/gui/css/fonts.css',
         'app/design/gui/css/main.css',
@@ -159,61 +156,64 @@ var paths = {
 
 gulp.task('app-scripts', function(){
   return gulp.src(paths.scripts)
-  .pipe(ngAnnotate())
-  .pipe(rename(function(path){
-    path.dirname = 'app/';
-  }))
-  .pipe(order([
-  'app/app.js',
-  'app/infrastructure/**/*.js',
-  'app/components/**/*.js',
-  'app/routes/**/*.js']))
-  .pipe(gulpif(buildMode === 'prod', uglify()))
-  .pipe(gulpif(buildMode === 'dev', sourcemaps.init()))
-  .pipe(concat('streamflow.js'))
-  .pipe(gulpif(buildMode === 'dev', sourcemaps.write()))
-  .pipe(gulp.dest('build/app'))
-  .pipe(connect.reload());
+    .pipe(ngAnnotate())
+    .pipe(rename(function(path){
+      path.dirname = 'app/';
+    }))
+    .pipe(order([
+      'app/app.js',
+      'app/infrastructure/**/*.js',
+      'app/components/**/*.js',
+      'app/routes/**/*.js'
+    ]))
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish))
+    .pipe(gulpif(buildMode === 'prod', uglify()))
+    .pipe(gulpif(buildMode === 'dev', sourcemaps.init()))
+    .pipe(concat('streamflow.js'))
+    .pipe(gulpif(buildMode === 'dev', sourcemaps.write()))
+    .pipe(gulp.dest('build/app'))
+    .pipe(connect.reload());
 });
 
 gulp.task('app-templates', function(){
   return gulp.src('app/**/*.html')
-  .pipe(gulp.dest('build'))
+    .pipe(gulp.dest('build'));
 });
 
 gulp.task('app-css', function(){
   return gulp.src(paths.design.css)
-  .pipe(gulpif(buildMode === 'prod', minifyCSS({keepBreaks:true})))
-  .pipe(concat('streamflow.css'))
-  .pipe(gulp.dest('build/app/css'))
-  .pipe(connect.reload());
+    .pipe(gulpif(buildMode === 'prod', minifyCSS({keepBreaks:true})))
+    .pipe(concat('streamflow.css'))
+    .pipe(gulp.dest('build/app/css'))
+    .pipe(connect.reload());
 });
 
 gulp.task('app-fonts', function(){
   return gulp.src(paths.design.fonts)
-  .pipe(gulp.dest('build/app/fonts'))
+    .pipe(gulp.dest('build/app/fonts'));
 });
 
 gulp.task('app-images', function(){
   return gulp.src(paths.design.images)
-  .pipe(gulp.dest('build/app/i'))
+    .pipe(gulp.dest('build/app/i'));
 });
 
 gulp.task('app-plugins', function(){
   return gulp.src(paths.design.scripts)
-  .pipe(gulp.dest('build/app/plugins'))
+    .pipe(gulp.dest('build/app/plugins'));
 });
 
 gulp.task('vendor-images', function(){
   return gulp.src(paths.vendor.images)
-  .pipe(gulp.dest('build/vendor'))
+    .pipe(gulp.dest('build/vendor'));
 });
 
 gulp.task('vendor-css', function(){
   return gulp.src(paths.vendor.css)
-  .pipe(gulpif(buildMode === 'prod', minifyCSS({keepBreaks:true})))
-  .pipe(concat('vendor.css'))
-  .pipe(gulp.dest('build/vendor'))
+    .pipe(gulpif(buildMode === 'prod', minifyCSS({keepBreaks:true})))
+    .pipe(concat('vendor.css'))
+    .pipe(gulp.dest('build/vendor'));
 });
 
 
@@ -296,3 +296,4 @@ gulp.task('default', ['connect'], function () {
   gulp.watch(paths.design.css, ['build']);
   gulp.watch(['app/**/*.html'], ['build']);
 });
+

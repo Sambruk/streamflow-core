@@ -81,10 +81,10 @@
             <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue" >
               <div class="select col medium col-2 form-comboBox" id="{{field.field.field}}">
                 <data-ng-include class="m-c" src="'routes/cases/form/form-label.html'"></data-ng-include>
-                <!--<select data-ng-model="field.value" 
+                <!--<select data-ng-model="field.value"
                         class="sidebar-chosen-drop-down ng-pristine ng-valid"-->
                 <select data-ng-model="field.value"
-                        class="sidebar-chosen-drop-down ng-pristine ng-valid ng-touched" 
+                        class="sidebar-chosen-drop-down ng-pristine ng-valid ng-touched"
                         name="{{ field.field.field }}" id="field-{{ field.field.field }}"
                         data-ng-options="option.value as option.name for option in field.field.fieldValue.options" ng-change="reapplyRules()" sf-generic-auto-send data-field-type="{{ field.field.fieldValue._type }}">
                 </select>
@@ -122,7 +122,7 @@
                            id="field-{{ field.field.field }}" value="{{ option.value }}">{{ option.display }}</input>
                     <br />
                   </span>
-                <div data-ng-show="field.field.fieldValue.values.indexOf(field.value) == -1">
+                <div data-ng-show="field.field.fieldValue.values.indexOf(field.value) === -1">
                   <input data-ng-model="field.value" sf-radio-extended-text-field="{{ field.field.fieldValue.extendedValues }}" type="text" name="{{ field.field.field }}">
                 </div>
               </div>

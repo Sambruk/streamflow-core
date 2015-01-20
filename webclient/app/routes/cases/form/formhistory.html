@@ -34,12 +34,12 @@
     {{page}}
     <div class="form-history-field">
       <div data-ng-repeat="field in page.fields">
-        <div ng-show="field.fieldType == 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'" class="form-field"><em>{{ field.field }}</em>: {{ field.value | attachmentJson }}</div> <button ng-click="downloadFormAttachment(field)">download</button>
+        <div ng-show="field.fieldType === 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'" class="form-field"><em>{{ field.field }}</em>: {{ field.value | attachmentJson }}</div> <button ng-click="downloadFormAttachment(field)">download</button>
         <div ng-show="field.fieldType !== 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'" class="form-field"><em>{{ field.field }}</em>: {{ field.value  | dateTime}}</div>
-        
+
       </div>
     </div>
-    <div ng-show="$last == true">
+    <div ng-show="$last === true">
       <div class="form-history-submitted" style="float:left;">Submitted: {{ submittedForm[0].submissionDate | dateTime}}</div>
     </div>
   </div>

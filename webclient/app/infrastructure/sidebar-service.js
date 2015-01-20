@@ -73,10 +73,10 @@ angular.module('sf')
         _priority(scope);
       });
 
-      if(scope.possibleForms.length == 0){
+      if(scope.possibleForms.length === 0){
         // Check if the current route contains formdraft to redirect to "case main page"
         var checkRoute = new RegExp('formdrafts').test($location.path());
-        if(checkRoute == true){
+        if(checkRoute === true){
           var href = navigationService.caseHrefSimple($routeParams.caseId);
           window.location.replace(href);
         }
@@ -86,7 +86,7 @@ angular.module('sf')
       $rootScope.$broadcast('case-type-changed');
       _updateCaseLabels(scope);
       _updateToolbar(scope);
-    }); 
+    });
   };
 
   var _updateCaseLabels = function(scope) {
@@ -96,13 +96,13 @@ angular.module('sf')
     } else {
       _updateObject(scope.caseLabel);
     }
-    
+
     if (!scope.possibleCaseLabels) {
       scope.possibleCaseLabels = caseService.getPossibleCaseLabels($routeParams.caseId);
     } else {
       _updateObject(scope.possibleCaseLabels);
     }
-    
+
     $q.all([
       scope.caseLabel.promise,
       scope.possibleCaseLabels.promise
@@ -112,12 +112,12 @@ angular.module('sf')
         i.selected = true;
         return i;
       });
-      
+
       scope.allCaseLabels = scope.activeLabels.concat(results[1].map(function (i) {
         i.selected = false;
         return i;
       })).sort(sortByText);
-      
+
       scope.previousActiveLabels = scope.activeLabels;
       setTimeout(function () {
         jQuery('.chosen-case-label').chosen({ 'search_contains': true }).trigger('chosen:updated');
@@ -132,8 +132,8 @@ angular.module('sf')
     } else {
       scope.commands = caseService.getSelectedCommands($routeParams.caseId);
     }
-    
-    scope.commands.promise.then(function (response) {  
+
+    scope.commands.promise.then(function (response) {
       var commandMap = {
         'sendto': 'canSendTo',
         'resolve': 'canResolve',
@@ -149,13 +149,13 @@ angular.module('sf')
         'markread': 'canMarkRead',
         'formonclose': 'formOnClose'
       };
-      
+
       var hasCommand = function (commandName) {
         return !!_.find(response, function (command) {
           return command.rel === commandName;
         });
       };
-      
+
       for (var commandName in commandMap) {
         if (commandMap.hasOwnProperty(commandName)) {
           scope[commandMap[commandName]] = hasCommand(commandName);
@@ -189,12 +189,12 @@ angular.module('sf')
         $rootScope.$broadcast('case-changed');
         $rootScope.$broadcast('case-owner-changed');
 
-        $rootScope.$broadcast('breadcrumb-updated', 
+        $rootScope.$broadcast('breadcrumb-updated',
           [{projectId: projectId},
           {projectType: projectType}]);
 
         window.location.replace(href);
-      }); 
+      });
     });
   };
 
@@ -218,11 +218,11 @@ angular.module('sf')
     });
   };
   // End Restrict / Unrestrict
-  
+
   // Mark Read / Unread
   var _markReadUnread = function (scope, read) {
     var markFunction = read ? caseService.markRead : caseService.markUnread;
-    
+
     markFunction($routeParams.caseId).then(function () {
       scope.commands.resolve().then(function () {
         _updateToolbar(scope);
@@ -230,7 +230,7 @@ angular.module('sf')
     });
   };
   // End Mark Read / Unread
-  
+
   // Close
   var _close = function (scope) {
     if(scope.caseType === null){
@@ -244,7 +244,7 @@ angular.module('sf')
     }
   };
   // End Close
-  
+
   // Delete
   var _deleteCase = function (scope) {
     caseService.deleteCase($routeParams.caseId).then(function () {
@@ -254,7 +254,7 @@ angular.module('sf')
     });
   };
   // End Delete
-  
+
   // Assign / Unassign
   var _assign = function (scope) {
     caseService.assignCase($routeParams.caseId).then(function () {
@@ -289,7 +289,7 @@ angular.module('sf')
       var userPass = window.atob(tokenService.getToken());
       return 'https://' + userPass + '@' ;
     });
-    
+
     var url = apiUrl + '/cases/' + $routeParams.caseId + '/attachments/' + attachment.href + 'download';
     window.location.replace(url);
   };
@@ -307,12 +307,12 @@ angular.module('sf')
         return item.id === j.id;
       });
     });
-    
+
     if (removedLabels.length > 0) {
       var removePromises = removedLabels.map(function (label) {
         return caseService.deleteCaseLabel($routeParams.caseId, label.id);
       });
-      
+
       $q.all(removePromises).then(function(){
         _updateCaseLabels(scope);
       });
@@ -320,12 +320,12 @@ angular.module('sf')
       var addPromises = labels.map(function (label) {
         return caseService.addCaseLabel($routeParams.caseId, label.id);
       });
-      
+
       $q.all(addPromises).then(function(){
         _updateCaseLabels(scope);
       });
     }
-  
+
     scope.previousActiveLabels = labels;
   };
 
@@ -414,7 +414,7 @@ angular.module('sf')
     reopen: _reopen,
     deleteCase: _deleteCase,
     assign: _assign,
-    unassign: _unassign, 
+    unassign: _unassign,
     downloadAttachment: _downloadAttachment,
     deleteAttachment: _deleteAttachment,
     changeCaseLabels: _changeCaseLabels,

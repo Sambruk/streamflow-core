@@ -27,7 +27,7 @@ angular.module('sf')
     function match(value) {
       for (var key in attrs) {
         if(!_.isUndefined(value)) {
-          if(value == null){
+          if(value === null){
             return false;
           }
           if (attrs[key] !== value[key]) {
@@ -41,7 +41,7 @@ angular.module('sf')
     function traverse(value) {
       var result;
       _.forEach(value, function (val) {
-        if (result == true) {
+        if (result === true) {
           return;
         }
         if (match(val) && val.field) {
@@ -56,7 +56,7 @@ angular.module('sf')
     }
 
     var a = traverse(items);
-    if(a == true){
+    if(a === true){
       return true;
     } else {
       //return traverse(items);
@@ -74,10 +74,10 @@ angular.module('sf')
   // displayFieldIfRuleValuePresent for each object/array in the tree
   var _applyRulesToElements = function(obj, rootObj){
     _.each(obj, function(objItem){
-    	if(objItem == null){
+    	if(objItem === null){
     		return;
     	}
-      if(typeof objItem == 'object' && objItem !== null){
+      if(typeof objItem === 'object' && objItem !== null){
         _displayFieldIfRuleValuePresent(objItem, rootObj);
         _applyRulesToElements(objItem, rootObj);
       } else {
@@ -144,7 +144,7 @@ angular.module('sf')
    //console.log(fld);
     //fld.css('display', 'hidden');
    //  debugger;
-    
+
     //console.log('hiding field: ' + fieldId);
     var element = $('#' + fieldId);
     if(element.hasClass('ng-show')){
