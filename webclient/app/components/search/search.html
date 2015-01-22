@@ -1,8 +1,14 @@
-<form ng-submit="search(query)" class="main-search" role="search">
-     <div>
-         <label for="main-searchtext" class="struct">Sök</label>
-         <input ng-model="query" type="text" name="main-searchtext" id="main-searchtext" placeholder="Sök" required>
-         <button type="submit"><i class="icon-search"><span>Sök</span></i></button>
-     </div>
- </form>
- <!-- /main-search -->
+<form ng-submit="search(query)" role="search">
+  <fieldset>
+    <label for="main-searchtext" class="struct">Sök</label>
+    <input ng-model="query" type="text" placeholder="Sök" id="main-searchtext" ng-focus="showSearchTerms = true" ng-blur="showSearchTerms = false" required>
+    <button type="submit" class="icon-search"><span>Sök</span></button>
+  </fieldset>
+</form>
+<div class="search-terms" ng-show="showSearchTerms">
+  <div class="due-date-divider">
+    <span>Lägg till sökterm</span>
+  </div>
+  <button ng-click="addSearchTermToQuery($event)" ng-repeat="(searchTerm, translation) in searchTerms">{{translation}}</button>
+</div>
+<!-- /main-search -->
