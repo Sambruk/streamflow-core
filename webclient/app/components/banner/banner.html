@@ -17,24 +17,21 @@
 
 -->
 <div growl role="banner"></div>
-  <div class="header cf" role="banner">
-
-    <div class="header-body cf">
-
-      <div class="client-name">
-        <div class="user-area" style="float:left;width:100%;">
-          <a href="#/logout" class="btn btn-xs">Logga ut</a>
-          <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
-        </div>
-        <!-- /user-area -->
-          <h1>Streamflow Web Client Beta 1</h1>
+<div class="header cf" role="banner">
+  <div class="header-body cf">
+    <div class="client-name">
+      <div class="user-area">
+        <a href="#/logout" class="btn btn-xs">Logga ut</a>
+        <a href="#/profile" class="icon-user logged-in">{{profile[0].name}}</a>
       </div>
-
-      <!-- /client-name -->
-      <search class="main-search"></search>
+      <!-- /user-area -->
+      <h1>Streamflow Web Client Beta 1</h1>
     </div>
-    <!-- /header-body -->
 
-    <breadcrumbbanner></breadcrumbbanner>
-
+    <!-- /client-name -->
+    <search class="main-search"></search>
   </div>
+  <!-- /header-body -->
+
+  <breadcrumbbanner></breadcrumbbanner>
+</div>
