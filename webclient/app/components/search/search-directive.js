@@ -37,7 +37,7 @@ angular.module('sf').directive('search', function ($location, navigationService)
         // Defer focus of text field to next cycle to avoid problems with
         // $apply. There must be a better way to do this?
         _.defer(function () {
-          $(element).find('#main-searchtext').focus();
+          element.find('#main-searchtext').focus();
         });
       };
 
