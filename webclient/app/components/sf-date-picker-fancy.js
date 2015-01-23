@@ -23,10 +23,8 @@ angular.module('sf')
       require: "ngModel",
 
       link: function (scope, element, attrs, ngModel) {
-          console.log(element);
           var dateRegex = /^\d{4}-\d{2}-\d{2}/,
               $element = $(element);
-              //debugger;
           var $input = $element.pickadate({
             selectYears: true,
             selectMonths: true,
@@ -53,7 +51,7 @@ angular.module('sf')
                 scope.dueOnShort = fancyDateService.format(newVal);
               });
             }
-          });    
+          });
       }
     };
   }]);
