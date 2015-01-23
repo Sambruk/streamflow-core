@@ -1,7 +1,7 @@
 <form data-ng-submit="search(query)" role="search">
   <fieldset>
     <label for="main-searchtext" class="struct">Sök</label>
-    <input data-ng-model="query" type="text" placeholder="Sök" id="main-searchtext" data-ng-focus="showSearchTerms = true" data-ng-blur="showSearchTerms = false" required>
+    <input type="search" placeholder="Sök" id="main-searchtext" data-ng-model="query" data-ng-focus="toggleSearchTerms(true)" data-ng-blur="toggleSearchTerms(false)">
     <button type="submit" class="icon-search"><span>Sök</span></button>
   </fieldset>
 </form>

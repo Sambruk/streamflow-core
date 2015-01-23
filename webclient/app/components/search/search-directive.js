@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sf').directive('search', function ($location, navigationService) {
+angular.module('sf').directive('search', ['$location', '$timeout', function ($location, $timeout, navigationService) {
   return {
     restrict: 'E',
     templateUrl: 'components/search/search.html',
@@ -22,6 +22,21 @@ angular.module('sf').directive('search', function ($location, navigationService)
         'week': 'vecka',
         'me': 'mig',
         'createdBy': 'skapadav'
+      };
+
+      scope.toggleSearchTerms = function (visible) {
+        if (visible) {
+          scope.showSearchTerms = true;
+        } else {
+          // Delay the hiding of search terms since we might have clicked a
+          // search term button, which would trigger a blur on the input field,
+          // hiding it immediately.
+          $timeout(function () {
+            if (!element.find('#main-searchtext').is(':focus')) {
+              scope.showSearchTerms = false;
+            }
+          }, 100);
+        }
       };
 
       scope.addSearchTermToQuery = function (event) {
@@ -47,4 +62,4 @@ angular.module('sf').directive('search', function ($location, navigationService)
       };
     }
   };
-});
+}]);
