@@ -31,6 +31,7 @@ var runSequence = require('run-sequence');
 var karma = require('gulp-karma');
 var minifyCSS = require('gulp-minify-css');
 var ngConstant = require('gulp-ng-constant');
+var replace = require('gulp-replace');
 var debug = require('gulp-debug');
 
 var testFiles = ['unit/filters-unit.js'];
@@ -52,7 +53,7 @@ var paths = {
   ],
   images: [
     'app/design/gui/i/**/*',
-    'bower_components/chosen/*.png'
+    'bower_components/chosen/**/*.png'
   ],
   fonts: [
     'app/design/gui/fonts/**/*'
@@ -112,6 +113,10 @@ gulp.task('build-vendor-scripts', function () {
 
 gulp.task('build-css', function () {
   return gulp.src(paths.css)
+    // Fix paths to Chosen's sprite sheets.
+    .pipe(replace(/chosen-sprite(@2x)?.png/gi, function (match) {
+      return '../i/' + match;
+    }))
     .pipe(minifyCSS())
     .pipe(concat('streamflow.css'))
     .pipe(gulp.dest('build/app/css'))
