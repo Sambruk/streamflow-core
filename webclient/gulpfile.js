@@ -133,7 +133,7 @@ gulp.task('copy-images', function () {
     .pipe(gulp.dest('build/app/i'));
 });
 
-gulp.task('connect', ['build'], function () {
+gulp.task('connect', function () {
   connect.server({
     root: 'build',
     port: 9999,
@@ -157,10 +157,14 @@ gulp.task('build', [
 ]);
 
 gulp.task('watch', function () {
-  gulp.watch(paths.scripts, ['build']);
-  gulp.watch(paths.css, ['build']);
-  gulp.watch(paths.templates, ['build']);
+  gulp.watch(paths.scripts, ['build-scripts', 'build-vendor-scripts']);
+  gulp.watch(paths.css, ['build-css']);
+  gulp.watch(paths.templates, ['copy-templates']);
+  gulp.watch(paths.images, ['copy-images']);
+  gulp.watch(paths.fonts, ['copy-fonts']);
 });
 
-gulp.task('default', ['connect']);
+gulp.task('default', function () {
+  runSequence('build', 'connect', 'watch');
+});
 
