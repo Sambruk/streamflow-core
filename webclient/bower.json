@@ -25,7 +25,8 @@
     "angular-scenario": "latest",
     "pickadate": "~3.5.4",
     "underscore": "~1.7.0",
-    "chosen": "https://github.com/harvesthq/chosen/releases/download/v1.3.0/chosen_v1.3.0.zip"
+    "chosen": "https://github.com/harvesthq/chosen/releases/download/v1.3.0/chosen_v1.3.0.zip",
+    "jquery.customSelect": "*"
   },
   "overrides": {
     "chosen": {
