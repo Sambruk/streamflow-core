@@ -32,7 +32,6 @@ var karma = require('gulp-karma');
 var minifyCSS = require('gulp-minify-css');
 var ngConstant = require('gulp-ng-constant');
 var replace = require('gulp-replace');
-var debug = require('gulp-debug');
 
 var testFiles = ['unit/filters-unit.js'];
 var buildMode = args.prod || args.dev || 'dev';
@@ -93,10 +92,10 @@ gulp.task('e2e-test', function () {
 
 gulp.task('build-scripts', function () {
   return gulp.src(paths.scripts)
-    //.pipe(jshint())
-    //.pipe(jshint.reporter(stylish))
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish))
     .pipe(ngAnnotate())
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(concat('streamflow.js'))
     .pipe(gulp.dest('build/app'))
     .pipe(connect.reload());
@@ -105,7 +104,7 @@ gulp.task('build-scripts', function () {
 gulp.task('build-vendor-scripts', function () {
   return gulp.src(mainBowerFiles({filter: /\.js$/i}))
     .pipe(ngAnnotate())
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/app'))
     .pipe(connect.reload());
