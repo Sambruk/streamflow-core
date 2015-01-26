@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sf').directive('search', ['$location', '$timeout', function ($location, $timeout, navigationService) {
+angular.module('sf').directive('search', function ($location, $timeout, navigationService) {
   return {
     restrict: 'E',
     templateUrl: 'components/search/search.html',
@@ -62,4 +62,4 @@ angular.module('sf').directive('search', ['$location', '$timeout', function ($lo
       };
     }
   };
-}]);
+});
