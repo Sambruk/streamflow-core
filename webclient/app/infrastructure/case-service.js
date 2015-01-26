@@ -1143,6 +1143,7 @@ angular.module('sf')
             {resources: 'participants'}
             ]),
           onSuccess:function (resource, result) {
+            result.commands = resource.response.commands;
             resource.response.index.links.forEach(function(item){result.push(item)});
             caseBase.broadcastMessage(result.status);
           },
