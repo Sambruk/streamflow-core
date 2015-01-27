@@ -32,6 +32,8 @@ var karma = require('gulp-karma');
 var minifyCSS = require('gulp-minify-css');
 var ngConstant = require('gulp-ng-constant');
 var replace = require('gulp-replace');
+var sourcemaps = require('gulp-sourcemaps');
+var debug = require('gulp-debug');
 
 var testFiles = ['unit/filters-unit.js'];
 var buildMode = args.prod || args.dev || 'dev';
@@ -92,20 +94,24 @@ gulp.task('e2e-test', function () {
 
 gulp.task('build-scripts', function () {
   return gulp.src(paths.scripts)
-    .pipe(jshint())
-    .pipe(jshint.reporter(stylish))
-    .pipe(ngAnnotate())
-    .pipe(uglify())
-    .pipe(concat('streamflow.js'))
+    //.pipe(jshint())
+    //.pipe(jshint.reporter(stylish))
+    .pipe(sourcemaps.init())
+      .pipe(concat('streamflow.js'))
+      .pipe(ngAnnotate())
+      .pipe(uglify())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('build/app'))
     .pipe(connect.reload());
 });
 
 gulp.task('build-vendor-scripts', function () {
   return gulp.src(mainBowerFiles({filter: /\.js$/i}))
-    .pipe(ngAnnotate())
-    .pipe(uglify())
-    .pipe(concat('vendor.js'))
+    .pipe(sourcemaps.init())
+      .pipe(concat('vendor.js'))
+      .pipe(ngAnnotate())
+      .pipe(uglify())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('build/app'))
     .pipe(connect.reload());
 });
@@ -116,8 +122,10 @@ gulp.task('build-css', function () {
     .pipe(replace(/chosen-sprite(@2x)?.png/gi, function (match) {
       return '../i/' + match;
     }))
-    .pipe(minifyCSS())
-    .pipe(concat('streamflow.css'))
+    .pipe(sourcemaps.init())
+      .pipe(concat('streamflow.css'))
+      .pipe(minifyCSS())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('build/app/css'))
     .pipe(connect.reload());
 });
