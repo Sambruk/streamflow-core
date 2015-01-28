@@ -16,8 +16,7 @@
  */
 'use strict';
 
-angular.module('sf')
-.directive('login', function($rootScope,buildMode,$location, $http, $window, $route, tokenService, httpService){
+angular.module('sf').directive('login', function($rootScope, buildMode, $location, $http, $window, $route, tokenService, httpService) {
   return {
     restrict: 'E',
     templateUrl: 'components/login/login.html',
@@ -31,43 +30,40 @@ angular.module('sf')
       scope.hasToken = tokenService.hasToken();
       scope.hasLoggedOut = $rootScope.hasLoggedOut;
 
-      // Set
-      var urlValue;
-      if(buildMode === 'dev'){
-        urlValue = 'https://username:password@test-sf.jayway.com/streamflow/';
-      } else {
-        urlValue = $location.$$protocol + '://username:password@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
+      function getLogoutUrl() {
+        var url;
+        if (buildMode === 'dev') {
+          url= 'https://username:password@test-sf.jayway.com/streamflow/';
+        } else {
+          url= $location.$$protocol + '://username:password@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
+        }
+        return url;
       }
 
       function getLoggedInStatus(){
         return $http.get(httpService.apiUrl)
-        .success(function(res){
-          return true;
-        })
-        .error(function(err){
-          return false;
-        });
+          .success(function () {
+            return true;
+          })
+          .error(function () {
+            return false;
+          });
       }
 
       getLoggedInStatus()
-      .then(function(status){
-        $rootScope.isLoggedIn = status;
-      });
+        .then(function (status) {
+          $rootScope.isLoggedIn = status;
+        });
 
-      $rootScope.$on('logout', function(event, data){
-        if(data === true){
-          $http.get(urlValue).error(function(){
-            $rootScope.$broadcast('logout', false);
+      $rootScope.$on('logout', function (event, logout) {
+        if (logout) {
+          var logoutUrl = getLogoutUrl();
+          $http.get(logoutUrl).error(function (response, status) {
+            if (status === 401) {
+              $location.path('#/');
+              $window.location.reload();
+            }
           });
-        } else {
-          getLoggedInStatus()
-          .then(function(status){
-            $rootScope.isLoggedIn = status;
-            $location.path('#/');
-            $window.location.reload();
-            console.log(status);
-          });
-
         }
       });
 
@@ -83,7 +79,7 @@ angular.module('sf')
           tokenService.storeToken(basicAuthBase64);
           window.location.reload();
         }, function () {
-          scope.errorMessage = "Användarnamn / lösenord ej giltigt!";
+          scope.errorMessage = 'Användarnamn / lösenord ej giltigt!';
         });
       };
     }

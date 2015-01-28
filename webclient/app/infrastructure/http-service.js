@@ -31,7 +31,7 @@ angular.module('sf')
       var url = $location.absUrl();
       var li = url.lastIndexOf($location.path());
       var index = url.substring(0, li);
-      var baseUrl = index.substring(0, index.lastIndexOf("/"));
+      var baseUrl = index.substring(0, index.lastIndexOf('/'));
       return baseUrl;
     }
 
