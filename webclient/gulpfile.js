@@ -107,11 +107,9 @@ gulp.task('build-scripts', function () {
 
 gulp.task('build-vendor-scripts', function () {
   return gulp.src(mainBowerFiles({filter: /\.js$/i}))
-    .pipe(sourcemaps.init())
-      .pipe(concat('vendor.js'))
-      .pipe(ngAnnotate())
-      .pipe(uglify())
-    .pipe(sourcemaps.write())
+    .pipe(concat('vendor.js'))
+    .pipe(ngAnnotate())
+    .pipe(uglify())
     .pipe(gulp.dest('build/app'))
     .pipe(connect.reload());
 });
