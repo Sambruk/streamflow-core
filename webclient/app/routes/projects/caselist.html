@@ -19,51 +19,93 @@
 <div class="content-primary" role="main">
   <div class="issues-overview">
     <div class="filter cf">
-      <input type="text" ng-model="q" id="search" placeholder="Filtrera sökning">
-      <select
-        ng-model="sortExpression">
-        <option value="">-- Sortera --</option>
-        <option value="caseId">Ingen</option>
-        <option value="text">Beskrivning</option>
-        <option value="creationDate">Skapad</option>
-        <option value="dueDate">Förfallodatum</option>
-        <option value="priority">Prioritet</option>
-      </select>
-      <select
-        ng-options="option.name for option in groupingOptions"
-        ng-model="selectedItem"
-        ng-change="groupBy()">
-        <option value="">-- Gruppera --</option>
-      </select>
+      <input ng-model="filterSearch" id="search" class="form-control" placeholder="Filtrera sökning" />
+      <div style="min-height: 20px; float: right;">
+      	<div>
+      		<label for="sortDropdown" style="display: block; font-weight: 700;">Sortera</label>
+      	</div>
+	      <select
+	      	style="width: 100%;"
+	      	id="sortDropdown"
+	      	ng-model="sortExpression">
+	        <option value="">Ingen</option>
+	        <option value="text">Beskrivning</option>
+	        <option value="creationDate">Skapad</option>
+	        <option value="dueDate">Förfallodatum</option>
+	        <option value="priority">Prioritet</option>
+	      </select>
+	    </div>
+	    <div style="min-height: 20px; float:right; margin-right: 1em;">
+	    	<div>
+	    		<label for="groupOptions" style="display: block; font-weight: 700;">Gruppera</label>
+	    	</div>
+	      <select
+	      	style="width: 100%;"
+	      	ng-options="option.name for option in groupingOptions"
+	      	ng-model="selectedItem"
+	      	ng-change="groupBy(selectedItem)">
+	        <option value="">Ingen</option>
+	      </select>
+	     </div>
     </div>
-    <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)">
-    </dir-pagination-controls>
+
+    <!-- <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)"></dir-pagination-controls> -->
+
     <h3>{{getHeader()}}</h3>
     <div class="due-date-divider"><span>Förfallodatum</span></div>
     <div ng-hide="showSpinner.currentCases">
       <ul class="issue-list">
-        <li class="issue-item {{case.overdueStatus()}}" dir-paginate="case in currentCases | orderBy:sortExpression | filter:q | itemsPerPage: pageSize" current-page="currentPage">
-        <a href="{{case.href}}" class="block-link">
-          <div class="due-date">
-            <span>{{case.overdueDays() | positive}}</span>
-            <data-ng-pluralize
-            count="case.overdueDays()"
-            when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
-            </data-ng-pluralize>
-          </div>
-          <div class="issue-description">
-            <span class="meta">{{case.caseId}} - {{case.project}}</span>
-            <h4>{{case.text}}</h4>
-            <span class="creator">{{case.createdBy}}</span>
-          </div>
-          <div class="issue-actions">
-            <div>
-              <span class="action-status updated">Ändrad {{case.modificationDate() | shortDate}}</span>
-              <span class="created-on">Skapad {{case.creationDate | shortDate}}</span>
-            </div>
-          </div>
-        </a>
+
+        <li ng-show="currentCases['grouped'] && selectedItem.value !== 'caseId'" class="issue-item {{case.overdueStatus()}}" ng-repeat="(key, value) in currentCases | filter: filterSearch | groupBy: selectedItem.value">
+	        <h3 id="groupingHeader">{{key}}</h3>
+	        <div ng-repeat="case in value | filter: filterSearch | orderBy: sortExpression">
+		        <a href="{{case.href}}" class="block-link">
+		          <div class="due-date">
+		            <span>{{case.overdueDays() | positive}}</span>
+		            <data-ng-pluralize
+		            count="case.overdueDays()"
+		            when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
+		            </data-ng-pluralize>
+		          </div>
+		          <div class="issue-description">
+		            <span class="meta">{{case.caseId}} - {{case.owner}}</span>
+		            <h4>{{case.text}}</h4>
+		            <span class="creator">{{case.createdBy}}</span>
+		          </div>
+		          <div class="issue-actions">
+		            <div>
+		              <span class="action-status updated">Ändrad {{case.modificationDate() | shortDate}}</span>
+		              <span class="created-on">Skapad {{case.creationDate | shortDate}}</span>
+		            </div>
+		          </div>
+		        </a>
+		      </div>
         </li>
+
+      	<li ng-show="!currentCases['grouped'] || selectedItem.value === 'caseId'" class="issue-item {{case.overdueStatus()}}" ng-repeat="case in currentCases | filter: filterSearch | orderBy: [sortExpression, caseId]">
+	        <a href="{{case.href}}" class="block-link">
+	          <div class="due-date">
+	            <span>{{case.overdueDays() | positive}}</span>
+	            <data-ng-pluralize
+	            count="case.overdueDays()"
+	            when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
+	            </data-ng-pluralize>
+	          </div>
+	          <div class="issue-description">
+	            <span class="meta">{{case.caseId}} - {{case.owner}}</span>
+	            <h4>{{case.text}}</h4>
+	            <span class="creator">{{case.createdBy}}</span>
+	          </div>
+	          <div class="issue-actions">
+	            <div>
+	              <span class="action-status updated">Ändrad {{case.modificationDate() | shortDate}}</span>
+	              <span class="created-on">Skapad {{case.creationDate | shortDate}}</span>
+	            </div>
+	          </div>
+	        </a>
+        </li>
+
+
       </ul> <!-- issue-list -->
     </div>
     <div ng-show="showSpinner.currentCases" class="spinner"></div>

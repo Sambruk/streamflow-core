@@ -22,28 +22,72 @@ angular.module('sf')
     $scope.pageSize = 10;
     $scope.currentCases = [];
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
+    $scope.totalCases = $scope.currentCases.length;
     $scope.projectType = $routeParams.projectType;
+    var originalCurrentCases;
 
-    $scope.pageChangeHandler = function(num) {
-      console.log('page changed to ' + num);
-    };
+    $scope.currentCases.promise.then(function(){
+      originalCurrentCases = $scope.currentCases;
+    });
+
+    // $scope.pageChangeHandler = function(num) {
+    //   console.log('page changed to ' + num);
+    // };
 
     $scope.showSpinner = {
       currentCases: true
     };
 
-    $scope.groupingOptions = [{name:'Ingen', value:'caseId'},
-      {name:'Ärendetyp', value:'caseType.text'},
+    $scope.groupingOptions = [{name:'Ärendetyp', value:'caseTypeText'},
       {name:'Förfallodatum', value:'dueOn'},
-      {name:'Assigned To', value:'assignedTo'},
-      {name:'Projekt', value:'project'},
+      {name:'Förvärvare', value:'assignedTo'},
+      {name:'Projekt', value:'owner'},
       {name:'Prioritet', value:'priority'}];
+
 
     $scope.getHeader = function () {
       return {
         assignments: 'Alla mina ärenden',
         inbox: 'Alla ärenden i inkorgen'
       }[$scope.projectType];
+    };
+
+    $scope.groupBy = function(selectedGroupItem){
+      var groupCurrentCases = [];
+
+      _.each($scope.currentCases, function(item){
+        switch(selectedGroupItem.value) {
+          case 'caseTypeText':
+            if(!item.caseType){
+              item.caseTypeText = 'Ingen ärendetyp';
+            } else {
+              item.caseTypeText = item.caseType.text.toLowerCase();
+            }
+            break;
+          case 'assignedTo':
+            if(!item.assignedTo){
+              item.assignedTo = 'Ingen förvärvare';
+            }
+            break;
+          case 'owner':
+            if(!item.owner){
+              item.owner = 'Inget projekt';
+            }
+          default:
+            $scope.currentCases = originalCurrentCases;
+        }
+
+        if(selectedGroupItem){
+          groupCurrentCases.push(item);
+        }
+      });
+
+      if(groupCurrentCases.length){
+        $scope.currentCases = groupCurrentCases;
+      }
+      if(selectedGroupItem){
+        $scope.currentCases['grouped'] = true;
+      }
     };
 
     //Set breadcrumbs to case-owner if possible else to project id
