@@ -58,11 +58,10 @@ angular.module('sf').directive('login', function($rootScope, buildMode, $locatio
       $rootScope.$on('logout', function (event, logout) {
         if (logout) {
           var logoutUrl = getLogoutUrl();
-          $http.get(logoutUrl).error(function (response, status) {
-            if (status === 401) {
-              $location.path('#/');
-              $window.location.reload();
-            }
+          $http.get(logoutUrl).error(function (response) {
+            // An error should mean we successfully logged out. This is handled
+            // by the response interceptor, so just show the error message.
+            console.error(response);
           });
         }
       });
