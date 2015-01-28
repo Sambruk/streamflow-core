@@ -17,9 +17,9 @@
 'use strict';
 
 angular.module('sf')
-  .controller('CaseListCtrl', function(growl, $scope, $routeParams, projectService, $rootScope) {
-    $scope.currentPage = 1;
-    $scope.pageSize = 10;
+  .controller('CaseListCtrl', function($scope, $routeParams, projectService, $rootScope, groupByService) {
+    // $scope.currentPage = 1;
+    // $scope.pageSize = 10;
     $scope.currentCases = [];
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
     $scope.totalCases = $scope.currentCases.length;
@@ -38,13 +38,6 @@ angular.module('sf')
       currentCases: true
     };
 
-    $scope.groupingOptions = [{name:'Ärendetyp', value:'caseTypeText'},
-      {name:'Förfallodatum', value:'dueOn'},
-      {name:'Förvärvare', value:'assignedTo'},
-      {name:'Projekt', value:'owner'},
-      {name:'Prioritet', value:'priority'}];
-
-
     $scope.getHeader = function () {
       return {
         assignments: 'Alla mina ärenden',
@@ -52,42 +45,10 @@ angular.module('sf')
       }[$scope.projectType];
     };
 
-    $scope.groupBy = function(selectedGroupItem){
-      var groupCurrentCases = [];
+    $scope.groupingOptions = groupByService.getGroupingOptions();
 
-      _.each($scope.currentCases, function(item){
-        switch(selectedGroupItem.value) {
-          case 'caseTypeText':
-            if(!item.caseType){
-              item.caseTypeText = 'Ingen ärendetyp';
-            } else {
-              item.caseTypeText = item.caseType.text.toLowerCase();
-            }
-            break;
-          case 'assignedTo':
-            if(!item.assignedTo){
-              item.assignedTo = 'Ingen förvärvare';
-            }
-            break;
-          case 'owner':
-            if(!item.owner){
-              item.owner = 'Inget projekt';
-            }
-          default:
-            $scope.currentCases = originalCurrentCases;
-        }
-
-        if(selectedGroupItem){
-          groupCurrentCases.push(item);
-        }
-      });
-
-      if(groupCurrentCases.length){
-        $scope.currentCases = groupCurrentCases;
-      }
-      if(selectedGroupItem){
-        $scope.currentCases['grouped'] = true;
-      }
+    $scope.groupBy = function(selectedGroupItem) {
+      $scope.currentCases = groupByService.groupBy($scope.currentCases, originalCurrentCases, selectedGroupItem);
     };
 
     //Set breadcrumbs to case-owner if possible else to project id

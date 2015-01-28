@@ -17,13 +17,15 @@
 
 'use strict';
 
-angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, searchService) {
+angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, searchService, groupByService) {
 
   var query = $routeParams.query;
 
-  $scope.currentPage = 1;
-  $scope.pageSize = 10;
+  // $scope.currentPage = 1;
+  // $scope.pageSize = 10;
   $scope.currentCases = [];
+  var originalCurrentCases = [];
+
   $scope.showSpinner = {
     currentCases: true
   };
@@ -32,9 +34,19 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, se
     return 'Sökresultat';
   };
 
+  $scope.groupingOptions = groupByService.getGroupingOptions();
+
+  $scope.groupBy = function(selectedGroupItem) {
+    $scope.currentCases = groupByService.groupBy($scope.currentCases, originalCurrentCases, selectedGroupItem);
+  };
+
   searchService.getCases(query).promise.then(function (result) {
     $scope.currentCases = result;
     $scope.showSpinner.currentCases = false;
+
+    $scope.currentCases.promise.then(function(){
+      originalCurrentCases = $scope.currentCases;
+    });
   });
 
 });
