@@ -24,13 +24,13 @@ angular.module('sf')
     $scope.showSpinner = {
       caseLogs: true
     };
-    
+
     httpService.getRequest(defaultFiltersUrl, false)
     .then(function(result){
       var filterObj = result.data;
       var filterArray = [];
       for (var prop in filterObj) {
-        filterArray.push({ "filterName": prop, "filterValue": filterObj[prop] });
+        filterArray.push({ 'filterName': prop, 'filterValue': filterObj[prop] });
       }
       $scope.caseLogFilters = filterArray;
       $scope.caseLogs = caseService.getSelectedCaseLog($routeParams.caseId);

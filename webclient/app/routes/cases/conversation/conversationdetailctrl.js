@@ -33,7 +33,7 @@ angular.module('sf')
       conversationMessageDraft: true
     };
 
-    $scope.conversationParticipants.promise.then(function(response){
+    $scope.conversationParticipants.promise.then(function(){
       checkPermissionService.checkPermissions($scope, $scope.conversationParticipants.commands, ['addparticipant', 'addexternalparticipant'], ['canAddParticipant', 'canAddExternalParticipant']);
     });
 
@@ -80,7 +80,7 @@ angular.module('sf')
       var url = httpService.apiUrl + 'workspacev2/cases/'+$routeParams.caseId+'/conversations/'+$routeParams.conversationId+'/messages/messagedraft/attachments/createattachment';
       fileService.uploadFiles($files, url);
       updateObject($scope.conversationMessageDraftAttachments);
-    }
+    };
 
     $scope.removeParticipant = function(participant){
       $rootScope.$broadcast('conversation-changed-set-spinner', 'true');
@@ -88,7 +88,7 @@ angular.module('sf')
         $rootScope.$broadcast('participant-removed');
         $rootScope.$broadcast('conversation-changed-set-spinner', 'false');
       });
-    }
+    };
 
     $scope.submitMessage = function($event){
       $event.preventDefault();
@@ -98,25 +98,25 @@ angular.module('sf')
         updateObject($scope.conversationMessages);
         updateObject($scope.conversationMessageDraftAttachments);
 
-        $scope.conversationMessageDraft[0] = "";
+        $scope.conversationMessageDraft[0] = '';
         $rootScope.$broadcast('conversation-message-created');
 
         $scope.showSpinner.conversation = false;
       });
-    }
+    };
 
     $scope.deleteDraftAttachment = function(attachment){
       caseService.deleteDraftAttachment($routeParams.caseId, $routeParams.conversationId, attachment.id).then(function(){
         updateObject($scope.conversationMessageDraftAttachments);
       });
-    }
+    };
 
     $scope.downloadDraftAttachment = function(attachment){
       var apiUrl = getApiUrl();
 
       var url = apiUrl + '/cases/' + $routeParams.caseId + '/conversations/' + $routeParams.conversationId + '/messages/messagedraft/attachments/' + attachment.href + 'download';
       window.location.replace(url);
-    }
+    };
 
     $scope.downloadMessageAttachment = function (message, attachment) {
       var apiUrl = getApiUrl();

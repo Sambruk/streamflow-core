@@ -29,7 +29,7 @@ angular.module('sf')
     });
 
     // cache the select element as we'll be using it a few times
-    var select = $(".chosen-select");
+    var select = $('.chosen-select');
     select.chosen();
     var chosen = select.data('chosen');
 
@@ -39,20 +39,20 @@ angular.module('sf')
           return;
         }
 
-        var option = $("<option>").val(this.value).text(this.value);
+        var option = $('<option>').val(this.value).text(this.value);
         select.prepend(option);
         select.find(option).prop('selected', true);
-        select.trigger("chosen:updated");
+        select.trigger('chosen:updated');
         $scope.externalParticipant = option[0].text;
       }
     });
 
     var updateParticipant = function(){
-      var href = navigationService.caseHrefSimple($routeParams.caseId) + "/conversation/" + $routeParams.conversationId;
+      var href = navigationService.caseHrefSimple($routeParams.caseId) + '/conversation/' + $routeParams.conversationId;
       $scope.possibleParticipants.invalidate();
       $scope.possibleParticipants.resolve();
       window.location.assign(href);
-    }
+    };
 
     $scope.addParticipant = function($event){
       $event.preventDefault();
@@ -69,5 +69,5 @@ angular.module('sf')
           updateParticipant();
         });
       }
-    }
+    };
   });

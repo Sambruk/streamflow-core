@@ -49,7 +49,7 @@ angular.module('sf')
 
     $scope.$watch('caseNote', function(newVal){
       if(!newVal){
-        return
+        return;
       }
       $scope.caseNote = newVal;
     });
@@ -68,7 +68,7 @@ angular.module('sf')
           $error($error($event.target));
         });
       }
-    }
+    };
 
     $scope.changeCaseDescription = function($event, $success, $error){
       $event.preventDefault();
@@ -85,6 +85,6 @@ angular.module('sf')
           $error($error($event.target));
         });
       }
-    }
+    };
 
   });

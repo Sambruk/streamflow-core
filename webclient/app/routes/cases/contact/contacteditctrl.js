@@ -31,8 +31,8 @@ angular.module('sf')
     $scope.contact.promise.then(function(){
       $scope.showSpinner.contact = false;
       checkPermissionService.checkPermissions($scope, $scope.contact.commands, ['delete', 'update'], ['canDeleteContact', 'canUpdateContact']);
-      if(!$scope['canUpdateContact']){
-        $(".custom-select, .contact-pref").addClass("disabled");
+      if(!$scope.canUpdateContact) {
+        $('.custom-select, .contact-pref').addClass('disabled');
       }
     });
 
@@ -57,7 +57,7 @@ angular.module('sf')
 
         window.location.assign(href);
       });
-    }
+    };
 
     $scope.updateField = function ($event, $success, $error) {
       $event.preventDefault();
@@ -78,9 +78,9 @@ angular.module('sf')
             $rootScope.$broadcast('contact-name-updated');
           }
           $success($($event.target));
-        }, function (error){
+        }, function (){
           $error($($event.target));
         });
       }
-    }
+    };
   });

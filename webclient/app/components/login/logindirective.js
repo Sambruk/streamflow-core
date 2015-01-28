@@ -25,12 +25,11 @@ angular.module('sf')
 
     },
     link: function(scope){
-      scope.errorMessage = "";
-      scope.username;
-      scope.password;
+      scope.errorMessage = '';
+      scope.username = '';
+      scope.password = '';
       scope.hasToken = tokenService.hasToken();
       scope.hasLoggedOut = $rootScope.hasLoggedOut;
-      //$rootScope.isLoggedIn = tokenService.hasToken();
 
       // Set
       var urlValue;
@@ -39,7 +38,6 @@ angular.module('sf')
       } else {
         urlValue = $location.$$protocol + '://username:password@' + $location.$$host + ':' + $location.$$port + '/webclient/api';
       }
-      //document.execCommand("ClearAuthenticationCache");
 
       function getLoggedInStatus(){
         return $http.get(httpService.apiUrl)

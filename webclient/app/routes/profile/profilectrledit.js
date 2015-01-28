@@ -34,7 +34,7 @@ angular.module('sf')
         function (error) {
           $error($($event.target));
         });
-    }
+    };
 
     $scope.changeMailFooter = function ($event, $success, $error) {
       $event.preventDefault();
@@ -47,7 +47,7 @@ angular.module('sf')
         function (error) {
           $error($($event.target));
         });
-    }
+    };
 
     $scope.updateField = function ($event, $success, $error) {
       $event.preventDefault();
@@ -70,7 +70,7 @@ angular.module('sf')
             $error($($event.target));
           });
       }
-    }
+    };
 
 
     $scope.changeMarkReadTimeout = function ($event, $success, $error) {
@@ -84,6 +84,6 @@ angular.module('sf')
         function (error) {
           $error($($event.target));
         });
-    }
+    };
 
   });

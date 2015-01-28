@@ -21,7 +21,7 @@ angular.module('sf')
 
     $scope.caseId = $routeParams.caseId;
     $scope.currentFormId = $routeParams.formId;
-    $scope.currentFormDescription;
+    $scope.currentFormDescription = '';
     $scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
     $scope.selectedItems = {};
     $scope.applyRules = webformRulesService.applyRules;
@@ -46,12 +46,12 @@ angular.module('sf')
               $scope.currentFormDescription = $scope.form[0].description;
               $scope.currentFormPage = $scope.form[0].enhancedPages[0];
               $scope.displayField($scope.form[0].enhancedPages);
-            };
+            }
           });
         }, 1000);
       });
 
-      $scope.formMessage = "";
+      $scope.formMessage = '';
       $scope.possibleForm = caseService.getPossibleForm($routeParams.caseId, formId);
 
       $scope.$watch('possibleForm[0]', function (){
@@ -68,10 +68,10 @@ angular.module('sf')
               $scope.formAttachments = [];
               $scope.showSpinner.form = false;
 
-              $scope.form[0].enhancedPages.forEach(function(pages, pageIndex){
-                pages.fields.forEach(function(field, fieldIndex){
+              $scope.form[0].enhancedPages.forEach(function(pages){
+                pages.fields.forEach(function(field){
 
-                  if(field.field.fieldValue['_type'] === 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'){
+                  if(field.field.fieldValue._type === 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'){
                     var name = null;
                     var id = null;
 
@@ -86,7 +86,7 @@ angular.module('sf')
                     	name: name,
                     	id: id,
                     	fieldId: field.field.field
-                    }
+                    };
 
                     $scope.formAttachments.push(attachment);
 									}
@@ -115,17 +115,17 @@ angular.module('sf')
             .then(function(){
               $scope.isLastPage = function(){
                 return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1); //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === visiblePages.length;
-              }
+              };
             });
           });
         }
         $scope.currentFormPage = null;
       });
-    }
+    };
 
     $scope.displayField = function(formPage){
       $scope.applyRules(formPage);
-    }
+    };
 
     $scope.reapplyRules = function(){
       $scope.applyRules($scope.form[0].enhancedPages);
@@ -133,25 +133,25 @@ angular.module('sf')
 
     $scope.selectFormPage = function(page){
       $scope.currentFormPage = page;
-    }
+    };
 
     $scope.submitForm = function(){
       caseService.submitForm($routeParams.caseId, $scope.form[0].draftId).then(function(){
-        $scope.formMessage = "Skickat!";
+        $scope.formMessage = 'Skickat!';
 
         $rootScope.$broadcast('form-submitted');
 
         $scope.form = [];
         $scope.currentFormPage = null;
       });
-      //$scope.form = [];
-      //$scope.currentFormPage = null;
-    }
+    };
 
     $scope.deleteFormDraftAttachment = function(fieldId){
-			var attachment = _.find($scope.formAttachments, function(attachment) { return attachment.fieldId === fieldId });
+			var attachment = _.find($scope.formAttachments, function(attachment) {
+        return attachment.fieldId === fieldId;
+      });
 
-      caseService.deleteFormDraftAttachment($routeParams.caseId, $scope.formDraftId, attachment.id).then(function(response){
+      caseService.deleteFormDraftAttachment($routeParams.caseId, $scope.formDraftId, attachment.id).then(function(){
       	$scope.formAttachments.forEach(function(attachment, index){
 	       	if($scope.formAttachments[index].fieldId === fieldId){
 	       		$scope.formAttachments[index].name = null;
@@ -160,7 +160,7 @@ angular.module('sf')
   			});
         caseService.updateField($routeParams.caseId, $scope.formDraftId, fieldId, null);
       });
-    }
+    };
 
     $scope.onFormDraftFileSelect = function($files, fieldId){
       var url = httpService.apiUrl + 'workspacev2/cases/'+$routeParams.caseId+'/formdrafts/'+$scope.formDraftId +'/formattachments/createformattachment';
@@ -178,46 +178,18 @@ angular.module('sf')
 		    	});
         });
       });
-    }
-
-    var formNavigationMachine = function(index){
-      var allowedNav = {
-        previousPage: false,
-        nextPage: false,
-        submitForm: false
-      };
-      if(index>0){
-        allowedNav.previousPage = true;
-        if(inputValid){
-          if(isLast){
-            allowedNav.submitForm = true;
-          } else {
-            allowedNav.nextPage = true;
-          }
-        }
-      } else {
-        if(inputValid){
-          if(isLast){
-            allowedNav.submitForm = true;
-          } else {
-            allowedNav.nextPage = true;
-          }
-        }
-      }
-      return allowedNav;
-    }
+    };
 
     $scope.toggleLastPageTrue = function(val){
-      alert(val);
       $scope.forcedLastPage = val;
-    }
+    };
 
     $scope.isLastPage = function(){
       if($scope.form && $scope.form[0]){
         return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === ($scope.form[0].enhancedPages.length - 1);
       }
-      return; //|| $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === visiblePages.length;
-    }
+      return false;
+    };
 
 
 
@@ -225,18 +197,18 @@ angular.module('sf')
       if($scope.form && $scope.form[0]){
         return $scope.currentFormPage && $scope.form[0].enhancedPages.indexOf($scope.currentFormPage) === 0;
      }
-     return;
-    }
+     return false;
+    };
 
     $scope.nextFormPage = function(){
       var index = $scope.form[0].enhancedPages.indexOf($scope.currentFormPage);
       index += 1;
       $scope.currentFormPage = $scope.form[0].enhancedPages[index];
-    }
+    };
 
     $scope.previousFormPage = function(){
       var index = $scope.form[0].enhancedPages.indexOf($scope.currentFormPage);
       index -= 1;
       $scope.currentFormPage = $scope.form[0].enhancedPages[index];
-    }
+    };
   });

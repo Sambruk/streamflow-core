@@ -57,7 +57,9 @@ angular.module('sf')
           {resources: 'attachments'}
           ]),
         onSuccess:function(resource, result){
-          resource.response.index.links.forEach(function(item){result.push(item)});
+          resource.response.index.links.forEach(function(item){
+            result.push(item);
+          });
           caseBase.broadcastMessage(result.status);
         },
         onFailure:function(err){
@@ -92,7 +94,7 @@ angular.module('sf')
       caseBase.initBroadcastMessage();
     };
 
-    caseBase.initBroadcastMessage = function(message){
+    caseBase.initBroadcastMessage = function(){
       $rootScope.$broadcast('httpRequestInitiated');
     };
 
@@ -124,7 +126,9 @@ angular.module('sf')
             if(resource.response.commands.length === 0){
               result.push(resource.response);
             } else {
-              resource.response.commands.forEach(function(item){result.push(item)});
+              resource.response.commands.forEach(function(item){
+                result.push(item);
+              });
             }
           }
         });
@@ -136,7 +140,9 @@ angular.module('sf')
             {queries: 'possibleresolutions'}
           ]),
           onSuccess:function (resource, result) {
-            resource.response.links.forEach(function(item){result.push(item)});
+            resource.response.links.forEach(function(item){
+              result.push(item);
+            });
           }
         });
       },
@@ -188,7 +194,9 @@ angular.module('sf')
             if(resource.response.links.length ===0){
               result.push(resource.response.links);
             } else {
-              resource.response.links.forEach(function(item){result.push(item)});
+              resource.response.links.forEach(function(item){
+                result.push(item);
+              });
             }
           }
         });
@@ -317,7 +325,7 @@ angular.module('sf')
             caseBase.broadcastMessage(result.status);
           }, function(error){
             caseBase.broadcastMessage(error);
-          }).then(callback);
+          });
       },
 
       getSelectedNote: function(caseId) {
@@ -346,7 +354,9 @@ angular.module('sf')
             {queries: 'allnotes'}
             ]),
           onSuccess:function (resource, result) {
-            resource.response.links.forEach(function(item){result.push(item)});
+            resource.response.links.forEach(function(item){
+              result.push(item);
+            });
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
@@ -361,8 +371,9 @@ angular.module('sf')
           onSuccess:function (resource, result) {
             var index = resource.response.index;
 
-            if (index.dueOn)
-              index.dueOnShort = index.dueOn.split("T")[0]
+            if (index.dueOn) {
+              index.dueOnShort = index.dueOn.split('T')[0];
+            }
 
             result.push(index);
             result.commands = resource.response.commands;
@@ -439,7 +450,9 @@ angular.module('sf')
             {resources: 'contacts'}
           ]),
           onSuccess:function (resource, result) {
-            resource.response.index.contacts.forEach(function(item){result.push(item)});
+            resource.response.index.contacts.forEach(function(item){
+              result.push(item);
+            });
             result.commands = resource.response.commands;
             caseBase.broadcastMessage(result.status);
           },
@@ -554,8 +567,8 @@ angular.module('sf')
       createCaseLogEntry: function(caseId, value) {
         //debugger;
         var specs = caseBase(caseId).concat([{resources: 'caselog'}, {commands: 'addmessage'}]),
-            data = {string: value},
-            responseSelector;
+            data = {string: value};
+
         return backendService.postNested(specs, data).then(function(response){
           caseBase.broadcastMessage(response.status);
           return response;
@@ -563,18 +576,6 @@ angular.module('sf')
           caseBase.broadcastMessage(err);
           return err;
         });
-        //backendService.postNested()
-        /*return backendService.postNested(
-          caseBase(caseId).concat([
-            {resources: 'caselog'},
-            {commands: 'addmessage'}
-          ]),
-          {string: value}).then(function(result){
-            caseBase.broadcastMessage(result.status);
-          }),
-          function(error){
-            caseBase.broadcastMessage(error);
-          };*/
       },
       getPossibleCaseTypes: function(caseId) {
         return backendService.get({
@@ -584,7 +585,9 @@ angular.module('sf')
           ]),
           onSuccess:function (resource, result) {
             var caseTypeOptions = resource.response.links;
-            caseTypeOptions.forEach(function(item){result.push(item)});
+            caseTypeOptions.forEach(function(item){
+              result.push(item);
+            });
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
@@ -649,7 +652,9 @@ angular.module('sf')
             onSuccess:function (resource, result) {
                 var labelOptions = resource.response.links;
 
-                labelOptions.forEach(function(item){result.push(item)});
+                labelOptions.forEach(function(item){
+                  result.push(item);
+                });
                 caseBase.broadcastMessage(result.status);
             },
             onFailure:function(err){
@@ -696,7 +701,9 @@ angular.module('sf')
               onSuccess:function (resource, result) {
                   var priorityOptions = resource.response.links;
 
-                  priorityOptions.forEach(function(item){result.push(item)});
+                  priorityOptions.forEach(function(item){
+                    result.push(item);
+                  });
                   caseBase.broadcastMessage(result.status);
               },
               onFailure:function(err){
@@ -754,7 +761,9 @@ angular.module('sf')
         return backendService.get({
           specs:caseBase(caseId).concat([{resources: 'possibleforms'}]),
           onSuccess:function (resource, result) {
-            resource.response.index.links.forEach(function(item){result.push(item)});
+            resource.response.index.links.forEach(function(item){
+              result.push(item);
+            });
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
@@ -767,7 +776,7 @@ angular.module('sf')
         return backendService.get({
           specs:caseBase(caseId).concat([
             {resources: 'possibleforms'},
-            {'index.links': formId.replace("/", "")}
+            {'index.links': formId.replace('/', '')}
           ]),
           onSuccess:function (resource, result) {
             result.push(resource.response);
@@ -783,7 +792,7 @@ angular.module('sf')
         return backendService.postNested(
             caseBase(caseId).concat([
                 {resources: 'possibleforms'},
-                {'index.links': formId.replace("/", "")},
+                {'index.links': formId.replace('/', '')},
                 {commands: 'create'}
             ]),
             {}).then(function(result){
@@ -798,7 +807,7 @@ angular.module('sf')
       addViewModelProperties: function(pages){
         _.forEach(pages, function(page){
           _.forEach(page.fields, function(field){
-            formMapperService.addProperties(field)
+            formMapperService.addProperties(field);
           });
         });
       },
@@ -830,7 +839,7 @@ angular.module('sf')
         return backendService.get({
           specs:caseBase(caseId).concat([
             {resources: 'possibleforms'},
-            {'index.links': formId.replace("/", "")},
+            {'index.links': formId.replace('/', '')},
             {queries: 'formdraft'}
             ]),
           onSuccess:function(resource, result){
@@ -962,9 +971,9 @@ angular.module('sf')
             var forms = _.filter(resource.response.index.forms, function(form){
               return form.id === formId;
             });
-            forms.reverse().forEach(function(item, index){
-              item.submissionDate = item.submissionDate.split("T")[0];
-              result.push(item)
+            forms.reverse().forEach(function(item){
+              item.submissionDate = item.submissionDate.split('T')[0];
+              result.push(item);
             });
             caseBase.broadcastMessage(result.status);
           },
@@ -1120,7 +1129,7 @@ angular.module('sf')
             caseBase.broadcastMessage(error);
           });
       },
-      createMessage: function(caseId, conversationId, value) {
+      createMessage: function(caseId, conversationId) {
         return backendService.postNested(
           caseBase(caseId).concat([
             {resources: 'conversations'},
@@ -1144,7 +1153,9 @@ angular.module('sf')
             ]),
           onSuccess:function (resource, result) {
             result.commands = resource.response.commands;
-            resource.response.index.links.forEach(function(item){result.push(item)});
+            resource.response.index.links.forEach(function(item){
+              result.push(item);
+            });
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
@@ -1161,7 +1172,9 @@ angular.module('sf')
             {queries: 'possibleparticipants'}
             ]),
           onSuccess:function (resource, result) {
-            resource.response.links.forEach(function(item){result.push(item)});
+            resource.response.links.forEach(function(item){
+              result.push(item);
+            });
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){
@@ -1215,6 +1228,5 @@ angular.module('sf')
             caseBase.broadcastMessage(error);
           });
       }
-
-    }
+    };
   });

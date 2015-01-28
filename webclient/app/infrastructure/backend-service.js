@@ -46,9 +46,6 @@
       },
 
       createById:function (resourceData, id, urls, skipCache) {
-        //console.log('CREATE BY ID');
-        //console.log(urls);
-        //console.log(id);
         var values = id.split('?');
         var trimmedId = values[0];
         var query = values[1];
@@ -63,8 +60,6 @@
         }
 
         if (!w) {
-          //console.log('Not found: ', trimmedId, ' in ', JSON.stringify(resourceData));
-
           var deferred = $q.defer();
           deferred.reject({msg: 'Missing key in json ' + id, data: resourceData});
           return deferred.promise;
@@ -121,13 +116,6 @@
 
         var skipCache = specs.length === 0;
 
-        //NOTE: What does this one do?
-        if (skipCache){
-          //var x = 0;
-        }
-        //console.log('GET NESTED');
-        //console.log(urls);
-
         var resource = this.createById(data, id, urls, skipCache);
         return resource.then(function (nextResource) {
           //console.log(nextResource);
@@ -143,7 +131,7 @@
 
         return this.getNested(specs).then(function(resource) {
           var w = _.find(resource.response[key], function(item){
-            return item.id === id
+            return item.id === id;
           });
           return httpService.postRequest(resource.basehref +  w.href, data);
         });
@@ -152,10 +140,14 @@
 
     function clear(obj) {
       obj.length = 0;
-      function clearable(i) { return obj.hasOwnProperty(i) && ['invalidate', 'resolve'].indexOf(i) === -1}
+      function clearable(i) {
+        return obj.hasOwnProperty(i) && ['invalidate', 'resolve'].indexOf(i) === -1;
+      }
 
       for (var i in obj) {
-        clearable(i) && delete obj[i];
+        if (clearable(i)) {
+          delete obj[i];
+        }
       }
     }
 
@@ -207,16 +199,12 @@
           .then(function (response) {
             var resource = new SfResource('', response);
             result.status = response.status;
-            //console.log('here')
-            //console.log(urls);
             return resource.getNested(angular.copy(dsl.specs), urls);
           })
           .then(function(resource){
             dsl.onSuccess(resource, result, urls);
-            //console.log(resource);
             return result;
           });
-          //console.log(result);
           return result.promise;
         };
         result.resolve();
@@ -228,15 +216,16 @@
       postNested: function (specs, data, responseSelector) {
 
         function findInJson(spec, json) {
-          //console.log('findInJson');
-          //console.log(spec);
-          //console.log(json);
           var key = Object.keys(spec)[0];
           var id = spec[key];
           var searchIds = key.split('.');
           var arrayId = searchIds.pop();
-          var jsonArray = searchIds.reduce(function(prev, curr) { return prev[curr]}, json);
-          return _.find(jsonArray, function (item) { return item[arrayId] === id });
+          var jsonArray = searchIds.reduce(function(prev, curr) {
+            return prev[curr];
+          }, json);
+          return _.find(jsonArray, function (item) {
+            return item[arrayId] === id;
+          });
         }
 
         return httpService.getRequest('')
@@ -245,10 +234,6 @@
           return resource.postNested(specs, data);
         })
         .then(function(response) {
-          //console.log('post');
-          //console.log(response);
-          //console.log('responseSelector');
-          //console.log(responseSelector);
           return responseSelector ?  findInJson(responseSelector, response.data) : response;
         });
       }

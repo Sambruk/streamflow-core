@@ -28,15 +28,11 @@ angular.module('sf')
       contactPreference: 'email'
     };
 
-    var _showContact = function(contactId){
-      alert("Not supported - need UX for this.");
-    };
-
     var _submitContact = function(caseId, contactIndex) {
       caseService.addContact(caseId, contact).then(function(){
         $rootScope.$broadcast('contact-created');
         var href = navigationService.caseHrefSimple(caseId);
-        window.location.assign(href + "/contact/" + contactIndex + "/");
+        window.location.assign(href + '/contact/' + contactIndex + '/');
       });
     };
 

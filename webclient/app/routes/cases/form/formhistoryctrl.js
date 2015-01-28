@@ -30,11 +30,11 @@ angular.module('sf')
     $scope.downloadFormAttachment = function(attachment){
       var jsonParse = JSON.parse(attachment.value);
 
-      var url = httpService.apiUrl+'workspacev2/cases/'+$routeParams.caseId+'/submittedforms/download?id='+jsonParse['attachment'];
+      var url = httpService.apiUrl+'workspacev2/cases/'+$routeParams.caseId+'/submittedforms/download?id='+jsonParse.attachment;
       window.location.replace(url);
     };
 
-    $scope.$watch("selectedSubmittedForm", function(){
+    $scope.$watch('selectedSubmittedForm', function(){
       var index = $scope.selectedSubmittedForm;
       if (_.isNumber(index)){
         $scope.submittedForm = caseService.getSubmittedForm($routeParams.caseId, index);

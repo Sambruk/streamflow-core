@@ -57,7 +57,7 @@ angular.module('sf')
     }
 
     var invalidate = function(hrefs) {
-        hrefs.forEach(function(href) { 
+        hrefs.forEach(function(href) {
           // console.log('invalidate');
           // console.log(href);
           cache.remove(href);
@@ -68,8 +68,8 @@ angular.module('sf')
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');
     // console.log(cache.info());
-    
-  
+
+
     return {
       baseUrl: baseUrl,
       apiUrl: apiUrl,
@@ -87,7 +87,7 @@ angular.module('sf')
       },
 
       invalidate: function(hrefs) {
-        hrefs.forEach(function(href) { 
+        hrefs.forEach(function(href) {
           // console.log('invalidate: ' + href);
           //console.log(href);
           cache.remove(href);
@@ -105,8 +105,8 @@ angular.module('sf')
         var resultUndefined = angular.isUndefined(result);
         if (!result || resultUndefined === true) {
           var url = this.prepareUrl(href);
-          var promise = $http({ 
-            method:'GET', 
+          var promise = $http({
+            method:'GET',
             url: url
           });
           cache.put(href, promise);
@@ -118,10 +118,12 @@ angular.module('sf')
       },
 
       prepareUrl: function(href) {
-        if (href[0] === '/')
+        if (href[0] === '/') {
           return (/\/streamflow/).test(href) ?  this.absApiUrl(href.substring(11)) : href;
-        else
+        }
+        else {
           return this.absApiUrl(href);
+        }
       },
 
       postRequest: function (href, data) {

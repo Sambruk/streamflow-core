@@ -15,16 +15,16 @@ angular.module('sf')
 			});
 		}
 		return scope;
-	}
+	};
 
 	var checkPermission = function(scope, permissions, permission, paraPermission){
-		if(_.find(permissions, function(obj){return obj.id === permission})){
+		if(_.find(permissions, function(obj){ return obj.id === permission; })){
 			scope[paraPermission] = true;
 		}
 		return scope;
-	}
+	};
 
 	return {
 		checkPermissions: checkPermissions
-	}
+	};
 });

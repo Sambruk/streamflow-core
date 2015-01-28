@@ -27,9 +27,9 @@ angular.module('sf')
       var topic = $scope.conversationTopicToCreate;
       caseService.createConversation($routeParams.caseId, topic).then(function(response){
         var conversationId = JSON.parse(response.data.events[0].parameters).param1;
-        var href = navigationService.caseHrefSimple($routeParams.caseId + "/conversation/" + conversationId);
+        var href = navigationService.caseHrefSimple($routeParams.caseId + '/conversation/' + conversationId);
         $rootScope.$broadcast('conversation-created');
         window.location.assign(href);
       });
-    }
+    };
   });

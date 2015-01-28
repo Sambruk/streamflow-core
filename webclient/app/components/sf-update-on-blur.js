@@ -18,7 +18,7 @@
 angular.module('sf')
 .directive('sfUpdateOnBlur', ['$parse', function($parse) {
     return function(scope, element, attr) {
-      var fn = $parse(attr['sfUpdateOnBlur']);
+      var fn = $parse(attr.sfUpdateOnBlur);
       var form = scope[element.closest('form').attr('name')];
 
       var successCallback = function (element){
@@ -30,14 +30,14 @@ angular.module('sf')
         if (element[0].type === 'select-one') {
           element.parent().addClass('saved saved-select');
         }else{
-                if( element[0].id === 'contact-name' && !$("#contact-name").val()){
-                    $("#contact-name").parent().addClass('error');
-                }else {
-                element.parent().addClass('saved');
-            }
+          if( element[0].id === 'contact-name' && !$('#contact-name').val()){
+            $('#contact-name').parent().addClass('error');
+          }else {
+            element.parent().addClass('saved');
+          }
         }
 
-        if ( $('form div').hasClass('error') || !$("#contact-name").val()){
+        if ( $('form div').hasClass('error') || !$('#contact-name').val()){
             $('#contact-submit-button').attr('disabled', true);
             $('#contact-submit-button').addClass('inactive');
         }
@@ -58,7 +58,7 @@ angular.module('sf')
         //setTimeout(removeIt,2000);
 
         setPristine(form, element);
-        $("[class^=error]", element.parent()).hide();
+        $('[class^=error]', element.parent()).hide();
       };
 
       function removeIt(){
@@ -72,15 +72,15 @@ angular.module('sf')
       };
 
       element.bind('blur', function(event) {
-        if (!element.hasClass("ng-invalid") && element.hasClass("ng-dirty")) {
+        if (!element.hasClass('ng-invalid') && element.hasClass('ng-dirty')) {
 
           scope.$apply(function() {
             fn(scope, {$event:event, $success:successCallback, $error:errorCallback});
           });
         }
         else {
-          _.each(element.attr("class").split(" "), function(klass){
-            var errorClass = ".error-" + klass
+          _.each(element.attr('class').split(' '), function(klass){
+            var errorClass = '.error-' + klass;
             $(errorClass, element.parent()).show();
           });
         }
@@ -97,16 +97,16 @@ angular.module('sf')
         }
       };
 
-      $("select").change(function () {
+      $('select').change(function () {
           $(this).parent().removeClass('saved');
           $(this).parent().removeClass('saved-select');
-          $("[class^=error]", $(this).parent()).hide()
-      })
+          $('[class^=error]', $(this).parent()).hide();
+      });
 
       if (element[0].type === 'text' || element[0].type === 'textarea') {
         var resetFieldState = function (value){
           $(this).parent().removeClass('saved');
-          $("[class^=error]", $(this).parent()).hide();
+          $('[class^=error]', $(this).parent()).hide();
         };
 
         var options = {
@@ -114,9 +114,9 @@ angular.module('sf')
           wait: 0,
           highlight: false,
           captureLength: 1
-        }
+        };
 
         element.typeWatch( options );
       }
-    }
+    };
   }]);
