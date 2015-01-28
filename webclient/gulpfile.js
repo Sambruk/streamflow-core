@@ -33,6 +33,7 @@ var minifyCSS = require('gulp-minify-css');
 var ngConstant = require('gulp-ng-constant');
 var replace = require('gulp-replace');
 var sourcemaps = require('gulp-sourcemaps');
+var imagemin = require('gulp-imagemin');
 
 var testFiles = ['unit/filters-unit.js'];
 var buildMode = args.prod || args.dev || 'dev';
@@ -53,7 +54,7 @@ var paths = {
   ],
   images: [
     'app/design/gui/i/**/*',
-    'bower_components/chosen/**/*.png'
+    'bower_components/chosen/*.png'
   ],
   fonts: [
     'app/design/gui/fonts/**/*'
@@ -93,8 +94,8 @@ gulp.task('e2e-test', function () {
 
 gulp.task('build-scripts', function () {
   return gulp.src(paths.scripts)
-    .pipe(jshint())
-    .pipe(jshint.reporter(stylish))
+    //.pipe(jshint())
+    //.pipe(jshint.reporter(stylish))
     .pipe(sourcemaps.init())
       .pipe(concat('streamflow.js'))
       .pipe(ngAnnotate())
@@ -141,6 +142,7 @@ gulp.task('copy-fonts', function () {
 
 gulp.task('copy-images', function () {
   return gulp.src(paths.images)
+    .pipe(imagemin())
     .pipe(gulp.dest('build/app/i'));
 });
 
