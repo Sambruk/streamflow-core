@@ -17,7 +17,7 @@
 
 'use strict';
 
-angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, searchService, groupByService) {
+angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $rootScope, searchService, groupByService) {
 
   var query = $routeParams.query;
 
@@ -46,6 +46,7 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, se
 
     $scope.currentCases.promise.then(function(){
       originalCurrentCases = $scope.currentCases;
+      $rootScope.$broadcast('breadcrumb-updated',[]);
     });
   });
 
