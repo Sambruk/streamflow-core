@@ -30,6 +30,7 @@ module.exports = function(config){
       'bower_components/angular-sanitize/angular-sanitize.js',
       'bower_components/ng-file-upload/angular-file-upload.js',
       'bower_components/underscore/underscore-min.js',
+      'bower_components/angular-filter/dist/angular-filter.js',
       'app/design/gui/js/jquery-1.10.1.js',
       'app/config/config.js',
       'app/*.js',

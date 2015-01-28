@@ -22,7 +22,8 @@ angular.module('sf', [
     'angular-growl',
     'ngSanitize',
     'angularFileUpload',
-    'sf.config'
+    'sf.config',
+    'angular.filter'
   ])
   .run(function ($rootScope, $http, httpService, $location, $routeParams, tokenService) {
     
