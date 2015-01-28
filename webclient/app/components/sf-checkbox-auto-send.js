@@ -25,14 +25,14 @@ angular.module('sf')
         var hasRunAtLeastOnce = false;
         scope.$watch(attr.ngModel, function (newValue, oldValue) {
           if (hasRunAtLeastOnce) {
-            var checked = _.chain($parse(attr['sfCheckboxAutoSend'])())
+            var checked = _.chain($parse(attr.sfCheckboxAutoSend)())
             .filter(function(input){
               return input.checked;
             }).map(function(input){
-              return input.name
+              return input.name;
             }).value();
 
-            var valueToSend = checked.join(", ");
+            var valueToSend = checked.join(', ');
 
             caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, valueToSend);
           }
@@ -40,5 +40,5 @@ angular.module('sf')
           hasRunAtLeastOnce = true;
         });
       }
-    }
+    };
   }]);

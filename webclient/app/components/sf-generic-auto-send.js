@@ -27,9 +27,9 @@ angular.module('sf')
           if (hasRunAtLeastOnce) {
 
             // Validation
-            if (element.hasClass("ng-invalid")) {
-              _.each(element.attr("class").split(" "), function(klass){
-                var errorClass = ".error-" + klass
+            if (element.hasClass('ng-invalid')) {
+              _.each(element.attr('class').split(' '), function (klass) {
+                var errorClass = '.error-' + klass;
                 $(errorClass, element.parent()).show();
               });
 
@@ -37,15 +37,14 @@ angular.module('sf')
             }
 
             // Valid input, clear error warnings
-            $("[class^=error]", element.parent()).hide();
+            $('[class^=error]', element.parent()).hide();
 
             var value = formMapper.getValue(newValue, attr);
             caseService.updateField($routeParams.caseId,  scope.$parent.form[0].draftId, attr.name, value);
-
           }
 
           hasRunAtLeastOnce = true;
         });
       }
-    }
+    };
   }]);

@@ -97,8 +97,8 @@ gulp.task('e2e-test', function () {
 
 gulp.task('build-scripts', function () {
   return gulp.src(paths.scripts)
-    //.pipe(jshint())
-    //.pipe(jshint.reporter(stylish))
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish))
     .pipe(sourcemaps.init())
       .pipe(concat('streamflow.js'))
       .pipe(ngAnnotate())

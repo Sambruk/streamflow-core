@@ -1,41 +1,19 @@
 {
-  // Settings
   "passfail"      : false,  // Stop on first error.
   "maxerr"        : 100,    // Maximum error before stopping.
-
-
-  // Predefined globals whom JSHint will ignore.
   "browser"       : true,   // Standard browser globals e.g. `window`, `document`.
-
   "node"          : true,
   "rhino"         : false,
   "couch"         : false,
   "wsh"           : true,   // Windows Scripting Host.
-
   "jquery"        : true,
   "prototypejs"   : false,
   "mootools"      : false,
   "dojo"          : false,
-
-  "predef"        : [  // Custom globals.
-    "$",
-    "_",
-    "jQuery",
-    "angular"
-  ],
-
-
-  // Development.
   "debug"         : false,  // Allow debugger statements e.g. browser breakpoints.
   "devel"         : true,   // Allow developments statements e.g. `console.log();`.
-
-
-  // ECMAScript 5.
   "strict"        : false,  // Require `use strict` pragma  in every file.
   "globalstrict"  : false,  // Allow global "use strict" (also enables 'strict').
-
-
-  // The Good Parts.
   "asi"           : false,  // Tolerate Automatic Semicolon Insertion (no semicolons).
   "laxbreak"      : true,   // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.
   "bitwise"       : true,   // Prohibit bitwise operators (&, |, ^, etc.).
@@ -57,9 +35,6 @@
   "supernew"      : false,  // Tolerate `new function () { ... };` and `new Object;`.
   "undef"         : true,   // Require all non-global variables be declared before they are used.
   "quotmark"      : "single", // Single quotes
-
-
-  // Personal styling preferences.
   "newcap"        : true,   // Require capitalization of all constructor functions e.g. `new F()`.
   "noempty"       : true,   // Prohibit use of empty blocks.
   "nonew"         : true,   // Prohibit use of constructors for side-effects.
@@ -68,6 +43,12 @@
   "plusplus"      : false,  // Prohibit use of `++` & `--`.
   "sub"           : false,  // Tolerate all forms of subscript notation besides dot notation e.g. `dict['key']` instead of `dict.key`.
   "trailing"      : true,   // Prohibit trailing whitespaces.
-  "white"         : false,  // Check against strict whitespace and indentation rules.
-  "indent"        : 2       // Specify indentation spacing
+  "white"         : true,   // Check against strict whitespace and indentation rules.
+  "indent"        : 2,      // Specify indentation spacing
+  "predef"        : [       // Custom globals
+    "$",
+    "_",
+    "jQuery",
+    "angular"
+  ]
 }
