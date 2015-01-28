@@ -58,11 +58,14 @@ var paths = {
   ],
   fonts: [
     'app/design/gui/fonts/**/*'
+  ],
+  config: [
+    'app/config/config.json'
   ]
 };
 
 gulp.task('config', function () {
-  gulp.src('app/config/config.json')
+  gulp.src(paths.config)
     .pipe(ngConstant({
       name: 'sf.config',
       constants: { buildMode: buildMode }
@@ -168,7 +171,8 @@ gulp.task('build', [
 ]);
 
 gulp.task('watch', function () {
-  gulp.watch(paths.scripts, ['build-scripts', 'build-vendor-scripts']);
+  gulp.watch(paths.scripts, ['build-scripts']);
+  gulp.watch(mainBowerFiles({filter: /\.js$/i}), ['build-vendor-scripts']);
   gulp.watch(paths.css, ['build-css']);
   gulp.watch(paths.templates, ['copy-templates']);
   gulp.watch(paths.images, ['copy-images']);
