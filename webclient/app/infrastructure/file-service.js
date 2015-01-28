@@ -11,7 +11,7 @@ angular.module('sf')
 				uploadFile(file, url);
 		  });
 	  }
-	}
+	};
 
 	var uploadFile = function(file, url){
     return $upload.upload({
@@ -19,10 +19,10 @@ angular.module('sf')
       headers: {'Content-Type': 'multipart/formdata'},
       file: file
     });
-	}
+	};
 
 	return {
 		uploadFiles: uploadFiles,
 		uploadFile: uploadFile
-	}
+	};
 });

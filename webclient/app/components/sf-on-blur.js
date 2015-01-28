@@ -18,22 +18,22 @@
 angular.module('sf')
 .directive('sfOnBlur', ['$parse', function($parse) {
     return function(scope, element, attr) {
-      var fn = $parse(attr['sfOnBlur']);
+      var fn = $parse(attr.sfOnBlur);
       element.bind('blur', function(event) {
-        if (!element.hasClass("ng-invalid")) {
+        if (!element.hasClass('ng-invalid')) {
           scope.$apply(function() {
             fn(scope, {$event:event});
           });
 
-          $("[class^=error]", element.parent()).hide();
+          $('[class^=error]', element.parent()).hide();
         }
         else {
-          _.each(element.attr("class").split(" "), function(klass){
-            var errorClass = ".error-" + klass
+          _.each(element.attr('class').split(' '), function(klass){
+            var errorClass = '.error-' + klass;
             $(errorClass, element.parent()).show();
           });
 
         }
       });
-    }
+    };
   }]);

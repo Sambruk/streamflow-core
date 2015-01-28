@@ -1,4 +1,4 @@
-/*
+/*;
  *
  * Copyright 2009-2014 Jayway Products AB
  *
@@ -32,7 +32,7 @@ angular.module('sf')
 
       scope.caseLogEntryToCreate = '';
       scope.caseId = $routeParams.caseId;
-      scope.caseLogs;
+      scope.caseLogs = null;
 
       scope.$watch('caseLogs', function(newVal){
         if(!newVal){
@@ -48,7 +48,7 @@ angular.module('sf')
           $rootScope.$broadcast('caselog-message-created');
           scope.caseLogEntryToCreate = '';
         });
-      }
+      };
     }
   };
 });

@@ -71,7 +71,7 @@ angular.module('sf')
   var _applyRules = function(obj){
   	var rootObj = obj;
   	_applyRulesToElements(obj, rootObj);
-  }
+  };
 
   //Recursive function that traverses down the object tree and executes
   // displayFieldIfRuleValuePresent for each object/array in the tree
@@ -83,8 +83,6 @@ angular.module('sf')
       if(typeof objItem === 'object' && objItem !== null){
         _displayFieldIfRuleValuePresent(objItem, rootObj);
         _applyRulesToElements(objItem, rootObj);
-      } else {
-        // Maybe do something else here...
       }
     });
   };
@@ -142,7 +140,6 @@ angular.module('sf')
 
   //Hide field (remove ng-show class if present)
   var _hideField = function(fieldId){
-    debugger;
     var fld = $('#'+fieldId);
    //console.log(fld);
     //fld.css('display', 'hidden');

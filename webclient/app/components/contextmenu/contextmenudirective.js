@@ -38,7 +38,7 @@ angular.module('sf')
         scope.toggleToolbar($event);
         navigationService.linkTo(href);
       };
-      
+
 
       scope.toggleToolbar = function($event) {
         $event.preventDefault();
@@ -75,10 +75,10 @@ angular.module('sf')
 
           $rootScope.$broadcast('case-created');
 
-          window.location.replace(href + "/edit");
+          window.location.replace(href + '/edit');
         });
-      }
-      
+      };
+
       var updateObject = function(itemToUpdate){
         itemToUpdate.invalidate();
         itemToUpdate.resolve();

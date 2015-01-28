@@ -30,7 +30,7 @@ angular.module('sf')
 
             var projects = _.chain(resource.response.index.links)
               .filter(function(item){
-                return item.rel === 'inbox' || item.rel === 'assignments'
+                return item.rel === 'inbox' || item.rel === 'assignments';
               })
               .groupBy('text')
               .value();
@@ -63,7 +63,9 @@ angular.module('sf')
               result.push(self.sfCaseFactory(item));
             });
 
-            if (callback) callback();
+            if (callback) {
+              callback();
+            }
           }
         });
       },

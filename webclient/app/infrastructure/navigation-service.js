@@ -23,13 +23,13 @@ angular.module('sf')
         return $location.path(href);
       },
       caseHref: function(caseId) {
-        return "#/" + this.projectId() + '/' + this.projectType() + '/' + caseId;
+        return '#/' + this.projectId() + '/' + this.projectType() + '/' + caseId;
       },
       caseHrefSimple: function(caseId) {
         return '#/cases/' + caseId;
       },
       caseListHrefFromCase: function(caze) {
-        return "#/" + "projects/" + caze[0].ownerId + '/' + caze[0].listType + '/';
+        return '#/' + 'projects/' + caze[0].ownerId + '/' + caze[0].listType + '/';
       },
       projectId: function() {
         return $routeParams.projectId;

@@ -22,31 +22,31 @@ angular.module('sf')
 
     function addOptions(fieldValue){
       var options = _.map(fieldValue.values, function(value){
-        return {name: value, value: value}
+        return {name: value, value: value};
       });
 
       fieldValue.options = options;
     }
 
     var mappings = {
-      "se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue": {
+      'se.streamsource.streamflow.api.administration.form.ComboBoxFieldValue': {
         addProperties: function(field){
           addOptions(field.field.fieldValue);
         }
       },
-      "se.streamsource.streamflow.api.administration.form.DateFieldValue": {
+      'se.streamsource.streamflow.api.administration.form.DateFieldValue': {
         addProperties: function(field){
           if (field.value)
-            field.value = field.value.split("T")[0];
+            field.value = field.value.split('T')[0];
         },
         getValue: function(value, attr){
-          return value + "T00:00:00.000Z";
+          return value + 'T00:00:00.000Z';
         }
       },
-      "se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue": {
+      'se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue': {
         addProperties: function(field){
           var checkings = _.map(field.field.fieldValue.values, function(value){
-            return {name: value, checked: field.value && field.value.indexOf(value) != -1};
+            return {name: value, checked: field.value && field.value.indexOf(value) !== -1};
           });
 
           field.field.fieldValue.checkings = checkings;
@@ -56,19 +56,19 @@ angular.module('sf')
             .filter(function(input){
               return input.checked;
             }).map(function(input){
-              return input.name
+              return input.name;
             }).value();
 
-          return checked.join(", ");
+          return checked.join(', ');
         }
       },
-      "se.streamsource.streamflow.api.administration.form.ListBoxFieldValue": {
+      'se.streamsource.streamflow.api.administration.form.ListBoxFieldValue': {
         addProperties: function(field){
           addOptions(field.field.fieldValue);
 
           if (field.value) {
-            var escapedValue = field.value.replace(/\[(.*),(.*)\]/, "$1" + encodeURIComponent(",")  + "$2");
-            var values = _.map(escapedValue.split(", "), function(espaced){
+            var escapedValue = field.value.replace(/\[(.*),(.*)\]/, '$1' + encodeURIComponent(',')  + '$2');
+            var values = _.map(escapedValue.split(', '), function(espaced){
               return decodeURIComponent(espaced);
             });
 
@@ -77,36 +77,36 @@ angular.module('sf')
         },
         getValue: function(value, attr){
           var espacedValues = _.map(value, function(value){
-            return value.indexOf(",") !== -1 ? "[" + value + "]" : value;
+            return value.indexOf(',') !== -1 ? '[' + value + ']' : value;
           });
 
           return espacedValues.join(", ");
         }
       },
-      "se.streamsource.streamflow.api.administration.form.NumberFieldValue": {
+      'se.streamsource.streamflow.api.administration.form.NumberFieldValue': {
         addProperties: function(field){
           var regex;
           if (field.field.fieldValue.integer) {
              regex = /^\d+$/; // Integer
           }
           else {
-            regex = /^(\d+(?:[\.\,]\d*)?)$/ // Possible decimal, with . or ,
+            regex = /^(\d+(?:[\.\,]\d*)?)$/; // Possible decimal, with . or ,
           }
 
           field.field.fieldValue.regularExpression = regex;
         }
       },
-      "se.streamsource.streamflow.api.administration.form.TextFieldValue": {
+      'se.streamsource.streamflow.api.administration.form.TextFieldValue': {
         addProperties: function(field){
           if (!field.field.fieldValue.regularExpression) {
             field.field.fieldValue.regularExpression = /(?:)/;
           }
           else {
-            field.field.fieldValue.regularExpression = new RegExp(field.field.fieldValue.regularExpression)
+            field.field.fieldValue.regularExpression = new RegExp(field.field.fieldValue.regularExpression);
           }
         }
       },
-      "se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue": {
+      'se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue': {
         addProperties: function(field){
           field.field.fieldValue.extendedValues = _.map(field.field.fieldValue.values, function(value){
             return {
@@ -117,7 +117,7 @@ angular.module('sf')
 
           var value;
           if (field.field.fieldValue.values.indexOf(field.value) === -1) {
-            value = field.value
+            value = field.value;
           }
 
           field.field.fieldValue.extendedValues.push({

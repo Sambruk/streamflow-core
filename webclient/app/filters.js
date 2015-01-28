@@ -20,8 +20,8 @@ angular.module('sf')
 .filter('attachmentJson', function($filter) {
   return function(attachment) {
     var jsonParse = JSON.parse(attachment);
-    return jsonParse['name'];
-  }
+    return jsonParse.name;
+  };
 })
 .filter('positive', function() {
     return function(input) {
@@ -49,10 +49,10 @@ angular.module('sf')
       // So far, we keep it simple by just using a lookup table
       var translation = {
         inbox: 'Inkorg',
-        assignments: "Mina ärenden",
+        assignments: 'Mina ärenden',
         attachment: 'Bifogande',
         contact: 'Kontakt',
-        conversation: "Konversation",
+        conversation: 'Konversation',
         custom: 'custom',
         form: 'Formulär',
         system: 'System',
@@ -78,8 +78,8 @@ angular.module('sf')
 
           if (logEntries && filterArray) {
               // loop through the items
-              for (i = 0; i < logEntries.length; i++) {   
-              
+              for (i = 0; i < logEntries.length; i++) {
+
                 // for each item, loop through the filter values
                 for (j = 0; j < filterArray.length; j++) {
 
@@ -96,15 +96,17 @@ angular.module('sf')
           }
 
           return matchingItems;
-      }
+      };
   })
   .filter('truncate', function () {
     return function (text, length, end) {
-      if (isNaN(length))
+      if (isNaN(length)) {
         length = 10;
+      }
 
-      if (end === undefined)
-        end = "...";
+      if (end === undefined) {
+        end = '...';
+      }
 
       if (text.length <= length || text.length - end.length <= length) {
         return text;

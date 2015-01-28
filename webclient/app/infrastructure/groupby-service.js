@@ -18,13 +18,13 @@
 
 angular.module('sf')
 .factory('groupByService', function(){
-  
+
   var groupingOptions = [{name:'Ärendetyp', value:'caseTypeText'},
       {name:'Förfallodatum*', value:'dueOn'},
       {name:'Förvärvare', value:'assignedTo'},
       {name:'Projekt', value:'owner'},
-      {name:'*Prioritet*', value:'priority'}];
-  
+      {name:'Prioritet*', value:'priority'}];
+
   var getGroupingOptions = function(){
   	return groupingOptions;
   };
@@ -50,6 +50,7 @@ angular.module('sf')
           if(!item.owner){
             item.owner = 'Inget projekt';
           }
+          break;
         default:
           currentCases = originalCurrentCases;
       }
@@ -63,15 +64,15 @@ angular.module('sf')
       currentCases = groupCurrentCases;
     }
     if(selectedGroupItem){
-      currentCases['grouped'] = true;
+      currentCases.grouped = true;
     }
 
     return currentCases;
   };
 
-   return {
-   	groupBy: groupBy,
-   	getGroupingOptions: getGroupingOptions
-   }
+  return {
+    groupBy: groupBy,
+    getGroupingOptions: getGroupingOptions
+  };
 
 });

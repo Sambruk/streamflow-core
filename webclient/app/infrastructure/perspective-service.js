@@ -31,7 +31,9 @@ angular.module('sf')
         return backendService.get({
           specs: perspectiveBase(),
           onSuccess:function (resource, result) {
-            resource.response.index.links.forEach(function(item){result.push(item)});
+            resource.response.index.links.forEach(function(item){
+              result.push(item);
+            });
           }
         });
       }
@@ -70,5 +72,5 @@ angular.module('sf')
         });
       }
       */
-    }
+    };
 });

@@ -57,8 +57,8 @@ angular.module('sf')
       scope.general.promise.then(function(){
         checkPermissionService.checkPermissions(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription', 'changepriority'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription', 'canChangePriority']);
         if(!scope.canChangeCaseType){
-         $("#type_select_chosen, #type-select").addClass("disabled");
-         $('.case-type-selected').addClass('cursor-default');
+          $('#type_select_chosen, #type-select').addClass('disabled');
+          $('.case-type-selected').addClass('cursor-default');
         }
 
         if(scope.sidebardata && scope.canChangeDescription){
@@ -278,26 +278,26 @@ angular.module('sf')
 
       scope.exportCaseInfo = function(){
         scope.caseExportInfo = caseService.getCaseExportInfo($routeParams.caseId);
-      }
+      };
       scope.onFileSelect = function($files){
         var url = httpService.apiUrl + 'workspacev2/cases/' + $routeParams.caseId + '/attachments/createattachment';
         fileService.uploadFiles($files, url);
         updateObject(scope.attachments);
-      }
+      };
 
 
       // Show / Close pop up
       scope.showExportCaseInfoPopUp = function(){
         scope.showExportInfo = true;
-      }
+      };
       scope.showCaseInfoPopUp = function(){
         scope.showCaseInfo = true;
-      }
+      };
       scope.closePopUp = function(){
         scope.showCaseInfo = false;
         scope.showExportInfo = false;
         scope.commandView = '';
-      } // End Show / Close pop up
+      };
 
       // Filter for caselog
       var defaultFiltersUrl =  caseService.getWorkspace() + '/cases/' + $routeParams.caseId + '/caselog/defaultfilters';
@@ -330,7 +330,7 @@ angular.module('sf')
         checkFilterCaseLog('system');
       });
       scope.$on('case-type-changed', function(){
-        checkFilterCaseLog('system')
+        checkFilterCaseLog('system');
       });
       scope.$on('casedescription-changed', function(){
         updateObject(scope.caze);

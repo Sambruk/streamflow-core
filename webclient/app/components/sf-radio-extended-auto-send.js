@@ -26,15 +26,15 @@ angular.module('sf')
         scope.$watch(attr.ngModel, function (newValue, oldValue, srcScope) {
 
           if (hasRunAtLeastOnce) {
-            console.log("new: ", newValue, ", old: ", oldValue);
+            console.log('new: ', newValue, ', old: ', oldValue);
 
             if (newValue === attr.value) {
 
-              var isOther = $parse(attr['sfRadioExtendedAutoSend'])();
+              var isOther = $parse(attr.sfRadioExtendedAutoSend)();
               var value;
 
               if (isOther) {
-                value = $("div input[type=text]", $(element).parent().parent()).val();
+                value = $('div input[type=text]', $(element).parent().parent()).val();
                 $(element).val(value);
               }
               else {
@@ -48,5 +48,5 @@ angular.module('sf')
           hasRunAtLeastOnce = true;
         });
       }
-    }
+    };
   }]);

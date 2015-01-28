@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('fancyDateService', function() {
+.factory('fancyDateService', function (moment) {
     moment.locale('sv');
 
     return {
@@ -25,17 +25,17 @@ angular.module('sf')
         var result = '';
 
         switch (value) {
-          case (new Date()).toISOString().split("T")[0]:
+          case (new Date()).toISOString().split('T')[0]:
             result = 'I dag';
             break;
-          case moment().subtract(1, 'days').format("YYYY-MM-DD"):
+          case moment().subtract(1, 'days').format('YYYY-MM-DD'):
             result = 'I går';
             break;
           case '':
             result = '';
             break;
           default:
-            result = moment(value + "T23:59:59").fromNow();
+            result = moment(value + 'T23:59:59').fromNow();
             break;
         }
 

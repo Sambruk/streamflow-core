@@ -24,15 +24,15 @@ angular.module('sf')
     scope: {
       breadcrumblist: '=?'
     },
-    link: function(scope) {
-      scope.breadcrumbList;
+    link: function (scope) {
+      scope.breadcrumbList = null;
       scope.$watch('breadcrumbList', function(newVal){
         if(!newVal){
           return;
         }
-        scope.breadcrumbList = newVal;   
+        scope.breadcrumbList = newVal;
       });
-      
+
       $rootScope.$on('breadcrumb-updated', function(event, breadcrumbList) {
         var newbcItems = getBreadcrumbItems(breadcrumbList);
         scope.breadcrumbList = getBreadcrumbItems(breadcrumbList);

@@ -41,7 +41,7 @@ angular.module('sf')
       var port = $location.$$port;
       var urlPrefix = protocol;//+ '://dummyuser:dummypass@';
       var prodUrl = urlPrefix + '://' + host +':'+ port + '/webclient/api/';
-      //debugger;
+
       switch (buildMode) {
         case 'prod':
           return prodUrl;
@@ -58,17 +58,12 @@ angular.module('sf')
 
     var invalidate = function(hrefs) {
         hrefs.forEach(function(href) {
-          // console.log('invalidate');
-          // console.log(href);
           cache.remove(href);
         });
-      }
-//    debugger;
+      };
     var baseUrl = prepareBaseUrl();
     var apiUrl = prepareApiUrl(baseUrl);
     var cache = $cacheFactory('sfHttpCache');
-    // console.log(cache.info());
-
 
     return {
       baseUrl: baseUrl,

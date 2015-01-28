@@ -26,15 +26,15 @@ angular.module('sf')
           if (hasRunAtLeastOnce) {
 
             var espacedValues = _.map(newValue, function(value){
-              return value.indexOf(",") !== -1 ? "[" + value + "]" : value;
+              return value.indexOf(',') !== -1 ? '[' + value + ']' : value;
             });
 
-            var valueToSend = espacedValues.join(", ");
+            var valueToSend = espacedValues.join(', ');
             caseService.updateField($params.caseId, scope.$parent.form[0].draftId, attr.name, valueToSend);
           }
 
           hasRunAtLeastOnce = true;
         });
       }
-    }
+    };
   }]);
