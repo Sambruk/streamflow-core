@@ -16,42 +16,42 @@
  */
 'use strict';
 angular.module('sf')
-.directive('sfDatePickerFancy', ['fancyDateService', '$timeout', function (fancyDateService, $timeout) {
+.directive('sfDatePickerFancy', function (fancyDateService, $timeout) {
+  return {
+    restrict:'A',
+    require: 'ngModel',
 
-    return {
-      restrict:'A',
-      require: "ngModel",
+    link: function (scope, element, attrs, ngModel) {
+        var dateRegex = /^\d{4}-\d{2}-\d{2}/,
+            $element = $(element);
+        var $input = $element.pickadate({
+          selectYears: true,
+          selectMonths: true,
+          format: 'yyyy-mm-dd',
+          min: new Date(),
+          close: false,
+          clear: false,
+          onClose: function () {
+            var value = $element.val();
 
-      link: function (scope, element, attrs, ngModel) {
-          var dateRegex = /^\d{4}-\d{2}-\d{2}/,
-              $element = $(element);
-          var $input = $element.pickadate({
-            selectYears: true,
-            selectMonths: true,
-            format: 'yyyy-mm-dd',
-            min: new Date(),
-            close: false,
-            clear: false,
-            onClose: function () {
-              var value = $element.val();
-
-              if (dateRegex.test(value)) {
-                // Set fancy date without triggering ng-change.
-                $element.val(fancyDateService.format(value)).blur();
-              }
+            if (dateRegex.test(value)) {
+              // Set fancy date without triggering ng-change.
+              $element.val(fancyDateService.format(value)).blur();
             }
-          });
+          }
+        });
 
-          scope.$watch('dueOnShortStartValue', function (newVal) {
-            if (!!newVal) {
-              // run on the next digest
-              $timeout(function () {
-                var picker = $input.pickadate('picker');
-                picker.set('select', new Date(newVal));
-                scope.dueOnShort = fancyDateService.format(newVal);
-              });
-            }
-          });
-      }
-    };
-  }]);
+        scope.$watch('dueOnShortStartValue', function (newVal) {
+          if (!!newVal) {
+            // run on the next digest
+            $timeout(function () {
+              var picker = $input.pickadate('picker');
+              picker.set('select', new Date(newVal));
+              scope.dueOnShort = fancyDateService.format(newVal);
+            });
+          }
+        });
+    }
+  };
+});
+

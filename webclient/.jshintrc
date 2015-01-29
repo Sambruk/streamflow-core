@@ -49,6 +49,7 @@
     "$",
     "_",
     "jQuery",
-    "angular"
+    "angular",
+    "moment"
   ]
 }

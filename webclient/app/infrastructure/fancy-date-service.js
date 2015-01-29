@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.factory('fancyDateService', function (moment) {
+.factory('fancyDateService', function () {
     moment.locale('sv');
 
     return {
