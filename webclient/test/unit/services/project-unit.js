@@ -94,18 +94,18 @@ describe("sf.services.project", function () {
 
     describe('overdueDays', function() {
       it('is overdue by 1 if dueDate is yesterday', function() {
-        var object = new SfCaseClass({dueDate: yesterday.toString()});
+        var object = new SfCaseClass({dueOn: yesterday.toString()});
         expect(object.overdueDays()).toEqual(1);
       });
 
       it('is not overdue (0) if dueDate is tomorrow', function() {
-        var object = new SfCaseClass({dueDate: tomorrow.toString()});
+        var object = new SfCaseClass({dueOn: tomorrow.toString()});
         //object.dueDate = tomorrow.toString();
         expect(object.overdueDays()).toEqual(0);
       });
 
       it('is overdue for an old string date', function() {
-        var object = new SfCaseClass({dueDate: '2013-01-24T12:04:34.220Z'});
+        var object = new SfCaseClass({dueOn: '2013-01-24T12:04:34.220Z'});
         // var object = SfCaseClass({dueDate: '2013-01-24T12:04:34.220Z'});
         //object.dueDate = '2013-01-24T12:04:34.220Z';
         expect(object.overdueDays()).toBeGreaterThan(6);
@@ -115,19 +115,19 @@ describe("sf.services.project", function () {
 
     describe('overdueStatus', function() {
       it('is unset if dueDate is unset', function() {
-        var object = new SfCaseClass({dueDate: null});
+        var object = new SfCaseClass({dueOn: null});
         //object.dueDate = null;
         expect(object.overdueStatus()).toEqual('unset');
       });
 
       it('is overdue if overdue:)', function() {
-        var object = new SfCaseClass({dueDate: yesterday.toString()});
+        var object = new SfCaseClass({dueOn: yesterday.toString()});
         //object.dueDate = yesterday;
         expect(object.overdueStatus()).toEqual('overdue');
       });
 
       it('is set if dueDate is set but not overdue', function() {
-        var object = new SfCaseClass({dueDate: tomorrow.toString()});
+        var object = new SfCaseClass({dueOn: tomorrow.toString()});
         //object.dueDate = tomorrow;
         expect(object.overdueStatus()).toEqual('set');
       });

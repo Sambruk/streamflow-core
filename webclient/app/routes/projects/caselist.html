@@ -52,7 +52,7 @@
     <div ng-hide="showSpinner.currentCases">
       <ul class="issue-list" ng-init="defaultSortExpression = '-creationDate'">
 
-        <li ng-show="currentCases['grouped'] && selectedItem.value !== 'caseId'" class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="(key, value) in currentCases | filter: filterSearch | groupBy: selectedItem.value">
+        <li ng-show="currentCases['grouped'] && selectedItem.value !== 'caseId'" class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="(key, value) in currentCases | filter: filterSearch | groupBy: selectedItem.value track by $index">
 	        <h3 id="groupingHeader">{{key}}</h3>
 	        <div class="caselistItem" ng-repeat="case in value | filter: filterSearch | orderBy: [sortExpression, defaultSortExpression]">
 		        <a href="{{case.href}}" class="block-link">
@@ -78,13 +78,13 @@
 		      </div>
         </li>
 
-      	<li ng-show="!currentCases['grouped'] || selectedItem.value === 'caseId'" class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in currentCases | filter: filterSearch | orderBy: [sortExpression, defaultSortExpression]">
+      	<li ng-show="!currentCases['grouped'] || selectedItem.value === 'caseId'" class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in currentCases | filter: filterSearch | orderBy: [sortExpression, defaultSortExpression]  | limitTo: itemsLimit() track by $index">
 	        <a href="{{case.href}}" class="block-link">
 	          <div class="due-date">
 	            <span>{{case.overdueDays() | positive}}</span>
 	            <data-ng-pluralize
 	            count="case.overdueDays()"
-	            when="{'0': '{{case.dueDate | shortDate}}', '1': 'dag', 'other': 'dagar '}">
+	            when="{'0': '{{case.dueOn | shortDate}}', '1': 'dag', 'other': 'dagar '}">
 	            </data-ng-pluralize>
 	          </div>
 	          <div class="issue-description">
@@ -103,6 +103,9 @@
 
 
       </ul> <!-- issue-list -->
+      <div style="text-align:center;">
+      	<button ng-show="hasMoreItemsToShow()" ng-click="showMoreItems()">Show more</button>
+      </div>
     </div>
     <div ng-show="showSpinner.currentCases" class="spinner"></div>
   </div>

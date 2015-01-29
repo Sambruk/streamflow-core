@@ -27,14 +27,15 @@ angular.module('sf')
       overdueDays: function() {
         var oneDay = 24*60*60*1000;
         var now = new Date();
-        var dueDate = new Date(this.dueDate);
-        var diff = Math.round((now.getTime() - dueDate.getTime())/(oneDay));
+        var dueOn = new Date(this.dueOn);
+        var diff = Math.round((now.getTime() - dueOn.getTime())/(oneDay));
         //console.log(this.dueDate);
         return diff > 0 ? diff : 0;
       },
 
       overdueStatus: function() {
-        if (!this.dueDate) return 'unset';
+        if (!this.dueOn) return 'unset';
+        var t = this.overdueDays();
         return this.overdueDays() > 0 ? 'overdue' : 'set';
       },
 

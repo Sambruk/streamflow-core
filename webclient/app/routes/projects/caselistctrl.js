@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-  .controller('CaseListCtrl', function($scope, $routeParams, projectService, $rootScope, groupByService) {
+  .controller('CaseListCtrl', function($scope, $routeParams, projectService, $rootScope, caseService, groupByService) {
     // $scope.currentPage = 1;
     // $scope.pageSize = 10;
     $scope.currentCases = [];
@@ -28,7 +28,32 @@ angular.module('sf')
 
     $scope.currentCases.promise.then(function(){
       originalCurrentCases = $scope.currentCases;
+
+      _.each($scope.currentCases, function(item){
+        caseService.getSelectedGeneral(item.id).promise.then(function(response){
+          if(response[0].dueOnShort){
+            item.dueOn = response[0].dueOnShort;
+          }
+          if(response[0].priority){
+            item.priority = response[0].priority;
+          }
+        });
+
+      });
     });
+
+
+    var pagesShown = 1;
+    var pageSize = 5;
+    $scope.itemsLimit = function() {
+      return pageSize * pagesShown;
+    };
+    $scope.hasMoreItemsToShow = function() {
+      return pagesShown < ($scope.currentCases.length / pageSize);
+    };
+    $scope.showMoreItems = function() {
+      pagesShown = pagesShown + 1;
+    };
 
     // $scope.pageChangeHandler = function(num) {
     //   console.log('page changed to ' + num);
