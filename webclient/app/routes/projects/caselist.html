@@ -50,11 +50,11 @@
     <h3>{{getHeader()}}</h3>
     <div class="due-date-divider"><span>Förfallodatum</span></div>
     <div ng-hide="showSpinner.currentCases">
-      <ul class="issue-list">
+      <ul class="issue-list" ng-init="defaultSortExpression = '-creationDate'">
 
         <li ng-show="currentCases['grouped'] && selectedItem.value !== 'caseId'" class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="(key, value) in currentCases | filter: filterSearch | groupBy: selectedItem.value">
 	        <h3 id="groupingHeader">{{key}}</h3>
-	        <div class="caselistItem" ng-repeat="case in value | filter: filterSearch | orderBy: sortExpression">
+	        <div class="caselistItem" ng-repeat="case in value | filter: filterSearch | orderBy: [sortExpression, defaultSortExpression]">
 		        <a href="{{case.href}}" class="block-link">
 		          <div class="due-date">
 		            <span>{{case.overdueDays() | positive}}</span>
@@ -78,7 +78,7 @@
 		      </div>
         </li>
 
-      	<li ng-show="!currentCases['grouped'] || selectedItem.value === 'caseId'" class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in currentCases | filter: filterSearch | orderBy: [sortExpression, caseId]">
+      	<li ng-show="!currentCases['grouped'] || selectedItem.value === 'caseId'" class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in currentCases | filter: filterSearch | orderBy: [sortExpression, defaultSortExpression]">
 	        <a href="{{case.href}}" class="block-link">
 	          <div class="due-date">
 	            <span>{{case.overdueDays() | positive}}</span>
