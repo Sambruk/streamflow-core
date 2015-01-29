@@ -29,25 +29,32 @@ angular.module('sf')
 
       scope.displayToolbar = false;
 
-      /*scope.toggleToolbar = function(){
-        scope.displayToolbar = !scope.displayToolbar;
-      }*/
-
-      scope.navigateTo = function(href, $event){
+      scope.navigateTo = function (href, $event){
         $event.preventDefault();
         scope.toggleToolbar($event);
         navigationService.linkTo(href);
       };
 
-
-      scope.toggleToolbar = function($event) {
+      scope.toggleToolbar = function ($event) {
         $event.preventDefault();
-        $('.functions-menu').toggleClass('open');
-        if ( $('.functions-menu').hasClass('open') ) {
-          $('.sub-category').show();
+
+        var $functionsMenu = $('.functions-menu');
+        var $subCategory = $('.sub-category');
+
+        if ($functionsMenu.hasClass('open')) {
+          $functionsMenu.removeClass('open', function () {
+            $subCategory.hide();
+          });
         } else {
-          $('.sub-category').hide();
+          $subCategory.show(function () {
+            $functionsMenu.addClass('open');
+          });
         }
+
+        //} else {
+          //$('.sub-category').hide();
+        //}
+        //$('.functions-menu').toggleClass('open');
       };
 
       scope.canCreateCase = function() {
