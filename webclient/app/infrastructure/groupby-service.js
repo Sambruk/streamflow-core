@@ -33,6 +33,11 @@ angular.module('sf')
     var groupCurrentCases = [];
 
     _.each(currentCases, function(item){
+      if(!selectedGroupItem){
+        currentCases = originalCurrentCases;
+        return;
+      }
+
       switch(selectedGroupItem.value) {
         case 'caseTypeText':
           if(!item.caseType){
