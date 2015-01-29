@@ -13,7 +13,7 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
         'label': 'etikett',
         'assignedTo': 'tilldelad',
         'name': 'namn',
-        'contactId': 'kontakdid',
+        'contactId': 'kontaktid',
         'phoneNumber': 'telefon',
         'emailAddress': 'email',
         'today': 'idag',
@@ -35,7 +35,7 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
             if (!element.find('#main-searchtext').is(':focus')) {
               scope.showSearchTerms = false;
             }
-          }, 100);
+          }, 500);
         }
       };
 
