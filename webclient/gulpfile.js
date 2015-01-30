@@ -41,8 +41,7 @@ var buildMode = args.prod || args.dev || 'dev';
 var paths = {
   scripts: [
     'app/**/*.js',
-    '!app/design/**/*.js',
-    '!app/config/config.js'
+    '!app/design/**/*.js'
   ],
   css: [
     'app/design/gui/css/**/*.css',
