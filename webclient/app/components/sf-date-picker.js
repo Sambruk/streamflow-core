@@ -19,7 +19,7 @@ angular.module('sf')
 .directive('sfDatePicker', [function (location) {
     return {
       restrict:'A',
-      require: "ngModel",
+      require: 'ngModel',
       link: function (scope, element, attrs, ngModel) {
         try {
           $(element).pickadate({
@@ -27,10 +27,10 @@ angular.module('sf')
             onSet: function(e){
               scope.$apply(function(){
                 var $element = $(element);
-                ngModel.$setViewValue($element.val())
+                ngModel.$setViewValue($element.val());
               });
             }
-         })
+         });
         } catch(e) {}
       }
     };

@@ -34,7 +34,9 @@ angular.module('sf')
       },
 
       overdueStatus: function() {
-        if (!this.dueOn) return 'unset';
+        if (!this.dueOn) {
+          return 'unset';
+        }
         var t = this.overdueDays();
         return this.overdueDays() > 0 ? 'overdue' : 'set';
       },

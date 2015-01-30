@@ -36,8 +36,9 @@ angular.module('sf')
       },
       'se.streamsource.streamflow.api.administration.form.DateFieldValue': {
         addProperties: function(field){
-          if (field.value)
+          if (field.value) {
             field.value = field.value.split('T')[0];
+          }
         },
         getValue: function(value, attr){
           return value + 'T00:00:00.000Z';
@@ -80,7 +81,7 @@ angular.module('sf')
             return value.indexOf(',') !== -1 ? '[' + value + ']' : value;
           });
 
-          return espacedValues.join(", ");
+          return espacedValues.join(', ');
         }
       },
       'se.streamsource.streamflow.api.administration.form.NumberFieldValue': {

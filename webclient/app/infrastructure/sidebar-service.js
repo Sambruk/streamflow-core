@@ -34,7 +34,7 @@ angular.module('sf')
   var _updateObject = function(itemToUpdate){
     itemToUpdate.invalidate();
     itemToUpdate.resolve();
-  }
+  };
 
   var _changePriorityLevel = function(scope, priorityId) {
     if (priorityId === '-1') {
@@ -346,7 +346,7 @@ angular.module('sf')
     caseService.resolveCase($routeParams.caseId, resolutionId, function(){
       $rootScope.$broadcast('case-resolved');
       var href = navigationService.caseListHrefFromCase(scope.caze);
-      window.location.replace(href)
+      window.location.replace(href);
     });
   };
 
