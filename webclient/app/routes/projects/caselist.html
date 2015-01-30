@@ -103,8 +103,8 @@
 
 
       </ul> <!-- issue-list -->
-      <div style="text-align:center;">
-      	<button ng-show="hasMoreItemsToShow()" ng-click="showMoreItems()">Show more</button>
+      <div class="show-more">
+        <button ng-show="hasMoreItemsToShow()" ng-click="showMoreItems()">Show more <i class="icon-arrow-down"></i></button>
       </div>
     </div>
     <div ng-show="showSpinner.currentCases" class="spinner"></div>
