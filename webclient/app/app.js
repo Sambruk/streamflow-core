@@ -19,6 +19,7 @@
 angular.module('sf', [
     'ngRoute',
     'ngResource',
+    'ngAnimate',
     'angular-growl',
     'ngSanitize',
     'angularFileUpload',
@@ -26,7 +27,7 @@ angular.module('sf', [
     'angular.filter'
   ])
   .run(function ($rootScope, $http, httpService, $location, $routeParams, tokenService) {
-    
+
     $rootScope.hasToken = tokenService.hasToken;
     $rootScope.isLoggedIn = $rootScope.hasToken();
     $rootScope.logout = tokenService.clear;
@@ -40,7 +41,7 @@ angular.module('sf', [
         $rootScope.contextmenuParams.projectType = $routeParams.projectType;
       }
       if($routeParams.projectId){
-        $rootScope.contextmenuParams.projectId = $routeParams.projectId;        
+        $rootScope.contextmenuParams.projectId = $routeParams.projectId;
       }
     });
   });
