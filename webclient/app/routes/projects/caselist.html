@@ -19,7 +19,7 @@
 <div class="content-primary" role="main">
   <div class="issues-overview">
     <div class="filter cf">
-      <input type="text" ng-model="filterSearch" id="search" class="form-control" placeholder="Filtrera sökning" />
+      <input type="text" ng-model="filterSearch" id="search" class="form-control" placeholder="Filtrera sökning">
       <div class="options">
         <div class="sort">
           <label for="sortDropdown">Sortera</label>
@@ -47,7 +47,7 @@
 
     <!-- <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)"></dir-pagination-controls> -->
 
-    <h3>{{getHeader()}}</h3>
+    <h3>{{getHeader()}} <span class="results">{{currentCases.length > 0 ? '(' + currentCases.length + ')' : ''}}<span></h3>
     <div class="due-date-divider"><span>Förfallodatum</span></div>
     <div ng-hide="showSpinner.currentCases">
       <ul class="issue-list" ng-init="defaultSortExpression = '-creationDate'">
