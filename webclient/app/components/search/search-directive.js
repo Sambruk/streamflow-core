@@ -7,21 +7,21 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
     link: function (scope, element) {
       // Translation map. Should use i18n for this.
       scope.searchTerms = {
-        'createdOn': 'skapad',
-        'caseType': 'ärendetyp',
-        'project': 'projekt',
-        'label': 'etikett',
-        'assignedTo': 'tilldelad',
-        'name': 'namn',
-        'contactId': 'kontaktid',
-        'phoneNumber': 'telefon',
-        'emailAddress': 'email',
-        'today': 'idag',
-        'yesterday': 'igår',
-        'hour': 'timme',
-        'week': 'vecka',
-        'me': 'mig',
-        'createdBy': 'skapadav'
+        'skapad': 'createdOn',
+        'ärendetyp': 'caseType',
+        'projekt': 'project',
+        'etikett': 'label',
+        'tilldelad': 'assignedTo',
+        'namn': 'name',
+        'kontaktid': 'contactId',
+        'telefon': 'phoneNumber',
+        'email': 'emailAddress',
+        'idag': 'today',
+        'igår': 'yesterday',
+        'timme': 'hour',
+        'vecka': 'week',
+        'mig': 'me',
+        'skapadav': 'createdBy'
       };
 
       scope.toggleSearchTerms = function (visible) {
@@ -39,9 +39,9 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
         }
       };
 
-      scope.addSearchTermToQuery = function (event) {
+      scope.addSearchTermToQuery = function ($event) {
         // Get key from search term value.
-        var searchTerm = _.invert(scope.searchTerms)[event.currentTarget.innerHTML] + ':';
+        var searchTerm = $event.currentTarget.innerHTML + ':';
 
         // Don't let query be undefined.
         scope.query = scope.query || '';
@@ -57,6 +57,13 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
       };
 
       scope.search = function (query) {
+        // Replace any search term with its proper API equivalent.
+        query = query.replace(/(\w+)(?=:)/gi, function (match) {
+          return scope.searchTerms[match];
+        });
+
+        console.log(query);
+
         $location.search({'query': query});
         navigationService.linkTo('/search');
       };
