@@ -1,6 +1,6 @@
 ::
 ::
-:: Copyright 2009-2014 Jayway Products AB
+:: Copyright 2009-2015 Jayway Products AB
 ::
 :: Licensed under the Apache License, Version 2.0 (the "License");
 :: you may not use this file except in compliance with the License.
@@ -22,7 +22,5 @@
 call npm install
 
 call bower install
-
-rm -rf bower_components/jquery
 
 call gulp clean-build --prod
