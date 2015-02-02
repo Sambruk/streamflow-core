@@ -39,22 +39,15 @@ angular.module('sf')
         $event.preventDefault();
 
         var $functionsMenu = $('.functions-menu');
-        var $subCategory = $('.sub-category');
+        var $subCategory = $('.sub-category', $functionsMenu);
 
         if ($functionsMenu.hasClass('open')) {
-          $functionsMenu.removeClass('open', function () {
-            $subCategory.hide();
-          });
+          $functionsMenu.removeClass('open');
         } else {
           $subCategory.show(function () {
             $functionsMenu.addClass('open');
           });
         }
-
-        //} else {
-          //$('.sub-category').hide();
-        //}
-        //$('.functions-menu').toggleClass('open');
       };
 
       scope.canCreateCase = function() {
