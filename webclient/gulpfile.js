@@ -34,6 +34,7 @@ var ngConstant = require('gulp-ng-constant');
 var replace = require('gulp-replace');
 var sourcemaps = require('gulp-sourcemaps');
 var imagemin = require('gulp-imagemin');
+var autoprefixer = require('gulp-autoprefixer');
 
 var testFiles = ['unit/filters-unit.js'];
 var buildMode = args.prod || args.dev || 'dev';
@@ -124,6 +125,7 @@ gulp.task('build-css', function () {
       return '../i/' + match;
     }))
     .pipe(sourcemaps.init())
+      .pipe(autoprefixer())
       .pipe(concat('streamflow.css'))
       .pipe(minifyCSS())
     .pipe(sourcemaps.write())
