@@ -17,6 +17,7 @@
 
 -->
 <div class="content-primary" role="main">
+  <div ng-show="showSpinner.currentCases" class="spinner"></div>
   <div class="issues-overview" data-ng-hide="currentCases.length === 0">
     <div class="filter cf">
       <input type="text" ng-model="filterSearch" id="search" placeholder="Filtrera sökning">
@@ -45,9 +46,7 @@
       </div>
     </div>
 
-    <!-- <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)"></dir-pagination-controls> -->
-
-    <h3>{{getHeader()}} <span class="results">{{currentCases.length}} träffar</span></h3>
+    <h3>{{getHeader()}} <span class="results">{{currentCases.length}} ärenden</span></h3>
     <div class="due-date-divider"><span>Förfallodatum</span></div>
     <div ng-hide="showSpinner.currentCases">
       <ul class="issue-list" ng-init="defaultSortExpression = '-creationDate'">
@@ -100,13 +99,10 @@
 	          </div>
 	        </a>
         </li>
-
-
       </ul> <!-- issue-list -->
       <div class="show-more">
         <button ng-show="hasMoreItemsToShow()" ng-click="showMoreItems()">Visa fler</button>
       </div>
     </div>
-    <div ng-show="showSpinner.currentCases" class="spinner"></div>
   </div>
-  </div> <!-- content-primary -->
+</div> <!-- content-primary -->
