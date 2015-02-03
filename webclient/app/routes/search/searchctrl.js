@@ -21,10 +21,20 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $r
 
   var query = $routeParams.query;
 
-  // $scope.currentPage = 1;
-  // $scope.pageSize = 10;
   $scope.currentCases = [];
   var originalCurrentCases = [];
+  var pagesShown = 1;
+  var pageSize = 5;
+  $scope.itemsLimit = function() {
+    return pageSize * pagesShown;
+  };
+  $scope.hasMoreItemsToShow = function() {
+    return pagesShown < ($scope.currentCases.length / pageSize);
+  };
+  $scope.showMoreItems = function() {
+    pagesShown = pagesShown + 1;
+  };
+
 
   $scope.showSpinner = {
     currentCases: true
