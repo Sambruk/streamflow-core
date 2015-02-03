@@ -35,6 +35,7 @@ var replace = require('gulp-replace');
 var sourcemaps = require('gulp-sourcemaps');
 var imagemin = require('gulp-imagemin');
 var autoprefixer = require('gulp-autoprefixer');
+var minifyHtml = require('gulp-minify-html');
 
 var testFiles = ['unit/filters-unit.js'];
 var buildMode = args.prod || args.dev || 'dev';
@@ -135,6 +136,7 @@ gulp.task('build-css', function () {
 
 gulp.task('copy-templates', function () {
   return gulp.src(paths.templates)
+    .pipe(minifyHtml())
     .pipe(gulp.dest('build'));
 });
 
