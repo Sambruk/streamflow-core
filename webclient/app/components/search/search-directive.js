@@ -62,8 +62,6 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
           return scope.searchTerms[match];
         });
 
-        console.log(query);
-
         $location.search({'query': query});
         navigationService.linkTo('/search');
       };

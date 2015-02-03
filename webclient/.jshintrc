@@ -11,8 +11,8 @@
   "mootools"      : false,
   "dojo"          : false,
   "debug"         : false,  // Allow debugger statements e.g. browser breakpoints.
-  "devel"         : true,   // Allow developments statements e.g. `console.log();`.
-  "strict"        : false,  // Require `use strict` pragma  in every file.
+  "devel"         : false,  // Allow developments statements e.g. `console.log();`.
+  "strict"        : true,   // Require `use strict` pragma  in every file.
   "globalstrict"  : false,  // Allow global "use strict" (also enables 'strict').
   "asi"           : false,  // Tolerate Automatic Semicolon Insertion (no semicolons).
   "laxbreak"      : true,   // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.
