@@ -16,38 +16,27 @@
  */
 'use strict';
 
-angular.module('sf')
-.directive('contextmenu', function(projectService, navigationService, $rootScope, $timeout){
+angular.module('sf').directive('contextmenu', function (projectService, navigationService, $rootScope, $timeout) {
   return {
     restrict: 'E',
     templateUrl: 'components/contextmenu/contextmenu.html',
     scope: {
       params: '=?'
     },
-    link: function(scope){
-      scope.projects = projectService.getAll();
+    link: function (scope) {
+      scope.showSidebar = false;
 
-      scope.displayToolbar = false;
+      scope.projects = projectService.getAll();
 
       scope.navigateTo = function (href, $event){
         $event.preventDefault();
-        scope.toggleToolbar($event);
+        scope.toggleSidebar($event);
         navigationService.linkTo(href);
       };
 
-      scope.toggleToolbar = function ($event) {
+      scope.toggleSidebar = function ($event) {
         $event.preventDefault();
-
-        var $functionsMenu = $('.functions-menu');
-        var $subCategory = $('.sub-category', $functionsMenu);
-
-        if ($functionsMenu.hasClass('open')) {
-          $functionsMenu.removeClass('open');
-        } else {
-          $subCategory.show(function () {
-            $functionsMenu.addClass('open');
-          });
-        }
+        scope.showSidebar = !scope.showSidebar;
       };
 
       scope.canCreateCase = function() {
