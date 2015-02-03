@@ -19,8 +19,7 @@
 <div class="issue-banner">
   <h2>
     <span data-ng-repeat="bread in breadcrumbList track by $index">
-      {{ bread | translate }}
-      <span ng-hide="$last === true">&rarr;</span>
+      {{ bread | translate }} <span ng-hide="$last === true">&rarr;&nbsp; </span>
     </span>
   </h2>
 </div>

@@ -18,44 +18,35 @@
 -->
 <!--TODO: Consider if it's a good idea or not tuo use the same controller as for sidebar-->
 <div class="content-primary" role="main">
-  <div class="m m-check-list">
+  <div class="m single-issue">
     <div class="m-h">
       <h2>Ärendelogg</h2>
     </div>
-    <br />
-    <caselogentry caseid="caseId"></caselogentry>
-    <div class="caselog-filter-options">
-      <span>Visa loggposter av typ:</span><br />
-      <div  class="caselog-filter-length" ng-repeat="filterTemp in caseLogFilters|limitTo:(caseLogFilters.length/4)+1">
-        <label class="caselog-filter caselog-filter-label" data-ng-repeat="filter in caseLogFilters.slice($index*4,($index*4+4))">
-          <input class="caselog-filter-checkbox" type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName | translate }}
-        </label>
-      </div>
-    </div>
-    <br />
-    <div ng-hide="showSpinner.caseLogs">
-      <div class="caselog-body" ng-show="filteredCaseLogs.length > 0">
-        <ul>
-          <li class="msg-item caselog-item" data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate') track by $index">
-            <div class="msg-head cf">
-              <div><span class="msg-author">{{ entry.creator }}</span><span> - {{ entry.caseLogType | translate }}</span></div>
-            </div>
-            <div class="msg-body">
-              <p>{{ entry.text }}</p>
-            </div>
-            <div class="msg-meta cf">
-              <!--<div class="caselog-type">-->
-              <!--{{ entry.caseLogType | translate }}-->
-              <!--</div>-->
-              <div class="msg-timestamp">
-                {{ entry.creationDate | dateTime }}
-              </div>
-            </div>
-          </li>
-        </ul>
+    <div class="issue-body">
+      <caselogentry caseid="caseId"></caselogentry>
+      <div class="caselog-filter-options">
+        <p>Visa loggposter av typ:</p>
+        <div  class="caselog-filter-length" ng-repeat="filterTemp in caseLogFilters|limitTo:(caseLogFilters.length/4)+1">
+          <label class="caselog-filter caselog-filter-label" data-ng-repeat="filter in caseLogFilters.slice($index*4,($index*4+4))">
+            <input class="caselog-filter-checkbox" type="checkbox" name="filters" data-ng-model="filter.filterValue" />{{ filter.filterName | translate }}
+          </label>
+        </div>
       </div>
     </div>
     <div ng-show="showSpinner.caseLogs" class="spinner"></div>
+    <div class="issue-notes cf" ng-show="!showSpinner.caseLogs && filteredCaseLogs.length > 0">
+      <div class="posted-notes">
+        <div class="note-item cf" data-ng-repeat="entry in filteredCaseLogs = (caseLogs | caseLogFilter:caseLogFilters | orderBy:'-creationDate') track by $index">
+          <div class="note-posted-by">
+            <span class="struct">Postad av: </span>{{ entry.creator }} <span> - {{ entry.caseLogType | translate }}</span>
+            <span class="note-timestamp">{{ entry.creationDate | dateTime }}</span>
+          </div>
+          <div class="note-body">
+            <p>{{ entry.text }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div ng-hide="showSpinner.caseLogs">
     <p ng-hide="filteredCaseLogs.length">Inga loggposter att visa med det angivna filtret.</p>

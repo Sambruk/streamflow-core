@@ -136,7 +136,9 @@ gulp.task('build-css', function () {
 
 gulp.task('copy-templates', function () {
   return gulp.src(paths.templates)
-    .pipe(minifyHtml())
+    .pipe(minifyHtml({
+      empty: true
+    }))
     .pipe(gulp.dest('build'));
 });
 
