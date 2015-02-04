@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-  .controller('CaseListCtrl', function($scope, $routeParams, projectService, $rootScope, caseService, groupByService, paginationService) {
+  .controller('CaseListCtrl', function($scope, $routeParams, projectService, $rootScope, caseService, groupByService, paginationService, casePropertiesService) {
     $scope.currentCases = [];
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
     $scope.totalCases = $scope.currentCases.length;
@@ -28,22 +28,7 @@ angular.module('sf')
     $scope.currentCases.promise.then(function(){
       originalCurrentCases = $scope.currentCases;
 
-      _.each($scope.currentCases, function(caze){
-        caseService.getSelectedGeneral(caze.id).promise.then(function(response){
-          if(response[0].dueOnShort){
-            caze.dueOn = response[0].dueOnShort;
-          }
-          if(response[0].priority){
-            caseService.getPossiblePriorities(caze.id).promise.then(function(possiblePriorities){
-              _.each(possiblePriorities, function(priority){
-                if(response[0].priority.id === priority.id){
-                  caze.priority = priority;
-                }
-              });
-            });
-          }
-        });
-      });
+      $scope.currentCases = casePropertiesService.checkCaseProperties($scope.currentCases);
 
       // 'Pagination'
       $scope.itemsLimit = paginationService.itemsLimit(pagesShown);

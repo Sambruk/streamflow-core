@@ -17,7 +17,7 @@
 
 'use strict';
 
-angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $rootScope, searchService, groupByService, paginationService) {
+angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $rootScope, searchService, groupByService, paginationService, caseService, casePropertiesService) {
   $scope.currentCases = [];
 
   var query = $routeParams.query;
@@ -36,6 +36,8 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $r
 
   $scope.groupBy = function(selectedGroupItem) {
     $scope.currentCases = groupByService.groupBy($scope.currentCases, originalCurrentCases, selectedGroupItem);
+    $scope.specificGroupByDefaultSortExpression = groupByService.getSpecificGroupByDefault(selectedGroupItem);
+    console.log($scope.specificGroupByDefaultSortExpression);
   };
 
   searchService.getCases(query).promise.then(function (result) {
@@ -45,6 +47,8 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $r
     $scope.currentCases.promise.then(function(){
       originalCurrentCases = $scope.currentCases;
       $rootScope.$broadcast('breadcrumb-updated',[]);
+
+      $scope.currentCases = casePropertiesService.checkCaseProperties($scope.currentCases);
 
       // 'Pagination'
       $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
