@@ -66,7 +66,13 @@ angular.module('sf')
         'read: Organization': 'Läsa: Organisatorisk enhet',
         'write: Organization': 'Skriva: Organisatorisk enhet',
         'read: Sameoubranch': 'Läsa: Samma organisatoriska gren',
-        'write: Sameoubranch': 'Skriva: Samma organisatoriska gren'
+        'write: Sameoubranch': 'Skriva: Samma organisatoriska gren',
+        0: 'Förfallna',
+        1: 'Förfaller idag',
+        2: 'Förfaller imorgon',
+        3: 'Förfaller inom en vecka',
+        4: 'Förfaller inom en månad',
+        5: 'Förfaller om mer än en månad'
       };
 
       return translation[input] || input;
