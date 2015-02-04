@@ -72,9 +72,7 @@ angular.module('sf')
 
     $scope.groupBy = function(selectedGroupItem) {
       $scope.currentCases = groupByService.groupBy($scope.currentCases, originalCurrentCases, selectedGroupItem);
-      if(selectedGroupItem && selectedGroupItem.value === 'checkDueOn'){
-        $scope.specificGroupByDefaultSortExpression = '-dueOn';
-      }
+      $scope.specificGroupByDefaultSortExpression = groupByService.getSpecificGroupByDefault(selectedGroupItem);
     };
 
     //Set breadcrumbs to case-owner if possible else to project id

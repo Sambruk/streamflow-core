@@ -29,6 +29,12 @@ angular.module('sf')
   	return groupingOptions;
   };
 
+  var getSpecificGroupByDefault = function(selectedGroupItem){
+    if(selectedGroupItem && selectedGroupItem.value === 'checkDueOn'){
+      return '-dueOn';
+    }
+  };
+
   var groupBy = function(currentCases, originalCurrentCases, selectedGroupItem){
     var groupCurrentCases = [];
 
@@ -103,7 +109,8 @@ angular.module('sf')
 
   return {
     groupBy: groupBy,
-    getGroupingOptions: getGroupingOptions
+    getGroupingOptions: getGroupingOptions,
+    getSpecificGroupByDefault: getSpecificGroupByDefault
   };
 
 });
