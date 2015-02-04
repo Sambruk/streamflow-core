@@ -409,6 +409,7 @@ angular.module('sf')
               result.push(link);
               getAttachmentPermissions(caseId, link.id, result[index]);
             });
+            result.queries = resource.response.queries;
             caseBase.broadcastMessage(result.status);
           },
           onFailure:function(err){

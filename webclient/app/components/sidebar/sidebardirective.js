@@ -79,6 +79,9 @@ angular.module('sf')
       scope.conversations.promise.then(function(){
         checkPermissionService.checkPermissions(scope, scope.conversations.commands, ['create'], ['canCreateConversation']);
       });
+      scope.attachments.promise.then(function(){
+        checkPermissionService.checkPermissions(scope, scope.attachments.queries, ['createattachment'], ['canCreateAttachment']);
+      });
       scope.possibleForms.promise.then(function(){
         if(scope.possibleForms.length > 0){
           scope.possibleForms.forEach(function(form){
