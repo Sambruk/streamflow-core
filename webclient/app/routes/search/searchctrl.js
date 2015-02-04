@@ -17,24 +17,12 @@
 
 'use strict';
 
-angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $rootScope, searchService, groupByService) {
+angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $rootScope, searchService, groupByService, paginationService) {
+  $scope.currentCases = [];
 
   var query = $routeParams.query;
-
-  $scope.currentCases = [];
   var originalCurrentCases = [];
   var pagesShown = 1;
-  var pageSize = 5;
-  $scope.itemsLimit = function() {
-    return pageSize * pagesShown;
-  };
-  $scope.hasMoreItemsToShow = function() {
-    return pagesShown < ($scope.currentCases.length / pageSize);
-  };
-  $scope.showMoreItems = function() {
-    pagesShown = pagesShown + 1;
-  };
-
 
   $scope.showSpinner = {
     currentCases: true
@@ -57,6 +45,16 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $r
     $scope.currentCases.promise.then(function(){
       originalCurrentCases = $scope.currentCases;
       $rootScope.$broadcast('breadcrumb-updated',[]);
+
+      // 'Pagination'
+      $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
+      $scope.hasMoreItemsToShow = function(){
+        paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
+      };
+      $scope.showMoreItems = function() {
+        pagesShown = paginationService.showMoreItems(pagesShown);
+        $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
+      };
     });
   });
 
