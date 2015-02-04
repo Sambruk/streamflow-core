@@ -51,12 +51,12 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $r
 
       // 'Pagination'
       $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
-      $scope.hasMoreItemsToShow = function(){
-        paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
-      };
+      $scope.hasMoreItemsToShow = paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
+
       $scope.showMoreItems = function() {
         pagesShown = paginationService.showMoreItems(pagesShown);
         $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
+        $scope.hasMoreItemsToShow = paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
       };
     });
   });

@@ -32,12 +32,12 @@ angular.module('sf')
 
       // 'Pagination'
       $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
-      $scope.hasMoreItemsToShow = function(){
-        paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
-      };
+      $scope.hasMoreItemsToShow = paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
+
       $scope.showMoreItems = function() {
         pagesShown = paginationService.showMoreItems(pagesShown);
         $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
+        $scope.hasMoreItemsToShow = paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
       };
     });
 
