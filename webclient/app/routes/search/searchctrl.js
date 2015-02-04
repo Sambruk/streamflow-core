@@ -37,7 +37,6 @@ angular.module('sf').controller('SearchCtrl', function ($scope, $routeParams, $r
   $scope.groupBy = function(selectedGroupItem) {
     $scope.currentCases = groupByService.groupBy($scope.currentCases, originalCurrentCases, selectedGroupItem);
     $scope.specificGroupByDefaultSortExpression = groupByService.getSpecificGroupByDefault(selectedGroupItem);
-    console.log($scope.specificGroupByDefaultSortExpression);
   };
 
   searchService.getCases(query).promise.then(function (result) {
