@@ -75,6 +75,13 @@ angular.module('sf')
             }
           }
           break;
+        case 'checkPriority':
+          if(!item.priority){
+            item.checkPriority = '_Ingen prioritet';
+          } else {
+            item.checkPriority = item.priority.priority + item.priority.text;
+          }
+          break;
         default:
           currentCases = originalCurrentCases;
       }

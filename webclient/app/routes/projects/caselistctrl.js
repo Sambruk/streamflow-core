@@ -17,47 +17,45 @@
 'use strict';
 
 angular.module('sf')
-  .controller('CaseListCtrl', function($scope, $routeParams, projectService, $rootScope, caseService, groupByService) {
-    // $scope.currentPage = 1;
-    // $scope.pageSize = 10;
+  .controller('CaseListCtrl', function($scope, $routeParams, projectService, $rootScope, caseService, groupByService, paginationService) {
     $scope.currentCases = [];
     $scope.currentCases = projectService.getSelected($routeParams.projectId, $routeParams.projectType);
     $scope.totalCases = $scope.currentCases.length;
     $scope.projectType = $routeParams.projectType;
     var originalCurrentCases;
+    var pagesShown = 1;
 
     $scope.currentCases.promise.then(function(){
       originalCurrentCases = $scope.currentCases;
 
-      _.each($scope.currentCases, function(item){
-        caseService.getSelectedGeneral(item.id).promise.then(function(response){
+      _.each($scope.currentCases, function(caze){
+        caseService.getSelectedGeneral(caze.id).promise.then(function(response){
           if(response[0].dueOnShort){
-            item.dueOn = response[0].dueOnShort;
+            caze.dueOn = response[0].dueOnShort;
           }
           if(response[0].priority){
-            item.priority = response[0].priority;
+            caseService.getPossiblePriorities(caze.id).promise.then(function(possiblePriorities){
+              _.each(possiblePriorities, function(priority){
+                if(response[0].priority.id === priority.id){
+                  caze.priority = priority;
+                }
+              });
+            });
           }
         });
-
       });
+
+      // 'Pagination'
+      $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
+      $scope.hasMoreItemsToShow = function(){
+        paginationService.hasMoreItemsToShow($scope.currentCases, pagesShown);
+      };
+      $scope.showMoreItems = function() {
+        pagesShown = paginationService.showMoreItems(pagesShown);
+        $scope.itemsLimit = paginationService.itemsLimit(pagesShown);
+      };
     });
 
-
-    var pagesShown = 1;
-    var pageSize = 5;
-    $scope.itemsLimit = function() {
-      return pageSize * pagesShown;
-    };
-    $scope.hasMoreItemsToShow = function() {
-      return pagesShown < ($scope.currentCases.length / pageSize);
-    };
-    $scope.showMoreItems = function() {
-      pagesShown = pagesShown + 1;
-    };
-
-    // $scope.pageChangeHandler = function(num) {
-    //   console.log('page changed to ' + num);
-    // };
 
     $scope.showSpinner = {
       currentCases: true
@@ -74,6 +72,9 @@ angular.module('sf')
 
     $scope.groupBy = function(selectedGroupItem) {
       $scope.currentCases = groupByService.groupBy($scope.currentCases, originalCurrentCases, selectedGroupItem);
+      if(selectedGroupItem && selectedGroupItem.value === 'checkDueOn'){
+        $scope.specificGroupByDefaultSortExpression = '-dueOn';
+      }
     };
 
     //Set breadcrumbs to case-owner if possible else to project id
