@@ -20,7 +20,7 @@ angular.module('sf')
 .factory('groupByService', function(SfCase){
 
   var groupingOptions = [{name:'Ärendetyp', value:'caseTypeText'},
-      {name:'Förfallodatum*', value:'checkDueOn'},
+      {name:'Förfallodatum', value:'checkDueOn'},
       {name:'Förvärvare', value:'assignedTo'},
       {name:'Projekt', value:'owner'},
       {name:'Prioritet*', value:'checkPriority'}];
@@ -30,8 +30,6 @@ angular.module('sf')
   };
 
   var groupBy = function(currentCases, originalCurrentCases, selectedGroupItem){
-    console.log('groupBy');
-    console.log(selectedGroupItem);
     var groupCurrentCases = [];
 
     _.each(currentCases, function(item){
@@ -63,17 +61,17 @@ angular.module('sf')
           }else{
             var dueDate = item.checkdueDay();
             if(dueDate === 0){
-              item.checkDueOn = 1; //Förfaller idag
+              item.checkDueOn = '1 Förfaller idag';
             }else if(dueDate === -1){
-              item.checkDueOn = 2; //Förfaller imorgon
+              item.checkDueOn = '2 Förfaller imorgon';
             }else if(dueDate > -7 && dueDate < -1){
-              item.checkDueOn = 3; //Förfaller inom en vecka
+              item.checkDueOn = '3 Förfaller inom en vecka';
             }else if(dueDate > -31 && dueDate < -7){
-              item.checkDueOn = 4; //Förfaller inom en månad
+              item.checkDueOn = '4 Förfaller inom en månad';
             }else if(dueDate < -31){
-              item.checkDueOn = 5; //Förfaller om mer än en månad
+              item.checkDueOn = '5 Förfaller om mer än en månad';
             }else if(dueDate > 0){
-              item.checkDueOn = 0;
+              item.checkDueOn = '0 Förfallna';
             }
           }
           break;
