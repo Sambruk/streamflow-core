@@ -33,6 +33,14 @@ angular.module('sf')
         return diff > 0 ? diff : 0;
       },
 
+      checkdueDay: function() {
+        var oneDay = 24*60*60*1000;
+        var now = new Date();
+        var dueOn = new Date(this.dueOn);
+        var diff = Math.round((now.getTime() - dueOn.getTime())/(oneDay));
+        return diff;
+      },
+
       overdueStatus: function() {
         if (!this.dueOn) {
           return 'unset';
