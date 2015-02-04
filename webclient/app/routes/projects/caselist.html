@@ -54,7 +54,7 @@
         	<h3 ng-show="selectedItem.value === 'checkPriority'" id="priorityHeader">{{key}}</h3>
 	        <h3 ng-show="selectedItem.value !== 'checkPriority'" id="groupingHeader">{{key | translate}}</h3>
 
-	        <div class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in value | filter: filterSearch | orderBy: [sortExpression, specificGroupByDefaultSortExpression, defaultSortExpression]">
+	        <div class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in value | filter: filterSearch | orderBy: [sortExpression, specificGroupByDefaultSortExpression, defaultSortExpression] | limitTo: itemsLimit">
 		        <a href="{{case.href}}" class="block-link">
 		          <div class="due-date">
 		            <span>{{case.overdueDays() | positive}}</span>
@@ -102,7 +102,7 @@
         </li>
       </ul> <!-- issue-list -->
       <div class="show-more">
-      	<button ng-show="hasMoreItemsToShow" ng-click="showMoreItems()">Visa fler</button>
+      	<button ng-show="hasMoreItemsToShow && !currentCases['grouped']" ng-click="showMoreItems()">Visa fler</button>
       </div>
     </div>
   </div>
