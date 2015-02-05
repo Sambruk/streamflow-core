@@ -287,10 +287,10 @@
 
   <!-- Module: Allmänt -->
   <div class="toolbar-content-popup" data-ng-show="showCaseInfo">
-    <div class='ng-modal'>
-      <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
-      <div class='ng-modal-dialog' ng-style='dialogStyle'>
-        <div class='ng-modal-close' ng-click="closePopUp()">X</div>
+    <div class="ng-modal">
+      <div class="ng-modal-ovelay" data-ng-click="closePopUp()"></div>
+      <div class="ng-modal-dialog" data-ng-style="dialogStyle">
+        <div class="ng-modal-close" data-ng-click="closePopUp()">X</div>
         <div class="m dialog-outer-content">
           <div class="dialog-inner-content">
             <div class="dialog-header">
@@ -326,7 +326,7 @@
   <!-- /Module: Allmänt -->
 
   <!-- Module: Formulär -->
-  <div class="m m-convos" ng-show="possibleForms.length > 0">
+  <div class="m m-convos" data-ng-show="possibleForms.length > 0">
     <div class="m-h">
       <h2>Formulär</h2>
     </div>
@@ -352,11 +352,11 @@
   <div class="m m-convos">
     <div class="m-h">
       <h2>Konversationer</h2>
-      <a ng-hide="!canCreateConversation" href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
+      <a data-ng-hide="!canCreateConversation" href="#/cases/{{ caze[0].id }}/conversation/create" class="action-btn">Ny konversation <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul>
-        <li data-ng-repeat='conversation in conversations track by $index' class="convo-li">
+        <li data-ng-repeat="conversation in conversations track by $index" class="convo-li">
           <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
@@ -375,7 +375,7 @@
   <div class="m m-contacts">
     <div class="m-h">
       <h2>Kontakter</h2>
-      <a ng-show="canAddContact" href="" data-ng-click="submitContact(caze[0].id, contacts.length)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
+      <a data-ng-show="canAddContact" href="" data-ng-click="submitContact(caze[0].id, contacts.length)" class="action-btn">Ny kontakt <i class="icon-plus"></i></a>
     </div>
     <div class="m-c">
       <ul class="zebra-list">
@@ -394,17 +394,17 @@
   <div class="m m-attachments">
     <div class="m-h">
       <h2>Bifogade filer</h2>
-      <label ng-show="canCreateAttachment" class="file-input-label action-btn">
+      <label data-ng-show="canCreateAttachment" class="file-input-label action-btn">
         <input type="file" name="file" ng-file-select="onFileSelect($files)" class="file-input"/>
         Lägg till fil <i class="icon-plus"></i>
       </label>
     </div>
     <div class="m-c">
       <ul class="zebra-list">
-        <li ng-show="attachment.rel === 'attachment'" ng-repeat="attachment in attachments">
-          <a ng-show="attachment.queries[0].id === 'download'" data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
-          <a ng-show="attachment.queries[0].id !== 'download'" href="">{{attachment.text}}</a>
-          <a ng-show="attachment.commands.length" data-ng-click="deleteAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+        <li data-ng-show="attachment.rel === 'attachment'" data-ng-repeat="attachment in attachments">
+          <a data-ng-show="attachment.queries[0].id === 'download'" data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
+          <a data-ng-show="attachment.queries[0].id !== 'download'" href="">{{attachment.text}}</a>
+          <a data-ng-show="attachment.commands.length" data-ng-click="deleteAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
         </li>
       </ul>
     </div>
