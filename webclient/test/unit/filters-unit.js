@@ -43,7 +43,7 @@ describe("sf.filters", function () {
 
     it('returns the short format of the date', function() {
       var date = new Date(2012, 9, 4);
-      expect(filter(date)).toEqual('10/04');
+      expect(filter(date)).toEqual('Oct 4');
     });
   });
 
