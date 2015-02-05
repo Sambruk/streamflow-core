@@ -29,7 +29,6 @@ angular.module('sf')
         var now = new Date();
         var dueOn = new Date(this.dueOn);
         var diff = Math.round((now.getTime() - dueOn.getTime())/(oneDay));
-        //console.log(this.dueDate);
         return diff > 0 ? diff : 0;
       },
 

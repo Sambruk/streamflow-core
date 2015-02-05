@@ -30,7 +30,7 @@ angular.module('sf')
   })
 .filter('shortDate', ['$filter', function($filter) {
     return function(input) {
-      return $filter('date')(input, 'MM/dd');
+      return $filter('date')(input, 'MMM d');
     };
   }])
 .filter('longDate', ['$filter', function($filter) {
@@ -38,6 +38,23 @@ angular.module('sf')
       return $filter('date')(input, 'yyyy-MM-dd');
     };
   }])
+.filter('googleDate', ['$filter', function ($filter) {
+  return function (input) {
+    var date = new Date(input);
+    var today = new Date();
+
+    date.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    if (date.getTime() === today.getTime()) {
+      return 'idag';
+    } else if (date.getTime() === today.getTime()-1) {
+      return 'igår';
+    } else {
+      return $filter('date')(input, 'MMM d');
+    }
+  };
+}])
 .filter('dateTime', ['$filter', function($filter) {
     return function(input) {
       return $filter('date')(input, 'yyyy-MM-dd, HH:mm');
