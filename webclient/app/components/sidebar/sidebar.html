@@ -274,13 +274,11 @@
             <h3>{{caze[0].text}}</h3>
             <p data-ng-hide="notes.length === 0" data-ng-bind-html="notes[0].note | limitTo: 250"></p>
           </a>
-          <ul class="convo-status">
-            <a href="#/cases/{{ caze[0].id }}/noteshistory">
-              <li class="icon-history-file icon-case-history" title="Ärendebeskrivning, historik">
-                <span class="struct">Ärendebeskrivning, historik</span>
-              </li>
+          <div class="convo-status">
+            <a href="#/cases/{{ caze[0].id }}/noteshistory" class="icon-history-file icon-case-history" title="Ärendebeskrivning, historik">
+              <span class="struct">Ärendebeskrivning, historik</span>
             </a>
-          </ul>
+          </div>
         </li>
       </ul>
     </div>
@@ -340,13 +338,10 @@
           </a>
           <a ng-show="canCreateFormDraft" href="#/cases/{{ caze[0].id  }}/formdrafts/{{ form.id }}" class="block-link convCaseSidebar">
             <h3>{{form.text}}</h3>
-            <div ng-show="canCreateFormDraft">
-              <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)"></span>
-              <ul class="form-status">
-                <li><a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-history-doc" title="Formulär, historik">{{submittedForms.length}}<span class="struct">Formulär, historik</span></span></a></li>
-              </ul>
-            </div>
+            <span data-ng-repeat="submittedForm in submittedForms = (submittedFormList | filter: form.id: submittedForm.id)"></span>
           </a>
+          <div class="convo-status"> <a href="#/cases/{{ caze[0].id  }}/formhistory/{{ form.id }}"><span class="icon-history-doc" title="Formulär, historik">{{submittedForms.length}} <span class="struct">Formulär, historik</span></span></a>
+          </div>
         </li>
       </ul>
     </div>
@@ -365,10 +360,10 @@
           <a href="#/cases/{{ caze[0].id }}/conversation/{{ conversation.id }}" class="block-link convCaseSidebar">
             <h3>{{ conversation.text }}</h3>
             <span class="date">{{ conversation.creationDate | dateTime }}</span>
-            <ul class="convo-status">
-              <li class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></li>
-              <li class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></li>
-            </ul>
+            <div class="convo-status">
+              <div class="icon-user" title="{{ conversation.participants }} användare i konversationen">{{ conversation.participants }} <span class="struct">användare i konversationen</span></div>
+              <div class="icon-chat" title="{{ conversation.messages }} meddelanden i konversationen">{{ conversation.messages }} <span class="struct">meddelanden i konversationen</span></div>
+            </div>
           </a>
         </li>
       </ul>
@@ -396,7 +391,7 @@
   <!-- /Module: Kontakter -->
 
   <!-- Module: Bifogade filer -->
-  <div class="m m-attachments" data-ng-hide="attachments.length === 0">
+  <div class="m m-attachments">
     <div class="m-h">
       <h2>Bifogade filer</h2>
       <label ng-show="canCreateAttachment" class="file-input-label action-btn">
