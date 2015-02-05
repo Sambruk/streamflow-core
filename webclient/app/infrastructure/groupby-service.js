@@ -23,7 +23,7 @@ angular.module('sf')
       {name:'Förfallodatum', value:'checkDueOn'},
       {name:'Förvärvare', value:'assignedTo'},
       {name:'Projekt', value:'owner'},
-      {name:'Prioritet*', value:'checkPriority'}];
+      {name:'Prioritet', value:'checkPriority'}];
 
   var getGroupingOptions = function(){
   	return groupingOptions;
@@ -112,5 +112,4 @@ angular.module('sf')
     getGroupingOptions: getGroupingOptions,
     getSpecificGroupByDefault: getSpecificGroupByDefault
   };
-
 });

@@ -29,9 +29,9 @@
             ng-model="sortExpression">
             <option value="">Ingen</option>
             <option value="text">Beskrivning</option>
-            <option value="creationDate">Skapad</option>
+            <option value="-creationDate">Skapad</option>
             <option value="dueOn">Förfallodatum</option>
-            <option value="priority.text">Prioritet*</option>
+            <option value="priority.priority">Prioritet</option>
           </select>
         </div>
         <div class="group">
@@ -54,7 +54,7 @@
         	<h3 ng-show="selectedItem.value === 'checkPriority'" id="priorityHeader">{{key}}</h3>
 	        <h3 ng-show="selectedItem.value !== 'checkPriority'" id="groupingHeader">{{key | translate}}</h3>
 
-	        <div class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in value | filter: filterSearch | orderBy: [sortExpression, specificGroupByDefaultSortExpression, defaultSortExpression] | limitTo: itemsLimit">
+	        <div class="issue-item {{case.overdueStatus()}} caselistItem" ng-repeat="case in value | filter: filterSearch | orderBy: [sortExpression, specificGroupByDefaultSortExpression, defaultSortExpression]">
 		        <a href="{{case.href}}" class="block-link">
 		          <div class="due-date">
 		            <span>{{case.overdueDays() | positive}}</span>
