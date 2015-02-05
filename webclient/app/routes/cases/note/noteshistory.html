@@ -23,17 +23,13 @@
       <div class="posted-notes">
         <div data-ng-repeat="note in notesHistory">
           <div class="note-item cf">
-
             <div class="note-posted-by">
               <span class="struct">Postad av: </span>{{ note.creator }}
+              <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
             </div>
             <div class="note-body">
               <p>{{ note.note }}</p>
             </div>
-            <div class="msg-timestamp">
-              <span class="note-timestamp">{{ note.createdOn | dateTime }}</span>
-            </div>
-            <br/>
           </div>
         </div>
       </div>
