@@ -272,7 +272,7 @@
         <li>
           <a href="#/cases/{{ caze[0].id }}" class="block-link case-sidebar-info">
             <h3>{{caze[0].text}}</h3>
-            <p class="caseInSidebar" style="" ng-bind-html="notes[0].note | limitTo: 250"></p>
+            <p data-ng-hide="notes.length === 0" data-ng-bind-html="notes[0].note | limitTo: 250"></p>
           </a>
           <ul class="convo-status">
             <a href="#/cases/{{ caze[0].id }}/noteshistory">
