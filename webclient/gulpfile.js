@@ -72,6 +72,8 @@ gulp.task('config', function () {
       name: 'sf.config',
       constants: { buildMode: buildMode }
     }))
+    // Replace double-quotes with single-quotes, because jshint.
+    .pipe(replace(/\"/g, '\''))
     .pipe(gulp.dest('app/config'));
 });
 

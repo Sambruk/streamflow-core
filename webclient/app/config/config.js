@@ -1,5 +1,5 @@
-angular.module("sf.config", [])
+angular.module('sf.config', [])
 
-.constant("buildMode", "dev")
+.constant('buildMode', 'dev')
 
 ;
