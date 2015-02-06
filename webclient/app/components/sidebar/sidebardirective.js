@@ -87,7 +87,7 @@ angular.module('sf')
           scope.possibleForms.forEach(function(form){
             caseService.getPossibleForm($routeParams.caseId, form.id).promise.then(function(response){
               // Making the assumption that the user is 'read-only' if he hasn't access to queries or commands
-              if(response[0].commands.length !== 0 || response[0].queries.length !== 0){
+              if(response[0].commands.length || response[0].queries.length){
                 scope.canCreateFormDraft = true;
               }
             });
