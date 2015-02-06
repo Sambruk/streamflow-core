@@ -45,23 +45,60 @@
         </ul>
       </li>
     </ul>
+
     <!-- Command view -->
     <div class="toolbar-content" ng-show="commandView">
       <div data-ng-switch on="commandView">
-        <div class="toolbar-content-style" data-ng-switch-when="resolve">
-          <select data-ng-options="option.id as option.text for option in possibleResolutions" data-ng-model="resolution">
-          </select>
-          <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
-          <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
-        </div>
-
-        <div class="toolbar-content-style" data-ng-switch-when="requiredCaseType">
-          <p>Du behöver ange en ärendetyp innan du kan stänga ärendet.</p>
-          <button data-ng-click="onCancelRequiredCaseTypeButtonClicked()">Avbryt</button>
-        </div>
 
         <div class="toolbar-content-style" data-ng-switch-when="close">
           <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
+        </div>
+
+        <div class="toolbar-content-popup" data-ng-switch-when="resolve">
+          <div class='ng-modal' ng-show='show'>
+            <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
+            <div class='ng-modal-dialog' ng-style='dialogStyle'>
+              <div class='ng-modal-close' ng-click="closePopUp()">X</div>
+              <div class="m dialog-outer-content">
+                <div class="dialog-inner-content">
+                  <div class="row cf">
+                    <div class="select">
+                      <select
+                        class="popup-select"
+                        data-ng-options="option.id as option.text for option in possibleResolutions"
+                        data-ng-model="resolution">
+                      </select>
+                    </div>
+                  </div>
+                  <div class="submit-area cf dialog-submit">
+                    <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
+                    <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-content-popup" data-ng-switch-when="requiredCaseType">
+          <div class='ng-modal' ng-show='show'>
+            <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
+            <div class='ng-modal-dialog' ng-style='dialogStyle'>
+              <div class='ng-modal-close' ng-click="closePopUp()">X</div>
+              <div class="m dialog-outer-content">
+                <div class="dialog-inner-content">
+                  <div class="dialog-header">
+                    <label>Du behöver ange en ärendetyp innan du kan stänga ärendet.</label>
+                  </div>
+                  <div class="row cf">
+                  </div>
+                  <div class="submit-area cf dialog-submit">
+                    <button data-ng-click="onCancelRequiredCaseTypeButtonClicked()">Avbryt</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
@@ -77,6 +114,7 @@
                   <div class="row cf">
                     <div class="select">
                       <select
+                        class="popup-select"
                         id="issue-owner"
                         name="issue-owner"
                         data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']"

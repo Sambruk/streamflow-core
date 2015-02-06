@@ -235,6 +235,7 @@ angular.module('sf')
   var _close = function (scope) {
     if(scope.caseType === null){
       scope.commandView = 'requiredCaseType';
+      scope.show = true;
     }else{
       caseService.closeCase($routeParams.caseId).then(function () {
         $rootScope.$broadcast('case-closed');
@@ -353,6 +354,7 @@ angular.module('sf')
   var _resolveCase = function(scope) {
     scope.possibleResolutions.promise.then(function (response) {
       scope.resolution = response[0].id;
+      scope.show = true;
       scope.commandView = 'resolve';
     });
   };
