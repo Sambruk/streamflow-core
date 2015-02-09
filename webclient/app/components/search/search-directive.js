@@ -7,7 +7,7 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
     link: function (scope, element) {
       // Translation map. Should use i18n for this.
       scope.searchTerms = {
-        'skapad': 'createdOn',
+        'skapad': 'createdOn', // +1
         'ärendetyp': 'caseType',
         'projekt': 'project',
         'etikett': 'label',
@@ -16,11 +16,6 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
         'kontaktid': 'contactId',
         'telefon': 'phoneNumber',
         'email': 'emailAddress',
-        'idag': 'today',
-        'igår': 'yesterday',
-        'timme': 'hour',
-        'vecka': 'week',
-        'mig': 'me',
         'skapadav': 'createdBy'
       };
 
@@ -58,7 +53,7 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
 
       scope.search = function (query) {
         // Replace any search term with its proper API equivalent.
-        query = query.replace(/(\w+)(?=:)/gi, function (match) {
+        query = query.replace(/([a-z\xE5\xE4\xF6]+)(?=:)/gi, function (match) {
           return scope.searchTerms[match];
         });
 
