@@ -7,11 +7,11 @@
         <span class="struct">Visa/dölj funktionsmeny</span>
       </a>
     </div>
-    <div class="sub-category" data-ng-show="showSidebar" data-ng-repeat="project in projects">
+    <div class="sub-category" data-ng-repeat="project in projects">
       <h3>{{project.text}}</h3>
       <ul>
         <li data-ng-repeat="type in project.types">
-          <a ng-href="#/{{type.href}}" sf-active-link  data-ng-click="navigateTo(type.href, $event)">
+          <a ng-href="#/{{type.href}}" sf-active-link data-ng-click="navigateTo(type.href, $event)">
             <span>{{type.caseCount}}</span><span class="struct">meddelanden i </span> {{type.name | translate }}
           </a>
         </li>

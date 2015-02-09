@@ -98,12 +98,11 @@ gulp.task('e2e-test', function () {
 });
 
 gulp.task('lint', function () {
-  return gulp.src([
-      'app/**/*.js',
-      '!app/design/**/*.js',
-      '!app/angular-locale_sv-se.js',
-      '!app/config/config.js'
-    ])
+  var path = paths.scripts.concat([
+    '!app/angular-locale_sv-se.js',
+    '!app/config/config.js'
+  ]);
+  return gulp.src(path)
     .pipe(jshint())
     .pipe(jshint.reporter(stylish));
 });
