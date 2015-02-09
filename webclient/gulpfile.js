@@ -108,7 +108,7 @@ gulp.task('lint', function () {
     .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('build-scripts', ['lint'], function () {
+gulp.task('build-scripts', ['lint', 'unit-test'], function () {
   return gulp.src(paths.scripts)
     .pipe(sourcemaps.init())
       .pipe(concat('streamflow.js'))
