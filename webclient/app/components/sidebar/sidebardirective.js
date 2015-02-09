@@ -83,16 +83,7 @@ angular.module('sf')
         checkPermissionService.checkPermissions(scope, scope.attachments.queries, ['createattachment'], ['canCreateAttachment']);
       });
       scope.possibleForms.promise.then(function(){
-        if(scope.possibleForms.length > 0){
-          scope.possibleForms.forEach(function(form){
-            caseService.getPossibleForm($routeParams.caseId, form.id).promise.then(function(response){
-              // Making the assumption that the user is 'read-only' if he hasn't access to queries or commands
-              if(response[0].commands.length || response[0].queries.length){
-                scope.canCreateFormDraft = true;
-              }
-            });
-          });
-        }
+        sidebarService.checkPossibleForms(scope, scope.possibleForms);
       });
 
       if($routeParams.formId && $routeParams.caseId){

@@ -58,6 +58,7 @@ angular.module('sf')
     caseService.changeCaseType($routeParams.caseId, casetype).then(function() {
       if(!scope.possibleForms){
         scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
+
       }else{
         _updateObject(scope.possibleForms);
       }
@@ -73,6 +74,8 @@ angular.module('sf')
         _priority(scope);
       });
 
+      _checkPossibleForms(scope, scope.possibleForms);
+
       if(scope.possibleForms.length === 0){
         // Check if the current route contains formdraft to redirect to "case main page"
         var checkRoute = new RegExp('formdrafts').test($location.path());
@@ -87,6 +90,23 @@ angular.module('sf')
       _updateCaseLabels(scope);
       _updateToolbar(scope);
     });
+  };
+
+  var _checkPossibleForms = function(scope, possibleForms){
+    if(!possibleForms){
+      return;
+    }
+    if(possibleForms.length > 0){
+      possibleForms.forEach(function(form){
+        caseService.getPossibleForm($routeParams.caseId, form.id).promise.then(function(response){
+          console.log('getPossibleForm');
+          // Making the assumption that the user is 'read-only' if he hasn't access to queries or commands
+          if(response[0].commands.length || response[0].queries.length){
+            scope.canCreateFormDraft = true;
+          }
+        });
+      });
+    }
   };
 
   var _updateCaseLabels = function(scope) {
@@ -432,6 +452,7 @@ angular.module('sf')
     onResolveButtonClicked: _onResolveButtonClicked,
     resolveCase: _resolveCase,
     caseType: _caseType,
-    priority: _priority
+    priority: _priority,
+    checkPossibleForms: _checkPossibleForms
   };
 });
