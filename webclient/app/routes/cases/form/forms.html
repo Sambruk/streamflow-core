@@ -25,15 +25,15 @@
       <h3>{{ currentFormDescription }}</h3>
     </div>
     <div ng-hide="showSpinner.form">
-      <ul class="form-sections cf row">
+      <ol class="form-sections cf row">
         <li class="section-item" data-ng-class="{sel: currentFormPage.title==page.title}" data-ng-repeat="page in form[0].enhancedPages" id="{{page.page}}">
           <a href="" id="page-{{$index}}"data-ng-click="issueForm.$valid && selectFormPage(page)">
           {{page.title}}
           </a>
         </li>
-      </ul>
+      </ol>
 
-      <form name="issueForm" method="post" novalidate data-ng-submit="submitForm()">
+      <form name="issueForm" method="post" novalidate data-ng-submit="submitForm()" class="cf">
         <div>{{ formMessage }}</div>
         <div data-ng-repeat="field in currentFormPage.fields" class="row cols-1 cf">
           <div class="form-row" data-ng-switch on="field.field.fieldValue._type">
@@ -113,7 +113,7 @@
               </div>
             </div>
 
-            <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue">
+<!--             <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.OpenSelectionFieldValue">
               <div class="radio col medium col-2" id="{{field.field.field}}">
                 <data-ng-include class="m-c form-label" src="'routes/cases/form/form-label.html'"></data-ng-include>
                 <br />
@@ -126,7 +126,7 @@
                   <input data-ng-model="field.value" sf-radio-extended-text-field="{{ field.field.fieldValue.extendedValues }}" type="text" name="{{ field.field.field }}">
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div data-ng-switch-when="se.streamsource.streamflow.api.administration.form.CheckboxesFieldValue">
               <div class="radio col-2 form" id="{{field.field.field}}">
@@ -177,7 +177,7 @@
           </div>
         </div>
 
-        <div data-ng-show="currentFormPage" class="row">
+        <div data-ng-show="currentFormPage" class="row button-group">
           <a href="" class="btn inline" data-ng-class="{inactive: isFirstPage() || !issueForm.$valid}" data-ng-click="!isFirstPage() && issueForm.$valid && previousFormPage()">Tillbaka</a>
           <a data-ng-hide="isLastPage(currentFormPage)" href="" class="btn inline" data-ng-class="{inactive: isLastPage() || !issueForm.$valid}" data-ng-click="!isLastPage() && issueForm.$valid && nextFormPage()">Nästa</a>
           <input data-ng-show="isLastPage(currentFormPage)" type="submit" id="submitForm" value="Submit" class="btn inline" data-ng-class="{inactive: !issueForm.$valid}" data-ng-disabled="!issueForm.$valid" /></input>
@@ -193,4 +193,4 @@
 </div>
 
 <!-- Content secondary -->
-<sidebar class="sidebar-content" sidebardata="sidebardata"></sidebar>
+	<sidebar ng-show="!closeWithForm" class="sidebar-content" sidebardata="sidebardata"></sidebar>

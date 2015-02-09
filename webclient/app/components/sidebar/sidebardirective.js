@@ -252,6 +252,12 @@ angular.module('sf')
         scope.commandView = '';
       };// End Close
 
+      // FormOnClose
+      scope.closeWithForm = function(){
+        scope.commandView = 'formonclose';
+        scope.show = true;
+      }; // End FormOnClose
+
       // Reopen
       scope.reopen = function(){
         sidebarService.reopen(scope);

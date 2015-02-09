@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService, $sce, navigationService, fileService, httpService) {
+  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService, $sce, navigationService, fileService, httpService, sidebarService) {
     $scope.sidebardata = {};
 
     $scope.caseId = $routeParams.caseId;
@@ -25,6 +25,7 @@ angular.module('sf')
     $scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
     $scope.selectedItems = {};
     $scope.applyRules = webformRulesService.applyRules;
+    $scope.possibleForm  = '';
 
     $scope.showSpinner = {
       form: true
@@ -35,6 +36,28 @@ angular.module('sf')
         return;
       }
       $scope.reapplyRules();
+    });
+
+    $scope.$watch('closeWithForm', function(newVal){
+      if(!newVal){
+        return;
+      }
+      caseService.createFormOnCloseDraft($routeParams.caseId).then(function(){
+        caseService.getFormOnCloseDraft($routeParams.caseId).promise.then(function(response){
+          caseService.getFormDraft($routeParams.caseId, response[0].id).promise.then(function(response){
+            $scope.closeWithFormId = response[0].draftId;
+          })
+          .then(function(){
+            $scope.formMessage = '';
+
+            var form = caseService.getFormDraft($routeParams.caseId, $scope.closeWithFormId);
+            form.promise.then(function(response){
+              $scope.getFormData(response);
+              $scope.closeWithForm = true;
+            });
+          });
+        });
+      });
     });
 
     $scope.selectForm = function(formId){
@@ -52,7 +75,10 @@ angular.module('sf')
       });
 
       $scope.formMessage = '';
-      $scope.possibleForm = caseService.getPossibleForm($routeParams.caseId, formId);
+
+      if(formId){
+        $scope.possibleForm = caseService.getPossibleForm($routeParams.caseId, formId);
+      }
 
       $scope.$watch('possibleForm[0]', function (){
         if (!$scope.possibleForm[0]){
@@ -64,34 +90,9 @@ angular.module('sf')
           }).then(function(){
             var form = caseService.getFormDraftFromForm($routeParams.caseId, $scope.formDraftId);
             form.promise.then(function(response){
-              $scope.form = response;
-              $scope.formAttachments = [];
-              $scope.showSpinner.form = false;
 
-              $scope.form[0].enhancedPages.forEach(function(pages){
-                pages.fields.forEach(function(field){
+              $scope.getFormData(response);
 
-                  if(field.field.fieldValue._type === 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'){
-                    var name = null;
-                    var id = null;
-
-
-										if(field.value){
-											var jsonParse = JSON.parse(field.value);
-											name = jsonParse.name;
-											id = jsonParse.attachment;
-										}
-
-                    var attachment = {
-                    	name: name,
-                    	id: id,
-                    	fieldId: field.field.field
-                    };
-
-                    $scope.formAttachments.push(attachment);
-									}
-                });
-              });
             })
             .then(function(){
               if($scope.isLastPage()){
@@ -123,6 +124,36 @@ angular.module('sf')
       });
     };
 
+    $scope.getFormData = function(data){
+      $scope.form = data;
+      $scope.formAttachments = [];
+      $scope.showSpinner.form = false;
+
+      $scope.form[0].enhancedPages.forEach(function(pages){
+        pages.fields.forEach(function(field){
+
+          if(field.field.fieldValue._type === 'se.streamsource.streamflow.api.administration.form.AttachmentFieldValue'){
+            var name = null;
+            var id = null;
+
+            if(field.value){
+              var jsonParse = JSON.parse(field.value);
+              name = jsonParse.name;
+              id = jsonParse.attachment;
+            }
+
+            var attachment = {
+              name: name,
+              id: id,
+              fieldId: field.field.field
+            };
+
+            $scope.formAttachments.push(attachment);
+          }
+        });
+      });
+    };
+
     $scope.displayField = function(formPage){
       $scope.applyRules(formPage);
     };
@@ -137,13 +168,24 @@ angular.module('sf')
 
     $scope.submitForm = function(){
       caseService.submitForm($routeParams.caseId, $scope.form[0].draftId).then(function(){
-        $scope.formMessage = 'Skickat!';
-
-        $rootScope.$broadcast('form-submitted');
-
-        $scope.form = [];
-        $scope.currentFormPage = null;
+        if(!$scope.closeWithForm){
+          formSubmitted();
+        }else{
+          caseService.closeFormOnClose($routeParams.caseId).then(function(){
+            formSubmitted();
+            sidebarService.close($scope);
+          });
+        }
       });
+    };
+
+    var formSubmitted = function(){
+      if(!$scope.closeWithForm){
+        $rootScope.$broadcast('form-submitted');
+      }
+      $scope.formMessage = 'Skickat!';
+      $scope.form = [];
+      $scope.currentFormPage = null;
     };
 
     $scope.deleteFormDraftAttachment = function(fieldId){

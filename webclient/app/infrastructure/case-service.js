@@ -174,11 +174,11 @@ angular.module('sf')
      getPermissions: function(caseId){
         return backendService.get({
             specs:caseBase(caseId).concat([
-                {queries: 'permissions'}
+              {queries: 'permissions'}
             ]),
             onSuccess:function(resource, result) {
-                result.push(resource.response);
-                caseBase.broadcastMessage(result.status);
+              result.push(resource.response);
+              caseBase.broadcastMessage(result.status);
             }
         });
       },
@@ -242,6 +242,50 @@ angular.module('sf')
           }, function(error){
             caseBase.broadcastMessage(error);
           }).then(callback);
+      },
+
+      createFormOnCloseDraft: function(caseId){
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {resources: 'submitformonclose'},
+            {commands: 'create'}
+            ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
+      },
+
+      getFormOnCloseDraft: function(caseId){
+        return backendService.get({
+          specs:caseBase(caseId).concat([
+            {resources: 'submitformonclose'},
+            {queries: 'formdraft'}
+          ]),
+          onSuccess: function(resource, result){
+            result.push(resource.response);
+            caseBase.broadcastMessage(result.status);
+          },
+          onFailure: function(error){
+            caseBase.broadcastMessage(error);
+          }
+        });
+      },
+
+      closeFormOnClose: function(caseId){
+        console.log('closeFormOnClose');
+        return backendService.postNested(
+          caseBase(caseId).concat([
+            {commands: 'formonclose'}
+          ]),
+          {}).then(function(result){
+            caseBase.broadcastMessage(result.status);
+          },
+          function(error){
+            caseBase.broadcastMessage(error);
+          });
       },
 
       reopenCase: function(caseId, callback) {

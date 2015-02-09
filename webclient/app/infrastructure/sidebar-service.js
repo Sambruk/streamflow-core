@@ -147,7 +147,7 @@ angular.module('sf')
         'unrestrict': 'canUnrestrict',
         'markunread': 'canMarkUnread',
         'markread': 'canMarkRead',
-        'formonclose': 'formOnClose'
+        'formonclose': 'canCloseWithForm'
       };
 
       var hasCommand = function (commandName) {
@@ -237,12 +237,20 @@ angular.module('sf')
       scope.commandView = 'requiredCaseType';
       scope.show = true;
     }else{
-      caseService.closeCase($routeParams.caseId).then(function () {
-        $rootScope.$broadcast('case-closed');
-        var href = navigationService.caseListHrefFromCase(scope.caze);
-        window.location.replace(href);
-      });
+      if(!scope.closeWithForm){
+        caseService.closeCase($routeParams.caseId).then(function () {
+          _caseClosed(scope);
+        });
+      }else{
+        _caseClosed(scope);
+      }
     }
+  };
+
+  var _caseClosed = function(scope){
+    $rootScope.$broadcast('case-closed');
+    var href = navigationService.caseListHrefFromCase(scope.caze);
+    window.location.replace(href);
   };
   // End Close
 

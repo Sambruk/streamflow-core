@@ -30,7 +30,7 @@
       <li data-ng-show="canResolve"><a href="" data-ng-click="resolveCase()" class="btn">Stäng</a></li>
       <li data-ng-show="canClose"><a href="" data-ng-click="close()" class="btn">Stäng</a></li>
       <li data-ng-show="caseRequireCaseType"><a href="" data-ng-click="close()" class="btn">Stäng</a></li>
-      <li data-ng-show="formOnClose"><a href="" class="btn disabled">Stäng</a></li>
+      <li data-ng-show="canCloseWithForm"><a href="" class="btn" data-ng-click="closeWithForm()">Stäng</a></li>
       <li data-ng-show="canReopen"><a href="" data-ng-click="reopen()" class="btn">Återuppta</a></li>
 
       <li data-ng-show="canDelete || canMarkRead || canMarkUnread || canRestrict || canUnrestrict || canExportCase">
@@ -52,6 +52,20 @@
 
         <div class="toolbar-content-style" data-ng-switch-when="close">
           <button data-ng-click="onCloseButtonClicked($event)">Stäng</button>
+        </div>
+
+        <div class="toolbar-content-popup" data-ng-switch-when="formonclose" ng-controller="FormCtrl">
+          <div class='ng-modal' ng-show='show'>
+            <div class='ng-modal-overlay' ng-click="closePopUp()"></div>
+            <div class='ng-modal-dialog' ng-style='dialogStyle'>
+              <div class='ng-modal-close' ng-click="closePopUp()">X</div>
+              <div class="m dialog-outer-content">
+                <div class="dialog-inner-content">
+                  <data-ng-include src="'routes/cases/form/formonclose.html'"></data-ng-include>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="resolve">
@@ -326,7 +340,7 @@
   <!-- Module: Allmänt -->
   <div class="toolbar-content-popup" data-ng-show="showCaseInfo">
     <div class="ng-modal">
-      <div class="ng-modal-ovelay" data-ng-click="closePopUp()"></div>
+      <div class="ng-modal-overlay" data-ng-click="closePopUp()"></div>
       <div class="ng-modal-dialog" data-ng-style="dialogStyle">
         <div class="ng-modal-close" data-ng-click="closePopUp()">X</div>
         <div class="m dialog-outer-content">
