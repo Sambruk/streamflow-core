@@ -868,7 +868,9 @@ angular.module('sf')
 
             index.draftId = draftId;
 
-            index.enhancedPages = angular.copy(index.pages);
+            if(!index.enhancedPages){
+              index.enhancedPages = angular.copy(index.pages);
+            }
             that.addViewModelProperties(index.enhancedPages);
 
             result.push(index);
