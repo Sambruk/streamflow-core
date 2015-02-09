@@ -17,51 +17,34 @@
 'use strict';
 
 angular.module('sf')
-.filter('attachmentJson', function($filter) {
-  return function(attachment) {
+.filter('attachmentJson', function ($filter) {
+  return function (attachment) {
     var jsonParse = JSON.parse(attachment);
     return jsonParse.name;
   };
 })
-.filter('positive', function() {
-    return function(input) {
-      return input > 0 ? input : '';
-    };
-  })
-.filter('shortDate', ['$filter', function($filter) {
-    return function(input) {
-      return $filter('date')(input, 'MMM d');
-    };
-  }])
-.filter('longDate', ['$filter', function($filter) {
-    return function(input) {
-      return $filter('date')(input, 'yyyy-MM-dd');
-    };
-  }])
-.filter('googleDate', ['$filter', function ($filter) {
+.filter('positive', function () {
   return function (input) {
-    var date = new Date(input);
-    var today = new Date();
-
-    date.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    if (date.getTime() === today.getTime()) {
-      return 'idag';
-    } else if (date.getTime() === today.getTime()-1) {
-      return 'igår';
-    } else {
-      return $filter('date')(input, 'MMM d');
-    }
+    return input > 0 ? input : '';
+  };
+})
+.filter('shortDate', ['$filter', function ($filter) {
+  return function (input) {
+    return $filter('date')(input, 'd MMM');
   };
 }])
-.filter('dateTime', ['$filter', function($filter) {
-    return function(input) {
-      return $filter('date')(input, 'yyyy-MM-dd, HH:mm');
-    };
-  }])
-.filter('translate', ['$filter', function($filter) {
-    return function(input) {
+.filter('longDate', ['$filter', function ($filter) {
+  return function (input) {
+    return $filter('date')(input, 'yyyy-MM-dd');
+  };
+}])
+.filter('dateTime', ['$filter', function ($filter) {
+  return function (input) {
+    return $filter('date')(input, 'yyyy-MM-dd, HH:mm');
+  };
+}])
+.filter('translate', ['$filter', function ($filter) {
+    return function (input) {
 
       // So far, we keep it simple by just using a lookup table
       var translation = {
@@ -96,47 +79,47 @@ angular.module('sf')
     };
   }])
 .filter('caseLogFilter', function ($filter) {
-      return function (logEntries, filterArray) {
-          var i, j, matchingItems = [];
+  return function (logEntries, filterArray) {
+    var i, j, matchingItems = [];
 
-          if (logEntries && filterArray) {
-              // loop through the items
-              for (i = 0; i < logEntries.length; i++) {
+    if (logEntries && filterArray) {
+      // loop through the items
+      for (i = 0; i < logEntries.length; i++) {
 
-                // for each item, loop through the filter values
-                for (j = 0; j < filterArray.length; j++) {
+        // for each item, loop through the filter values
+        for (j = 0; j < filterArray.length; j++) {
 
-                    //If the caseLogType is the same as the name of the filter
-                    if (logEntries[i].caseLogType === filterArray[j].filterName) {
-                        //Check the value of the filter
-                        if (filterArray[j].filterValue) {
-                            matchingItems.push(logEntries[i]);
-                        }
-                        break;
-                    }
-                }
-              }
+          //If the caseLogType is the same as the name of the filter
+          if (logEntries[i].caseLogType === filterArray[j].filterName) {
+            //Check the value of the filter
+            if (filterArray[j].filterValue) {
+                matchingItems.push(logEntries[i]);
+            }
+            break;
           }
-
-          return matchingItems;
-      };
-  })
-  .filter('truncate', function () {
-    return function (text, length, end) {
-      if (isNaN(length)) {
-        length = 10;
+        }
       }
+    }
 
-      if (end === undefined) {
-        end = '...';
-      }
+    return matchingItems;
+  };
+})
+.filter('truncate', function () {
+  return function (text, length, end) {
+    if (isNaN(length)) {
+      length = 10;
+    }
 
-      if (text.length <= length || text.length - end.length <= length) {
-        return text;
-      }
-      else {
-        return String(text).substring(0, length-end.length) + end;
-      }
+    if (end === undefined) {
+      end = '...';
+    }
 
-    };
-  });
+    if (text.length <= length || text.length - end.length <= length) {
+      return text;
+    }
+    else {
+      return String(text).substring(0, length-end.length) + end;
+    }
+
+  };
+});
