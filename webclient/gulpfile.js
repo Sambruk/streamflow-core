@@ -72,8 +72,6 @@ gulp.task('config', function () {
       name: 'sf.config',
       constants: { buildMode: buildMode }
     }))
-    // Replace double-quotes with single-quotes, because jshint.
-    .pipe(replace(/\"/g, '\''))
     .pipe(gulp.dest('app/config'));
 });
 
@@ -99,10 +97,19 @@ gulp.task('e2e-test', function () {
     });
 });
 
-gulp.task('build-scripts', function () {
-  return gulp.src(paths.scripts)
+gulp.task('lint', function () {
+  return gulp.src([
+      'app/**/*.js',
+      '!app/design/**/*.js',
+      '!app/angular-locale_sv-se.js',
+      '!app/config/config.js'
+    ])
     .pipe(jshint())
-    .pipe(jshint.reporter(stylish))
+    .pipe(jshint.reporter(stylish));
+});
+
+gulp.task('build-scripts', ['lint'], function () {
+  return gulp.src(paths.scripts)
     .pipe(sourcemaps.init())
       .pipe(concat('streamflow.js'))
       .pipe(ngAnnotate())
