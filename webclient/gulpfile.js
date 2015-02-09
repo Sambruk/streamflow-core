@@ -17,25 +17,25 @@
 
 'use strict';
 
-var gulp = require('gulp');
 var args = require('yargs').argv;
-var mainBowerFiles = require('main-bower-files');
-var ngAnnotate = require('gulp-ng-annotate');
-var jshint = require('gulp-jshint');
-var stylish = require('jshint-stylish');
-var connect = require('gulp-connect');
+var autoprefixer = require('gulp-autoprefixer');
 var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
+var connect = require('gulp-connect');
 var del = require('del');
-var runSequence = require('run-sequence');
+var gulp = require('gulp');
+var imagemin = require('gulp-imagemin');
+var jshint = require('gulp-jshint');
 var karma = require('gulp-karma');
+var mainBowerFiles = require('main-bower-files');
 var minifyCSS = require('gulp-minify-css');
+var minifyHtml = require('gulp-minify-html');
+var ngAnnotate = require('gulp-ng-annotate');
 var ngConstant = require('gulp-ng-constant');
 var replace = require('gulp-replace');
+var runSequence = require('run-sequence');
 var sourcemaps = require('gulp-sourcemaps');
-var imagemin = require('gulp-imagemin');
-var autoprefixer = require('gulp-autoprefixer');
-var minifyHtml = require('gulp-minify-html');
+var stylish = require('jshint-stylish');
+var uglify = require('gulp-uglify');
 
 var testFiles = ['unit/filters-unit.js'];
 var buildMode = args.prod || args.dev || 'dev';
