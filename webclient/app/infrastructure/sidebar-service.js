@@ -257,7 +257,7 @@ angular.module('sf')
       scope.commandView = 'requiredCaseType';
       scope.show = true;
     }else{
-      if(!scope.closeWithForm){
+      if(!scope.canCloseWithForm){
         caseService.closeCase($routeParams.caseId).then(function () {
           _caseClosed(scope);
         });
