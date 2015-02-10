@@ -269,6 +269,8 @@ angular.module('sf')
   var _caseClosed = function(scope){
     $rootScope.$broadcast('case-closed');
     var href = navigationService.caseListHrefFromCase(scope.caze);
+    // To do this or do invalidate/resolve on everything in case.
+    window.location.reload();
     window.location.replace(href);
   };
   // End Close
@@ -306,7 +308,8 @@ angular.module('sf')
 
   var _reopen = function(scope){
     caseService.reopenCase($routeParams.caseId).then(function(){
-      _updateToolbar(scope);
+      // To do this or do invalidate/resolve on everything in case
+      window.location.reload();
     });
   };
 
