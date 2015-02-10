@@ -33,8 +33,10 @@
               <label for="case-description" class="struct">Ärende</label>
               <input type="text" name="case-description" id="case-description" data-ng-model="caze[0].text" disabled>
             </div>
-            <label for="issue-notes" class="struct">Notering</label>
-            <textarea id="issue-notes" ng-bind-html="notes[0].note" cols="30" rows="5" disabled></textarea>
+            <div class="text">
+              <label for="issue-notes" class="struct">Notering</label>
+              <textarea id="issue-notes" ng-bind-html="notes[0].note" cols="30" rows="5" disabled></textarea>
+            </div>
           </div>
         </form>
       </div>
