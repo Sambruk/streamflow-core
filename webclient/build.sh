@@ -21,4 +21,5 @@
 
 npm install
 bower install
-gulp clean-build --prod
+gulp clean
+gulp build --prod

@@ -23,4 +23,6 @@ call npm install
 
 call bower install
 
-call gulp clean-build --prod
+call gulp clean
+
+call gulp build --prod
