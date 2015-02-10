@@ -16,7 +16,7 @@
  */
 'use strict';
 
-angular.module('sf').directive('contextmenu', function (projectService, navigationService, $rootScope, $timeout) {
+angular.module('sf').directive('contextmenu', function (projectService, navigationService, $rootScope) {
   return {
     restrict: 'E',
     templateUrl: 'components/contextmenu/contextmenu.html',
