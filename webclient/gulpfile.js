@@ -38,7 +38,13 @@ var stylish = require('jshint-stylish');
 var uglify = require('gulp-uglify');
 
 var testFiles = ['unit/filters-unit.js'];
-var buildMode = args.prod || args.dev || 'dev';
+var buildMode = (function () {
+  if (args.prod) {
+    return 'prod';
+  } else {
+    return 'dev';
+  }
+})();
 
 var paths = {
   scripts: [
