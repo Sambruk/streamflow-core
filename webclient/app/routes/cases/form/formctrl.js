@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService, $sce, navigationService, fileService, httpService, sidebarService) {
+  .controller('FormCtrl', function($scope, caseService, $routeParams, $rootScope, webformRulesService, $sce, navigationService, fileService, httpService, sidebarService, $timeout) {
     $scope.sidebardata = {};
 
     $scope.caseId = $routeParams.caseId;
@@ -172,9 +172,11 @@ angular.module('sf')
           formSubmitted();
         }else{
           caseService.closeFormOnClose($routeParams.caseId).then(function(){
-            formSubmitted();
-            sidebarService.close($scope);
-          });
+          	formSubmitted();
+	          $timeout(function(){
+	            sidebarService.close($scope);
+	      		}, 1000);
+					});
         }
       });
     };
