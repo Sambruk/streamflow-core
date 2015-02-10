@@ -275,7 +275,6 @@ angular.module('sf')
       },
 
       closeFormOnClose: function(caseId){
-        console.log('closeFormOnClose');
         return backendService.postNested(
           caseBase(caseId).concat([
             {commands: 'formonclose'}
