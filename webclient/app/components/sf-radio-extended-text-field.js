@@ -16,7 +16,7 @@
  */
 'use strict';
 angular.module('sf')
-.directive('sfRadioExtendedTextField', function($parse, $params, $timeout, caseService) {
+.directive('sfRadioExtendedTextField', ['$parse', '$routeParams', '$timeout', 'caseService', function($parse, $params, $timeout, caseService) {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ngModel) {
@@ -45,5 +45,5 @@ angular.module('sf')
       });
     }
   };
-});
+}]);
 
