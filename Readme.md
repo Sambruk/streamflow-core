@@ -25,31 +25,6 @@ Tasks that are not being run by default are:
 
 Gulp will by default build to the `webclient/build/` folder.
 
-# Deployment
-We're using maven to build the complete project.  
-Start by updating the design submodule and then make sure all changes have been commited, pushed and that you have the latest version of the repository (pull).
-
-Then in the streamflow-core/webclient folder type: `mvn clean install`.  
-The build process should start and this will create a .war file in the target/ folder of /webclient, that can be deployed on a java webserver.  
-The pom.xml describes what happens when we build using maven.  
-In the pom.xml we reference to the build.sh/build.bat script that defines which webclient specific actions that are performed.
-
-Glassfish:<br>
-Redeploy the new .war file at <a href="test-sfwc.jayway.com:4848" /> under Applications. Account details could be found at: https://confluence.jayway.com/display/streamsource/Windows+server+tips+and+tricks
-
-Remote Desktop:<br>
-test-sfwc.jayway.com
-Edit web.xml in the WEB-INF/ folder of your application.
-
-Comment<br>
-`<param-value>http://localhost/streamflow</param-value>`<br>
-and uncomment <br>
-`<param-value>http://test-sf.jayway.com/streamflow</param-value>`
-(*depending on targetUri).
-
-Glassfish:<br>
-Reload deployed application
-
 ## Submodules
 
 This project uses a submodule, it need to be initiated with.
@@ -57,3 +32,4 @@ This project uses a submodule, it need to be initiated with.
     git submodule update --init
 
 This populates the folder `webclient/app/design`.
+
