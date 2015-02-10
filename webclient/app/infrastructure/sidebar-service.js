@@ -363,12 +363,14 @@ angular.module('sf')
   var _changeDueOn = function (scope, date) {
     // Must be in the future and time must be set (but is not used).
     var isoString = (new Date(date + 'T23:59:59.000Z')).toISOString();
-    caseService.changeDueOn($routeParams.caseId, isoString).then(function () {
-      scope.general.invalidate();
-      scope.general.resolve().then(function (result) {
-        scope.dueOnShortStartValue = result[0].dueOnShort;
+    if(scope.canChangeDueOn){
+      caseService.changeDueOn($routeParams.caseId, isoString).then(function () {
+        scope.general.invalidate();
+        scope.general.resolve().then(function (result) {
+          scope.dueOnShortStartValue = result[0].dueOnShort;
+        });
       });
-    });
+    }
   };
 
   var _onResolveButtonClicked = function(scope){
