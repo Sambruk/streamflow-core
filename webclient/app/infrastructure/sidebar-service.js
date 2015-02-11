@@ -140,10 +140,6 @@ angular.module('sf')
       })).sort(sortByText);
 
       scope.previousActiveLabels = scope.activeLabels;
-      setTimeout(function () {
-        jQuery('.chosen-case-label').chosen({ 'search_contains': true }).trigger('chosen:updated');
-        $('.chosen-container').css({visibility: 'visible'});
-      }, 0);
     });
   };
 
@@ -400,12 +396,6 @@ angular.module('sf')
     ]).then(function (results) {
       scope.caseType = results[1][0].caseType && results[1][0].caseType.id;
       scope.possibleCaseTypes = results[0].sort(sortByText);
-
-      setTimeout(function () {
-        jQuery('.chosen-case-type').chosen({ 'search_contains': true }).trigger('chosen:updated');
-        // $('#type-select').css({visibility: 'visible'});
-        // $('#type_select_chosen').css({visibility: 'visible'});
-      }, 0);
     });
   };
 
@@ -422,17 +412,18 @@ angular.module('sf')
             intColor = 0xFFFFFFFF + intColor + 1;
           }
           scope.priorityColor[item.id] = '#' + intColor.toString(16).slice(2,8);
-        }else{
+        } else {
           scope.priorityColor[item.id] = '#ffffff';
+        }
+
+        scope.priority = responses[0][0].priority && responses[0][0].priority.id;
+        if (scope.priorityColor[scope.priority]) {
+          scope.activePriorityColor = {
+            'background-color': scope.priorityColor[scope.priority]
+          };
         }
       });
 
-      scope.priority = responses[0][0].priority && responses[0][0].priority.id;
-      if (scope.priorityColor[scope.priority]) {
-        scope.activePriorityColor = {
-          'background-color': scope.priorityColor[scope.priority]
-        };
-      }
     });
   };
 
