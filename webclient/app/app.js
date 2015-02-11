@@ -24,7 +24,8 @@ angular.module('sf', [
     'ngSanitize',
     'angularFileUpload',
     'sf.config',
-    'angular.filter'
+    'angular.filter',
+    'localytics.directives'
   ])
   .run(function ($rootScope, $http, httpService, $location, $routeParams, tokenService) {
 

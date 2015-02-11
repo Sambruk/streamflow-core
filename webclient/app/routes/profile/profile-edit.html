@@ -44,12 +44,14 @@
 					</div>
 					<div class="text col col-3 medium-small">
 						<label for="profile-message-delivery-type">Notifiering</label>
-						<select class="custom-select hasCustomSelect" data-ng-model="profile[0].messageDeliveryType"
-								id="profile-message-delivery-type" name="messagedeliverytype"
-								data-sf-update-on-blur="changeMessageDeliveryType($event, $success, $error)">
-							<option value="none">Ingen</option>
-							<option value="email" selected>E-post</option>
-						</select>
+            <div class="select">
+              <select class="hasCustomSelect" data-ng-model="profile[0].messageDeliveryType"
+                  id="profile-message-delivery-type" name="messagedeliverytype"
+                  data-sf-update-on-blur="changeMessageDeliveryType($event, $success, $error)">
+                <option value="none">Ingen</option>
+                <option value="email" selected>E-post</option>
+              </select>
+            </div>
 					</div>
 				</div>
 				<div class="row cols-1 cf">

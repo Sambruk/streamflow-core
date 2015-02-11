@@ -153,7 +153,10 @@
 	                <ul class="zebra-list">
 	                  <li>
 	                    <a href="">{{ attachment.name }}</a>
-	                    <a data-ng-click="deleteFormDraftAttachment(field.field.field)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+	                    <a data-ng-click="deleteFormDraftAttachment(field.field.field)" href="" class="delete" title="Radera fil">
+                        <i class="icon-close"></i>
+                        <span class="struct">Radera fil</span>
+                      </a>
 	                  </li>
 	                </ul>
 	              </div>

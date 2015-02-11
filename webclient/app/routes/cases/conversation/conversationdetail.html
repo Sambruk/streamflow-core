@@ -49,7 +49,10 @@
           <ul class="zebra-list">
             <li ng-repeat="attachment in conversationMessageDraftAttachments">
               <a data-ng-click="downloadDraftAttachment(attachment)" href="">{{ attachment.text }}</a>
-              <a data-ng-click="deleteDraftAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+              <a data-ng-click="deleteDraftAttachment(attachment)" href="" class="delete" title="Radera fil">
+                <i class="icon-close"></i>
+                <span class="struct">Radera fil</span>
+              </a>
             </li>
           </ul>
         </div>

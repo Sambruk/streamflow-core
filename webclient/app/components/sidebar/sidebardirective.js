@@ -56,12 +56,11 @@ angular.module('sf')
       });
       scope.general.promise.then(function(){
         checkPermissionService.checkPermissions(scope, scope.general.commands, ['casetype', 'changedueon', 'changedescription', 'changepriority'], ['canChangeCaseType', 'canChangeDueOn', 'canChangeDescription', 'canChangePriority']);
-        if(!scope.canChangeCaseType){
-          $('#type_select_chosen, #type-select').addClass('disabled');
+        if (!scope.canChangeCaseType) {
           $('.case-type-selected').addClass('cursor-default');
         }
 
-        if(scope.sidebardata && scope.canChangeDescription){
+        if (scope.sidebardata && scope.canChangeDescription) {
           scope.sidebardata.canChangeDescription = true;
         }
       });

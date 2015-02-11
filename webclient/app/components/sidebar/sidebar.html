@@ -212,29 +212,17 @@
         <div class="row full">
           <div class="select">
             <label for="type-select">Ärendetyp</label>
-            <span>
-              <select
-                ng-show="possibleCaseTypes.length"
-                data-placeholder="Ärendetyp"
-                class="chosen-case-type chosen-select"
-                data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
-                data-ng-model="caseType"
-                data-ng-change="changeCaseType(caseType)"
-                name="name-select"
-                id="type-select"
-                data-ng-disabled="!canChangeCaseType"
-              >
-              </select>
-            </span>
-            <!-- Have taken layout classes from chosen so caseType looks the same even if there's no possibleCaseTypes -->
-            <div class="chosen-container chosen-container-single" id="type_select_chosen" ng-show="!possibleCaseTypes.length">
-              <div id="case-type-selected">
-                <a id="type-selected" class="chosen-single tabindex='-1'">
-                  <span ng-show="general[0].caseType.text" class="case-type-selected" selected>{{ general[0].caseType.text }}</span>
-                  <span ng-show="!general[0].caseType.text" class="case-type-selected" placeholder="Ärendetyp"></span>
-                </a>
-              </div>
-            </div>
+            <select
+              chosen
+              data-placeholder="Ärendetyp"
+              data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
+              data-ng-model="caseType"
+              data-ng-change="changeCaseType(caseType)"
+              data-ng-disabled="!canChangeCaseType"
+              name="name-select"
+              id="type-select"
+            >
+            </select>
           </div>
         </div>
         <!-- /Ärendetyp -->
@@ -242,17 +230,17 @@
         <!-- Ärendelabel -->
         <div class="row">
           <div class="select">
-            <label for="issue-label-select">Etiketter</label>
+            <label for="label-select">Etiketter</label>
             <select
-              data-placeholder="Etiketter"
-              class="chosen chosen-case-label chosen-choices"
-              id="issue-label-select"
-              name="caseLabel"
+              chosen
+              multiple
+              data-placeholder="Etikett"
               data-ng-options="label as label.text for label in allCaseLabels"
               data-ng-model="activeLabels"
               data-ng-change="changeCaseLabels(activeLabels)"
-              multiple
               data-ng-disabled="!canAddLabel"
+              name="label-select"
+              id="label-select"
             >
             </select>
           </div>
@@ -268,19 +256,9 @@
               data-ng-options="priority.id as priority.text for priority in possiblePriorities"
               data-ng-model="priority"
               data-ng-change="changePriorityLevel(priority, activePriorityColor, priorityColor, caseId);"
-              class="sidebar-chosen-drop-down"
               name="priority-select"
               id="priority-select"
             >
-            </select>
-          </div>
-        </div>
-        <!-- Have taken layout classes from chosen so caseType looks the same even if user can not change priority -->
-        <div ng-show="!canChangePriority && general[0].priority" class="row sidebar-priority">
-          <div class="select">
-            <label for="priority-select">Prioritet</label>
-            <select data-placeholder="hej" class="sidebar-chosen-drop-down disabled" disabled >
-              <option selected>{{general[0].priority.text}}</option>
             </select>
           </div>
         </div>
@@ -456,7 +434,10 @@
         <li data-ng-show="attachment.rel === 'attachment'" data-ng-repeat="attachment in attachments">
           <a data-ng-show="attachment.queries[0].id === 'download'" data-ng-click="downloadAttachment(attachment)" href="">{{ attachment.text }}</a>
           <a data-ng-show="attachment.queries[0].id !== 'download'" href="">{{attachment.text}}</a>
-          <a data-ng-show="attachment.commands.length" data-ng-click="deleteAttachment(attachment)" href="" class="icon-close delete" title="Radera fil"><span class="struct">Radera fil</span></a>
+          <a data-ng-show="attachment.commands.length" data-ng-click="deleteAttachment(attachment)" href="" class="delete" title="Radera fil">
+            <i class="icon-close"></i>
+            <span class="struct">Radera fil</span>
+          </a>
         </li>
       </ul>
     </div>
