@@ -214,6 +214,7 @@
             <label for="type-select">Ärendetyp</label>
             <select
               chosen
+              no-results-text="'Inga ärendetyper funna'"
               data-placeholder="Ärendetyp"
               data-ng-options="caseType.id as caseType.text group by caseType.title for caseType in possibleCaseTypes"
               data-ng-model="caseType"
@@ -234,6 +235,7 @@
             <select
               chosen
               multiple
+              no-results-text="'Inga etiketter funna'"
               data-placeholder="Etikett"
               data-ng-options="label as label.text for label in allCaseLabels"
               data-ng-model="activeLabels"
