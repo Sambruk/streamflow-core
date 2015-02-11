@@ -63,8 +63,7 @@ var paths = {
   ],
   images: [
     'app/design/gui/i/**/*',
-    'bower_components/chosen/*.png',
-    'bower_components/angular-chosen-localytics/spinner.gif'
+    'bower_components/chosen/*.png'
   ],
   fonts: [
     'app/design/gui/fonts/**/*'
