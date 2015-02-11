@@ -58,7 +58,6 @@ angular.module('sf')
     caseService.changeCaseType($routeParams.caseId, casetype).then(function() {
       if(!scope.possibleForms){
         scope.possibleForms = caseService.getSelectedPossibleForms($routeParams.caseId);
-
       }else{
         _updateObject(scope.possibleForms);
       }
@@ -74,30 +73,33 @@ angular.module('sf')
         _priority(scope);
       });
 
-      _checkPossibleForms(scope, scope.possibleForms);
-
-      if(scope.possibleForms.length === 0){
-        // Check if the current route contains formdraft to redirect to "case main page"
-        var checkRoute = new RegExp('formdrafts').test($location.path());
-        if(checkRoute === true){
-          var href = navigationService.caseHrefSimple($routeParams.caseId);
-          window.location.replace(href);
+      scope.possibleForms.promise.then(function(){
+        _checkPossibleForms(scope);
+        if(scope.possibleForms.length === 0){
+          // Check if the current route contains formdraft to redirect to "case main page"
+          var checkRoute = new RegExp('formdrafts').test($location.path());
+          if(checkRoute === true){
+            var href = navigationService.caseHrefSimple($routeParams.caseId);
+            window.location.replace(href);
+          }
         }
-      }
+      });
+
       _updateObject(scope.possibleResolutions);
 
       $rootScope.$broadcast('case-type-changed');
+
       _updateCaseLabels(scope);
       _updateToolbar(scope);
     });
   };
 
-  var _checkPossibleForms = function(scope, possibleForms){
-    if(!possibleForms){
+  var _checkPossibleForms = function(scope){
+    if(!scope.possibleForms){
       return;
     }
-    if(possibleForms.length > 0){
-      possibleForms.forEach(function(form){
+    if(scope.possibleForms.length > 0){
+      scope.possibleForms.forEach(function(form){
         caseService.getPossibleForm($routeParams.caseId, form.id).promise.then(function(response){
           // Making the assumption that the user is 'read-only' if he hasn't access to queries or commands
           if(response[0].commands.length || response[0].queries.length){
