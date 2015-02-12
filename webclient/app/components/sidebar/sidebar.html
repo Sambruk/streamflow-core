@@ -54,101 +54,63 @@
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="formonclose" ng-controller="FormCtrl">
-          <div class='modal' ng-show='show'>
-            <div class='modal-overlay' ng-click="closePopUp()"></div>
-            <div class='modal-dialog'>
-              <button class="modal-close" data-ng-click="closePopUp()">
-                <span class="struct">Stäng</span>
-                <i class="icon-close"></i>
-              </button>
-              <div class="modal-content">
-                <data-ng-include src="'routes/cases/form/forms.html'"></data-ng-include>
-              </div>
-            </div>
-          </div>
+          <modal show="show">
+            <data-ng-include src="'routes/cases/form/forms.html'"></data-ng-include>
+          </modal>
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="resolve">
-          <div class='modal' ng-show='show'>
-            <div class='modal-overlay' ng-click="closePopUp()"></div>
-            <div class='modal-dialog'>
-              <button class="modal-close" data-ng-click="closePopUp()">
-                <span class="struct">Stäng</span>
-                <i class="icon-close"></i>
-              </button>
-              <div class="modal-content">
-                <div class="row cf">
-                  <div class="select">
-                    <select
-                      class="popup-select"
-                      data-ng-options="option.id as option.text for option in possibleResolutions"
-                      data-ng-model="resolution">
-                    </select>
-                  </div>
-                </div>
-                <div class="submit-area cf dialog-submit">
-                  <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
-                  <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
-                </div>
+          <modal show="show">
+            <div class="row cf">
+              <div class="select">
+                <select
+                  class="popup-select"
+                  data-ng-options="option.id as option.text for option in possibleResolutions"
+                  data-ng-model="resolution">
+                </select>
               </div>
             </div>
-          </div>
+            <div class="submit-area cf dialog-submit">
+              <button data-ng-click="onResolveButtonClicked()">Avsluta</button>
+              <button data-ng-click="onCancelResolveButtonClicked()">Avbryt</button>
+            </div>
+          </modal>
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="requiredCaseType">
-          <div class='modal' ng-show='show'>
-            <div class='modal-overlay' ng-click="closePopUp()"></div>
-            <div class='modal-dialog'>
-              <button class="modal-close" data-ng-click="closePopUp()">
-                <span class="struct">Stäng</span>
-                <i class="icon-close"></i>
-              </button>
-              <div class="modal-content">
-                <div class="dialog-header">
-                  <label>Du behöver ange en ärendetyp innan du kan stänga ärendet.</label>
-                </div>
-                <div class="row cf">
-                </div>
-                <div class="submit-area cf dialog-submit">
-                  <button data-ng-click="onCancelRequiredCaseTypeButtonClicked()">Avbryt</button>
-                </div>
-              </div>
+          <modal show="show">
+            <div class="dialog-header">
+              <label>Du behöver ange en ärendetyp innan du kan stänga ärendet.</label>
             </div>
-          </div>
+            <div class="row cf">
+            </div>
+            <div class="submit-area cf dialog-submit">
+              <button data-ng-click="onCancelRequiredCaseTypeButtonClicked()">Avbryt</button>
+            </div>
+          </modal>
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
-          <div class='modal' ng-show='show'>
-            <div class='modal-overlay' ng-click="closePopUp()"></div>
-            <div class='modal-dialog'>
-              <button class="modal-close" data-ng-click="closePopUp()">
-                <span class="struct">Stäng</span>
-                <i class="icon-close"></i>
-              </button>
-              <div class="m dialog-outer-content">
-                <div class="modal-content">
-                  <div class="dialog-header">
-                    <label>Byt ägare</label>
-                  </div>
-                  <div class="row cf">
-                    <div class="select">
-                      <select
-                        class="popup-select"
-                        id="issue-owner"
-                        name="issue-owner"
-                        data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']"
-                        data-ng-model="sendToId"
-                        data-ng-change='sendToIdChanged(sendToId)'>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="submit-area cf dialog-submit">
-                    <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
-                  </div>
-                </div>
+          <modal show="show">
+            <div class="dialog-header">
+              <label>Byt ägare</label>
+            </div>
+            <div class="row cf">
+              <div class="select">
+                <select
+                  class="popup-select"
+                  id="issue-owner"
+                  name="issue-owner"
+                  data-ng-options="option.id as option.text group by option.title for option in sendToRecipients | orderBy: ['title', 'text']"
+                  data-ng-model="sendToId"
+                  data-ng-change='sendToIdChanged(sendToId)'>
+                </select>
               </div>
             </div>
-          </div>
+            <div class="submit-area cf dialog-submit">
+              <button type="submit" name="save-issue-owner" data-ng-click="onSendToButtonClicked($event)">Spara</button>
+            </div>
+          </modal>
         </div>
 
         <div data-ng-switch-when="todo">
@@ -164,45 +126,34 @@
   <!-- /Issue toolbar -->
 
   <!-- Pop up export to pdf -->
-  <div class="toolbar-content-popup" ng-show='showExport'>
-    <div class='modal'>
-      <div class='modal-overlay' ng-click="showExportPopUp()"></div>
-      <div class='modal-dialog'>
-        <button class="modal-close" data-ng-click="closePopUp()">
-          <span class="struct">Stäng</span>
-          <i class="icon-close"></i>
-        </button>
-        <div class="modal-content">
-          <h3>Exporteringsalternativ</h3>
-          <ul class="dialog-list">
-            <li>
-              <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
-              <label for="export-submitted-forms">Skickade formulär</label>
-            </li>
-            <li>
-              <input id="export-attachments" type="checkbox" ng-model="exportAttachments" name="export-attachments">
-              <label for="export-attachments">Bifogade filer</label>
-            </li>
-            <li>
-              <input id="export-conversations" type="checkbox" ng-model="exportConversations" name="export-conversations">
-              <label for="export-conversations">Konversationer</label>
-            </li>
-            <li>
-              <input id="export-contacts" type="checkbox" ng-model="exportContacts" name="export-contacts">
-              <label for="export-contacts">Kontakter</label>
-            </li>
-            <li>
-              <input id="export-case-log" type="checkbox" ng-model="exportCaseLog" name="export-case-log">
-              <label for="export-case-log">Ärendelogg</label>
-            </li>
-          </ul>
-          <div class="submit-area cf dialog-submit">
-            <button type="submit" name="save-issue-owner" data-ng-click="onExportButtonClicked()">Exportera</button>
-          </div>
-        </div>
-      </div>
+  <modal show="showExport">
+    <h3>Exporteringsalternativ</h3>
+    <ul class="dialog-list">
+      <li>
+        <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
+        <label for="export-submitted-forms">Skickade formulär</label>
+      </li>
+      <li>
+        <input id="export-attachments" type="checkbox" ng-model="exportAttachments" name="export-attachments">
+        <label for="export-attachments">Bifogade filer</label>
+      </li>
+      <li>
+        <input id="export-conversations" type="checkbox" ng-model="exportConversations" name="export-conversations">
+        <label for="export-conversations">Konversationer</label>
+      </li>
+      <li>
+        <input id="export-contacts" type="checkbox" ng-model="exportContacts" name="export-contacts">
+        <label for="export-contacts">Kontakter</label>
+      </li>
+      <li>
+        <input id="export-case-log" type="checkbox" ng-model="exportCaseLog" name="export-case-log">
+        <label for="export-case-log">Ärendelogg</label>
+      </li>
+    </ul>
+    <div class="submit-area cf dialog-submit">
+      <button type="submit" name="save-issue-owner" data-ng-click="onExportButtonClicked()">Exportera</button>
     </div>
-  </div>
+  </modal>
   <!-- / Pop up export to pdf -->
 
   <!-- Module: Status -->
@@ -322,43 +273,34 @@
   <!-- /Module: Ärende -->
 
   <!-- Module: Allmänt -->
-  <div class="modal" data-ng-show="showCaseInfo">
-    <div class="modal-overlay" data-ng-click="closePopUp()"></div>
-    <div class="modal-dialog">
-      <button class="modal-close" data-ng-click="closePopUp()">
-        <span class="struct">Stäng</span>
-        <i class="icon-close"></i>
-      </button>
-      <div class="modal-content">
-        <table class="log-table">
-          <caption>Allmänt</caption>
-          <tr>
-            <th>Ansvarig</td>
-            <td>{{ caze[0].owner }}</td>
-          </tr>
-          <tr>
-            <th>Skapad av</td>
-            <td>{{ caze[0].createdBy }}</td>
-          </tr>
-          <tr>
-            <th>Handläggare</td>
-            <td>{{ caze[0].assignedTo }}</td>
-          </tr>
-        </table>
-        <table class="log-table">
-          <caption>Åtkomst</caption>
-          <tr>
-            <th>Läsa</td>
-            <td>{{ permissions[0].readAccess }}</td>
-          </tr>
-          <tr>
-            <th>Skriva</td>
-            <td>{{ permissions[0].writeAccess }}</td>
-          </tr>
-        </table>
-      </div>
-    </div>
-  </div>
+  <modal show="showCaseInfo">
+    <table class="log-table">
+      <caption>Allmänt</caption>
+      <tr>
+        <th>Ansvarig</th>
+        <td>{{ caze[0].owner }}</td>
+      </tr>
+      <tr>
+        <th>Skapad av</th>
+        <td>{{ caze[0].createdBy }}</td>
+      </tr>
+      <tr>
+        <th>Handläggare</th>
+        <td>{{ caze[0].assignedTo }}</td>
+      </tr>
+    </table>
+    <table class="log-table">
+      <caption>Åtkomst</caption>
+      <tr>
+        <th>Läsa</th>
+        <td>{{ permissions[0].readAccess }}</td>
+      </tr>
+      <tr>
+        <th>Skriva</th>
+        <td>{{ permissions[0].writeAccess }}</td>
+      </tr>
+    </table>
+  </modal>
   <!-- /Module: Allmänt -->
 
   <!-- Module: Formulär -->

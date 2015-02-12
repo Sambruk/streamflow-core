@@ -1,0 +1,11 @@
+<div class="modal" data-ng-show="show">
+  <div class="modal-overlay" data-ng-click="hideModal()"></div>
+  <div class="modal-dialog" data-ng-style="dialogStyle">
+    <button class="modal-close" data-ng-click="hideModal()">
+      <i class="icon-close"></i>
+      <span class="struct">Stäng modalfönster</span>
+    </button>
+    <div class="modal-content" data-ng-transclude>
+    </div>
+  </div>
+</div>
