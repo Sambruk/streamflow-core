@@ -195,11 +195,12 @@
         <!-- /Ärendelabel -->
 
         <!-- Prioritet -->
-        <div data-ng-show="canChangePriority && possiblePriorities.length !== 0" class="row sidebar-priority">
+        <div data-ng-show="possiblePriorities.length !== 0" class="row sidebar-priority">
           <div class="select">
             <label for="priority-select">Prioritet</label>
             <span class="priority-color" ng-style="activePriorityColor"></span>
             <select
+              data-ng-disabled="!canChangePriority"
               data-ng-options="priority.id as priority.text for priority in possiblePriorities"
               data-ng-model="priority"
               data-ng-change="changePriorityLevel(priority, activePriorityColor, priorityColor, caseId);"
@@ -224,8 +225,6 @@
                 data-ng-change="changeDueOn(dueOnShort)"
                 id="issue-due-date"
                 name="issue-due-date"
-                class="datepicker-due"
-                ng-class="{'chosen-disabled': !canChangeDueOn}"
                 data-ng-disabled="!canChangeDueOn"
               >
             </div>
