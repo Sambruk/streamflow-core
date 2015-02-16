@@ -21,7 +21,8 @@ angular.module('sf').directive('modal', function () {
   return {
     restrict: 'E',
     scope: {
-      show: '='
+      show: '=',
+      dialogTitle: '@'
     },
     transclude: true,
     templateUrl: 'components/modal/modal.html',

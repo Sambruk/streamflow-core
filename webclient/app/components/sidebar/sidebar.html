@@ -53,13 +53,13 @@
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="formonclose" ng-controller="FormCtrl">
-          <modal show="show">
+          <modal dialog-title="Formulär" show="show">
             <data-ng-include src="'routes/cases/form/forms.html'"></data-ng-include>
           </modal>
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="resolve">
-          <modal show="show">
+          <modal dialog-title="Stäng ärende" show="show">
             <div class="row cf">
               <div class="select">
                 <select
@@ -77,10 +77,8 @@
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="requiredCaseType">
-          <modal show="show">
-            <div class="dialog-header">
-              <label>Du behöver ange en ärendetyp innan du kan stänga ärendet.</label>
-            </div>
+          <modal dialog-title="Ange ärendetyå" show="show">
+            <p>Du behöver ange en ärendetyp innan du kan stänga ärendet.</p>
             <div class="row cf">
             </div>
             <div class="submit-area cf dialog-submit">
@@ -90,10 +88,7 @@
         </div>
 
         <div class="toolbar-content-popup" data-ng-switch-when="sendTo">
-          <modal show="show">
-            <div class="dialog-header">
-              <label>Byt ägare</label>
-            </div>
+          <modal dialog-title="Byt ägare" show="show">
             <div class="row cf">
               <div class="select">
                 <select
@@ -121,8 +116,8 @@
   <!-- /Issue toolbar -->
 
   <!-- Pop up export to pdf -->
-  <modal show="showExport">
-    <h3>Exporteringsalternativ</h3>
+  <modal dialog-title="Exportera till PDF" show="showExport">
+    <h4>Exporteringsalternativ</h4>
     <ul class="dialog-list">
       <li>
         <input id="export-submitted-forms" type="checkbox" ng-model="exportSubmittedForms" name="export-submitted-forms">
@@ -268,7 +263,7 @@
   <!-- /Module: Ärende -->
 
   <!-- Module: Allmänt -->
-  <modal show="showCaseInfo">
+  <modal dialog-title="Ärendeinformation" show="showCaseInfo">
     <table class="log-table">
       <caption>Allmänt</caption>
       <tr>
