@@ -32,6 +32,9 @@
   "overrides": {
     "chosen": {
       "main": "chosen.jquery.js"
+    },
+    "momentjs": {
+      "main": "min/moment-with-locales.js"
     }
   }
 }
