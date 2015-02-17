@@ -14,43 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 'use strict';
 
-angular.module('sf')
-.factory('SfCase', function() {
+angular.module('sf').factory('SfCase', function() {
+  function SfCase(model, href) {
+    _.extend(this, model, {href: href});
+  }
 
-    function SfCase(model, href) {
-      _.extend(this, model, {href: href});
-    }
+  SfCase.prototype = {
+    overdueDays: function() {
+      var oneDay = 24*60*60*1000;
+      var now = new Date();
+      var dueOn = new Date(this.dueOn);
+      var diff = Math.floor((now.getTime() - dueOn.getTime())/(oneDay));
+      return diff > 0 ? diff : 0;
+    },
 
-    SfCase.prototype = {
-      overdueDays: function() {
-        var oneDay = 24*60*60*1000;
-        var now = new Date();
-        var dueOn = new Date(this.dueOn);
-        var diff = Math.round((now.getTime() - dueOn.getTime())/(oneDay));
-        return diff > 0 ? diff : 0;
-      },
+    checkdueDay: function() {
+      var oneDay = 24*60*60*1000;
+      var now = new Date();
+      var dueOn = new Date(this.dueOn);
+      var diff = Math.floor((now.getTime() - dueOn.getTime())/(oneDay));
+      return diff;
+    },
 
-      checkdueDay: function() {
-        var oneDay = 24*60*60*1000;
-        var now = new Date();
-        var dueOn = new Date(this.dueOn);
-        var diff = Math.round((now.getTime() - dueOn.getTime())/(oneDay));
-        return diff;
-      },
-
-      overdueStatus: function() {
-        if (!this.dueOn) {
-          return 'unset';
-        }
-        var t = this.overdueDays();
-        return this.overdueDays() > 0 ? 'overdue' : 'set';
-      },
-
-      modificationDate: function() {
-        return this.lastModifiedDate || this.creationDate;
+    overdueStatus: function() {
+      if (!this.dueOn) {
+        return 'unset';
       }
-    };
-    return SfCase;
-  });
+      return this.overdueDays() > 0 ? 'overdue' : 'set';
+    },
+
+    modificationDate: function() {
+      return this.lastModifiedDate || this.creationDate;
+    }
+  };
+  return SfCase;
+});
