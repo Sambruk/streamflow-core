@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('sf')
-.filter('attachmentJson', function ($filter) {
+.filter('attachmentJson', function () {
   return function (attachment) {
     var jsonParse = JSON.parse(attachment);
     return jsonParse.name;
@@ -38,47 +38,76 @@ angular.module('sf')
     return $filter('date')(input, 'yyyy-MM-dd');
   };
 }])
+// Date formatting á la Google Mail.
+.filter('googleDate', ['$filter', function ($filter) {
+  function isSameDay(date1, date2) {
+    return date1.getDate() === date2.getDate() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getFullYear() === date2.getFullYear();
+  }
+
+  function isSameYear(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear();
+  }
+
+  return function (input) {
+    var today = new Date();
+    var other = new Date(input);
+
+    // Default formatting: same year
+    var format = 'd MMM';
+
+    // Change formatting if year differs or if it's the same day.
+    if (!isSameYear(today, other)) {
+      format = 'yyyy-MM-dd';
+    } else if (isSameDay(today, other)) {
+      format = 'HH:mm';
+    }
+
+    return $filter('date')(input, format);
+  };
+}])
 .filter('dateTime', ['$filter', function ($filter) {
   return function (input) {
     return $filter('date')(input, 'yyyy-MM-dd, HH:mm');
   };
 }])
-.filter('translate', ['$filter', function ($filter) {
-    return function (input) {
+.filter('translate', ['$filter', function () {
+  return function (input) {
 
-      // So far, we keep it simple by just using a lookup table
-      var translation = {
-        inbox: 'Inkorg',
-        assignments: 'Mina ärenden',
-        attachment: 'Bifogande',
-        contact: 'Kontakt',
-        conversation: 'Konversation',
-        custom: 'custom',
-        form: 'Formulär',
-        system: 'System',
-        systemTrace: 'systemTrace',
-        successMessage: 'Hämtning lyckades',
-        errorMessage: 'Hämtning misslyckades',
-        'read: All': 'Läsa: Alla',
-        'write: All': 'Skriva: Alla',
-        'read: Project': 'Läsa: Projekt',
-        'write: Project': 'Skriva: Projekt',
-        'read: Organization': 'Läsa: Organisatorisk enhet',
-        'write: Organization': 'Skriva: Organisatorisk enhet',
-        'read: Sameoubranch': 'Läsa: Samma organisatoriska gren',
-        'write: Sameoubranch': 'Skriva: Samma organisatoriska gren',
-        '0 Förfallna': 'Förfallna',
-        '1 Förfaller idag': 'Förfaller idag',
-        '2 Förfaller imorgon': 'Förfaller imorgon',
-        '3 Förfaller inom en vecka': 'Förfaller inom en vecka',
-        '4 Förfaller inom en månad': 'Förfaller inom en månad',
-        '5 Förfaller inom en månad': 'Förfaller om mer än en månad'
-      };
-
-      return translation[input] || input;
+    // So far, we keep it simple by just using a lookup table
+    var translation = {
+      inbox: 'Inkorg',
+      assignments: 'Mina ärenden',
+      attachment: 'Bifogande',
+      contact: 'Kontakt',
+      conversation: 'Konversation',
+      custom: 'custom',
+      form: 'Formulär',
+      system: 'System',
+      systemTrace: 'systemTrace',
+      successMessage: 'Hämtning lyckades',
+      errorMessage: 'Hämtning misslyckades',
+      'read: All': 'Läsa: Alla',
+      'write: All': 'Skriva: Alla',
+      'read: Project': 'Läsa: Projekt',
+      'write: Project': 'Skriva: Projekt',
+      'read: Organization': 'Läsa: Organisatorisk enhet',
+      'write: Organization': 'Skriva: Organisatorisk enhet',
+      'read: Sameoubranch': 'Läsa: Samma organisatoriska gren',
+      'write: Sameoubranch': 'Skriva: Samma organisatoriska gren',
+      '0 Förfallna': 'Förfallna',
+      '1 Förfaller idag': 'Förfaller idag',
+      '2 Förfaller imorgon': 'Förfaller imorgon',
+      '3 Förfaller inom en vecka': 'Förfaller inom en vecka',
+      '4 Förfaller inom en månad': 'Förfaller inom en månad',
+      '5 Förfaller inom en månad': 'Förfaller om mer än en månad'
     };
-  }])
-.filter('caseLogFilter', function ($filter) {
+
+    return translation[input] || input;
+  };
+}])
+.filter('caseLogFilter', function () {
   return function (logEntries, filterArray) {
     var i, j, matchingItems = [];
 
@@ -123,3 +152,4 @@ angular.module('sf')
 
   };
 });
+
