@@ -18,28 +18,23 @@
 
 angular.module('sf')
 .factory('fancyDateService', function () {
-    moment.locale('sv');
+  moment.locale('sv');
 
-    return {
-      format: function (value) {
-        var result = '';
+  return {
+    format: function (value) {
+      var date = new Date(value).setHours(23, 59, 59, 0);
+      var result = '';
 
-        switch (value) {
-          case (new Date()).toISOString().split('T')[0]:
-            result = 'I dag';
-            break;
-          case moment().subtract(1, 'days').format('YYYY-MM-DD'):
-            result = 'I går';
-            break;
-          case '':
-            result = '';
-            break;
-          default:
-            result = moment(value + 'T23:59:59').fromNow();
-            break;
-        }
-
-        return result;
+      switch (value) {
+        case (new Date()).toISOString().split('T')[0]:
+          result = 'i dag';
+          break;
+        default:
+          result = moment(value + 'T23:59:59').fromNow();
+          break;
       }
+
+      return result;
+    }
   };
 });

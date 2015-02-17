@@ -14,43 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 'use strict';
-angular.module('sf')
-.directive('sfDatePickerFancy', function (fancyDateService, $timeout) {
+
+angular.module('sf').directive('sfDatePickerFancy', function (fancyDateService) {
   return {
     restrict:'A',
     require: 'ngModel',
+    link: function (scope, element) {
+      var $element = $(element);
 
-    link: function (scope, element, attrs, ngModel) {
-        var dateRegex = /^\d{4}-\d{2}-\d{2}/,
-            $element = $(element);
-        var $input = $element.pickadate({
-          selectYears: true,
-          selectMonths: true,
-          format: 'yyyy-mm-dd',
-          min: new Date(),
-          close: false,
-          clear: false,
-          onClose: function () {
-            var value = $element.val();
+      function setDateWithoutTriggeringChange(el, date) {
+        el.val(fancyDateService.format(date)).blur();
+      }
 
-            if (dateRegex.test(value)) {
-              // Set fancy date without triggering ng-change.
-              $element.val(fancyDateService.format(value)).blur();
-            }
-          }
-        });
-
-        scope.$watch('dueOnShortStartValue', function (newVal) {
-          if (!!newVal) {
-            // run on the next digest
-            $timeout(function () {
-              var picker = $input.pickadate('picker');
-              picker.set('select', new Date(newVal));
-              scope.dueOnShort = fancyDateService.format(newVal);
-            });
-          }
-        });
+      var $input = $element.pickadate({
+        selectYears: true,
+        selectMonths: true,
+        format: 'yyyy-mm-dd',
+        min: new Date(),
+        close: false,
+        clear: false,
+        onStart: function () {
+          scope.$watch('dueOnShortStartValue', function (value) {
+            setDateWithoutTriggeringChange($element, value);
+          });
+        }
+      });
     }
   };
 });
