@@ -2,7 +2,7 @@
   <fieldset>
     <label for="main-searchtext" class="struct">Sök</label>
     <input type="search" placeholder="Sök" id="main-searchtext" data-ng-model="query" data-ng-focus="toggleSearchTerms(true)" data-ng-blur="toggleSearchTerms(false)">
-    <button type="submit" class="icon-search"><span>Sök</span></button>
+    <button type="submit" class="icon-search" data-ng-blur="toggleSearchTerms(false)"><span>Sök</span></button>
   </fieldset>
 </form>
 <div class="search-terms" data-ng-show="showSearchTerms">
@@ -10,6 +10,6 @@
     <span>Lägg till sökterm</span>
   </div>
   <div>
-    <button data-ng-click="addSearchTermToQuery($event)" data-ng-repeat="(searchTerm, translation) in searchTerms">{{searchTerm}}</button>
+    <button data-ng-click="addSearchTermToQuery($event)" data-ng-blur="toggleSearchTerms(false)" data-ng-repeat="(key, value) in searchTerms">{{key}}</button>
   </div>
 </div>

@@ -27,7 +27,19 @@ angular.module('sf').directive('search', function ($location, $timeout, navigati
           // search term button, which would trigger a blur on the input field,
           // hiding it immediately.
           $timeout(function () {
-            if (!element.find('#main-searchtext').is(':focus')) {
+            var $elements = $('#main-searchtext, .search-terms button, button[type="submit"]');
+            var okToHide = true;
+
+            // Only hide if none of the elements defined above have focus.
+            angular.forEach($elements, function (el) {
+              var $el = angular.element(el);
+              if ($el.is(':focus')) {
+                console.log(okToHide);
+              }
+            });
+
+            // Focus has left the search terms dialog entirely.
+            if (okToHide) {
               scope.showSearchTerms = false;
             }
           }, 500);
