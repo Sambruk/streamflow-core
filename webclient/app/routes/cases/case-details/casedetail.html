@@ -18,9 +18,9 @@
 -->
 <div class="content-primary" role="main">
   <div class="m single-issue">
-    <div class="m-h cf" ng-show="sidebardata.canChangeDescription || sidebardata.canAddNote ">
+    <div class="m-h cf">
       <h2 class="id">{{caze[0].caseId}}</h2>
-      <a href="#/cases/{{ caze[0].id }}/edit" class="action-btn">
+      <a href="#/cases/{{ caze[0].id }}/edit" class="action-btn" ng-show="sidebardata.canChangeDescription || sidebardata.canAddNote">
         <i class="icon-edit"></i>
         Redigera ärende
       </a>
