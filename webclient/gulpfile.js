@@ -154,18 +154,21 @@ gulp.task('copy-templates', function () {
     .pipe(minifyHtml({
       empty: true
     }))
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('build'))
+    .pipe(connect.reload());
 });
 
 gulp.task('copy-fonts', function () {
   return gulp.src(paths.fonts)
-    .pipe(gulp.dest('build/app/fonts'));
+    .pipe(gulp.dest('build/app/fonts'))
+    .pipe(connect.reload());
 });
 
 gulp.task('copy-images', function () {
   return gulp.src(paths.images)
     .pipe(imagemin())
-    .pipe(gulp.dest('build/app/i'));
+    .pipe(gulp.dest('build/app/i'))
+    .pipe(connect.reload());
 });
 
 gulp.task('connect', function () {
