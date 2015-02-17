@@ -28,7 +28,7 @@ angular.module('sf').directive('sfDatePickerFancy', function (fancyDateService) 
         el.val(fancyDateService.format(date)).blur();
       }
 
-      var $input = $element.pickadate({
+      $element.pickadate({
         selectYears: true,
         selectMonths: true,
         format: 'yyyy-mm-dd',

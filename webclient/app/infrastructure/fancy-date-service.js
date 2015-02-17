@@ -22,19 +22,14 @@ angular.module('sf')
 
   return {
     format: function (value) {
-      var date = new Date(value).setHours(23, 59, 59, 0);
-      var result = '';
+      var date = moment(new Date(value).setHours(23, 59, 59, 0));
+      var today = moment(new Date().setHours(23, 59, 59, 0));
 
-      switch (value) {
-        case (new Date()).toISOString().split('T')[0]:
-          result = 'i dag';
-          break;
-        default:
-          result = moment(value + 'T23:59:59').fromNow();
-          break;
+      if (date.diff(today, 'days') === 0) {
+        return 'i dag';
       }
 
-      return result;
+      return moment(date).fromNow();
     }
   };
 });
