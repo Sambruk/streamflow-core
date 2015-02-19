@@ -31,11 +31,11 @@
           <div class="row">
             <div class="text">
               <label for="case-description" class="struct">Ärende</label>
-              <input type="text" name="description" id="case-description" data-sf-update-on-blur="changeCaseDescription($event, $success, $error)" data-ng-model="caseDescription" maxlength="50" data-ng-disabled="!sidebardata.canChangeDescription">
+              <input placeholder="Ärendetitel" type="text" name="description" id="case-description" data-sf-update-on-blur="changeCaseDescription($event, $success, $error)" data-ng-model="caseDescription" maxlength="50" data-ng-disabled="!sidebardata.canChangeDescription">
             </div>
             <div class="text">
               <label for="issue-notes" class="struct">Notering</label>
-              <textarea id="issue-notes" cols="30" rows="5" data-sf-update-on-blur="addNote($event, $success, $error)" data-ng-model="caseNote" data-ng-disabled="!sidebardata.canAddNote"></textarea>
+              <textarea placeholder="Anteckningar" id="issue-notes" cols="30" rows="5" data-sf-update-on-blur="addNote($event, $success, $error)" data-ng-model="caseNote" data-ng-disabled="!sidebardata.canAddNote"></textarea>
             </div>
           </div>
         </form>

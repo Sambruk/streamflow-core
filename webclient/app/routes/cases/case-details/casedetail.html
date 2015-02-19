@@ -31,11 +31,11 @@
           <div class="row">
             <div class="text">
               <label for="case-description" class="struct">Ärende</label>
-              <input type="text" name="case-description" id="case-description" data-ng-model="caze[0].text" disabled>
+              <input placeholder="Ärendetitel" type="text" name="case-description" id="case-description" data-ng-model="caze[0].text" disabled>
             </div>
             <div class="text">
               <label for="issue-notes" class="struct">Notering</label>
-              <textarea id="issue-notes" ng-bind-html="notes[0].note" cols="30" rows="5" disabled></textarea>
+              <textarea placeholder="Anteckningar" id="issue-notes" ng-bind-html="notes[0].note" cols="30" rows="5" disabled></textarea>
             </div>
           </div>
         </form>
