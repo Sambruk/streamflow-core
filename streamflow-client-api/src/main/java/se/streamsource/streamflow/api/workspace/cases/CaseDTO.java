@@ -87,5 +87,10 @@ public interface CaseDTO
    @Optional
    @UseDefaults
    Property<String> location();
+
+   @Optional
+   Property<Date> modificationDate();
    
+   @Optional
+   Property<Date> dueOn();
 }

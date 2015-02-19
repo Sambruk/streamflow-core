@@ -28,9 +28,11 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.spi.Qi4jSPI;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -61,6 +63,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 
 import java.util.Collections;
+import java.util.Date;
 
 import static se.streamsource.dci.value.table.TableValue.*;
 
@@ -72,6 +75,9 @@ public class StreamflowResultConverter
 {
    @Structure
    Module module;
+   
+   @Structure
+   Qi4jSPI spi;
 
    @Service
    ServiceReference<KnowledgebaseService> knowledgeBaseService;
@@ -243,6 +249,10 @@ public class StreamflowResultConverter
       }
 
       prototype.restricted().set( aCase.restricted().get() );
+      
+      prototype.modificationDate().set(new Date(spi.getEntityState(aCase).lastModified()));
+      prototype.dueOn().set(aCase.dueOn().get());
+      
       return builder.newInstance();
    }
 
