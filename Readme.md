@@ -33,27 +33,42 @@ This project uses a submodule, it need to be initiated with.
 
 This populates the folder `webclient/app/design`.
 
-# Deployment
-We're using maven to build the complete project.  
+## Deployment
+
+We're using maven to build the complete project.
 Start by updating the design submodule and then make sure all changes have been commited, pushed and that you have the latest version of the repository (pull).
 
-Then in the streamflow-core/webclient folder type: `mvn clean install`.  
-The build process should start and this will create a .war file in the target/ folder of /webclient, that can be deployed on a java webserver.  
-The pom.xml describes what happens when we build using maven.  
-In the pom.xml we reference to the build.sh/build.bat script that defines which webclient specific actions that are performed.
+Then in the `streamflow-core/webclient` folder type:
 
-Glassfish:<br>
-Redeploy the new .war file at <a href="test-sfwc.jayway.com:4848" /> under Applications. Account details could be found at: https://confluence.jayway.com/display/streamsource/Windows+server+tips+and+tricks
+```bash
+mvn clean install
+```
 
-Remote Desktop:<br>
+The build process should start and this will create a .war file in the `target/` folder of `/webclient`, that can be deployed on a java webserver.
+The `pom.xml` describes what happens when we build using maven.
+In the `pom.xml` we reference to the `build.sh/build.bat` script that defines which webclient specific actions that are performed.
+
+### Glassfish
+
+Redeploy the new `.war` file at <a href="test-sfwc.jayway.com:4848" />under Applications. Account details could be found at: https://confluence.jayway.com/display/streamsource/Windows+server+tips+and+tricks</a>
+
+Remote desktop to:
+
+```
 test-sfwc.jayway.com
-Edit web.xml in the WEB-INF/ folder of your application.
+```
 
-Comment<br>
-`<param-value>http://localhost/streamflow</param-value>`<br>
-and uncomment <br>
-`<param-value>http://test-sf.jayway.com/streamflow</param-value>`
-(*depending on targetUri).
+Edit `WEB-INF/web.xml`. Comment out:
 
-Glassfish:<br>
-Reload deployed application
+```
+<param-value>http://localhost/streamflow</param-value>`
+```
+
+and uncomment:
+
+```
+<param-value>http://test-sf.jayway.com/streamflow</param-value>`
+```
+
+Go back to Glassfish and **Reload deployed application**.
+
