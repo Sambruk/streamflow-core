@@ -253,7 +253,18 @@ public class StreamflowResultConverter
       
       prototype.lastLogEntryTime().set(new Date(spi.getEntityState((CaseLogEntity) aCase.caselog().get()).lastModified()));
       prototype.dueOn().set(aCase.dueOn().get());
-      
+      if (aCase.casepriority().get() != null)
+      {
+         Priority priority = aCase.casepriority().get();
+
+         ValueBuilder<PriorityValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(PriorityValue.class);
+         linkBuilder.prototype().text().set(priority.getDescription());
+         linkBuilder.prototype().href().set("");
+         linkBuilder.prototype().id().set(EntityReference.getEntityReference( priority ).identity());
+         linkBuilder.prototype().priority().set(((PrioritySettings.Data)priority).priority().get());
+         prototype.priority().set(linkBuilder.newInstance());
+      }
+
       return builder.newInstance();
    }
 
