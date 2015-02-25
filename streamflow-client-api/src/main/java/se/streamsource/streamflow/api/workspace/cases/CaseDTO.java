@@ -89,7 +89,7 @@ public interface CaseDTO
    Property<String> location();
 
    @Optional
-   Property<Date> modificationDate();
+   Property<Date> lastLogEntryTime();
    
    @Optional
    Property<Date> dueOn();

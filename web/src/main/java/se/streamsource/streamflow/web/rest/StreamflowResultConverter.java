@@ -47,6 +47,7 @@ import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseSer
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -250,7 +251,7 @@ public class StreamflowResultConverter
 
       prototype.restricted().set( aCase.restricted().get() );
       
-      prototype.modificationDate().set(new Date(spi.getEntityState(aCase).lastModified()));
+      prototype.lastLogEntryTime().set(new Date(spi.getEntityState((CaseLogEntity) aCase.caselog().get()).lastModified()));
       prototype.dueOn().set(aCase.dueOn().get());
       
       return builder.newInstance();
