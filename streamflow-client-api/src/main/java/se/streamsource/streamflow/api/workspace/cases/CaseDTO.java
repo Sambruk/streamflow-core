@@ -22,7 +22,7 @@ import org.qi4j.api.property.Property;
 
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.api.administration.priority.PriorityValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityDTO;
 
 import java.util.Date;
 
@@ -97,5 +97,5 @@ public interface CaseDTO
    Property<Date> dueOn();
 
    @Optional
-   Property<PriorityValue> priority();
+   Property<PriorityDTO> priority();
 }

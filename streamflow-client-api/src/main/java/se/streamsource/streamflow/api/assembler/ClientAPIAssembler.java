@@ -53,6 +53,7 @@ import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
@@ -148,6 +149,7 @@ public class ClientAPIAssembler
               ExternalEmailValue.class,
               PermissionsDTO.class,
               PriorityValue.class,
+              PriorityDTO.class,
               ProjectListValue.class);
 
       workspace.values(FieldDTO.class,

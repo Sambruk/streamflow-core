@@ -40,6 +40,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
@@ -257,12 +258,11 @@ public class StreamflowResultConverter
       {
          Priority priority = aCase.casepriority().get();
 
-         ValueBuilder<PriorityValue> linkBuilder = module.valueBuilderFactory().newValueBuilder(PriorityValue.class);
-         linkBuilder.prototype().text().set(priority.getDescription());
-         linkBuilder.prototype().href().set("");
-         linkBuilder.prototype().id().set(EntityReference.getEntityReference( priority ).identity());
-         linkBuilder.prototype().priority().set(((PrioritySettings.Data)priority).priority().get());
-         prototype.priority().set(linkBuilder.newInstance());
+         ValueBuilder<PriorityDTO> priorityDTOBuilder = module.valueBuilderFactory().newValueBuilder(PriorityDTO.class);
+         priorityDTOBuilder.prototype().text().set(priority.getDescription());
+         priorityDTOBuilder.prototype().id().set(EntityReference.getEntityReference( priority ).identity());
+         priorityDTOBuilder.prototype().priority().set(((PrioritySettings.Data)priority).priority().get());
+         prototype.priority().set(priorityDTOBuilder.newInstance());
       }
 
       return builder.newInstance();
