@@ -23,6 +23,7 @@ import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ServiceAvailable;
@@ -36,10 +37,12 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -69,6 +72,9 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
    
    @Structure
    Module module;
+   
+   @Service
+   SystemDefaultsService systemDefaults;
 
    public FormDraftDTO index()
    {
@@ -187,5 +193,15 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
          // Not available at this time
          return resultBuilder.newInstance();
       }
+   }
+   
+   public FormDraftSettingsDTO settings() 
+   {
+       ValueBuilder<FormDraftSettingsDTO> builder = module.valueBuilderFactory().newValueBuilder( FormDraftSettingsDTO.class );
+       
+       builder.prototype().location().set( systemDefaults.config().configuration().mapDefaultStartLocation().get() );
+       builder.prototype().zoomLevel().set( systemDefaults.config().configuration().mapDefaultZoomLevel().get() );
+       
+       return builder.newInstance();
    }
 }
