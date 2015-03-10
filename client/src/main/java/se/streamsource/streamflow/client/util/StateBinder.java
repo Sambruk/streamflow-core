@@ -80,6 +80,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Attach
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
@@ -110,6 +111,7 @@ public class StateBinder
       registerBinder( defaultBinder,
             AbstractFieldPanel.class,
             TextFieldPanel.class,
+            GeoLocationFieldPanel.class,
             TextAreaFieldPanel.class,
             NumberPanel.class,
             CheckboxesPanel.class,

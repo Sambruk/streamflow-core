@@ -22,6 +22,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
+
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -151,6 +152,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Checkb
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
@@ -180,7 +182,6 @@ import se.streamsource.streamflow.client.util.dialog.InputDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
-
 import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
@@ -291,6 +292,7 @@ public class UIAssembler
             NumberPanel.class,
             TextAreaFieldPanel.class,
             TextFieldPanel.class,
+            GeoLocationFieldPanel.class,
             AttachmentFieldPanel.class,
             MessagesConversationView.class,
             ConversationsView.class,
