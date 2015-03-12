@@ -16,12 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.text.MessageFormat;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.qi4j.api.common.Optional;
@@ -32,22 +26,27 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.io.Input;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.*;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.task.DoubleSignatureTask;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.text.MessageFormat;
 
 /**
  * JAVADOC
@@ -57,6 +56,7 @@ import se.streamsource.streamflow.web.rest.service.mail.MailSenderService;
 public interface CaseSubmittedFormsContext extends IndexContext<SubmittedFormsListDTO>, Context
 {
 
+   @SkipResourceValidityCheck
    SubmittedFormDTO submittedform(@Name("index") int index);
 
    Input<ByteBuffer, IOException> download(@Name("id") String id) throws IOException, URISyntaxException;
