@@ -16,14 +16,23 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 
 import org.jdesktop.application.ApplicationContext;
+import org.jxmapviewer.JXMapViewer;
+import org.jxmapviewer.OSMTileFactoryInfo;
+import org.jxmapviewer.viewer.DefaultTileFactory;
+import org.jxmapviewer.viewer.GeoPosition;
+import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 
@@ -37,8 +46,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 {
    private JTextField textField;
    private GeoLocationFieldValue fieldValue;
-   private StreamflowButton openMapButton;
-   private StreamflowButton pasteMapCoordinatesButton;
 
    @Service
    DialogService dialogs;
@@ -50,16 +57,41 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    {
       super( field );
       this.model = model;
-      setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
+      setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
       this.fieldValue = fieldValue;
-      
-      
+
       textField = new JTextField();
       add(textField);
       textField.setColumns( 50 ); // TODO: Fix magic number
+
+      setBorder(new LineBorder(Color.GREEN));
+
+      JComponent mapViewer = setUpMapViewer();
+      mapViewer.setPreferredSize(new Dimension(500, 400));
+      add(mapViewer);
       
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
+   }
+
+   private JComponent setUpMapViewer() {
+       JXMapViewer mapViewer = new JXMapViewer();
+
+       // Create a TileFactoryInfo for OpenStreetMap
+       TileFactoryInfo info = new OSMTileFactoryInfo();
+       DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+       mapViewer.setTileFactory(tileFactory);
+
+       // Use 8 threads in parallel to load the tiles
+       tileFactory.setThreadPoolSize(8);
+
+       // Set the focus
+       GeoPosition frankfurt = new GeoPosition(50.11, 8.68);
+
+       mapViewer.setZoom(7);
+       mapViewer.setAddressLocation(frankfurt);
+
+       return mapViewer;
    }
 
    @Override
