@@ -134,10 +134,10 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       GeoMarker geoMarker = parseGeoMarker(locationDTO.location().get());
       if (geoMarker instanceof PointMarker) {
          PointMarker point = (PointMarker) geoMarker;
-         mapViewer.setAddressLocation(new GeoPosition(point.getLon(), point.getLat()));    
+         mapViewer.setAddressLocation(new GeoPosition(point.getLat(), point.getLon()));    
          
          final WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLon(), point.getLat())));
+         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLat(), point.getLon())));
          
          mapViewer.setOverlayPainter(waypointPainter);
 
@@ -297,7 +297,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       private double lon;
       private double lat;
 
-      public PointMarker(double lon, double lat) {
+      public PointMarker(double lat, double lon) {
          this.lon = lon;
          this.lat = lat;
       }
