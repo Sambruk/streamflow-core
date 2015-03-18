@@ -19,6 +19,8 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import javax.swing.text.JTextComponent;
 import org.jdesktop.application.ApplicationContext;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
+import org.jxmapviewer.VirtualEarthTileFactoryInfo;
 import org.jxmapviewer.input.PanKeyListener;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
@@ -70,7 +73,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    private JXMapViewer mapViewer;
    private GeoLocationFieldValue fieldValue;
 
-
    @Service
    DialogService dialogs;
 
@@ -92,6 +94,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 
       mapViewer = setUpMapViewer();
       mapViewer.setPreferredSize(new Dimension(500, 400));
+      setMapType(MapType.ROAD_MAP);
       add(mapViewer, BorderLayout.CENTER);
 
       JPanel controlPanel = setupControlPanel();
@@ -103,14 +106,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 
    private JXMapViewer setUpMapViewer() {
        JXMapViewer mapViewer = new JXMapViewer();
-
-       // Create a TileFactoryInfo for OpenStreetMap
-       TileFactoryInfo info = new OSMTileFactoryInfo();
-       DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-       mapViewer.setTileFactory(tileFactory);
-
-       // Use 8 threads in parallel to load the tiles
-       tileFactory.setThreadPoolSize(8);
 
        // Add interactions
        MouseInputListener panListener = new PanMouseInputListener(mapViewer);
@@ -138,7 +133,13 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 
       dummyTopPanel.setLayout(new BoxLayout(dummyTopPanel, BoxLayout.Y_AXIS));
 
-      JComboBox mapTypeSelector = new JComboBox(new String[] { "Road map", "Satellite map" });
+      final JComboBox<MapType> mapTypeSelector = new JComboBox<MapType>(MapType.values());
+      mapTypeSelector.addItemListener(new ItemListener() {
+         @Override
+         public void itemStateChanged(ItemEvent e) {
+            setMapType((MapType) mapTypeSelector.getSelectedItem());
+         }
+      });
       dummyTopPanel.add(mapTypeSelector);
 
       ButtonGroup modeButtonGroup = new ButtonGroup();
@@ -156,6 +157,35 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       dummyTopPanel.add(new JLabel("Help hint here"));
 
       return controlPanel;
+   }
+
+   private void setMapType(MapType mapType) {
+      if (mapViewer.getTileFactory() != null) {
+         mapViewer.getTileFactory().dispose();
+      }
+
+      switch (mapType) {
+      case ROAD_MAP:
+      {
+         TileFactoryInfo info = new OSMTileFactoryInfo();
+         DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+         mapViewer.setTileFactory(tileFactory);
+         tileFactory.setThreadPoolSize(8);
+         break;
+      }
+      case SATELLITE:
+      {
+         TileFactoryInfo info = new VirtualEarthTileFactoryInfo(VirtualEarthTileFactoryInfo.SATELLITE);
+         DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+         mapViewer.setTileFactory(tileFactory);
+         tileFactory.setThreadPoolSize(8);
+         break;
+      }
+      default:
+         mapViewer.setTileFactory(null);
+      }
+
+
    }
 
    @Override
@@ -289,43 +319,27 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
          public boolean verify(JComponent input)
          {
              // TODO: Verify geo value properly
-
-//            if (!Strings.empty( fieldValue.regularExpression().get() )
-//                  && !Strings.empty( ((JTextComponent) input).getText() ))
-//            {
-//               try
-//               {
-//                  new RegexPatternFormatter( fieldValue.regularExpression().get() )
-//                        .stringToValue( ((JTextComponent) input).getText() );
-//               } catch (ParseException e)
-//               {
-//                  dialogs.showMessageDialog( panel, i18n.text( CaseResources.regular_expression_does_not_validate ), "" );
-//                  return false;
-//               }
-//            }
             binding.updateProperty( ((JTextComponent) input).getText() );
             return true;
          }
       } );
    }
 
-//   @Override
-//   protected String componentName()
-//   {
-//      StringBuilder componentName = new StringBuilder( "<html>" );
-//      componentName.append( title() );
-//      if (!Strings.empty( fieldValue.hint().get() ))
-//      {
-//         componentName.append( " <font color='#778899'>(" ).append( fieldValue.hint().get() ).append( ")</font>" );
-//      }
-//
-//      if (mandatory())
-//      {
-//         componentName.append( " <font color='red'>*</font>" );
-//      }
-//      componentName.append( "</html>" );
-//      return componentName.toString();
-//   }
+   enum MapType {
+      ROAD_MAP("Road map"),
+      SATELLITE("Satellite");
+
+      String name;
+
+      private MapType(String name) {
+         this.name = name;
+      }
+
+      @Override
+      public String toString() {
+         return name;
+      }
+   };
 
    static abstract class GeoMarker {
 
