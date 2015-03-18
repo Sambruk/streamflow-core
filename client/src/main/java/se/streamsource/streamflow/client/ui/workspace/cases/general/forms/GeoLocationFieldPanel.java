@@ -27,11 +27,15 @@ import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.event.MouseInputListener;
 import javax.swing.text.JTextComponent;
 
 import org.jdesktop.application.ApplicationContext;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
+import org.jxmapviewer.input.PanKeyListener;
+import org.jxmapviewer.input.PanMouseInputListener;
+import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
@@ -92,6 +96,13 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 
        // Use 8 threads in parallel to load the tiles
        tileFactory.setThreadPoolSize(8);
+
+       // Add interactions
+       MouseInputListener panListener = new PanMouseInputListener(mapViewer);
+       mapViewer.addMouseListener(panListener);
+       mapViewer.addMouseMotionListener(panListener);
+       mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));       
+       mapViewer.addKeyListener(new PanKeyListener(mapViewer));
 
        // Set the focus
        GeoPosition frankfurt = new GeoPosition(50.11, 8.68);
