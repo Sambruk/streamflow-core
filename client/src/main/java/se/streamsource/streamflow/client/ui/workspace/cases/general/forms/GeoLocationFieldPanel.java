@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
@@ -26,9 +27,14 @@ import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.InputVerifier;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.border.LineBorder;
 import javax.swing.event.MouseInputListener;
 import javax.swing.text.JTextComponent;
@@ -64,7 +70,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    private JXMapViewer mapViewer;
    private GeoLocationFieldValue fieldValue;
 
-   
+
    @Service
    DialogService dialogs;
 
@@ -75,19 +81,22 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    {
       super( field );
       this.model = model;
-      setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
+      setLayout( new BorderLayout() );
       this.fieldValue = fieldValue;
 
       textField = new JTextField();
-      add(textField);
+      add(textField, BorderLayout.NORTH);
       textField.setColumns( 50 ); // TODO: Fix magic number
 
       setBorder(new LineBorder(Color.GREEN));
 
       mapViewer = setUpMapViewer();
       mapViewer.setPreferredSize(new Dimension(500, 400));
-      add(mapViewer);
-      
+      add(mapViewer, BorderLayout.CENTER);
+
+      JPanel controlPanel = setupControlPanel();
+      add(controlPanel, BorderLayout.EAST);
+
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
    }
@@ -107,7 +116,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
        MouseInputListener panListener = new PanMouseInputListener(mapViewer);
        mapViewer.addMouseListener(panListener);
        mapViewer.addMouseMotionListener(panListener);
-       mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));       
+       mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
        mapViewer.addKeyListener(new PanKeyListener(mapViewer));
 
        // Set the focus
@@ -117,6 +126,36 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
        mapViewer.setAddressLocation(frankfurt);
 
        return mapViewer;
+   }
+
+   private JPanel setupControlPanel() {
+      // TODO: Clean up this layout mess
+
+      JPanel controlPanel = new JPanel(new BorderLayout(10, 0));
+
+      JPanel dummyTopPanel = new JPanel();
+      controlPanel.add(dummyTopPanel, BorderLayout.NORTH);
+
+      dummyTopPanel.setLayout(new BoxLayout(dummyTopPanel, BoxLayout.Y_AXIS));
+
+      JComboBox mapTypeSelector = new JComboBox(new String[] { "Road map", "Satellite map" });
+      dummyTopPanel.add(mapTypeSelector);
+
+      ButtonGroup modeButtonGroup = new ButtonGroup();
+      JToggleButton selectPointButton = new JToggleButton("Select point");
+      JToggleButton selectLineButton = new JToggleButton("Select line");
+      JToggleButton selectPolygonButton = new JToggleButton("Select area");
+      modeButtonGroup.add(selectPointButton);
+      modeButtonGroup.add(selectLineButton);
+      modeButtonGroup.add(selectPolygonButton);
+      dummyTopPanel.add(selectPointButton);
+      dummyTopPanel.add(selectLineButton);
+      dummyTopPanel.add(selectPolygonButton);
+
+      dummyTopPanel.add(new JLabel("Address here"));
+      dummyTopPanel.add(new JLabel("Help hint here"));
+
+      return controlPanel;
    }
 
    @Override
@@ -134,32 +173,32 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       GeoMarker geoMarker = parseGeoMarker(locationDTO.location().get());
       if (geoMarker instanceof PointMarker) {
          PointMarker point = (PointMarker) geoMarker;
-         mapViewer.setAddressLocation(new GeoPosition(point.getLat(), point.getLon()));    
-         
+         mapViewer.setAddressLocation(new GeoPosition(point.getLat(), point.getLon()));
+
          final WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
          waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLat(), point.getLon())));
-         
+
          mapViewer.setOverlayPainter(waypointPainter);
 
-         
+
          mapViewer.addMouseListener(new MouseListener() {
-            
+
             @Override
             public void mouseReleased(MouseEvent e) {
             }
-            
+
             @Override
             public void mousePressed(MouseEvent e) {
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
             }
-            
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
-            
+
             @Override
             public void mouseClicked(MouseEvent e) {
                if (e.getButton() == MouseEvent.BUTTON2) {
@@ -177,18 +216,18 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    private LocationDTO parseLocationDTOValue(String newValue) {
        return module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, "".equals( newValue ) ? "{}" : newValue );
    }
-   
-   /** Parses a geomarker string in one of these formats: Point: "1.23, 4.56", 
-    * Lines: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66)", 
-    * Polygon: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66), (1.11, 2.22)"   
+
+   /** Parses a geomarker string in one of these formats: Point: "1.23, 4.56",
+    * Lines: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66)",
+    * Polygon: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66), (1.11, 2.22)"
     */
    static GeoMarker parseGeoMarker(String string) {
       String trimmed = string.trim();
-      
+
       if (trimmed.isEmpty()) {
          return null;
       }
-      
+
       if (trimmed.startsWith("(")) {
          List<PointMarker> points = parsePointList(trimmed);
          if (points.get(0).equals(points.get(points.size()-1))) {
@@ -205,23 +244,23 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 
    private static List<PointMarker> parsePointList(String s) {
       List<PointMarker> result = new ArrayList<PointMarker>();
-      
+
       while (!s.isEmpty()) {
          int endParenIndex = s.indexOf(')');
          if (endParenIndex == -1) {
-            throw new IllegalArgumentException("Unterminated parenthesis in point list");            
+            throw new IllegalArgumentException("Unterminated parenthesis in point list");
          }
-         
+
          result.add(parsePoint(s.substring(1, endParenIndex-1)));
-         
+
          int nextStartParenIndex = s.indexOf('(', 1);
          if (nextStartParenIndex == -1) {
             break;
          }
-         
+
          s = s.substring(nextStartParenIndex);
       }
-      
+
       return result;
    }
 
@@ -230,7 +269,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       if (lonLat.length != 2) {
          throw new IllegalArgumentException("Invalid position");
       }
-      
+
       return new PointMarker(Double.parseDouble(lonLat[0]), Double.parseDouble(lonLat[1]));
    }
 
@@ -250,7 +289,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
          public boolean verify(JComponent input)
          {
              // TODO: Verify geo value properly
-             
+
 //            if (!Strings.empty( fieldValue.regularExpression().get() )
 //                  && !Strings.empty( ((JTextComponent) input).getText() ))
 //            {
@@ -293,7 +332,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    }
 
    static class PointMarker extends GeoMarker {
-      
+
       private double lon;
       private double lat;
 
@@ -336,9 +375,9 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
          if (Double.doubleToLongBits(lon) != Double.doubleToLongBits(other.lon))
             return false;
          return true;
-      } 
-      
-      
+      }
+
+
    }
 
    static class LineMarker extends GeoMarker {
@@ -376,16 +415,16 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
          } else if (!points.equals(other.points))
             return false;
          return true;
-      }         
+      }
    }
 
    static class PolygonMarker extends GeoMarker {
-   
+
       private List<PointMarker> points;
 
       public PolygonMarker(List<PointMarker> points) {
          this.points = points;
-      }   
+      }
 
       public List<PointMarker> getPoints() {
          return points;
@@ -414,6 +453,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
          } else if (!points.equals(other.points))
             return false;
          return true;
-      }              
+      }
    }
 }

@@ -147,7 +147,7 @@ public class FormSubmissionWizardPageView
       panel.setScrollableHeightHint( ScrollableSizeHint.VERTICAL_STRETCH );
 
       fieldBinders = new HashMap<StateBinder, EntityReference>( page.fields().get().size() );
-      FormLayout formLayout = new FormLayout( "200dlu, 70dlu:grow", "" );
+      FormLayout formLayout = new FormLayout( "250dlu, 70dlu:grow", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 
