@@ -51,6 +51,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    private static final Logger logger = LoggerFactory.getLogger(GeoLocationFieldPanel.class);
 
    private JTextField textField;
+   private JXMapViewer mapViewer;
    private GeoLocationFieldValue fieldValue;
 
    
@@ -73,7 +74,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 
       setBorder(new LineBorder(Color.GREEN));
 
-      JComponent mapViewer = setUpMapViewer();
+      mapViewer = setUpMapViewer();
       mapViewer.setPreferredSize(new Dimension(500, 400));
       add(mapViewer);
       
@@ -81,7 +82,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       ActionMap am = getActionMap();
    }
 
-   private JComponent setUpMapViewer() {
+   private JXMapViewer setUpMapViewer() {
        JXMapViewer mapViewer = new JXMapViewer();
 
        // Create a TileFactoryInfo for OpenStreetMap
@@ -113,7 +114,11 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       textField.setText( newValue );
 
       LocationDTO locationDTO = parseLocationDTOValue(newValue);
-//      GeoMarker geoMarker = parseGeoMarker(locationDTO.location().get());
+      GeoMarker geoMarker = parseGeoMarker(locationDTO.location().get());
+      if (geoMarker instanceof PointMarker) {
+         PointMarker point = (PointMarker) geoMarker;
+         mapViewer.setAddressLocation(new GeoPosition(point.getLon(), point.getLat()));         
+      }
    }
 
 
