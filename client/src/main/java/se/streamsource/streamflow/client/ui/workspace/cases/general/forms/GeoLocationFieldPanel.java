@@ -18,7 +18,10 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ActionMap;
@@ -37,8 +40,11 @@ import org.jxmapviewer.input.PanKeyListener;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.viewer.DefaultTileFactory;
+import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
+import org.jxmapviewer.viewer.Waypoint;
+import org.jxmapviewer.viewer.WaypointPainter;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.slf4j.Logger;
@@ -128,7 +134,42 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       GeoMarker geoMarker = parseGeoMarker(locationDTO.location().get());
       if (geoMarker instanceof PointMarker) {
          PointMarker point = (PointMarker) geoMarker;
-         mapViewer.setAddressLocation(new GeoPosition(point.getLon(), point.getLat()));         
+         mapViewer.setAddressLocation(new GeoPosition(point.getLon(), point.getLat()));    
+         
+         final WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
+         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLon(), point.getLat())));
+         
+         mapViewer.setOverlayPainter(waypointPainter);
+
+         
+         mapViewer.addMouseListener(new MouseListener() {
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+            
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+            
+            @Override
+            public void mouseClicked(MouseEvent e) {
+               if (e.getButton() == MouseEvent.BUTTON2) {
+                  GeoPosition geoPosition = mapViewer.convertPointToGeoPosition(e.getPoint());
+                  waypointPainter.setWaypoints(Collections.singleton(
+                        new DefaultWaypoint(geoPosition.getLatitude(), geoPosition.getLongitude())));
+                  mapViewer.repaint();
+               }
+            }
+         });
       }
    }
 
