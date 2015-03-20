@@ -14,18 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
+package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -62,6 +58,8 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
@@ -200,107 +198,31 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       textField.setText( newValue );
 
       LocationDTO locationDTO = parseLocationDTOValue(newValue);
-      GeoMarker geoMarker = parseGeoMarker(locationDTO.location().get());
+      GeoMarker geoMarker = GeoMarker.parseGeoMarker(locationDTO.location().get());
       if (geoMarker instanceof PointMarker) {
          PointMarker point = (PointMarker) geoMarker;
-         mapViewer.setAddressLocation(new GeoPosition(point.getLat(), point.getLon()));
+         mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
 
          final WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLat(), point.getLon())));
+         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLatitude(), point.getLongitude())));
 
          mapViewer.setOverlayPainter(waypointPainter);
 
 
-         mapViewer.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-               if (e.getButton() == MouseEvent.BUTTON2) {
-                  GeoPosition geoPosition = mapViewer.convertPointToGeoPosition(e.getPoint());
-                  waypointPainter.setWaypoints(Collections.singleton(
-                        new DefaultWaypoint(geoPosition.getLatitude(), geoPosition.getLongitude())));
-                  mapViewer.repaint();
-               }
-            }
-         });
+         mapViewer.addMouseListener(new PointSelector(this, mapViewer));
       }
    }
 
+
+   public void setGeoMarker(GeoMarker marker) {
+      if (marker instanceof PointMarker) {
+         PointMarker point = (PointMarker) marker;
+         logger.info("Point: "+point.getLatitude()+","+point.getLongitude());
+      }
+   }
 
    private LocationDTO parseLocationDTOValue(String newValue) {
        return module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, "".equals( newValue ) ? "{}" : newValue );
-   }
-
-   /** Parses a geomarker string in one of these formats: Point: "1.23, 4.56",
-    * Lines: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66)",
-    * Polygon: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66), (1.11, 2.22)"
-    */
-   static GeoMarker parseGeoMarker(String string) {
-      String trimmed = string.trim();
-
-      if (trimmed.isEmpty()) {
-         return null;
-      }
-
-      if (trimmed.startsWith("(")) {
-         List<PointMarker> points = parsePointList(trimmed);
-         if (points.get(0).equals(points.get(points.size()-1))) {
-            return new PolygonMarker(points);
-         }
-         else {
-            return new LineMarker(points);
-         }
-      }
-      else {
-         return parsePoint(trimmed);
-      }
-   }
-
-   private static List<PointMarker> parsePointList(String s) {
-      List<PointMarker> result = new ArrayList<PointMarker>();
-
-      while (!s.isEmpty()) {
-         int endParenIndex = s.indexOf(')');
-         if (endParenIndex == -1) {
-            throw new IllegalArgumentException("Unterminated parenthesis in point list");
-         }
-
-         result.add(parsePoint(s.substring(1, endParenIndex-1)));
-
-         int nextStartParenIndex = s.indexOf('(', 1);
-         if (nextStartParenIndex == -1) {
-            break;
-         }
-
-         s = s.substring(nextStartParenIndex);
-      }
-
-      return result;
-   }
-
-   private static PointMarker parsePoint(String s) {
-      String[] lonLat = s.split(",");
-      if (lonLat.length != 2) {
-         throw new IllegalArgumentException("Invalid position");
-      }
-
-      return new PointMarker(Double.parseDouble(lonLat[0]), Double.parseDouble(lonLat[1]));
    }
 
    @Override
@@ -338,135 +260,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       @Override
       public String toString() {
          return name;
-      }
-   };
-
-   static abstract class GeoMarker {
-
-   }
-
-   static class PointMarker extends GeoMarker {
-
-      private double lon;
-      private double lat;
-
-      public PointMarker(double lat, double lon) {
-         this.lon = lon;
-         this.lat = lat;
-      }
-
-      public double getLon() {
-         return lon;
-      }
-
-      public double getLat() {
-         return lat;
-      }
-
-      @Override
-      public int hashCode() {
-         final int prime = 31;
-         int result = 1;
-         long temp;
-         temp = Double.doubleToLongBits(lat);
-         result = prime * result + (int) (temp ^ (temp >>> 32));
-         temp = Double.doubleToLongBits(lon);
-         result = prime * result + (int) (temp ^ (temp >>> 32));
-         return result;
-      }
-
-      @Override
-      public boolean equals(Object obj) {
-         if (this == obj)
-            return true;
-         if (obj == null)
-            return false;
-         if (getClass() != obj.getClass())
-            return false;
-         PointMarker other = (PointMarker) obj;
-         if (Double.doubleToLongBits(lat) != Double.doubleToLongBits(other.lat))
-            return false;
-         if (Double.doubleToLongBits(lon) != Double.doubleToLongBits(other.lon))
-            return false;
-         return true;
-      }
-
-
-   }
-
-   static class LineMarker extends GeoMarker {
-
-      private List<PointMarker> points;
-
-      public LineMarker(List<PointMarker> points) {
-         this.points = points;
-      }
-
-      public List<PointMarker> getPoints() {
-         return points;
-      }
-
-      @Override
-      public int hashCode() {
-         final int prime = 31;
-         int result = 1;
-         result = prime * result + ((points == null) ? 0 : points.hashCode());
-         return result;
-      }
-
-      @Override
-      public boolean equals(Object obj) {
-         if (this == obj)
-            return true;
-         if (obj == null)
-            return false;
-         if (getClass() != obj.getClass())
-            return false;
-         LineMarker other = (LineMarker) obj;
-         if (points == null) {
-            if (other.points != null)
-               return false;
-         } else if (!points.equals(other.points))
-            return false;
-         return true;
-      }
-   }
-
-   static class PolygonMarker extends GeoMarker {
-
-      private List<PointMarker> points;
-
-      public PolygonMarker(List<PointMarker> points) {
-         this.points = points;
-      }
-
-      public List<PointMarker> getPoints() {
-         return points;
-      }
-
-      @Override
-      public int hashCode() {
-         final int prime = 31;
-         int result = 1;
-         result = prime * result + ((points == null) ? 0 : points.hashCode());
-         return result;
-      }
-
-      @Override
-      public boolean equals(Object obj) {
-         if (this == obj)
-            return true;
-         if (obj == null)
-            return false;
-         if (getClass() != obj.getClass())
-            return false;
-         PolygonMarker other = (PolygonMarker) obj;
-         if (points == null) {
-            if (other.points != null)
-               return false;
-         } else if (!points.equals(other.points))
-            return false;
-         return true;
       }
    }
 }

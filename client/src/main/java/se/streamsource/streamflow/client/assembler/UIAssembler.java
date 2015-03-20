@@ -152,7 +152,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Checkb
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageView;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
@@ -161,6 +160,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Possib
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
