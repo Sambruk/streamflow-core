@@ -6,14 +6,14 @@ import java.awt.event.MouseListener;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 
-public class PointSelector implements MouseListener {
+public class PointSelectionListener implements MouseListener {
 
    private JXMapViewer mapViewer;
-   private GeoLocationFieldPanel geoLocationFieldPanel;
+   private GeoMarkerHolder geoMarkerHolder;
 
-   public PointSelector(GeoLocationFieldPanel geoLocationFieldPanel,
+   public PointSelectionListener(GeoMarkerHolder geoMarkerHolder,
          JXMapViewer mapViewer) {
-      this.geoLocationFieldPanel = geoLocationFieldPanel;
+      this.geoMarkerHolder = geoMarkerHolder;
       this.mapViewer = mapViewer;
    }
 
@@ -35,10 +35,10 @@ public class PointSelector implements MouseListener {
 
    @Override
    public void mouseClicked(MouseEvent e) {
-      if (e.getButton() == MouseEvent.BUTTON2) {
+      if (e.getButton() == MouseEvent.BUTTON1) {
          GeoPosition geoPosition = mapViewer.convertPointToGeoPosition(e.getPoint());
          GeoMarker marker = new PointMarker(geoPosition.getLatitude(), geoPosition.getLongitude());
-         geoLocationFieldPanel.setGeoMarker(marker);
+         geoMarkerHolder.updateGeoMarker(marker);
       }
    }
 }

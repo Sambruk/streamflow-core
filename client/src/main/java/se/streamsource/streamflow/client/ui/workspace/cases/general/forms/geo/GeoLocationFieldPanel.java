@@ -19,9 +19,10 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Collections;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -34,22 +35,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.LineBorder;
-import javax.swing.event.MouseInputListener;
 import javax.swing.text.JTextComponent;
 
 import org.jdesktop.application.ApplicationContext;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.VirtualEarthTileFactoryInfo;
-import org.jxmapviewer.input.PanKeyListener;
-import org.jxmapviewer.input.PanMouseInputListener;
-import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.viewer.DefaultTileFactory;
-import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
-import org.jxmapviewer.viewer.Waypoint;
-import org.jxmapviewer.viewer.WaypointPainter;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.slf4j.Logger;
@@ -63,18 +57,23 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSu
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
-public class GeoLocationFieldPanel extends AbstractFieldPanel
+public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMarkerHolder
 {
    private static final Logger logger = LoggerFactory.getLogger(GeoLocationFieldPanel.class);
 
    private JTextField textField;
    private JXMapViewer mapViewer;
+   private MapInteractionMode currentInteractionMode;
+   private GeoMarker currentGeoMarker;
+   private LocationDTO currentLocationData;
    private GeoLocationFieldValue fieldValue;
 
    @Service
    DialogService dialogs;
 
    private FormSubmissionWizardPageModel model;
+
+   private ButtonGroup modeButtonGroup;
 
    public GeoLocationFieldPanel(@Service ApplicationContext appContext, @Uses FieldSubmissionDTO field,
          @Uses GeoLocationFieldValue fieldValue, @Uses FormSubmissionWizardPageModel model)
@@ -105,19 +104,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    private JXMapViewer setUpMapViewer() {
        JXMapViewer mapViewer = new JXMapViewer();
 
-       // Add interactions
-       MouseInputListener panListener = new PanMouseInputListener(mapViewer);
-       mapViewer.addMouseListener(panListener);
-       mapViewer.addMouseMotionListener(panListener);
-       mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
-       mapViewer.addKeyListener(new PanKeyListener(mapViewer));
-
-       // Set the focus
-       GeoPosition frankfurt = new GeoPosition(50.11, 8.68);
-
        mapViewer.setZoom(7);
-       mapViewer.setAddressLocation(frankfurt);
-
        return mapViewer;
    }
 
@@ -140,7 +127,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
       });
       dummyTopPanel.add(mapTypeSelector);
 
-      ButtonGroup modeButtonGroup = new ButtonGroup();
+      modeButtonGroup = new ButtonGroup();
       JToggleButton selectPointButton = new JToggleButton("Select point");
       JToggleButton selectLineButton = new JToggleButton("Select line");
       JToggleButton selectPolygonButton = new JToggleButton("Select area");
@@ -153,6 +140,13 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
 
       dummyTopPanel.add(new JLabel("Address here"));
       dummyTopPanel.add(new JLabel("Help hint here"));
+
+      selectPointButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            switchInteractionMode(new PointSelectionInteractionMode());
+         }
+      });
 
       return controlPanel;
    }
@@ -197,28 +191,48 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
    {
       textField.setText( newValue );
 
-      LocationDTO locationDTO = parseLocationDTOValue(newValue);
-      GeoMarker geoMarker = GeoMarker.parseGeoMarker(locationDTO.location().get());
-      if (geoMarker instanceof PointMarker) {
-         PointMarker point = (PointMarker) geoMarker;
-         mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
-
-         final WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLatitude(), point.getLongitude())));
-
-         mapViewer.setOverlayPainter(waypointPainter);
-
-
-         mapViewer.addMouseListener(new PointSelector(this, mapViewer));
-      }
+      currentLocationData = parseLocationDTOValue(newValue);
+      currentGeoMarker = GeoMarker.parseGeoMarker(currentLocationData.location().get());
+      switchInteractionMode(new PanZoomInteractionMode());
+      scrollMarkerIntoView(currentGeoMarker);
    }
 
 
-   public void setGeoMarker(GeoMarker marker) {
-      if (marker instanceof PointMarker) {
-         PointMarker point = (PointMarker) marker;
-         logger.info("Point: "+point.getLatitude()+","+point.getLongitude());
+   @Override
+   public GeoMarker getCurrentGeoMarker() {
+      return currentGeoMarker;
+   }
+
+   @Override
+   public void updateGeoMarker(GeoMarker marker) {
+      currentGeoMarker = marker;
+      switchInteractionMode(new PanZoomInteractionMode());
+   }
+
+   private void scrollMarkerIntoView(GeoMarker marker) {
+      if (marker == null) {
+         // TODO: Scroll to default location
       }
+      else if (marker instanceof PointMarker) {
+         PointMarker point = (PointMarker) marker;
+         mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
+      }
+      else {
+         throw new UnsupportedOperationException("Not implemented");
+      }
+   }
+
+   private void switchInteractionMode(MapInteractionMode newMode) {
+      if (currentInteractionMode != null) {
+         currentInteractionMode.leaveMode(mapViewer);
+      }
+
+      if (newMode instanceof PanZoomInteractionMode) {
+         modeButtonGroup.clearSelection();
+      }
+
+      newMode.enterMode(mapViewer, this);
+      currentInteractionMode = newMode;
    }
 
    private LocationDTO parseLocationDTOValue(String newValue) {
@@ -262,4 +276,5 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel
          return name;
       }
    }
+
 }
