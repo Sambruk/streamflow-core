@@ -217,6 +217,14 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
          PointMarker point = (PointMarker) marker;
          mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
       }
+      else if (marker instanceof LineMarker) {
+         // TODO: Center map on center of lines instead of first point
+         LineMarker line = (LineMarker) marker;
+         if (line.getPoints().size() > 0) {
+            PointMarker point = line.getPoints().get(0);
+            mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
+         }
+      }
       else {
          throw new UnsupportedOperationException("Not implemented");
       }

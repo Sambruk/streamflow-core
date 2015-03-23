@@ -10,8 +10,11 @@ import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.painter.Painter;
 import org.jxmapviewer.viewer.DefaultWaypoint;
+import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.util.Iterables;
 
 public class PanZoomInteractionMode implements MapInteractionMode {
 
@@ -38,6 +41,20 @@ public class PanZoomInteractionMode implements MapInteractionMode {
          final WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
          waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLatitude(), point.getLongitude())));
          return waypointPainter;
+      }
+      else if (marker instanceof LineMarker) {
+         LineMarker line = (LineMarker) marker;
+         Iterable<GeoPosition> points =
+               Iterables.map(new Function<PointMarker, GeoPosition>() {
+                  @Override
+                  public GeoPosition map(PointMarker from) {
+                     return new GeoPosition(from.getLatitude(), from.getLongitude());
+                  }
+               }, line.getPoints());
+
+         LinePainter linePainter = new LinePainter();
+         linePainter.setPoints(points);
+         return linePainter;
       }
       else {
          return null;
