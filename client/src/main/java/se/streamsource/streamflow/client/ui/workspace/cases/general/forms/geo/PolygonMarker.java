@@ -1,13 +1,17 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class PolygonMarker extends GeoMarker {
 
    private List<PointMarker> points;
 
-   public PolygonMarker(List<PointMarker> points) {
-      this.points = points;
+   public PolygonMarker(Iterable<PointMarker> points) {
+      this.points = new ArrayList<PointMarker>();
+      for (PointMarker p: points) {
+         this.points.add(p);
+      }
    }
 
    public List<PointMarker> getPoints() {

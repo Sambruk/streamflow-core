@@ -153,6 +153,12 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
             switchInteractionMode(new LineSelectionInteractionMode());
          }
       });
+      selectPolygonButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            switchInteractionMode(new AreaSelectionInteractionMode());
+         }
+      });
 
       return controlPanel;
    }
