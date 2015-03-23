@@ -56,6 +56,20 @@ public class PanZoomInteractionMode implements MapInteractionMode {
          linePainter.setPoints(points);
          return linePainter;
       }
+      else if (marker instanceof PolygonMarker) {
+         PolygonMarker polygon = (PolygonMarker) marker;
+         Iterable<GeoPosition> points =
+               Iterables.map(new Function<PointMarker, GeoPosition>() {
+                  @Override
+                  public GeoPosition map(PointMarker from) {
+                     return new GeoPosition(from.getLatitude(), from.getLongitude());
+                  }
+               }, polygon.getPoints());
+
+         AreaPainter areaPainter = new AreaPainter();
+         areaPainter.setPoints(points);
+         return areaPainter;
+      }
       else {
          return null;
       }
