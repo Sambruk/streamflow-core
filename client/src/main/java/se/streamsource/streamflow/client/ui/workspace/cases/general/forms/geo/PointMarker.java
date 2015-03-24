@@ -2,6 +2,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 class PointMarker extends GeoMarker {
 
@@ -24,6 +25,11 @@ class PointMarker extends GeoMarker {
    @Override
    public List<PointMarker> getPoints() {
       return Collections.singletonList(this);
+   }
+
+   @Override
+   public String stringify() {
+      return String.format(Locale.US, "%.15f,%.15f", latitude, longitude);
    }
 
    @Override

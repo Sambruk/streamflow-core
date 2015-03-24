@@ -31,15 +31,12 @@ import java.util.Set;
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.InputVerifier;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.LineBorder;
-import javax.swing.text.JTextComponent;
 
 import org.jdesktop.application.ApplicationContext;
 import org.jxmapviewer.JXMapViewer;
@@ -50,7 +47,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.security.MapVerifier;
+import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +64,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    private static final Logger logger = LoggerFactory.getLogger(GeoLocationFieldPanel.class);
 
    private JTextField textField;
+   private StateBinder.Binding binding;
    private JXMapViewer mapViewer;
    private MapInteractionMode currentInteractionMode;
    private GeoMarker currentGeoMarker;
@@ -201,7 +199,18 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Override
    public String getValue()
    {
-      return textField.getText();
+//      return textField.getText();
+      ValueBuilder<LocationDTO> builder = module.valueBuilderFactory().newValueBuilder(LocationDTO.class);
+      LocationDTO prototype = builder.prototype();
+
+      prototype.city().set("x");
+      prototype.country().set("x");
+      prototype.street().set("x");
+      prototype.zipcode().set("x");
+      prototype.location().set(currentGeoMarker.stringify());
+
+      String json = builder.newInstance().toJSON();
+      return json;
    }
 
    @Override
@@ -224,6 +233,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Override
    public void updateGeoMarker(GeoMarker marker) {
       currentGeoMarker = marker;
+      binding.updateProperty(getValue());
       switchInteractionMode(new PanZoomInteractionMode());
    }
 
@@ -264,17 +274,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Override
    public void setBinding(final StateBinder.Binding binding)
    {
-      final GeoLocationFieldPanel panel = this;
-      textField.setInputVerifier( new InputVerifier()
-      {
-         @Override
-         public boolean verify(JComponent input)
-         {
-             // TODO: Verify geo value properly
-            binding.updateProperty( ((JTextComponent) input).getText() );
-            return true;
-         }
-      } );
+      this.binding = binding;
    }
 
    enum MapType {

@@ -18,6 +18,24 @@ class LineMarker extends GeoMarker {
    }
 
    @Override
+   public String stringify() {
+      StringBuilder sb = new StringBuilder();
+      boolean firstElement = true;
+      for (PointMarker p: points) {
+         if (firstElement) {
+            firstElement = false;
+         }
+         else {
+            sb.append(',');
+         }
+         sb.append('(');
+         sb.append(p.stringify());
+         sb.append(')');
+      }
+      return sb.toString();
+   }
+
+   @Override
    public int hashCode() {
       final int prime = 31;
       int result = 1;
