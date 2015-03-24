@@ -8,8 +8,6 @@ import javax.swing.event.MouseInputListener;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
-import org.qi4j.api.util.Function;
-import org.qi4j.api.util.Iterables;
 
 public class AreaSelectionInteractionMode
    implements MapInteractionMode, MouseInputListener {
@@ -49,13 +47,7 @@ public class AreaSelectionInteractionMode
 
       if (e.getClickCount() == 2) {
          points.add(points.get(0)); // Close polygon
-         PolygonMarker areaMarker = new PolygonMarker(Iterables.map(new Function<GeoPosition, PointMarker>() {
-            @Override
-            public PointMarker map(GeoPosition from) {
-               return new PointMarker(from.getLatitude(), from.getLongitude());
-            }
-         }, points));
-         geoMarkerHolder.updateGeoMarker(areaMarker);
+         geoMarkerHolder.updateGeoMarker(new PolygonMarker(GeoUtils.pointMarkerList(points)));
       }
    }
 

@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.jxmapviewer.JXMapViewer;
@@ -27,11 +28,8 @@ public class AreaPainter implements Painter<JXMapViewer>
 	   points = new ArrayList<GeoPosition>();
 	}
 
-	void setPoints(Iterable<GeoPosition> points) {
-	   this.points= new ArrayList<GeoPosition>();
-	   for (GeoPosition p: points) {
-	      this.points.add(p);
-	   }
+	void setPoints(Collection<GeoPosition> points) {
+	   this.points= new ArrayList<GeoPosition>(points);
 	}
 
 	@Override

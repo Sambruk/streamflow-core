@@ -1,6 +1,7 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.event.MouseInputListener;
 
@@ -13,8 +14,6 @@ import org.jxmapviewer.viewer.DefaultWaypoint;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
-import org.qi4j.api.util.Function;
-import org.qi4j.api.util.Iterables;
 
 public class PanZoomInteractionMode implements MapInteractionMode {
 
@@ -44,28 +43,14 @@ public class PanZoomInteractionMode implements MapInteractionMode {
       }
       else if (marker instanceof LineMarker) {
          LineMarker line = (LineMarker) marker;
-         Iterable<GeoPosition> points =
-               Iterables.map(new Function<PointMarker, GeoPosition>() {
-                  @Override
-                  public GeoPosition map(PointMarker from) {
-                     return new GeoPosition(from.getLatitude(), from.getLongitude());
-                  }
-               }, line.getPoints());
-
+         List<GeoPosition> points = GeoUtils.positionList(line.getPoints());
          LinePainter linePainter = new LinePainter();
          linePainter.setPoints(points);
          return linePainter;
       }
       else if (marker instanceof PolygonMarker) {
          PolygonMarker polygon = (PolygonMarker) marker;
-         Iterable<GeoPosition> points =
-               Iterables.map(new Function<PointMarker, GeoPosition>() {
-                  @Override
-                  public GeoPosition map(PointMarker from) {
-                     return new GeoPosition(from.getLatitude(), from.getLongitude());
-                  }
-               }, polygon.getPoints());
-
+         List<GeoPosition> points = GeoUtils.positionList(polygon.getPoints());
          AreaPainter areaPainter = new AreaPainter();
          areaPainter.setPoints(points);
          return areaPainter;
