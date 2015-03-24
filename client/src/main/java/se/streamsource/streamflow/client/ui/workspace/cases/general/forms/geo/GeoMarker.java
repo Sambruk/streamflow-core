@@ -5,6 +5,8 @@ import java.util.List;
 
 abstract class GeoMarker {
 
+   public abstract List<PointMarker> getPoints();
+
    /** Parses a geomarker string in one of these formats: Point: "1.23, 4.56",
     * Lines: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66)",
     * Polygon: "(1.11, 2.22), (3.33, 4.44), (5.55, 6.66), (1.11, 2.22)"

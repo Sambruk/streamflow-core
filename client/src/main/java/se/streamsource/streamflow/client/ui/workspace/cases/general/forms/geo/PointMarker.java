@@ -1,5 +1,8 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
+import java.util.Collections;
+import java.util.List;
+
 class PointMarker extends GeoMarker {
 
    private double longitude;
@@ -16,6 +19,11 @@ class PointMarker extends GeoMarker {
 
    public double getLatitude() {
       return latitude;
+   }
+
+   @Override
+   public List<PointMarker> getPoints() {
+      return Collections.singletonList(this);
    }
 
    @Override

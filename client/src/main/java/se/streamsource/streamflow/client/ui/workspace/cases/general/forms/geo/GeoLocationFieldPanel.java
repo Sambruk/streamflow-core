@@ -21,8 +21,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -46,6 +50,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.security.MapVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +110,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
        JXMapViewer mapViewer = new JXMapViewer();
 
        mapViewer.setZoom(7);
+       mapViewer.addComponentListener(new InitialMapScrollHandler());
        return mapViewer;
    }
 
@@ -225,28 +231,10 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       if (marker == null) {
          // TODO: Scroll to default location
       }
-      else if (marker instanceof PointMarker) {
-         PointMarker point = (PointMarker) marker;
-         mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
-      }
-      else if (marker instanceof LineMarker) {
-         // TODO: Center map on center of lines instead of first point
-         LineMarker line = (LineMarker) marker;
-         if (line.getPoints().size() > 0) {
-            PointMarker point = line.getPoints().get(0);
-            mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
-         }
-      }
-      else if (marker instanceof PolygonMarker) {
-         // TODO: Center map on center of lines instead of first point
-         PolygonMarker area = (PolygonMarker) marker;
-         if (area.getPoints().size() > 0) {
-            PointMarker point = area.getPoints().get(0);
-            mapViewer.setAddressLocation(new GeoPosition(point.getLatitude(), point.getLongitude()));
-         }
-      }
       else {
-         throw new UnsupportedOperationException("Not implemented");
+         List<PointMarker> pointsInMarker = marker.getPoints();
+         Set<GeoPosition> positionsForMarker = GeoUtils.positionSet(pointsInMarker);
+         mapViewer.zoomToBestFit(positionsForMarker, 0.5);
       }
    }
 
@@ -305,4 +293,14 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       }
    }
 
+   class InitialMapScrollHandler extends ComponentAdapter {
+      @Override
+      public void componentShown(ComponentEvent e) {
+         scrollMarkerIntoView(getCurrentGeoMarker());
+      }
+      @Override
+      public void componentResized(ComponentEvent e) {
+         scrollMarkerIntoView(getCurrentGeoMarker());
+      }
+   }
 }

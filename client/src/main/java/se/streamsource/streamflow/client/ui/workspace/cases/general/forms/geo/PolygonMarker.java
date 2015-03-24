@@ -14,6 +14,7 @@ class PolygonMarker extends GeoMarker {
       }
    }
 
+   @Override
    public List<PointMarker> getPoints() {
       return points;
    }
