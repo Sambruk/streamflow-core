@@ -178,7 +178,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
          TileFactoryInfo info = new OSMTileFactoryInfo();
          DefaultTileFactory tileFactory = new DefaultTileFactory(info);
          mapViewer.setTileFactory(tileFactory);
-         tileFactory.setThreadPoolSize(8);
          break;
       }
       case SATELLITE:
@@ -186,14 +185,11 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
          TileFactoryInfo info = new VirtualEarthTileFactoryInfo(VirtualEarthTileFactoryInfo.SATELLITE);
          DefaultTileFactory tileFactory = new DefaultTileFactory(info);
          mapViewer.setTileFactory(tileFactory);
-         tileFactory.setThreadPoolSize(8);
          break;
       }
       default:
          mapViewer.setTileFactory(null);
       }
-
-
    }
 
    @Override
@@ -235,6 +231,12 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       currentGeoMarker = marker;
       binding.updateProperty(getValue());
       switchInteractionMode(new PanZoomInteractionMode());
+   }
+
+   @Override
+   public void removeNotify() {
+      super.removeNotify();
+      mapViewer.getTileFactory().dispose();
    }
 
    private void scrollMarkerIntoView(GeoMarker marker) {
