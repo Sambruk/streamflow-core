@@ -307,6 +307,16 @@
 			<artifactId>org.restlet.ext.httpclient</artifactId>
 			<version>${version.restlet}</version>
 		</dependency>
+      <dependency>
+         <groupId>org.restlet.jee</groupId>
+         <artifactId>org.restlet.ext.jackson</artifactId>
+         <version>${version.restlet}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.codehaus.jackson</groupId>
+         <artifactId>jackson-core-asl</artifactId>
+         <version>${version.jackson}</version>
+      </dependency>
 
 		<!-- Help -->
 		<dependency>
